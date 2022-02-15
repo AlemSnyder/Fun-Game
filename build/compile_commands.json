@@ -1,0 +1,32 @@
+[
+{
+  "directory": "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build",
+  "command": "C:\\msys64\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe -g -Wall -Wextra -Wpedantic -o CMakeFiles\\json_test.dir\\src\\TerrainGeneration\\noise.cpp.obj -c \"C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\TerrainGeneration\\noise.cpp\"",
+  "file": "C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\TerrainGeneration\\noise.cpp"
+},
+{
+  "directory": "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build",
+  "command": "C:\\msys64\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe -g -Wall -Wextra -Wpedantic -o CMakeFiles\\json_test.dir\\src\\jsoncpp.cpp.obj -c \"C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\jsoncpp.cpp\"",
+  "file": "C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\jsoncpp.cpp"
+},
+{
+  "directory": "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build",
+  "command": "C:\\msys64\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe -g -Wall -Wextra -Wpedantic -o CMakeFiles\\json_test.dir\\src\\main.cpp.obj -c \"C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\main.cpp\"",
+  "file": "C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\main.cpp"
+},
+{
+  "directory": "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build",
+  "command": "C:\\msys64\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe -g -Wall -Wextra -Wpedantic -o CMakeFiles\\json_test.dir\\src\\terrain.cpp.obj -c \"C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\terrain.cpp\"",
+  "file": "C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\terrain.cpp"
+},
+{
+  "directory": "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build",
+  "command": "C:\\msys64\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe -g -Wall -Wextra -Wpedantic -o CMakeFiles\\json_test.dir\\src\\tile.cpp.obj -c \"C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\tile.cpp\"",
+  "file": "C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\tile.cpp"
+},
+{
+  "directory": "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build",
+  "command": "C:\\msys64\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe -g -Wall -Wextra -Wpedantic -o CMakeFiles\\json_test.dir\\src\\world.cpp.obj -c \"C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\world.cpp\"",
+  "file": "C:\\Users\\haile\\Documents\\School\\Comp Sci but C\\gcc\\terrain_generation\\src\\world.cpp"
+}
+]

@@ -1,0 +1,3 @@
+C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build/CMakeFiles/json_test.dir
+C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build/CMakeFiles/edit_cache.dir
+C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/build/CMakeFiles/rebuild_cache.dir
