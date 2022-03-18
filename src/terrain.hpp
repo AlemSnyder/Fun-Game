@@ -10,8 +10,10 @@
 //#include "json/json.h"
 //#include <json.h>
 
-#include "TerrainGeneration/land_generator.hpp"
+#include "node.hpp"
+#include "onepath.hpp"
 #include "tile.hpp"
+#include "TerrainGeneration/land_generator.hpp"
 #include "TerrainGeneration/material.hpp"
 #include "TerrainGeneration/tile_stamp.hpp"
 
@@ -45,6 +47,18 @@ private:
 
     void add_all_adjacent(int xyz);
 
+    Node new_node(Node &parrent, Tile &tile, Tile goal);
+    void add_node(std::set<Node> &nodelist, Node &node);
+    void get_path_through_nodes(Node *node, std::vector<Tile *> &out,
+                                const Tile *start) {
+        out.push_back(node->get_tile());
+        if (start == node->get_tile()) {
+            return;
+        }
+        get_path_through_nodes(node->get_parent(), out, start);
+    };
+
+
     // TODO none of this is defined
     void add_line_to(std::vector<int> &out, Json::Value data, int i);
     void add_line_to(std::vector<int> &out, Json::Value data, int i, std::vector<std::array<float, 2>>);
@@ -54,6 +68,19 @@ private:
 
 public:
     
+    const OnePath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
+
+    const static float get_H_cost(int xyz1, int xyz2);
+    const static float get_H_cost(const Tile tile1, const Tile tile2);
+    const static float get_H_cost(const Tile *const tile1, const Tile *const tile2);
+    const static float get_H_cost(const Tile tile1, const Tile *const tile2);
+    const static float get_H_cost(const Tile *const tile1, const Tile tile2);
+
+    const static float get_G_cost(const Tile tile, const Node node);
+    const static float get_G_cost(const Tile *const tile,const Node *const node);
+    const static float get_G_cost(const Tile tile, const Node *const node);
+    const static float get_G_cost(const Tile *const tile, const Node node);
+
     static int pos(int x, int y, int z) {// for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z; // TODO should not be static
     }
@@ -94,12 +121,29 @@ public:
     
     std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
     const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
+
+    void add_all_adjacent(int xyz);
+    // TODO plack block
+    std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
+    const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
+    std::set<Node *> get_adjacent_Nodes(const Node *const node, std::vector<Node *> &nodes, int8_t type) const;
+    std::set<Node *> get_adjacent_Nodes(const Node *const node, std::vector<Node> &nodes, int8_t type) const;
+
     inline int get_X_MAX() { return X_MAX; };
     inline int get_Y_MAX() { return Y_MAX; };
     inline int get_Z_MAX() { return Z_MAX; };
 
     inline bool in_range(int x, int y, int z) const {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
+    }
+
+    bool is_valid_pos(int x, int y, int z) const {
+        return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
+                z >= 0);
+    }
+    inline bool in_range(int x, int y, int z) {
+        return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
+                z >= 0);
     }
 
     Tile *get_tile(int x, int y, int z) {
@@ -144,7 +188,6 @@ public:
         tile->set_color_id(color_id);
     }
 
-
     void set_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat);
 
     void stamp_tile_region(Tile_Stamp tStamp, int x ,int y);
@@ -168,6 +211,8 @@ public:
 
     int qb_save(const char * path)const;
     int qb_read(const char * path, const std::map<uint32_t, std::pair<const Material*, uint8_t>> *materials);
+
+    std::vector<Tile *> get_path_Astar(Tile *start, Tile *goal);
 
     int get_Z_solid(int x, int y);
     int get_Z_solid(int x, int y, int z);

@@ -104,6 +104,20 @@ uint8_t Tile::get_grow_high() const{
 // This should be removed.
 int Tile::pos() const { return Terrain::pos(x, y, z); }
 // This should be removed.
+
+void Tile::add_adjacent(Tile *tile, OnePath type) {
+    adjacent.insert(std::make_pair(tile, type));
+    return ;
+}
+void Tile::add_adjacent(std::map<Tile *, OnePath>::iterator it, Tile *tile, OnePath type) {
+    adjacent.insert(it, std::make_pair(tile, type));
+    return ;
+}
+
+void Tile::clear_adjacent(){
+    adjacent.clear();
+}
+
 bool TilePCompare::operator() (const Tile* lhs, const Tile* rhs) const{
     return lhs->pos() < rhs->pos();
 }

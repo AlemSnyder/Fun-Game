@@ -28,8 +28,9 @@ private:
     bool grass; // Does this tile obey grass color Gradient?
     
     bool solid;  // used for can stand, grass edges, etc. Should be the same as mat->solid.
-
     const Material * mat; // The material of the tile
+    std::map<Tile *,OnePath, TilePCompare> adjacent;//(tile_pair_hash, tile_pair_equals);
+
 
 public:
 
@@ -60,6 +61,14 @@ public:
     uint8_t get_color_id() const ;
     uint8_t get_grow_low() const;
     uint8_t get_grow_high() const;
+
+    void add_adjacent(Tile *tile, OnePath type);
+    void add_adjacent(std::map<Tile *, OnePath>::iterator it, Tile *tile, OnePath type);
+    void clear_adjacent();
+
+    std::map<Tile *,OnePath, TilePCompare> & get_adjacent() { return adjacent; };
+    const std::map<Tile *,OnePath, TilePCompare> & get_adjacent() const { return adjacent; };
+
 
     inline bool is_solid() const { return solid; }
     bool operator==(const Tile other) const {
