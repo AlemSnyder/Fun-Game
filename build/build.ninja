@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: json_test
+# Project: Fun_Game
 # Configurations: 
 # =============================================================================
 
@@ -36,72 +36,72 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/build/
 # =============================================================================
-# Object build statements for EXECUTABLE target json_test
+# Object build statements for EXECUTABLE target Fun_Game
 
 
 #############################################
-# Order-only phony target for json_test
+# Order-only phony target for Fun_Game
 
-build cmake_object_order_depends_target_json_test: phony || CMakeFiles/json_test.dir
+build cmake_object_order_depends_target_Fun_Game: phony || CMakeFiles/Fun_Game.dir
 
-build CMakeFiles/json_test.dir/src/TerrainGeneration/noise.cpp.obj: CXX_COMPILER__json_test_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/TerrainGeneration/noise.cpp || cmake_object_order_depends_target_json_test
-  DEP_FILE = CMakeFiles\json_test.dir\src\TerrainGeneration\noise.cpp.obj.d
+build CMakeFiles/Fun_Game.dir/src/TerrainGeneration/noise.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/TerrainGeneration/noise.cpp || cmake_object_order_depends_target_Fun_Game
+  DEP_FILE = CMakeFiles\Fun_Game.dir\src\TerrainGeneration\noise.cpp.obj.d
   FLAGS = -Wall -Wextra -Wpedantic
-  OBJECT_DIR = CMakeFiles\json_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\json_test.dir\src\TerrainGeneration
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
+  OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src\TerrainGeneration
 
-build CMakeFiles/json_test.dir/src/jsoncpp.cpp.obj: CXX_COMPILER__json_test_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/jsoncpp.cpp || cmake_object_order_depends_target_json_test
-  DEP_FILE = CMakeFiles\json_test.dir\src\jsoncpp.cpp.obj.d
+build CMakeFiles/Fun_Game.dir/src/jsoncpp.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/jsoncpp.cpp || cmake_object_order_depends_target_Fun_Game
+  DEP_FILE = CMakeFiles\Fun_Game.dir\src\jsoncpp.cpp.obj.d
   FLAGS = -Wall -Wextra -Wpedantic
-  OBJECT_DIR = CMakeFiles\json_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\json_test.dir\src
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
+  OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/json_test.dir/src/main.cpp.obj: CXX_COMPILER__json_test_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/main.cpp || cmake_object_order_depends_target_json_test
-  DEP_FILE = CMakeFiles\json_test.dir\src\main.cpp.obj.d
+build CMakeFiles/Fun_Game.dir/src/main.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/main.cpp || cmake_object_order_depends_target_Fun_Game
+  DEP_FILE = CMakeFiles\Fun_Game.dir\src\main.cpp.obj.d
   FLAGS = -Wall -Wextra -Wpedantic
-  OBJECT_DIR = CMakeFiles\json_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\json_test.dir\src
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
+  OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/json_test.dir/src/node.cpp.obj: CXX_COMPILER__json_test_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/node.cpp || cmake_object_order_depends_target_json_test
-  DEP_FILE = CMakeFiles\json_test.dir\src\node.cpp.obj.d
+build CMakeFiles/Fun_Game.dir/src/node.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/node.cpp || cmake_object_order_depends_target_Fun_Game
+  DEP_FILE = CMakeFiles\Fun_Game.dir\src\node.cpp.obj.d
   FLAGS = -Wall -Wextra -Wpedantic
-  OBJECT_DIR = CMakeFiles\json_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\json_test.dir\src
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
+  OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/json_test.dir/src/terrain.cpp.obj: CXX_COMPILER__json_test_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/terrain.cpp || cmake_object_order_depends_target_json_test
-  DEP_FILE = CMakeFiles\json_test.dir\src\terrain.cpp.obj.d
+build CMakeFiles/Fun_Game.dir/src/terrain.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/terrain.cpp || cmake_object_order_depends_target_Fun_Game
+  DEP_FILE = CMakeFiles\Fun_Game.dir\src\terrain.cpp.obj.d
   FLAGS = -Wall -Wextra -Wpedantic
-  OBJECT_DIR = CMakeFiles\json_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\json_test.dir\src
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
+  OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/json_test.dir/src/tile.cpp.obj: CXX_COMPILER__json_test_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/tile.cpp || cmake_object_order_depends_target_json_test
-  DEP_FILE = CMakeFiles\json_test.dir\src\tile.cpp.obj.d
+build CMakeFiles/Fun_Game.dir/src/tile.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/tile.cpp || cmake_object_order_depends_target_Fun_Game
+  DEP_FILE = CMakeFiles\Fun_Game.dir\src\tile.cpp.obj.d
   FLAGS = -Wall -Wextra -Wpedantic
-  OBJECT_DIR = CMakeFiles\json_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\json_test.dir\src
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
+  OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/json_test.dir/src/world.cpp.obj: CXX_COMPILER__json_test_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/world.cpp || cmake_object_order_depends_target_json_test
-  DEP_FILE = CMakeFiles\json_test.dir\src\world.cpp.obj.d
+build CMakeFiles/Fun_Game.dir/src/world.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/world.cpp || cmake_object_order_depends_target_Fun_Game
+  DEP_FILE = CMakeFiles\Fun_Game.dir\src\world.cpp.obj.d
   FLAGS = -Wall -Wextra -Wpedantic
-  OBJECT_DIR = CMakeFiles\json_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\json_test.dir\src
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
+  OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target json_test
+# Link build statements for EXECUTABLE target Fun_Game
 
 
 #############################################
-# Link the executable json_test.exe
+# Link the executable Fun_Game.exe
 
-build json_test.exe: CXX_EXECUTABLE_LINKER__json_test_ CMakeFiles/json_test.dir/src/TerrainGeneration/noise.cpp.obj CMakeFiles/json_test.dir/src/jsoncpp.cpp.obj CMakeFiles/json_test.dir/src/main.cpp.obj CMakeFiles/json_test.dir/src/node.cpp.obj CMakeFiles/json_test.dir/src/terrain.cpp.obj CMakeFiles/json_test.dir/src/tile.cpp.obj CMakeFiles/json_test.dir/src/world.cpp.obj
+build Fun_Game.exe: CXX_EXECUTABLE_LINKER__Fun_Game_ CMakeFiles/Fun_Game.dir/src/TerrainGeneration/noise.cpp.obj CMakeFiles/Fun_Game.dir/src/jsoncpp.cpp.obj CMakeFiles/Fun_Game.dir/src/main.cpp.obj CMakeFiles/Fun_Game.dir/src/node.cpp.obj CMakeFiles/Fun_Game.dir/src/terrain.cpp.obj CMakeFiles/Fun_Game.dir/src/tile.cpp.obj CMakeFiles/Fun_Game.dir/src/world.cpp.obj
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  OBJECT_DIR = CMakeFiles\json_test.dir
+  OBJECT_DIR = CMakeFiles\Fun_Game.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_FILE = json_test.exe
-  TARGET_IMPLIB = libjson_test.dll.a
-  TARGET_PDB = json_test.exe.dbg
+  TARGET_FILE = Fun_Game.exe
+  TARGET_IMPLIB = libFun_Game.dll.a
+  TARGET_PDB = Fun_Game.exe.dbg
 
 
 #############################################
@@ -130,7 +130,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build json_test: phony json_test.exe
+build Fun_Game: phony Fun_Game.exe
 
 # =============================================================================
 # Folder targets.
@@ -140,7 +140,7 @@ build json_test: phony json_test.exe
 #############################################
 # Folder: C:/Users/haile/Documents/School/Comp Sci but C/gcc/Fun-Game/build
 
-build all: phony json_test.exe
+build all: phony Fun_Game.exe
 
 # =============================================================================
 # Built-in targets

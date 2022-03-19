@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 
 
 # set the project name
-project(json_test)
+project(Fun_Game)
 
 #target_compile_options(Terrain_Generation -municode)
 #add_compile_options(-static-libstdc++)
@@ -12,12 +12,12 @@ project(json_test)
 # add the executable
 file(GLOB SOURCES "src/**/*.cpp")
 file(GLOB SOURCES2 "src/*.cpp")
-add_executable(json_test ${SOURCES} ${SOURCES2})
+add_executable(Fun_Game ${SOURCES} ${SOURCES2})
 
 if(MSVC)
-  target_compile_options(json_test PRIVATE /W4 /WX)
+  target_compile_options(Fun_Game PRIVATE /W4 /WX)
 else()
-  target_compile_options(json_test PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(Fun_Game PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 #target_link_libraries(jsonparser "src/js")

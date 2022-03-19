@@ -67,5 +67,6 @@ _deps
 #
 
 # this is a lot of qb files
-/SavedTerrain
-/build/.cmake
+SavedTerrain/*
+
+build/*
