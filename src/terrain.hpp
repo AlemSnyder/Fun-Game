@@ -70,16 +70,16 @@ public:
     
     const OnePath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
 
-    const static float get_H_cost(int xyz1, int xyz2);
-    const static float get_H_cost(const Tile tile1, const Tile tile2);
-    const static float get_H_cost(const Tile *const tile1, const Tile *const tile2);
-    const static float get_H_cost(const Tile tile1, const Tile *const tile2);
-    const static float get_H_cost(const Tile *const tile1, const Tile tile2);
+    static float get_H_cost(int xyz1, int xyz2);
+    static float get_H_cost(const Tile tile1, const Tile tile2);
+    static float get_H_cost(const Tile *const tile1, const Tile *const tile2);
+    static float get_H_cost(const Tile tile1, const Tile *const tile2);
+    static float get_H_cost(const Tile *const tile1, const Tile tile2);
 
-    const static float get_G_cost(const Tile tile, const Node node);
-    const static float get_G_cost(const Tile *const tile,const Node *const node);
-    const static float get_G_cost(const Tile tile, const Node *const node);
-    const static float get_G_cost(const Tile *const tile, const Node node);
+    static float get_G_cost(const Tile tile, const Node node);
+    static float get_G_cost(const Tile *const tile,const Node *const node);
+    static float get_G_cost(const Tile tile, const Node *const node);
+    static float get_G_cost(const Tile *const tile, const Node node);
 
     static int pos(int x, int y, int z) {// for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z; // TODO should not be static
@@ -118,11 +118,7 @@ public:
     Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, const std::map<int, const Material> * material, Json::Value biome_data, std::vector<int> grass_grad_data, int grass_mid);
     Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type, const std::map<int, const Material> * material, Json::Value biome_data);
     Terrain(const char * path, const std::map<int, const Material> * material);
-    
-    std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
-    const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
 
-    void add_all_adjacent(int xyz);
     // TODO plack block
     std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
     const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;

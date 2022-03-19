@@ -6,6 +6,7 @@
 #include <map>
 #include <stdint.h>
 #include "TerrainGeneration/material.hpp"
+#include "onepath.hpp"
 //#include <iostream>
 
 class Tile;

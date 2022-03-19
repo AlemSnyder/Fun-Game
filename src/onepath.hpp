@@ -71,7 +71,7 @@ class OnePath {  // path type from adjacent nodes
     inline void close() { type = type & (DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2 | DirectionFlags::VERTICAL); }
     inline void open() { type = type | DirectionFlags::OPEN; }
 
-    inline const int8_t get_type() const { return static_cast<int8_t>(type); }
+    inline int8_t get_type() const { return static_cast<int8_t>(type); }
 
     inline bool compatible(DirectionFlags test) const {
         DirectionFlags upOver = is_up_over() ? DirectionFlags::UP_AND_OVER : DirectionFlags::NONE;

@@ -2,7 +2,7 @@
 #include <vector>
 #include "terrain.hpp"
 
-int test1(){
+int test7(){
     Terrain ter = Terrain(1000,1000,20);
     //ter.test();
     Tile * start = ter.get_tile(2,2,5);
@@ -36,8 +36,4 @@ int test1(){
     std::cout << path.compatible(8);
 
     return 0;*/
-}
-
-int main(){
-    return test1();
 }

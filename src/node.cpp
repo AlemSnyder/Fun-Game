@@ -2,7 +2,7 @@
 //#include "terrain.hpp"
 
 
-void Node::init(Tile *tile_, Tile *goal, float hc) {
+void Node::init(Tile *tile_, float hc) {
     parent_node = NULL;
     tile = tile_;
     gCost = 0;
@@ -11,7 +11,7 @@ void Node::init(Tile *tile_, Tile *goal, float hc) {
     explored = false;
 }
 
-Node::Node(Tile *tile_, Tile *goal, float hc) { init(tile_, goal, hc); }
+Node::Node(Tile *tile_, float hc) { init(tile_, hc); }
 
 Node::Node() {
     parent_node = NULL;

@@ -521,13 +521,13 @@ inline bool Terrain::can_stand_1(Tile *tile) const {
 }
 // can_stand should take an int xyz
 
-float const Terrain::get_H_cost(const Tile tile1, const Tile tile2) {
+float Terrain::get_H_cost(const Tile tile1, const Tile tile2) {
     return get_H_cost(tile1.pos(), tile2.pos());
 }
-float const Terrain::get_H_cost(const Tile *tile1, const Tile *tile2) {
+float Terrain::get_H_cost(const Tile *tile1, const Tile *tile2) {
     return get_H_cost(tile1->pos(), tile2->pos());
 }  // might need to define this for other orentations
-float const Terrain::get_H_cost(int xyz1, int xyz2) {
+float Terrain::get_H_cost(int xyz1, int xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
@@ -541,16 +541,16 @@ float const Terrain::get_H_cost(int xyz1, int xyz2) {
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
 
-inline const float Terrain::get_G_cost(const Tile tile, const Node node) {
+inline float Terrain::get_G_cost(const Tile tile, const Node node) {
     return node.get_gCost() + get_H_cost(tile, node.get_tile());
 }
-inline const float Terrain::get_G_cost(const Tile *const tile, const Node *const node) {
+inline float Terrain::get_G_cost(const Tile *const tile, const Node *const node) {
     return node->get_gCost() + get_H_cost(tile, node->get_tile());
 }
-inline const float Terrain::get_G_cost(const Tile tile, const Node *const node) {
+inline float Terrain::get_G_cost(const Tile tile, const Node *const node) {
     return node->get_gCost() + get_H_cost(tile, node->get_tile());
 }
-inline const float Terrain::get_G_cost(const Tile *const tile, const Node node) {
+inline float Terrain::get_G_cost(const Tile *const tile, const Node node) {
     return node.get_gCost() + get_H_cost(tile, node.get_tile());
 }
 
@@ -634,7 +634,7 @@ void Terrain::test() {
     // std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
     // - millisec_since_epoch << " time\n";
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        nodes.push_back(new Node(this->get_tile(xyz), goal, get_H_cost(this->get_tile(xyz), goal)));
+        nodes.push_back(new Node(this->get_tile(xyz), get_H_cost(this->get_tile(xyz), goal)));
     }
     std::cout << sizeof(nodes) << " Size of nodes\n";
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -644,7 +644,7 @@ void Terrain::test() {
               << " time define all nodes\n";
     int x = 0;
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        auto node = new Node(this->get_tile(xyz), goal, get_H_cost(this->get_tile(xyz), goal));
+        auto node = new Node(this->get_tile(xyz), get_H_cost(this->get_tile(xyz), goal));
         if (node->is_explored()) {
             x++;
         };
@@ -655,6 +655,63 @@ void Terrain::test() {
                          .count() -
                      millisec_since_epoch
               << " time\n";
+}
+
+const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
+    // the function should be passed the shape of the thing that wants to go on
+    // the path just set them for now
+    int dz = 3;
+    int dxy = 1;
+
+    int8_t type = abs(xs - xf) + abs(ys - yf) + 4 * abs(zs - zf);
+    bool open;
+    if (type == 1 || type == 4) {
+        // up / down or side to side
+        // in this case the two tiles are bordering
+        // same lever so the only thing that maters if the entity can stand on
+        // both tiles
+        open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
+    } else if (type == 2) {
+        // still the same level
+        // this test if the start and final locations are open,
+        // and if the two between them are open
+        // S O
+        // O F
+        open = can_stand(xs, ys, zs, dz, dxy) &&
+               can_stand(xf, yf, zf, dz, dxy) &&
+               can_stand(xs, yf, zs, dz, dxy) && can_stand(xf, ys, zf, dz, dxy);
+    } else if (type == 5) {
+        if (zf > zs) {
+            // going up, and over
+            open = can_stand(xs, ys, zs, dz + 1, dxy) &&
+                   can_stand(xf, yf, zf, dz, dxy);
+        } else {
+            // going down and over
+            open = can_stand(xs, ys, zs, dz, dxy) &&
+                   can_stand(xf, yf, zf, dz + 1, dxy);
+        }
+
+    } else if (type == 6) {
+        if (zf > zs) {
+            // going up, and over
+            open = can_stand(xs, ys, zs, dz + 1, dxy) &&
+                   can_stand(xf, yf, zf, dz, dxy) &&
+               ((can_stand(xf, ys, zs, dz + 1, dxy) ||
+                can_stand(xf, ys, zf, dz, dxy)) &&
+               (can_stand(xs, yf, zs, dz + 1, dxy) ||
+                can_stand(xs, yf, zf, dz, dxy)));
+        } else {
+            // going down and over
+            open = can_stand(xs, ys, zs, dz, dxy) &&
+                   can_stand(xf, yf, zf, dz + 1, dxy)&&
+               ((can_stand(xf, ys, zs, dz, dxy) ||
+                can_stand(xf, ys, zf, dz + 1, dxy)) &&
+               (can_stand(xs, yf, zs, dz, dxy) ||
+                can_stand(xs, yf, zf, dz + 1, dxy)));
+        }
+    }
+
+    return int8_t(type + 8 * open);
 }
 
 std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
@@ -702,7 +759,7 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
         // Tile * test_tile = this->get_tile(xyz);
         // nodes.push_back(new Node(this->get_tile(xyz), goal)); //each node is
         // initialized
-        nodes[xyz].init(get_tile(xyz), goal, get_H_cost(this->get_tile(xyz), goal));
+        nodes[xyz].init(get_tile(xyz), get_H_cost(this->get_tile(xyz), goal));
     }
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
                      std::chrono::system_clock::now().time_since_epoch())
@@ -898,8 +955,4 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     fclose(file);
     std::cout << tiles_read << std::endl;
     return 0;
-}
-
-void Terrain::test() {
-    
 }
