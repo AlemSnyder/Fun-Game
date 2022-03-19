@@ -10,7 +10,7 @@ int test1(){
 
     //const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation";
 
-    const char * path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/savedTerrain/save.qb";
+    const char * path = "../SavedTerrain/save.qb";
 
     World world;
 
@@ -32,8 +32,8 @@ int test2(){
 }
 
 int savetest(){
-    const char * path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/savedTerrain/save.qb";
-    const char * save_path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/savedTerrain/save_test.qb";
+    const char * path = "../SavedTerrain/save.qb";
+    const char * save_path = "../SavedTerrain/save_test.qb";
 
     World world(path);
 
@@ -51,7 +51,7 @@ void save_terrain(Json::Value biome_data, std::string biome_name){
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++){
         world.terrain_main.init(3,3, 32, 128, 5, (int) i, world.get_materials(), biome_data);
-        std::string path("C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation/savedTerrain/");
+        std::string path("../SavedTerrain/");
         path += biome_name;
         path += "/biome_";
         path += std::to_string(i);
