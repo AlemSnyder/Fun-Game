@@ -69,9 +69,45 @@ void save_all_terrain(Json::Value biome_data){
     }
 }
 
+int pathfindertest(){
+    const char * path = "../SavedTerrain/save_test.qb";
+    //const char * save_path = "../SavedTerrain/save_test.qb";
+
+    World world(path);
+
+    //world.terrain_main.qb_save(save_path);
+
+    Tile * start = world.terrain_main.get_tile(1,1,1);
+    Tile * end = world.terrain_main.get_tile(1,25,1);
+
+    start->set_material(&world.get_materials()->at(0));
+    end->set_material(&world.get_materials()->at(0));
+
+    //std::cout << ter.can_stand(3,3,6, 3, 1) << ter.get_tile(3,3,6)->is_solid() << "can stand\n";
+    //std::cout << ter.can_stand(3,3,5, 3, 1) << ter.get_tile(3,3,5)->is_solid() << "can stand\n";
+    //std::cout << ter.can_stand(3,3,4, 3, 1) << ter.get_tile(3,3,4)->is_solid() << "can stand\n";
+
+    std::vector<Tile*> tile_path = world.terrain_main.get_path_Astar(start, end);
+
+    if (tile_path.size() == 0){
+        std::cout << "no path" << std::endl;
+    }
+
+    for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
+        std::cout << (*it)->get_x() << " " << (*it)->get_y() << " " << (*it)->get_z() << std::endl;
+    }
+
+    start->set_material(&world.get_materials()->at(1));
+    end->set_material(&world.get_materials()->at(1));
+
+    world.terrain_main.qb_save(path);
+
+    return 0;
+}
+
 int main( int argc, char** argv ){
     if (argc == 1){
-        return savetest();
+        return pathfindertest();
     } else if (std::string(argv[1]) == "--TerrainTypes"){
         Json::Value biome_data;
         std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
@@ -88,5 +124,7 @@ int main( int argc, char** argv ){
     else if (std::string(argv[1]) == "--SaveTest"){
         return savetest();
     }
-
+    else if (std::string(argv[1]) == "--pathfinder"){
+        return pathfindertest();
+    }
 }

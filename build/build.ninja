@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: Fun_Game
-# Configurations: 
+# Configurations: Debug
 # =============================================================================
 
 #############################################
@@ -20,6 +20,11 @@
 
 ninja_required_version = 1.5
 
+
+#############################################
+# Set configuration variable for custom commands.
+
+CONFIGURATION = Debug
 # =============================================================================
 # Include auxiliary files.
 
@@ -44,45 +49,45 @@ cmake_ninja_workdir = C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun
 
 build cmake_object_order_depends_target_Fun_Game: phony || CMakeFiles/Fun_Game.dir
 
-build CMakeFiles/Fun_Game.dir/src/TerrainGeneration/noise.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/TerrainGeneration/noise.cpp || cmake_object_order_depends_target_Fun_Game
+build CMakeFiles/Fun_Game.dir/src/TerrainGeneration/noise.cpp.obj: CXX_COMPILER__Fun_Game_Debug C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/TerrainGeneration/noise.cpp || cmake_object_order_depends_target_Fun_Game
   DEP_FILE = CMakeFiles\Fun_Game.dir\src\TerrainGeneration\noise.cpp.obj.d
-  FLAGS = -Wall -Wextra -Wpedantic
+  FLAGS = -g -Wall -Wextra -Wpedantic
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src\TerrainGeneration
 
-build CMakeFiles/Fun_Game.dir/src/jsoncpp.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/jsoncpp.cpp || cmake_object_order_depends_target_Fun_Game
+build CMakeFiles/Fun_Game.dir/src/jsoncpp.cpp.obj: CXX_COMPILER__Fun_Game_Debug C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/jsoncpp.cpp || cmake_object_order_depends_target_Fun_Game
   DEP_FILE = CMakeFiles\Fun_Game.dir\src\jsoncpp.cpp.obj.d
-  FLAGS = -Wall -Wextra -Wpedantic
+  FLAGS = -g -Wall -Wextra -Wpedantic
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/Fun_Game.dir/src/main.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/main.cpp || cmake_object_order_depends_target_Fun_Game
+build CMakeFiles/Fun_Game.dir/src/main.cpp.obj: CXX_COMPILER__Fun_Game_Debug C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/main.cpp || cmake_object_order_depends_target_Fun_Game
   DEP_FILE = CMakeFiles\Fun_Game.dir\src\main.cpp.obj.d
-  FLAGS = -Wall -Wextra -Wpedantic
+  FLAGS = -g -Wall -Wextra -Wpedantic
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/Fun_Game.dir/src/node.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/node.cpp || cmake_object_order_depends_target_Fun_Game
+build CMakeFiles/Fun_Game.dir/src/node.cpp.obj: CXX_COMPILER__Fun_Game_Debug C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/node.cpp || cmake_object_order_depends_target_Fun_Game
   DEP_FILE = CMakeFiles\Fun_Game.dir\src\node.cpp.obj.d
-  FLAGS = -Wall -Wextra -Wpedantic
+  FLAGS = -g -Wall -Wextra -Wpedantic
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/Fun_Game.dir/src/terrain.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/terrain.cpp || cmake_object_order_depends_target_Fun_Game
+build CMakeFiles/Fun_Game.dir/src/terrain.cpp.obj: CXX_COMPILER__Fun_Game_Debug C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/terrain.cpp || cmake_object_order_depends_target_Fun_Game
   DEP_FILE = CMakeFiles\Fun_Game.dir\src\terrain.cpp.obj.d
-  FLAGS = -Wall -Wextra -Wpedantic
+  FLAGS = -g -Wall -Wextra -Wpedantic
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/Fun_Game.dir/src/tile.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/tile.cpp || cmake_object_order_depends_target_Fun_Game
+build CMakeFiles/Fun_Game.dir/src/tile.cpp.obj: CXX_COMPILER__Fun_Game_Debug C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/tile.cpp || cmake_object_order_depends_target_Fun_Game
   DEP_FILE = CMakeFiles\Fun_Game.dir\src\tile.cpp.obj.d
-  FLAGS = -Wall -Wextra -Wpedantic
+  FLAGS = -g -Wall -Wextra -Wpedantic
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
-build CMakeFiles/Fun_Game.dir/src/world.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/world.cpp || cmake_object_order_depends_target_Fun_Game
+build CMakeFiles/Fun_Game.dir/src/world.cpp.obj: CXX_COMPILER__Fun_Game_Debug C$:/Users/haile/Documents/School/Comp$ Sci$ but$ C/gcc/Fun-Game/src/world.cpp || cmake_object_order_depends_target_Fun_Game
   DEP_FILE = CMakeFiles\Fun_Game.dir\src\world.cpp.obj.d
-  FLAGS = -Wall -Wextra -Wpedantic
+  FLAGS = -g -Wall -Wextra -Wpedantic
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   OBJECT_FILE_DIR = CMakeFiles\Fun_Game.dir\src
 
@@ -94,7 +99,8 @@ build CMakeFiles/Fun_Game.dir/src/world.cpp.obj: CXX_COMPILER__Fun_Game_ C$:/Use
 #############################################
 # Link the executable Fun_Game.exe
 
-build Fun_Game.exe: CXX_EXECUTABLE_LINKER__Fun_Game_ CMakeFiles/Fun_Game.dir/src/TerrainGeneration/noise.cpp.obj CMakeFiles/Fun_Game.dir/src/jsoncpp.cpp.obj CMakeFiles/Fun_Game.dir/src/main.cpp.obj CMakeFiles/Fun_Game.dir/src/node.cpp.obj CMakeFiles/Fun_Game.dir/src/terrain.cpp.obj CMakeFiles/Fun_Game.dir/src/tile.cpp.obj CMakeFiles/Fun_Game.dir/src/world.cpp.obj
+build Fun_Game.exe: CXX_EXECUTABLE_LINKER__Fun_Game_Debug CMakeFiles/Fun_Game.dir/src/TerrainGeneration/noise.cpp.obj CMakeFiles/Fun_Game.dir/src/jsoncpp.cpp.obj CMakeFiles/Fun_Game.dir/src/main.cpp.obj CMakeFiles/Fun_Game.dir/src/node.cpp.obj CMakeFiles/Fun_Game.dir/src/terrain.cpp.obj CMakeFiles/Fun_Game.dir/src/tile.cpp.obj CMakeFiles/Fun_Game.dir/src/world.cpp.obj
+  FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Fun_Game.dir
   POST_BUILD = cd .

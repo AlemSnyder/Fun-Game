@@ -39,10 +39,10 @@ class OnePath {  // path type from adjacent nodes
     up
     forward
     */
-   private:
+private:
     DirectionFlags type;
 
-   public:
+public:
     // there should be not OnePath pointers
     OnePath() : type(DirectionFlags::NONE) {}
     OnePath(int8_t type_) : type(static_cast<DirectionFlags>(type_)) {}

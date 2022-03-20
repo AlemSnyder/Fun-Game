@@ -76,6 +76,15 @@ Terrain::Terrain(const char * path, const std::map<int, const Material> * materi
         }
     }
     qb_read(path, &materials);
+
+    get_tile(1,1,1)->set_material(&material->at(0));
+    get_tile(1,25,1)->set_material(&material->at(0));
+
+    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        if (can_stand_1(xyz)){
+            add_all_adjacent(xyz);
+        }
+    }
 }
 
 void Terrain::init_old(int x, int y, int z) {
@@ -141,6 +150,12 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
 
     //grow_grass();
     init_grass();
+    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        if (can_stand_1(xyz)){
+            add_all_adjacent(xyz);
+        }
+    }
+
 }
 
 // this should be changed because it is only used for testing.
@@ -188,8 +203,13 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, int tile_type
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time Add to Top" << std::endl;
 
     init_grass();
-}
+    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        if (can_stand_1(xyz)){
+            add_all_adjacent(xyz);
+        }
+    }
 
+}
 
 void Terrain::init_area(int area_x, int area_y, Land_Generator gen){
     int count = 0;
@@ -492,7 +512,6 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
     return out;
 }
 
-
 //can_stand_1 is broken somehow
 bool Terrain::can_stand_1(int x, int y, int z) const {
     // this should be the same as can_stand(x,y,z,1,1)
@@ -573,6 +592,7 @@ void Terrain::add_all_adjacent(int xyz) {
             it++;
         }
     }
+    //std::cout << "adding adjacent" << std::endl;
 }
 
 std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type) {
@@ -614,7 +634,7 @@ std::set<Node *> Terrain::get_adjacent_Nodes(const Node *const node, std::vector
 
     for (const std::pair<Tile *,OnePath> t : node->get_tile()->get_adjacent()) {
         if (t.second.compatible(type) && t.second.is_open()) {
-            if (!can_stand(t.first, 3, 1)) {
+            if (!can_stand(t.first, 1, 1)) { //XXX set the first one to 3
                 std::cout << "eek!\n";
             }
             out.insert(&nodes[t.first->pos()]);
@@ -660,7 +680,7 @@ void Terrain::test() {
 const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
-    int dz = 3;
+    int dz = 1; // XXX set to 3
     int dxy = 1;
 
     int8_t type = abs(xs - xf) + abs(ys - yf) + 4 * abs(zs - zf);
@@ -679,7 +699,8 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
         // O F
         open = can_stand(xs, ys, zs, dz, dxy) &&
                can_stand(xf, yf, zf, dz, dxy) &&
-               can_stand(xs, yf, zs, dz, dxy) && can_stand(xf, ys, zf, dz, dxy);
+               can_stand(xs, yf, zs, dz, dxy) &&
+               can_stand(xf, ys, zf, dz, dxy);
     } else if (type == 5) {
         if (zf > zs) {
             // going up, and over
@@ -696,18 +717,18 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
             // going up, and over
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
                    can_stand(xf, yf, zf, dz, dxy) &&
-               ((can_stand(xf, ys, zs, dz + 1, dxy) ||
-                can_stand(xf, ys, zf, dz, dxy)) &&
-               (can_stand(xs, yf, zs, dz + 1, dxy) ||
-                can_stand(xs, yf, zf, dz, dxy)));
+                 ((can_stand(xf, ys, zs, dz + 1, dxy) ||
+                   can_stand(xf, ys, zf, dz, dxy)) &&
+                  (can_stand(xs, yf, zs, dz + 1, dxy) ||
+                   can_stand(xs, yf, zf, dz, dxy)));
         } else {
             // going down and over
             open = can_stand(xs, ys, zs, dz, dxy) &&
                    can_stand(xf, yf, zf, dz + 1, dxy)&&
-               ((can_stand(xf, ys, zs, dz, dxy) ||
-                can_stand(xf, ys, zf, dz + 1, dxy)) &&
-               (can_stand(xs, yf, zs, dz, dxy) ||
-                can_stand(xs, yf, zf, dz + 1, dxy)));
+                 ((can_stand(xf, ys, zs, dz, dxy) ||
+                   can_stand(xf, ys, zf, dz + 1, dxy)) &&
+                  (can_stand(xs, yf, zs, dz, dxy) ||
+                   can_stand(xs, yf, zf, dz + 1, dxy)));
         }
     }
 
@@ -717,10 +738,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
 std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
     // TODO add chunk pathfinding
     // int start_time = std::time(nullptr);// what time is it for testing
-    auto millisec_since_epoch =
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch())
-            .count();
+    auto millisec_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     int start_z = start->get_z();
     int goal_z = goal_->get_z();
     if (!can_stand_1(start)) {
@@ -729,9 +747,7 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
     if (!can_stand_1(goal_)) {
         goal_z = get_Z_solid(goal_->get_x(), goal_->get_y()) + 1;
     }
-    if (start_z == 0 ||
-        goal_z == 0) {  // in this case there is no valid z position at one of
-                        // the given x, y positions
+    if (start_z == 0 || goal_z == 0) {  // in this case there is no valid z position at one of the given x, y positions
         return std::vector<Tile *>();
     }
 
@@ -746,26 +762,16 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
     std::vector<Node> nodes;
     Tile *goal = get_tile(goal_->get_x(), goal_->get_y(), goal_z);
     nodes.resize(X_MAX * Y_MAX * Z_MAX);  // 4.5
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                         .count() -
-                     millisec_since_epoch
-              << " time resize nodes\n";
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " time resize nodes\n";
 
     // nodes should be an unordered map
     // this will reduce def time, and
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        // Tile * test_tile = this->get_tile(xyz);
-        // nodes.push_back(new Node(this->get_tile(xyz), goal)); //each node is
-        // initialized
+        // each node is initialized
         nodes[xyz].init(get_tile(xyz), get_H_cost(this->get_tile(xyz), goal));
     }
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                         .count() -
-                     millisec_since_epoch
-              << " time define all nodes\n";
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -millisec_since_epoch << " time define all nodes\n";
     // 5.247 5.386
     Node start_node = nodes[pos(start->get_x(), start->get_y(), start_z)];
 
@@ -789,7 +795,7 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
         for (Node *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
-            if (can_stand(n->get_tile(), 3, 1) && !n->is_explored()) {
+            if (can_stand(n->get_tile(), 1, 1) && !n->is_explored()) {
                 n->explore(choice, get_G_cost(n->get_tile(), choice));  
                 // explore means that there is a path from
                 // start to n. This is the best path so n
@@ -798,13 +804,7 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
 
                 if (n->get_tile() == goal) {
                     std::vector<Tile *> path;
-                    std::cout << std::chrono::duration_cast<
-                                     std::chrono::milliseconds>(
-                                     std::chrono::system_clock::now()
-                                         .time_since_epoch())
-                                         .count() -
-                                     millisec_since_epoch
-                              << " Total time\n";
+                    std::cout << std::chrono::duration_cast< std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " Total time\n";
                     get_path_through_nodes(n, path, start);
                     return path;
                 }
@@ -812,11 +812,7 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
             }
         }
     }
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                         .count() -
-                     millisec_since_epoch
-              << " Total time\n";
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " Total time\n";
     return std::vector<Tile *>();
 }
 
