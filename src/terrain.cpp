@@ -70,8 +70,8 @@ Terrain::Terrain(const char * path, const std::map<int, const Material> * materi
 
     for (auto it = material->begin(); it != material->end(); it++){
         for (size_t color_id =0; color_id < it->second.color.size(); color_id++){
-            printf("%x\n", it->second.color.at(color_id).second);
-            std::cout << "color" << std::endl;
+            //printf("%x\n", it->second.color.at(color_id).second);
+            //std::cout << "color" << std::endl;
             materials.insert( std::map<uint32_t, std::pair<const Material*, uint8_t>>::value_type(it->second.color.at(color_id).second, std::make_pair(&it->second, (uint8_t)color_id)) );
         }
     }
@@ -634,7 +634,7 @@ std::set<Node *> Terrain::get_adjacent_Nodes(const Node *const node, std::vector
 
     for (const std::pair<Tile *,OnePath> t : node->get_tile()->get_adjacent()) {
         if (t.second.compatible(type) && t.second.is_open()) {
-            if (!can_stand(t.first, 1, 1)) { //XXX set the first one to 3
+            if (!can_stand(t.first, 3, 1)) {
                 std::cout << "eek!\n";
             }
             out.insert(&nodes[t.first->pos()]);
@@ -680,7 +680,7 @@ void Terrain::test() {
 const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
-    int dz = 1; // XXX set to 3
+    int dz = 3;
     int dxy = 1;
 
     int8_t type = abs(xs - xf) + abs(ys - yf) + 4 * abs(zs - zf);
@@ -894,26 +894,26 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
 
     file = fopen(path, "rb");
     READ<uint32_t>(void_, file); // version
-    std::cout << void_ << std::endl;
+    //std::cout << void_ << std::endl;
     (void) void_;
     READ<uint32_t>(void_, file);   // color format RGBA
-    std::cout << void_ << std::endl;(void) void_;
+    //std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file);   // orientation right handed // c
-    std::cout << void_ << std::endl;(void) void_;
+    //std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file);   // no compression
-    std::cout << void_ << std::endl;(void) void_;
+    //std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file);   // vmask
-    std::cout << void_ << std::endl;(void) void_;
+    //std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file);
-    std::cout << void_ << std::endl;(void) void_;
+    //std::cout << void_ << std::endl;(void) void_;
     // none of these are used
 
     int8_t name_len;
     READ<int8_t>(name_len, file);
-    std::cout << (int) name_len << " name length" << std::endl;
+    std::cout << "name length: " << (int) name_len << std::endl;
     char* name = (char*) malloc (name_len);
     fread(name, sizeof(char), name_len, file);
-    std::cout << name << " NAME" <<std::endl;
+    std::cout << "Name: " << name << std::endl;
     uint32_t X_max, Y_max, Z_max;
     READ<uint32_t>(X_max, file);  // x
     READ<uint32_t>(Z_max, file);  // z
@@ -922,9 +922,9 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     READ<int32_t>(x_offset, file); // x
     READ<int32_t>(z_offset, file); // z
     READ<int32_t>(y_offset, file); // y
-    std::cout << "----" << X_MAX << " max X\n";
-    std::cout << "----" << Y_MAX << " max Y\n";
-    std::cout << "----" << Z_MAX << " max Z\n";
+    std::cout << "    " << "max X: " << X_MAX << std::endl;
+    std::cout << "    " << "max Y: " << Y_MAX << std::endl;
+    std::cout << "    " << "max Z: " << Z_MAX << std::endl;
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
     int tiles_read = 0;
@@ -942,13 +942,13 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
                 get_tile(x,y,z)->init(pos(x,y,z), mat_color.first, mat_color.second);
                 tiles_read++;
             } else {
-                std::cout << "cannot find " << CC << std::endl;
+                std::cout << "    cannot find color: " << CC << std::endl;
                 auto mat_color = materials->at(0); // else set to air.
                 get_tile(x,y,z)->init(pos(x,y,z), mat_color.first, mat_color.second);
             }
         }
     }
     fclose(file);
-    std::cout << tiles_read << std::endl;
+    std::cout << "    " << "tiles read: " << tiles_read << std::endl;
     return 0;
 }

@@ -70,8 +70,8 @@ void save_all_terrain(Json::Value biome_data){
 }
 
 int pathfindertest(){
-    const char * path = "../SavedTerrain/save_test.qb";
-    //const char * save_path = "../SavedTerrain/save_test.qb";
+    const char * path = "../SavedTerrain/pathfinder_input.qb";
+    const char * save_path = "../SavedTerrain/pathfinder_output.qb";
 
     World world(path);
 
@@ -94,13 +94,14 @@ int pathfindertest(){
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
+        (*it)->set_material(&world.get_materials()->at(6));
         std::cout << (*it)->get_x() << " " << (*it)->get_y() << " " << (*it)->get_z() << std::endl;
     }
 
     start->set_material(&world.get_materials()->at(1));
     end->set_material(&world.get_materials()->at(1));
 
-    world.terrain_main.qb_save(path);
+    world.terrain_main.qb_save(save_path);
 
     return 0;
 }
