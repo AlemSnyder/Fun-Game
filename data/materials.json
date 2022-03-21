@@ -84,6 +84,10 @@
             {
                 "name":"my_house",
                 "hex": "253456FF"
+            },
+            {
+                "name":"path",
+                "hex": "255634FF"
             }
         ],
         "solid": true,

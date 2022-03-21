@@ -77,29 +77,31 @@ int pathfindertest(){
 
     //world.terrain_main.qb_save(save_path);
 
-    Tile * start = world.terrain_main.get_tile(1,1,1);
-    Tile * end = world.terrain_main.get_tile(1,25,1);
+    //Tile * start = world.terrain_main.get_tile(1,1,1);
+    //Tile * end = world.terrain_main.get_tile(1,25,1);
 
-    start->set_material(&world.get_materials()->at(0));
-    end->set_material(&world.get_materials()->at(0));
+    std::pair<Tile *, Tile *> start_end = world.terrain_main.get_start_end_test();
+
+    //start->set_material(&world.get_materials()->at(0));
+    //end->set_material(&world.get_materials()->at(0));
 
     //std::cout << ter.can_stand(3,3,6, 3, 1) << ter.get_tile(3,3,6)->is_solid() << "can stand\n";
     //std::cout << ter.can_stand(3,3,5, 3, 1) << ter.get_tile(3,3,5)->is_solid() << "can stand\n";
     //std::cout << ter.can_stand(3,3,4, 3, 1) << ter.get_tile(3,3,4)->is_solid() << "can stand\n";
 
-    std::vector<Tile*> tile_path = world.terrain_main.get_path_Astar(start, end);
+    std::vector<Tile*> tile_path = world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
     if (tile_path.size() == 0){
         std::cout << "no path" << std::endl;
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
-        (*it)->set_material(&world.get_materials()->at(6));
+        (*it)->set_material(&world.get_materials()->at(6),1);
         std::cout << (*it)->get_x() << " " << (*it)->get_y() << " " << (*it)->get_z() << std::endl;
     }
 
-    start->set_material(&world.get_materials()->at(1));
-    end->set_material(&world.get_materials()->at(1));
+    //start->set_material(&world.get_materials()->at(1));
+    //end->set_material(&world.get_materials()->at(1));
 
     world.terrain_main.qb_save(save_path);
 

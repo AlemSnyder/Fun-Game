@@ -36,9 +36,9 @@ class Node {  // Used to find paths.
     Tile *tile;
     Node *parent_node;
 
-    float gCost;
-    float hCost;
-    float fCost;
+    float gCost; //Time from start to this node
+    float hCost; //Minimum time from this node to end
+    float fCost; //Minimum time from start to end through this node
     bool explored;
 };
 

@@ -795,7 +795,7 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
         for (Node *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
-            if (can_stand(n->get_tile(), 1, 1) && !n->is_explored()) {
+            if (can_stand(n->get_tile(), 3, 1) && !n->is_explored()) {
                 n->explore(choice, get_G_cost(n->get_tile(), choice));  
                 // explore means that there is a path from
                 // start to n. This is the best path so n
@@ -805,10 +805,13 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
                 if (n->get_tile() == goal) {
                     std::vector<Tile *> path;
                     std::cout << std::chrono::duration_cast< std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " Total time\n";
-                    get_path_through_nodes(n, path, start);
+                    get_path_through_nodes(n, path, get_tile(start->get_x(), start->get_y(), start_z));
                     return path;
                 }
                 openNodes.push(n);  // n can be chose to expand around
+            }
+            else if (can_stand(n->get_tile(), 3, 1) && n->is_explored()){
+                n->explore(choice, get_G_cost(n->get_tile(), choice));
             }
         }
     }
@@ -952,3 +955,22 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     std::cout << "    " << "tiles read: " << tiles_read << std::endl;
     return 0;
 }
+
+std::pair<Tile*, Tile*> Terrain::get_start_end_test(){
+    std::pair<Tile*, Tile*>out;
+    bool first = true;
+    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        if (get_tile(xyz)->get_material()->element_id == 6){
+            std::cout << (int) get_tile(xyz)->get_color_id() << std::endl;
+            if (first){
+                out.first = get_tile(xyz);
+                first = false;
+            } else {
+                out.second = get_tile(xyz);
+                return out;
+            }
+        }
+    }
+    return out;
+}
+
