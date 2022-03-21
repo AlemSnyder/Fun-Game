@@ -838,9 +838,9 @@ int Terrain::qb_save(const char * path)const{
 
     //This is from goxel with GPL license
     std::cout << "Saving to " << path << "\n";
-    std::cout << "----" << X_MAX << " max X\n";
-    std::cout << "----" << Y_MAX << " max Y\n";
-    std::cout << "----" << Z_MAX << " max Z\n";
+    std::cout << "    max X: " << X_MAX << std::endl;
+    std::cout << "    max Y: " << Y_MAX << std::endl;
+    std::cout << "    max Z: " << Z_MAX << std::endl;
     FILE *file;
     int count, x, y, z, sop[3];
     uint8_t v[4];
@@ -880,7 +880,7 @@ int Terrain::qb_save(const char * path)const{
         tiles_written++;
     }
     fclose(file);
-    std::cout << tiles_written << "\n";
+    std::cout << "    tiles written: " << tiles_written << std::endl;
     return 0;
 }
 
@@ -925,9 +925,9 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     READ<int32_t>(x_offset, file); // x
     READ<int32_t>(z_offset, file); // z
     READ<int32_t>(y_offset, file); // y
-    std::cout << "    " << "max X: " << X_MAX << std::endl;
-    std::cout << "    " << "max Y: " << Y_MAX << std::endl;
-    std::cout << "    " << "max Z: " << Z_MAX << std::endl;
+    std::cout << "    max X: " << X_MAX << std::endl;
+    std::cout << "    max Y: " << Y_MAX << std::endl;
+    std::cout << "    max Z: " << Z_MAX << std::endl;
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
     int tiles_read = 0;
@@ -952,7 +952,7 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
         }
     }
     fclose(file);
-    std::cout << "    " << "tiles read: " << tiles_read << std::endl;
+    std::cout << "    tiles read: " << tiles_read << std::endl;
     return 0;
 }
 
@@ -961,7 +961,6 @@ std::pair<Tile*, Tile*> Terrain::get_start_end_test(){
     bool first = true;
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         if (get_tile(xyz)->get_material()->element_id == 6){
-            std::cout << (int) get_tile(xyz)->get_color_id() << std::endl;
             if (first){
                 out.first = get_tile(xyz);
                 first = false;

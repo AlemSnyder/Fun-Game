@@ -97,7 +97,7 @@ int pathfindertest(){
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
         (*it)->set_material(&world.get_materials()->at(6),1);
-        std::cout << (*it)->get_x() << " " << (*it)->get_y() << " " << (*it)->get_z() << std::endl;
+        //std::cout << (*it)->get_x() << " " << (*it)->get_y() << " " << (*it)->get_z() << std::endl;
     }
 
     //start->set_material(&world.get_materials()->at(1));

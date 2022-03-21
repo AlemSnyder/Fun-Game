@@ -35,11 +35,11 @@
 # VSCode
 #
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
+#!.vscode/settings.json
+#!.vscode/tasks.json
+#!.vscode/launch.json
+#!.vscode/extensions.json
+#!.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
 .history/
@@ -61,6 +61,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+_log
 
 #
 # Other 
