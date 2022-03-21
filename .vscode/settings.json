@@ -3,5 +3,8 @@
         "Astar",
         "goxel",
         "voxel"
-    ]
+    ],
+    "files.associations": {
+        "ostream": "cpp"
+    }
 }

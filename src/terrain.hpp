@@ -67,6 +67,8 @@ private:
     std::vector<std::array<float, 2>> generate_line(std::vector<int> &out, Json::Value dataWI);
 
 public:
+
+    std::pair<Tile*, Tile*> get_start_end_test();
     
     const OnePath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
 

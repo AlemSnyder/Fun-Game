@@ -66,8 +66,6 @@
                 "name":"Grass -3",
                 "hex":"9DDE7EFF"
             },
-
-            
             {
                 "name":"Dirt 1",
                 "hex":"5E400FFF"
@@ -86,6 +84,10 @@
             {
                 "name":"my_house",
                 "hex": "253456FF"
+            },
+            {
+                "name":"path",
+                "hex": "255634FF"
             }
         ],
         "solid": true,

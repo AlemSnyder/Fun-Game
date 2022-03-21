@@ -23,11 +23,18 @@ Node::Node() {
 }
 
 void Node::explore(Node *parent, float gc) {
-    this->parent_node = parent;
-    gCost = gc;//Terrain::get_G_cost(tile, parent);
-    // hCost = Terrain::get_H_cost(tile, goal);
-    fCost = gCost + hCost;
-    explored = true;
+    if (explored){
+        if (gCost > gc){
+            this->parent_node = parent;
+            gCost = gc;
+            fCost = gCost + hCost;
+        }
+    } else{
+        this->parent_node = parent;
+        gCost = gc;
+        fCost = gCost + hCost;
+        explored = true;
+    }
 }
 void Node::explore() {  // explore for start
     this->parent_node = NULL;
