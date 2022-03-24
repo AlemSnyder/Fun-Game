@@ -36,11 +36,11 @@ private:
 public:
 
     Tile();
-    Tile(int xyz, const Material *mat);
-    Tile(int xyz, const Material *mat, uint8_t color_id);
-    void init(int xyz, bool solid);
-    void init(int xyz, const Material *mat);
-    void init(int xyz, const Material *mat, uint8_t color_id);
+    Tile(std::array<int, 3> sop, const Material *mat);
+    Tile(std::array<int, 3> sop, const Material *mat, uint8_t color_id);
+    void init(std::array<int, 3> sop, bool solid);
+    void init(std::array<int, 3> sop, const Material *mat);
+    void init(std::array<int, 3> sop, const Material *mat, uint8_t color_id);
     // Setters
     void set_material(const Material * mat_); //Set mat to mat_, and updates color, and solid
     void set_material(const Material * mat_, uint8_t color_id_);
@@ -53,10 +53,11 @@ public:
     int get_x() const { return x; }
     int get_y() const { return y; }
     int get_z() const { return z; }
+    std::array<int, 3> sop() const;
         // Is this tile grass?
     bool is_grass() const {return grass;}
     const Material * get_material() const { return mat; }
-    int pos() const;
+    //int pos() const;
 
     uint32_t get_color() const ;
     uint8_t get_color_id() const ;

@@ -1,8 +1,8 @@
-#include <set>
-#include "material.hpp"
-
 #ifndef __TILE_STAMP_HPP__
 #define __TILE_STAMP_HPP__
+
+#include <set>
+#include "material.hpp"
 
 struct Tile_Stamp{
     int x_start;

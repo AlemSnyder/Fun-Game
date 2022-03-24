@@ -21,6 +21,7 @@
 #include "node.hpp"
 #include "tile.hpp"
 #include "terrain.hpp"
+#include "chunk.hpp"
 
 #include "TerrainGeneration/noise.hpp"
 #include "TerrainGeneration/land_generator.hpp"
@@ -37,15 +38,11 @@ int Terrain::Area_size = 32;
 int Terrain::seed = 0;
 
 Terrain::Terrain() { init_old(1, 1, 1); seed = 0;}
-Terrain::Terrain(int x) { init_old(x, x, x); seed = 0;}
-Terrain::Terrain(int x, int y, int z) { init_old(x, y, z); seed = 0;}
 
 Terrain::Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, const std::map<int, const Material> * material, Json::Value biome_data, std::vector<int> grass_grad_data, int grass_mid_){
-
     if (grass_mid_ < 0){
         grass_mid_ = 0;
     }
-
     for (size_t i = 0; i < grass_grad_data.size(); i++){
         if (i == (size_t)grass_mid_){
             grass_mid = grass_colors.size();
@@ -54,37 +51,35 @@ Terrain::Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed
             grass_colors.push_back(i);
         }
     }
-
     grass_grad_length = grass_colors.size();
-
-    init(x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data);
+    init(x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data, generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"]));
 }
+
 Terrain::Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type, const std::map<int, const Material> * material, Json::Value biome_data){
     init(x_tiles, y_tiles, Area_size_, z_tiles, seed, tile_type, material, biome_data);
 }
 
+void Terrain::init(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type, const std::map<int, const Material> * material, Json::Value biome_data){
+    std::vector<int> Terrain_Maps;
+    Terrain_Maps.resize(x_tiles*y_tiles, 0);
+    Terrain_Maps[(x_tiles*y_tiles-1)/2]=tile_type;
+    init(x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data, Terrain_Maps);
+}
+
 Terrain::Terrain(const char * path, const std::map<int, const Material> * material){
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials;
-    
-    //for (const auto& [key, mat] : (*material)){
-
     for (auto it = material->begin(); it != material->end(); it++){
         for (size_t color_id =0; color_id < it->second.color.size(); color_id++){
-            //printf("%x\n", it->second.color.at(color_id).second);
-            //std::cout << "color" << std::endl;
             materials.insert( std::map<uint32_t, std::pair<const Material*, uint8_t>>::value_type(it->second.color.at(color_id).second, std::make_pair(&it->second, (uint8_t)color_id)) );
         }
     }
     qb_read(path, &materials);
-
-    get_tile(1,1,1)->set_material(&material->at(0));
-    get_tile(1,25,1)->set_material(&material->at(0));
-
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         if (can_stand_1(xyz)){
             add_all_adjacent(xyz);
         }
     }
+    init_chunks();
 }
 
 void Terrain::init_old(int x, int y, int z) {
@@ -93,10 +88,10 @@ void Terrain::init_old(int x, int y, int z) {
     Z_MAX = z;
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        this->get_tile(xyz)->init(xyz, true);
+        this->get_tile(xyz)->init(sop(xyz), true);
     }
 }
-void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::map<int, const Material> *materials, Json::Value biome_data){
+void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::map<int, const Material> *materials, Json::Value biome_data, std::vector<int> Terrain_Maps){
     auto millisec_since_epoch =std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
     Area_size = Area_size_;
@@ -107,17 +102,16 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
 
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time tiles resize\n";
+    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time tiles resize\n";
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        this->get_tile(xyz)->init(xyz, &(*materials).at(0));
+        this->get_tile(xyz)->init(sop(xyz), &(*materials).at(0));
     }
 
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time Terrain init\n";
+    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time Terrain init\n";
 
     srand(seed);
-
-    std::cout << "start of land Generator\n";
+    std::cout << "start of land Generator" << std::endl;
 
     // create a map of int -> Land_Generator
     std::map<int, Land_Generator> land_generators;
@@ -126,12 +120,8 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
     for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++){
         // create a land generator for each tile macro
         Land_Generator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
-
         land_generators.insert(std::make_pair(i, gen));
     }
-
-    // create a 2x2 vector of ints
-    std::vector<int> Terrain_Maps = generate_macro_map(x, y, biome_data["Terrain_Data"]);
 
     for (int i = 0; i < x; i++)
     for (int j = 0; j < y; j++){
@@ -140,13 +130,13 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
         }
     }
 
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time init area" << std::endl;
+    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time init area" << std::endl;
 
     for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size(); i++){
         add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }
 
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time Add to Top" << std::endl;
+    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time Add to Top" << std::endl;
 
     //grow_grass();
     init_grass();
@@ -156,59 +146,9 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
         }
     }
 
-}
+    //init_chunks();
 
-// this should be changed because it is only used for testing.
-void Terrain::init(int x, int y, int Area_size_, int z, int seed_, int tile_type, const std::map<int, const Material> *materials, Json::Value biome_data){
-    auto millisec_since_epoch =std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-    Area_size = Area_size_;
-    seed = seed_;
-    X_MAX = x * Area_size;
-    Y_MAX = y * Area_size;
-    Z_MAX = z;
-
-    tiles.resize(X_MAX * Y_MAX * Z_MAX);
-
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time tiles resize\n";
-
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        this->get_tile(xyz)->init(xyz, &(*materials).at(0));
-    }
-
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time Terrain init\n";
-
-    std::cout << "start of land Generator\n";
-
-    // create a map of int -> Land_Generator
-    std::map<int, Land_Generator> land_generators;
-
-    // for tile macro in data biome
-    for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++){
-        // create a land generator for each tile macro
-        Land_Generator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
-        land_generators.insert(std::make_pair(i, gen));
-    }
-
-    for (unsigned int k = 0; k < biome_data["Tile_Data"][tile_type]["Land_From"].size(); k ++){
-        init_area(1, 1, land_generators[biome_data["Tile_Data"][tile_type]["Land_From"][k].asInt()]);
-    }
-
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time init area" << std::endl;
-
-    for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size(); i++){
-        add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
-    }
-
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " time Add to Top" << std::endl;
-
-    init_grass();
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        if (can_stand_1(xyz)){
-            add_all_adjacent(xyz);
-        }
-    }
-
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " Total time Terrain_init" << std::endl;
 }
 
 void Terrain::init_area(int area_x, int area_y, Land_Generator gen){
@@ -220,6 +160,30 @@ void Terrain::init_area(int area_x, int area_y, Land_Generator gen){
     }
     gen.reset();
     //std::cout << count << " total stamps\n";
+}
+
+void Terrain::init_chunks(){
+    for (int xyz=0; xyz<((X_MAX-1)/Chunk::size+1)*((Y_MAX-1)/Chunk::size+1)*((Z_MAX-1)/Chunk::size+1); xyz+=1){
+        auto [x,y,z] = sop(xyz, ((X_MAX-1)/Chunk::size+1),((Y_MAX-1)/Chunk::size+1),((Z_MAX-1)/Chunk::size+1));
+        chunks.push_back(Chunk(x,y,z, this));
+    }
+    // for tile on chunk border
+        // create node group adjecency
+    /*for (int x = 0; x < X_MAX; x++)
+    for (int y = 0; y < Y_MAX; y++)
+    for (int z = 0; z < Z_MAX; z+= Chunk::size){
+        stitch_chunks_at(get_tile(x,y,z));
+    }
+    for (int x = 0; x < X_MAX; x++)
+    for (int y = 0; y < Y_MAX; y+= Chunk::size)
+    for (int z = 0; z < Z_MAX; z++){
+        stitch_chunks_at(get_tile(x,y,z));
+    }
+    for (int x = 0; x < X_MAX; x+= Chunk::size)
+    for (int y = 0; y < Y_MAX; y++)
+    for (int z = 0; z < Z_MAX; z++){
+        stitch_chunks_at(get_tile(x,y,z));
+    }*/
 }
 
 void Terrain::add_to_top(Json::Value top_data, const std::map<int, const Material> * materials){
@@ -283,7 +247,6 @@ int Terrain::get_Z_solid(int x, int y, int z_start) {
     }
     return 0;
 }
-
 inline int Terrain::get_Z_solid(int x, int y) {
     return get_Z_solid(x, y, Z_MAX - 1);
 }
@@ -344,11 +307,9 @@ bool Terrain::can_stand(int x, int y, int z, int dz, int dxy) const {
     // currently this only requires one solid tile.
     return true;
 }
-
 bool Terrain::can_stand(Tile * tile, int dz, int dxy) const {
     return can_stand(tile->get_x(), tile->get_y(), tile->get_z(), dz, dxy);
 }
-
 bool Terrain::can_stand(Tile tile, int dz, int dxy) const {
     return can_stand(tile.get_x(), tile.get_y(), tile.get_z(), dz, dxy);
 }
@@ -388,7 +349,6 @@ void Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end
         }
     }
 }
-
 void Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat,  uint8_t color_id){
     // set tiles in region to mat and color_id 
     for (int x = x_start; x < x_end; x++){
@@ -401,7 +361,6 @@ void Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end
         }
     }
 }
-
 inline void Terrain::stamp_tile_region(Tile_Stamp tStamp, int x, int y){ // unpack Tile_Stamp
     stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2, tStamp.y_start + y*Area_size + Area_size/2 , tStamp.z_start, tStamp.x_end + x*Area_size + Area_size/2, tStamp.y_end + y*Area_size + Area_size/2, tStamp.z_end, tStamp.mat, tStamp.elements_canstamp, tStamp.color_id);
 }
@@ -458,7 +417,6 @@ void Terrain::grow_all_grass_high(){
         }
     }
 }
-// .1 sec
 void Terrain::grow_all_grass_low(){
     // extends lower bound of grass color
     for (Tile& t : tiles){ //for tile in sources
@@ -539,19 +497,21 @@ inline bool Terrain::can_stand_1(Tile *tile) const {
     return can_stand_1(tile->get_x(), tile->get_y(), tile->get_z());
 }
 // can_stand should take an int xyz
-
-float Terrain::get_H_cost(const Tile tile1, const Tile tile2) {
-    return get_H_cost(tile1.pos(), tile2.pos());
+/*
+template<class T>
+float Terrain::get_H_cost(const T tile1, const T tile2) const {
+    return get_H_cost(tile1.sop(), tile2.sop());
 }
-float Terrain::get_H_cost(const Tile *tile1, const Tile *tile2) {
-    return get_H_cost(tile1->pos(), tile2->pos());
-}  // might need to define this for other orentations
-float Terrain::get_H_cost(int xyz1, int xyz2) {
+template<class T>
+float Terrain::get_H_cost(const T *tile1, const T *tile2) const{
+    return get_H_cost(tile1->sop(), tile2->sop());
+}  // might need to define this for other orentations*/
+float Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
-    auto [x1, y1, z1] = sop(xyz1);
-    auto [x2, y2, z2] = sop(xyz2);
+    auto [x1, y1, z1] = xyz1;
+    auto [x2, y2, z2] = xyz2;
 
     int DX = abs(x1 - x2);
     int DY = abs(y1 - y2);
@@ -559,19 +519,22 @@ float Terrain::get_H_cost(int xyz1, int xyz2) {
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
-
-inline float Terrain::get_G_cost(const Tile tile, const Node node) {
-    return node.get_gCost() + get_H_cost(tile, node.get_tile());
+template<class T>
+inline float Terrain::get_G_cost(const T tile, const Node<T> node){
+    return node.get_gCost() + get_H_cost(tile.sop(), node.get_tile()->sop());
+}/*
+template<class T>
+inline float Terrain::get_G_cost(const T *const tile, const Node<T> *const node) {
+    return node->get_gCost() + get_H_cost(tile->sop(), node->get_tile()->sop());
 }
-inline float Terrain::get_G_cost(const Tile *const tile, const Node *const node) {
-    return node->get_gCost() + get_H_cost(tile, node->get_tile());
+template<class T>
+inline float Terrain::get_G_cost(const T tile, const Node<T> *const node) {
+    return node->get_gCost() + get_H_cost(tile.sop(), node->get_tile()->sop());
 }
-inline float Terrain::get_G_cost(const Tile tile, const Node *const node) {
-    return node->get_gCost() + get_H_cost(tile, node->get_tile());
-}
-inline float Terrain::get_G_cost(const Tile *const tile, const Node node) {
-    return node.get_gCost() + get_H_cost(tile, node.get_tile());
-}
+template<class T>
+inline float Terrain::get_G_cost(const T *const tile, const Node<T> node) {
+    return node.get_gCost() + get_H_cost(tile->sop(), node.get_tile()->sop());
+}*/
 
 void Terrain::add_all_adjacent(int xyz) {
     tiles[xyz].clear_adjacent();
@@ -616,32 +579,80 @@ const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile,
     return out;
 };
 
-std::set<Node *> Terrain::get_adjacent_Nodes(const Node *const node, std::vector<Node *> & nodes, int8_t type) const {
-    std::set<Node *> out;
+std::set<Node<Tile> *> Terrain::get_adjacent_Nodes(const Node<Tile> *const node, std::vector<Node<Tile> *> & nodes, int8_t type) const {
+    std::set<Node<Tile> *> out;
 
     for (const std::pair<Tile *, OnePath> t : node->get_tile()->get_adjacent()) {
         if (t.second.compatible(type) && t.second.is_open()) {
             if (!can_stand(t.first, 3, 1)) {
                 std::cout << "eek!\n";
             }
-            out.insert(nodes[t.first->pos()]);
+            out.insert(nodes[pos(t.first)]);
         }
     }
     return out;
 };
-std::set<Node *> Terrain::get_adjacent_Nodes(const Node *const node, std::vector<Node> & nodes, int8_t type) const {
-    std::set<Node *> out;
+std::set<Node<Tile> *> Terrain::get_adjacent_Nodes(const Node<Tile> *const node, std::vector<Node<Tile>> & nodes, int8_t type) const {
+    std::set<Node<Tile> *> out;
 
     for (const std::pair<Tile *,OnePath> t : node->get_tile()->get_adjacent()) {
         if (t.second.compatible(type) && t.second.is_open()) {
             if (!can_stand(t.first, 3, 1)) {
                 std::cout << "eek!\n";
             }
-            out.insert(&nodes[t.first->pos()]);
+            out.insert(&nodes[pos(t.first)]);
         }
     }
     return out;
 };
+
+NodeGroup* Terrain::get_NodeGroup(int xyz){
+    try{
+        return tile_to_group.at(xyz);
+    }
+    catch(const std::exception& e){
+        return nullptr;
+    }
+}
+//inline NodeGroup* Terrain::get_NodeGroup(Tile t){
+//    return get_NodeGroup(pos(t));
+//}
+//inline NodeGroup* Terrain::get_NodeGroup(Tile* t){
+//    return get_NodeGroup(pos(t));
+//}
+NodeGroup* Terrain::get_NodeGroup(const Tile t){
+    return get_NodeGroup(pos(t));
+}
+NodeGroup* Terrain::get_NodeGroup(const Tile * t){
+    return get_NodeGroup(pos(t));
+}
+
+void Terrain::add_NodeGroup(NodeGroup* NG){
+    for (Tile* t : NG->get_tiles()){
+        tile_to_group[pos(t)] = NG;
+    }
+}
+
+void Terrain::remove_NodeGroup(NodeGroup* NG){
+    for (Tile* t : NG->get_tiles()){
+        tile_to_group.erase(pos(t));
+    }
+}
+
+//void Terrain::stitch_chunks_at(Tile* tile){
+//    if (can_stand_1(tile)){
+//        NodeGroup* NG = get_NodeGroup(tile);
+//        if (NG != nullptr){
+//            for (Tile* other : get_adjacent_Tiles(tile, 31)){
+//                NodeGroup* NG_other = get_NodeGroup(other);
+//                if (NG_other != nullptr){
+//                    NG->add_adjacent(NG_other);
+//                    NG_other->add_adjacent(NG);
+//                }
+//            }
+//        }
+//    }
+//}
 
 void Terrain::test() {
     Tile *goal = this->get_tile(2, 2, 2);
@@ -649,12 +660,12 @@ void Terrain::test() {
         std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch())
             .count();
-    std::vector<Node *> nodes;
+    std::vector<Node<Tile> *> nodes;
     // std::cout <<
     // std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
     // - millisec_since_epoch << " time\n";
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        nodes.push_back(new Node(this->get_tile(xyz), get_H_cost(this->get_tile(xyz), goal)));
+        nodes.push_back(new Node(this->get_tile(xyz), get_H_cost(sop(xyz), goal->sop())));
     }
     std::cout << sizeof(nodes) << " Size of nodes\n";
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -664,7 +675,7 @@ void Terrain::test() {
               << " time define all nodes\n";
     int x = 0;
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        auto node = new Node(this->get_tile(xyz), get_H_cost(this->get_tile(xyz), goal));
+        auto node = new Node(this->get_tile(xyz), get_H_cost(sop(xyz), goal->sop()));
         if (node->is_explored()) {
             x++;
         };
@@ -753,13 +764,13 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
 
     // this is used to choose the next node
     // lambda return lhs->get_fCost() > rhs->get_fCost();
-    auto compare = [](Node *lhs, Node *rhs) {
+    auto compare = [](Node<Tile> *lhs, Node<Tile> *rhs) {
         return lhs->get_fCost() > rhs->get_fCost();
     };
-    std::priority_queue<Node *, std::vector<Node *>, decltype(compare)> openNodes(compare);
-
+    std::priority_queue<Node<Tile> *, std::vector<Node<Tile> *>, decltype(compare)> openNodes(compare);
+    std::set<Node<Tile>*> shershed;
     // initialize all nodes
-    std::vector<Node> nodes;
+    std::vector<Node<Tile>> nodes;
     Tile *goal = get_tile(goal_->get_x(), goal_->get_y(), goal_z);
     nodes.resize(X_MAX * Y_MAX * Z_MAX);  // 4.5
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " time resize nodes\n";
@@ -769,34 +780,35 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         // each node is initialized
-        nodes[xyz].init(get_tile(xyz), get_H_cost(this->get_tile(xyz), goal));
+        nodes[xyz].init(get_tile(xyz), get_H_cost(sop(xyz), goal->sop()));
     }
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -millisec_since_epoch << " time define all nodes\n";
     // 5.247 5.386
-    Node start_node = nodes[pos(start->get_x(), start->get_y(), start_z)];
+    Node<Tile> start_node = nodes[pos(start->get_x(), start->get_y(), start_z)];
 
     // initialize
     // while true
     // expand around best
 
     openNodes.push(&start_node);  // gotta start somewhere
+    shershed.insert(&start_node);
     start_node.explore();  // this sets the cost to get from start to this node
                            // to 0 an some other stuff.
     std::cout << sizeof(tiles) << " size tiles\n";
     std::cout << sizeof(openNodes) << " size openNodes\n";
     std::cout << sizeof(nodes) << " size nodes\n";
     while (!openNodes.empty()) {
-        Node *choice = openNodes.top();
+        Node<Tile> *choice = openNodes.top();
         // Choose first in openNodes (they are arranged from best to worst)
 
         openNodes.pop();  // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
         std::set adjacent_nodes = get_adjacent_Nodes(choice, nodes, 31);
-        for (Node *n : adjacent_nodes) {
+        for (Node<Tile> *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
             if (can_stand(n->get_tile(), 3, 1) && !n->is_explored()) {
-                n->explore(choice, get_G_cost(n->get_tile(), choice));  
+                n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
                 // explore means that there is a path from
                 // start to n. This is the best path so n
                 // should not be explored again.
@@ -809,14 +821,24 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
                     return path;
                 }
                 openNodes.push(n);  // n can be chose to expand around
+                shershed.insert(n);
             }
             else if (can_stand(n->get_tile(), 3, 1) && n->is_explored()){
-                n->explore(choice, get_G_cost(n->get_tile(), choice));
+                n->explore(choice, get_G_cost(*(n->get_tile()), *choice)); // Might need to rearage openNodes
             }
         }
     }
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " Total time\n";
-    return std::vector<Tile *>();
+    std::vector<Tile*> out;
+    for (auto N : shershed){
+        //for (int x : N->get_tile()->sop()){
+        //   std::cout << x << " ";
+        //}
+        //std::cout << std::endl;
+        out.push_back(N->get_tile());
+    }
+    return out;
+    //return std::vector<Tile *>();
 }
 
 // Set `color` to the color of the tile at `pos`.
@@ -937,17 +959,17 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
         fread(v, sizeof(uint8_t), 4, file);// read the color to v
         if (v[3] == 0){ // if the qb voxel is transparent.
             auto mat_color = materials->at(0); // set the materials to air
-            get_tile(x,y,z)->init(pos(x,y,z), mat_color.first, mat_color.second);
+            get_tile(x,y,z)->init({x,y,z}, mat_color.first, mat_color.second);
         } else {
             auto CC = compress_color(v);// get the complete color
             if (materials->count(CC)){// if the color is known
                 auto mat_color = materials->at(CC);
-                get_tile(x,y,z)->init(pos(x,y,z), mat_color.first, mat_color.second);
+                get_tile(x,y,z)->init({x,y,z}, mat_color.first, mat_color.second);
                 tiles_read++;
             } else {
                 std::cout << "    cannot find color: " << CC << std::endl;
                 auto mat_color = materials->at(0); // else set to air.
-                get_tile(x,y,z)->init(pos(x,y,z), mat_color.first, mat_color.second);
+                get_tile(x,y,z)->init({x,y,z}, mat_color.first, mat_color.second);
             }
         }
     }

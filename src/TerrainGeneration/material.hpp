@@ -15,10 +15,10 @@
         open   like a dore or open window
         air    open and no placed objects
 */
-#include <stdint.h>
-
 #ifndef __MATERIAL_HPP__
 #define __MATERIAL_HPP__
+
+#include <stdint.h>
 
 struct Material{
     //std::map<const char *,  uint32_t> 

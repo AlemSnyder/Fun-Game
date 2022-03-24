@@ -1,6 +1,6 @@
 #include <iostream>
 //#include <vector>
-//#include "terrain.hpp"
+#include "terrain.hpp"
 #include <iostream>
 #include <string>
 #include "world.hpp"

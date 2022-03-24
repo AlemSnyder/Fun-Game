@@ -4,13 +4,13 @@
 #define NUM_GRASS 8
 #define DIRT_ID 1
 
-Tile::Tile() { init(1, false); }
-Tile::Tile(int xyz, const Material *mat) { init(xyz, mat);}
-Tile::Tile(int xyz, const Material * mat_, uint8_t color_id_){
-    init( xyz, mat_, color_id_);
+Tile::Tile() { init({1,1,1}, false); }
+Tile::Tile(std::array<int, 3> sop, const Material *mat) { init(sop, mat);}
+Tile::Tile(std::array<int, 3> sop, const Material * mat_, uint8_t color_id_){
+    init( sop, mat_, color_id_);
 }
-void Tile::init(int xyz, bool solid_) {
-    auto sop = Terrain::sop(xyz);
+void Tile::init(std::array<int, 3> sop, bool solid_) {
+    //auto sop = Terrain::sop(xyz);
     x = sop[0];
     y = sop[1];
     z = sop[2];
@@ -22,12 +22,12 @@ void Tile::init(int xyz, bool solid_) {
     grow_source = false;
     grass = false;
 }
-void Tile::init(int xyz, const Material * mat_) {
-    init(xyz, mat_->solid);
+void Tile::init(std::array<int, 3> sop, const Material * mat_) {
+    init(sop, mat_->solid);
     mat=mat_;
 }
-void Tile::init(int xyz, const Material * mat_, uint8_t color_id_) {
-    init(xyz, mat_);
+void Tile::init(std::array<int, 3> sop, const Material * mat_, uint8_t color_id_) {
+    init(sop, mat_);
     color_id = color_id_;
 }
 // Set material, and color_id
@@ -102,8 +102,10 @@ uint8_t Tile::get_grow_high() const{
     return grow_data_high;
 }
 // This should be removed.
-int Tile::pos() const { return Terrain::pos(x, y, z); }
 // This should be removed.
+std::array<int, 3> Tile::sop() const {
+    return { x, y, z };
+}
 
 void Tile::add_adjacent(Tile *tile, OnePath type) {
     adjacent.insert(std::make_pair(tile, type));
@@ -119,5 +121,13 @@ void Tile::clear_adjacent(){
 }
 
 bool TilePCompare::operator() (const Tile* lhs, const Tile* rhs) const{
-    return lhs->pos() < rhs->pos();
+    if (lhs->get_x() < rhs->get_x()){
+        return true;
+    } else if (lhs->get_x() > rhs->get_x()){
+        return false;
+    } else if (lhs->get_y() < rhs->get_y()){
+        return true;
+    } else if (lhs->get_y() < rhs->get_y()){
+        return false;
+    } else {return lhs->get_z() < rhs->get_z();}
 }

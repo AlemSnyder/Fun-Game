@@ -48,8 +48,8 @@ World::World(){
     biome_file >> biome_data;
 
     std::cout << "start of terrain\n";
-    
-    terrain_main = Terrain(6, 6, 32, 128, 5, &materials, biome_data["Biome_1"], grass_grad_data, materials_json["Dirt"]["Gradient"]["midpoint"].asInt());
+    terrain_main = Terrain();
+    //terrain_main = Terrain(6, 6, 32, 128, 5, &materials, biome_data["Biome_1"], grass_grad_data, materials_json["Dirt"]["Gradient"]["midpoint"].asInt());
 
 }
 
@@ -82,9 +82,6 @@ World::World(Json::Value materials_json, Json::Value biome_data){
     std::cout << "start of terrain\n";
 
     terrain_main = Terrain(6, 6, 32, 128, 5, &materials, biome_data["Biome_1"], grass_grad_data, materials_json["Dirt"]["Gradient"]["midpoint"].asInt());
-    
-    //terrain_main = Terrain(6, 6, 32, 128, 5, &materials, biome_data["Biome_1"]);
-
 }
 
 World::World(Json::Value biome_data, int tile_type){
