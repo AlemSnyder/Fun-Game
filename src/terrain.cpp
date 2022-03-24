@@ -307,10 +307,10 @@ bool Terrain::can_stand(int x, int y, int z, int dz, int dxy) const {
     // currently this only requires one solid tile.
     return true;
 }
-bool Terrain::can_stand(Tile * tile, int dz, int dxy) const {
+bool Terrain::can_stand(const Tile * tile, int dz, int dxy) const {
     return can_stand(tile->get_x(), tile->get_y(), tile->get_z(), dz, dxy);
 }
-bool Terrain::can_stand(Tile tile, int dz, int dxy) const {
+bool Terrain::can_stand(const Tile tile, int dz, int dxy) const {
     return can_stand(tile.get_x(), tile.get_y(), tile.get_z(), dz, dxy);
 }
 
@@ -485,7 +485,7 @@ bool Terrain::can_stand_1(int xyz) const {
     }
     return (!get_tile(xyz)->is_solid() && get_tile(xyz-1)->is_solid());
 }
-bool Terrain::can_stand_1(Tile tile) const {
+bool Terrain::can_stand_1(const Tile tile) const {
     if (tile.get_z() <= 0) {
         return false;
     }
@@ -493,7 +493,7 @@ bool Terrain::can_stand_1(Tile tile) const {
             this->get_tile(tile.get_x(), tile.get_y(), tile.get_z() - 1)
                 ->is_solid());  // can_stand_1(tile.x, tile.y, tile.z);
 }
-inline bool Terrain::can_stand_1(Tile *tile) const {
+inline bool Terrain::can_stand_1(const Tile *tile) const {
     return can_stand_1(tile->get_x(), tile->get_y(), tile->get_z());
 }
 // can_stand should take an int xyz
@@ -506,6 +506,19 @@ template<class T>
 float Terrain::get_H_cost(const T *tile1, const T *tile2) const{
     return get_H_cost(tile1->sop(), tile2->sop());
 }  // might need to define this for other orentations*/
+float Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {
+    double D1 = 1.0;
+    double D2 = 1.414;
+    double D3 = 1.0;
+    auto [x1, y1, z1] = xyz1;
+    auto [x2, y2, z2] = xyz2;
+
+    float DX = abs(x1 - x2);
+    float DY = abs(y1 - y2);
+    float DZ = abs(z1 - z2);
+
+    return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
+}
 float Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
@@ -513,14 +526,14 @@ float Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
     auto [x1, y1, z1] = xyz1;
     auto [x2, y2, z2] = xyz2;
 
-    int DX = abs(x1 - x2);
-    int DY = abs(y1 - y2);
-    int DZ = abs(z1 - z2);
+    float DX = abs(x1 - x2);
+    float DY = abs(y1 - y2);
+    float DZ = abs(z1 - z2);
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
 template<class T>
-inline float Terrain::get_G_cost(const T tile, const Node<T> node){
+inline float Terrain::get_G_cost(const T tile, const Node<const T> node){
     return node.get_gCost() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }/*
 template<class T>
@@ -579,8 +592,8 @@ const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile,
     return out;
 };
 
-std::set<Node<Tile> *> Terrain::get_adjacent_Nodes(const Node<Tile> *const node, std::vector<Node<Tile> *> & nodes, int8_t type) const {
-    std::set<Node<Tile> *> out;
+std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::vector<Node<const Tile> *> & nodes, int8_t type) const {
+    std::set<Node<const Tile> *> out;
 
     for (const std::pair<Tile *, OnePath> t : node->get_tile()->get_adjacent()) {
         if (t.second.compatible(type) && t.second.is_open()) {
@@ -592,10 +605,10 @@ std::set<Node<Tile> *> Terrain::get_adjacent_Nodes(const Node<Tile> *const node,
     }
     return out;
 };
-std::set<Node<Tile> *> Terrain::get_adjacent_Nodes(const Node<Tile> *const node, std::vector<Node<Tile>> & nodes, int8_t type) const {
-    std::set<Node<Tile> *> out;
+std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::vector<Node<const Tile>> & nodes, int8_t type) const {
+    std::set<Node<const Tile> *> out;
 
-    for (const std::pair<Tile *,OnePath> t : node->get_tile()->get_adjacent()) {
+    for (const std::pair<const Tile *,OnePath> t : node->get_tile()->get_adjacent()) {
         if (t.second.compatible(type) && t.second.is_open()) {
             if (!can_stand(t.first, 3, 1)) {
                 std::cout << "eek!\n";
@@ -746,8 +759,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     return int8_t(type + 8 * open);
 }
 
-std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
-    // TODO add chunk pathfinding
+std::vector<Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_) {
     // int start_time = std::time(nullptr);// what time is it for testing
     auto millisec_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     int start_z = start->get_z();
@@ -764,14 +776,17 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
 
     // this is used to choose the next node
     // lambda return lhs->get_fCost() > rhs->get_fCost();
-    auto compare = [](Node<Tile> *lhs, Node<Tile> *rhs) {
+    auto compare = [](Node<const Tile> *lhs, Node<const Tile> *rhs) {
         return lhs->get_fCost() > rhs->get_fCost();
     };
-    std::priority_queue<Node<Tile> *, std::vector<Node<Tile> *>, decltype(compare)> openNodes(compare);
-    std::set<Node<Tile>*> shershed;
+    std::priority_queue<Node<const Tile> *, std::vector<Node<const Tile> *>, decltype(compare)> openNodes(compare);
+    std::set<Node<const Tile>*> searched;
     // initialize all nodes
-    std::vector<Node<Tile>> nodes;
-    Tile *goal = get_tile(goal_->get_x(), goal_->get_y(), goal_z);
+    std::vector<Node<const Tile>> nodes;
+    const Tile *goal = get_tile(goal_->get_x(), goal_->get_y(), goal_z);
+
+    std::vector<const NodeGroup*> Node_path = get_path_Astar(get_NodeGroup(goal), get_NodeGroup(get_tile(start->get_x(), start->get_y(), start_z)));
+
     nodes.resize(X_MAX * Y_MAX * Z_MAX);  // 4.5
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " time resize nodes\n";
 
@@ -784,27 +799,27 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
     }
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -millisec_since_epoch << " time define all nodes\n";
     // 5.247 5.386
-    Node<Tile> start_node = nodes[pos(start->get_x(), start->get_y(), start_z)];
+    Node<const Tile> start_node = nodes[pos(start->get_x(), start->get_y(), start_z)];
 
     // initialize
     // while true
     // expand around best
 
     openNodes.push(&start_node);  // gotta start somewhere
-    shershed.insert(&start_node);
+    searched.insert(&start_node);
     start_node.explore();  // this sets the cost to get from start to this node
                            // to 0 an some other stuff.
     std::cout << sizeof(tiles) << " size tiles\n";
     std::cout << sizeof(openNodes) << " size openNodes\n";
     std::cout << sizeof(nodes) << " size nodes\n";
     while (!openNodes.empty()) {
-        Node<Tile> *choice = openNodes.top();
+        Node<const Tile> *choice = openNodes.top();
         // Choose first in openNodes (they are arranged from best to worst)
 
         openNodes.pop();  // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::set adjacent_nodes = get_adjacent_Nodes(choice, nodes, 31);
-        for (Node<Tile> *n : adjacent_nodes) {
+        std::set<Node<const Tile>*> adjacent_nodes = get_adjacent_Nodes(choice, nodes, 31);
+        for (Node<const Tile> *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
             if (can_stand(n->get_tile(), 3, 1) && !n->is_explored()) {
@@ -815,13 +830,18 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
                 // At the goal node return the path
 
                 if (n->get_tile() == goal) {
-                    std::vector<Tile *> path;
+                    std::vector<const Tile *> path;
                     std::cout << std::chrono::duration_cast< std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " Total time\n";
                     get_path_through_nodes(n, path, get_tile(start->get_x(), start->get_y(), start_z));
-                    return path;
+                    //return path;
+                    std::vector<Tile*> out;
+                    for (auto N : path){
+                        out.push_back(get_tile(pos(N)));
+                    }
+                    return out;
                 }
                 openNodes.push(n);  // n can be chose to expand around
-                shershed.insert(n);
+                searched.insert(n);
             }
             else if (can_stand(n->get_tile(), 3, 1) && n->is_explored()){
                 n->explore(choice, get_G_cost(*(n->get_tile()), *choice)); // Might need to rearage openNodes
@@ -830,15 +850,67 @@ std::vector<Tile *> Terrain::get_path_Astar(Tile *start, Tile *goal_) {
     }
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " Total time\n";
     std::vector<Tile*> out;
-    for (auto N : shershed){
+    for (auto N : searched){
         //for (int x : N->get_tile()->sop()){
         //   std::cout << x << " ";
         //}
         //std::cout << std::endl;
-        out.push_back(N->get_tile());
+        out.push_back(get_tile(pos(N->get_tile())));
     }
     return out;
     //return std::vector<Tile *>();
+}
+
+std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, const NodeGroup *goal) {
+
+    // this is used to choose the next node
+    auto compare = [](Node<const NodeGroup> *lhs, Node<const NodeGroup> *rhs) {
+        return lhs->get_fCost() > rhs->get_fCost();
+    };
+    std::priority_queue<Node<const NodeGroup> *, std::vector<Node<const NodeGroup> *>, decltype(compare)> openNodes(compare);
+    //std::set<Node<NodeGroup>*> searched;
+    // initialize all nodes
+    std::map<const NodeGroup*,Node<const NodeGroup>> nodes;
+    // get total nodegroups
+    Node<const NodeGroup> start_node;
+    for (Chunk& c : chunks){
+        c.incert_nodes(nodes, goal->sop());
+        //c.incert_nodes(nodes);
+        //for (NodeGroup NG : c.get_NodeGroups()){
+        //    auto temp = std::make_pair(&NG, Node(&NG, get_H_cost( NG.sop(), goal->sop() ) ));
+        //    nodes.insert(temp);
+        //}
+    }
+    start_node = nodes.at(start);
+    openNodes.push(&start_node);  // gotta start somewhere
+    //searched.insert(&start_node);
+    start_node.explore();  // this sets the cost to get from start to this node
+                           // to 0 an some other stuff.
+    std::cout << sizeof(tiles) << " size tiles\n";
+    std::cout << sizeof(openNodes) << " size openNodes\n";
+    std::cout << sizeof(nodes) << " size nodes\n";
+    while (!openNodes.empty()) {
+        Node<const NodeGroup> *choice = openNodes.top();// Choose first in openNodes (they are arranged from best to worst)
+        openNodes.pop();  // Remove the chosen node from openNodes
+        std::set adjacent_nodes = choice->get_tile()->get_adjacent();
+        for (const NodeGroup *NG : adjacent_nodes) {// Expand openNodes around the best choice
+            Node<const NodeGroup>& n = nodes.at(NG);
+            if (!n.is_explored()) {
+                n.explore(choice, get_G_cost(*NG, *choice));
+                if (NG == goal) {
+                    std::vector<const NodeGroup *> path;
+                    get_path_through_nodes(&n, path, start);
+                    return path;
+                }
+                openNodes.push(&n);  // n can be chosen to expand around
+                //searched.insert(&n);
+            }
+            else {
+                n.explore(choice, get_G_cost(*NG, *choice)); // Might need to rearage openNodes
+            }
+        }
+    }
+    return std::vector<const NodeGroup *>();
 }
 
 // Set `color` to the color of the tile at `pos`.

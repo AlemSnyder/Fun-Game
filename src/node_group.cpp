@@ -41,6 +41,9 @@ std::set<NodeGroup *> NodeGroup::merge_groups(NodeGroup other){
 float NodeGroup::get_center_x(){ return center_x; }
 float NodeGroup::get_center_y(){ return center_y; }
 float NodeGroup::get_center_z(){ return center_z; }
+std::array<float, 3> NodeGroup::sop() const {
+    return { center_x, center_y, center_z };
+}
 
 const std::set<Tile*> NodeGroup::get_tiles() const{
     return tiles;

@@ -57,13 +57,14 @@ private:
 
     Node<Tile> new_node(Node<Tile> &parrent, Tile &tile, Tile goal);
     void add_node(std::set<Node<Tile>> &nodelist, Node<Tile> &node);
-    void get_path_through_nodes(Node<Tile> *node, std::vector<Tile *> &out, const Tile *start) {
+    template<class T>
+    void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) {
         out.push_back(node->get_tile());
         if (start == node->get_tile()) {
             return;
         }
         get_path_through_nodes(node->get_parent(), out, start);
-    };
+    }
 
 
     // TODO none of this is defined
@@ -79,7 +80,9 @@ public:
     
     const OnePath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
 
+    static float get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
     static float get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2);
+
     /*template<class T>
     float get_H_cost(const T tile1, const T tile2) const;
     template<class T>
@@ -90,7 +93,7 @@ public:
     float get_H_cost(const T *const tile1, const T tile2) const;*/
 
     template<class T>
-    static float get_G_cost(const T tile, const Node<T> node);
+    static float get_G_cost(const T tile, const Node<const T> node);
     /*
     template<class T>
     static float get_G_cost(const T *const tile,const Node<T> *const node);
@@ -147,8 +150,8 @@ public:
     // TODO plack block
     std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
     const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
-    std::set<Node<Tile> *> get_adjacent_Nodes(const Node<Tile> *const node, std::vector<Node<Tile> *> &nodes, int8_t type) const;
-    std::set<Node<Tile> *> get_adjacent_Nodes(const Node<Tile> *const node, std::vector<Node<Tile>> &nodes, int8_t type) const;
+    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::vector<Node<const Tile> *> &nodes, int8_t type) const;
+    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::vector<Node<const Tile>> &nodes, int8_t type) const;
     
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);
@@ -234,16 +237,17 @@ public:
 
     bool can_stand_1(int x, int y, int z) const;
     bool can_stand_1(int xyz) const;
-    bool can_stand_1(Tile tile) const;
-    bool can_stand_1(Tile *tile) const;
+    bool can_stand_1(const Tile tile) const;
+    bool can_stand_1(const Tile *tile) const;
     bool can_stand(int x, int y, int z, int dz, int dxy) const;
-    bool can_stand(Tile tile, int dz, int dxy) const;
-    bool can_stand(Tile *tile, int dz, int dxy) const;
+    bool can_stand(const Tile tile, int dz, int dxy) const;
+    bool can_stand(const Tile *tile, int dz, int dxy) const;
 
     int qb_save(const char * path)const;
     int qb_read(const char * path, const std::map<uint32_t, std::pair<const Material*, uint8_t>> *materials);
 
-    std::vector<Tile *> get_path_Astar(Tile *start, Tile *goal);
+    std::vector<Tile *> get_path_Astar(const Tile *start, const Tile *goal);
+    std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
     void init_chunks();
     void stitch_chunks_at(Tile* tile);

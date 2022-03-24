@@ -22,6 +22,7 @@ public:
     float get_center_x();
     float get_center_y();
     float get_center_z();
+    std::array<float, 3> sop() const;
 
     bool operator==(const NodeGroup& other) const;
 
