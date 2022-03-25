@@ -6,14 +6,19 @@
 #include "tile.hpp"
 
 class NodeGroup{
+private:
+    //static inline bool cmp(Tile* a, Tile* b) { return ((*a) > (*b)); };
+    std::set<Tile*, TilePCompare> tiles;
+    std::set<NodeGroup *> adjacent;
+    float center_x, center_y, center_z;
 public:
     NodeGroup();
     NodeGroup(Tile* tile);
     std::set<NodeGroup *> merge_groups(NodeGroup other);
     //~NodeGroup();
     void update();
-    const std::set<Tile*> get_tiles() const;
-    std::set<Tile*> get_tiles();
+    const std::set<Tile*, TilePCompare> get_tiles() const;
+    std::set<Tile*, TilePCompare> get_tiles();
     void add_adjacent(NodeGroup* NG);
     void remove_adjacent(NodeGroup* NG);
     const std::set<NodeGroup *> get_adjacent() const;
@@ -25,13 +30,7 @@ public:
     std::array<float, 3> sop() const;
 
     bool operator==(const NodeGroup& other) const;
-
-private:
-    /* data */
-    std::set<Tile*> tiles;
-    std::set<NodeGroup *> adjacent;
-    float center_x, center_y, center_z;
-    
+    bool operator>(const NodeGroup& other) const;
 };
 
 

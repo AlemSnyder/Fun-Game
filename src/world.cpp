@@ -49,7 +49,6 @@ World::World(){
 
     std::cout << "start of terrain\n";
     terrain_main = Terrain();
-    //terrain_main = Terrain(6, 6, 32, 128, 5, &materials, biome_data["Biome_1"], grass_grad_data, materials_json["Dirt"]["Gradient"]["midpoint"].asInt());
 
 }
 

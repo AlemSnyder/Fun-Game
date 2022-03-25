@@ -10,9 +10,17 @@ int test1(){
 
     //const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation";
 
+    Json::Value materials_json;
+    std::ifstream materials_file("../data/materials.json", std::ifstream::in);
+    materials_file >> materials_json;
+
+    Json::Value biome_data;
+    std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    biome_file >> biome_data;
+
     const char * path = "../SavedTerrain/save.qb";
 
-    World world;
+    World world(materials_json, biome_data);
 
     world.terrain_main.qb_save(path);
 
@@ -110,7 +118,7 @@ int pathfindertest(){
 
 int main( int argc, char** argv ){
     if (argc == 1){
-        return pathfindertest();
+        return test1();
     } else if (std::string(argv[1]) == "--TerrainTypes"){
         Json::Value biome_data;
         std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);

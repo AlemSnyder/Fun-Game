@@ -45,10 +45,10 @@ std::array<float, 3> NodeGroup::sop() const {
     return { center_x, center_y, center_z };
 }
 
-const std::set<Tile*> NodeGroup::get_tiles() const{
+const std::set<Tile*, TilePCompare> NodeGroup::get_tiles() const{
     return tiles;
 }
-std::set<Tile*> NodeGroup::get_tiles(){
+std::set<Tile*, TilePCompare> NodeGroup::get_tiles(){
     return tiles;
 }
 
@@ -58,4 +58,7 @@ inline bool NodeGroup::adjacent_to(const NodeGroup* other) const{
 
 bool NodeGroup::operator==(const NodeGroup & other) const{
     return (this == &other);
+}
+bool NodeGroup::operator>(const NodeGroup & other) const{
+    return ((**tiles.begin()) > **(other.tiles.begin()));
 }

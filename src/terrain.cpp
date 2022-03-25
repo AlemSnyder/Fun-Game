@@ -592,7 +592,7 @@ const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile,
     return out;
 };
 
-std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::vector<Node<const Tile> *> & nodes, int8_t type) const {
+/*std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::vector<Node<const Tile> *> & nodes, int8_t type) const {
     std::set<Node<const Tile> *> out;
 
     for (const std::pair<Tile *, OnePath> t : node->get_tile()->get_adjacent()) {
@@ -604,8 +604,8 @@ std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> 
         }
     }
     return out;
-};
-std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::vector<Node<const Tile>> & nodes, int8_t type) const {
+};*/
+std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::map<int, Node<const Tile>> & nodes, int8_t type) const {
     std::set<Node<const Tile> *> out;
 
     for (const std::pair<const Tile *,OnePath> t : node->get_tile()->get_adjacent()) {
@@ -613,7 +613,11 @@ std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> 
             if (!can_stand(t.first, 3, 1)) {
                 std::cout << "eek!\n";
             }
-            out.insert(&nodes[pos(t.first)]);
+            try{
+                auto tile = &nodes.at(pos(t.first));
+                out.insert(tile);
+            }
+            catch(const std::exception& e){ }
         }
     }
     return out;
@@ -782,22 +786,27 @@ std::vector<Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_
     std::priority_queue<Node<const Tile> *, std::vector<Node<const Tile> *>, decltype(compare)> openNodes(compare);
     std::set<Node<const Tile>*> searched;
     // initialize all nodes
-    std::vector<Node<const Tile>> nodes;
+    std::map<int, Node<const Tile>> nodes;
     const Tile *goal = get_tile(goal_->get_x(), goal_->get_y(), goal_z);
 
     std::vector<const NodeGroup*> Node_path = get_path_Astar(get_NodeGroup(goal), get_NodeGroup(get_tile(start->get_x(), start->get_y(), start_z)));
 
-    nodes.resize(X_MAX * Y_MAX * Z_MAX);  // 4.5
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " time resize nodes\n";
+    //nodes.resize(X_MAX * Y_MAX * Z_MAX);  // 4.5
+    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " time resize nodes\n";
 
     // nodes should be an unordered map
     // this will reduce def time, and
 
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    //for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         // each node is initialized
-        nodes[xyz].init(get_tile(xyz), get_H_cost(sop(xyz), goal->sop()));
+    //    nodes[xyz].init(get_tile(xyz), get_H_cost(sop(xyz), goal->sop()));
+    //}
+    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -millisec_since_epoch << " time define all nodes\n";
+    for (const NodeGroup* NG : Node_path){
+        for (Tile* t : NG->get_tiles()){
+            nodes[pos(t)] = Node<const Tile>(t, get_H_cost(t->sop(), goal->sop()));
+        }
     }
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -millisec_since_epoch << " time define all nodes\n";
     // 5.247 5.386
     Node<const Tile> start_node = nodes[pos(start->get_x(), start->get_y(), start_z)];
 

@@ -120,6 +120,18 @@ void Tile::clear_adjacent(){
     adjacent.clear();
 }
 
+bool Tile::operator> (const Tile other) const{
+    if (get_x() < other.get_x()){
+        return true;
+    } else if (get_x() > other.get_x()){
+        return false;
+    } else if (get_y() < other.get_y()){
+        return true;
+    } else if (get_y() < other.get_y()){
+        return false;
+    } else {return get_z() < other.get_z();}
+}
+
 bool TilePCompare::operator() (const Tile* lhs, const Tile* rhs) const{
     if (lhs->get_x() < rhs->get_x()){
         return true;

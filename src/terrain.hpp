@@ -150,8 +150,8 @@ public:
     // TODO plack block
     std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
     const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
-    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::vector<Node<const Tile> *> &nodes, int8_t type) const;
-    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::vector<Node<const Tile>> &nodes, int8_t type) const;
+    //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
+    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
     
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);

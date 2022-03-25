@@ -80,6 +80,7 @@ public:
         return (this->x == other->x && this->y == other->y &&
                 this->z == other->z);
     }
+    bool operator>(const Tile other) const;
 };
 
 #endif  // __TILE_HPP__
