@@ -924,6 +924,19 @@ uint32_t Terrain::compress_color(uint8_t v[4]){
     return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16 | (uint32_t)v[0] << 24;
 }
 
+int Terrain::qb_save_debug(const char * path, const std::map<int, const Material>* materials) {
+    int x=0;
+    for (Chunk & c : get_chunks()){
+        for ( const NodeGroup& NG : c.get_NodeGroups() ){
+            for (Tile* t : NG.get_tiles()){
+                set_tile_material(t, &materials->at(7), x%4);
+            }
+            x++;
+        }
+    }
+    return qb_save(path);
+}
+
 // Save all tiles as .qb to path.
 int Terrain::qb_save(const char * path)const{
     //Saves the tiles in this to the path specified

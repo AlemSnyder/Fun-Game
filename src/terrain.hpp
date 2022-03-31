@@ -246,6 +246,7 @@ public:
     bool can_stand(const Tile tile, int dz, int dxy) const;
     bool can_stand(const Tile *tile, int dz, int dxy) const;
 
+    int qb_save_debug(const char * path, const std::map<int, const Material>* materials);
     int qb_save(const char * path)const;
     int qb_read(const char * path, const std::map<uint32_t, std::pair<const Material*, uint8_t>> *materials);
 
