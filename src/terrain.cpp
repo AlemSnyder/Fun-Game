@@ -146,7 +146,7 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
         }
     }
 
-    //init_chunks();
+    init_chunks();
 
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " Total time Terrain_init" << std::endl;
 }
@@ -551,7 +551,7 @@ inline float Terrain::get_G_cost(const T *const tile, const Node<T> node) {
 
 void Terrain::add_all_adjacent(int xyz) {
     tiles[xyz].clear_adjacent();
-    std::map<Tile*,OnePath>::iterator it = tiles[xyz].get_adjacent().begin();
+    //std::map<Tile*,OnePath>::iterator it = tiles[xyz].get_adjacent().begin();
 
     for (int xyz_ = 0; xyz_ < 27; xyz_++) {
         if (xyz_ == 13) {
@@ -564,8 +564,9 @@ void Terrain::add_all_adjacent(int xyz) {
             // Tile t = ;
             Tile *other = get_tile(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
             OnePath path_type = get_path_type(x_, y_, z_, x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
-            tiles[xyz].add_adjacent(it, other, path_type);
-            it++;
+            //tiles[xyz].add_adjacent(it, other, path_type);
+            tiles[xyz].add_adjacent(other, path_type);
+            //it++;
         }
     }
     //std::cout << "adding adjacent" << std::endl;
@@ -791,17 +792,10 @@ std::vector<Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_
 
     std::vector<const NodeGroup*> Node_path = get_path_Astar(get_NodeGroup(goal), get_NodeGroup(get_tile(start->get_x(), start->get_y(), start_z)));
 
-    //nodes.resize(X_MAX * Y_MAX * Z_MAX);  // 4.5
-    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " time resize nodes\n";
+    if (Node_path.empty()){
+        return std::vector<Tile*>();
+    }
 
-    // nodes should be an unordered map
-    // this will reduce def time, and
-
-    //for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        // each node is initialized
-    //    nodes[xyz].init(get_tile(xyz), get_H_cost(sop(xyz), goal->sop()));
-    //}
-    //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -millisec_since_epoch << " time define all nodes\n";
     for (const NodeGroup* NG : Node_path){
         for (Tile* t : NG->get_tiles()){
             nodes[pos(t)] = Node<const Tile>(t, get_H_cost(t->sop(), goal->sop()));
@@ -859,13 +853,13 @@ std::vector<Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_
     }
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) .count() - millisec_since_epoch << " Total time\n";
     std::vector<Tile*> out;
-    for (auto N : searched){
+    //for (auto N : searched){
         //for (int x : N->get_tile()->sop()){
         //   std::cout << x << " ";
         //}
         //std::cout << std::endl;
-        out.push_back(get_tile(pos(N->get_tile())));
-    }
+        //out.push_back(get_tile(pos(N->get_tile())));
+    //}
     return out;
     //return std::vector<Tile *>();
 }
@@ -884,11 +878,6 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
     Node<const NodeGroup> start_node;
     for (Chunk& c : chunks){
         c.incert_nodes(nodes, goal->sop());
-        //c.incert_nodes(nodes);
-        //for (NodeGroup NG : c.get_NodeGroups()){
-        //    auto temp = std::make_pair(&NG, Node(&NG, get_H_cost( NG.sop(), goal->sop() ) ));
-        //    nodes.insert(temp);
-        //}
     }
     start_node = nodes.at(start);
     openNodes.push(&start_node);  // gotta start somewhere

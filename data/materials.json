@@ -127,5 +127,28 @@
         ],
         "solid": true,
         "speed": 1
+    },
+    "Debug": {
+        "id": 7,
+        "colors": [
+            {
+                "name":"debug_1",
+                "hex": "b548b5FF"
+            },
+            {
+                "name":"debug_2",
+                "hex": "5d4be3FF"
+            },
+            {
+                "name":"debug_3",
+                "hex": "cf7079FF"
+            },
+            {
+                "name":"debug_4",
+                "hex": "81de3aFF"
+            }
+        ],
+        "solid": true,
+        "speed": 1
     }
 }

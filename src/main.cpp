@@ -22,6 +22,16 @@ int test1(){
 
     World world(materials_json, biome_data);
 
+    int x=0;
+    for (Chunk & c : world.terrain_main.get_chunks()){
+        for ( const NodeGroup& NG : c.get_NodeGroups() ){
+            for (Tile* t : NG.get_tiles()){
+                world.terrain_main.set_tile_material(t, &world.get_materials()->at(7), x%4);
+            }
+            x++;
+        }
+    }
+
     world.terrain_main.qb_save(path);
 
     return 0;
@@ -101,6 +111,15 @@ int pathfindertest(){
 
     if (tile_path.size() == 0){
         std::cout << "no path" << std::endl;
+            int x=0;
+        for (Chunk & c : world.terrain_main.get_chunks()){
+            for ( const NodeGroup& NG : c.get_NodeGroups() ){
+                for (Tile* t : NG.get_tiles()){
+                    world.terrain_main.set_tile_material(t, &world.get_materials()->at(7), x%4);
+                }
+                x++;
+            }
+        }
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
@@ -118,7 +137,7 @@ int pathfindertest(){
 
 int main( int argc, char** argv ){
     if (argc == 1){
-        return test1();
+        return pathfindertest();
     } else if (std::string(argv[1]) == "--TerrainTypes"){
         Json::Value biome_data;
         std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);

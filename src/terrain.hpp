@@ -66,6 +66,7 @@ private:
         get_path_through_nodes(node->get_parent(), out, start);
     }
 
+    
 
     // TODO none of this is defined
     void add_line_to(std::vector<int> &out, Json::Value data, int i);
@@ -153,6 +154,8 @@ public:
     //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
     std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
     
+    std::vector<Chunk> get_chunks(){ return chunks; }
+
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);
     //NodeGroup* get_NodeGroup(Tile* t);

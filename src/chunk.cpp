@@ -28,6 +28,10 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
         }
     }
 
+    //            for (auto path : tile_main->get_adjacent()){//ter->get_adjacent_Tiles(tile_main, 31)){
+    //            if (path && path.second.is_open()){  //if (NodeGroup* to_add = ter->get_NodeGroup(tile_adjacent)){
+    //                NG.add_adjacent(ter->get_NodeGroup(path.first));
+
     std::list<NodeGroup>::iterator it = NodeGroups.begin(); //it != NodeGroups.end(); it++
     //auto test = NodeGroups[4];
     while (it != NodeGroups.end()){
