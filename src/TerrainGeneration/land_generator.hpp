@@ -1,3 +1,6 @@
+#ifndef __LAND_GENERATOR_HPP__
+#define __LAND_GENERATOR_HPP__
+
 #include <stdint.h>
 #include "json/json.h"
 #include <map>
@@ -8,9 +11,6 @@
 
 #include "tile_stamp.hpp"
 #include "material.hpp"
-
-#ifndef __LAND_GENERATOR_HPP__
-#define __LAND_GENERATOR_HPP__
 
 class Land_Generator{
 public:

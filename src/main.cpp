@@ -1,6 +1,6 @@
 #include <iostream>
 //#include <vector>
-//#include "terrain.hpp"
+#include "terrain.hpp"
 #include <iostream>
 #include <string>
 #include "world.hpp"
@@ -10,11 +10,19 @@ int test1(){
 
     //const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation";
 
+    Json::Value materials_json;
+    std::ifstream materials_file("../data/materials.json", std::ifstream::in);
+    materials_file >> materials_json;
+
+    Json::Value biome_data;
+    std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    biome_file >> biome_data;
+
     const char * path = "../SavedTerrain/save.qb";
 
-    World world;
+    World world(materials_json, biome_data);
 
-    world.terrain_main.qb_save(path);
+    world.terrain_main.qb_save_debug(path, world.get_materials());
 
     return 0;
 }
@@ -58,7 +66,7 @@ void save_terrain(Json::Value biome_data, std::string biome_name){
         path += ".qb";
         world.terrain_main.qb_save(path.c_str());
     }
-        //Json::Value biome_data;
+    //Json::Value biome_data;
     //std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
     //biome_file >> biome_data;
 }
@@ -75,33 +83,18 @@ int pathfindertest(){
 
     World world(path);
 
-    //world.terrain_main.qb_save(save_path);
-
-    //Tile * start = world.terrain_main.get_tile(1,1,1);
-    //Tile * end = world.terrain_main.get_tile(1,25,1);
-
     std::pair<Tile *, Tile *> start_end = world.terrain_main.get_start_end_test();
-
-    //start->set_material(&world.get_materials()->at(0));
-    //end->set_material(&world.get_materials()->at(0));
-
-    //std::cout << ter.can_stand(3,3,6, 3, 1) << ter.get_tile(3,3,6)->is_solid() << "can stand\n";
-    //std::cout << ter.can_stand(3,3,5, 3, 1) << ter.get_tile(3,3,5)->is_solid() << "can stand\n";
-    //std::cout << ter.can_stand(3,3,4, 3, 1) << ter.get_tile(3,3,4)->is_solid() << "can stand\n";
 
     std::vector<Tile*> tile_path = world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
     if (tile_path.size() == 0){
         std::cout << "no path" << std::endl;
+        world.terrain_main.qb_save_debug(path, world.get_materials());
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
         (*it)->set_material(&world.get_materials()->at(6),1);
-        //std::cout << (*it)->get_x() << " " << (*it)->get_y() << " " << (*it)->get_z() << std::endl;
     }
-
-    //start->set_material(&world.get_materials()->at(1));
-    //end->set_material(&world.get_materials()->at(1));
 
     world.terrain_main.qb_save(save_path);
 

@@ -1,9 +1,9 @@
+#ifndef __WORLD_HPP__
+#define __WORLD_HPP__
+
 #include "terrain.hpp"
 #include <stdint.h>
 #include "json/json.h"
-
-#ifndef __WORLD_HPP__
-#define __WORLD_HPP__
 
 class World{
 public:
