@@ -92,7 +92,7 @@ const std::list<NodeGroup>& Chunk::get_NodeGroups() const {
     return NodeGroups;
 }
 
-void Chunk::incert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes, std::array<float, 3> sop) const {
+void Chunk::insert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes, std::array<float, 3> sop) const {
     for (const NodeGroup& NG : NodeGroups){
         auto temp = std::make_pair(&NG, Node(&NG, Terrain::get_H_cost( NG.sop(), sop) ));
         nodes.insert(temp);

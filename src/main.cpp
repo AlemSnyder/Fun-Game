@@ -42,10 +42,13 @@ int test2(){
 int savetest(){
     const char * path = "../SavedTerrain/save.qb";
     const char * save_path = "../SavedTerrain/save_test.qb";
+    const char * save_path_text = "../SavedTerrain/save_test.txt";
 
     World world(path);
 
     world.terrain_main.qb_save(save_path);
+
+    world.terrain_main.saveAsText(save_path_text);
 
     return 0;
 }

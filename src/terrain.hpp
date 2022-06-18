@@ -55,7 +55,7 @@ private:
 
     void add_all_adjacent(int xyz);
 
-    Node<Tile> new_node(Node<Tile> &parrent, Tile &tile, Tile goal);
+    Node<Tile> new_node(Node<Tile> &parent, Tile &tile, Tile goal);
     void add_node(std::set<Node<Tile>> &nodelist, Node<Tile> &node);
     template<class T>
     void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) {
@@ -155,6 +155,9 @@ public:
     std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
     
     std::vector<Chunk> get_chunks(){ return chunks; }
+
+    std::list<int> ExportVoxelsAsList() const;
+    void saveAsText(const char * path) const;
 
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);

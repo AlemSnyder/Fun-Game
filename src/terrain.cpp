@@ -16,6 +16,7 @@
 #include <cstring>
 #include <fstream>
 #include <stdint.h>
+#include <fstream>
 
 #include "json/json.h"
 #include "node.hpp"
@@ -168,7 +169,7 @@ void Terrain::init_chunks(){
         chunks.push_back(Chunk(x,y,z, this));
     }
     // for tile on chunk border
-        // create node group adjecency
+        // create node group adjacency
     /*for (int x = 0; x < X_MAX; x++)
     for (int y = 0; y < Y_MAX; y++)
     for (int z = 0; z < Z_MAX; z+= Chunk::size){
@@ -448,7 +449,7 @@ void Terrain::grow_all_grass_low(){
 // generates a size_x by size_y vector of macro tile types.
 std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value terrain_data) {
     std::vector<int> out;
-    int background = terrain_data["BackGround"].asInt(); // default terain type.
+    int background = terrain_data["BackGround"].asInt(); // default terrain type.
     int numOctaves = terrain_data["NumOctaves"].asInt(); // number of octaves
     double persistance = terrain_data["Persistance"].asDouble();
     int range = terrain_data["Range"].asInt();
@@ -505,7 +506,7 @@ float Terrain::get_H_cost(const T tile1, const T tile2) const {
 template<class T>
 float Terrain::get_H_cost(const T *tile1, const T *tile2) const{
     return get_H_cost(tile1->sop(), tile2->sop());
-}  // might need to define this for other orentations*/
+}  // might need to define this for other orientations*/
 float Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
@@ -570,6 +571,29 @@ void Terrain::add_all_adjacent(int xyz) {
         }
     }
     //std::cout << "adding adjacent" << std::endl;
+}
+
+std::list<int> Terrain::ExportVoxelsAsList() const{
+    std::list<int> out;
+    for (Tile t : tiles){
+        int i=0;
+        if (t.is_solid()){
+            i=1;
+        }
+        out.push_back(i);
+    }
+    return out;
+}
+
+void Terrain::saveAsText(const char * path) const{
+    std::fstream file(path);
+    //FILE *file;
+    //file = fopen(path, "wb");
+    file << "{";
+    for (int vox : ExportVoxelsAsList()){
+        file << vox << ", ";
+    }
+    file << "}\n" << X_MAX << " " << Y_MAX << " " << Z_MAX << " ";
 }
 
 std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type) {
@@ -847,7 +871,7 @@ std::vector<Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_
                 searched.insert(n);
             }
             else if (can_stand(n->get_tile(), 3, 1) && n->is_explored()){
-                n->explore(choice, get_G_cost(*(n->get_tile()), *choice)); // Might need to rearage openNodes
+                n->explore(choice, get_G_cost(*(n->get_tile()), *choice)); // Might need to rearrange openNodes
             }
         }
     }
@@ -877,7 +901,7 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
     // get total nodegroups
     Node<const NodeGroup> start_node;
     for (Chunk& c : chunks){
-        c.incert_nodes(nodes, goal->sop());
+        c.insert_nodes(nodes, goal->sop());
     }
     start_node = nodes.at(start);
     openNodes.push(&start_node);  // gotta start somewhere
@@ -904,7 +928,7 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
                 //searched.insert(&n);
             }
             else {
-                n.explore(choice, get_G_cost(*NG, *choice)); // Might need to rearage openNodes
+                n.explore(choice, get_G_cost(*NG, *choice)); // Might need to rearrange openNodes
             }
         }
     }
@@ -913,8 +937,8 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
 
 // Set `color` to the color of the tile at `pos`.
 void Terrain::export_color(const int sop[3], uint8_t color[4]) const{
-    int possition = pos(sop);
-    uint32_t tile_color = get_tile(possition)->get_color();
+    int position = pos(sop);
+    uint32_t tile_color = get_tile(position)->get_color();
     color[0]=(tile_color >> 24) & 0xFF;
     color[1]=(tile_color >> 16) & 0xFF;
     color[2]=(tile_color >> 8) & 0xFF;

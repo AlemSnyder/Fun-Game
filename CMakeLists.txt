@@ -14,6 +14,8 @@ file(GLOB SOURCES "src/**/*.cpp")
 file(GLOB SOURCES2 "src/*.cpp")
 add_executable(Fun_Game ${SOURCES} ${SOURCES2})
 
+add_library(ImportVoxel "external/CSDLL.hpp" ${SOURCES} ${SOURCES2})
+
 if(MSVC)
   target_compile_options(Fun_Game PRIVATE /W4 /WX)
 else()
