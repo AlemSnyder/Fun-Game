@@ -256,6 +256,9 @@ public:
     std::vector<Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
+    std::vector<Tile *> get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal);
+    std::vector<const NodeGroup *> Terrain::get_path_BreadthFirst(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
+
     void init_chunks();
     void stitch_chunks_at(Tile* tile);
 

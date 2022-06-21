@@ -91,6 +91,9 @@ void Chunk::R_merge(NodeGroup &G1, std::set<NodeGroup*>& to_merge){
 const std::list<NodeGroup>& Chunk::get_NodeGroups() const {
     return NodeGroups;
 }
+std::list<NodeGroup>& Chunk::get_NodeGroups() {
+    return NodeGroups;
+}
 
 void Chunk::insert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes, std::array<float, 3> sop) const {
     for (const NodeGroup& NG : NodeGroups){
