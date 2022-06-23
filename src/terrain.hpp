@@ -158,7 +158,7 @@ public:
     std::vector<Chunk> get_chunks(){ return chunks; }
 
     std::list<int> ExportVoxelsAsList() const;
-    void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector5> &faces);
+    void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces);
 
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);

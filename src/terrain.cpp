@@ -585,7 +585,7 @@ std::list<int> Terrain::ExportVoxelsAsList() const{
     return out;
 }
 
-void Terrain::Get_Mesh_Greedy(std::vector<vector3> &vertices, std::vector<vector5> &faces) {
+void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces) {
     int dims[3] = {X_MAX, Y_MAX, Z_MAX};
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // printf("axis: %ld\n", axis);
@@ -594,9 +594,6 @@ void Terrain::Get_Mesh_Greedy(std::vector<vector3> &vertices, std::vector<vector
         const std::size_t v = (axis + 2) % 3;
 
         // printf("u: %ld, v: %ld\n", u, v);
-
-        // const int len = dims[u]*dims[v];
-        // const int len_v = ;
 
         int x[3] = {0};
         int q[3] = {0};
@@ -676,18 +673,19 @@ void Terrain::Get_Mesh_Greedy(std::vector<vector3> &vertices, std::vector<vector
                         }
 
                         const std::size_t vertexSize = vertices.size();
-                        vertices.push_back(vector3(x[0], x[1], x[2]));
+                        vertices.push_back(MoreVectors::vector3(x[0], x[1], x[2]));
                         vertices.push_back(
-                            vector3(x[0] + du[0], x[1] + du[1], x[2] + du[2]));
-                        vertices.push_back(vector3(x[0] + du[0] + dv[0],
+                            MoreVectors::vector3(x[0] + du[0], x[1] + du[1], x[2] + du[2]));
+                        vertices.push_back(MoreVectors::vector3(x[0] + du[0] + dv[0],
                                                    x[1] + du[1] + dv[1],
                                                    x[2] + du[2] + dv[2]));
                         vertices.push_back(
-                            vector3(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]));
+                            MoreVectors::vector3(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]));
 
-                        faces.push_back(vector5(vertexSize, vertexSize + 1,
-                                                vertexSize + 2, vertexSize + 3,
-                                                c));
+                        faces.push_back(MoreVectors::vector4(vertexSize, vertexSize + 1,
+                                                vertexSize + 2, c));
+                        faces.push_back(MoreVectors::vector4(vertexSize + 2, vertexSize + 3,
+                                                vertexSize, c));
 
                         for (int b = 0; b < width; ++b)
                             for (int a = 0; a < height; ++a)
