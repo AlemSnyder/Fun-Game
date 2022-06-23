@@ -585,23 +585,130 @@ std::list<int> Terrain::ExportVoxelsAsList() const{
     return out;
 }
 
-/*void Terrain::saveAsText(const char * path) const{
-    std::ofstream file(path);
-    if (file.is_open()){
-        file << "{";
-        for (int vox : ExportVoxelsAsList()){
-            file << vox << ", ";
-        }
-        file << "}\n" << X_MAX << " " << Y_MAX << " " << Z_MAX << " ";
-        file.close();
-    }
-    else {
-        std::cout << "unable to open file \n";
-    }
-    //FILE *file;
-    //file = fopen(path, "wb");
+void Terrain::Get_Mesh_Greedy(std::vector<vector3> &vertices, std::vector<vector5> &faces) {
+    int dims[3] = {X_MAX, Y_MAX, Z_MAX};
+    for (std::size_t axis = 0; axis < 3; ++axis) {
+        // printf("axis: %ld\n", axis);
 
-}*/
+        const std::size_t u = (axis + 1) % 3;
+        const std::size_t v = (axis + 2) % 3;
+
+        // printf("u: %ld, v: %ld\n", u, v);
+
+        // const int len = dims[u]*dims[v];
+        // const int len_v = ;
+
+        int x[3] = {0};
+        int q[3] = {0};
+        std::vector<int> mask(dims[u] * dims[v]);
+        // printf("dims[u]: %d, dims[v]: %d\n", dims[u], dims[v]);
+
+        printf("x: %d, %d, %d\n", x[0], x[1], x[2]);
+        // printf("q: %d, %d, %d\n", q[0], q[1], q[2]);
+
+        // Compute mask
+        q[axis] = 1;
+        for (x[axis] = -1; x[axis] < dims[axis];) {
+            // printf("x: %d, %d, %d\n", x[0], x[1], x[2]);
+            // printf("q: %d, %d, %d\n", q[0], q[1], q[2]);
+
+            std::size_t counter = 0;
+            for (x[v] = 0; x[v] < dims[v]; ++x[v])
+                for (x[u] = 0; x[u] < dims[u]; ++x[u], ++counter) {
+                    const int a = 0 <= x[axis] ? get_tile(x[0], x[1], x[2])->get_material()->element_id : 0;
+                    const int b = x[axis] < dims[axis] - 1
+                                      ? get_tile(x[0] + q[0], x[1] + q[1], x[2] + q[2])->get_material()->element_id
+                                      : 0;
+                    const bool ba = static_cast<bool>(a);
+                    if (ba == static_cast<bool>(b))
+                        mask[counter] = 0;
+                    else if (ba)
+                        mask[counter] = a;
+                    else
+                        mask[counter] = -b;
+                }
+
+            ++x[axis];
+
+            // for (size_t a = 0; a < dims[u] * dims[v]; ++a)
+            //   printf("%d, ", mask[a]);
+            // printf("\n");
+
+            // Generate mesh for mask using lexicographic ordering
+            int width = 0, height = 0;
+
+            counter = 0;
+            for (int j = 0; j < dims[v]; ++j)
+                for (int i = 0; i < dims[u];) {
+                    int c = mask[counter];
+                    if (c) {
+                        // Compute width
+                        for (width = 1;
+                             c == mask[counter + width] && i + width < dims[u];
+                             ++width) {
+                        }
+
+                        // Compute height
+                        bool done = false;
+                        for (height = 1; j + height < dims[v]; ++height) {
+                            for (int k = 0; k < width; ++k)
+                                if (c != mask[counter + k + height * dims[u]]) {
+                                    done = true;
+                                    break;
+                                }
+
+                            if (done) break;
+                        }
+
+                        // Add quad
+                        x[u] = i;
+                        x[v] = j;
+
+                        int du[3] = {0}, dv[3] = {0};
+
+                        if (c > 0) {
+                            dv[v] = height;
+                            du[u] = width;
+                        } else {
+                            c = -c;
+                            du[v] = height;
+                            dv[u] = width;
+                        }
+
+                        const std::size_t vertexSize = vertices.size();
+                        vertices.push_back(vector3(x[0], x[1], x[2]));
+                        vertices.push_back(
+                            vector3(x[0] + du[0], x[1] + du[1], x[2] + du[2]));
+                        vertices.push_back(vector3(x[0] + du[0] + dv[0],
+                                                   x[1] + du[1] + dv[1],
+                                                   x[2] + du[2] + dv[2]));
+                        vertices.push_back(
+                            vector3(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]));
+
+                        faces.push_back(vector5(vertexSize, vertexSize + 1,
+                                                vertexSize + 2, vertexSize + 3,
+                                                c));
+
+                        for (int b = 0; b < width; ++b)
+                            for (int a = 0; a < height; ++a)
+                                mask[counter + b + a * dims[u]] = 0;
+
+                        // Increment counters
+                        i += width;
+                        counter += width;
+                    } else {
+                        ++i;
+                        ++counter;
+                    }
+                }
+        }
+
+        // printf("x: %d, %d, %d\n", x[0], x[1], x[2]);
+        // printf("q: %d, %d, %d\n", q[0], q[1], q[2]);
+
+        // printf("\n");
+    }
+}
 
 std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type) {
     std::set<Tile *> out;

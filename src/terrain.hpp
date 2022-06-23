@@ -19,6 +19,7 @@
 #include "tile.hpp"
 #include "node_group.hpp"
 #include "chunk.hpp"
+#include "more_vectors.hpp"
 #include "TerrainGeneration/land_generator.hpp"
 #include "TerrainGeneration/material.hpp"
 #include "TerrainGeneration/tile_stamp.hpp"
@@ -157,7 +158,7 @@ public:
     std::vector<Chunk> get_chunks(){ return chunks; }
 
     std::list<int> ExportVoxelsAsList() const;
-    void saveAsText(const char * path) const;
+    void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector5> &faces);
 
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);

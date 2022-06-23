@@ -1,0 +1,2 @@
+The src floder is getting to bloated. terrain file, and things that the terrain file inherits should be moved into 
+this folder.
