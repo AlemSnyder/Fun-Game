@@ -121,7 +121,7 @@ static void wait_for_input(void) {
 
 int GUITest(){
 
-    const char * path = "../SavedTerrain/save.qb";
+    const char * path = "../SavedTerrain/pathfinder_input.qb";
     World world(path);
     
     // Initialise GLFW
@@ -181,7 +181,7 @@ int GUITest(){
     glDepthFunc(GL_LESS);
 
     // Cull triangles which normal is not towards the camera
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE); //XXX This is just for testing re add this
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
@@ -217,19 +217,19 @@ int GUITest(){
     std::vector<MoreVectors::vector4> faces;
     world.terrain_main.Get_Mesh_Greedy(vertices, faces);
 
-    std::vector<float> terrain_buffer_data;
+    std::vector<GLfloat> terrain_buffer_data;
     for (MoreVectors::vector4 face : faces){
         terrain_buffer_data.push_back(vertices[face.x].x); terrain_buffer_data.push_back(vertices[face.x].y); terrain_buffer_data.push_back(vertices[face.x].z);
         terrain_buffer_data.push_back(vertices[face.y].x); terrain_buffer_data.push_back(vertices[face.y].y); terrain_buffer_data.push_back(vertices[face.y].z);
         terrain_buffer_data.push_back(vertices[face.z].x); terrain_buffer_data.push_back(vertices[face.z].y); terrain_buffer_data.push_back(vertices[face.z].z);
     }
 
-    std::vector<float> terrain_color_buffer_data(terrain_buffer_data.size(), .5);
+    std::vector<GLfloat> terrain_color_buffer_data(terrain_buffer_data.size(), .5);
 
     // Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive
     // vertices give a triangle. A cube has 6 faces with 2 triangles each, so
     // this makes 6*2=12 triangles, and 12*3 vertices
-    /*static const GLfloat g_vertex_buffer_data[] = {
+    static const GLfloat g_vertex_buffer_data[] = {
         -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,
         1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f,
         1.0f,  -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f,
@@ -243,7 +243,8 @@ int GUITest(){
         1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, 1.0f};
 
     // One color for each vertex. They were generated randomly.
-    static const GLfloat g_color_buffer_data[] = {
+    //static const GLfloat g_color_buffer_data[] = {
+    static const std::vector<GLfloat> g_color_buffer_data{
         0.583f, 0.771f, 0.014f, 0.609f, 0.115f, 0.436f, 0.327f, 0.483f, 0.844f,
         0.822f, 0.569f, 0.201f, 0.435f, 0.602f, 0.223f, 0.310f, 0.747f, 0.185f,
         0.597f, 0.770f, 0.761f, 0.559f, 0.436f, 0.730f, 0.359f, 0.583f, 0.152f,
@@ -256,7 +257,9 @@ int GUITest(){
         0.722f, 0.645f, 0.174f, 0.302f, 0.455f, 0.848f, 0.225f, 0.587f, 0.040f,
         0.517f, 0.713f, 0.338f, 0.053f, 0.959f, 0.120f, 0.393f, 0.621f, 0.362f,
         0.673f, 0.211f, 0.457f, 0.820f, 0.883f, 0.371f, 0.982f, 0.099f, 0.879f};
-    */
+    
+    //static const std::vector<GLfloat> g_color_buffer_data_float(g_color_buffer_data, sizeof(g_color_buffer_data)/sizeof(g_color_buffer_data[0]));
+
     // This will identify our vertex buffer
     GLuint vertexbuffer;
     // Generate 1 buffer, put the resulting identifier in vertexbuffer
@@ -264,13 +267,15 @@ int GUITest(){
     // The following commands will talk about our 'vertexbuffer' buffer
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     // Give our vertices to OpenGL.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(terrain_buffer_data),
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain_buffer_data.size(),
                 &terrain_buffer_data[0], GL_STATIC_DRAW);
+
+    std::cout <<"Size of color buffer data:" << (int) sizeof(float) * terrain_color_buffer_data.size();
 
     GLuint colorbuffer;
     glGenBuffers(1, &colorbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(terrain_color_buffer_data),
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain_color_buffer_data.size(),
                 &terrain_color_buffer_data[0], GL_STATIC_DRAW);
 
     do {
@@ -318,7 +323,7 @@ int GUITest(){
         // Draw the triangle !
         glDrawArrays(
             GL_TRIANGLES, 0,
-            12 * 3);  // Starting from vertex 0; 3 vertices total -> 1 triangle
+            terrain_buffer_data.size() / 3);  // Starting from vertex 0; 3 vertices total -> 1 triangle
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
