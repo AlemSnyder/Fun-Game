@@ -158,7 +158,7 @@ public:
     std::vector<Chunk> get_chunks(){ return chunks; }
 
     std::list<int> ExportVoxelsAsList() const;
-    void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces);
+    void Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces);
 
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);
@@ -258,7 +258,7 @@ public:
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
     std::vector<Tile *> get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal);
-    std::vector<const NodeGroup *> Terrain::get_path_BreadthFirst(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
+    std::vector<const NodeGroup *> get_path_BreadthFirst(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
 
     void init_chunks();
     void stitch_chunks_at(Tile* tile);

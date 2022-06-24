@@ -45,9 +45,10 @@ std::array<float, 3> NodeGroup::sop() const {
     return { center_x, center_y, center_z };
 }
 
-const std::set<Tile*, TilePCompare> NodeGroup::get_tiles() const{
-    return tiles;
+const std::set<const Tile*, TilePCompare> NodeGroup::get_tiles() const{
+    return std::set<const Tile*, TilePCompare>(tiles.begin(), tiles.end());
 }
+
 std::set<Tile*, TilePCompare> NodeGroup::get_tiles(){
     return tiles;
 }
