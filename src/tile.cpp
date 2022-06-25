@@ -96,6 +96,9 @@ uint8_t Tile::get_color_id() const {
 }
 // returns the element id and the color id as one int
 uint16_t Tile::get_mat_color_id() const{
+    if (mat->element_id == 0){
+        return 0;
+    }
     return mat->element_id << 8 | color_id;
 }
 // return `grow_data_low`
