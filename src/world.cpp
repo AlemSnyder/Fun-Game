@@ -7,6 +7,10 @@ void World::save(){
     terrain_main.qb_save(path);
 }
 
+const Material* World::get_material(int material_id) const {
+    return &materials.at(material_id);
+}
+
 void World::init_materials(Json::Value material_data){
     for (auto element_it = material_data.begin(); element_it != material_data.end(); element_it++){
         

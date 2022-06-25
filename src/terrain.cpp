@@ -586,6 +586,7 @@ std::list<int> Terrain::ExportVoxelsAsList() const{
 }
 
 void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces) {
+    // TODO something is wrong with color on the negative face. one face works but the opposite does not
     int dims[3] = {X_MAX, Y_MAX, Z_MAX};
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // printf("axis: %ld\n", axis);
@@ -614,7 +615,7 @@ void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::
                 for (x[u] = 0; x[u] < dims[u]; ++x[u], ++counter) {
                     const int a = 0 <= x[axis] ? get_tile(x[0], x[1], x[2])->get_material()->element_id : 0;
                     const int b = x[axis] < dims[axis] - 1
-                                      ? get_tile(x[0] + q[0], x[1] + q[1], x[2] + q[2])->get_material()->element_id
+                                      ? get_tile(x[0] + q[0], x[1] + q[1], x[2] + q[2])->get_mat_color_id()
                                       : 0;
                     const bool ba = static_cast<bool>(a);
                     if (ba == static_cast<bool>(b))

@@ -181,7 +181,7 @@ int GUITest(){
     glDepthFunc(GL_LESS);
 
     // Cull triangles which normal is not towards the camera
-    //glEnable(GL_CULL_FACE); //XXX This is just for testing re add this
+    glEnable(GL_CULL_FACE);
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
@@ -201,13 +201,31 @@ int GUITest(){
     world.terrain_main.Get_Mesh_Greedy(vertices, faces);
 
     std::vector<GLfloat> terrain_buffer_data;
+    std::vector<GLfloat> terrain_color_buffer_data;
     for (MoreVectors::vector4 face : faces){
         terrain_buffer_data.push_back(vertices[face.x].x); terrain_buffer_data.push_back(vertices[face.x].y); terrain_buffer_data.push_back(vertices[face.x].z);
         terrain_buffer_data.push_back(vertices[face.y].x); terrain_buffer_data.push_back(vertices[face.y].y); terrain_buffer_data.push_back(vertices[face.y].z);
         terrain_buffer_data.push_back(vertices[face.z].x); terrain_buffer_data.push_back(vertices[face.z].y); terrain_buffer_data.push_back(vertices[face.z].z);
+
+        uint8_t color_id = uint16_t(face.q) & 0xFF;
+        uint8_t material_id = (uint16_t(face.q) >> 8) & 0xFF;
+        uint32_t color = world.get_material(material_id)->color[color_id].second;
+
+
+        terrain_color_buffer_data.push_back( float( ( color >> 24 ) & 0xFF ) / 255.0);
+        terrain_color_buffer_data.push_back( float( ( color >> 16 ) & 0xFF ) / 255.0);
+        terrain_color_buffer_data.push_back( float( ( color >> 8  ) & 0xFF ) / 255.0);
+
+        terrain_color_buffer_data.push_back( float( ( color >> 24 ) & 0xFF ) / 255.0);
+        terrain_color_buffer_data.push_back( float( ( color >> 16 ) & 0xFF ) / 255.0);
+        terrain_color_buffer_data.push_back( float( ( color >> 8  ) & 0xFF ) / 255.0);
+
+        terrain_color_buffer_data.push_back( float( ( color >> 24 ) & 0xFF ) / 255.0);
+        terrain_color_buffer_data.push_back( float( ( color >> 16 ) & 0xFF ) / 255.0);
+        terrain_color_buffer_data.push_back( float( ( color >> 8  ) & 0xFF ) / 255.0);
     }
 
-    std::vector<GLfloat> terrain_color_buffer_data(terrain_buffer_data.size(), .5);
+    //std::vector<GLfloat> terrain_color_buffer_data(terrain_buffer_data.size(), .5);
 
     // This will identify our vertex buffer
     GLuint vertexbuffer;

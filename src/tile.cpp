@@ -94,6 +94,10 @@ uint32_t Tile::get_color()const{
 uint8_t Tile::get_color_id() const {
     return color_id;
 }
+// returns the element id and the color id as one int
+uint16_t Tile::get_mat_color_id() const{
+    return mat->element_id << 8 | color_id;
+}
 // return `grow_data_low`
 uint8_t Tile::get_grow_low() const{
     return grow_data_low;

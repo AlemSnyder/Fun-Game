@@ -19,6 +19,8 @@ public:
         return &materials;
     }
 
+    const Material* get_material(int element_id) const;
+
     void init_materials(Json::Value material_data);
 
 private:
