@@ -15,8 +15,6 @@
 #include <vector>
 #include <cstring>
 #include <fstream>
-#include <stdint.h>
-#include <fstream>
 
 #include "json/json.h"
 #include "node.hpp"
@@ -30,11 +28,11 @@
 #include "TerrainGeneration/tile_stamp.hpp"
 
 
-#define DIRT_ID 1
+#define DIRT_ID 1 // what am I going to do with this?
 
-int Terrain::X_MAX = 1;
-int Terrain::Y_MAX = 1;
-int Terrain::Z_MAX = 1;
+int Terrain::X_MAX = 32;
+int Terrain::Y_MAX = 32;
+int Terrain::Z_MAX = 32;
 int Terrain::Area_size = 32;
 int Terrain::seed = 0;
 
@@ -573,18 +571,6 @@ void Terrain::add_all_adjacent(int xyz) {
     //std::cout << "adding adjacent" << std::endl;
 }
 
-std::list<int> Terrain::ExportVoxelsAsList() const{
-    std::list<int> out;
-    for (Tile t : tiles){
-        int i=0;
-        if (t.is_solid()){
-            i=1;
-        }
-        out.push_back(i);
-    }
-    return out;
-}
-
 void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces) {
     int dims[3] = {X_MAX, Y_MAX, Z_MAX};
     for (std::size_t axis = 0; axis < 3; ++axis) {
@@ -729,19 +715,6 @@ const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile,
     return out;
 };
 
-/*std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::vector<Node<const Tile> *> & nodes, int8_t type) const {
-    std::set<Node<const Tile> *> out;
-
-    for (const std::pair<Tile *, OnePath> t : node->get_tile()->get_adjacent()) {
-        if (t.second.compatible(type) && t.second.is_open()) {
-            if (!can_stand(t.first, 3, 1)) {
-                std::cout << "eek!\n";
-            }
-            out.insert(nodes[pos(t.first)]);
-        }
-    }
-    return out;
-};*/
 std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::map<int, Node<const Tile>> & nodes, int8_t type) const {
     std::set<Node<const Tile> *> out;
 
@@ -768,12 +741,6 @@ NodeGroup* Terrain::get_NodeGroup(int xyz){
         return nullptr;
     }
 }
-//inline NodeGroup* Terrain::get_NodeGroup(Tile t){
-//    return get_NodeGroup(pos(t));
-//}
-//inline NodeGroup* Terrain::get_NodeGroup(Tile* t){
-//    return get_NodeGroup(pos(t));
-//}
 NodeGroup* Terrain::get_NodeGroup(const Tile t){
     return get_NodeGroup(pos(t));
 }
@@ -791,55 +758,6 @@ void Terrain::remove_NodeGroup(NodeGroup* NG){
     for (Tile* t : NG->get_tiles()){
         tile_to_group.erase(pos(t));
     }
-}
-
-//void Terrain::stitch_chunks_at(Tile* tile){
-//    if (can_stand_1(tile)){
-//        NodeGroup* NG = get_NodeGroup(tile);
-//        if (NG != nullptr){
-//            for (Tile* other : get_adjacent_Tiles(tile, 31)){
-//                NodeGroup* NG_other = get_NodeGroup(other);
-//                if (NG_other != nullptr){
-//                    NG->add_adjacent(NG_other);
-//                    NG_other->add_adjacent(NG);
-//                }
-//            }
-//        }
-//    }
-//}
-
-void Terrain::test() {
-    Tile *goal = this->get_tile(2, 2, 2);
-    auto millisec_since_epoch =
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch())
-            .count();
-    std::vector<Node<Tile> *> nodes;
-    // std::cout <<
-    // std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
-    // - millisec_since_epoch << " time\n";
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        nodes.push_back(new Node(this->get_tile(xyz), get_H_cost(sop(xyz), goal->sop())));
-    }
-    std::cout << sizeof(nodes) << " Size of nodes\n";
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                         .count() -
-                     millisec_since_epoch
-              << " time define all nodes\n";
-    int x = 0;
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        auto node = new Node(this->get_tile(xyz), get_H_cost(sop(xyz), goal->sop()));
-        if (node->is_explored()) {
-            x++;
-        };
-    }
-    std::cout << x << " x\n";
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                         .count() -
-                     millisec_since_epoch
-              << " time\n";
 }
 
 const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {

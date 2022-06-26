@@ -121,7 +121,7 @@ static void wait_for_input(void) {
 
 int GUITest(){
 
-    const char * path = "../SavedTerrain/pathfinder_input_4.qb";
+    const char * path = "../SavedTerrain/pathfinder_input.qb";
     World world(path);
     
     // Initialise GLFW
@@ -141,7 +141,7 @@ int GUITest(){
 
     // Open a window and create its OpenGL context
     // (In the accompanying source code, this variable is global for simplicity)
-    window = glfwCreateWindow(1024, 768, "Tutorial 01", NULL, NULL);
+    window = glfwCreateWindow(1024, 768, "Mane Window", NULL, NULL);
     if (window == NULL) {
         std::cerr << "Failed to open GLFW window. If you have an Intel GPU, "
                   << "they are not 3.3 compatible. Try the 2.1 version of the "
@@ -237,7 +237,7 @@ int GUITest(){
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain_buffer_data.size(),
                 &terrain_buffer_data[0], GL_STATIC_DRAW);
 
-    std::cout <<"Size of color buffer data:" << (int) sizeof(float) * terrain_color_buffer_data.size();
+    std::cout <<"Size of color buffer data: " << (int) sizeof(float) * terrain_color_buffer_data.size();
 
     GLuint colorbuffer;
     glGenBuffers(1, &colorbuffer);
