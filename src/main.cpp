@@ -379,4 +379,7 @@ int main( int argc, char** argv ){
     else if (std::string(argv[1]) == "--GUITest"){
         return GUITest();
     }
+    else if (std::string(argv[1]) == "--worldgen") {
+      return test1();
+    }
 }
