@@ -586,7 +586,7 @@ void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::
         std::vector<int> mask(dims[u] * dims[v]);
         // printf("dims[u]: %d, dims[v]: %d\n", dims[u], dims[v]);
 
-        printf("x: %d, %d, %d\n", x[0], x[1], x[2]);
+        // printf("x: %d, %d, %d\n", x[0], x[1], x[2]);
         // printf("q: %d, %d, %d\n", q[0], q[1], q[2]);
 
         // Compute mask

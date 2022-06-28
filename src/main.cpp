@@ -195,13 +195,16 @@ int GUITest(){
 
     // Get a handle for our "MVP" uniform
     GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+    GLuint SunlightID = glGetUniformLocation(programID, "lightDir");
 
     std::vector<MoreVectors::vector3> vertices;
+    //std::vector<glm::vec3> vertices;
     std::vector<MoreVectors::vector4> faces;
     world.terrain_main.Get_Mesh_Greedy(vertices, faces);
 
     std::vector<GLfloat> terrain_buffer_data;
     std::vector<GLfloat> terrain_color_buffer_data;
+    std::vector<GLfloat> terrain_buffer_normal_data;
     for (MoreVectors::vector4 face : faces){
         terrain_buffer_data.push_back(vertices[face.x].x); terrain_buffer_data.push_back(vertices[face.x].y); terrain_buffer_data.push_back(vertices[face.x].z);
         terrain_buffer_data.push_back(vertices[face.y].x); terrain_buffer_data.push_back(vertices[face.y].y); terrain_buffer_data.push_back(vertices[face.y].z);
@@ -223,6 +226,24 @@ int GUITest(){
         terrain_color_buffer_data.push_back( float( ( color >> 24 ) & 0xFF ) / 255.0);
         terrain_color_buffer_data.push_back( float( ( color >> 16 ) & 0xFF ) / 255.0);
         terrain_color_buffer_data.push_back( float( ( color >> 8  ) & 0xFF ) / 255.0);
+
+        glm::vec3 vertex1 = {vertices[face.x].x,vertices[face.x].y,vertices[face.x].z};
+        glm::vec3 vertex2 = {vertices[face.y].x,vertices[face.y].y,vertices[face.y].z};
+        glm::vec3 vertex3 = {vertices[face.z].x,vertices[face.z].y,vertices[face.z].z};
+
+        glm::vec3 normal = glm::cross(vertex1 - vertex2, vertex1 - vertex3);
+
+        //int normal_packed = static_cast<uint8_t>(normal.x < 0) << 2 | static_cast<uint8_t>(normal.y < 0) << 1 | static_cast<uint8_t>(normal.z < 0) | static_cast<uint8_t>(normal.x > 0) << 5 | static_cast<uint8_t>(normal.y > 0) << 4 | static_cast<uint8_t>(normal.z > 0) << 3;
+
+        //if (normal_packed == 0){
+        //    std::cout << (int) normal_packed << std::endl;
+        //}
+
+        //std::cout << normal_packed << std::endl;
+
+        terrain_buffer_normal_data.push_back(normal.x); terrain_buffer_normal_data.push_back(normal.y); terrain_buffer_normal_data.push_back(normal.z);
+        terrain_buffer_normal_data.push_back(normal.x); terrain_buffer_normal_data.push_back(normal.y); terrain_buffer_normal_data.push_back(normal.z);
+        terrain_buffer_normal_data.push_back(normal.x); terrain_buffer_normal_data.push_back(normal.y); terrain_buffer_normal_data.push_back(normal.z);
     }
 
     //std::vector<GLfloat> terrain_color_buffer_data(terrain_buffer_data.size(), .5);
@@ -245,6 +266,12 @@ int GUITest(){
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain_color_buffer_data.size(),
                 &terrain_color_buffer_data[0], GL_STATIC_DRAW);
 
+    GLuint normalbuffer;
+    glGenBuffers(1, &normalbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain_buffer_normal_data.size(),
+                &terrain_buffer_normal_data[0], GL_STATIC_DRAW);
+
     do {
         // Clear the screen. It's not mentioned before Tutorial 02, but it can
         // cause flickering, so it's there nonetheless.
@@ -263,6 +290,7 @@ int GUITest(){
         // Send our transformation to the currently bound shader,
         // in the "MVP" uniform
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+        glUniform3f(SunlightID, 1,2,6 );
 
         // 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -279,6 +307,17 @@ int GUITest(){
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
         glVertexAttribPointer(1,  // attribute. No particular reason for 1, but
+                                  // must match the layout in the shader.
+                              3,         // size
+                              GL_FLOAT,  // type
+                              GL_FALSE,  // normalized?
+                              0,         // stride
+                              (void*)0   // array buffer offset
+        );
+        // 3rd attribute buffer : normals
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+        glVertexAttribPointer(2,  // attribute. No particular reason for 2, but
                                   // must match the layout in the shader.
                               3,         // size
                               GL_FLOAT,  // type
