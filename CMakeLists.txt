@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 #add_compile_options(-municode)
 
-
 # set the project name
 project(Fun_Game)
 
@@ -11,6 +10,8 @@ project(Fun_Game)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(glfw3 3.3 REQUIRED)
+find_package(glm REQUIRED)
 
 # add the executable
 file(GLOB SOURCES "src/**/*.cpp")
@@ -20,6 +21,7 @@ add_executable(Fun_Game ${SOURCES} ${SOURCES2})
 target_link_libraries(Fun_Game glfw3)
 target_link_libraries(Fun_Game OpenGL::GL)
 target_link_libraries(Fun_Game GLEW::GLEW)
+target_link_libraries(Fun_Game glm)
 
 # add_library(ImportVoxel "external/CSDLL.hpp" ${SOURCES} ${SOURCES2})
 
