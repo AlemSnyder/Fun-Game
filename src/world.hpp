@@ -41,4 +41,4 @@ private:
 
 };
 
-#endif
+#endif // __WORLD_HPP__

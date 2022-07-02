@@ -549,13 +549,13 @@ int main( int argc, char** argv ){
     else if (std::string(argv[1]) == "--SaveTest"){
         return savetest();
     }
-    else if (std::string(argv[1]) == "--pathfinder"){
+    else if (std::string(argv[1]) == "--PathFinder"){
         return pathfindertest();
     }
     else if (std::string(argv[1]) == "--GUITest"){
         return GUITest();
     }
-    else if (std::string(argv[1]) == "--worldgen") {
+    else if (std::string(argv[1]) == "--WorldGen") {
       return test1();
     }
 }

@@ -14,7 +14,7 @@
         "id": 9,
         "colors": [
             {
-                "name":"brown",
+                "name":"brown_1",
                 "hex": "330f00FF"
             },
             {
@@ -47,19 +47,19 @@
         },
         "colors": [
             {
-                "name":"Grass *4",
+                "name":"Grass +4",
                 "hex":"747724FF"
             },
             {
-                "name":"Grass *3",
+                "name":"Grass +3",
                 "hex":"849846FF"
             },
             {
-                "name":"Grass *2",
+                "name":"Grass +2",
                 "hex":"86A349FF"
             },
             {
-                "name":"Grass *1",
+                "name":"Grass +1",
                 "hex":"82AF4AFF"
             },
             {
@@ -94,19 +94,19 @@
         "id": 6,
         "colors": [
             {
-                "name":"my_house",
+                "name":"Stone_1",
                 "hex": "253456FF"
             },
             {
-                "name":"path",
+                "name":"Stone_2",
                 "hex": "255634FF"
             },
             {
-                "name":"path",
+                "name":"Stone_3",
                 "hex": "4d4f4fFF"
             },
             {
-                "name":"path",
+                "name":"Stone_4",
                 "hex": "a2a3a3FF"
             }
         ],

@@ -33,5 +33,4 @@ public:
     bool operator>(const NodeGroup& other) const;
 };
 
-
 #endif
