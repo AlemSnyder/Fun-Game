@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <map>
 
+#include <glm/glm.hpp>
+
 //#include "json/json.h"
 //#include <json.h>
 
@@ -157,9 +159,6 @@ public:
     
     std::vector<Chunk> get_chunks(){ return chunks; }
 
-    std::list<int> ExportVoxelsAsList() const;
-    void Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces);
-
     NodeGroup* get_NodeGroup(int xyz);
     //NodeGroup* get_NodeGroup(Tile t);
     //NodeGroup* get_NodeGroup(Tile* t);
@@ -169,9 +168,9 @@ public:
     void add_NodeGroup(NodeGroup* NG);
     void remove_NodeGroup(NodeGroup* NG);
 
-    inline int get_X_MAX() { return X_MAX; };
-    inline int get_Y_MAX() { return Y_MAX; };
-    inline int get_Z_MAX() { return Z_MAX; };
+    inline int get_X_MAX() const { return X_MAX; };
+    inline int get_Y_MAX() const { return Y_MAX; };
+    inline int get_Z_MAX() const { return Z_MAX; };
 
     inline bool in_range(int x, int y, int z) const {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
@@ -179,10 +178,6 @@ public:
 
     // return true when the point is within the bounds of terrain
     bool is_valid_pos(int x, int y, int z) const {
-        return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
-                z >= 0);
-    }
-    inline bool in_range(int x, int y, int z) {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
                 z >= 0);
     }
