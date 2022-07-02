@@ -190,7 +190,7 @@ int GUITest( void ) {
 	glBindVertexArray(VertexArrayID);
 
 	// Create and compile our GLSL program from the shaders
-	GLuint depthProgramID = LoadShaders( "../src/GUI/DepthRTT.vertexshader", "../src/GUI/DepthRTT.fragmentshader" );
+	GLuint depthProgramID = LoadShaders( "../src/GUI/DepthRTT.vert", "../src/GUI/DepthRTT.frag" );
 
 	// Get a handle for our "MVP" uniform
 	GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
@@ -282,12 +282,12 @@ int GUITest( void ) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
 
 	// Create and compile our GLSL program from the shaders
-	GLuint quad_programID = LoadShaders( "../src/GUI/Passthrough.vertexshader", "../src/GUI/SimpleTexture.fragmentshader" );
+	GLuint quad_programID = LoadShaders( "../src/GUI/Passthrough.vert", "../src/GUI/SimpleTexture.frag" );
 	GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders( "../src/GUI/ShadowMapping.vertexshader", "../src/GUI/ShadowMapping.fragmentshader" );
+	GLuint programID = LoadShaders( "../src/GUI/ShadowMapping.vert", "../src/GUI/ShadowMapping.frag" );
 
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
