@@ -80,10 +80,7 @@ void computeMatricesFromInputs(GLFWwindow* window) {
 
 
 	// speed boost
-	if (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS){
-		speed_boost = 10.0f;
-	}
-	else {speed_boost = 1.0f;}
+	speed_boost = glfwGetKey( window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 10.0f : 1.0f;
 	// Move forward
 	if (glfwGetKey( window, GLFW_KEY_R ) == GLFW_PRESS){
 		position += direction * deltaTime * speed * speed_boost;

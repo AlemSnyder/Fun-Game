@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include <stdint.h>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -128,30 +129,31 @@ int GUITest( void ) {
 	// Initialise GLFW
 	if( !glfwInit() )
 	{
-		fprintf( stderr, "Failed to initialize GLFW\n" );
+		std::cerr << "Failed to initialize GLFW!" << std::endl;
 		getchar();
 		return -1;
 	}
 
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_SAMPLES, 4);// anti-alsing of 4
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // set Major 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // and Minor version
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// somehow turning on core profiling
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "Tutorial 16 - Shadows", NULL, NULL);
+    // We would expect width and height to be 1024 and 768
+    int windowWidth = 1024;
+    int windowHeight = 768;
+	window = glfwCreateWindow( windowWidth, windowHeight, "Mane Window", NULL, NULL);
 	if( window == NULL ){
-		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials." << std::endl;
 		getchar();
 		glfwTerminate();
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
     
-    // We would expect width and height to be 1024 and 768
-    int windowWidth = 1024;
-    int windowHeight = 768;
+
     // But on MacOS X with a retina screen it'll be 1024*2 and 768*2, so we get the actual framebuffer size:
     glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
 
@@ -204,7 +206,7 @@ int GUITest( void ) {
 	//std::vector<glm::vec3> normals;
 	//bool res = loadOBJ("../src/GUI/room_thickwalls.obj", vertices, uvs, normals);
 
-	std::vector<unsigned short> indices;
+	std::vector<std::uint16_t> indices;
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec3> indexed_colors;
 	std::vector<glm::vec3> indexed_normals;
@@ -305,7 +307,7 @@ int GUITest( void ) {
 
 	
 	do{
-
+		// denerat shadow depth map
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0,0,1024*4,1024*4); // Render on the whole framebuffer, complete from the lower left corner to the upper right
@@ -382,7 +384,7 @@ int GUITest( void ) {
 		glUseProgram(programID);
 
 		// Compute the MVP matrix from keyboard and mouse input
-		computeMatricesFromInputs();
+		computeMatricesFromInputs(window);
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
 		//ViewMatrix = glm::lookAt(glm::vec3(14,6,4), glm::vec3(0,1,0), glm::vec3(0,1,0));
