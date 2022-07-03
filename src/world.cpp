@@ -35,7 +35,7 @@ void World::init_materials(Json::Value material_data){
     }
 }
 
-void World::Get_Mesh_Greedy(std::vector<unsigned short> &indices,
+void World::get_mesh_greedy(std::vector<unsigned short> &indices,
 					std::vector<glm::vec3> &indexed_vertices,
 					std::vector<glm::vec3> &indexed_uvs,
 					std::vector<glm::vec3> &indexed_normals) const {

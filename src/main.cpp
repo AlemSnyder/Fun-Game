@@ -121,7 +121,7 @@ void get_vertex_data(std::vector<unsigned short> &indices,
 	const char * path = "../SavedTerrain/pathfinder_input_1.qb";
     World world(path);
 
-	world.Get_Mesh_Greedy(indices, indexed_vertices, indexed_colors, indexed_normals);
+	world.get_mesh_greedy(indices, indexed_vertices, indexed_colors, indexed_normals);
 	}
 
 int GUITest( void ) {

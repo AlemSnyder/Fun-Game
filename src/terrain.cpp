@@ -574,7 +574,7 @@ void Terrain::add_all_adjacent(int xyz) {
 }
 
 
-std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type) {
+std::set<Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, int8_t type) {
     std::set<Tile *> out;
 
     for (std::pair<Tile *, OnePath> t : tile->get_adjacent()) {
@@ -584,7 +584,7 @@ std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type
     }
     return out;
 };
-const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type) const {
+const std::set<const Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, int8_t type) const {
     std::set<const Tile *> out;
 
     for (const std::pair<Tile *,OnePath> t : tile->get_adjacent()) {
@@ -595,7 +595,7 @@ const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile,
     return out;
 };
 
-std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::map<int, Node<const Tile>> & nodes, int8_t type) const {
+std::set<Node<const Tile> *> Terrain::get_adjacent_nodes(const Node<const Tile> *const node, std::map<int, Node<const Tile>> & nodes, int8_t type) const {
     std::set<Node<const Tile> *> out;
 
     for (const std::pair<const Tile *,OnePath> t : node->get_tile()->get_adjacent()) {
@@ -613,7 +613,7 @@ std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> 
     return out;
 };
 
-NodeGroup* Terrain::get_NodeGroup(int xyz){
+NodeGroup* Terrain::get_node_group(int xyz){
     try{
         return tile_to_group.at(xyz);
     }
@@ -621,20 +621,20 @@ NodeGroup* Terrain::get_NodeGroup(int xyz){
         return nullptr;
     }
 }
-NodeGroup* Terrain::get_NodeGroup(const Tile t){
-    return get_NodeGroup(pos(t));
+NodeGroup* Terrain::get_node_group(const Tile t){
+    return get_node_group(pos(t));
 }
-NodeGroup* Terrain::get_NodeGroup(const Tile * t){
-    return get_NodeGroup(pos(t));
+NodeGroup* Terrain::get_node_group(const Tile * t){
+    return get_node_group(pos(t));
 }
 
-void Terrain::add_NodeGroup(NodeGroup* NG){
+void Terrain::add_node_group(NodeGroup* NG){
     for (Tile* t : NG->get_tiles()){
         tile_to_group[pos(t)] = NG;
     }
 }
 
-void Terrain::remove_NodeGroup(NodeGroup* NG){
+void Terrain::remove_node_group(NodeGroup* NG){
     for (Tile* t : NG->get_tiles()){
         tile_to_group.erase(pos(t));
     }
@@ -724,7 +724,7 @@ std::vector<Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_
     std::map<int, Node<const Tile>> nodes;
     const Tile *goal = get_tile(goal_->get_x(), goal_->get_y(), goal_z);
 
-    std::vector<const NodeGroup*> Node_path = get_path_Astar(get_NodeGroup(goal), get_NodeGroup(get_tile(start->get_x(), start->get_y(), start_z)));
+    std::vector<const NodeGroup*> Node_path = get_path_Astar(get_node_group(goal), get_node_group(get_tile(start->get_x(), start->get_y(), start_z)));
 
     if (Node_path.empty()){
         return std::vector<Tile*>();
@@ -755,7 +755,7 @@ std::vector<Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_
 
         openNodes.pop();  // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::set<Node<const Tile>*> adjacent_nodes = get_adjacent_Nodes(choice, nodes, 31);
+        std::set<Node<const Tile>*> adjacent_nodes = get_adjacent_nodes(choice, nodes, 31);
         for (Node<const Tile> *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
@@ -846,7 +846,7 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
 }
 
 // Same as get_path_Astar, but compare is changed, a set is used, and not a point
-std::vector<const NodeGroup *> Terrain::get_path_BreadthFirst(const NodeGroup *start, const std::set<const NodeGroup *> goal) {
+std::vector<const NodeGroup *> Terrain::get_path_breadth_first(const NodeGroup *start, const std::set<const NodeGroup *> goal) {
 
     // this is used to choose the next node
     auto compare = [](Node<const NodeGroup> *lhs, Node<const NodeGroup> *rhs) {
@@ -893,7 +893,7 @@ std::vector<const NodeGroup *> Terrain::get_path_BreadthFirst(const NodeGroup *s
     return std::vector<const NodeGroup *>();
 }
 
-std::vector<Tile *> Terrain::get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal_) {
+std::vector<Tile *> Terrain::get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal_) {
     // int start_time = std::time(nullptr);// what time is it for testing
     auto millisec_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
@@ -913,18 +913,18 @@ std::vector<Tile *> Terrain::get_path_BreadthFirst(const Tile *start, const std:
             goal_z = get_Z_solid(g->get_x(), g->get_y()) + 1;
             if (goal_z !=0){
                 NoGoal = false;
-                GoalNodes.insert(get_NodeGroup(get_tile(g->get_x(), g->get_y(), goal_z)));
+                GoalNodes.insert(get_node_group(get_tile(g->get_x(), g->get_y(), goal_z)));
             }
         } else{
             NoGoal = false;
-            GoalNodes.insert(get_NodeGroup(g));
+            GoalNodes.insert(get_node_group(g));
         }
     }
     if (NoGoal) {  // in this case there is no valid z position at one of the given x, y positions
         return std::vector<Tile *>();
     }
 
-    std::vector<const NodeGroup *> Node_path = get_path_BreadthFirst(get_NodeGroup(start), GoalNodes);
+    std::vector<const NodeGroup *> Node_path = get_path_breadth_first(get_node_group(start), GoalNodes);
     if (Node_path.empty()){
         return std::vector<Tile*>();
     }
@@ -973,7 +973,7 @@ std::vector<Tile *> Terrain::get_path_BreadthFirst(const Tile *start, const std:
 
         openNodes.pop();  // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::set<Node<const Tile>*> adjacent_nodes = get_adjacent_Nodes(choice, nodes, 31);
+        std::set<Node<const Tile>*> adjacent_nodes = get_adjacent_nodes(choice, nodes, 31);
         for (Node<const Tile> *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
@@ -1032,7 +1032,7 @@ uint32_t Terrain::compress_color(uint8_t v[4]){
 int Terrain::qb_save_debug(const char * path, const std::map<int, const Material>* materials) {
     int x=0;
     for (Chunk & c : get_chunks()){
-        for ( NodeGroup& NG : c.get_NodeGroups() ){
+        for ( NodeGroup& NG : c.get_node_groups() ){
             for (Tile* t : NG.get_tiles()){
                 set_tile_material(t, &materials->at(7), x%4);
             }

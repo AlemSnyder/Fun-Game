@@ -11,11 +11,6 @@
 #include <stdint.h>
 #include <map>
 
-#include <glm/glm.hpp>
-
-//#include "json/json.h"
-//#include <json.h>
-
 #include "node.hpp"
 #include "onepath.hpp"
 #include "tile.hpp"
@@ -151,21 +146,19 @@ public:
     Terrain(const char * path, const std::map<int, const Material> * material);
 
     // TODO plack block
-    std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
-    const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
-    //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
-    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
+    std::set<Tile *> get_adjacent_tiles(const Tile *const tile, int8_t type);
+    const std::set<const Tile *> get_adjacent_tiles(const Tile *const tile, int8_t type) const;
+    //std::set<Node<const Tile> *> get_adjacent_nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
+    std::set<Node<const Tile> *> get_adjacent_nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
     
     std::vector<Chunk> get_chunks(){ return chunks; }
 
-    NodeGroup* get_NodeGroup(int xyz);
-    //NodeGroup* get_NodeGroup(Tile t);
-    //NodeGroup* get_NodeGroup(Tile* t);
-    NodeGroup* get_NodeGroup(const Tile t);
-    NodeGroup* get_NodeGroup(const Tile* t);
+    NodeGroup* get_node_group(int xyz);
+    NodeGroup* get_node_group(const Tile t);
+    NodeGroup* get_node_group(const Tile* t);
 
-    void add_NodeGroup(NodeGroup* NG);
-    void remove_NodeGroup(NodeGroup* NG);
+    void add_node_group(NodeGroup* NG);
+    void remove_node_group(NodeGroup* NG);
 
     inline int get_X_MAX() const { return X_MAX; };
     inline int get_Y_MAX() const { return Y_MAX; };
@@ -251,8 +244,8 @@ public:
     std::vector<Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
-    std::vector<Tile *> get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal);
-    std::vector<const NodeGroup *> get_path_BreadthFirst(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
+    std::vector<Tile *> get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal);
+    std::vector<const NodeGroup *> get_path_breadth_first(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
 
     void init_chunks();
     void stitch_chunks_at(Tile* tile);
