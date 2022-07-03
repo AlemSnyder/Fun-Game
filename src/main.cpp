@@ -20,6 +20,9 @@ GLFWwindow* window;
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
 
+#define INITIAL_WINDOW_WIDTH 1024
+#define INITIAL_WINDOW_HEIGHT 768
+
 int test1(){
 
     //const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation";
@@ -142,9 +145,9 @@ int GUITest( void ) {
 
 	// Open a window and create its OpenGL context
     // We would expect width and height to be 1024 and 768
-    int windowWidth = 1024;
-    int windowHeight = 768;
-	window = glfwCreateWindow( windowWidth, windowHeight, "Mane Window", NULL, NULL);
+    int windowFrameWidth = 1024;
+    int windowFrameHeight = 768;
+	window = glfwCreateWindow( windowFrameWidth, windowFrameHeight, "Mane Window", NULL, NULL);
 	if( window == NULL ){
 		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials." << std::endl;
 		getchar();
@@ -155,7 +158,7 @@ int GUITest( void ) {
     
 
     // But on MacOS X with a retina screen it'll be 1024*2 and 768*2, so we get the actual framebuffer size:
-    glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+    glfwGetFramebufferSize(window, &windowFrameWidth, &windowFrameHeight);
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
@@ -173,7 +176,7 @@ int GUITest( void ) {
     
     // Set the mouse at the center of the screen
     glfwPollEvents();
-    glfwSetCursorPos(window, 1024/2, 768/2);
+    glfwSetCursorPos(window, windowFrameWidth/2, windowFrameHeight/2);
 
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -296,7 +299,7 @@ int GUITest( void ) {
 
 	// Get a handle for our "MVP" uniform
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
+	GLuint view_matrix_ID = glGetUniformLocation(programID, "V");
 	GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
 	GLuint DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
 	GLuint ShadowMapID = glGetUniformLocation(programID, "shadowMap");
@@ -372,7 +375,7 @@ int GUITest( void ) {
 
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0,0,windowWidth,windowHeight); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+		glViewport(0,0,windowFrameWidth,windowFrameHeight); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
@@ -384,12 +387,11 @@ int GUITest( void ) {
 		glUseProgram(programID);
 
 		// Compute the MVP matrix from keyboard and mouse input
-		computeMatricesFromInputs(window);
-		glm::mat4 ProjectionMatrix = getProjectionMatrix();
-		glm::mat4 ViewMatrix = getViewMatrix();
-		//ViewMatrix = glm::lookAt(glm::vec3(14,6,4), glm::vec3(0,1,0), glm::vec3(0,1,0));
+		controls::computeMatricesFromInputs(window);
+		glm::mat4 projection_matrix = controls::get_projection_matrix();
+		glm::mat4 view_matrix = controls::get_view_matrix();
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glm::mat4 MVP = projection_matrix * view_matrix * ModelMatrix;
 		
 		glm::mat4 biasMatrix(
 			0.5, 0.0, 0.0, 0.0, 
@@ -404,7 +406,7 @@ int GUITest( void ) {
 		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+		glUniformMatrix4fv(view_matrix_ID, 1, GL_FALSE, &view_matrix[0][0]);
 		glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
 
 		glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);

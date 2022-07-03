@@ -1,4 +1,4 @@
-// Two-dimensional value noise based on Hugo Elias's description:
+// Two-dimensional value noise_ based on Hugo Elias's description:
 //   http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
 
 #ifndef __NOISE_HPP__
@@ -10,19 +10,19 @@
 
 class NoiseGenerator {
 public:
-    NoiseGenerator(int numOctaves_, double persistence_, int primeIndex_){
-        numOctaves = numOctaves_;
-        persistence = persistence_;
-        primeIndex = primeIndex_ % maxPrimeIndex;
+    NoiseGenerator(int numOctaves, double persistence, int primeIndex){
+        num_octaves_ = numOctaves;
+        persistence_ = persistence;
+        primeIndex_ = primeIndex % maxPrimeIndex;
     }
 
-    double GetValueNoise(double x, double y);
+    double getValueNoise(double x, double y);
 
 private:
 
-    int numOctaves = 7;
-    double persistence = 0.5;
-    int primeIndex = 0;
+    int num_octaves_ = 7;
+    double persistence_ = 0.5;
+    int primeIndex_ = 0;
 
     int primes[maxPrimeIndex][3] = {
     { 995615039, 600173719, 701464987 },
@@ -37,10 +37,10 @@ private:
     { 997169939, 842027887, 423882827 }
     };
 
-    double noise(int i, int x, int y);
-    double SmoothedNoise(int i, int x, int y);
-    double Interpolate(double a, double b, double x); // cosine interpolation
-    double InterpolatedNoise(int i, double x, double y);
+    double noise_(int i, int x, int y);
+    double smoothed_noise_(int i, int x, int y);
+    double interpolate_(double a, double b, double x); // cosine interpolation
+    double interpolated_noise_(int i, double x, double y);
 };
 
 #endif

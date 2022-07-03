@@ -16,8 +16,6 @@
 #include <cstring>
 #include <fstream>
 
-#include <glm/glm.hpp>
-
 #include "json/json.h"
 #include "node.hpp"
 #include "tile.hpp"
@@ -459,7 +457,7 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
 
     for (unsigned int i = 0; i < out.size(); i++){
         auto [x,y,z] = sop(i,size_x,size_y,1);
-        auto p = ng.GetValueNoise((double)x*spacing,(double)y*spacing);
+        auto p = ng.getValueNoise((double)x*spacing,(double)y*spacing);
         out[i] = (int) (pow((p+1),2)*range);
     }
     for (unsigned int i = 0; i < size_x; i++){
