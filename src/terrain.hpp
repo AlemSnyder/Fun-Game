@@ -59,7 +59,7 @@ private:
     Node<Tile> new_node(Node<Tile> &parent, Tile &tile, Tile goal);
     void add_node(std::set<Node<Tile>> &nodelist, Node<Tile> &node);
     template<class T>
-    void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) {
+    void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) const {
         out.push_back(node->get_tile());
         if (start == node->get_tile()) {
             return;
@@ -153,7 +153,8 @@ public:
     std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
     const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
     //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
-    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
+    template<class T>
+    std::set<Node<const T> *> get_adjacent_Nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, int8_t type) const;
     
     std::vector<Chunk> get_chunks(){ return chunks; }
 
@@ -254,11 +255,28 @@ public:
     int qb_save(const char * path)const;
     int qb_read(const char * path, const std::map<uint32_t, std::pair<const Material*, uint8_t>> *materials);
 
-    std::vector<Tile *> get_path_Astar(const Tile *start, const Tile *goal);
+    std::vector<const Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
-    std::vector<Tile *> get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal);
+    std::vector<const Tile *> get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal);
     std::vector<const NodeGroup *> get_path_BreadthFirst(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
+
+    template<class T>
+    std::vector<const T *> get_path(const T * start,
+                                        const std::set<const T*> goal,
+                                        const std::set<const T*> search_through,
+                                        std::function<bool(Node<const T>*, Node<const T>*)> compare) const;
+    template<class T>
+    void get_path_T1(const T * start);
+
+    template<class T>
+    void get_path_T2(const std::set<const T*> goal);
+
+    template<class T>
+    void get_path_T3(const std::set<const T*> search_through);
+
+    template<class T>
+    void get_path_T4(std::function<bool(Node<const T>*, Node<const T>*)> compare) const;
 
     void init_chunks();
     void stitch_chunks_at(Tile* tile);

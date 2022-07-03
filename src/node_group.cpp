@@ -23,6 +23,9 @@ void NodeGroup::remove_adjacent(NodeGroup* NG){
 const std::set<NodeGroup *> NodeGroup::get_adjacent() const{
     return adjacent;
 }
+std::set<const NodeGroup *> NodeGroup::get_adjacent_clear(int path_type)const{
+    return std::set<const NodeGroup *>(adjacent.begin(), adjacent.end());;
+}
 
 std::set<NodeGroup *> NodeGroup::merge_groups(NodeGroup other){
     center_x = (center_x*tiles.size() + other.center_x*other.tiles.size())/(tiles.size()+other.tiles.size());

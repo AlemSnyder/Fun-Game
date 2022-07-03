@@ -1,6 +1,8 @@
 #ifndef __NODE_HPP__
 #define __NODE_HPP__
 
+#include <set>
+
 template<class T>
 class Node {  // Used to find paths.
 public:
@@ -12,12 +14,15 @@ public:
     void explore(Node<T> *parent, float gc);
     void explore();  //
 
-    inline bool operator<(const Node<T> *other) {
-        return this->fCost < other->fCost;
-    }
-    inline bool operator>(const Node<T> *other) {
-        return this->fCost > other->fCost;
-    }
+    // if nodes are compared it might be breadth first or A*
+    // in these cases the comparison is determined if the nodes is used for
+    // A* or for breadth first.
+    //inline bool operator<(const Node<T> *other) {
+    //    return this->fCost < other->fCost;
+    //}
+    //inline bool operator>(const Node<T> *other) {
+    //    return this->fCost > other->fCost;
+    //}
     // Setters
 
     // Getters
@@ -29,6 +34,7 @@ public:
     float get_hCost() const { return hCost; } //Minimum time from this node to end
     float get_fCost() const { return fCost; } //Minimum time from start to end through this node
     bool is_explored() const { return explored; }
+    std::set<const T*> get_adjacent(int path_type) const; //The nodes that can be reached from this one
 
 private:
     T *tile;
@@ -39,53 +45,5 @@ private:
     float fCost; //Minimum time from start to end through this node
     bool explored;
 };
-
-template<class T>
-void Node<T>::init(T *tile_, float hc) {
-    parent_node = NULL;
-    tile = tile_;
-    gCost = 0;
-    hCost = hc;
-    fCost = gCost + hCost;
-    explored = false;
-}
-
-template<class T>
-Node<T>::Node(T *tile_, float hc) { init(tile_, hc); }
-
-template<class T>
-Node<T>::Node() {
-    parent_node = NULL;
-    tile = nullptr;
-    gCost = 0;
-    hCost = 0;
-    fCost = gCost + hCost;
-    explored = false;
-}
-
-template<class T>
-void Node<T>::explore(Node<T> *parent, float gc) {
-    if (explored){
-        if (gCost > gc){
-            this->parent_node = parent;
-            gCost = gc;
-            fCost = gCost + hCost;
-        }
-    } else{
-        this->parent_node = parent;
-        gCost = gc;
-        fCost = gCost + hCost;
-        explored = true;
-    }
-}
-
-template<class T>
-void Node<T>::explore() {  // explore for start
-    this->parent_node = NULL;
-    gCost = 0;  // distance from start should be 0 when this is the start
-    hCost = 0;
-    fCost = gCost + hCost;
-    explored = true;
-}
 
 #endif

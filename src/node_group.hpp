@@ -20,6 +20,7 @@ public:
     const std::set<const Tile*, TilePCompare> get_tiles() const;
     std::set<Tile*, TilePCompare> get_tiles();
     void add_adjacent(NodeGroup* NG);
+    std::set<const NodeGroup *> get_adjacent_clear(int path_type) const;
     void remove_adjacent(NodeGroup* NG);
     const std::set<NodeGroup *> get_adjacent() const;
     bool adjacent_to(const NodeGroup* other) const;

@@ -98,7 +98,7 @@ int pathfindertest(){
 
     std::pair<Tile *, Tile *> start_end = world.terrain_main.get_start_end_test();
 
-    std::vector<Tile*> tile_path = world.terrain_main.get_path_Astar(start_end.first, start_end.second);
+    std::vector<const Tile*> tile_path = world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
     if (tile_path.size() == 0){
         std::cout << "no path" << std::endl;
@@ -106,7 +106,7 @@ int pathfindertest(){
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
-        (*it)->set_material(&world.get_materials()->at(6),1);
+        world.terrain_main.get_tile(world.terrain_main.pos((*it)->sop()))->set_material(&world.get_materials()->at(6),1);
     }
 
     world.terrain_main.qb_save(save_path);

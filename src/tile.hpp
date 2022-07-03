@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <unordered_set>
+#include <set>
 #include <map>
 #include <stdint.h>
 #include "TerrainGeneration/material.hpp"
@@ -70,7 +71,8 @@ public:
 
     std::map<Tile *,OnePath, TilePCompare> & get_adjacent() { return adjacent; };
     const std::map<Tile *,OnePath, TilePCompare> & get_adjacent() const { return adjacent; };
-
+    std::set<Tile *> get_adjacent_clear(int path_type);
+    std::set<const Tile *> get_adjacent_clear(int path_type) const;
 
     inline bool is_solid() const { return solid; }
     bool operator==(const Tile other) const {

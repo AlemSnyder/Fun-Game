@@ -120,6 +120,34 @@ void Tile::clear_adjacent(){
     adjacent.clear();
 }
 
+std::set<const Tile *> Tile::get_adjacent_clear(int path_type)const {
+    std::set<const Tile *> out;
+
+    for (const std::pair<const Tile *,OnePath> t : adjacent) {
+        if (t.second.compatible(path_type) && t.second.is_open()) {
+            try{
+                out.insert(t.first);
+            }
+            catch(const std::exception& e){ }
+        }
+    }
+    return out;
+};
+
+std::set<Tile *> Tile::get_adjacent_clear(int path_type) {
+    std::set< Tile *> out;
+
+    for (std::pair<Tile *,OnePath> t : adjacent) {
+        if (t.second.compatible(path_type) && t.second.is_open()) {
+            try{
+                out.insert(t.first);
+            }
+            catch(std::exception& e){ }
+        }
+    }
+    return out;
+};
+
 bool Tile::operator> (const Tile other) const{
     if (get_x() < other.get_x()){
         return true;
