@@ -1,6 +1,9 @@
+// Include math constants
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 // Include GLFW
 #include <GLFW/glfw3.h>
-extern GLFWwindow* window; // The "extern" keyword here is to access the variable "window" declared in tutorialXXX.cpp. This is a hack to keep the tutorials simple. Please avoid this.
 
 // Include GLM
 #include <glm/glm.hpp>
@@ -34,7 +37,7 @@ float mouseSpeed = 0.005f;
 
 
 
-void computeMatricesFromInputs(){
+void computeMatricesFromInputs(GLFWwindow* window) {
 
 	// glfwGetTime is called only once, the first time this function is called
 	static double lastTime = glfwGetTime();
@@ -67,8 +70,8 @@ void computeMatricesFromInputs(){
 	
 	// Right vector
 	glm::vec3 screen_right = glm::vec3(
-		sin(horizontalAngle - 3.14f/2.0f),
-		cos(horizontalAngle - 3.14f/2.0f),
+		sin(horizontalAngle - M_PI/2.0f),
+		cos(horizontalAngle - M_PI/2.0f),
 		0
 	);
 	
