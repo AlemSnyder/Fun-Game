@@ -113,6 +113,41 @@
         "solid": true,
         "speed": 1
     },
+    "Brick": {
+        "id": 5,
+        "colors": [
+            {
+                "name":"Blue_1",
+                "hex": "293E6DFF"
+            },
+            {
+                "name":"Blue_2",
+                "hex": "284C86FF"
+            },
+            {
+                "name":"Blue_3",
+                "hex": "264678FF"
+            },
+            {
+                "name":"Blue_4",
+                "hex": "3968A2FF"
+            },
+            {
+                "name":"Red_1",
+                "hex": "BB4B39FF"
+            },
+            {
+                "name":"Red_2",
+                "hex": "B32D17FF"
+            },
+            {
+                "name":"Red_3",
+                "hex": "CD6A5DFF"
+            }
+        ],
+        "solid": true,
+        "speed": 1
+    },
     "Rock": {
         "id": 2,
         "colors": [
