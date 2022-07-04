@@ -109,11 +109,9 @@ std::array<int, 3> Tile::sop() const {
 
 void Tile::add_adjacent(Tile *tile, OnePath type) {
     adjacent.insert(std::make_pair(tile, type));
-    return ;
 }
 void Tile::add_adjacent(std::map<Tile *, OnePath>::iterator it, Tile *tile, OnePath type) {
     adjacent.insert(it, std::make_pair(tile, type));
-    return ;
 }
 
 void Tile::clear_adjacent(){

@@ -23,8 +23,8 @@ private:
     int z; // The z index
     // does this need to know where it is?
     uint8_t color_id; // The tile color is determined by this and the material type.
-    uint8_t grow_data_high; // Determined by the horizontal manhatian distance from a wall
-    uint8_t grow_data_low; // Determined by the horizontal manhatian distance from a edge
+    uint8_t grow_data_high; // Determined by the horizontal manhattan distance from a wall
+    uint8_t grow_data_low; // Determined by the horizontal manhattan distance from a edge
     bool grow_sink; // not used
     bool grow_source; // not used
     bool grass; // Does this tile obey grass color Gradient?

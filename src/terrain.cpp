@@ -346,7 +346,7 @@ void Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end
     }
 }
 inline void Terrain::stamp_tile_region(Tile_Stamp tStamp, int x, int y){ // unpack Tile_Stamp
-    stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2, tStamp.y_start + y*Area_size + Area_size/2 , tStamp.z_start, tStamp.x_end + x*Area_size + Area_size/2, tStamp.y_end + y*Area_size + Area_size/2, tStamp.z_end, tStamp.mat, tStamp.elements_canstamp, tStamp.color_id);
+    stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2, tStamp.y_start + y*Area_size + Area_size/2 , tStamp.z_start, tStamp.x_end + x*Area_size + Area_size/2, tStamp.y_end + y*Area_size + Area_size/2, tStamp.z_end, tStamp.mat, tStamp.elements_can_stamp, tStamp.color_id);
 }
 
 void Terrain::init_grass(){
@@ -691,7 +691,7 @@ void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::
     }
 }
 
-std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type) {
+std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t type) {
     std::set<Tile *> out;
 
     for (std::pair<Tile *, OnePath> t : tile->get_adjacent()) {
@@ -701,7 +701,7 @@ std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type
     }
     return out;
 };
-const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, int8_t type) const {
+std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t type) const {
     std::set<const Tile *> out;
 
     for (const std::pair<Tile *,OnePath> t : tile->get_adjacent()) {
@@ -712,21 +712,10 @@ const std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile,
     return out;
 };
 
-/*std::set<Node<const Tile> *> Terrain::get_adjacent_Nodes(const Node<const Tile> *const node, std::vector<Node<const Tile> *> & nodes, int8_t type) const {
-    std::set<Node<const Tile> *> out;
 
-    for (const std::pair<Tile *, OnePath> t : node->get_tile()->get_adjacent()) {
-        if (t.second.compatible(type) && t.second.is_open()) {
-            if (!can_stand(t.first, 3, 1)) {
-                std::cout << "eek!\n";
-            }
-            out.insert(nodes[pos(t.first)]);
-        }
-    }
-    return out;
-};*/
+
 template<class T>
-std::set<Node<const T> *> Terrain::get_adjacent_Nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> & nodes, int8_t path_type) const {
+std::set<Node<const T> *> Terrain::get_adjacent_Nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> & nodes, uint8_t path_type) const {
     std::set<Node<const T> *> out;
     for (const T* t : node->get_adjacent(path_type)) {
         try{
@@ -746,12 +735,7 @@ NodeGroup* Terrain::get_NodeGroup(int xyz){
         return nullptr;
     }
 }
-//inline NodeGroup* Terrain::get_NodeGroup(Tile t){
-//    return get_NodeGroup(pos(t));
-//}
-//inline NodeGroup* Terrain::get_NodeGroup(Tile* t){
-//    return get_NodeGroup(pos(t));
-//}
+
 NodeGroup* Terrain::get_NodeGroup(const Tile t){
     return get_NodeGroup(pos(t));
 }
@@ -760,31 +744,16 @@ NodeGroup* Terrain::get_NodeGroup(const Tile * t){
 }
 
 void Terrain::add_NodeGroup(NodeGroup* NG){
-    for (Tile* t : NG->get_tiles()){
+    for (const Tile* t : NG->get_tiles()){
         tile_to_group[pos(t)] = NG;
     }
 }
 
 void Terrain::remove_NodeGroup(NodeGroup* NG){
-    for (Tile* t : NG->get_tiles()){
+    for (const Tile* t : NG->get_tiles()){
         tile_to_group.erase(pos(t));
     }
 }
-
-//void Terrain::stitch_chunks_at(Tile* tile){
-//    if (can_stand_1(tile)){
-//        NodeGroup* NG = get_NodeGroup(tile);
-//        if (NG != nullptr){
-//            for (Tile* other : get_adjacent_Tiles(tile, 31)){
-//                NodeGroup* NG_other = get_NodeGroup(other);
-//                if (NG_other != nullptr){
-//                    NG->add_adjacent(NG_other);
-//                    NG_other->add_adjacent(NG);
-//                }
-//            }
-//        }
-//    }
-//}
 
 void Terrain::test() {
     Tile *goal = this->get_tile(2, 2, 2);
@@ -1050,8 +1019,8 @@ int Terrain::qb_save_debug(const char * path, const std::map<int, const Material
     int x=0;
     for (Chunk & c : get_chunks()){
         for ( NodeGroup& NG : c.get_NodeGroups() ){
-            for (Tile* t : NG.get_tiles()){
-                set_tile_material(t, &materials->at(7), x%4);
+            for (const Tile* t : NG.get_tiles()){
+                set_tile_material(get_tile(pos(t->sop())), &materials->at(7), x%4);
             }
             x++;
         }

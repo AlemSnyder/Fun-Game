@@ -39,11 +39,11 @@ public:
             int E = data[current_region]["Can_Stamp"][i]["E"].asInt();
             if (data[current_region]["Can_Stamp"][i]["C"].isInt()){
                 int C = data[current_region]["Can_Stamp"][i]["C"].asInt();
-                out.elements_canstamp.insert(std::make_pair(E, C));
+                out.elements_can_stamp.insert(std::make_pair(E, C));
             }
             else if (data[current_region]["Can_Stamp"][i]["C"].asBool()){
                 for (unsigned int C = 0; C < (*materials).at(E).color.size(); C++){
-                    out.elements_canstamp.insert(std::make_pair(E, C));
+                    out.elements_can_stamp.insert(std::make_pair(E, C));
                 }
             }
         }

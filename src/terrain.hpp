@@ -57,7 +57,7 @@ private:
     void add_all_adjacent(int xyz);
 
     Node<Tile> new_node(Node<Tile> &parent, Tile &tile, Tile goal);
-    void add_node(std::set<Node<Tile>> &nodelist, Node<Tile> &node);
+    void add_node(std::set<Node<Tile>> &node_list, Node<Tile> &node);
     template<class T>
     void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) const {
         out.push_back(node->get_tile());
@@ -150,11 +150,11 @@ public:
     Terrain(const char * path, const std::map<int, const Material> * material);
 
     // TODO plack block
-    std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
-    const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
-    //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
+    std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, uint8_t type);
+    std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, uint8_t type) const;
+    //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, uint8_t type) const;
     template<class T>
-    std::set<Node<const T> *> get_adjacent_Nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, int8_t type) const;
+    std::set<Node<const T> *> get_adjacent_Nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, uint8_t type) const;
     
     std::vector<Chunk> get_chunks(){ return chunks; }
 
@@ -234,8 +234,8 @@ public:
 
     void stamp_tile_region(Tile_Stamp tStamp, int x ,int y);
     void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, uint8_t color_id);
-    //void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<int> elements_canstamp);
-    void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<std::pair<int, int>> elements_canstamp, uint8_t color_id);
+    //void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<int> elements_can_stamp);
+    void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<std::pair<int, int>> elements_can_stamp, uint8_t color_id);
 
     void init_grass();
     void grow_all_grass_high();
