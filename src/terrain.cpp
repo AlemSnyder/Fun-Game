@@ -1076,7 +1076,7 @@ int Terrain::qb_save(const char * path)const{
     int tiles_written = 0;
     for (x = 0; x < X_MAX; x++)
     for (z = 0; z < Z_MAX; z++)
-    for (y = 0; y < Y_MAX; y++) {
+    for (y = Y_MAX - 1; y >= 0; y--) {
         sop[0] = x;
         sop[1] = y;
         sop[2] = z;
@@ -1141,7 +1141,7 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     int tiles_read = 0;
     for (x = 0; x < X_MAX; x++)
     for (z = 0; z < Z_MAX; z++)
-    for (y = 0; y < Y_MAX; y++) {
+    for (y = Y_MAX - 1; y >= 0; y--) {
         fread(v, sizeof(uint8_t), 4, file);// read the color to v
         if (v[3] == 0){ // if the qb voxel is transparent.
             auto mat_color = materials->at(0); // set the materials to air
