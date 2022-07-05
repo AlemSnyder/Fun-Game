@@ -25,9 +25,9 @@ public:
     const T *get_tile() const { return tile; }
     Node<T> *get_parent() { return parent_node; }
 
-    float get_gCost() const { return gCost; }
-    float get_hCost() const { return hCost; }
-    float get_fCost() const { return fCost; }
+    float get_gCost() const { return gCost; } //Time from start to this node
+    float get_hCost() const { return hCost; } //Minimum time from this node to end
+    float get_fCost() const { return fCost; } //Minimum time from start to end through this node
     bool is_explored() const { return explored; }
 
 private:

@@ -11,9 +11,6 @@
 #include <stdint.h>
 #include <map>
 
-//#include "json/json.h"
-//#include <json.h>
-
 #include "node.hpp"
 #include "onepath.hpp"
 #include "tile.hpp"
@@ -55,7 +52,7 @@ private:
 
     void add_all_adjacent(int xyz);
 
-    Node<Tile> new_node(Node<Tile> &parrent, Tile &tile, Tile goal);
+    Node<Tile> new_node(Node<Tile> &parent, Tile &tile, Tile goal);
     void add_node(std::set<Node<Tile>> &nodelist, Node<Tile> &node);
     template<class T>
     void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) {
@@ -149,25 +146,23 @@ public:
     Terrain(const char * path, const std::map<int, const Material> * material);
 
     // TODO plack block
-    std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type);
-    const std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, int8_t type) const;
-    //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
-    std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
+    std::set<Tile *> get_adjacent_tiles(const Tile *const tile, int8_t type);
+    const std::set<const Tile *> get_adjacent_tiles(const Tile *const tile, int8_t type) const;
+    //std::set<Node<const Tile> *> get_adjacent_nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
+    std::set<Node<const Tile> *> get_adjacent_nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
     
     std::vector<Chunk> get_chunks(){ return chunks; }
 
-    NodeGroup* get_NodeGroup(int xyz);
-    //NodeGroup* get_NodeGroup(Tile t);
-    //NodeGroup* get_NodeGroup(Tile* t);
-    NodeGroup* get_NodeGroup(const Tile t);
-    NodeGroup* get_NodeGroup(const Tile* t);
+    NodeGroup* get_node_group(int xyz);
+    NodeGroup* get_node_group(const Tile t);
+    NodeGroup* get_node_group(const Tile* t);
 
-    void add_NodeGroup(NodeGroup* NG);
-    void remove_NodeGroup(NodeGroup* NG);
+    void add_node_group(NodeGroup* NG);
+    void remove_node_group(NodeGroup* NG);
 
-    inline int get_X_MAX() { return X_MAX; };
-    inline int get_Y_MAX() { return Y_MAX; };
-    inline int get_Z_MAX() { return Z_MAX; };
+    inline int get_X_MAX() const { return X_MAX; };
+    inline int get_Y_MAX() const { return Y_MAX; };
+    inline int get_Z_MAX() const { return Z_MAX; };
 
     inline bool in_range(int x, int y, int z) const {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
@@ -175,10 +170,6 @@ public:
 
     // return true when the point is within the bounds of terrain
     bool is_valid_pos(int x, int y, int z) const {
-        return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
-                z >= 0);
-    }
-    inline bool in_range(int x, int y, int z) {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
                 z >= 0);
     }
@@ -252,6 +243,9 @@ public:
 
     std::vector<Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
+
+    std::vector<Tile *> get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal);
+    std::vector<const NodeGroup *> get_path_breadth_first(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
 
     void init_chunks();
     void stitch_chunks_at(Tile* tile);

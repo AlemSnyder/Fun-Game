@@ -15,11 +15,27 @@
         "colors": [
             {
                 "name":"brown",
-                "hex": "242424FF"
+                "hex": "330f00FF"
             },
             {
                 "name":"brown_2",
-                "hex": "234567FF"
+                "hex": "472001FF"
+            },
+            {
+                "name":"brown_3",
+                "hex": "663f23FF"
+            },
+            {
+                "name":"brown_4",
+                "hex": "E1DDDAFF"
+            },
+            {
+                "name":"brown_5",
+                "hex": "ad9582FF"
+            },
+            {
+                "name":"brown_6",
+                "hex": "351E0AFF"
             }
         ],
         "solid": true,
@@ -88,6 +104,49 @@
             {
                 "name":"path",
                 "hex": "255634FF"
+            },
+            {
+                "name":"path",
+                "hex": "4d4f4fFF"
+            },
+            {
+                "name":"path",
+                "hex": "a2a3a3FF"
+            }
+        ],
+        "solid": true,
+        "speed": 1
+    },
+    "Brick": {
+        "id": 5,
+        "colors": [
+            {
+                "name":"Blue_1",
+                "hex": "293E6DFF"
+            },
+            {
+                "name":"Blue_2",
+                "hex": "284C86FF"
+            },
+            {
+                "name":"Blue_3",
+                "hex": "264678FF"
+            },
+            {
+                "name":"Blue_4",
+                "hex": "3968A2FF"
+            },
+            {
+                "name":"Red_1",
+                "hex": "BB4B39FF"
+            },
+            {
+                "name":"Red_2",
+                "hex": "B32D17FF"
+            },
+            {
+                "name":"Red_3",
+                "hex": "CD6A5DFF"
             }
         ],
         "solid": true,
@@ -101,27 +160,27 @@
                 "hex":"B8B0ABFF"
             },
             {
-                "name":"mountain1",
+                "name":"mountain2",
                 "hex":"756D6AFF"
             },
             {
-                "name":"mountain1",
+                "name":"mountain3",
                 "hex":"605955FF"
             },
             {
-                "name":"mountain1",
+                "name":"mountain4",
                 "hex":"473F3BFF"
             },
             {
-                "name":"mountain1",
+                "name":"mountain5",
                 "hex":"362F2CFF"
             },
             {
-                "name":"mountain1",
+                "name":"mountain6",
                 "hex":"2C2724FF"
             },
             {
-                "name":"mountain1",
+                "name":"mountain7",
                 "hex":"211E1CFF"
             }
         ],

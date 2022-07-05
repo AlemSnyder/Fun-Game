@@ -17,7 +17,7 @@ public:
     std::set<NodeGroup *> merge_groups(NodeGroup other);
     //~NodeGroup();
     void update();
-    const std::set<Tile*, TilePCompare> get_tiles() const;
+    const std::set<const Tile*, TilePCompare> get_tiles() const;
     std::set<Tile*, TilePCompare> get_tiles();
     void add_adjacent(NodeGroup* NG);
     void remove_adjacent(NodeGroup* NG);
@@ -32,6 +32,5 @@ public:
     bool operator==(const NodeGroup& other) const;
     bool operator>(const NodeGroup& other) const;
 };
-
 
 #endif

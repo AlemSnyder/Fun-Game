@@ -14,9 +14,9 @@
 
 class Land_Generator{
 public:
-    Land_Generator( const std::map<int, const Material> *materials_, Json::Value data_){
+    Land_Generator( const std::map<int, const Material> *materials_, Json::Value data){
         materials = materials_;
-        data = data_;
+        data_ = data;
         current_region = 0;
         current_sub_region = 0;
     };
@@ -29,25 +29,25 @@ public:
 
 
     bool empty()const{
-        return (current_region >= data.size());
+        return (current_region >= data_.size());
     }
     Tile_Stamp get_this_stamp(){
         Tile_Stamp out;
-        out.mat = &(*materials).at((int)data[current_region]["Material_id"].asInt());
-        out.color_id = data[current_region]["Color_id"].asInt();
-        for (Json::Value::ArrayIndex i = 0; i < data[current_region]["Can_Stamp"].size(); i++ ){
-            int E = data[current_region]["Can_Stamp"][i]["E"].asInt();
-            if (data[current_region]["Can_Stamp"][i]["C"].isInt()){
-                int C = data[current_region]["Can_Stamp"][i]["C"].asInt();
+        out.mat = &(*materials).at((int)data_[current_region]["Material_id"].asInt());
+        out.color_id = data_[current_region]["Color_id"].asInt();
+        for (Json::Value::ArrayIndex i = 0; i < data_[current_region]["Can_Stamp"].size(); i++ ){
+            int E = data_[current_region]["Can_Stamp"][i]["E"].asInt();
+            if (data_[current_region]["Can_Stamp"][i]["C"].isInt()){
+                int C = data_[current_region]["Can_Stamp"][i]["C"].asInt();
                 out.elements_canstamp.insert(std::make_pair(E, C));
             }
-            else if (data[current_region]["Can_Stamp"][i]["C"].asBool()){
+            else if (data_[current_region]["Can_Stamp"][i]["C"].asBool()){
                 for (unsigned int C = 0; C < (*materials).at(E).color.size(); C++){
                     out.elements_canstamp.insert(std::make_pair(E, C));
                 }
             }
         }
-        std::string type = data[current_region]["Type"].asCString();
+        std::string type = data_[current_region]["Type"].asCString();
 
         if (type == "Positions" ){
             From_Positions(current_region, current_sub_region, out);
@@ -61,7 +61,7 @@ public:
     
     void operator++(){
         current_sub_region++;
-        if (current_sub_region == get_num_stamps(data[current_region])){
+        if (current_sub_region == get_num_stamps(data_[current_region])){
             current_region++;
             current_sub_region=0;
         }
@@ -75,7 +75,7 @@ private:
     unsigned int current_region;
     unsigned int current_sub_region;
 
-    Json::Value data; //this should be a structure
+    Json::Value data_; //this should be a structure
     const std::map<int, const Material> *materials;
 
     unsigned int static get_num_stamps(Json::Value biome){
@@ -119,8 +119,8 @@ private:
     }
 
     void From_Radius(int cr, int csr, Tile_Stamp & ts){
-        int radius = data[cr]["Radius"]["radius"].asInt();
-        double distance = (double) (8 * radius) / data[cr]["Radius"]["number"].asInt() * csr;
+        int radius = data_[cr]["Radius"]["radius"].asInt();
+        double distance = (double) (8 * radius) / data_[cr]["Radius"]["number"].asInt() * csr;
         int side = (int) distance / 2 / radius;
         int x_center, y_center;
 
@@ -140,11 +140,11 @@ private:
             throw std::invalid_argument("Something went horribly wrong");
         }
 
-        int DC = data[cr]["Radius"]["DC"].asInt();
+        int DC = data_[cr]["Radius"]["DC"].asInt();
         int center [2][2] = {{x_center-DC, y_center-DC}, 
                              {x_center+DC, y_center+DC} };
 
-        std::array<int, 6> volume = get_volume(center, data[cr]["Size"].asInt(), data[cr]["Hight"].asInt(), data[cr]["DS"].asInt(), data[cr]["DH"].asInt());
+        std::array<int, 6> volume = get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(), data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
 
         ts.x_start = volume[0];
         ts.y_start = volume[1];
@@ -154,14 +154,14 @@ private:
         ts.z_end = volume[5];
     }
     void From_Grid(int cr, int csr, Tile_Stamp &ts){
-        int x_center = (1 + 2 * (csr % data[cr]["Grid"]["number"].asInt())) * ( data[cr]["Grid"]["radius"].asInt() / data[cr]["Grid"]["number"].asInt()) - data[cr]["Grid"]["radius"].asInt();
-        int y_center = (1 + 2 * (csr / data[cr]["Grid"]["number"].asInt())) * ( data[cr]["Grid"]["radius"].asInt() / data[cr]["Grid"]["number"].asInt()) - data[cr]["Grid"]["radius"].asInt();
-        int DC = data[cr]["Grid"]["DC"].asInt();
+        int x_center = (1 + 2 * (csr % data_[cr]["Grid"]["number"].asInt())) * ( data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt()) - data_[cr]["Grid"]["radius"].asInt();
+        int y_center = (1 + 2 * (csr / data_[cr]["Grid"]["number"].asInt())) * ( data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt()) - data_[cr]["Grid"]["radius"].asInt();
+        int DC = data_[cr]["Grid"]["DC"].asInt();
 
         int center [2][2] = {{x_center-DC, y_center-DC}, 
                              {x_center+DC, y_center+DC} };
 
-        std::array<int, 6> volume = get_volume(center, data[cr]["Size"].asInt(), data[cr]["Hight"].asInt(), data[cr]["DS"].asInt(), data[cr]["DH"].asInt());
+        std::array<int, 6> volume = get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(), data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
 
         ts.x_start = volume[0];
         ts.y_start = volume[1];
@@ -172,11 +172,11 @@ private:
 
     }
     void From_Positions(int cr, int csr, Tile_Stamp &ts){
-        Json::Value xy_positions = data[cr]["Positions"][csr];
+        Json::Value xy_positions = data_[cr]["Positions"][csr];
         int center [2][2] = {{xy_positions[0].asInt(), xy_positions[1].asInt()}, 
                              {xy_positions[0].asInt(), xy_positions[1].asInt()} };
 
-        std::array<int, 6> volume = get_volume(center, data[cr]["Size"].asInt(), data[cr]["Hight"].asInt(), data[cr]["DS"].asInt(), data[cr]["DH"].asInt());
+        std::array<int, 6> volume = get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(), data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
 
         ts.x_start = volume[0];
         ts.y_start = volume[1];
