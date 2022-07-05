@@ -110,7 +110,7 @@ int pathfindertest(){
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
-        (*it)->set_material(&world.get_materials()->at(6),1);
+		world.terrain_main.get_tile(world.terrain_main.pos((*it)->sop()))->set_material(&world.get_materials()->at(6),1);
     }
 
     world.terrain_main.qb_save(save_path);

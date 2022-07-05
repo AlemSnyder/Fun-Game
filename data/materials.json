@@ -14,7 +14,7 @@
         "id": 9,
         "colors": [
             {
-                "name":"brown_1",
+                "name":"brown",
                 "hex": "330f00FF"
             },
             {
@@ -27,11 +27,15 @@
             },
             {
                 "name":"brown_4",
-                "hex": "dbd0c8FF"
+                "hex": "E1DDDAFF"
             },
             {
                 "name":"brown_5",
                 "hex": "ad9582FF"
+            },
+            {
+                "name":"brown_6",
+                "hex": "351E0AFF"
             }
         ],
         "solid": true,
@@ -47,19 +51,19 @@
         },
         "colors": [
             {
-                "name":"Grass +4",
+                "name":"Grass *4",
                 "hex":"747724FF"
             },
             {
-                "name":"Grass +3",
+                "name":"Grass *3",
                 "hex":"849846FF"
             },
             {
-                "name":"Grass +2",
+                "name":"Grass *2",
                 "hex":"86A349FF"
             },
             {
-                "name":"Grass +1",
+                "name":"Grass *1",
                 "hex":"82AF4AFF"
             },
             {
@@ -94,20 +98,55 @@
         "id": 6,
         "colors": [
             {
-                "name":"Stone_1",
+                "name":"my_house",
                 "hex": "253456FF"
             },
             {
-                "name":"Stone_2",
+                "name":"path",
                 "hex": "255634FF"
             },
             {
-                "name":"Stone_3",
+                "name":"path",
                 "hex": "4d4f4fFF"
             },
             {
-                "name":"Stone_4",
+                "name":"path",
                 "hex": "a2a3a3FF"
+            }
+        ],
+        "solid": true,
+        "speed": 1
+    },
+    "Brick": {
+        "id": 5,
+        "colors": [
+            {
+                "name":"Blue_1",
+                "hex": "293E6DFF"
+            },
+            {
+                "name":"Blue_2",
+                "hex": "284C86FF"
+            },
+            {
+                "name":"Blue_3",
+                "hex": "264678FF"
+            },
+            {
+                "name":"Blue_4",
+                "hex": "3968A2FF"
+            },
+            {
+                "name":"Red_1",
+                "hex": "BB4B39FF"
+            },
+            {
+                "name":"Red_2",
+                "hex": "B32D17FF"
+            },
+            {
+                "name":"Red_3",
+                "hex": "CD6A5DFF"
             }
         ],
         "solid": true,
