@@ -33,7 +33,7 @@ std::map<NodeGroup *, OnePath> NodeGroup::get_adjacent(){
 std::set<const NodeGroup *> NodeGroup::get_adjacent_clear(int path_type)const{
     std::set<const NodeGroup *> out;
 
-    for (const std::pair<const NodeGroup *,OnePath> t : adjacent) {
+    for (const std::pair<NodeGroup *,OnePath> t : adjacent) {
         if (t.second.compatible(path_type) && t.second.is_open()) {
             try{
                 out.insert(t.first);

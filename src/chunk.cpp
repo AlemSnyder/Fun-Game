@@ -28,12 +28,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
         }
     }
 
-    //            for (auto path : tile_main->get_adjacent()){//ter->get_adjacent_Tiles(tile_main, 31)){
-    //            if (path && path.second.is_open()){  //if (NodeGroup* to_add = ter->get_NodeGroup(tile_adjacent)){
-    //                NG.add_adjacent(ter->get_NodeGroup(path.first));
-
-    std::list<NodeGroup>::iterator it = NodeGroups.begin(); //it != NodeGroups.end(); it++
-    //auto test = NodeGroups[4];
+    std::list<NodeGroup>::iterator it = NodeGroups.begin();
     while (it != NodeGroups.end()){
 
         // to merge = get_adjacent()
@@ -44,21 +39,8 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
             }
         }
         R_merge((*it),to_merge);
-        //auto other = (it)->get_adjacent().begin();
-
-        //std::list<NodeGroup*>::const_iterator it_next = (it)->get_adjacent().begin();//it != NodeGroups.end(); it++
-        //mergeNodeGroup((*it), *(it_next)));
         it++;
     }
-
-    //for (std::list<NodeGroup>::iterator it = NodeGroups.begin(); it != NodeGroups.end(); it++){
-    //    while ((it)->get_adjacent().size()>0){
-    //        NodeGroup* other = (it)->get_adjacent().back();
-    //        if (contains_nodeGroup(other)){
-    //            mergeNodeGroup((*it), *other);
-    //        }
-    //    }
-    //}
 }
 
 void Chunk::R_merge(NodeGroup &G1, std::set<NodeGroup*>& to_merge){
@@ -66,10 +48,8 @@ void Chunk::R_merge(NodeGroup &G1, std::set<NodeGroup*>& to_merge){
         return;
     }
     std::set<NodeGroup*> new_merge;
-    //for (NodeGroup* G2 : to_merge){
     while(to_merge.size()>0){
         auto G2 = to_merge.begin();
-        //auto test = **(G2);
         std::map<NodeGroup *, OnePath> to_add = G1.merge_groups(**(G2));
         delNodeGroup(**G2);
         new_merge.erase(*G2);
@@ -95,10 +75,15 @@ std::list<NodeGroup>& Chunk::get_NodeGroups() {
     return NodeGroups;
 }
 
+void Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const{
+    for (auto it = NodeGroups.begin(); it != NodeGroups.end(); it++){
+        out.insert(&*it);
+    }
+}
+
 void Chunk::insert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes, std::array<float, 3> sop) const {
     for (const NodeGroup& NG : NodeGroups){
-        auto temp = std::make_pair(&NG, Node(&NG, Terrain::get_H_cost( NG.sop(), sop) ));
-        nodes.insert(temp);
+        nodes.insert(std::make_pair(&NG, Node(&NG, Terrain::get_H_cost( NG.sop(), sop) )));
     }
 }
 

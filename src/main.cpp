@@ -91,21 +91,27 @@ void save_all_terrain(Json::Value biome_data){
 }
 
 int pathfindertest(){
-    const char * path = "../SavedTerrain/pathfinder_input.qb";
+    const char * path = "../SavedTerrain/pathfinder_input_old.qb";
     const char * save_path = "../SavedTerrain/pathfinder_output.qb";
 
     World world(path);
 
     std::pair<Tile *, Tile *> start_end = world.terrain_main.get_start_end_test();
 
+    std::cout << "Start: " << start_end.first->get_x() << ", " << start_end.first->get_y() << ", " << start_end.first->get_z() << std::endl;
+    std::cout << "End:   " << start_end.second->get_x() << ", " << start_end.second->get_y() << ", " << start_end.second->get_z() << std::endl;
+
     std::vector<const Tile*> tile_path = world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
+    std::cout << "    " << (int) tile_path.size() << std::endl;
     if (tile_path.size() == 0){
         std::cout << "no path" << std::endl;
-        world.terrain_main.qb_save_debug(path, world.get_materials());
+        world.terrain_main.qb_save_debug(save_path, world.get_materials());
+        return 1;
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it){
+        std::cout << "    " << (*it)->get_x() << " " << (*it)->get_y() << " " <<(*it)->get_z() << std::endl;
         world.terrain_main.get_tile(world.terrain_main.pos((*it)->sop()))->set_material(&world.get_materials()->at(6),1);
     }
 
@@ -300,7 +306,8 @@ int GUITest(){
 int main( int argc, char** argv ){
     if (argc == 1){
         return pathfindertest();
-    } else if (std::string(argv[1]) == "--TerrainTypes"){
+    } 
+    else if (std::string(argv[1]) == "--TerrainTypes"){
         Json::Value biome_data;
         std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
         biome_file >> biome_data;

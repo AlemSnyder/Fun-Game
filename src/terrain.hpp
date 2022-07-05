@@ -255,6 +255,8 @@ public:
     int qb_save(const char * path)const;
     int qb_read(const char * path, const std::map<uint32_t, std::pair<const Material*, uint8_t>> *materials);
 
+    std::set<const NodeGroup*> get_all_node_groups() const ;
+
     std::vector<const Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 

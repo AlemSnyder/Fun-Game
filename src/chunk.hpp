@@ -27,6 +27,7 @@ public:
     Chunk(int bx, int by, int bz, Terrain * ter_);
     const std::list<NodeGroup>& get_NodeGroups() const;
     std::list<NodeGroup>& get_NodeGroups();
+    void add_nodes_to(std::set<const NodeGroup*>& out) const;
     void insert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes, std::array<float, 3> sop) const ;
     //~Chunk();
 };

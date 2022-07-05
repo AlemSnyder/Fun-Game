@@ -454,16 +454,15 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
     return out;
 }
 
-//can_stand_1 is broken somehow
+// this should be the same as can_stand(x,y,z,1,1)
 bool Terrain::can_stand_1(int x, int y, int z) const {
-    // this should be the same as can_stand(x,y,z,1,1)
     if (x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 1) {
         return false;
     }
     return (!get_tile(x, y, z)->is_solid() && get_tile(x, y, z - 1)->is_solid());
 }
+// this should be the same as can_stand(x,y,z,1,1)
 bool Terrain::can_stand_1(int xyz) const {
-    // this should be the same as can_stand(x,y,z,1,1)
     if (xyz % Z_MAX < 1 || xyz >= X_MAX*Y_MAX*Z_MAX) {
         return false;
     }
@@ -848,9 +847,18 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     return int8_t(type + 8 * open);
 }
 
-std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start, const Tile *goal_) {
+std::set<const NodeGroup*> Terrain::get_all_node_groups() const {
+    std::set<const NodeGroup*> out;
+    for (size_t c = 0; c < chunks.size(); c++){
+        chunks[c].add_nodes_to(out);
+    }
+    return out;
+}
 
-    NodeGroup * GoalNodes;
+std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile *goal_) {
+
+    NodeGroup * GoalNode;
+    NodeGroup * StartNode;
     int goal_z = goal_->get_z();
     Tile* goal;
     if (!can_stand_1(goal_)) {
@@ -863,14 +871,28 @@ std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start, const Tile 
     } else{
         return std::vector<const Tile *>();
     }
-    try {
-        GoalNodes = get_NodeGroup(goal);
+    int start_z = start_->get_z();
+    Tile* start;
+    if (!can_stand_1(start_)) {
+        start_z = get_Z_solid(start_->get_x(), start_->get_y()) + 1;
+        if (start_z !=0){
+            start = get_tile(start_->get_x(), start_->get_y(), start_z);
+        } else {
+            return std::vector<const Tile *>();
+        }
+    } else{
+        return std::vector<const Tile *>();
     }
-    catch(const std::exception& e) { return std::vector<const Tile *>(); }
-    //get_NodeGroup(g);
+    if ((GoalNode = get_NodeGroup(goal))) { }
+    else { return std::vector<const Tile *>(); }
+    if ((StartNode = get_NodeGroup(start))) { }
+    else { return std::vector<const Tile *>(); }
 
-    std::vector<const NodeGroup *> Node_path = get_path_Astar(get_NodeGroup(start), GoalNodes);
-
+    std::vector<const NodeGroup *> Node_path = get_path_Astar(StartNode, GoalNode);
+    // if Node_path is empty then return
+    if (Node_path.size() == 0){
+        return std::vector<const Tile *>();
+    }
     std::set<const Tile*> search_through;
     for (const NodeGroup* NG : Node_path){
         search_through.insert(NG->get_tiles().begin(), NG->get_tiles().end());
@@ -890,7 +912,7 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
         return lhs->get_fCost() > rhs->get_fCost();
     };
 
-    const std::set<const NodeGroup*> search_through; //! XXX this is not defined
+    std::set<const NodeGroup*> search_through = get_all_node_groups();
 
     return get_path(start, {goal}, search_through, compare);
 }
@@ -901,7 +923,7 @@ std::vector<const NodeGroup *> Terrain::get_path_BreadthFirst(const NodeGroup *s
         return lhs->get_gCost() > rhs->get_gCost();
     };
 
-    const std::set<const NodeGroup*> search_through; //! XXX this is not defined
+    std::set<const NodeGroup*> search_through = get_all_node_groups();
 
     return get_path(start, goal, search_through, compare);
 }
