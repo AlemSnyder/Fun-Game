@@ -69,8 +69,8 @@ public:
     void add_adjacent(std::map<Tile *, OnePath>::iterator it, Tile *tile, OnePath type);
     void clear_adjacent();
 
-    std::map<Tile *,OnePath, TilePCompare> & get_adjacent() { return adjacent; };
-    const std::map<Tile *,OnePath, TilePCompare> & get_adjacent() const { return adjacent; };
+    std::map<Tile *,OnePath, TilePCompare> & get_adjacent_map() { return adjacent; };
+    const std::map<Tile *,OnePath, TilePCompare> & get_adjacent_map() const { return adjacent; };
     std::set<Tile *> get_adjacent_clear(int path_type);
     std::set<const Tile *> get_adjacent_clear(int path_type) const;
 

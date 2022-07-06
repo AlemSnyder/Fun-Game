@@ -24,8 +24,8 @@ public:
     void add_adjacent(NodeGroup* NG, OnePath path_type);
     std::set<const NodeGroup *> get_adjacent_clear(int path_type) const;
     void remove_adjacent(NodeGroup* NG);
-    std::map<NodeGroup *, OnePath> get_adjacent();
-    std::map<const NodeGroup *, OnePath> get_adjacent() const;
+    std::map<NodeGroup *, OnePath> get_adjacent_map();
+    std::map<const NodeGroup *, OnePath> get_adjacent_map() const;
     bool adjacent_to(NodeGroup* other) const;
 
     float get_center_x();

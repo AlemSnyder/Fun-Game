@@ -454,40 +454,13 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
 }
 
 // this should be the same as can_stand(x,y,z,1,1)
-bool Terrain::can_stand_1(int x, int y, int z) const {
-    if (x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 1) {
-        return false;
-    }
-    return (!get_tile(x, y, z)->is_solid() && get_tile(x, y, z - 1)->is_solid());
-}
-// this should be the same as can_stand(x,y,z,1,1)
 bool Terrain::can_stand_1(int xyz) const {
     if (xyz % Z_MAX < 1 || xyz >= X_MAX*Y_MAX*Z_MAX) {
         return false;
     }
     return (!get_tile(xyz)->is_solid() && get_tile(xyz-1)->is_solid());
 }
-bool Terrain::can_stand_1(const Tile tile) const {
-    if (tile.get_z() <= 0) {
-        return false;
-    }
-    return ((!tile.is_solid()) &&
-            this->get_tile(tile.get_x(), tile.get_y(), tile.get_z() - 1)
-                ->is_solid());  // can_stand_1(tile.x, tile.y, tile.z);
-}
-inline bool Terrain::can_stand_1(const Tile *tile) const {
-    return can_stand_1(tile->get_x(), tile->get_y(), tile->get_z());
-}
-// can_stand should take an int xyz
-/*
-template<class T>
-float Terrain::get_H_cost(const T tile1, const T tile2) const {
-    return get_H_cost(tile1.sop(), tile2.sop());
-}
-template<class T>
-float Terrain::get_H_cost(const T *tile1, const T *tile2) const{
-    return get_H_cost(tile1->sop(), tile2->sop());
-}  // might need to define this for other orientations*/
+
 float Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
@@ -680,7 +653,7 @@ void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::
 std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t type) {
     std::set<Tile *> out;
 
-    for (std::pair<Tile *, OnePath> t : tile->get_adjacent()) {
+    for (std::pair<Tile *, OnePath> t : tile->get_adjacent_map()) {
         if (t.second.compatible(type)) {
             out.insert(t.first);
         }
@@ -691,7 +664,7 @@ std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t typ
 std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t type) const {
     std::set<const Tile *> out;
 
-    for (const std::pair<Tile *,OnePath> t : tile->get_adjacent()) {
+    for (const std::pair<Tile *,OnePath> t : tile->get_adjacent_map()) {
         if (t.second.compatible(type)) {
             out.insert(t.first);
         }
@@ -845,8 +818,8 @@ std::set<const NodeGroup*> Terrain::get_all_node_groups() const {
 
 std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile *goal_) {
 
-    NodeGroup * GoalNode;
-    NodeGroup * StartNode;
+    NodeGroup * goal_node;
+    NodeGroup * start_node;
     int goal_z = goal_->get_z();
     Tile* goal;
     if (!can_stand_1(goal_)) {
@@ -871,12 +844,12 @@ std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile
     } else{
         return std::vector<const Tile *>();
     }
-    if ((GoalNode = get_NodeGroup(goal))) { }
+    if ((goal_node = get_NodeGroup(goal))) { }
     else { return std::vector<const Tile *>(); }
-    if ((StartNode = get_NodeGroup(start))) { }
+    if ((start_node = get_NodeGroup(start))) { }
     else { return std::vector<const Tile *>(); }
 
-    std::vector<const NodeGroup *> Node_path = get_path_Astar(StartNode, GoalNode);
+    std::vector<const NodeGroup *> Node_path = get_path_Astar(start_node, goal_node);
     // if Node_path is empty then return
     if (Node_path.size() == 0){
         return std::vector<const Tile *>();
@@ -919,7 +892,7 @@ std::vector<const NodeGroup *> Terrain::get_path_BreadthFirst(const NodeGroup *s
 
 std::vector<const Tile *> Terrain::get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal_) {
 
-    std::set<const NodeGroup *> GoalNodes;
+    std::set<const NodeGroup *> goal_nodes;
     bool NoGoal = true;
     for (const Tile* g : goal_){
         int goal_z = g->get_z();
@@ -927,18 +900,18 @@ std::vector<const Tile *> Terrain::get_path_BreadthFirst(const Tile *start, cons
             goal_z = get_Z_solid(g->get_x(), g->get_y()) + 1;
             if (goal_z !=0){
                 NoGoal = false;
-                GoalNodes.insert(get_NodeGroup(get_tile(g->get_x(), g->get_y(), goal_z)));
+                goal_nodes.insert(get_NodeGroup(get_tile(g->get_x(), g->get_y(), goal_z)));
             }
         } else{
             NoGoal = false;
-            GoalNodes.insert(get_NodeGroup(g));
+            goal_nodes.insert(get_NodeGroup(g));
         }
     }
     if (NoGoal) {  // in this case there is no valid z position at one of the given x, y positions
         return std::vector<const Tile *>();
     }
 
-    std::vector<const NodeGroup *> Node_path = get_path_BreadthFirst(get_NodeGroup(start), GoalNodes);
+    std::vector<const NodeGroup *> Node_path = get_path_BreadthFirst(get_NodeGroup(start), goal_nodes);
 
     const Tile * goal = nullptr;
     const NodeGroup* end = Node_path.back();

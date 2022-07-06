@@ -22,11 +22,11 @@ void NodeGroup::remove_adjacent(NodeGroup* NG){
     }
 }
 
-std::map<const NodeGroup *, OnePath> NodeGroup::get_adjacent() const{
+std::map<const NodeGroup *, OnePath> NodeGroup::get_adjacent_map() const{
     return std::map<const NodeGroup *, OnePath>(adjacent.begin(), adjacent.end());
 }
 
-std::map<NodeGroup *, OnePath> NodeGroup::get_adjacent(){
+std::map<NodeGroup *, OnePath> NodeGroup::get_adjacent_map(){
     return adjacent;
 }
 
@@ -52,12 +52,12 @@ std::map<NodeGroup *, OnePath> NodeGroup::merge_groups(NodeGroup other){
     for (const Tile* t : other.get_tiles()){
         tiles.insert(t);
     }
-    for (auto adj: other.get_adjacent()){
+    for (auto adj: other.get_adjacent_map()){
         add_adjacent(adj.first, adj.second);
     }
     path_type_ = path_type_ & other.path_type_; // restriction of the ways to get between tiles
 
-    return other.get_adjacent();
+    return other.get_adjacent_map();
 }
 
 float NodeGroup::get_center_x(){ return center_x; }

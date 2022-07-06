@@ -219,7 +219,7 @@ public:
     }
     bool can_stand_1(int xyz) const; // this is fast, and used for looping
     // Ok so basically when running through a loop the cpu moves a large chunk of memory that is close together
-    // into the cpu's memory, then this function iterates over memory space, rather then coordinate space.\
+    // into the cpu's memory, then this function iterates over memory space, rather then coordinate space.
     // someone should test if this is true.
 
     inline bool can_stand_1(const Tile tile) const{

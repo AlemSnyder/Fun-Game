@@ -31,9 +31,9 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
     auto it = node_groups.begin();
     while (it != node_groups.end()){
 
-        // to merge = get_adjacent()
+        // to merge = get_adjacent_map()
         std::set<NodeGroup*> to_merge;
-        for (auto other : (it)->get_adjacent()){ //! remove nullprt?
+        for (auto other : (it)->get_adjacent_map()){ //! remove nullprt?
             if (other.first != nullptr && contains_nodeGroup(other.first)){
                 to_merge.insert(other.first);
             }
@@ -91,7 +91,7 @@ void Chunk::insert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes
 void Chunk::delNodeGroup(NodeGroup &NG){
     // remove form ter. tile to group map
     ter->remove_NodeGroup(&NG);
-    for (std::pair<NodeGroup *const, OnePath> &adjacent : NG.get_adjacent()){
+    for (std::pair<NodeGroup *const, OnePath> &adjacent : NG.get_adjacent_map()){
         adjacent.first->remove_adjacent(&NG);
     }
     node_groups.remove(NG);
