@@ -35,10 +35,7 @@ std::set<const NodeGroup *> NodeGroup::get_adjacent_clear(int path_type)const{
 
     for (const std::pair<NodeGroup *,OnePath> t : adjacent) {
         if (t.second.compatible(path_type) && t.second.is_open()) {
-            try{
-                out.insert(t.first);
-            }
-            catch(const std::exception& e){ }
+            out.insert(t.first);
         }
     }
     return out;

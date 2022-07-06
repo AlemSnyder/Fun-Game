@@ -682,7 +682,7 @@ std::set<Node<const T> *> Terrain::get_adjacent_Nodes(const Node<const T> *const
             Node<const T>* tile = &nodes.at(t);
             out.emplace(tile);
         }
-        catch(const std::exception& e){ }
+        catch(const std::out_of_range& e){ }
     }
     return out;
 };
@@ -691,7 +691,7 @@ NodeGroup* Terrain::get_NodeGroup(int xyz){
     try{
         return tile_to_group.at(xyz);
     }
-    catch(const std::exception& e){
+    catch(const std::out_of_range& e){
         return nullptr;
     }
 }
@@ -844,7 +844,7 @@ std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile
     } else{
         return std::vector<const Tile *>();
     }
-    
+
     if (!(goal_node = get_NodeGroup(goal)))
     { return std::vector<const Tile *>(); }
     if (!(start_node = get_NodeGroup(start)))
