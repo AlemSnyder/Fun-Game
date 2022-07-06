@@ -1,7 +1,7 @@
 #ifndef __LAND_GENERATOR_HPP__
 #define __LAND_GENERATOR_HPP__
 
-#include <stdint.h>
+#include <cstdint>
 #include "json/json.h"
 #include <map>
 #include <math.h>

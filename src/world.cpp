@@ -1,7 +1,7 @@
 #include "world.hpp"
 #include "terrain.hpp"
 #include <fstream>
-#include <stdint.h>
+#include <cstdint>
 
 void World::save(){
     terrain_main.qb_save(path);

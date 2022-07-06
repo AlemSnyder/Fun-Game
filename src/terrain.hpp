@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <vector>
 #include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
 #include <map>
 
 //#include "json/json.h"
@@ -214,10 +214,20 @@ public:
     //std::set<int[3]> Terrain::grow_grass_high(int pos[3], int level);
     //std::set<int[3]> Terrain::grow_grass_down(int pos[3], int level);
 
-    bool can_stand_1(int x, int y, int z) const;
-    bool can_stand_1(int xyz) const;
-    bool can_stand_1(const Tile tile) const;
-    bool can_stand_1(const Tile *tile) const;
+    inline bool can_stand_1(int x, int y, int z) const{
+        return can_stand(x, y, z, 1, 1);
+    }
+    bool can_stand_1(int xyz) const; // this is fast, and used for looping
+    // Ok so basically when running through a loop the cpu moves a large chunk of memory that is close together
+    // into the cpu's memory, then this function iterates over memory space, rather then coordinate space.\
+    // someone should test if this is true.
+
+    inline bool can_stand_1(const Tile tile) const{
+        return can_stand(tile, 1, 1);
+    }
+    bool can_stand_1(const Tile *tile) const{
+        return can_stand(tile, 1, 1);
+    }
     bool can_stand(int x, int y, int z, int dz, int dxy) const;
     bool can_stand(const Tile tile, int dz, int dxy) const;
     bool can_stand(const Tile *tile, int dz, int dxy) const;

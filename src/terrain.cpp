@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <sys/timeb.h>
 #include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -15,7 +15,6 @@
 #include <vector>
 #include <cstring>
 #include <fstream>
-#include <stdint.h>
 #include <fstream>
 
 #include "json/json.h"
@@ -517,20 +516,8 @@ float Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
 }
 template<class T>
 inline float Terrain::get_G_cost(const T tile, const Node<const T> node){
-    return node.get_gCost() + get_H_cost(tile.sop(), node.get_tile()->sop());
-}/*
-template<class T>
-inline float Terrain::get_G_cost(const T *const tile, const Node<T> *const node) {
-    return node->get_gCost() + get_H_cost(tile->sop(), node->get_tile()->sop());
+    return node.get_current_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }
-template<class T>
-inline float Terrain::get_G_cost(const T tile, const Node<T> *const node) {
-    return node->get_gCost() + get_H_cost(tile.sop(), node->get_tile()->sop());
-}
-template<class T>
-inline float Terrain::get_G_cost(const T *const tile, const Node<T> node) {
-    return node.get_gCost() + get_H_cost(tile->sop(), node.get_tile()->sop());
-}*/
 
 void Terrain::add_all_adjacent(int xyz) {
     tiles[xyz].clear_adjacent();
@@ -901,7 +888,7 @@ std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile
     }
 
     std::function<bool (Node<const Tile> *, Node<const Tile> *)> compare = [](Node<const Tile> *lhs, Node<const Tile> *rhs)->bool {
-        return lhs->get_fCost() > rhs->get_fCost();
+        return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
     };
 
     return get_path(start, {goal}, search_through, compare);
@@ -911,7 +898,7 @@ std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile
 std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, const NodeGroup *goal) {
     
     std::function<bool (Node<const NodeGroup> *, Node<const NodeGroup> *)> compare = [](Node<const NodeGroup> *lhs, Node<const NodeGroup> *rhs)->bool {
-        return lhs->get_fCost() > rhs->get_fCost();
+        return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
     };
 
     std::set<const NodeGroup*> search_through = get_all_node_groups();
@@ -922,7 +909,7 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
 std::vector<const NodeGroup *> Terrain::get_path_BreadthFirst(const NodeGroup *start, std::set<const NodeGroup *> goal) {
 
     std::function<bool (Node<const NodeGroup> *, Node<const NodeGroup> *)> compare = [](Node<const NodeGroup> *lhs, Node<const NodeGroup> *rhs)->bool {
-        return lhs->get_gCost() > rhs->get_gCost();
+        return lhs->get_current_cots() > rhs->get_current_cots();
     };
 
     std::set<const NodeGroup*> search_through = get_all_node_groups();
@@ -967,7 +954,7 @@ std::vector<const Tile *> Terrain::get_path_BreadthFirst(const Tile *start, cons
     }
 
     std::function<bool (Node<const Tile> *, Node<const Tile> *)> compare = [](Node<const Tile> *lhs, Node<const Tile> *rhs)->bool {
-        return lhs->get_fCost() > rhs->get_fCost();
+        return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
     };
 
     return get_path(start, {goal}, search_through, compare);
@@ -1042,7 +1029,7 @@ uint32_t Terrain::compress_color(uint8_t v[4]){
 int Terrain::qb_save_debug(const char * path, const std::map<int, const Material>* materials) {
     int x=0;
     for (Chunk & c : get_chunks()){
-        for ( NodeGroup& NG : c.get_NodeGroups() ){
+        for ( NodeGroup& NG : c.get_node_groups() ){
             for (const Tile* t : NG.get_tiles()){
                 set_tile_material(get_tile(pos(t->sop())), &materials->at(7), x%4);
             }

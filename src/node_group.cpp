@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <cstdint>
 #include "node_group.hpp"
 
 NodeGroup::NodeGroup(Tile* tile, OnePath path_type){
@@ -71,7 +71,7 @@ const std::set<const Tile*, TilePCompare> NodeGroup::get_tiles() const {
     return std::set<const Tile*, TilePCompare>(tiles.begin(), tiles.end());
 }
 
-inline bool NodeGroup::adjacent_to(NodeGroup* other) const{
+bool NodeGroup::adjacent_to(NodeGroup* other) const{
     return (adjacent.find(other)) == adjacent.end();
 }
 

@@ -3,7 +3,7 @@
 
 #include <list>
 #include <set>
-#include <stdint.h>
+#include <cstdint>
 #include "onepath.hpp"
 #include "tile.hpp"
 

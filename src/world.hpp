@@ -2,7 +2,7 @@
 #define __WORLD_HPP__
 
 #include "terrain.hpp"
-#include <stdint.h>
+#include <cstdint>
 #include "json/json.h"
 
 class World{

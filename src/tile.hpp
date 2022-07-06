@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <set>
 #include <map>
-#include <stdint.h>
+#include <cstdint>
 #include "TerrainGeneration/material.hpp"
 #include "onepath.hpp"
 //#include <iostream>

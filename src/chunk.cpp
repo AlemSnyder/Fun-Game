@@ -14,11 +14,11 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
     for (int z = size * bz; z < size*(1+bz); z++){
         if (ter->can_stand_1(x,y,z)){
             NodeGroup group = NodeGroup(ter->get_tile(x,y,z), 31);
-            NodeGroups.push_back(group);
-            ter->add_NodeGroup(&NodeGroups.back());
+            node_groups.push_back(group);
+            ter->add_NodeGroup(&node_groups.back());
         }
     }
-    for (NodeGroup& NG : NodeGroups){
+    for (NodeGroup& NG : node_groups){
         for (const Tile* tile_main : NG.get_tiles()){
             for (const Tile* tile_adjacent : ter->get_adjacent_Tiles(tile_main, 31)){
                 if (NodeGroup* to_add = ter->get_NodeGroup(tile_adjacent)){
@@ -28,8 +28,8 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
         }
     }
 
-    std::list<NodeGroup>::iterator it = NodeGroups.begin();
-    while (it != NodeGroups.end()){
+    auto it = node_groups.begin();
+    while (it != node_groups.end()){
 
         // to merge = get_adjacent()
         std::set<NodeGroup*> to_merge;
@@ -68,22 +68,22 @@ void Chunk::R_merge(NodeGroup &G1, std::set<NodeGroup*>& to_merge){
 
 //}
 
-const std::list<NodeGroup>& Chunk::get_NodeGroups() const {
-    return NodeGroups;
+const std::list<NodeGroup>& Chunk::get_node_groups() const {
+    return node_groups;
 }
-std::list<NodeGroup>& Chunk::get_NodeGroups() {
-    return NodeGroups;
+std::list<NodeGroup>& Chunk::get_node_groups() {
+    return node_groups;
 }
 
 void Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const{
-    for (auto it = NodeGroups.begin(); it != NodeGroups.end(); it++){
+    for (auto it = node_groups.begin(); it != node_groups.end(); it++){
         auto elem = *it;
         out.insert(&elem);  // Ptr to element
     }
 }
 
 void Chunk::insert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes, std::array<float, 3> sop) const {
-    for (const NodeGroup& NG : NodeGroups){
+    for (const NodeGroup& NG : node_groups){
         nodes.insert(std::make_pair(&NG, Node(&NG, Terrain::get_H_cost( NG.sop(), sop) )));
     }
 }
@@ -91,10 +91,10 @@ void Chunk::insert_nodes(std::map<const NodeGroup*,Node<const NodeGroup>>& nodes
 void Chunk::delNodeGroup(NodeGroup &NG){
     // remove form ter. tile to group map
     ter->remove_NodeGroup(&NG);
-    for (auto &adjacent : NG.get_adjacent()){
+    for (std::pair<NodeGroup *const, OnePath> &adjacent : NG.get_adjacent()){
         adjacent.first->remove_adjacent(&NG);
     }
-    NodeGroups.remove(NG);
+    node_groups.remove(NG);
 }
 
 void Chunk::mergeNodeGroup(NodeGroup &G1, NodeGroup &G2){

@@ -1,7 +1,7 @@
 #ifndef __ONEPATH_HPP__
 #define __ONEPATH_HPP__
 
-#include <stdint.h>
+#include <cstdint>
 
 enum class DirectionFlags : uint8_t {
     NONE = 0,

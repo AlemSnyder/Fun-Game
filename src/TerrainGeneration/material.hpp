@@ -18,7 +18,7 @@
 #ifndef __MATERIAL_HPP__
 #define __MATERIAL_HPP__
 
-#include <stdint.h>
+#include <cstdint>
 
 struct Material{
     //std::map<const char *,  uint32_t> 
