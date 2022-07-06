@@ -844,10 +844,11 @@ std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile
     } else{
         return std::vector<const Tile *>();
     }
-    if ((goal_node = get_NodeGroup(goal))) { }
-    else { return std::vector<const Tile *>(); }
-    if ((start_node = get_NodeGroup(start))) { }
-    else { return std::vector<const Tile *>(); }
+    
+    if (!(goal_node = get_NodeGroup(goal)))
+    { return std::vector<const Tile *>(); }
+    if (!(start_node = get_NodeGroup(start)))
+    { return std::vector<const Tile *>(); }
 
     std::vector<const NodeGroup *> Node_path = get_path_Astar(start_node, goal_node);
     // if Node_path is empty then return
