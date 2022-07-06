@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <cstdint>
 #include "node_group.hpp"
 
 NodeGroup::NodeGroup(Tile* tile, OnePath path_type){
