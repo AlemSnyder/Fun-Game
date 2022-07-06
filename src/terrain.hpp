@@ -67,15 +67,6 @@ private:
         get_path_through_nodes(node->get_parent(), out, start);
     }
 
-    
-
-    // TODO none of this is defined
-    void add_line_to(std::vector<int> &out, Json::Value data, int i);
-    void add_line_to(std::vector<int> &out, Json::Value data, int i, std::vector<std::array<float, 2>>);
-    void add_point_to(std::vector<int> &out, Json::Value data, int i);
-    void add_point_to(std::vector<int> &out, Json::Value data, int i, std::vector<std::array<float, 2>>);
-    std::vector<std::array<float, 2>> generate_line(std::vector<int> &out, Json::Value dataWI);
-
 public:
 
     std::pair<Tile*, Tile*> get_start_end_test();
@@ -85,24 +76,8 @@ public:
     static float get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
     static float get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2);
 
-    /*template<class T>
-    float get_H_cost(const T tile1, const T tile2) const;
-    template<class T>
-    float get_H_cost(const T *const tile1, const T *const tile2) const;
-    template<class T>
-    float get_H_cost(const T tile1, const T *const tile2) const;
-    template<class T>
-    float get_H_cost(const T *const tile1, const T tile2) const;*/
-
     template<class T>
     static float get_G_cost(const T tile, const Node<const T> node);
-    /*
-    template<class T>
-    static float get_G_cost(const T *const tile,const Node<T> *const node);
-    template<class T>
-    static float get_G_cost(const T tile, const Node<T> *const node);
-    template<class T>
-    static float get_G_cost(const T *const tile, const Node<T> node);*/
 
     int pos(int x, int y, int z) const {// for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
@@ -136,7 +111,6 @@ public:
     }
 
     static std::vector<int> generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value map_data);
-    //void terrain_fall(Json::Value fall_data, const std::map<int, const Material> * material);
     void add_to_top(Json::Value to_data, const std::map<int, const Material> * material);
     static int get_stop_height(int height, const Json::Value how_to_add);
     void init_area(int area_x, int area_y, Land_Generator gen);
@@ -152,7 +126,6 @@ public:
     // TODO plack block
     std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, uint8_t type);
     std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, uint8_t type) const;
-    //std::set<Node<const Tile> *> get_adjacent_Nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, uint8_t type) const;
     template<class T>
     std::set<Node<const T> *> get_adjacent_Nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, uint8_t type) const;
     
@@ -162,8 +135,6 @@ public:
     void Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces);
 
     NodeGroup* get_NodeGroup(int xyz);
-    //NodeGroup* get_NodeGroup(Tile t);
-    //NodeGroup* get_NodeGroup(Tile* t);
     NodeGroup* get_NodeGroup(const Tile t);
     NodeGroup* get_NodeGroup(const Tile* t);
 
@@ -268,17 +239,6 @@ public:
                                         const std::set<const T*> goal,
                                         const std::set<const T*> search_through,
                                         std::function<bool(Node<const T>*, Node<const T>*)> compare) const;
-    template<class T>
-    void get_path_T1(const T * start);
-
-    template<class T>
-    void get_path_T2(const std::set<const T*> goal);
-
-    template<class T>
-    void get_path_T3(const std::set<const T*> search_through);
-
-    template<class T>
-    void get_path_T4(std::function<bool(Node<const T>*, Node<const T>*)> compare) const;
 
     void init_chunks();
     void stitch_chunks_at(Tile* tile);
