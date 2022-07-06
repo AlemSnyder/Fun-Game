@@ -77,7 +77,8 @@ std::list<NodeGroup>& Chunk::get_NodeGroups() {
 
 void Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const{
     for (auto it = NodeGroups.begin(); it != NodeGroups.end(); it++){
-        out.insert(&*it);
+        auto elem = *it;
+        out.insert(&elem);  // Ptr to element
     }
 }
 
