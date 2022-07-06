@@ -19,9 +19,9 @@ GLFWwindow* window;
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
 
-int test1(){
-
-    //const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but C/gcc/terrain_generation";
+int test1(const char * path){
+    
+    // path = "../SavedTerrain/save.qb";
 
     Json::Value materials_json;
     std::ifstream materials_file("../data/materials.json", std::ifstream::in);
@@ -30,8 +30,6 @@ int test1(){
     Json::Value biome_data;
     std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
-
-    const char * path = "../SavedTerrain/save.qb";
 
     World world(materials_json, biome_data);
 
@@ -52,9 +50,9 @@ int test2(){
     return 1;
 }
 
-int savetest(){
-    const char * path = "../SavedTerrain/pathfinder_input_4.qb";
-    const char * save_path = "../SavedTerrain/save_test.qb";
+int save_test(const char * path, const char * save_path){
+    // path = "../SavedTerrain/pathfinder_input_4.qb";
+    // save_path = "../SavedTerrain/save_test.qb";
 
     World world(path);
 
@@ -90,9 +88,9 @@ void save_all_terrain(Json::Value biome_data){
     }
 }
 
-int pathfindertest(){
-    const char * path = "../SavedTerrain/pathfinder_input.qb";
-    const char * save_path = "../SavedTerrain/pathfinder_output.qb";
+int path_finder_test(const char * path, const char * save_path){
+    // path = "../SavedTerrain/pathfinder_input.qb";
+    // save_path = "../SavedTerrain/pathfinder_output.qb";
 
     World world(path);
 
@@ -125,9 +123,9 @@ static void wait_for_input(void) {
     getchar();  // Wait for input
 }
 
-int GUITest(){
+int GUITest(const char * path){
 
-    const char * path = "../SavedTerrain/pathfinder_input_4.qb";
+    // path = "../SavedTerrain/pathfinder_input_4.qb";
     World world(path);
     
     // Initialise GLFW
@@ -305,7 +303,7 @@ int GUITest(){
 
 int main( int argc, char** argv ){
     if (argc == 1){
-        return pathfindertest();
+        return path_finder_test("../SavedTerrain/pathfinder_input.qb", "../SavedTerrain/pathfinder_output.qb");
     } 
     else if (std::string(argv[1]) == "--TerrainTypes"){
         Json::Value biome_data;
@@ -321,12 +319,12 @@ int main( int argc, char** argv ){
         return test2();
     }
     else if (std::string(argv[1]) == "--SaveTest"){
-        return savetest();
+        return save_test(argv[2], argv[3]);
     }
     else if (std::string(argv[1]) == "--pathfinder"){
-        return pathfindertest();
+        return path_finder_test(argv[2], argv[3]);
     }
     else if (std::string(argv[1]) == "--GUITest"){
-        return GUITest();
+        return GUITest(argv[2]);
     }
 }
