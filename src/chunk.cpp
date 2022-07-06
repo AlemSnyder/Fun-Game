@@ -14,6 +14,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
     for (int z = size * bz; z < size*(1+bz); z++){
         if (ter->can_stand_1(x,y,z)){
             NodeGroup group = NodeGroup(ter->get_tile(x,y,z), 31); // the int determines which paths between two tiles are compliant 31 means anything that is not opposite corner.
+            // look at onePath for more information
             node_groups.push_back(group);
             ter->add_NodeGroup(&node_groups.back());
         }
