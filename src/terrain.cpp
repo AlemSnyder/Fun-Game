@@ -689,7 +689,7 @@ void Terrain::Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::
         // printf("\n");
     }
 }
-
+//! should be removed
 std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t type) {
     std::set<Tile *> out;
 
@@ -700,6 +700,7 @@ std::set<Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t typ
     }
     return out;
 };
+//! should be removed
 std::set<const Tile *> Terrain::get_adjacent_Tiles(const Tile *const tile, uint8_t type) const {
     std::set<const Tile *> out;
 
@@ -895,7 +896,8 @@ std::vector<const Tile *> Terrain::get_path_Astar(const Tile *start_, const Tile
     }
     std::set<const Tile*> search_through;
     for (const NodeGroup* NG : Node_path){
-        search_through.insert(NG->get_tiles().begin(), NG->get_tiles().end());
+        auto tiles = NG->get_tiles();
+        search_through.insert(tiles.begin(), tiles.end());
     }
 
     std::function<bool (Node<const Tile> *, Node<const Tile> *)> compare = [](Node<const Tile> *lhs, Node<const Tile> *rhs)->bool {
@@ -999,7 +1001,7 @@ std::vector<const T *> Terrain::get_path(const T *start,
         Node<const T> *choice = openNodes.top();
         openNodes.pop();  // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::set<Node<const T>*> adjacent_nodes = get_adjacent_Nodes(choice, nodes, 31);
+        std::set<Node<const T>*> adjacent_nodes = get_adjacent_Nodes(choice, nodes, 63); //! onepath needs to be updated. this should be returned to 31
         for (Node<const T> *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
@@ -1148,6 +1150,8 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     std::cout << "    max Z: " << Z_MAX << std::endl;
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
+    std::set<uint32_t> unknown_materials;
+
     int tiles_read = 0;
     for (x = 0; x < X_MAX; x++)
     for (z = 0; z < Z_MAX; z++)
@@ -1163,11 +1167,14 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
                 get_tile(x,y,z)->init({x,y,z}, mat_color.first, mat_color.second);
                 tiles_read++;
             } else {
-                std::cout << "    cannot find color: " << CC << std::endl;
+                unknown_materials.insert(CC);
                 auto mat_color = materials->at(0); // else set to air.
                 get_tile(x,y,z)->init({x,y,z}, mat_color.first, mat_color.second);
             }
         }
+    }
+    for (uint32_t CC : unknown_materials){
+        std::cout << "    cannot find color: " << CC << std::endl;
     }
     fclose(file);
     std::cout << "    tiles read: " << tiles_read << std::endl;
@@ -1178,7 +1185,7 @@ std::pair<Tile*, Tile*> Terrain::get_start_end_test(){
     std::pair<Tile*, Tile*>out;
     bool first = true;
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        if (get_tile(xyz)->get_material()->element_id == 6){
+        if (get_tile(xyz)->get_material()->element_id == 7 && get_tile(xyz)->get_color_id() == 4){
             if (first){
                 out.first = get_tile(xyz);
                 first = false;

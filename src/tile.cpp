@@ -165,7 +165,7 @@ bool TilePCompare::operator() (const Tile* lhs, const Tile* rhs) const{
         return false;
     } else if (lhs->get_y() < rhs->get_y()){
         return true;
-    } else if (lhs->get_y() < rhs->get_y()){
+    } else if (lhs->get_y() > rhs->get_y()){
         return false;
     } else {return lhs->get_z() < rhs->get_z();}
 }

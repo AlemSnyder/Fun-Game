@@ -33,7 +33,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
 
         // to merge = get_adjacent()
         std::set<NodeGroup*> to_merge;
-        for (auto other : (it)->get_adjacent()){
+        for (auto other : (it)->get_adjacent()){ //! remove nullprt?
             if (other.first != nullptr && contains_nodeGroup(other.first)){
                 to_merge.insert(other.first);
             }
