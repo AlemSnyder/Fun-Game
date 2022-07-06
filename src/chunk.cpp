@@ -13,7 +13,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
     for (int y = size * by; y < size*(1+by); y++)
     for (int z = size * bz; z < size*(1+bz); z++){
         if (ter->can_stand_1(x,y,z)){
-            NodeGroup group = NodeGroup(ter->get_tile(x,y,z), 31);
+            NodeGroup group = NodeGroup(ter->get_tile(x,y,z), 31); // the int determines which paths between two tiles are compliant 31 means anything that is not opposite corner.
             node_groups.push_back(group);
             ter->add_NodeGroup(&node_groups.back());
         }
@@ -33,8 +33,8 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter_){
 
         // to merge = get_adjacent_map()
         std::set<NodeGroup*> to_merge;
-        for (std::pair<NodeGroup *const, OnePath> other : (it)->get_adjacent_map()){ //! remove nullprt?
-            if (other.first != nullptr && contains_nodeGroup(other.first)){
+        for (std::pair<NodeGroup *const, OnePath> other : (it)->get_adjacent_map()){
+            if (contains_nodeGroup(other.first)){
                 to_merge.insert(other.first);
             }
         }
