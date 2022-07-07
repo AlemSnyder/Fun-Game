@@ -11,15 +11,11 @@
 #include <cstdint>
 #include <map>
 
-//#include "json/json.h"
-//#include <json.h>
-
 #include "node.hpp"
 #include "onepath.hpp"
 #include "tile.hpp"
 #include "node_group.hpp"
 #include "chunk.hpp"
-#include "more_vectors.hpp"
 #include "TerrainGeneration/land_generator.hpp"
 #include "TerrainGeneration/material.hpp"
 #include "TerrainGeneration/tile_stamp.hpp"
@@ -70,7 +66,7 @@ private:
 public:
 
     std::pair<Tile*, Tile*> get_start_end_test();
-    
+
     const OnePath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
 
     static float get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
@@ -124,26 +120,23 @@ public:
     Terrain(const char * path, const std::map<int, const Material> * material);
 
     // TODO plack block
-    std::set<Tile *> get_adjacent_Tiles(const Tile *const tile, uint8_t type);
-    std::set<const Tile *> get_adjacent_Tiles(const Tile *const tile, uint8_t type) const;
+    std::set<Tile *> get_adjacent_tiles(const Tile *const tile, uint8_t type);
+    std::set<const Tile *> get_adjacent_tiles(const Tile *const tile, uint8_t type) const;
     template<class T>
-    std::set<Node<const T> *> get_adjacent_Nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, uint8_t type) const;
-    
+    std::set<Node<const T> *> get_adjacent_nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, uint8_t type) const;
+
     std::vector<Chunk> get_chunks(){ return chunks; }
 
-    std::list<int> ExportVoxelsAsList() const;
-    void Get_Mesh_Greedy(std::vector<MoreVectors::vector3> &vertices, std::vector<MoreVectors::vector4> &faces);
+    NodeGroup* get_node_group(int xyz);
+    NodeGroup* get_node_group(const Tile t);
+    NodeGroup* get_node_group(const Tile* t);
 
-    NodeGroup* get_NodeGroup(int xyz);
-    NodeGroup* get_NodeGroup(const Tile t);
-    NodeGroup* get_NodeGroup(const Tile* t);
+    void add_node_group(NodeGroup* NG);
+    void remove_node_group(NodeGroup* NG);
 
-    void add_NodeGroup(NodeGroup* NG);
-    void remove_NodeGroup(NodeGroup* NG);
-
-    inline int get_X_MAX() { return X_MAX; };
-    inline int get_Y_MAX() { return Y_MAX; };
-    inline int get_Z_MAX() { return Z_MAX; };
+    inline int get_X_MAX() const { return X_MAX; };
+    inline int get_Y_MAX() const { return Y_MAX; };
+    inline int get_Z_MAX() const { return Z_MAX; };
 
     inline bool in_range(int x, int y, int z) const {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
@@ -151,10 +144,6 @@ public:
 
     // return true when the point is within the bounds of terrain
     bool is_valid_pos(int x, int y, int z) const {
-        return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
-                z >= 0);
-    }
-    inline bool in_range(int x, int y, int z) {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX &&
                 z >= 0);
     }
@@ -241,8 +230,8 @@ public:
     std::vector<const Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
-    std::vector<const Tile *> get_path_BreadthFirst(const Tile *start, const std::set<const Tile *> goal);
-    std::vector<const NodeGroup *> get_path_BreadthFirst(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
+    std::vector<Tile *> get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal);
+    std::vector<const NodeGroup *> get_path_breadth_first(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
 
     template<class T>
     std::vector<const T *> get_path(const T * start,

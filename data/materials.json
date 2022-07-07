@@ -27,11 +27,15 @@
             },
             {
                 "name":"brown_4",
-                "hex": "dbd0c8FF"
+                "hex": "E1DDDAFF"
             },
             {
                 "name":"brown_5",
                 "hex": "ad9582FF"
+            },
+            {
+                "name":"brown_6",
+                "hex": "351E0AFF"
             }
         ],
         "solid": true,

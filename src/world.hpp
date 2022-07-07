@@ -5,6 +5,8 @@
 #include <cstdint>
 #include "json/json.h"
 
+#include <glm/glm.hpp>
+#include <stdint.h>
 class World{
 public:
     World();
@@ -19,7 +21,14 @@ public:
         return &materials;
     }
 
+    const Material* get_material(int element_id) const;
+
     void init_materials(Json::Value material_data);
+
+    void get_mesh_greedy(std::vector<unsigned short> &indices,
+					std::vector<glm::vec3> &indexed_vertices,
+					std::vector<glm::vec3> &indexed_uvs,
+					std::vector<glm::vec3> &indexed_normals) const;
 
 private:
     //Json::Value materials;
@@ -33,4 +42,4 @@ private:
 
 };
 
-#endif
+#endif // __WORLD_HPP__

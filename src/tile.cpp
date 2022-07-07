@@ -94,15 +94,24 @@ uint32_t Tile::get_color()const{
 uint8_t Tile::get_color_id() const {
     return color_id;
 }
+// returns the element id and the color id as one int
+uint16_t Tile::get_mat_color_id() const{
+    // element_id, and color_id are 8 bit this function 
+    // concatenates them together, and returns a 16 bit int
+    if (mat->element_id == 0){
+        return 0;
+    }
+    return mat->element_id << 8 | color_id; 
+}
 // return `grow_data_low`
 uint8_t Tile::get_grow_low() const{
     return grow_data_low;
 }
+// return `grow_data_high`
 uint8_t Tile::get_grow_high() const{
     return grow_data_high;
 }
-// This should be removed.
-// This should be removed.
+// return x, y, z positions as array
 std::array<int, 3> Tile::sop() const {
     return { x, y, z };
 }

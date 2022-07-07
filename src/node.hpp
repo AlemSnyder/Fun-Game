@@ -21,7 +21,7 @@ public:
     float get_current_cots() const { return gCost; } //Time from start to this node
     float get_predicted_continue_cots() const { return hCost; } //Minimum time from this node to end
     float get_total_predicted_cost() const { return fCost; } //Minimum time from start to end through this node
-    
+
     bool is_explored() const { return explored; }
     std::set<const T*> get_adjacent(int path_type) const; //The nodes that can be reached from this one
     std::set<const T*> get_adjacent() const; //The nodes that can be reached from this one

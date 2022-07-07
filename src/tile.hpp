@@ -55,13 +55,14 @@ public:
     int get_y() const { return y; }
     int get_z() const { return z; }
     std::array<int, 3> sop() const;
-        // Is this tile grass?
+    // Is this tile grass?
     bool is_grass() const {return grass;}
     const Material * get_material() const { return mat; }
     //int pos() const;
 
-    uint32_t get_color() const ;
-    uint8_t get_color_id() const ;
+    uint32_t get_color() const;
+    uint8_t get_color_id() const;
+    uint16_t get_mat_color_id() const;
     uint8_t get_grow_low() const;
     uint8_t get_grow_high() const;
 
