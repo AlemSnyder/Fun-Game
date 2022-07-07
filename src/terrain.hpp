@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <vector>
 #include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
 #include <map>
 
 #include "node.hpp"
@@ -53,9 +53,9 @@ private:
     void add_all_adjacent(int xyz);
 
     Node<Tile> new_node(Node<Tile> &parent, Tile &tile, Tile goal);
-    void add_node(std::set<Node<Tile>> &nodelist, Node<Tile> &node);
+    void add_node(std::set<Node<Tile>> &node_list, Node<Tile> &node);
     template<class T>
-    void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) {
+    void get_path_through_nodes(Node<const T> *node, std::vector<const T *> &out, const T *start) const {
         out.push_back(node->get_tile());
         if (start == node->get_tile()) {
             return;
@@ -63,42 +63,17 @@ private:
         get_path_through_nodes(node->get_parent(), out, start);
     }
 
-    
-
-    // TODO none of this is defined
-    void add_line_to(std::vector<int> &out, Json::Value data, int i);
-    void add_line_to(std::vector<int> &out, Json::Value data, int i, std::vector<std::array<float, 2>>);
-    void add_point_to(std::vector<int> &out, Json::Value data, int i);
-    void add_point_to(std::vector<int> &out, Json::Value data, int i, std::vector<std::array<float, 2>>);
-    std::vector<std::array<float, 2>> generate_line(std::vector<int> &out, Json::Value dataWI);
-
 public:
 
     std::pair<Tile*, Tile*> get_start_end_test();
-    
+
     const OnePath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
 
     static float get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
     static float get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2);
 
-    /*template<class T>
-    float get_H_cost(const T tile1, const T tile2) const;
-    template<class T>
-    float get_H_cost(const T *const tile1, const T *const tile2) const;
-    template<class T>
-    float get_H_cost(const T tile1, const T *const tile2) const;
-    template<class T>
-    float get_H_cost(const T *const tile1, const T tile2) const;*/
-
     template<class T>
     static float get_G_cost(const T tile, const Node<const T> node);
-    /*
-    template<class T>
-    static float get_G_cost(const T *const tile,const Node<T> *const node);
-    template<class T>
-    static float get_G_cost(const T tile, const Node<T> *const node);
-    template<class T>
-    static float get_G_cost(const T *const tile, const Node<T> node);*/
 
     int pos(int x, int y, int z) const {// for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
@@ -132,7 +107,6 @@ public:
     }
 
     static std::vector<int> generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value map_data);
-    //void terrain_fall(Json::Value fall_data, const std::map<int, const Material> * material);
     void add_to_top(Json::Value to_data, const std::map<int, const Material> * material);
     static int get_stop_height(int height, const Json::Value how_to_add);
     void init_area(int area_x, int area_y, Land_Generator gen);
@@ -146,11 +120,11 @@ public:
     Terrain(const char * path, const std::map<int, const Material> * material);
 
     // TODO plack block
-    std::set<Tile *> get_adjacent_tiles(const Tile *const tile, int8_t type);
-    const std::set<const Tile *> get_adjacent_tiles(const Tile *const tile, int8_t type) const;
-    //std::set<Node<const Tile> *> get_adjacent_nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>*> &nodes, int8_t type) const;
-    std::set<Node<const Tile> *> get_adjacent_nodes(const Node<const Tile> * node, std::map<int, Node<const Tile>> &nodes, int8_t type) const;
-    
+    std::set<Tile *> get_adjacent_tiles(const Tile *const tile, uint8_t type);
+    std::set<const Tile *> get_adjacent_tiles(const Tile *const tile, uint8_t type) const;
+    template<class T>
+    std::set<Node<const T> *> get_adjacent_nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, uint8_t type) const;
+
     std::vector<Chunk> get_chunks(){ return chunks; }
 
     NodeGroup* get_node_group(int xyz);
@@ -220,8 +194,8 @@ public:
 
     void stamp_tile_region(Tile_Stamp tStamp, int x ,int y);
     void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, uint8_t color_id);
-    //void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<int> elements_canstamp);
-    void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<std::pair<int, int>> elements_canstamp, uint8_t color_id);
+    //void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<int> elements_can_stamp);
+    void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<std::pair<int, int>> elements_can_stamp, uint8_t color_id);
 
     void init_grass();
     void grow_all_grass_high();
@@ -229,10 +203,20 @@ public:
     //std::set<int[3]> Terrain::grow_grass_high(int pos[3], int level);
     //std::set<int[3]> Terrain::grow_grass_down(int pos[3], int level);
 
-    bool can_stand_1(int x, int y, int z) const;
-    bool can_stand_1(int xyz) const;
-    bool can_stand_1(const Tile tile) const;
-    bool can_stand_1(const Tile *tile) const;
+    inline bool can_stand_1(int x, int y, int z) const{
+        return can_stand(x, y, z, 1, 1);
+    }
+    bool can_stand_1(int xyz) const; // this is fast, and used for looping
+    // Ok so basically when running through a loop the cpu moves a large chunk of memory that is close together
+    // into the cpu's memory, then this function iterates over memory space, rather then coordinate space.
+    // someone should test if this is true.
+
+    inline bool can_stand_1(const Tile tile) const{
+        return can_stand(tile, 1, 1);
+    }
+    bool can_stand_1(const Tile *tile) const{
+        return can_stand(tile, 1, 1);
+    }
     bool can_stand(int x, int y, int z, int dz, int dxy) const;
     bool can_stand(const Tile tile, int dz, int dxy) const;
     bool can_stand(const Tile *tile, int dz, int dxy) const;
@@ -241,11 +225,19 @@ public:
     int qb_save(const char * path)const;
     int qb_read(const char * path, const std::map<uint32_t, std::pair<const Material*, uint8_t>> *materials);
 
-    std::vector<Tile *> get_path_Astar(const Tile *start, const Tile *goal);
+    std::set<const NodeGroup*> get_all_node_groups() const ;
+
+    std::vector<const Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
-    std::vector<Tile *> get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal);
+    std::vector<const Tile *> get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal);
     std::vector<const NodeGroup *> get_path_breadth_first(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
+
+    template<class T>
+    std::vector<const T *> get_path(const T * start,
+                                        const std::set<const T*> goal,
+                                        const std::set<const T*> search_through,
+                                        std::function<bool(Node<const T>*, Node<const T>*)> compare) const;
 
     void init_chunks();
     void stitch_chunks_at(Tile* tile);

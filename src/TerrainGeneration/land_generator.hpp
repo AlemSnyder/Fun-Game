@@ -1,7 +1,7 @@
 #ifndef __LAND_GENERATOR_HPP__
 #define __LAND_GENERATOR_HPP__
 
-#include <stdint.h>
+#include <cstdint>
 #include "json/json.h"
 #include <map>
 #include <math.h>
@@ -39,11 +39,11 @@ public:
             int E = data_[current_region]["Can_Stamp"][i]["E"].asInt();
             if (data_[current_region]["Can_Stamp"][i]["C"].isInt()){
                 int C = data_[current_region]["Can_Stamp"][i]["C"].asInt();
-                out.elements_canstamp.insert(std::make_pair(E, C));
+                out.elements_can_stamp.insert(std::make_pair(E, C));
             }
             else if (data_[current_region]["Can_Stamp"][i]["C"].asBool()){
                 for (unsigned int C = 0; C < (*materials).at(E).color.size(); C++){
-                    out.elements_canstamp.insert(std::make_pair(E, C));
+                    out.elements_can_stamp.insert(std::make_pair(E, C));
                 }
             }
         }
@@ -58,7 +58,7 @@ public:
         }
         return out;
     }
-    
+
     void operator++(){
         current_sub_region++;
         if (current_sub_region == get_num_stamps(data_[current_region])){
@@ -141,7 +141,7 @@ private:
         }
 
         int DC = data_[cr]["Radius"]["DC"].asInt();
-        int center [2][2] = {{x_center-DC, y_center-DC}, 
+        int center [2][2] = {{x_center-DC, y_center-DC},
                              {x_center+DC, y_center+DC} };
 
         std::array<int, 6> volume = get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(), data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
@@ -158,7 +158,7 @@ private:
         int y_center = (1 + 2 * (csr / data_[cr]["Grid"]["number"].asInt())) * ( data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt()) - data_[cr]["Grid"]["radius"].asInt();
         int DC = data_[cr]["Grid"]["DC"].asInt();
 
-        int center [2][2] = {{x_center-DC, y_center-DC}, 
+        int center [2][2] = {{x_center-DC, y_center-DC},
                              {x_center+DC, y_center+DC} };
 
         std::array<int, 6> volume = get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(), data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
@@ -173,7 +173,7 @@ private:
     }
     void From_Positions(int cr, int csr, Tile_Stamp &ts){
         Json::Value xy_positions = data_[cr]["Positions"][csr];
-        int center [2][2] = {{xy_positions[0].asInt(), xy_positions[1].asInt()}, 
+        int center [2][2] = {{xy_positions[0].asInt(), xy_positions[1].asInt()},
                              {xy_positions[0].asInt(), xy_positions[1].asInt()} };
 
         std::array<int, 6> volume = get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(), data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
