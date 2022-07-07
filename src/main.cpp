@@ -197,6 +197,9 @@ int GUITest(const char *path)
     glfwPollEvents();
     glfwSetCursorPos(window, windowFrameWidth / 2, windowFrameHeight / 2);
 
+	// Turn on VSync
+	glfwSwapInterval(1);
+
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
