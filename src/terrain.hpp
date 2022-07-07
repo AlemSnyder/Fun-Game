@@ -230,7 +230,7 @@ public:
     std::vector<const Tile *> get_path_Astar(const Tile *start, const Tile *goal);
     std::vector<const NodeGroup *> get_path_Astar(const NodeGroup *start, const NodeGroup *goal);
 
-    std::vector<Tile *> get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal);
+    std::vector<const Tile *> get_path_breadth_first(const Tile *start, const std::set<const Tile *> goal);
     std::vector<const NodeGroup *> get_path_breadth_first(const NodeGroup *start, const std::set<const NodeGroup *> goal); //TODO this should return a pair
 
     template<class T>
