@@ -14,9 +14,11 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 
 # add the executable
-file(GLOB SOURCES "src/**/*.cpp")
-file(GLOB SOURCES2 "src/*.cpp")
-add_executable(Fun_Game ${SOURCES} ${SOURCES2})
+file(GLOB SOURCES1 "src/*.cpp")
+file(GLOB SOURCES2 "src/**/*.cpp")
+file(GLOB SOURCES3 "src/**/**/*.cpp")
+
+add_executable(Fun_Game ${SOURCES1} ${SOURCES2} ${SOURCES3})
 
 target_link_libraries(Fun_Game glfw3)
 target_link_libraries(Fun_Game OpenGL::GL)
