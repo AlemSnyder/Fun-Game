@@ -1,6 +1,5 @@
 #include <cmath>
 #include "noise.hpp"
-//#include "noise_.hpp"
 
 #define maxPrimeIndex 10
 

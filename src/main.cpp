@@ -15,7 +15,7 @@ GLFWwindow* window;
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "terrain.hpp"
+#include "Terrain/terrain.hpp"
 #include "world.hpp"
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
@@ -102,7 +102,7 @@ int pathfindertest(){
 
     std::pair<Tile *, Tile *> start_end = world.terrain_main.get_start_end_test();
 
-    std::vector<Tile*> tile_path = world.terrain_main.get_path_Astar(start_end.first, start_end.second);
+    std::vector<const Tile*> tile_path = world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
     if (tile_path.size() == 0){
         std::cout << "no path" << std::endl;

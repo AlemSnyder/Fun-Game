@@ -1,5 +1,5 @@
 #include "world.hpp"
-#include "terrain.hpp"
+#include "Terrain/terrain.hpp"
 #include <fstream>
 #include <stdint.h>
 

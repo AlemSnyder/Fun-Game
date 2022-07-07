@@ -14,7 +14,7 @@ struct Tile_Stamp{
 
     const Material * mat;
     uint8_t color_id;
-    std::set<std::pair<int, int>> elements_canstamp;
+    std::set<std::pair<int, int>> elements_can_stamp;
 };
 
 #endif
