@@ -98,14 +98,6 @@
         "id": 6,
         "colors": [
             {
-                "name":"my_house",
-                "hex": "253456FF"
-            },
-            {
-                "name":"path",
-                "hex": "255634FF"
-            },
-            {
                 "name":"path",
                 "hex": "4d4f4fFF"
             },
@@ -205,6 +197,14 @@
             {
                 "name":"debug_4",
                 "hex": "81de3aFF"
+            },
+            {
+                "name":"path_start",
+                "hex": "253456FF"
+            },
+            {
+                "name":"path",
+                "hex": "255634FF"
             }
         ],
         "solid": true,

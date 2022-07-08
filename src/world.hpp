@@ -5,7 +5,6 @@
 #include "json/json.h"
 
 #include <glm/glm.hpp>
-#include <stdint.h>
 class World{
 public:
     World();
