@@ -89,7 +89,6 @@ public:
     }
     /**
      * @brief Resets this land generator
-     * 
      */
     void reset(){
         current_region = 0;
