@@ -24,6 +24,7 @@
 #define __MATERIAL_HPP__
 
 #include <cstdint>
+#include <string>
 
 /*
     block types:
@@ -55,11 +56,11 @@
  */
 struct Material{
     // vector of <name hex color> for possible colors
-    std::vector<std::pair<const char *, uint32_t>> color;
+    std::vector<std::pair<const std::string, uint32_t>> color;
     uint8_t speed_multiplier = 1; // speed on this material compared to base
     bool solid = false; // Is the material solid?
     uint8_t element_id = 0; // The ID of the material (Air is 0)
-    const char * element = "Air"; // The material name (why is this not name?)
+    const std::string name = "Air"; // The material name
     //int8_t deteraition from wind
     //int8_t deteraition from water
 };

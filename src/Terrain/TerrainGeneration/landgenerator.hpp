@@ -12,16 +12,16 @@
 */
 
 /**
- * @file land_generator.hpp
+ * @file landgenerator.hpp
  *
- * @brief Defines Land_Generator class.
+ * @brief Defines LandGenerator class.
  *
  * @ingroup Terrain
  *
  */
 
-#ifndef __LAND_GENERATOR_HPP__
-#define __LAND_GENERATOR_HPP__
+#ifndef __LandGenerator_HPP__
+#define __LandGenerator_HPP__
 
 #include <cstdint>
 #include "json/json.h"
@@ -29,13 +29,12 @@
 #include <math.h>
 #include <string>
 #include <iostream>
-#include <string>
 
-#include "tile_stamp.hpp"
+#include "tilestamp.hpp"
 #include "material.hpp"
 
 /**
- * @brief Reads JSON data and generates Tile_Stamp objects
+ * @brief Reads JSON data and generates TileStamp objects
  * 
  * @details The way biomes are generated is saved in data/biome_data.json.
  * The biome pipeline starts with getting a 2D tile map. Each tile in the map
@@ -46,21 +45,21 @@
  * iterates though these macros, and creates Tile Stamps.
  * 
  */
-class Land_Generator{
+class LandGenerator{
 public:
     /**
-     * @brief Construct a new Land_Generator object
+     * @brief Construct a new LandGenerator object
      * 
      * @param materials the materials used in this biome
      * @param data the description of how tiles stamps should be generated
      */
-    Land_Generator( const std::map<int, const Material> *materials, Json::Value data);
+    LandGenerator( const std::map<int, const Material> *materials, Json::Value data);
     /**
-     * @brief Construct a new Land_Generator object (default constructor)
+     * @brief Construct a new LandGenerator object (default constructor)
      * 
      * This should not be used.
      */
-    Land_Generator();
+    LandGenerator();
 
     /**
      * @brief Test if iteration is complete
@@ -74,9 +73,9 @@ public:
     /**
      * @brief Generate and return Tile Stamp object
      * 
-     * @return Tile_Stamp 
+     * @return TileStamp 
      */
-    Tile_Stamp get_this_stamp() const;
+    TileStamp get_this_stamp() const;
     /**
      * @brief increment the data of the Tile Stamp that will be generated
      */
@@ -106,9 +105,9 @@ private:
 
     std::array<int, 6> get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz ) const ;
 
-    void From_Radius(int cr, int csr, Tile_Stamp & ts) const ;
-    void From_Grid(int cr, int csr, Tile_Stamp &ts) const ;
-    void From_Positions(int cr, int csr, Tile_Stamp &ts) const ;
+    void from_radius(int cr, int csr, TileStamp & ts) const ;
+    void from_grid(int cr, int csr, TileStamp &ts) const ;
+    void from_positions(int cr, int csr, TileStamp &ts) const ;
 };
 
 #endif

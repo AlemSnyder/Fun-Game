@@ -12,7 +12,7 @@
 */
 
 /**
- * @file tile_stamp.hpp
+ * @file tilestamp.hpp
  *
  * @brief Defines Tile_stamp struct.
  *
@@ -30,12 +30,12 @@
  * @brief Holds data used to set the material and color of a rectangular prism
  * in terrain.
  * 
- * @details Tile_Stamp holds 6 ints to define the start and end of a
- * rectangular prism in 3D space. Tile_Stamp also contains the material 
+ * @details TileStamp holds 6 ints to define the start and end of a
+ * rectangular prism in 3D space. TileStamp also contains the material 
  * pointer, and color ID of the final tile. The types of tiles that can be
  * changed are also saved
  */
-struct Tile_Stamp{
+struct TileStamp{
     int x_start; // Lower bound in the x direction.
     int y_start; // Lower bound in the y direction.
     int z_start; // Lower bound in the z direction.

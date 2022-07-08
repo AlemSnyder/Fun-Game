@@ -17,9 +17,9 @@
 #include "node_group.hpp"
 #include "chunk.hpp"
 #include "TerrainGeneration/noise.hpp"
-#include "TerrainGeneration/land_generator.hpp"
+#include "TerrainGeneration/landgenerator.hpp"
 #include "TerrainGeneration/material.hpp"
-#include "TerrainGeneration/tile_stamp.hpp"
+#include "TerrainGeneration/tilestamp.hpp"
 
 class Chunk;
 
@@ -110,7 +110,7 @@ public:
     static std::vector<int> generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value map_data);
     void add_to_top(Json::Value to_data, const std::map<int, const Material> * material);
     static int get_stop_height(int height, const Json::Value how_to_add);
-    void init_area(int area_x, int area_y, Land_Generator gen);
+    void init_area(int area_x, int area_y, LandGenerator gen);
 
     void init_old(int x, int y, int z);
     void init(int x, int y, int Area_size_, int z, int seed, const std::map<int, const Material> *materials, Json::Value biome_data, std::vector<int> Terrain_Maps);
@@ -193,7 +193,7 @@ public:
 
     void set_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat);
 
-    void stamp_tile_region(Tile_Stamp tStamp, int x ,int y);
+    void stamp_tile_region(TileStamp tStamp, int x ,int y);
     void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, uint8_t color_id);
     //void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<int> elements_can_stamp);
     void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end, int z_end, const Material * mat, std::set<std::pair<int, int>> elements_can_stamp, uint8_t color_id);

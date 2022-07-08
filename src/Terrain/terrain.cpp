@@ -24,9 +24,9 @@
 #include "chunk.hpp"
 
 #include "TerrainGeneration/noise.hpp"
-#include "TerrainGeneration/land_generator.hpp"
+#include "TerrainGeneration/landgenerator.hpp"
 #include "TerrainGeneration/material.hpp"
-#include "TerrainGeneration/tile_stamp.hpp"
+#include "TerrainGeneration/tilestamp.hpp"
 
 
 #define DIRT_ID 1 // what am I going to do with this?
@@ -113,13 +113,13 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
     srand(seed);
     std::cout << "start of land Generator" << std::endl;
 
-    // create a map of int -> Land_Generator
-    std::map<int, Land_Generator> land_generators;
+    // create a map of int -> LandGenerator
+    std::map<int, LandGenerator> land_generators;
 
     // for tile macro in data biome
     for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++){
         // create a land generator for each tile macro
-        Land_Generator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
+        LandGenerator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
         land_generators.insert(std::make_pair(i, gen));
     }
 
@@ -151,7 +151,7 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " Total time Terrain_init" << std::endl;
 }
 
-void Terrain::init_area(int area_x, int area_y, Land_Generator gen){
+void Terrain::init_area(int area_x, int area_y, LandGenerator gen){
     //int count = 0;
     while (!gen.empty()){
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
@@ -344,7 +344,7 @@ void Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end
         }
     }
 }
-inline void Terrain::stamp_tile_region(Tile_Stamp tStamp, int x, int y){ // unpack Tile_Stamp
+inline void Terrain::stamp_tile_region(TileStamp tStamp, int x, int y){ // unpack TileStamp
     stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2,
                       tStamp.y_start + y*Area_size + Area_size/2,
                       tStamp.z_start,

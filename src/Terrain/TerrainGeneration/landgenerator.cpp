@@ -19,23 +19,23 @@
 #include <iostream>
 #include <string>
 
-#include "tile_stamp.hpp"
+#include "tilestamp.hpp"
 #include "material.hpp"
 
-#include "land_generator.hpp"
+#include "landgenerator.hpp"
 
-Land_Generator::Land_Generator( const std::map<int, const Material> *materials_, Json::Value data){
+LandGenerator::LandGenerator( const std::map<int, const Material> *materials_, Json::Value data){
     materials = materials_;
     data_ = data;
     current_region = 0;
     current_sub_region = 0;
 };
-Land_Generator::Land_Generator(){
+LandGenerator::LandGenerator(){
     current_region = 0;
     current_sub_region = 0;
 };
 
-unsigned int Land_Generator::get_num_stamps(Json::Value biome){
+unsigned int LandGenerator::get_num_stamps(Json::Value biome){
     if (biome["Type"].asCString()== std::string( "Positions")){
         return biome["Positions"].size();
     } else if (biome["Type"].asCString()==std::string("Grid")){
@@ -45,8 +45,8 @@ unsigned int Land_Generator::get_num_stamps(Json::Value biome){
     }
 }
 
-Tile_Stamp Land_Generator::get_this_stamp() const {
-    Tile_Stamp out;
+TileStamp LandGenerator::get_this_stamp() const {
+    TileStamp out;
     out.mat = &(*materials).at((int)data_[current_region]["Material_id"].asInt());
     out.color_id = data_[current_region]["Color_id"].asInt();
     for (Json::Value::ArrayIndex i = 0; i < data_[current_region]["Can_Stamp"].size(); i++ ){
@@ -64,16 +64,16 @@ Tile_Stamp Land_Generator::get_this_stamp() const {
     std::string type = data_[current_region]["Type"].asCString();
 
     if (type == "Positions" ){
-        From_Positions(current_region, current_sub_region, out);
+        from_positions(current_region, current_sub_region, out);
     } else if (type == "Radius"){
-        From_Radius(current_region, current_sub_region, out);
+        from_radius(current_region, current_sub_region, out);
     } else if (type == "Grid"){
-        From_Grid(current_region, current_sub_region, out);
+        from_grid(current_region, current_sub_region, out);
     }
     return out;
 }
 
-void Land_Generator::From_Radius(int cr, int csr, Tile_Stamp & ts) const {
+void LandGenerator::from_radius(int cr, int csr, TileStamp & ts) const {
     int radius = data_[cr]["Radius"]["radius"].asInt();
     double distance = (double) (8 * radius) / data_[cr]["Radius"]["number"].asInt() * csr;
     int side = (int) distance / 2 / radius;
@@ -108,7 +108,7 @@ void Land_Generator::From_Radius(int cr, int csr, Tile_Stamp & ts) const {
     ts.y_end = volume[4];
     ts.z_end = volume[5];
 }
-void Land_Generator::From_Grid(int cr, int csr, Tile_Stamp &ts) const {
+void LandGenerator::from_grid(int cr, int csr, TileStamp &ts) const {
     int x_center = (1 + 2 * (csr % data_[cr]["Grid"]["number"].asInt())) * ( data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt()) - data_[cr]["Grid"]["radius"].asInt();
     int y_center = (1 + 2 * (csr / data_[cr]["Grid"]["number"].asInt())) * ( data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt()) - data_[cr]["Grid"]["radius"].asInt();
     int DC = data_[cr]["Grid"]["DC"].asInt();
@@ -126,7 +126,7 @@ void Land_Generator::From_Grid(int cr, int csr, Tile_Stamp &ts) const {
     ts.z_end = volume[5];
 
 }
-void Land_Generator::From_Positions(int cr, int csr, Tile_Stamp &ts) const {
+void LandGenerator::from_positions(int cr, int csr, TileStamp &ts) const {
     Json::Value xy_positions = data_[cr]["Positions"][csr];
     int center [2][2] = {{xy_positions[0].asInt(), xy_positions[1].asInt()},
                             {xy_positions[0].asInt(), xy_positions[1].asInt()} };
@@ -141,7 +141,7 @@ void Land_Generator::From_Positions(int cr, int csr, Tile_Stamp &ts) const {
     ts.z_end = volume[5];
 }
 
-std::array<int, 6> Land_Generator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz ) const {
+std::array<int, 6> LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz ) const {
 
     int center_x = rand() % ( center[1][0]-center[0][0] + 1) + center[0][0];
     int center_y = rand() % ( center[1][1]-center[0][1] + 1) + center[0][1];
