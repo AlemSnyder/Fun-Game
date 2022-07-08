@@ -66,7 +66,7 @@ void Chunk::R_merge(NodeGroup &G1, std::set<NodeGroup*>& to_merge){
 
 void Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const{
     for (auto it = node_groups_.begin(); it != node_groups_.end(); it++){
-        auto elem = *it;
+        auto& elem = *it;
         out.insert(&elem);  // Ptr to element
     }
 }
