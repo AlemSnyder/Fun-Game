@@ -12,9 +12,9 @@
 */
 
 /**
- * @file land_generator.hpp
+ * @file chunk.hpp
  *
- * @brief Defines Land_Generator class.
+ * @brief Defines Chunk class.
  *
  * @ingroup Terrain
  *
