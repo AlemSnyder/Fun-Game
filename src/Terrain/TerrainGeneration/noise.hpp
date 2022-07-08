@@ -1,21 +1,51 @@
-// Two-dimensional value noise_ based on Hugo Elias's description:
-//   http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
+// -*- lsst-c++ -*-
+// Two-dimensional value noise_ based on Hugo Elias's description.
+// I did not write this code, but the link to the original no longer exists.
 
+/**
+ * @file noise.hpp
+ *
+ * @brief Defines NoiseGenerator class.
+ *
+ * @ingroup Terrain
+ *
+ */
 #ifndef __NOISE_HPP__
 #define __NOISE_HPP__
 
 #include <cmath>
 
-#define maxPrimeIndex 10
+#define maxPrimeIndex 10 // The length of NoiseGenerator::primes
 
+/**
+ * @brief Generates two dimensional Perlin noise.
+ * 
+ * @details NoiseGenerator generates two dimensional Perlin noise with cosine
+ * interpolation, and geometric persistance. The noise consists of different
+ * layers. The first layer is between -1, and 1. Subsequent have twice the 
+ * frequency, and amplitude of persistance times the previous amplitude.
+ */
 class NoiseGenerator {
 public:
+    /**
+     * @brief Construct a new Noise Generator object
+     * 
+     * @param numOctaves the number of noise layers that are generated
+     * @param persistence the strength of subsequent noise; between 0, and 1
+     * @param primeIndex int for randomization (a worse version of a seed)
+     */
     NoiseGenerator(int numOctaves, double persistence, int primeIndex){
         num_octaves_ = numOctaves;
         persistence_ = persistence;
         primeIndex_ = primeIndex % maxPrimeIndex;
     }
-
+    /**
+     * @brief Get the value of the noise.
+     * 
+     * @param x postion in x direction
+     * @param y postion in y direction
+     * @return double the value of the noise
+     */
     double getValueNoise(double x, double y);
 
 private:
