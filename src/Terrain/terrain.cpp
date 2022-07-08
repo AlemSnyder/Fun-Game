@@ -976,7 +976,7 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
         }
     }
     for (uint32_t CC : unknown_materials){
-        std::cout << "    cannot find color: " << CC << std::endl;
+        std::cout << "    cannot find color: " << std::hex << std::uppercase << CC << std::dec << std::endl;
     }
     fclose(file);
     std::cout << "    tiles read: " << tiles_read << std::endl;
