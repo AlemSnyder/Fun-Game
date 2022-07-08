@@ -10,6 +10,7 @@
  * @ingroup Terrain
  *
  */
+
 #ifndef __NOISE_HPP__
 #define __NOISE_HPP__
 

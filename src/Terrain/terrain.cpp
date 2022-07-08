@@ -152,11 +152,11 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
 }
 
 void Terrain::init_area(int area_x, int area_y, Land_Generator gen){
-    int count = 0;
+    //int count = 0;
     while (!gen.empty()){
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
         ++gen;
-        count++;
+        //count++;
     }
     gen.reset();
     //std::cout << count << " total stamps\n";
@@ -345,7 +345,15 @@ void Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end
     }
 }
 inline void Terrain::stamp_tile_region(Tile_Stamp tStamp, int x, int y){ // unpack Tile_Stamp
-    stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2, tStamp.y_start + y*Area_size + Area_size/2 , tStamp.z_start, tStamp.x_end + x*Area_size + Area_size/2, tStamp.y_end + y*Area_size + Area_size/2, tStamp.z_end, tStamp.mat, tStamp.elements_can_stamp, tStamp.color_id);
+    stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2,
+                      tStamp.y_start + y*Area_size + Area_size/2,
+                      tStamp.z_start,
+                      tStamp.x_end + x*Area_size + Area_size/2,
+                      tStamp.y_end + y*Area_size + Area_size/2,
+                      tStamp.z_end,
+                      tStamp.mat,
+                      tStamp.elements_can_stamp,
+                      tStamp.color_id);
 }
 
 void Terrain::init_grass(){

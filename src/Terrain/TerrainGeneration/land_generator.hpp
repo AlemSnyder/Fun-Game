@@ -34,17 +34,52 @@
 #include "tile_stamp.hpp"
 #include "material.hpp"
 
+/**
+ * @brief Reads JSON data and generates Tile_Stamp objects
+ * 
+ * @details The way biomes are generated is saved in data/biome_data.json.
+ * The biome pipeline starts with getting a 2D tile map. Each tile in the map
+ * a different type (usually height). Next is defining macros. These define how
+ * some part of a map tile is generated. This is useful because some parts of a
+ * map tile will be the same as another with a different value (all bedrock is
+ * the same). Each map tile type is now assigned macros. Land Generator
+ * iterates though these macros, and creates Tile Stamps.
+ * 
+ */
 class Land_Generator{
 public:
-    Land_Generator( const std::map<int, const Material> *materials_, Json::Value data);
+    /**
+     * @brief Construct a new Land_Generator object
+     * 
+     * @param materials the materials used in this biome
+     * @param data the description of how tiles stamps should be generated
+     */
+    Land_Generator( const std::map<int, const Material> *materials, Json::Value data);
+    /**
+     * @brief Construct a new Land_Generator object (default constructor)
+     * 
+     * This should not be used.
+     */
     Land_Generator();
 
-
+    /**
+     * @brief Test if iteration is complete
+     * 
+     * @return true if iteration is complete,
+     * @return false otherwise
+     */
     inline bool empty()const{
         return (current_region >= data_.size());
     }
+    /**
+     * @brief Generate and return Tile Stamp object
+     * 
+     * @return Tile_Stamp 
+     */
     Tile_Stamp get_this_stamp() const;
-
+    /**
+     * @brief increment the data of the Tile Stamp that will be generated
+     */
     void operator++(){
         current_sub_region++;
         if (current_sub_region == get_num_stamps(data_[current_region])){
@@ -52,6 +87,10 @@ public:
             current_sub_region=0;
         }
     }
+    /**
+     * @brief Resets this land generator
+     * 
+     */
     void reset(){
         current_region = 0;
         current_sub_region = 0;
