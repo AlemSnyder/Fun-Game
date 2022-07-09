@@ -1,4 +1,4 @@
-fix onepoath
+fix one path
     should be renamed unit_path
     should be a glorified boolean 
     saves two things
@@ -7,3 +7,9 @@ fix onepoath
             ie. up or down, horizontal, diagonal, up and over, or up and diagonal.
         this should take 6 bits total.
     this way the path can be easily converted to a "has a" functionality. the unit path will test if all its paths are compatible with the given type.
+
+Documentation
+    tile.hpp
+    terrain.hpp
+    onepath.hpp
+    node.hpp

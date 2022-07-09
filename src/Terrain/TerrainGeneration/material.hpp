@@ -61,8 +61,8 @@ struct Material{
     bool solid = false; // Is the material solid?
     uint8_t element_id = 0; // The ID of the material (Air is 0)
     const std::string name = "Air"; // The material name
-    //int8_t deteraition from wind
-    //int8_t deteraition from water
+    //int8_t deterioration from wind
+    //int8_t deterioration from water
 };
 
 #endif
