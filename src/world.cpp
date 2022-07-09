@@ -14,23 +14,18 @@ const Material* World::get_material(int material_id) const {
 void World::init_materials(Json::Value material_data){
     for (auto element_it = material_data.begin(); element_it != material_data.end(); element_it++){
         
-        Material mat;
-        mat.element = element_it.key().asCString();
-        //std::cout << mat.element << "<- that is the element\n";
-        mat.element_id = (*element_it)["id"].asInt();
-        mat.solid = (*element_it)["solid"].asBool();
-        mat.speed_multiplier = (*element_it)["speed"].asInt();
-        //std::cout << "to colors 23\n";
-        //for (auto subtype_it = (*element_it)["colors"].begin(); subtype_it != (*element_it)["colors"].end(); subtype_it++ ){
+        std::vector<std::pair<const std::string, uint32_t>> color_vector;
+        std::string name = (element_it.key().asCString());
         for (unsigned int i = 0; i < (*element_it)["colors"].size(); i++){
-            //std::cout << "start loop\n";
             const char * string = (*element_it)["colors"][i]["name"].asCString();
-            //std::cout << "as string\n";
-            //std::cout << (*subtype_it).asCString() << " color as string\n";
-            uint32_t color = std::stoll((*element_it)["colors"][i]["hex"].asCString(), 0, 16); //materials_json[element_it]["colors"][subtype_it].asInt();
-            //std::cout << color << " color as int\n";
-            mat.color.push_back(std::make_pair(string, color));
+            uint32_t color = std::stoll((*element_it)["colors"][i]["hex"].asCString(), 0, 16);
+            color_vector.push_back(std::make_pair(string, color));
         }
+        Material mat{ color_vector, // color
+                      (uint8_t)(*element_it)["speed"].asInt(), // speed_multiplier
+                      (*element_it)["solid"].asBool(), // solid
+                      (uint8_t)(*element_it)["id"].asInt(), // element_id
+                      name}; //name
         materials.insert( std::make_pair(mat.element_id, mat));
     }
 }

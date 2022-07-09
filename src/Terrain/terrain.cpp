@@ -502,7 +502,6 @@ inline float Terrain::get_G_cost(const T tile, const Node<const T> node){
 
 void Terrain::add_all_adjacent(int xyz) {
     tiles[xyz].clear_adjacent();
-    //std::map<Tile*,OnePath>::iterator it = tiles[xyz].get_adjacent().begin();
 
     for (int xyz_ = 0; xyz_ < 27; xyz_++) {
         if (xyz_ == 13) {
@@ -515,7 +514,6 @@ void Terrain::add_all_adjacent(int xyz) {
             // Tile t = ;
             Tile *other = get_tile(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
             OnePath path_type = get_path_type(x_, y_, z_, x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
-            //tiles[xyz].add_adjacent(it, other, path_type);
             tiles[xyz].add_adjacent(other, path_type);
             //it++;
         }
@@ -595,15 +593,15 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     int dz = 3;
     int dxy = 1;
 
-    int8_t type = abs(xs - xf) + abs(ys - yf) + 4 * abs(zs - zf);
+    int8_t type = ((abs(xs - xf) + abs(ys - yf)) << (1 + 2 * abs(zs - zf))) + (abs(zs - zf) << 1);
     bool open;
-    if (type == 1 || type == 4) {
+    if (type == 2 || type == 8) {
         // up / down or side to side
         // in this case the two tiles are bordering
         // same lever so the only thing that maters if the entity can stand on
         // both tiles
         open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
-    } else if (type == 2) {
+    } else if (type == 4) {
         // still the same level
         // this test if the start and final locations are open,
         // and if the two between them are open
@@ -613,7 +611,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                can_stand(xf, yf, zf, dz, dxy) &&
                can_stand(xs, yf, zs, dz, dxy) &&
                can_stand(xf, ys, zf, dz, dxy);
-    } else if (type == 5) {
+    } else if (type == 16) {
         if (zf > zs) {
             // going up, and over
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
@@ -624,7 +622,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                    can_stand(xf, yf, zf, dz + 1, dxy);
         }
 
-    } else if (type == 6) {
+    } else if (type == 32) {
         if (zf > zs) {
             // going up, and over
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
@@ -644,7 +642,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
         }
     }
 
-    return int8_t(type + 8 * open);
+    return int8_t(type + open);
 }
 
 std::set<const NodeGroup*> Terrain::get_all_node_groups() const {
@@ -801,7 +799,7 @@ std::vector<const T *> Terrain::get_path(const T *start,
         Node<const T> *choice = openNodes.top();
         openNodes.pop();  // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::set<Node<const T>*> adjacent_nodes = get_adjacent_nodes(choice, nodes, 63); //! onepath needs to be updated. this should be returned to 31
+        std::set<Node<const T>*> adjacent_nodes = get_adjacent_nodes(choice, nodes, 31);
         for (Node<const T> *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes

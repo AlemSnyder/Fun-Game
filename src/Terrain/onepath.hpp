@@ -5,10 +5,10 @@
 
 enum class DirectionFlags : uint8_t {
     NONE = 0,
-    HORIZONTAL1 = 1 << 0,
-    HORIZONTAL2 = 1 << 1,
-    VERTICAL = 1 << 2,
-    OPEN = 1 << 3,
+    OPEN = 1 << 0,
+    HORIZONTAL1 = 1 << 1,
+    HORIZONTAL2 = 1 << 2,
+    VERTICAL = 1 << 3,
     UP_AND_OVER = 1 << 4,
     UP_AND_DIAGONAL = 1 << 5,
 };
@@ -53,17 +53,15 @@ public:
     }
     inline bool is_up_diagonal() const {
         return (
-            ((DirectionFlags::HORIZONTAL2 | DirectionFlags::VERTICAL) & type) ==
-            (DirectionFlags::HORIZONTAL2 | DirectionFlags::VERTICAL));
+            (DirectionFlags::UP_AND_DIAGONAL & type)) != DirectionFlags::UP_AND_DIAGONAL;
     }
     inline bool is_up_over() const {
-        return (((DirectionFlags::HORIZONTAL1 | DirectionFlags::VERTICAL) &
-                type) ==
-                    (DirectionFlags::HORIZONTAL1 | DirectionFlags::VERTICAL));
+        return (
+            (DirectionFlags::UP_AND_OVER & type)) != DirectionFlags::UP_AND_OVER;
     }
     inline bool is_diagonal() const {
-        return (((DirectionFlags::HORIZONTAL2 | DirectionFlags::VERTICAL) &
-                type) == DirectionFlags::HORIZONTAL2);
+        return (
+            (DirectionFlags::HORIZONTAL2 & type)) != DirectionFlags::HORIZONTAL2;
     }
     inline bool is_up() const { return ((DirectionFlags::VERTICAL & type) == DirectionFlags::VERTICAL); }
     inline bool is_level() const { return ((DirectionFlags::VERTICAL & type) == DirectionFlags::NONE); }
@@ -74,9 +72,7 @@ public:
     inline uint8_t get_type() const { return static_cast<uint8_t>(type); }
 
     inline bool compatible(DirectionFlags test) const {
-        DirectionFlags upOver = is_up_over() ? DirectionFlags::UP_AND_OVER : DirectionFlags::NONE;
-        DirectionFlags upDiagonal = is_up_diagonal() ? DirectionFlags::UP_AND_DIAGONAL : DirectionFlags::NONE;
-        return !bool((type | upOver | upDiagonal) & ~test);// != DirectionFlags::NONE;
+        return !bool(type & ~test);
     };
 
     inline bool compatible(uint8_t test) const {
