@@ -121,8 +121,6 @@ public:
     Terrain(const char * path, const std::map<int, const Material> * material);
 
     // TODO plack block
-    std::set<Tile *> get_adjacent_tiles(const Tile *const tile, uint8_t type);
-    std::set<const Tile *> get_adjacent_tiles(const Tile *const tile, uint8_t type) const;
     template<class T>
     std::set<Node<const T> *> get_adjacent_nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> &nodes, uint8_t type) const;
 

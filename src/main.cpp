@@ -19,6 +19,7 @@ GLFWwindow *window;
 #include "GUI/shader.hpp"
 #include "Terrain/terrain.hpp"
 #include "world.hpp"
+#include "Entity/mesh.hpp"
 
 #define INITIAL_WINDOW_WIDTH 1024
 #define INITIAL_WINDOW_HEIGHT 768
@@ -138,9 +139,32 @@ int path_finder_test(const char *path, const char *save_path)
     return 0;
 }
 
+void get_mesh(const char * path,
+    std::vector<std::uint16_t>& indices,
+    std::vector<glm::vec3>& indexed_vertices,
+    std::vector<glm::vec3>& indexed_colors,
+    std::vector<glm::vec3>& indexed_normals){
+
+    Mesh mesh(path);
+    //World world(path);
+    std::cout << "read from file" << std::endl;
+
+    mesh.get_mesh(indices,
+            indexed_vertices,
+            indexed_colors,
+            indexed_normals);
+    }
+
 int GUITest(const char *path)
 {
-    World world(path);
+    std::vector<std::uint16_t> indices;
+    std::vector<glm::vec3> indexed_vertices;
+    std::vector<glm::vec3> indexed_colors;
+    std::vector<glm::vec3> indexed_normals;
+    // indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs,
+    // indexed_normals);
+    get_mesh(path, indices, indexed_vertices, indexed_colors,
+                          indexed_normals);
 
     // Initialise GLFW
     if (!glfwInit()) {
@@ -233,14 +257,7 @@ int GUITest(const char *path)
     // bool res = loadOBJ("../src/GUI/room_thickwalls.obj", vertices, uvs,
     // normals);
 
-    std::vector<std::uint16_t> indices;
-    std::vector<glm::vec3> indexed_vertices;
-    std::vector<glm::vec3> indexed_colors;
-    std::vector<glm::vec3> indexed_normals;
-    // indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs,
-    // indexed_normals);
-    world.get_mesh_greedy(indices, indexed_vertices, indexed_colors,
-                          indexed_normals);
+
 
     // Load it into a VBO
 
@@ -567,8 +584,9 @@ int GUITest(const char *path)
 int main(int argc, char **argv)
 {
     if (argc == 1) {
-        return path_finder_test("../SavedTerrain/pathfinder_input.qb",
-                                "../SavedTerrain/pathfinder_output.qb");
+        //return path_finder_test("../SavedTerrain/pathfinder_input.qb",
+        //                        "../SavedTerrain/pathfinder_output.qb");
+        return GUITest("../data/Models/DefaultTree.qb");
     } else if (std::string(argv[1]) == "--TerrainTypes") {
         Json::Value biome_data;
         std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);

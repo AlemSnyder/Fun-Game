@@ -15,7 +15,6 @@
 #include <vector>
 #include <cstring>
 #include <fstream>
-#include <fstream>
 
 #include "json/json.h"
 #include "node.hpp"
@@ -521,31 +520,6 @@ void Terrain::add_all_adjacent(int xyz) {
     //std::cout << "adding adjacent" << std::endl;
 }
 
-
-//! should be removed
-std::set<Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t type) {
-    std::set<Tile *> out;
-
-    for (std::pair<Tile *, OnePath> t : tile->get_adjacent_map()) {
-        if (t.second.compatible(type)) {
-            out.insert(t.first);
-        }
-    }
-    return out;
-};
-//! should be removed
-std::set<const Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t type) const {
-    std::set<const Tile *> out;
-
-    for (const std::pair<Tile *,OnePath> t : tile->get_adjacent_map()) {
-        if (t.second.compatible(type)) {
-            out.insert(t.first);
-        }
-    }
-    return out;
-};
-
-
 template<class T>
 std::set<Node<const T> *> Terrain::get_adjacent_nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> & nodes, uint8_t path_type) const {
     std::set<Node<const T> *> out;
@@ -918,7 +892,6 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     file = fopen(path, "rb");
     READ<uint32_t>(void_, file); // version
     //std::cout << void_ << std::endl;
-    (void) void_;
     READ<uint32_t>(void_, file);   // color format RGBA
     //std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file);   // orientation right handed // c
