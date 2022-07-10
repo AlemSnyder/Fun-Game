@@ -23,6 +23,7 @@ inline DirectionFlags operator&(DirectionFlags lhs, DirectionFlags rhs) {
 inline DirectionFlags operator~(DirectionFlags val){
     return static_cast<DirectionFlags>(~static_cast<uint8_t>(val));
 }
+
 //DirectionFlags operator!=(DirectionFlags lhs, DirectionFlags rhs){
 //    return (static_cast<uint8_t>(lhs)) == (static_cast<uint8_t>(rhs));
 //}
@@ -90,6 +91,12 @@ public:
 
     bool operator==(const OnePath other) const {
         return other.type == this->type;
+    }
+    bool operator==(const uint8_t other) const {
+        return static_cast<DirectionFlags>(other) == this->type;
+    }
+    bool operator==(const DirectionFlags other) const {
+        return other == this->type;
     }
     OnePath operator&(const OnePath other) const {
         return type & other.type;

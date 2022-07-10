@@ -593,15 +593,15 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     int dz = 3;
     int dxy = 1;
 
-    int8_t type = ((abs(xs - xf) + abs(ys - yf)) << (1 + 2 * abs(zs - zf))) + (abs(zs - zf) << 1);
+    OnePath type(((abs(xs - xf) + abs(ys - yf)) << (1 + 2 * abs(zs - zf))) + (abs(zs - zf) << 1));
     bool open;
-    if (type == 2 || type == 8) {
+    if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
         // same lever so the only thing that maters if the entity can stand on
         // both tiles
         open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
-    } else if (type == 4) {
+    } else if (type == DirectionFlags::HORIZONTAL2) {
         // still the same level
         // this test if the start and final locations are open,
         // and if the two between them are open
@@ -611,7 +611,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                can_stand(xf, yf, zf, dz, dxy) &&
                can_stand(xs, yf, zs, dz, dxy) &&
                can_stand(xf, ys, zf, dz, dxy);
-    } else if (type == 16) {
+    } else if (type == DirectionFlags::UP_AND_OVER) {
         if (zf > zs) {
             // going up, and over
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
@@ -622,9 +622,9 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                    can_stand(xf, yf, zf, dz + 1, dxy);
         }
 
-    } else if (type == 32) {
+    } else if (type == DirectionFlags::UP_AND_DIAGONAL) {
         if (zf > zs) {
-            // going up, and over
+            // going up, and diagonal
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
                    can_stand(xf, yf, zf, dz, dxy) &&
                  ((can_stand(xf, ys, zs, dz + 1, dxy) ||
@@ -632,7 +632,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                   (can_stand(xs, yf, zs, dz + 1, dxy) ||
                    can_stand(xs, yf, zf, dz, dxy)));
         } else {
-            // going down and over
+            // going down and diagonal
             open = can_stand(xs, ys, zs, dz, dxy) &&
                    can_stand(xf, yf, zf, dz + 1, dxy)&&
                  ((can_stand(xf, ys, zs, dz, dxy) ||
@@ -642,7 +642,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
         }
     }
 
-    return int8_t(type + open);
+    return type & OnePath(open);
 }
 
 std::set<const NodeGroup*> Terrain::get_all_node_groups() const {
