@@ -13,7 +13,7 @@ int VoxelUtility::from_qb(const char * path,
     std::cout << "Reading form " << path << "\n";
     FILE *file;
     //int x, y, z; // position in terrain
-    uint32_t void_, compression, color; // void int 32 used to read 32 bites without saving it.
+    uint32_t void_, compression; // void int 32 used to read 32 bites without saving it.
     int32_t x_center, y_center, z_center;
     uint8_t v[4];
 

@@ -145,11 +145,11 @@ void get_mesh(const char * path,
     std::vector<glm::vec3>& indexed_colors,
     std::vector<glm::vec3>& indexed_normals){
 
-    Mesh mesh(path);
+    World world(path);
     //World world(path);
     std::cout << "read from file" << std::endl;
 
-    mesh.get_mesh(indices,
+    world.get_mesh_greedy(indices,
             indexed_vertices,
             indexed_colors,
             indexed_normals);
@@ -161,10 +161,18 @@ int GUITest(const char *path)
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
     std::vector<glm::vec3> indexed_normals;
-    // indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs,
-    // indexed_normals);
     get_mesh(path, indices, indexed_vertices, indexed_colors,
                           indexed_normals);
+
+    std::vector<std::uint16_t> indices_tree;
+    std::vector<glm::vec3> indexed_vertices_tree;
+    std::vector<glm::vec3> indexed_colors_tree;
+    std::vector<glm::vec3> indexed_normals_tree;
+    Mesh mesh("../data/Models/DefaultTree.qb");
+    mesh.get_mesh(indices_tree,
+                  indexed_vertices_tree,
+                  indexed_colors_tree,
+                  indexed_normals_tree);
 
     // Initialise GLFW
     if (!glfwInit()) {
@@ -173,7 +181,7 @@ int GUITest(const char *path)
         return -1;
     }
 
-    glfwWindowHint(GLFW_SAMPLES, 4);               // anti-alsing of 4
+    glfwWindowHint(GLFW_SAMPLES, 4);               // anti-aliasing of 4
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // set Major
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // and Minor version
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
@@ -225,7 +233,7 @@ int GUITest(const char *path)
 	glfwSwapInterval(1);
 
     // Dark blue background
-    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    glClearColor(0.42f, 0.79f, 0.94f, 0.0f);
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
@@ -246,16 +254,6 @@ int GUITest(const char *path)
 
     // Get a handle for our "MVP" uniform
     GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
-
-    // Load the texture
-    // GLuint Texture = loadDDS("uvmap.DDS");
-
-    // Read our .obj file
-    // std::vector<glm::vec3> vertices;
-    // std::vector<glm::vec2> uvs;
-    // std::vector<glm::vec3> normals;
-    // bool res = loadOBJ("../src/GUI/room_thickwalls.obj", vertices, uvs,
-    // normals);
 
 
 
