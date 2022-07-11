@@ -285,6 +285,34 @@ int GUITest(const char *path)
                  indices.size() * sizeof(unsigned short), &indices[0],
                  GL_STATIC_DRAW);
 
+    // The above is for the wold the below is for trees
+
+    GLuint vertexbuffer_tree;
+    glGenBuffers(1, &vertexbuffer_tree);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer_tree);
+    glBufferData(GL_ARRAY_BUFFER, indexed_vertices_tree.size() * sizeof(glm::vec3),
+                 &indexed_vertices_tree[0], GL_STATIC_DRAW);
+
+    GLuint colorbuffer_tree;
+    glGenBuffers(1, &colorbuffer_tree);
+    glBindBuffer(GL_ARRAY_BUFFER, colorbuffer_tree);
+    glBufferData(GL_ARRAY_BUFFER, indexed_colors_tree.size() * sizeof(glm::vec3),
+                 &indexed_colors_tree[0], GL_STATIC_DRAW);
+
+    GLuint normalbuffer_tree;
+    glGenBuffers(1, &normalbuffer_tree);
+    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer_tree);
+    glBufferData(GL_ARRAY_BUFFER, indexed_normals_tree.size() * sizeof(glm::vec3),
+                 &indexed_normals_tree[0], GL_STATIC_DRAW);
+
+    // Generate a buffer for the indices as well
+    GLuint elementbuffer_tree;
+    glGenBuffers(1, &elementbuffer_tree);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer_tree);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 indices_tree.size() * sizeof(unsigned short), &indices_tree[0],
+                 GL_STATIC_DRAW);
+
     // ---------------------------------------------
     // Render to Texture - specific code begins here
     // ---------------------------------------------
@@ -339,6 +367,9 @@ int GUITest(const char *path)
     // Create and compile our GLSL program from the shaders
     GLuint programID = LoadShaders("../src/GUI/ShadowMapping.vert",
                                    "../src/GUI/ShadowMapping.frag");
+
+    GLuint programID_tree = LoadShaders("../src/GUI/ShadowMappingInstanced.vert",
+                                   "../src/GUI/ShadowMappingInstanced.frag");
 
     // Get a handle for our "myTextureSampler" uniform
     GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
@@ -513,6 +544,85 @@ int GUITest(const char *path)
                        (void *)0          // element array buffer offset
         );
 
+        // Use our Tree shader (This one is instanced)
+        glUseProgram(programID_tree);
+
+        // Send our transformation to the currently bound shader,
+        // in the "MVP" uniform
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+        glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+        glUniformMatrix4fv(view_matrix_ID, 1, GL_FALSE, &view_matrix[0][0]);
+        glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
+
+        glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
+
+        // Bind our texture in Texture Unit 0
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, TextureID);
+        // Set our "myTextureSampler" sampler to use Texture Unit 0
+        glUniform1i(TextureID, 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depthTexture);
+        glUniform1i(ShadowMapID, 1);
+
+        // 1rst attribute buffer : vertices
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer_tree);
+        glVertexAttribPointer(0,        // attribute
+                              3,        // size
+                              GL_FLOAT, // type
+                              GL_FALSE, // normalized?
+                              0,        // stride
+                              (void *)0 // array buffer offset
+        );
+
+        // 2nd attribute buffer : UVs
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, colorbuffer_tree);
+        glVertexAttribPointer(1,        // attribute
+                              3,        // size
+                              GL_FLOAT, // type
+                              GL_FALSE, // normalized?
+                              0,        // stride
+                              (void *)0 // array buffer offset
+        );
+
+        // 3rd attribute buffer : normals
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer_tree);
+        glVertexAttribPointer(2,        // attribute
+                              3,        // size
+                              GL_FLOAT, // type
+                              GL_FALSE, // normalized?
+                              0,        // stride
+                              (void *)0 // array buffer offset
+        );
+
+        // Index buffer
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer_tree);
+
+        std::vector<glm::mat4> model_matrices;
+
+        for (unsigned int i = 0; i < 5; i++){
+            glm::mat4 model = glm::mat4(1.0f);
+            float x, y = 0; // set the coordinates for the mesh
+            float z = i * 5.0f;
+            model = glm::translate(model, glm::vec3(x,y,z));
+            float rotAngle = 90 * i % 4;
+            model = glm::rotate(model, rotAngle, glm::vec3(0,0,1));
+
+            model_matrices.push_back(model);
+
+        }
+
+        // Draw the triangles !
+        glDrawElements(GL_TRIANGLES,      // mode
+                       indices.size(),    // count
+                       GL_UNSIGNED_SHORT, // type
+                       (void *)0          // element array buffer offset
+        );
+
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
@@ -563,6 +673,10 @@ int GUITest(const char *path)
     glDeleteBuffers(1, &colorbuffer);
     glDeleteBuffers(1, &normalbuffer);
     glDeleteBuffers(1, &elementbuffer);
+    glDeleteBuffers(1, &vertexbuffer_tree);
+    glDeleteBuffers(1, &colorbuffer_tree);
+    glDeleteBuffers(1, &normalbuffer_tree);
+    glDeleteBuffers(1, &elementbuffer_tree);
     glDeleteProgram(programID);
     glDeleteProgram(depthProgramID);
     glDeleteProgram(quad_programID);

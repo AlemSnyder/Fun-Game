@@ -46,7 +46,7 @@ int Mesh::get_position(int x, int y, int z) const {
 void Mesh::generate_mesh(std::vector<uint32_t> data,
                        std::vector<int32_t> center,
                        std::vector<int> dims){
-    
+    glm::vec3 glm_vector(center[0], center[1], center[2]);
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // printf("axis: %ld\n", axis);
 
@@ -132,13 +132,16 @@ void Mesh::generate_mesh(std::vector<uint32_t> data,
                     const std::size_t vertexSize = indexed_vertices_.size();
 
                     indexed_vertices_.push_back(
-                        glm::vec3(x[0], x[1], x[2]));
+                        glm::vec3(x[0], x[1], x[2])+glm_vector);
                     indexed_vertices_.push_back(glm::vec3(
-                        x[0] + du[0], x[1] + du[1], x[2] + du[2]));
+                        x[0] + du[0], x[1] + du[1], x[2] + du[2])
+                        + glm_vector);
                     indexed_vertices_.push_back(glm::vec3(
-                        x[0] + du[0] + dv[0], x[1] + du[1] + dv[1], x[2] + du[2] + dv[2]));
+                        x[0] + du[0] + dv[0], x[1] + du[1] + dv[1], x[2] + du[2] + dv[2])
+                        + glm_vector);
                     indexed_vertices_.push_back(glm::vec3(
-                        x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]));
+                        x[0] + dv[0], x[1] + dv[1], x[2] + dv[2])
+                        + glm_vector);
 
                     uint32_t int_color = c.second;
                     glm::vec3 vector_color(float( ( int_color >> 24 ) & 0xFF ) / 255.0,
