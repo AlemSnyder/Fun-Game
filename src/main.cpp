@@ -320,10 +320,10 @@ int GUITest(const char *path)
 
     std::vector<glm::vec3> model_matrices;
 
-    for (int x = 0; x < world.terrain_main.get_X_MAX(); x+=6)
-    for (int y = 0; y < world.terrain_main.get_Y_MAX(); y+=6){
+    for (int x = 0; x < world.terrain_main.get_X_MAX(); x+=1)
+    for (int y = 0; y < world.terrain_main.get_Y_MAX(); y+=1){
         int z;
-        if (( z = world.terrain_main.get_Z_solid(x,y)) != 0){
+        if (( z = world.terrain_main.get_Z_solid(x,y)+1) != 1){
             glm::vec3 model(x, y, z);
             model_matrices.push_back(model);
         }
