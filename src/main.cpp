@@ -14,6 +14,7 @@ GLFWwindow *window;
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
@@ -161,8 +162,12 @@ int GUITest(const char *path)
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
     std::vector<glm::vec3> indexed_normals;
-    get_mesh(path, indices, indexed_vertices, indexed_colors,
-                          indexed_normals);
+    World world(path);
+
+    world.get_mesh_greedy(indices,
+            indexed_vertices,
+            indexed_colors,
+            indexed_normals);
 
     std::vector<std::uint16_t> indices_tree;
     std::vector<glm::vec3> indexed_vertices_tree;
@@ -313,8 +318,29 @@ int GUITest(const char *path)
                  indices_tree.size() * sizeof(unsigned short), &indices_tree[0],
                  GL_STATIC_DRAW);
 
+    std::vector<glm::vec3> model_matrices;
+
+    for (int x = 0; x < world.terrain_main.get_X_MAX(); x+=6)
+    for (int y = 0; y < world.terrain_main.get_Y_MAX(); y+=6){
+        int z;
+        if (( z = world.terrain_main.get_Z_solid(x,y)) != 0){
+            glm::vec3 model(x, y, z);
+            model_matrices.push_back(model);
+        }
+    }
+
+    std::cout << "Number of models: " << model_matrices.size() << std::endl;
+
+    GLuint model_matrices_buffer_tree;
+    glGenBuffers(1, &model_matrices_buffer_tree);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model_matrices_buffer_tree);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 model_matrices.size() * sizeof(glm::vec3), &model_matrices[0],
+                 GL_STATIC_DRAW);
+
+
     // ---------------------------------------------
-    // Render to Texture - specific code begins here
+    // Render Shadow to Texture - specific code begins here
     // ---------------------------------------------
 
     // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth
@@ -599,33 +625,33 @@ int GUITest(const char *path)
                               (void *)0 // array buffer offset
         );
 
+        // 4th attribute buffer : transmorm
+        glEnableVertexAttribArray(3);
+        glBindBuffer(GL_ARRAY_BUFFER, model_matrices_buffer_tree);
+        glVertexAttribPointer(3,        // attribute
+                              3,        // size
+                              GL_FLOAT, // type
+                              GL_FALSE, // normalized?
+                              0,        // stride
+                              (void *)0 // array buffer offset
+        );
+        glVertexAttribDivisor(3,1);
+
         // Index buffer
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer_tree);
 
-        std::vector<glm::mat4> model_matrices;
-
-        for (unsigned int i = 0; i < 5; i++){
-            glm::mat4 model = glm::mat4(1.0f);
-            float x, y = 0; // set the coordinates for the mesh
-            float z = i * 5.0f;
-            model = glm::translate(model, glm::vec3(x,y,z));
-            float rotAngle = 90 * i % 4;
-            model = glm::rotate(model, rotAngle, glm::vec3(0,0,1));
-
-            model_matrices.push_back(model);
-
-        }
-
         // Draw the triangles !
-        glDrawElements(GL_TRIANGLES,      // mode
-                       indices.size(),    // count
+        glDrawElementsInstanced(GL_TRIANGLES,      // mode
+                       indices_tree.size(),    // count
                        GL_UNSIGNED_SHORT, // type
-                       (void *)0          // element array buffer offset
+                       (void *)0,          // element array buffer offset
+                       model_matrices.size()
         );
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(3);
 
         // Optionally render the shadowmap (for debug only)
 

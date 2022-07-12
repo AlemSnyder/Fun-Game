@@ -4,8 +4,7 @@
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexUV;
 layout(location = 2) in vec3 vertexNormal_modelspace;
-layout(location = 3) in mat4 instancedMatrix
-
+layout(location = 3) in vec3 model_matrix_transform;
 // Output data ; will be interpolated for each fragment.
 out vec3 UV;
 out vec3 Position_worldspace;
@@ -24,17 +23,19 @@ uniform mat4 DepthBiasMVP;
 
 void main(){
 
+	vec4 vertex_postion_model_space_instanced = vec4(vertexPosition_modelspace+model_matrix_transform, 1);
+
 	// Output position of the vertex, in clip space : MVP * position
-	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
+	gl_Position =  MVP * vertex_postion_model_space_instanced;
 	
-	ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace,1);
+	ShadowCoord = DepthBiasMVP * vertex_postion_model_space_instanced;
 	
 	// Position of the vertex, in worldspace : M * position
-	Position_worldspace = (M * vec4(vertexPosition_modelspace,1)).xyz;
+	Position_worldspace = (M * vertex_postion_model_space_instanced).xyz;
 	
 	// Vector that goes from the vertex to the camera, in camera space.
 	// In camera space, the camera is at the origin (0,0,0).
-	EyeDirection_cameraspace = vec3(0,0,0) - ( V * M * vec4(vertexPosition_modelspace,1)).xyz;
+	EyeDirection_cameraspace = vec3(0,0,0) - ( V * M * vertex_postion_model_space_instanced).xyz;
 
 	// Vector that goes from the vertex to the light, in camera space
 	LightDirection_cameraspace = (V*vec4(LightInvDirection_worldspace,0)).xyz;
