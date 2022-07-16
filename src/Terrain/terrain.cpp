@@ -951,6 +951,7 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     }
     fclose(file);
     std::cout << "    tiles read: " << tiles_read << std::endl;
+    free(name);
     return 0;
 }
 

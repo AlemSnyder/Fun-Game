@@ -71,7 +71,7 @@ int VoxelUtility::from_qb(const char * path,
     //free(void_);
     //free(compression);
     //free(name_len);
-    //free(name);
+    free(name);
 
     fclose(file);
     return 0;

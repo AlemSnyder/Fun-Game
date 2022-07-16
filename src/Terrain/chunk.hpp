@@ -67,7 +67,7 @@ private:
     Terrain* ter_;
     void delNodeGroup(NodeGroup &NG);
     void mergeNodeGroup(NodeGroup &g1, NodeGroup &g2);
-    int Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by chunk::size to get tile position.
+    uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by chunk::size to get tile position.
     bool contains_nodeGroup(NodeGroup*);
     void R_merge(NodeGroup &g1, std::set<NodeGroup*>& to_merge);
 };

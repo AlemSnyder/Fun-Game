@@ -18,9 +18,9 @@ struct TilePCompare{
 
 class Tile {  // this represents a tile in the world
 private:
-    int x; // The x index
-    int y; // The y index
-    int z; // The z index
+    uint16_t x; // The x index
+    uint16_t y; // The y index
+    uint16_t z; // The z index
     // does this need to know where it is?
     uint8_t color_id; // The tile color is determined by this and the material type.
     uint8_t grow_data_high; // Determined by the horizontal manhattan distance from a wall
