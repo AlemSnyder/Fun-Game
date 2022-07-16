@@ -593,16 +593,24 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     int dz = 3;
     int dxy = 1;
 
-    OnePath type(((abs(xs - xf) + abs(ys - yf)) << (1 + 2 * abs(zs - zf))) + (abs(zs - zf) << 1));
+
     // so what is going on? Only god knows.
     // abs(_s - _f) returns zero or one depending on wether the final and
     // initial positions are the same. same as bool (_s != _f)
+    uint8_t x_diff = abs(xs - xf);
+    uint8_t y_diff = abs(ys - yf);
+    uint8_t z_diff = abs(zs - zf);
+
     // If there is a change in the horizontal position, then everything should
     // be shifted 3, and if no 1.
     // This is because Directional flags are defined as follows:
     // 32   16  8  4  2 1
     // VH2 VH1  V H2 H1 O
+    uint8_t horizontal_direction= (x_diff + y_diff) << (1 + 2 * z_diff);
+    uint8_t vertical_direction= z_diff << 1;
+
     bool open;
+    OnePath type(horizontal_direction + vertical_direction);
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
