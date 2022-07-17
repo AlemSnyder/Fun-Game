@@ -27,10 +27,12 @@ file(GLOB SOURCES3 "src/**/**/*.cpp")
 
 add_executable(Fun_Game ${SOURCES1} ${SOURCES2} ${SOURCES3})
 
+#target_include_directories(Fun_Game ${GLM_INCLUDE_DIRS})
+
 target_link_libraries(Fun_Game glfw)
 target_link_libraries(Fun_Game OpenGL::GL)
 target_link_libraries(Fun_Game GLEW::GLEW)
-#target_link_libraries(Fun_Game glm)
+target_link_libraries(Fun_Game glm::glm)
 
 # add_library(ImportVoxel "external/CSDLL.hpp" ${SOURCES} ${SOURCES2})
 
