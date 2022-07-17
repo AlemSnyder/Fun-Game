@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 #add_compile_options(-municode)
 
-# set policies
+# prefer newer OpenGL
+# https://cmake.org/cmake/help/latest/policy/CMP0072.html
 cmake_policy(SET CMP0072 NEW)
 
 # set the project name
