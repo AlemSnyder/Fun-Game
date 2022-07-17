@@ -602,7 +602,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     uint8_t z_diff = abs(zs - zf);
 
     // If there is a change in the horizontal position, then everything should
-    // be shifted 3, and if no 1.
+    // be bit shifted by 3, and if not, by 1.
     // This is because Directional flags are defined as follows:
     // 32   16  8  4  2 1
     // VH2 VH1  V H2 H1 O
