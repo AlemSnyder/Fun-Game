@@ -16,7 +16,7 @@
 #include <cstring>
 #include <fstream>
 
-#include "json/json.h"
+#include "../json/json.h"
 #include "node.hpp"
 #include "tile.hpp"
 #include "terrain.hpp"
@@ -164,7 +164,7 @@ void Terrain::init_area(int area_x, int area_y, LandGenerator gen){
 void Terrain::init_chunks(){
     for (int xyz=0; xyz<((X_MAX-1)/Chunk::size+1)*((Y_MAX-1)/Chunk::size+1)*((Z_MAX-1)/Chunk::size+1); xyz+=1){
         auto [x,y,z] = sop(xyz, ((X_MAX-1)/Chunk::size+1),((Y_MAX-1)/Chunk::size+1),((Z_MAX-1)/Chunk::size+1));
-        chunks.push_back(Chunk(x,y,z, this));
+        chunks.push_back(Chunk(x, y, z, this));
     }
 }
 
@@ -447,8 +447,8 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
     NoiseGenerator ng = NoiseGenerator(numOctaves, persistance, 3);
 
     for (unsigned int i = 0; i < out.size(); i++){
-        auto [x,y,z] = sop(i,size_x,size_y,1);
-        auto p = ng.getValueNoise((double)x*spacing,(double)y*spacing);
+        auto [x, y, z] = sop(i,size_x,size_y,1);
+        auto p = ng.getValueNoise((double)x * spacing,(double)y * spacing);
         out[i] = (int) (pow((p+1),2)*range);
     }
     for (unsigned int i = 0; i < size_x; i++){
@@ -505,16 +505,17 @@ void Terrain::add_all_adjacent(int xyz) {
     for (int xyz_ = 0; xyz_ < 27; xyz_++) {
         if (xyz_ == 13) {
             continue;
-        }  //
-        auto [x_, y_, z_] = sop(xyz);
-        auto [xs, ys, zs] = sop(xyz_, 3, 3, 3);
-        // is valid position might take too long this can be optimized away
-        if (is_valid_pos(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1)) {
-            // Tile t = ;
-            Tile *other = get_tile(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
-            OnePath path_type = get_path_type(x_, y_, z_, x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
+        }
+        // center of the starting tile.
+        auto [x_c, y_c, z_c] = sop(xyz);
+        // direction to final tile. can be +1, -1, or 0
+        auto [x_d, y_d, z_d] = sop(xyz_, 3, 3, 3);
+        // test if the final tiles is in a valid position
+        if (is_valid_pos(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
+            Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
+            OnePath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
-            //it++;
+            //compute and add the pathtype.
         }
     }
     //std::cout << "adding adjacent" << std::endl;
@@ -531,7 +532,7 @@ std::set<Node<const T> *> Terrain::get_adjacent_nodes(const Node<const T> *const
         catch(const std::out_of_range& e){ }
     }
     return out;
-};
+}
 
 NodeGroup* Terrain::get_node_group(int xyz){
     try{
@@ -567,15 +568,31 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     int dz = 3;
     int dxy = 1;
 
-    int8_t type = ((abs(xs - xf) + abs(ys - yf)) << (1 + 2 * abs(zs - zf))) + (abs(zs - zf) << 1);
+
+    // so what is going on? Only god knows.
+    // abs(_s - _f) returns zero or one depending on wether the final and
+    // initial positions are the same. same as bool (_s != _f)
+    uint8_t x_diff = abs(xs - xf);
+    uint8_t y_diff = abs(ys - yf);
+    uint8_t z_diff = abs(zs - zf);
+
+    // If there is a change in the horizontal position, then everything should
+    // be bit shifted by 3, and if not, by 1.
+    // This is because Directional flags are defined as follows:
+    // 32   16  8  4  2 1
+    // VH2 VH1  V H2 H1 O
+    uint8_t horizontal_direction= (x_diff + y_diff) << (1 + 2 * z_diff);
+    uint8_t vertical_direction= z_diff << 1;
+
     bool open;
-    if (type == 2 || type == 8) {
+    OnePath type(horizontal_direction + vertical_direction);
+    if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
         // same lever so the only thing that maters if the entity can stand on
         // both tiles
         open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
-    } else if (type == 4) {
+    } else if (type == DirectionFlags::HORIZONTAL2) {
         // still the same level
         // this test if the start and final locations are open,
         // and if the two between them are open
@@ -585,7 +602,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                can_stand(xf, yf, zf, dz, dxy) &&
                can_stand(xs, yf, zs, dz, dxy) &&
                can_stand(xf, ys, zf, dz, dxy);
-    } else if (type == 16) {
+    } else if (type == DirectionFlags::UP_AND_OVER) {
         if (zf > zs) {
             // going up, and over
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
@@ -596,9 +613,9 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                    can_stand(xf, yf, zf, dz + 1, dxy);
         }
 
-    } else if (type == 32) {
+    } else if (type == DirectionFlags::UP_AND_DIAGONAL) {
         if (zf > zs) {
-            // going up, and over
+            // going up, and diagonal
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
                    can_stand(xf, yf, zf, dz, dxy) &&
                  ((can_stand(xf, ys, zs, dz + 1, dxy) ||
@@ -606,7 +623,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                   (can_stand(xs, yf, zs, dz + 1, dxy) ||
                    can_stand(xs, yf, zf, dz, dxy)));
         } else {
-            // going down and over
+            // going down and diagonal
             open = can_stand(xs, ys, zs, dz, dxy) &&
                    can_stand(xf, yf, zf, dz + 1, dxy)&&
                  ((can_stand(xf, ys, zs, dz, dxy) ||
@@ -616,7 +633,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
         }
     }
 
-    return int8_t(type + open);
+    return type & OnePath(open);
 }
 
 std::set<const NodeGroup*> Terrain::get_all_node_groups() const {

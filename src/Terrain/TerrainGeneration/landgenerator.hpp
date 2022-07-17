@@ -24,7 +24,7 @@
 #define __LandGenerator_HPP__
 
 #include <cstdint>
-#include "json/json.h"
+#include "../../json/json.h"
 #include <map>
 #include <math.h>
 #include <string>
