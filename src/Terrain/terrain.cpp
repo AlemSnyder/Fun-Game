@@ -473,12 +473,12 @@ float Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) 
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
-    //auto [x1, y1, z1] = xyz1;
-    //auto [x2, y2, z2] = xyz2;
+    auto [x1, y1, z1] = xyz1;
+    auto [x2, y2, z2] = xyz2;
 
-    float DX = abs(xyz1[0] - xyz2[0]);
-    float DY = abs(xyz1[1] - xyz2[1]);
-    float DZ = abs(xyz1[2] - xyz2[2]);
+    float DX = abs(x1 - x2);
+    float DY = abs(y1 - y2);
+    float DZ = abs(z1 - z2);
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
@@ -486,12 +486,12 @@ float Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
-    //auto [x1, y1, z1] = xyz1;
-    //auto [x2, y2, z2] = xyz2;
+    auto [x1, y1, z1] = xyz1;
+    auto [x2, y2, z2] = xyz2;
 
-    float DX = abs(xyz1[0] - xyz2[0]);
-    float DY = abs(xyz1[1] - xyz2[1]);
-    float DZ = abs(xyz1[2] - xyz2[2]);
+    float DX = abs(x1 - x2);
+    float DY = abs(y1 - y2);
+    float DZ = abs(z1 - z2);
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
@@ -506,22 +506,17 @@ void Terrain::add_all_adjacent(int xyz) {
     for (int xyz_ = 0; xyz_ < 27; xyz_++) {
         if (xyz_ == 13) {
             continue;
-        }  //
-        auto xyz_center = sop(xyz);
-       	int x_c = xyz_center[0];
-        int y_c = xyz_center[0];
-        int z_c = xyz_center[2];
-        auto xyz_direction = sop(xyz_, 3, 3, 3);
-        int x_d = xyz_direction[0]; // direction to final tile. can be +1, -1, or 0
-        int y_d = xyz_direction[0];
-        int z_d = xyz_direction[2];
-        // is valid position might take too long this can be optimized away
+        }
+        // center of the starting tile.
+        auto [x_c, y_c, z_c] = sop(xyz);
+        // direction to final tile. can be +1, -1, or 0
+        auto [x_d, y_d, z_d] = sop(xyz_, 3, 3, 3);
+        // test if the final tiles is in a valid position
         if (is_valid_pos(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
-            // Tile t = ;
             Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             OnePath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
-            //it++;
+            //compute and add the pathtype.
         }
     }
     //std::cout << "adding adjacent" << std::endl;

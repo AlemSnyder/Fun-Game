@@ -1,3 +1,7 @@
+# specify the C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 cmake_minimum_required(VERSION 3.10)
 #add_compile_options(-municode)
 
@@ -50,6 +54,3 @@ set(CMAKE_BUILD_TYPE Debug)
 
 #target_include_directories(Terrain_Generation PRIVATE json)
 
-# specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
