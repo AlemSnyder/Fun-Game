@@ -164,8 +164,8 @@ void Terrain::init_area(int area_x, int area_y, LandGenerator gen){
 
 void Terrain::init_chunks(){
     for (int xyz=0; xyz<((X_MAX-1)/Chunk::size+1)*((Y_MAX-1)/Chunk::size+1)*((Z_MAX-1)/Chunk::size+1); xyz+=1){
-        auto xyz_sop = sop(xyz, ((X_MAX-1)/Chunk::size+1),((Y_MAX-1)/Chunk::size+1),((Z_MAX-1)/Chunk::size+1));
-        chunks.push_back(Chunk(xyz_sop[0],xyz_sop[1],xyz_sop[2], this));
+        auto [x,y,z] = sop(xyz, ((X_MAX-1)/Chunk::size+1),((Y_MAX-1)/Chunk::size+1),((Z_MAX-1)/Chunk::size+1));
+        chunks.push_back(Chunk(x, y, z, this));
     }
 }
 
@@ -448,8 +448,8 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
     NoiseGenerator ng = NoiseGenerator(numOctaves, persistance, 3);
 
     for (unsigned int i = 0; i < out.size(); i++){
-        auto xyz = sop(i,size_x,size_y,1);
-        auto p = ng.getValueNoise((double)xyz[0]*spacing,(double)xyz[1]*spacing);
+        auto [x, y, z] = sop(i,size_x,size_y,1);
+        auto p = ng.getValueNoise((double)x * spacing,(double)y * spacing);
         out[i] = (int) (pow((p+1),2)*range);
     }
     for (unsigned int i = 0; i < size_x; i++){
