@@ -17,7 +17,7 @@ GLFWwindow *window;
 
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
-#include "terrain.hpp"
+#include "Terrain/terrain.hpp"
 #include "world.hpp"
 
 #define INITIAL_WINDOW_WIDTH 1024

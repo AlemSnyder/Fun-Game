@@ -8,7 +8,6 @@
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
 
 #include "controls.hpp"
 
@@ -29,11 +28,11 @@ glm::vec3 position = glm::vec3( 0, 0, 5 );
 // Initial horizontal angle : toward -Z
 float horizontalAngle = 3.14f;
 // Initial vertical angle : none
-float verticalAngle = 0.0f;
+float verticalAngle = 1.57f;
 // Initial Field of View
 float initialFoV = 45.0f;
 
-float speed = 3.0f; // 3 units / second
+float speed = 10.0f; // 3 units / second
 float mouseSpeed = 0.005f;
 
 

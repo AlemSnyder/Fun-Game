@@ -1,8 +1,7 @@
 #ifndef __WORLD_HPP__
 #define __WORLD_HPP__
 
-#include "terrain.hpp"
-#include <cstdint>
+#include "Terrain/terrain.hpp"
 #include "json/json.h"
 
 #include <glm/glm.hpp>

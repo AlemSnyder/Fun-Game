@@ -17,16 +17,16 @@
 #include <fstream>
 #include <fstream>
 
-#include "json/json.h"
+#include "../json/json.h"
 #include "node.hpp"
 #include "tile.hpp"
 #include "terrain.hpp"
 #include "chunk.hpp"
 
 #include "TerrainGeneration/noise.hpp"
-#include "TerrainGeneration/land_generator.hpp"
+#include "TerrainGeneration/landgenerator.hpp"
 #include "TerrainGeneration/material.hpp"
-#include "TerrainGeneration/tile_stamp.hpp"
+#include "TerrainGeneration/tilestamp.hpp"
 
 
 #define DIRT_ID 1 // what am I going to do with this?
@@ -113,13 +113,13 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
     srand(seed);
     std::cout << "start of land Generator" << std::endl;
 
-    // create a map of int -> Land_Generator
-    std::map<int, Land_Generator> land_generators;
+    // create a map of int -> LandGenerator
+    std::map<int, LandGenerator> land_generators;
 
     // for tile macro in data biome
     for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++){
         // create a land generator for each tile macro
-        Land_Generator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
+        LandGenerator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
         land_generators.insert(std::make_pair(i, gen));
     }
 
@@ -151,12 +151,12 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_, const std::ma
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - millisec_since_epoch << " Total time Terrain_init" << std::endl;
 }
 
-void Terrain::init_area(int area_x, int area_y, Land_Generator gen){
-    int count = 0;
+void Terrain::init_area(int area_x, int area_y, LandGenerator gen){
+    //int count = 0;
     while (!gen.empty()){
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
         ++gen;
-        count++;
+        //count++;
     }
     gen.reset();
     //std::cout << count << " total stamps\n";
@@ -165,7 +165,7 @@ void Terrain::init_area(int area_x, int area_y, Land_Generator gen){
 void Terrain::init_chunks(){
     for (int xyz=0; xyz<((X_MAX-1)/Chunk::size+1)*((Y_MAX-1)/Chunk::size+1)*((Z_MAX-1)/Chunk::size+1); xyz+=1){
         auto [x,y,z] = sop(xyz, ((X_MAX-1)/Chunk::size+1),((Y_MAX-1)/Chunk::size+1),((Z_MAX-1)/Chunk::size+1));
-        chunks.push_back(Chunk(x,y,z, this));
+        chunks.push_back(Chunk(x, y, z, this));
     }
 }
 
@@ -344,8 +344,16 @@ void Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end
         }
     }
 }
-inline void Terrain::stamp_tile_region(Tile_Stamp tStamp, int x, int y){ // unpack Tile_Stamp
-    stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2, tStamp.y_start + y*Area_size + Area_size/2 , tStamp.z_start, tStamp.x_end + x*Area_size + Area_size/2, tStamp.y_end + y*Area_size + Area_size/2, tStamp.z_end, tStamp.mat, tStamp.elements_can_stamp, tStamp.color_id);
+inline void Terrain::stamp_tile_region(TileStamp tStamp, int x, int y){ // unpack TileStamp
+    stamp_tile_region(tStamp.x_start + x*Area_size + Area_size/2,
+                      tStamp.y_start + y*Area_size + Area_size/2,
+                      tStamp.z_start,
+                      tStamp.x_end + x*Area_size + Area_size/2,
+                      tStamp.y_end + y*Area_size + Area_size/2,
+                      tStamp.z_end,
+                      tStamp.mat,
+                      tStamp.elements_can_stamp,
+                      tStamp.color_id);
 }
 
 void Terrain::init_grass(){
@@ -440,8 +448,8 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
     NoiseGenerator ng = NoiseGenerator(numOctaves, persistance, 3);
 
     for (unsigned int i = 0; i < out.size(); i++){
-        auto [x,y,z] = sop(i,size_x,size_y,1);
-        auto p = ng.getValueNoise((double)x*spacing,(double)y*spacing);
+        auto [x, y, z] = sop(i,size_x,size_y,1);
+        auto p = ng.getValueNoise((double)x * spacing,(double)y * spacing);
         out[i] = (int) (pow((p+1),2)*range);
     }
     for (unsigned int i = 0; i < size_x; i++){
@@ -494,22 +502,21 @@ inline float Terrain::get_G_cost(const T tile, const Node<const T> node){
 
 void Terrain::add_all_adjacent(int xyz) {
     tiles[xyz].clear_adjacent();
-    //std::map<Tile*,OnePath>::iterator it = tiles[xyz].get_adjacent().begin();
 
     for (int xyz_ = 0; xyz_ < 27; xyz_++) {
         if (xyz_ == 13) {
             continue;
-        }  //
-        auto [x_, y_, z_] = sop(xyz);
-        auto [xs, ys, zs] = sop(xyz_, 3, 3, 3);
-        // is valid position might take too long this can be optimized away
-        if (is_valid_pos(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1)) {
-            // Tile t = ;
-            Tile *other = get_tile(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
-            OnePath path_type = get_path_type(x_, y_, z_, x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
-            //tiles[xyz].add_adjacent(it, other, path_type);
+        }
+        // center of the starting tile.
+        auto [x_c, y_c, z_c] = sop(xyz);
+        // direction to final tile. can be +1, -1, or 0
+        auto [x_d, y_d, z_d] = sop(xyz_, 3, 3, 3);
+        // test if the final tiles is in a valid position
+        if (is_valid_pos(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
+            Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
+            OnePath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
-            //it++;
+            //compute and add the pathtype.
         }
     }
     //std::cout << "adding adjacent" << std::endl;
@@ -526,7 +533,7 @@ std::set<Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t typ
         }
     }
     return out;
-};
+}
 //! should be removed
 std::set<const Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t type) const {
     std::set<const Tile *> out;
@@ -537,7 +544,7 @@ std::set<const Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8
         }
     }
     return out;
-};
+}
 
 
 template<class T>
@@ -551,7 +558,7 @@ std::set<Node<const T> *> Terrain::get_adjacent_nodes(const Node<const T> *const
         catch(const std::out_of_range& e){ }
     }
     return out;
-};
+}
 
 NodeGroup* Terrain::get_node_group(int xyz){
     try{
@@ -587,15 +594,31 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     int dz = 3;
     int dxy = 1;
 
-    int8_t type = abs(xs - xf) + abs(ys - yf) + 4 * abs(zs - zf);
+
+    // so what is going on? Only god knows.
+    // abs(_s - _f) returns zero or one depending on wether the final and
+    // initial positions are the same. same as bool (_s != _f)
+    uint8_t x_diff = abs(xs - xf);
+    uint8_t y_diff = abs(ys - yf);
+    uint8_t z_diff = abs(zs - zf);
+
+    // If there is a change in the horizontal position, then everything should
+    // be bit shifted by 3, and if not, by 1.
+    // This is because Directional flags are defined as follows:
+    // 32   16  8  4  2 1
+    // VH2 VH1  V H2 H1 O
+    uint8_t horizontal_direction= (x_diff + y_diff) << (1 + 2 * z_diff);
+    uint8_t vertical_direction= z_diff << 1;
+
     bool open;
-    if (type == 1 || type == 4) {
+    OnePath type(horizontal_direction + vertical_direction);
+    if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
         // same lever so the only thing that maters if the entity can stand on
         // both tiles
         open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
-    } else if (type == 2) {
+    } else if (type == DirectionFlags::HORIZONTAL2) {
         // still the same level
         // this test if the start and final locations are open,
         // and if the two between them are open
@@ -605,7 +628,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                can_stand(xf, yf, zf, dz, dxy) &&
                can_stand(xs, yf, zs, dz, dxy) &&
                can_stand(xf, ys, zf, dz, dxy);
-    } else if (type == 5) {
+    } else if (type == DirectionFlags::UP_AND_OVER) {
         if (zf > zs) {
             // going up, and over
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
@@ -616,9 +639,9 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                    can_stand(xf, yf, zf, dz + 1, dxy);
         }
 
-    } else if (type == 6) {
+    } else if (type == DirectionFlags::UP_AND_DIAGONAL) {
         if (zf > zs) {
-            // going up, and over
+            // going up, and diagonal
             open = can_stand(xs, ys, zs, dz + 1, dxy) &&
                    can_stand(xf, yf, zf, dz, dxy) &&
                  ((can_stand(xf, ys, zs, dz + 1, dxy) ||
@@ -626,7 +649,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
                   (can_stand(xs, yf, zs, dz + 1, dxy) ||
                    can_stand(xs, yf, zf, dz, dxy)));
         } else {
-            // going down and over
+            // going down and diagonal
             open = can_stand(xs, ys, zs, dz, dxy) &&
                    can_stand(xf, yf, zf, dz + 1, dxy)&&
                  ((can_stand(xf, ys, zs, dz, dxy) ||
@@ -636,7 +659,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
         }
     }
 
-    return int8_t(type + 8 * open);
+    return type & OnePath(open);
 }
 
 std::set<const NodeGroup*> Terrain::get_all_node_groups() const {
@@ -793,7 +816,7 @@ std::vector<const T *> Terrain::get_path(const T *start,
         Node<const T> *choice = openNodes.top();
         openNodes.pop();  // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::set<Node<const T>*> adjacent_nodes = get_adjacent_nodes(choice, nodes, 63); //! onepath needs to be updated. this should be returned to 31
+        std::set<Node<const T>*> adjacent_nodes = get_adjacent_nodes(choice, nodes, 31);
         for (Node<const T> *n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
@@ -834,8 +857,10 @@ uint32_t Terrain::compress_color(uint8_t v[4]){
 int Terrain::qb_save_debug(const char * path, const std::map<int, const Material>* materials) {
     int x=0;
     for (Chunk & c : get_chunks()){
-        for ( NodeGroup& NG : c.get_node_groups() ){
-            for (const Tile* t : NG.get_tiles()){
+        std::set<const NodeGroup*> node_groups;
+        c.add_nodes_to(node_groups);
+        for ( const NodeGroup* NG : node_groups ){
+            for (const Tile* t : NG->get_tiles()){
                 set_tile_material(get_tile(pos(t->sop())), &materials->at(7), x%4);
             }
             x++;
@@ -966,7 +991,7 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
         }
     }
     for (uint32_t CC : unknown_materials){
-        std::cout << "    cannot find color: " << CC << std::endl;
+        std::cout << "    cannot find color: " << std::hex << std::uppercase << CC << std::dec << std::endl;
     }
     fclose(file);
     std::cout << "    tiles read: " << tiles_read << std::endl;

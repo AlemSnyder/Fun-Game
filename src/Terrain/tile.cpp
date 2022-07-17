@@ -139,7 +139,7 @@ std::set<const Tile *> Tile::get_adjacent_clear(int path_type)const {
         }
     }
     return out;
-};
+}
 
 std::set<Tile *> Tile::get_adjacent_clear(int path_type) {
     std::set< Tile *> out;
@@ -153,7 +153,7 @@ std::set<Tile *> Tile::get_adjacent_clear(int path_type) {
         }
     }
     return out;
-};
+}
 
 bool Tile::operator> (const Tile other) const{
     if (get_x() < other.get_x()){
