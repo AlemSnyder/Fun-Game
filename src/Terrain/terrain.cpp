@@ -17,7 +17,7 @@
 #include <fstream>
 #include <fstream>
 
-#include "json/json.h"
+#include "../json/json.h"
 #include "node.hpp"
 #include "tile.hpp"
 #include "terrain.hpp"
@@ -164,8 +164,8 @@ void Terrain::init_area(int area_x, int area_y, LandGenerator gen){
 
 void Terrain::init_chunks(){
     for (int xyz=0; xyz<((X_MAX-1)/Chunk::size+1)*((Y_MAX-1)/Chunk::size+1)*((Z_MAX-1)/Chunk::size+1); xyz+=1){
-        auto [x,y,z] = sop(xyz, ((X_MAX-1)/Chunk::size+1),((Y_MAX-1)/Chunk::size+1),((Z_MAX-1)/Chunk::size+1));
-        chunks.push_back(Chunk(x,y,z, this));
+        auto xyz_sop = sop(xyz, ((X_MAX-1)/Chunk::size+1),((Y_MAX-1)/Chunk::size+1),((Z_MAX-1)/Chunk::size+1));
+        chunks.push_back(Chunk(xyz_sop[0],xyz_sop[1],xyz_sop[2], this));
     }
 }
 
@@ -448,8 +448,8 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x, unsigned int s
     NoiseGenerator ng = NoiseGenerator(numOctaves, persistance, 3);
 
     for (unsigned int i = 0; i < out.size(); i++){
-        auto [x,y,z] = sop(i,size_x,size_y,1);
-        auto p = ng.getValueNoise((double)x*spacing,(double)y*spacing);
+        auto xyz = sop(i,size_x,size_y,1);
+        auto p = ng.getValueNoise((double)xyz[0]*spacing,(double)xyz[1]*spacing);
         out[i] = (int) (pow((p+1),2)*range);
     }
     for (unsigned int i = 0; i < size_x; i++){
@@ -473,12 +473,12 @@ float Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) 
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
-    auto [x1, y1, z1] = xyz1;
-    auto [x2, y2, z2] = xyz2;
+    //auto [x1, y1, z1] = xyz1;
+    //auto [x2, y2, z2] = xyz2;
 
-    float DX = abs(x1 - x2);
-    float DY = abs(y1 - y2);
-    float DZ = abs(z1 - z2);
+    float DX = abs(xyz1[0] - xyz2[0]);
+    float DY = abs(xyz1[1] - xyz2[1]);
+    float DZ = abs(xyz1[2] - xyz2[2]);
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
@@ -486,12 +486,12 @@ float Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
-    auto [x1, y1, z1] = xyz1;
-    auto [x2, y2, z2] = xyz2;
+    //auto [x1, y1, z1] = xyz1;
+    //auto [x2, y2, z2] = xyz2;
 
-    float DX = abs(x1 - x2);
-    float DY = abs(y1 - y2);
-    float DZ = abs(z1 - z2);
+    float DX = abs(xyz1[0] - xyz2[0]);
+    float DY = abs(xyz1[1] - xyz2[1]);
+    float DZ = abs(xyz1[2] - xyz2[2]);
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
@@ -507,13 +507,19 @@ void Terrain::add_all_adjacent(int xyz) {
         if (xyz_ == 13) {
             continue;
         }  //
-        auto [x_, y_, z_] = sop(xyz);
-        auto [xs, ys, zs] = sop(xyz_, 3, 3, 3);
+        auto xyz_center = sop(xyz);
+       	int x_c = xyz_center[0];
+        int y_c = xyz_center[0];
+        int z_c = xyz_center[2];
+        auto xyz_direction = sop(xyz_, 3, 3, 3);
+        int x_d = xyz_direction[0]; // direction to final tile. can be +1, -1, or 0
+        int y_d = xyz_direction[0];
+        int z_d = xyz_direction[2];
         // is valid position might take too long this can be optimized away
-        if (is_valid_pos(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1)) {
+        if (is_valid_pos(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
             // Tile t = ;
-            Tile *other = get_tile(x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
-            OnePath path_type = get_path_type(x_, y_, z_, x_ + xs - 1, y_ + ys - 1, z_ + zs - 1);
+            Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
+            OnePath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
             //it++;
         }
@@ -532,7 +538,7 @@ std::set<Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t typ
         }
     }
     return out;
-};
+}
 //! should be removed
 std::set<const Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t type) const {
     std::set<const Tile *> out;
@@ -543,7 +549,7 @@ std::set<const Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8
         }
     }
     return out;
-};
+}
 
 
 template<class T>
@@ -557,7 +563,7 @@ std::set<Node<const T> *> Terrain::get_adjacent_nodes(const Node<const T> *const
         catch(const std::out_of_range& e){ }
     }
     return out;
-};
+}
 
 NodeGroup* Terrain::get_node_group(int xyz){
     try{

@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 #add_compile_options(-municode)
 
+# set policies
+cmake_policy(SET CMP0072 NEW)
+
 # set the project name
 project(Fun_Game)
 
@@ -10,7 +13,7 @@ project(Fun_Game)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(glfw3 3.3 REQUIRED)
+find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
 # add the executable
@@ -20,10 +23,10 @@ file(GLOB SOURCES3 "src/**/**/*.cpp")
 
 add_executable(Fun_Game ${SOURCES1} ${SOURCES2} ${SOURCES3})
 
-target_link_libraries(Fun_Game glfw3)
+target_link_libraries(Fun_Game glfw)
 target_link_libraries(Fun_Game OpenGL::GL)
 target_link_libraries(Fun_Game GLEW::GLEW)
-target_link_libraries(Fun_Game glm)
+#target_link_libraries(Fun_Game glm)
 
 # add_library(ImportVoxel "external/CSDLL.hpp" ${SOURCES} ${SOURCES2})
 
@@ -41,6 +44,8 @@ endif()
 #  CMAKE_CXX_FLAGS
 #  "${CMAKE_CXX_FLAGS} -municode"
 #)
+
+set(CMAKE_BUILD_TYPE Debug)
 
 #target_include_directories(Terrain_Generation PRIVATE json)
 

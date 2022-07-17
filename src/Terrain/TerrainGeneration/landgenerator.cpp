@@ -12,7 +12,7 @@
 */
 
 #include <cstdint>
-#include "json/json.h"
+#include "../../json/json.h"
 #include <map>
 #include <math.h>
 #include <string>
@@ -29,11 +29,11 @@ LandGenerator::LandGenerator( const std::map<int, const Material> *materials_, J
     data_ = data;
     current_region = 0;
     current_sub_region = 0;
-};
+}
 LandGenerator::LandGenerator(){
     current_region = 0;
     current_sub_region = 0;
-};
+}
 
 unsigned int LandGenerator::get_num_stamps(Json::Value biome){
     if (biome["Type"].asCString()== std::string( "Positions")){
