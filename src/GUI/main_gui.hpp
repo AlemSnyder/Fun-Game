@@ -129,7 +129,7 @@ int GUITest(World world)
 
     // Load it into a VBO
 
-    GLuint vertexbuffer;
+    /*GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3),
@@ -154,6 +154,11 @@ int GUITest(World world)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                  indices.size() * sizeof(unsigned short), &indices[0],
                  GL_STATIC_DRAW);
+*/
+    TerrainMesh terrain_mesh(indices,
+                  indexed_vertices,
+                  indexed_colors,
+                  indexed_normals);;
 
     // The above is for the wold the below is for trees
 
@@ -323,7 +328,7 @@ int GUITest(World world)
 
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_vertex_buffer());
         glVertexAttribPointer(0,        // The attribute we want to configure
                               3,        // size
                               GL_FLOAT, // type
@@ -333,7 +338,7 @@ int GUITest(World world)
         );
 
         // Index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_mesh.get_element_buffer());
 
         // Draw the triangles !
         glDrawElements(GL_TRIANGLES,      // mode
@@ -394,7 +399,7 @@ int GUITest(World world)
 
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_vertex_buffer());
         glVertexAttribPointer(0,        // attribute
                               3,        // size
                               GL_FLOAT, // type
@@ -403,9 +408,9 @@ int GUITest(World world)
                               (void *)0 // array buffer offset
         );
 
-        // 2nd attribute buffer : UVs
+        // 2nd attribute buffer : colorss
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_color_buffer());
         glVertexAttribPointer(1,        // attribute
                               3,        // size
                               GL_FLOAT, // type
@@ -416,7 +421,7 @@ int GUITest(World world)
 
         // 3rd attribute buffer : normals
         glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_normal_buffer());
         glVertexAttribPointer(2,        // attribute
                               3,        // size
                               GL_FLOAT, // type
@@ -426,7 +431,7 @@ int GUITest(World world)
         );
 
         // Index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_mesh.get_element_buffer());
 
         // Draw the triangles !
         glDrawElements(GL_TRIANGLES,      // mode
@@ -560,10 +565,10 @@ int GUITest(World world)
            glfwWindowShouldClose(window) == 0);
 
     // Cleanup VBO and shader
-    glDeleteBuffers(1, &vertexbuffer);
-    glDeleteBuffers(1, &colorbuffer);
-    glDeleteBuffers(1, &normalbuffer);
-    glDeleteBuffers(1, &elementbuffer);
+    //glDeleteBuffers(1, &vertexbuffer);
+    //glDeleteBuffers(1, &colorbuffer);
+    //glDeleteBuffers(1, &normalbuffer);
+    //glDeleteBuffers(1, &elementbuffer);
     glDeleteBuffers(1, &vertexbuffer_tree);
     glDeleteBuffers(1, &colorbuffer_tree);
     glDeleteBuffers(1, &normalbuffer_tree);

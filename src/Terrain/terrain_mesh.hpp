@@ -13,6 +13,9 @@
 
 #include "../GUI/meshloader.hpp"
 
+#ifndef __TERRAIN_MESH_HPP__
+#define __TERRAIN_MESH_HPP__
+
 class TerrainMesh : public MeshLoader::SingleComplexMesh {
 private:
     GLuint vertex_buffer_;
@@ -21,6 +24,7 @@ private:
     GLuint element_buffer_;
     unsigned int num_vertices_;
 public:
+    TerrainMesh();
 
     TerrainMesh(std::vector<unsigned short> &indices,
                 std::vector<glm::vec3> &indexed_vertices,
@@ -60,23 +64,25 @@ public:
         glDeleteBuffers(1, &element_buffer_);
     }
 
-    GLuint get_color_buffer() override {
+    GLuint get_color_buffer() const override {
         return color_buffer_;
     }
 
-    GLuint get_element_buffer() override {
+    GLuint get_element_buffer() const override {
         return element_buffer_;
     }
 
-    GLuint get_normal_buffer() override {
+    GLuint get_normal_buffer() const override {
         return normal_buffer_;
     }
 
-    GLuint get_vertex_buffer() override {
+    GLuint get_vertex_buffer() const override {
         return vertex_buffer_;
     }
 
-    unsigned int get_num_vertices() override {
+    unsigned int get_num_vertices() const override {
         return num_vertices_;
     }
 };
+
+#endif
