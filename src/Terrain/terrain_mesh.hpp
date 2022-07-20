@@ -24,7 +24,7 @@ private:
     GLuint element_buffer_;
     unsigned int num_vertices_;
 public:
-    TerrainMesh();
+    TerrainMesh(){};
 
     TerrainMesh(std::vector<unsigned short> &indices,
                 std::vector<glm::vec3> &indexed_vertices,

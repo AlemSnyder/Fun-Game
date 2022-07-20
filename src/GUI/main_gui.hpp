@@ -190,8 +190,8 @@ int GUITest(World world)
 
     std::vector<glm::vec3> model_matrices;
 
-    for (int x = 0; x < world.terrain_main.get_X_MAX(); x+=1)
-    for (int y = 0; y < world.terrain_main.get_Y_MAX(); y+=1){
+    for (int x = 0; x < world.terrain_main.get_X_MAX(); x+=40)
+    for (int y = 0; y < world.terrain_main.get_Y_MAX(); y+=40){
         int z;
         if (( z = world.terrain_main.get_Z_solid(x,y)+1) != 1){
             glm::vec3 model(x, y, z);
@@ -281,6 +281,10 @@ int GUITest(World world)
     GLuint lightInvDirID =
         glGetUniformLocation(programID, "LightInvDirection_worldspace");
 
+    MainRenderer MR;
+    MR.add_mesh(terrain_mesh);
+    //MR.set_window_size(windowFrameWidth, windowFrameHeight); //TODO <- right here
+    //MR.set_depth_texture(depthTexture);
     do {
         // denerat shadow depth map
         // Render to our framebuffer
@@ -342,7 +346,7 @@ int GUITest(World world)
 
         // Draw the triangles !
         glDrawElements(GL_TRIANGLES,      // mode
-                       indices.size(),    // count
+                       terrain_mesh.get_num_vertices(),    // count
                        GL_UNSIGNED_SHORT, // type
                        (void *)0          // element array buffer offset
         );
@@ -362,6 +366,10 @@ int GUITest(World world)
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+
+
 
         // Use our shader
         glUseProgram(programID);
@@ -388,14 +396,14 @@ int GUITest(World world)
         glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
 
         // Bind our texture in Texture Unit 0
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, TextureID);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, TextureID);
         // Set our "myTextureSampler" sampler to use Texture Unit 0
-        glUniform1i(TextureID, 0);
+        //glUniform1i(TextureID, 0);
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, depthTexture);
-        glUniform1i(ShadowMapID, 1);
+        //glActiveTexture(GL_TEXTURE1);
+        //glBindTexture(GL_TEXTURE_2D, depthTexture);
+        //glUniform1i(ShadowMapID, 1);
 
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -435,10 +443,15 @@ int GUITest(World world)
 
         // Draw the triangles !
         glDrawElements(GL_TRIANGLES,      // mode
-                       indices.size(),    // count
+                       terrain_mesh.get_num_vertices(),    // count
                        GL_UNSIGNED_SHORT, // type
                        (void *)0          // element array buffer offset
         );
+
+
+
+        //MR.render();
+
 
         // Use our Tree shader (This one is instanced)
         glUseProgram(programID_tree);
