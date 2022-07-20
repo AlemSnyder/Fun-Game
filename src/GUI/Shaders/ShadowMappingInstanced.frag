@@ -12,7 +12,6 @@ in vec4 ShadowCoord;
 layout(location = 0) out vec3 color;
 
 // Values that stay constant for the whole mesh.
-uniform sampler2D myTextureSampler;
 uniform mat4 MV;
 uniform vec3 LightPosition_worldspace;
 uniform sampler2DShadow shadowMap;

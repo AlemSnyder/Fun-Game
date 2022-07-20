@@ -515,7 +515,7 @@ void Terrain::add_all_adjacent(int xyz) {
             Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             OnePath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
-            //compute and add the pathtype.
+            //compute and add the path type.
         }
     }
     //std::cout << "adding adjacent" << std::endl;
