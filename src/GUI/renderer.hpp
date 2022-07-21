@@ -119,8 +119,8 @@ public:
         controls::computeMatricesFromInputs(window);
         glm::mat4 projection_matrix = controls::get_projection_matrix();
         glm::mat4 view_matrix = controls::get_view_matrix();
-        glm::mat4 ModelMatrix = glm::mat4(1.0);
-        glm::mat4 MVP = projection_matrix * view_matrix * ModelMatrix;
+        //glm::mat4 ModelMatrix = glm::mat4(1.0);
+        glm::mat4 MVP = projection_matrix * view_matrix;// * ModelMatrix;
 
         glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0,
                              0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
@@ -142,9 +142,9 @@ public:
         // Set our "myTextureSampler" sampler to use Texture Unit 0
         //glUniform1i(TextureID, 0);
 
-        //glActiveTexture(GL_TEXTURE1);
-        //glBindTexture(GL_TEXTURE_2D, depthTexture);
-        //glUniform1i(ShadowMapID, 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depth_texture_);
+        glUniform1i(ShadowMapID_, 1);
 
         //std::unique_ptr<MeshLoader::SingleComplexMesh>& terrain_mesh_ = singles_meshes_[0];
 

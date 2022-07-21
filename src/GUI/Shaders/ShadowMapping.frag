@@ -45,27 +45,27 @@ float random(vec3 seed, int i){
 void main(){
 
 	// Light emission properties
-	//vec3 LightColor = vec3(1,1,1);
-	//float LightPower = 1.0f;
+	vec3 LightColor = vec3(1,1,1);
+	float LightPower = 1.0f;
 	
 	// Material properties
-	//vec3 MaterialDiffuseColor = base_color * 0.6;
-	//vec3 MaterialAmbientColor = vec3(0.5,0.5,0.5) * MaterialDiffuseColor;
+	vec3 MaterialDiffuseColor = base_color * 0.6;
+	vec3 MaterialAmbientColor = vec3(0.5,0.5,0.5) * MaterialDiffuseColor;
 	//vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 
 	// Distance to the light
 	//float distance = length( LightPosition_worldspace - Position_worldspace );
 
 	// Normal of the computed fragment, in camera space
-	//vec3 n = normalize( Normal_cameraspace );
+	vec3 n = normalize( Normal_cameraspace );
 	// Direction of the light (from the fragment to the light)
-	//vec3 l = normalize( LightDirection_cameraspace );
+	vec3 l = normalize( LightDirection_cameraspace );
 	// Cosine of the angle between the normal and the light direction, 
 	// clamped above 0
 	//  - light is at the vertical of the triangle -> 1
 	//  - light is perpendiular to the triangle -> 0
 	//  - light is behind the triangle -> 0
-	//float cosTheta = clamp( dot( n,l ), 0,1 );
+	float cosTheta = clamp( dot( n,l ), 0,1 );
 	
 	// Eye vector (towards the camera)
 	//vec3 E = normalize(EyeDirection_cameraspace);
@@ -77,17 +77,17 @@ void main(){
 	//  - Looking elsewhere -> < 1
 	//float cosAlpha = clamp( dot( E,R ), 0,1 );
 	
-	//float visibility=1.0;
+	float visibility=1.0;
 
 	// Fixed bias, or...
 	//float bias = 0.005;
 
 	// ...variable bias
-	//float bias = 0.002*tan(acos(cosTheta));
-	//bias = clamp(bias, 0.00005, 0.01);
+	float bias = 0.002*tan(acos(cosTheta));
+	bias = clamp(bias, 0.00005, 0.01);
 
 	// Sample the shadow map 4 times
-	//for (int i=0;i<4;i++){
+	for (int i=0;i<4;i++){
 		// use either :
 		//  - Always the same samples.
 		//    Gives a fixed pattern in the shadow, but no noise
@@ -97,24 +97,24 @@ void main(){
 		// int index = int(16.0*random(gl_FragCoord.xyy, i))%16;
 		//  - A random sample, based on the pixel's position in world space.
 		//    The position is rounded to the millimeter to avoid too much aliasing
-		// int index = int(16.0*random(floor(Position_worldspace.xyz*1000.0), i))%16;
+		int index = int(16.0*random(floor(Position_worldspace.xyz*1000.0), i))%16;
 		
 		// being fully in the shadow will eat up 4*0.3 = 1.2
 		// 0.2 potentially remain, which is quite dark.
-		//visibility -= 0.3*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[index]/(700.0*4),  (ShadowCoord.z-bias)/ShadowCoord.w) ));
-	//}
+		visibility -= 0.3*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[index]/(700.0*4),  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+	}
 
-	//visibility = max(visibility, 0.0);
+	visibility = max(visibility, 0.0);
 
 	// For spot lights, use either one of these lines instead.
 	// if ( texture( shadowMap, (ShadowCoord.xy/ShadowCoord.w) ).z  <  (ShadowCoord.z-bias)/ShadowCoord.w )
 	// if ( textureProj( shadowMap, ShadowCoord.xyw ).z  <  (ShadowCoord.z-bias)/ShadowCoord.w )
 	
-	color = base_color;
+	color = //base_color
 		// Ambient : simulates indirect lighting
-		//-MaterialAmbientColor +
+		MaterialAmbientColor +
 		// Diffuse : "color" of the object
-		//-visibility * MaterialDiffuseColor * LightColor * LightPower * cosTheta;// +
+		visibility * MaterialDiffuseColor * LightColor * LightPower * cosTheta;// +
 		// Specular : reflective highlight, like a mirror
 		//visibility * MaterialSpecularColor * LightColor * LightPower * min(pow(cosAlpha, 5), 1);
 }

@@ -230,101 +230,98 @@ int GUITest(World world)
                                         "../src/GUI/Shaders/SimpleTexture.frag");
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
-    // Create and compile our GLSL program from the shaders
-    GLuint programID = LoadShaders("../src/GUI/Shaders/ShadowMapping.vert",
-                                   "../src/GUI/Shaders/ShadowMapping.frag");
-
     GLuint programID_tree = LoadShaders("../src/GUI/Shaders/ShadowMappingInstanced.vert",
                                    "../src/GUI/Shaders/ShadowMappingInstanced.frag");
 
     // Get a handle for our "myTextureSampler" uniform
-    GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
+    //GLuint TextureID = glGetUniformLocation(programID_tree, "myTextureSampler");
 
     // Get a handle for our "MVP" uniform
-    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-    GLuint view_matrix_ID = glGetUniformLocation(programID, "V");
-    GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
-    GLuint DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
-    GLuint ShadowMapID = glGetUniformLocation(programID, "shadowMap");
+    GLuint MatrixID = glGetUniformLocation(programID_tree, "MVP");
+    GLuint view_matrix_ID = glGetUniformLocation(programID_tree, "V");
+    GLuint ModelMatrixID = glGetUniformLocation(programID_tree, "M");
+    GLuint DepthBiasID = glGetUniformLocation(programID_tree, "DepthBiasMVP");
+    GLuint ShadowMapID = glGetUniformLocation(programID_tree, "shadowMap");
 
     // Get a handle for our "LightPosition" uniform
     GLuint lightInvDirID =
-        glGetUniformLocation(programID, "LightInvDirection_worldspace");
+        glGetUniformLocation(programID_tree, "LightInvDirection_worldspace");
 
     MainRenderer MR;
     MR.add_mesh(std::make_unique<TerrainMesh>(terrain_mesh));
     MR.set_window_size(windowFrameWidth, windowFrameHeight);
     MR.set_depth_texture(depthTexture);
     do {
-        // render at shadow depth map
-        // Render to our framebuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-        glViewport(0, 0, 1024 * 4,
-                   1024 * 4); // Render on the whole framebuffer, complete from
-                              // the lower left corner to the upper right
+            // render at shadow depth map
+            // Render to our framebuffer
+            glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+            glViewport(0, 0, 1024 * 4,
+                    1024 * 4); // Render on the whole framebuffer, complete from
+                                // the lower left corner to the upper right
 
-        // We don't use bias in the shader, but instead we draw back faces,
-        // which are already separated from the front faces by a small distance
-        // (if your geometry is made this way)
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK); // Cull back-facing triangles -> draw only
-                             // front-facing triangles
+            // We don't use bias in the shader, but instead we draw back faces,
+            // which are already separated from the front faces by a small distance
+            // (if your geometry is made this way)
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK); // Cull back-facing triangles -> draw only
+                                // front-facing triangles
 
-        // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // Clear the screen
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Use our shader
-        glUseProgram(depthProgramID);
+            // Use our shader
+            glUseProgram(depthProgramID);
 
-        glm::vec3 lightInvDir = glm::vec3(40.0f, 8.2f, 120.69f);
+            glm::vec3 lightInvDir = glm::vec3(40.0f, 8.2f, 120.69f);
 
-        lightInvDir = glm::normalize(lightInvDir) * 128.0f;
+            lightInvDir = glm::normalize(lightInvDir) * 128.0f;
 
-        // Compute the MVP matrix from the light's point of view
-        glm::mat4 depthProjectionMatrix =
-            glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
-        glm::mat4 depthViewMatrix =
-            glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-        // or, for spot light :
-        // glm::vec3 lightPos(5, 20, 20);
-        // glm::mat4 depthProjectionMatrix =
-        // glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
-        // depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
-        // glm::vec3(0,1,0));
+            // Compute the MVP matrix from the light's point of view
+            glm::mat4 depthProjectionMatrix =
+                glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+            glm::mat4 depthViewMatrix =
+                glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+            // or, for spot light :
+            // glm::vec3 lightPos(5, 20, 20);
+            // glm::mat4 depthProjectionMatrix =
+            // glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
+            // depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
+            // glm::vec3(0,1,0));
 
-        glm::mat4 depthModelMatrix = glm::mat4(1.0);
-        glm::mat4 depthMVP =
-            depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+            glm::mat4 depthModelMatrix = glm::mat4(1.0);
+            glm::mat4 depthMVP =
+                depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
-        // Send our transformation to the currently bound shader,
-        // in the "MVP" uniform
-        glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
+            // Send our transformation to the currently bound shader,
+            // in the "MVP" uniform
+            glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
 
-        // 1rst attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_vertex_buffer());
-        glVertexAttribPointer(0,        // The attribute we want to configure
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void *)0 // array buffer offset
-        );
+            // 1rst attribute buffer : vertices
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_vertex_buffer());
+            glVertexAttribPointer(0,        // The attribute we want to configure
+                                3,        // size
+                                GL_FLOAT, // type
+                                GL_FALSE, // normalized?
+                                0,        // stride
+                                (void *)0 // array buffer offset
+            );
 
-        // Index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_mesh.get_element_buffer());
+            // Index buffer
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_mesh.get_element_buffer());
 
-        // Draw the triangles !
-        glDrawElements(GL_TRIANGLES,      // mode
-                       terrain_mesh.get_num_vertices(),    // count
-                       GL_UNSIGNED_SHORT, // type
-                       (void *)0          // element array buffer offset
-        );
+            // Draw the triangles !
+            glDrawElements(GL_TRIANGLES,      // mode
+                        terrain_mesh.get_num_vertices(),    // count
+                        GL_UNSIGNED_SHORT, // type
+                        (void *)0          // element array buffer offset
+            );
 
-        glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(0);
 
 
         MR.render(window);
+
 
         controls::computeMatricesFromInputs(window);
         glm::mat4 projection_matrix = controls::get_projection_matrix();
@@ -336,9 +333,6 @@ int GUITest(World world)
                              0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 
         glm::mat4 depthBiasMVP = biasMatrix * depthMVP;
-
-        //MR.render();
-
 
         // Use our Tree shader (This one is instanced)
         glUseProgram(programID_tree);
@@ -353,10 +347,10 @@ int GUITest(World world)
         glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
 
         // Bind our texture in Texture Unit 0
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, TextureID);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, TextureID);
         // Set our "myTextureSampler" sampler to use Texture Unit 0
-        glUniform1i(TextureID, 0);
+        //glUniform1i(TextureID, 0);
 
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthTexture);
@@ -452,7 +446,7 @@ int GUITest(World world)
 
         // Draw the triangle !
         // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see
-        // anything ! glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
+        glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
         // at 0 -> 2 triangles
         glDisableVertexAttribArray(0);
 
@@ -473,7 +467,6 @@ int GUITest(World world)
     glDeleteBuffers(1, &colorbuffer_tree);
     glDeleteBuffers(1, &normalbuffer_tree);
     glDeleteBuffers(1, &elementbuffer_tree);
-    glDeleteProgram(programID);
     glDeleteProgram(depthProgramID);
     glDeleteProgram(quad_programID);
     // glDeleteTextures(1, &Texture);
