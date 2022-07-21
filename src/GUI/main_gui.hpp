@@ -125,36 +125,6 @@ int GUITest(World world)
     // Get a handle for our "MVP" uniform
     GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
 
-
-
-    // Load it into a VBO
-
-    /*GLuint vertexbuffer;
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3),
-                 &indexed_vertices[0], GL_STATIC_DRAW);
-
-    GLuint colorbuffer;
-    glGenBuffers(1, &colorbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_colors.size() * sizeof(glm::vec3),
-                 &indexed_colors[0], GL_STATIC_DRAW);
-
-    GLuint normalbuffer;
-    glGenBuffers(1, &normalbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3),
-                 &indexed_normals[0], GL_STATIC_DRAW);
-
-    // Generate a buffer for the indices as well
-    GLuint elementbuffer;
-    glGenBuffers(1, &elementbuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 indices.size() * sizeof(unsigned short), &indices[0],
-                 GL_STATIC_DRAW);
-*/
     TerrainMesh terrain_mesh(indices,
                   indexed_vertices,
                   indexed_colors,
@@ -243,7 +213,7 @@ int GUITest(World world)
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         return false;
 
-    // The quad's FBO. Used only for visualizing the shadowmap.
+    // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
         -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
         -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
@@ -282,11 +252,10 @@ int GUITest(World world)
         glGetUniformLocation(programID, "LightInvDirection_worldspace");
 
     MainRenderer MR(terrain_mesh);
-    //MR.add_mesh(terrain_mesh);
     MR.set_window_size(windowFrameWidth, windowFrameHeight);
     MR.set_depth_texture(depthTexture);
     do {
-        // denerat shadow depth map
+        // render at shadow depth map
         // Render to our framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
         glViewport(0, 0, 1024 * 4,
@@ -353,28 +322,9 @@ int GUITest(World world)
 
         glDisableVertexAttribArray(0);
 
-        // Render to the screen
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(
-            0, 0, windowFrameWidth,
-            windowFrameHeight); // Render on the whole framebuffer, complete
-                                // from the lower left corner to the upper right
 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK); // Cull back-facing triangles -> draw only
-                             // front-facing triangles
+        MR.render(window);
 
-        // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-
-
-
-        // Use our shader
-        glUseProgram(programID);
-
-        // Compute the MVP matrix from keyboard and mouse input
         controls::computeMatricesFromInputs(window);
         glm::mat4 projection_matrix = controls::get_projection_matrix();
         glm::mat4 view_matrix = controls::get_view_matrix();
@@ -385,70 +335,6 @@ int GUITest(World world)
                              0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 
         glm::mat4 depthBiasMVP = biasMatrix * depthMVP;
-
-        // Send our transformation to the currently bound shader,
-        // in the "MVP" uniform
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-        glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-        glUniformMatrix4fv(view_matrix_ID, 1, GL_FALSE, &view_matrix[0][0]);
-        glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
-
-        glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
-
-        // Bind our texture in Texture Unit 0
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, TextureID);
-        // Set our "myTextureSampler" sampler to use Texture Unit 0
-        //glUniform1i(TextureID, 0);
-
-        //glActiveTexture(GL_TEXTURE1);
-        //glBindTexture(GL_TEXTURE_2D, depthTexture);
-        //glUniform1i(ShadowMapID, 1);
-
-        // 1rst attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_vertex_buffer());
-        glVertexAttribPointer(0,        // attribute
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void *)0 // array buffer offset
-        );
-
-        // 2nd attribute buffer : colorss
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_color_buffer());
-        glVertexAttribPointer(1,        // attribute
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void *)0 // array buffer offset
-        );
-
-        // 3rd attribute buffer : normals
-        glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh.get_normal_buffer());
-        glVertexAttribPointer(2,        // attribute
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void *)0 // array buffer offset
-        );
-
-        // Index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_mesh.get_element_buffer());
-
-        // Draw the triangles !
-        glDrawElements(GL_TRIANGLES,      // mode
-                       terrain_mesh.get_num_vertices(),    // count
-                       GL_UNSIGNED_SHORT, // type
-                       (void *)0          // element array buffer offset
-        );
-
-
 
         //MR.render();
 
@@ -508,7 +394,7 @@ int GUITest(World world)
                               (void *)0 // array buffer offset
         );
 
-        // 4th attribute buffer : transmorm
+        // 4th attribute buffer : transform
         glEnableVertexAttribArray(3);
         glBindBuffer(GL_ARRAY_BUFFER, model_matrices_buffer_tree);
         glVertexAttribPointer(3,        // attribute
@@ -536,7 +422,7 @@ int GUITest(World world)
         glDisableVertexAttribArray(2);
         glDisableVertexAttribArray(3);
 
-        // Optionally render the shadowmap (for debug only)
+        // Optionally render the shadow map (for debug only)
 
         // Render only on a corner of the window (or we we won't see the real
         // rendering...)

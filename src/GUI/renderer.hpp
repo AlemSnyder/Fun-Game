@@ -111,10 +111,6 @@ public:
         glDeleteProgram(programID_multi_);
     }
 
-    //void add_mesh(TerrainMesh& tm){
-    //    terrain_mesh_ = tm;
-    //}
-
     /*void add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh){
         single_meshes_uint_.push_back({mesh->get_color_buffer(),
                                        mesh->get_element_buffer(),
@@ -146,7 +142,17 @@ public:
         // Render to the screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        glViewport(
+            0, 0, windowFrameWidth,
+            windowFrameHeight); // Render on the whole framebuffer, complete
+                                // from the lower left corner to the upper right
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK); // Cull back-facing triangles -> draw only
+                             // front-facing triangles
+
         // Clear the screen
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Use our shader
         glUseProgram(programID_single_);
