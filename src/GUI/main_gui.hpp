@@ -281,10 +281,10 @@ int GUITest(World world)
     GLuint lightInvDirID =
         glGetUniformLocation(programID, "LightInvDirection_worldspace");
 
-    MainRenderer MR;
-    MR.add_mesh(terrain_mesh);
-    //MR.set_window_size(windowFrameWidth, windowFrameHeight); //TODO <- right here
-    //MR.set_depth_texture(depthTexture);
+    MainRenderer MR(terrain_mesh);
+    //MR.add_mesh(terrain_mesh);
+    MR.set_window_size(windowFrameWidth, windowFrameHeight);
+    MR.set_depth_texture(depthTexture);
     do {
         // denerat shadow depth map
         // Render to our framebuffer

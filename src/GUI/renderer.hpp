@@ -36,11 +36,11 @@ private:
     glm::mat4 depth_view_matrix_; //! def in class
     //std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
     //std::vector<std::array<unsigned int, 5>> single_meshes_uint_;
-    TerrainMesh terrain_mesh_;
+    TerrainMesh& terrain_mesh_;
     //std::vector<std::shared_ptr<MeshLoader::MultiComplexMesh>> multis_meshes_;
 public:
 
-    MainRenderer(){
+    MainRenderer(TerrainMesh& tm) : terrain_mesh_ (tm) {
         programID_single_ =
             LoadShaders("../src/GUI/Shaders/ShadowMapping.vert", "../src/GUI/Shaders/ShadowMapping.frag");
 
@@ -111,9 +111,9 @@ public:
         glDeleteProgram(programID_multi_);
     }
 
-    void add_mesh(TerrainMesh tm){
-        terrain_mesh_ = tm;
-    }
+    //void add_mesh(TerrainMesh& tm){
+    //    terrain_mesh_ = tm;
+    //}
 
     /*void add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh){
         single_meshes_uint_.push_back({mesh->get_color_buffer(),

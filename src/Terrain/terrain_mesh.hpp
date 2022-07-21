@@ -24,6 +24,9 @@ private:
     GLuint element_buffer_;
     unsigned int num_vertices_;
 public:
+    TerrainMesh(const TerrainMesh& obj) = delete;
+    TerrainMesh& operator=(const TerrainMesh& obj) = delete;
+
     TerrainMesh(){};
 
     TerrainMesh(std::vector<unsigned short> &indices,

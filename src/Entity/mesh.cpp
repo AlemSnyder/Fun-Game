@@ -18,7 +18,7 @@
 #include <utility>
 #include <glm/glm.hpp>
 
-#include "../util/voxelutility.hpp"
+#include "../Util/voxelutility.hpp"
 #include "mesh.hpp"
 
 Mesh::Mesh(const char* path){
