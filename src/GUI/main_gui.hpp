@@ -125,7 +125,7 @@ int GUITest(World world)
     // Get a handle for our "MVP" uniform
     GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
 
-    TerrainMesh terrain_mesh(indices,
+    TerrainMesh terrain_mesh (indices,
                   indexed_vertices,
                   indexed_colors,
                   indexed_normals);;
@@ -251,7 +251,8 @@ int GUITest(World world)
     GLuint lightInvDirID =
         glGetUniformLocation(programID, "LightInvDirection_worldspace");
 
-    MainRenderer MR(terrain_mesh);
+    MainRenderer MR;
+    MR.add_mesh(std::make_unique<TerrainMesh>(terrain_mesh));
     MR.set_window_size(windowFrameWidth, windowFrameHeight);
     MR.set_depth_texture(depthTexture);
     do {

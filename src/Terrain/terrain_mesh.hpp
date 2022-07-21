@@ -24,8 +24,21 @@ private:
     GLuint element_buffer_;
     unsigned int num_vertices_;
 public:
-    TerrainMesh(const TerrainMesh& obj) = delete;
-    TerrainMesh& operator=(const TerrainMesh& obj) = delete;
+    TerrainMesh(const TerrainMesh& obj){
+        vertex_buffer_ = obj.vertex_buffer_;
+        color_buffer_ = obj.color_buffer_;
+        normal_buffer_ = obj.normal_buffer_;
+        element_buffer_ = obj.element_buffer_;
+        num_vertices_ = obj.num_vertices_;
+    };
+    TerrainMesh& operator=(const TerrainMesh& obj){
+        vertex_buffer_ = obj.vertex_buffer_;
+        color_buffer_ = obj.color_buffer_;
+        normal_buffer_ = obj.normal_buffer_;
+        element_buffer_ = obj.element_buffer_;
+        num_vertices_ = obj.num_vertices_;
+        return *this;
+    }
 
     TerrainMesh(){};
 

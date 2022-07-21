@@ -34,13 +34,15 @@ private:
     int windowFrameHeight; //! def in class
     glm::mat4 depth_projection_matrix_; //! def in class
     glm::mat4 depth_view_matrix_; //! def in class
-    //std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
+    std::vector<std::unique_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
     //std::vector<std::array<unsigned int, 5>> single_meshes_uint_;
-    TerrainMesh& terrain_mesh_;
+    //TerrainMesh& terrain_mesh_;
+    //std::unique_ptr<MeshLoader::SingleComplexMesh> terrain_mesh_;
     //std::vector<std::shared_ptr<MeshLoader::MultiComplexMesh>> multis_meshes_;
 public:
 
-    MainRenderer(TerrainMesh& tm) : terrain_mesh_ (tm) {
+    MainRenderer(){//(std::unique_ptr<MeshLoader::SingleComplexMesh> tm) {
+        //terrain_mesh_ = std::move(tm);
         programID_single_ =
             LoadShaders("../src/GUI/Shaders/ShadowMapping.vert", "../src/GUI/Shaders/ShadowMapping.frag");
 
@@ -71,18 +73,9 @@ public:
         glDeleteProgram(programID_multi_);
     }
 
-    /*void add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh){
-        single_meshes_uint_.push_back({mesh->get_color_buffer(),
-                                       mesh->get_element_buffer(),
-                                       mesh->get_normal_buffer(),
-                                       mesh->get_num_vertices(),
-                                       mesh->get_vertex_buffer()});
-        std::cout << "Color buffer: " << (int) mesh->get_color_buffer() << std::endl;
-        std::cout << "Element buffer: " << (int) mesh->get_element_buffer() << std::endl;
-        std::cout << "Normal buffer: " << (int) mesh->get_normal_buffer() << std::endl;
-        std::cout << "Number of vertices: " << (int) mesh->get_num_vertices() << std::endl;
-        std::cout << "Vertex buffer: " << (int) mesh->get_vertex_buffer() << std::endl;
-    }*/
+    void add_mesh(std::unique_ptr<MeshLoader::SingleComplexMesh> mesh){
+        singles_meshes_.push_back(std::move(mesh));
+    }
 
     /*void add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh){
         multis_meshes_.push_back(mesh);
@@ -153,9 +146,11 @@ public:
         //glBindTexture(GL_TEXTURE_2D, depthTexture);
         //glUniform1i(ShadowMapID, 1);
 
+        //std::unique_ptr<MeshLoader::SingleComplexMesh>& terrain_mesh_ = singles_meshes_[0];
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh_.get_vertex_buffer());
+        glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_vertex_buffer());
         glVertexAttribPointer(0,        // attribute
                               3,        // size
                               GL_FLOAT, // type
@@ -166,7 +161,7 @@ public:
 
         // 2nd attribute buffer : colors
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh_.get_color_buffer());
+        glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_color_buffer());
         glVertexAttribPointer(1,        // attribute
                               3,        // size
                               GL_FLOAT, // type
@@ -177,7 +172,7 @@ public:
 
         // 3rd attribute buffer : normals
         glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain_mesh_.get_normal_buffer());
+        glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_normal_buffer());
         glVertexAttribPointer(2,        // attribute
                               3,        // size
                               GL_FLOAT, // type
@@ -187,11 +182,11 @@ public:
         );
 
         // Index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_mesh_.get_element_buffer());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, singles_meshes_[0]->get_element_buffer());
 
         // Draw the triangles !
         glDrawElements(GL_TRIANGLES,      // mode
-                       terrain_mesh_.get_num_vertices(),    // count
+                       singles_meshes_[0]->get_num_vertices(),    // count
                        GL_UNSIGNED_SHORT, // type
                        (void *)0          // element array buffer offset
         );
