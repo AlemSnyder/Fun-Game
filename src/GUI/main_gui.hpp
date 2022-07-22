@@ -119,16 +119,16 @@ int GUITest(World world)
     glBindVertexArray(VertexArrayID);
 
     // Create and compile our GLSL program from the shaders
-    GLuint depthProgramID =
-        LoadShaders("../src/GUI/Shaders/DepthRTT.vert", "../src/GUI/Shaders/DepthRTT.frag");
+    //GLuint depthProgramID =
+    //    LoadShaders("../src/GUI/Shaders/DepthRTT.vert", "../src/GUI/Shaders/DepthRTT.frag");
 
     // Get a handle for our "MVP" uniform
-    GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
+    //GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
 
     TerrainMesh terrain_mesh (indices,
                   indexed_vertices,
                   indexed_colors,
-                  indexed_normals);;
+                  indexed_normals);
 
     // The above is for the wold the below is for trees
 
@@ -247,14 +247,33 @@ int GUITest(World world)
     GLuint lightInvDirID =
         glGetUniformLocation(programID_tree, "LightInvDirection_worldspace");
 
+    ShadowMap SM;
+    SM.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
+
     MainRenderer MR;
-    MR.add_mesh(std::make_unique<TerrainMesh>(terrain_mesh));
+    MR.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
     MR.set_window_size(windowFrameWidth, windowFrameHeight);
-    MR.set_depth_texture(depthTexture);
+    MR.set_depth_texture(SM.get_depth_texture());//SM.get_depth_texture());
     do {
+
+            glm::vec3 lightInvDir = glm::vec3(40.0f, 8.2f, 120.69f);
+
+            lightInvDir = glm::normalize(lightInvDir) * 128.0f;
+
+            // Compute the MVP matrix from the light's point of view
+            glm::mat4 depthProjectionMatrix =
+                glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+            glm::mat4 depthViewMatrix =
+                glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
+        glm::mat4 depthModelMatrix = glm::mat4(1.0);
+            glm::mat4 depthMVP =
+                depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+        SM.render_shadow_depth_buffer();
             // render at shadow depth map
             // Render to our framebuffer
-            glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+            /*glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
             glViewport(0, 0, 1024 * 4,
                     1024 * 4); // Render on the whole framebuffer, complete from
                                 // the lower left corner to the upper right
@@ -272,15 +291,6 @@ int GUITest(World world)
             // Use our shader
             glUseProgram(depthProgramID);
 
-            glm::vec3 lightInvDir = glm::vec3(40.0f, 8.2f, 120.69f);
-
-            lightInvDir = glm::normalize(lightInvDir) * 128.0f;
-
-            // Compute the MVP matrix from the light's point of view
-            glm::mat4 depthProjectionMatrix =
-                glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
-            glm::mat4 depthViewMatrix =
-                glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
             // or, for spot light :
             // glm::vec3 lightPos(5, 20, 20);
             // glm::mat4 depthProjectionMatrix =
@@ -288,9 +298,7 @@ int GUITest(World world)
             // depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
             // glm::vec3(0,1,0));
 
-            glm::mat4 depthModelMatrix = glm::mat4(1.0);
-            glm::mat4 depthMVP =
-                depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+            
 
             // Send our transformation to the currently bound shader,
             // in the "MVP" uniform
@@ -317,8 +325,18 @@ int GUITest(World world)
                         (void *)0          // element array buffer offset
             );
 
-            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(0);*/
 
+        //glm::vec3 lightInvDir = glm::vec3(40.0f, 8.2f, 120.69f);
+
+        //glm::mat4 depthProjectionMatrix =
+        //    glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+        //glm::mat4 depthViewMatrix =
+        //    glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
+        //glm::mat4 depthModelMatrix = glm::mat4(1.0);
+        //glm::mat4 depthMVP =
+        //        depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
         MR.render(window);
 
@@ -353,7 +371,7 @@ int GUITest(World world)
         //glUniform1i(TextureID, 0);
 
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, depthTexture);
+        glBindTexture(GL_TEXTURE_2D, SM.get_depth_texture());
         glUniform1i(ShadowMapID, 1);
 
         // 1rst attribute buffer : vertices
@@ -428,7 +446,7 @@ int GUITest(World world)
 
         // Bind our texture in Texture Unit 0
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, depthTexture);
+        glBindTexture(GL_TEXTURE_2D, SM.get_depth_texture());
         // Set our "renderedTexture" sampler to use Texture Unit 0
         glUniform1i(texID, 0);
 
@@ -467,12 +485,12 @@ int GUITest(World world)
     glDeleteBuffers(1, &colorbuffer_tree);
     glDeleteBuffers(1, &normalbuffer_tree);
     glDeleteBuffers(1, &elementbuffer_tree);
-    glDeleteProgram(depthProgramID);
+    //glDeleteProgram(depthProgramID);
     glDeleteProgram(quad_programID);
     // glDeleteTextures(1, &Texture);
 
-    glDeleteFramebuffers(1, &FramebufferName);
-    glDeleteTextures(1, &depthTexture);
+    //glDeleteFramebuffers(1, &SM.get_frame_buffer());
+    //glDeleteTextures(1, &SM.get_depth_texture());
     glDeleteBuffers(1, &quad_vertexbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
 

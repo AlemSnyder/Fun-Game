@@ -16,6 +16,7 @@ private:
     GLuint programID_; //def in class
     GLuint depth_matrix_ID_; //def in class
     GLuint depthTexture; //def in class
+    GLuint FramebufferName;
     // TODO all of these things should be defined somewhere else and sent to this class.
     glm::vec3 light_direction_; //! def in class
     int windowFrameWidth; //! def in class
@@ -25,7 +26,9 @@ private:
     std::vector<std::shared_ptr<MeshLoader::MultiMesh>> multi_meshes_;
 public:
 
-    ShadowMap(){
+    ShadowMap(){// : depthTexture(), FramebufferName(0){
+        depthTexture = 0;
+        FramebufferName = 0;
         programID_ =
             LoadShaders("../src/GUI/Shaders/DepthRTT.vert", "../src/GUI/Shaders/DepthRTT.frag");
         
@@ -40,48 +43,49 @@ public:
         depth_projection_matrix_ =
             glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
-        windowFrameWidth = 4092;
-        windowFrameHeight = 4092;
+        windowFrameWidth = 4096;
+        windowFrameHeight = 4096;
 
-    // ---------------------------------------------
-    // Render Shadow to Texture - specific code begins here
-    // ---------------------------------------------
+        // ---------------------------------------------
+        // Render Shadow to Texture - specific code begins here
+        // ---------------------------------------------
 
-    // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth
-    // buffer.
-    GLuint FramebufferName = 0;
-    glGenFramebuffers(1, &FramebufferName);
-    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+        // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth
+        // buffer.
+        FramebufferName = 0;
+        glGenFramebuffers(1, &FramebufferName);
+        glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 
-    // Depth texture. Slower than a depth buffer, but you can sample it later in
-    // your shader
-    
-    glGenTextures(1, &depthTexture);
-    glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024 * 4, 1024 * 4, 0,
-                 GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE,
-                    GL_COMPARE_R_TO_TEXTURE);
+        // Depth texture. Slower than a depth buffer, but you can sample it later in
+        // your shader
+        
+        glGenTextures(1, &depthTexture);
+        glBindTexture(GL_TEXTURE_2D, depthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024 * 4, 1024 * 4, 0,
+                        GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE,
+                        GL_COMPARE_R_TO_TEXTURE);
 
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
 
-    // No color output in the bound framebuffer, only depth.
-    glDrawBuffer(GL_NONE);
+        // No color output in the bound framebuffer, only depth.
+        glDrawBuffer(GL_NONE);
 
-    // Always check that our framebuffer is ok
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        return;
+        // Always check that our framebuffer is ok
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+            std::cout << "Framebuffer not OK" << std::endl;
+        }
 
-    // The quad's FBO. Used only for visualizing the shadow map.
-    //static const GLfloat g_quad_vertex_buffer_data[] = {
-    //    -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-    //    -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-    //};
+        // The quad's FBO. Used only for visualizing the shadow map.
+        //static const GLfloat g_quad_vertex_buffer_data[] = {
+        //    -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+        //    -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+        //};
 
     }
 
@@ -93,13 +97,17 @@ public:
         multi_meshes_.push_back(mesh);
     }
 
-    GLuint get_depth_texture() const {
+    GLuint& get_depth_texture() {
         return depthTexture;
+    }
+
+    GLuint& get_frame_buffer() {
+        return FramebufferName;
     }
 
     void render_shadow_depth_buffer() const{
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
         glViewport(
             0, 0, windowFrameWidth,
             windowFrameHeight); // Render on the whole framebuffer, complete
@@ -131,11 +139,11 @@ public:
         // in the "MVP" uniform
         glUniformMatrix4fv(depth_matrix_ID_, 1, GL_FALSE, &depthMVP[0][0]);
 
-        for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_){
+        //for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_){
 
             // 1rst attribute buffer : vertices
             glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
+            glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_vertex_buffer());
             glVertexAttribPointer(0,        // The attribute we want to configure
                                 3,        // size
                                 GL_FLOAT, // type
@@ -145,20 +153,20 @@ public:
             );
 
             // Index buffer
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, singles_meshes_[0]->get_element_buffer());
 
             // Draw the triangles !
             glDrawElements(GL_TRIANGLES,      // mode
-                        mesh->get_num_vertices(),    // count
+                        singles_meshes_[0]->get_num_vertices(),    // count
                         GL_UNSIGNED_SHORT, // type
                         (void *)0          // element array buffer offset
             );
 
             glDisableVertexAttribArray(0);
 
-        }
+        //}
 
         // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     };
 };

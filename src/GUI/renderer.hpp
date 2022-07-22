@@ -34,7 +34,7 @@ private:
     int windowFrameHeight; //! def in class
     glm::mat4 depth_projection_matrix_; //! def in class
     glm::mat4 depth_view_matrix_; //! def in class
-    std::vector<std::unique_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
+    std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
     //std::vector<std::array<unsigned int, 5>> single_meshes_uint_;
     //TerrainMesh& terrain_mesh_;
     //std::unique_ptr<MeshLoader::SingleComplexMesh> terrain_mesh_;
@@ -73,7 +73,7 @@ public:
         glDeleteProgram(programID_multi_);
     }
 
-    void add_mesh(std::unique_ptr<MeshLoader::SingleComplexMesh> mesh){
+    void add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh){
         singles_meshes_.push_back(std::move(mesh));
     }
 
