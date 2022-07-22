@@ -27,6 +27,11 @@ private:
     GLuint ShadowMapID_; // def in class
     GLuint light_direction_ID_; // def in class
     // ---------------------------------------
+    GLuint MatrixID_multi_; // def in class 
+    GLuint view_matrix_ID_multi_; // def in class
+    GLuint DepthBiasID_multi_; // def in class
+    GLuint ShadowMapID_multi_; // def in class
+    GLuint light_direction_ID_multi_; // def in class
     GLuint depth_texture_; // added to class
     // TODO all of these things should be defined somewhere else and sent to this class.
     glm::vec3 light_direction_; //! def in class
@@ -38,7 +43,7 @@ private:
     //std::vector<std::array<unsigned int, 5>> single_meshes_uint_;
     //TerrainMesh& terrain_mesh_;
     //std::unique_ptr<MeshLoader::SingleComplexMesh> terrain_mesh_;
-    //std::vector<std::shared_ptr<MeshLoader::MultiComplexMesh>> multis_meshes_;
+    std::vector<std::shared_ptr<MeshLoader::MultiComplexMesh>> multis_meshes_;
 public:
 
     MainRenderer(){//(std::unique_ptr<MeshLoader::SingleComplexMesh> tm) {
@@ -55,6 +60,13 @@ public:
         ShadowMapID_ = glGetUniformLocation(programID_single_, "shadowMap");
         light_direction_ID_ =
             glGetUniformLocation(programID_single_, "LightInvDirection_worldspace");
+
+        MatrixID_multi_ = glGetUniformLocation(programID_multi_, "MVP");
+        view_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "V");
+        DepthBiasID_multi_ = glGetUniformLocation(programID_multi_, "DepthBiasMVP");
+        ShadowMapID_multi_ = glGetUniformLocation(programID_multi_, "shadowMap");
+        light_direction_ID_multi_ =
+            glGetUniformLocation(programID_multi_, "LightInvDirection_worldspace");
 
         light_direction_ =
             glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f))// direction
@@ -77,9 +89,9 @@ public:
         singles_meshes_.push_back(std::move(mesh));
     }
 
-    /*void add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh){
+    void add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh){
         multis_meshes_.push_back(mesh);
-    }*/
+    }
 
     void set_depth_texture(GLuint texture_id){
         depth_texture_ = texture_id;
@@ -193,18 +205,22 @@ public:
                         (void *)0          // element array buffer offset
             );
 
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+            glDisableVertexAttribArray(2);
+
         }
-/*
+
         // Use our shader
         glUseProgram(programID_multi_);
 
         // Send our transformation to the currently bound shader,
         // in the "MVP" uniform
-        glUniformMatrix4fv(MatrixID_, 1, GL_FALSE, &MVP[0][0]);
-        glUniformMatrix4fv(view_matrix_ID_, 1, GL_FALSE, &view_matrix[0][0]);
-        glUniformMatrix4fv(DepthBiasID_, 1, GL_FALSE, &depthBiasMVP[0][0]);
+        glUniformMatrix4fv(MatrixID_multi_, 1, GL_FALSE, &MVP[0][0]);
+        glUniformMatrix4fv(view_matrix_ID_multi_, 1, GL_FALSE, &view_matrix[0][0]);
+        glUniformMatrix4fv(DepthBiasID_multi_, 1, GL_FALSE, &depthBiasMVP[0][0]);
 
-        glUniform3f(light_direction_ID_, light_direction_.x, light_direction_.y, light_direction_.z);
+        glUniform3f(light_direction_ID_multi_, light_direction_.x, light_direction_.y, light_direction_.z);
 
         // Bind our texture in Texture Unit 0
         glActiveTexture(GL_TEXTURE0);
@@ -269,7 +285,7 @@ public:
                         mesh->get_num_models()
             );
         }
-*/
+
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
