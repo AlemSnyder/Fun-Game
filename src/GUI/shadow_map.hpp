@@ -34,7 +34,7 @@ public:
         programID_ =
             LoadShaders("../src/GUI/Shaders/DepthRTT.vert", "../src/GUI/Shaders/DepthRTT.frag");
         programID_multi_ =
-            LoadShaders("../src/GUI/Shaders/DepthRTTInstanced.vert", "../src/GUI/Shaders/DepthRTT.frag");
+            LoadShaders("../src/GUI/Shaders/DepthRTTInstanced.vert", "../src/GUI/Shaders/DepthRTTInstanced.frag");
 
         light_direction_ =
             glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f))// direction
@@ -89,11 +89,11 @@ public:
     }
 
     void add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh){
-        singles_meshes_.push_back(mesh);
+        singles_meshes_.push_back(std::move(mesh));
     }
 
     void add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh){
-        multi_meshes_.push_back(mesh);
+        multi_meshes_.push_back(std::move(mesh));
     }
 
     GLuint& get_depth_texture() {
@@ -164,8 +164,8 @@ public:
 
         }
 
-                // Use our shader
-        glUseProgram(programID_);
+        // Use our shader
+        glUseProgram(programID_multi_);
 
         //glm::mat4 depth_view_matrix =
         //    glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -184,7 +184,6 @@ public:
         glUniformMatrix4fv(depth_matrix_ID_multi_, 1, GL_FALSE, &depthMVP[0][0]);
 
         for (std::shared_ptr<MeshLoader::MultiMesh> mesh : multi_meshes_){
-
             // 1rst attribute buffer : vertices
             glEnableVertexAttribArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -197,16 +196,16 @@ public:
             );
 
             // 4th attribute buffer : transform
-            glEnableVertexAttribArray(1);
+            glEnableVertexAttribArray(3);
             glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
-            glVertexAttribPointer(1,        // attribute
-                                3,        // size
-                                GL_FLOAT, // type
-                                GL_FALSE, // normalized?
-                                0,        // stride
-                                (void *)0 // array buffer offset
+            glVertexAttribPointer(3,        // attribute
+                                  3,        // size
+                                  GL_FLOAT, // type
+                                  GL_FALSE, // normalized?
+                                  0,        // stride
+                                  (void *)0 // array buffer offset
             );
-            glVertexAttribDivisor(1,1);
+            glVertexAttribDivisor(3,1);
 
             // Index buffer
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
@@ -220,6 +219,7 @@ public:
             );
 
             glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
 
         }
 

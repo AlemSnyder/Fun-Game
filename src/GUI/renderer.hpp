@@ -86,7 +86,7 @@ public:
     }
 
     void add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh){
-        multis_meshes_.push_back(mesh);
+        multis_meshes_.push_back(std::move(mesh));
     }
 
     void set_depth_texture(GLuint texture_id){

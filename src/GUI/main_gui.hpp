@@ -125,32 +125,6 @@ int GUITest(World world)
 
     // The above is for the wold the below is for trees
 
-    /*GLuint vertexbuffer_tree;
-    glGenBuffers(1, &vertexbuffer_tree);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer_tree);
-    glBufferData(GL_ARRAY_BUFFER, indexed_vertices_tree.size() * sizeof(glm::vec3),
-                 &indexed_vertices_tree[0], GL_STATIC_DRAW);
-
-    GLuint colorbuffer_tree;
-    glGenBuffers(1, &colorbuffer_tree);
-    glBindBuffer(GL_ARRAY_BUFFER, colorbuffer_tree);
-    glBufferData(GL_ARRAY_BUFFER, indexed_colors_tree.size() * sizeof(glm::vec3),
-                 &indexed_colors_tree[0], GL_STATIC_DRAW);
-
-    GLuint normalbuffer_tree;
-    glGenBuffers(1, &normalbuffer_tree);
-    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer_tree);
-    glBufferData(GL_ARRAY_BUFFER, indexed_normals_tree.size() * sizeof(glm::vec3),
-                 &indexed_normals_tree[0], GL_STATIC_DRAW);
-
-    // Generate a buffer for the indices as well
-    GLuint elementbuffer_tree;
-    glGenBuffers(1, &elementbuffer_tree);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer_tree);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 indices_tree.size() * sizeof(unsigned short), &indices_tree[0],
-                 GL_STATIC_DRAW);*/
-
     std::vector<glm::vec3> model_matrices;
 
     for (int x = 0; x < world.terrain_main.get_X_MAX(); x+=40)
@@ -170,13 +144,6 @@ int GUITest(World world)
                         indexed_normals_tree,
                         model_matrices);
 
-    //GLuint model_matrices_buffer_tree;
-    //glGenBuffers(1, &model_matrices_buffer_tree);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model_matrices_buffer_tree);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-    //             model_matrices.size() * sizeof(glm::vec3), &model_matrices[0],
-    //             GL_STATIC_DRAW);
-
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
         -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
@@ -194,25 +161,9 @@ int GUITest(World world)
                                         "../src/GUI/Shaders/SimpleTexture.frag");
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
-    //GLuint programID_tree = LoadShaders("../src/GUI/Shaders/ShadowMappingInstanced.vert",
-    //                               "../src/GUI/Shaders/ShadowMappingInstanced.frag");
-
-    // Get a handle for our "myTextureSampler" uniform
-    //GLuint TextureID = glGetUniformLocation(programID_tree, "myTextureSampler");
-
-    // Get a handle for our "MVP" uniform
-    //GLuint MatrixID = glGetUniformLocation(programID_tree, "MVP");
-    //GLuint view_matrix_ID = glGetUniformLocation(programID_tree, "V");
-    //GLuint ModelMatrixID = glGetUniformLocation(programID_tree, "M");
-    //GLuint DepthBiasID = glGetUniformLocation(programID_tree, "DepthBiasMVP");
-    //GLuint ShadowMapID = glGetUniformLocation(programID_tree, "shadowMap");
-
-    // Get a handle for our "LightPosition" uniform
-    //GLuint lightInvDirID =
-    //    glGetUniformLocation(programID_tree, "LightInvDirection_worldspace");
-
     ShadowMap SM;
     SM.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
+    SM.add_mesh(std::make_shared<StaticMesh>(treesMesh));
 
     MainRenderer MR;
     MR.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
