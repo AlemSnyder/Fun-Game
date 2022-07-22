@@ -81,12 +81,6 @@ public:
             std::cout << "Framebuffer not OK" << std::endl;
         }
 
-        // The quad's FBO. Used only for visualizing the shadow map.
-        //static const GLfloat g_quad_vertex_buffer_data[] = {
-        //    -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-        //    -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-        //};
-
     }
 
     void add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh){
@@ -139,11 +133,11 @@ public:
         // in the "MVP" uniform
         glUniformMatrix4fv(depth_matrix_ID_, 1, GL_FALSE, &depthMVP[0][0]);
 
-        //for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_){
+        for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_){
 
             // 1rst attribute buffer : vertices
             glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_vertex_buffer());
+            glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
             glVertexAttribPointer(0,        // The attribute we want to configure
                                 3,        // size
                                 GL_FLOAT, // type
@@ -153,18 +147,18 @@ public:
             );
 
             // Index buffer
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, singles_meshes_[0]->get_element_buffer());
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
 
             // Draw the triangles !
             glDrawElements(GL_TRIANGLES,      // mode
-                        singles_meshes_[0]->get_num_vertices(),    // count
+                        mesh->get_num_vertices(),    // count
                         GL_UNSIGNED_SHORT, // type
                         (void *)0          // element array buffer offset
             );
 
             glDisableVertexAttribArray(0);
 
-        //}
+        }
 
         // Clear the screen
         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

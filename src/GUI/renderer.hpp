@@ -148,50 +148,52 @@ public:
 
         //std::unique_ptr<MeshLoader::SingleComplexMesh>& terrain_mesh_ = singles_meshes_[0];
 
-        // 1rst attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_vertex_buffer());
-        glVertexAttribPointer(0,        // attribute
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void *)0 // array buffer offset
-        );
+        for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_){
 
-        // 2nd attribute buffer : colors
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_color_buffer());
-        glVertexAttribPointer(1,        // attribute
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void *)0 // array buffer offset
-        );
+            // 1rst attribute buffer : vertices
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
+            glVertexAttribPointer(0,        // attribute
+                                3,        // size
+                                GL_FLOAT, // type
+                                GL_FALSE, // normalized?
+                                0,        // stride
+                                (void *)0 // array buffer offset
+            );
 
-        // 3rd attribute buffer : normals
-        glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, singles_meshes_[0]->get_normal_buffer());
-        glVertexAttribPointer(2,        // attribute
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void *)0 // array buffer offset
-        );
+            // 2nd attribute buffer : colors
+            glEnableVertexAttribArray(1);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh->get_color_buffer());
+            glVertexAttribPointer(1,        // attribute
+                                3,        // size
+                                GL_FLOAT, // type
+                                GL_FALSE, // normalized?
+                                0,        // stride
+                                (void *)0 // array buffer offset
+            );
 
-        // Index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, singles_meshes_[0]->get_element_buffer());
+            // 3rd attribute buffer : normals
+            glEnableVertexAttribArray(2);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh->get_normal_buffer());
+            glVertexAttribPointer(2,        // attribute
+                                3,        // size
+                                GL_FLOAT, // type
+                                GL_FALSE, // normalized?
+                                0,        // stride
+                                (void *)0 // array buffer offset
+            );
 
-        // Draw the triangles !
-        glDrawElements(GL_TRIANGLES,      // mode
-                       singles_meshes_[0]->get_num_vertices(),    // count
-                       GL_UNSIGNED_SHORT, // type
-                       (void *)0          // element array buffer offset
-        );
+            // Index buffer
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
 
-        //}
+            // Draw the triangles !
+            glDrawElements(GL_TRIANGLES,      // mode
+                        mesh->get_num_vertices(),    // count
+                        GL_UNSIGNED_SHORT, // type
+                        (void *)0          // element array buffer offset
+            );
+
+        }
 /*
         // Use our shader
         glUseProgram(programID_multi_);
