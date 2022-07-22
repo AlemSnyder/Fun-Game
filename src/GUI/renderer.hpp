@@ -19,19 +19,19 @@
 class MainRenderer {
 private:
     GLuint programID_single_; // def in class
-    GLuint programID_multi_; //def in class
-    // TODO -- need to be defined for multi --
     GLuint MatrixID_; // def in class 
     GLuint view_matrix_ID_; // def in class
     GLuint DepthBiasID_; // def in class
     GLuint ShadowMapID_; // def in class
     GLuint light_direction_ID_; // def in class
-    // ---------------------------------------
+
+    GLuint programID_multi_; //def in class
     GLuint MatrixID_multi_; // def in class 
     GLuint view_matrix_ID_multi_; // def in class
     GLuint DepthBiasID_multi_; // def in class
     GLuint ShadowMapID_multi_; // def in class
     GLuint light_direction_ID_multi_; // def in class
+
     GLuint depth_texture_; // added to class
     // TODO all of these things should be defined somewhere else and sent to this class.
     glm::vec3 light_direction_; //! def in class
@@ -40,14 +40,10 @@ private:
     glm::mat4 depth_projection_matrix_; //! def in class
     glm::mat4 depth_view_matrix_; //! def in class
     std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
-    //std::vector<std::array<unsigned int, 5>> single_meshes_uint_;
-    //TerrainMesh& terrain_mesh_;
-    //std::unique_ptr<MeshLoader::SingleComplexMesh> terrain_mesh_;
     std::vector<std::shared_ptr<MeshLoader::MultiComplexMesh>> multis_meshes_;
 public:
 
-    MainRenderer(){//(std::unique_ptr<MeshLoader::SingleComplexMesh> tm) {
-        //terrain_mesh_ = std::move(tm);
+    MainRenderer(){
         programID_single_ =
             LoadShaders("../src/GUI/Shaders/ShadowMapping.vert", "../src/GUI/Shaders/ShadowMapping.frag");
 
@@ -142,23 +138,15 @@ public:
         // Send our transformation to the currently bound shader,
         // in the "MVP" uniform
         glUniformMatrix4fv(MatrixID_, 1, GL_FALSE, &MVP[0][0]);
-        //glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
         glUniformMatrix4fv(view_matrix_ID_, 1, GL_FALSE, &view_matrix[0][0]);
         glUniformMatrix4fv(DepthBiasID_, 1, GL_FALSE, &depthBiasMVP[0][0]);
 
         glUniform3f(light_direction_ID_, light_direction_.x, light_direction_.y, light_direction_.z);
 
-        // Bind our texture in Texture Unit 0
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, TextureID);
-        // Set our "myTextureSampler" sampler to use Texture Unit 0
-        //glUniform1i(TextureID, 0);
-
+        // Bind our texture in Texture Unit 1
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depth_texture_);
         glUniform1i(ShadowMapID_, 1);
-
-        //std::unique_ptr<MeshLoader::SingleComplexMesh>& terrain_mesh_ = singles_meshes_[0];
 
         for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_){
 
@@ -219,13 +207,12 @@ public:
         glUniformMatrix4fv(MatrixID_multi_, 1, GL_FALSE, &MVP[0][0]);
         glUniformMatrix4fv(view_matrix_ID_multi_, 1, GL_FALSE, &view_matrix[0][0]);
         glUniformMatrix4fv(DepthBiasID_multi_, 1, GL_FALSE, &depthBiasMVP[0][0]);
-
         glUniform3f(light_direction_ID_multi_, light_direction_.x, light_direction_.y, light_direction_.z);
 
         // Bind our texture in Texture Unit 0
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depth_texture_);
-        glUniform1i(ShadowMapID_, 1);
+        glUniform1i(ShadowMapID_multi_, 1);
 
         for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_){
             
@@ -266,11 +253,11 @@ public:
             glEnableVertexAttribArray(3);
             glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
             glVertexAttribPointer(3,        // attribute
-                                3,        // size
-                                GL_FLOAT, // type
-                                GL_FALSE, // normalized?
-                                0,        // stride
-                                (void *)0 // array buffer offset
+                                  3,        // size
+                                  GL_FLOAT, // type
+                                  GL_FALSE, // normalized?
+                                  0,        // stride
+                                  (void *)0 // array buffer offset
             );
             glVertexAttribDivisor(3,1);
 

@@ -15,6 +15,8 @@ class ShadowMap {
 private:
     GLuint programID_; //def in class
     GLuint depth_matrix_ID_; //def in class
+    GLuint programID_multi_; //def in class
+    GLuint depth_matrix_ID_multi_; //def in class
     GLuint depthTexture; //def in class
     GLuint FramebufferName;
     // TODO all of these things should be defined somewhere else and sent to this class.
@@ -26,18 +28,21 @@ private:
     std::vector<std::shared_ptr<MeshLoader::MultiMesh>> multi_meshes_;
 public:
 
-    ShadowMap(){// : depthTexture(), FramebufferName(0){
+    ShadowMap(){
         depthTexture = 0;
         FramebufferName = 0;
         programID_ =
             LoadShaders("../src/GUI/Shaders/DepthRTT.vert", "../src/GUI/Shaders/DepthRTT.frag");
-        
+        programID_multi_ =
+            LoadShaders("../src/GUI/Shaders/DepthRTTInstanced.vert", "../src/GUI/Shaders/DepthRTT.frag");
+
         light_direction_ =
             glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f))// direction
             * 128.0f; // length
 
         // Get a handle for our "MVP" uniform
         depth_matrix_ID_ = glGetUniformLocation(programID_, "depthMVP");
+        depth_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "depthMVP");
 
         // Compute the MVP matrix from the light's point of view
         depth_projection_matrix_ =
@@ -61,7 +66,7 @@ public:
         
         glGenTextures(1, &depthTexture);
         glBindTexture(GL_TEXTURE_2D, depthTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024 * 4, 1024 * 4, 0,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, windowFrameWidth, windowFrameHeight, 0,
                         GL_DEPTH_COMPONENT, GL_FLOAT, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -125,7 +130,6 @@ public:
         // depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
         // glm::vec3(0,1,0));
 
-        //glm::mat4 depthModelMatrix = glm::mat4(1.0);
         glm::mat4 depthMVP =
             depth_projection_matrix_ * depth_view_matrix;// * depthModelMatrix;
 
@@ -160,7 +164,66 @@ public:
 
         }
 
-        // Clear the screen
+                // Use our shader
+        glUseProgram(programID_);
+
+        //glm::mat4 depth_view_matrix =
+        //    glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+        // or, for spot light :
+        // glm::vec3 lightPos(5, 20, 20);
+        // glm::mat4 depthProjectionMatrix =
+        // glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
+        // depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
+        // glm::vec3(0,1,0));
+
+        //glm::mat4 depthMVP =
+        //    depth_projection_matrix_ * depth_view_matrix;// * depthModelMatrix;
+
+        // Send our transformation to the currently bound shader,
+        // in the "MVP" uniform
+        glUniformMatrix4fv(depth_matrix_ID_multi_, 1, GL_FALSE, &depthMVP[0][0]);
+
+        for (std::shared_ptr<MeshLoader::MultiMesh> mesh : multi_meshes_){
+
+            // 1rst attribute buffer : vertices
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
+            glVertexAttribPointer(0,        // The attribute we want to configure
+                                3,        // size
+                                GL_FLOAT, // type
+                                GL_FALSE, // normalized?
+                                0,        // stride
+                                (void *)0 // array buffer offset
+            );
+
+            // 4th attribute buffer : transform
+            glEnableVertexAttribArray(1);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
+            glVertexAttribPointer(1,        // attribute
+                                3,        // size
+                                GL_FLOAT, // type
+                                GL_FALSE, // normalized?
+                                0,        // stride
+                                (void *)0 // array buffer offset
+            );
+            glVertexAttribDivisor(1,1);
+
+            // Index buffer
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
+
+            // Draw the triangles !
+            glDrawElementsInstanced(GL_TRIANGLES,      // mode
+                        mesh->get_num_vertices(),    // count
+                        GL_UNSIGNED_SHORT, // type
+                        (void *)0,          // element array buffer offset
+                        mesh->get_num_models()
+            );
+
+            glDisableVertexAttribArray(0);
+
+        }
+
+        // Clear the screen  -  for some reason this broke things
         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     };
 };
