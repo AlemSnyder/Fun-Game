@@ -46,25 +46,23 @@
 class MainRenderer {
    private:
     GLuint programID_single_;    // ID of non-indexed mesh Program
-    GLuint MatrixID_;            // def in class
+    GLuint matrix_ID_;            // def in class
     GLuint view_matrix_ID_;      // def in class
-    GLuint DepthBiasID_;         // def in class
-    GLuint ShadowMapID_;         // def in class
+    GLuint depth_bias_ID_;         // def in class
+    GLuint shadow_map_ID_;         // def in class
     GLuint light_direction_ID_;  // def in class
 
     GLuint programID_multi_;           // ID of indexed mesh Program
-    GLuint MatrixID_multi_;            // def in class
+    GLuint matrix_ID_multi_;            // def in class
     GLuint view_matrix_ID_multi_;      // def in class
-    GLuint DepthBiasID_multi_;         // def in class
-    GLuint ShadowMapID_multi_;         // def in class
+    GLuint depth_bias_ID_multi_;         // def in class
+    GLuint shadow_map_ID_multi_;         // def in class
     GLuint light_direction_ID_multi_;  // def in class
 
     GLuint depth_texture_;  // added to class
     // TODO all of these things should be defined somewhere else and sent to
     // this class.
     glm::vec3 light_direction_;          // direction of sun light
-    //int windowFrameWidth;                // added to class
-    //int windowFrameHeight;               // added to class
     glm::mat4 depth_projection_matrix_;  //! def in class
     glm::mat4 depth_view_matrix_;        // def in class
     std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;

@@ -12,8 +12,7 @@
 */
 
 #include <cstdint>
-#include <iostream>
-#include <fstream>
+#include <string>
 #include <vector>
 #include <utility>
 #include <glm/glm.hpp>
@@ -32,7 +31,8 @@ void Mesh::load_from_qb(const char * path){
     int test = VoxelUtility::from_qb(path, data, center, size_);
 
     if (!static_cast<bool>(test)){
-        // some error statement
+        std::string message("Could not load voxel from ");
+        throw std::invalid_argument(message + path);
     }
 
     generate_mesh(data, center, size_);

@@ -25,17 +25,17 @@ MainRenderer::MainRenderer() {
         LoadShaders("../src/GUI/Shaders/ShadowMappingInstanced.vert",
                     "../src/GUI/Shaders/ShadowMappingInstanced.frag");
 
-    MatrixID_ = glGetUniformLocation(programID_single_, "MVP");
+    matrix_ID_ = glGetUniformLocation(programID_single_, "MVP");
     view_matrix_ID_ = glGetUniformLocation(programID_single_, "V");
-    DepthBiasID_ = glGetUniformLocation(programID_single_, "DepthBiasMVP");
-    ShadowMapID_ = glGetUniformLocation(programID_single_, "shadowMap");
+    depth_bias_ID_ = glGetUniformLocation(programID_single_, "DepthBiasMVP");
+    shadow_map_ID_ = glGetUniformLocation(programID_single_, "shadowMap");
     light_direction_ID_ =
         glGetUniformLocation(programID_single_, "LightInvDirection_worldspace");
 
-    MatrixID_multi_ = glGetUniformLocation(programID_multi_, "MVP");
+    matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "MVP");
     view_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "V");
-    DepthBiasID_multi_ = glGetUniformLocation(programID_multi_, "DepthBiasMVP");
-    ShadowMapID_multi_ = glGetUniformLocation(programID_multi_, "shadowMap");
+    depth_bias_ID_multi_ = glGetUniformLocation(programID_multi_, "DepthBiasMVP");
+    shadow_map_ID_multi_ = glGetUniformLocation(programID_multi_, "shadowMap");
     light_direction_ID_multi_ =
         glGetUniformLocation(programID_multi_, "LightInvDirection_worldspace");
 
@@ -116,9 +116,9 @@ void MainRenderer::render(GLFWwindow *window) const {
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
-    glUniformMatrix4fv(MatrixID_, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(matrix_ID_, 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(view_matrix_ID_, 1, GL_FALSE, &view_matrix[0][0]);
-    glUniformMatrix4fv(DepthBiasID_, 1, GL_FALSE, &depthBiasMVP[0][0]);
+    glUniformMatrix4fv(depth_bias_ID_, 1, GL_FALSE, &depthBiasMVP[0][0]);
 
     glUniform3f(light_direction_ID_, light_direction_.x, light_direction_.y,
                 light_direction_.z);
@@ -126,7 +126,7 @@ void MainRenderer::render(GLFWwindow *window) const {
     // Bind our texture in Texture Unit 1
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
-    glUniform1i(ShadowMapID_, 1);
+    glUniform1i(shadow_map_ID_, 1);
 
     for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh :
          singles_meshes_) {
@@ -183,16 +183,16 @@ void MainRenderer::render(GLFWwindow *window) const {
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
-    glUniformMatrix4fv(MatrixID_multi_, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(matrix_ID_multi_, 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(view_matrix_ID_multi_, 1, GL_FALSE, &view_matrix[0][0]);
-    glUniformMatrix4fv(DepthBiasID_multi_, 1, GL_FALSE, &depthBiasMVP[0][0]);
+    glUniformMatrix4fv(depth_bias_ID_multi_, 1, GL_FALSE, &depthBiasMVP[0][0]);
     glUniform3f(light_direction_ID_multi_, light_direction_.x,
                 light_direction_.y, light_direction_.z);
 
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
-    glUniform1i(ShadowMapID_multi_, 1);
+    glUniform1i(shadow_map_ID_multi_, 1);
 
     for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
         // 1rst attribute buffer : vertices

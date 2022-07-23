@@ -1,4 +1,5 @@
 #include <memory>
+#include <exception>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -28,8 +29,8 @@ ShadowMap::ShadowMap(int w, int h) {
     // depth_projection_matrix_ =
     //    glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
-    windowFrameWidth = w;
-    windowFrameHeight = h;
+    shadow_width = w;
+    shadow_height = h;
 
     // ---------------------------------------------
     // Render Shadow to Texture - specific code begins here
@@ -46,8 +47,8 @@ ShadowMap::ShadowMap(int w, int h) {
 
     glGenTextures(1, &depthTexture);
     glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, windowFrameWidth,
-                 windowFrameHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, shadow_width,
+                 shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -62,9 +63,9 @@ ShadowMap::ShadowMap(int w, int h) {
     glDrawBuffer(GL_NONE);
 
     // Always check that our framebuffer is ok
-    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    // { std::cout << "Framebuffer not OK" << std::endl;
-    //}
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+        throw std::invalid_argument("Framebuffer is not ok");
+    }
 }
 
 void ShadowMap::add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh) {
@@ -92,8 +93,8 @@ GLuint &ShadowMap::get_frame_buffer() { return FramebufferName; }
 void ShadowMap::render_shadow_depth_buffer() const {
     glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
     glViewport(
-        0, 0, windowFrameWidth,
-        windowFrameHeight);  // Render on the whole framebuffer, complete
+        0, 0, shadow_width,
+        shadow_height);  // Render on the whole framebuffer, complete
                              // from the lower left corner to the upper right
 
     glEnable(GL_CULL_FACE);
