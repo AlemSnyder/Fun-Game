@@ -36,8 +36,8 @@ class MainRenderer {
     // TODO all of these things should be defined somewhere else and sent to
     // this class.
     glm::vec3 light_direction_;          //! def in class
-    int windowFrameWidth;                //! def in class
-    int windowFrameHeight;               //! def in class
+    int windowFrameWidth;                // added to class
+    int windowFrameHeight;               // added to class
     glm::mat4 depth_projection_matrix_;  //! def in class
     glm::mat4 depth_view_matrix_;        //! def in class
     std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
@@ -55,6 +55,8 @@ class MainRenderer {
     void set_depth_texture(GLuint texture_id);
 
     void set_window_size(int w, int h);
+
+    void set_light_direction(glm::vec3 light_direction);
 
     void render(GLFWwindow* window) const;
 };

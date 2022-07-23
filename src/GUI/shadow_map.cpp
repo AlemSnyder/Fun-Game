@@ -12,7 +12,7 @@
 #include "shader.hpp"
 #include "shadow_map.hpp"
 
-ShadowMap::ShadowMap() {
+ShadowMap::ShadowMap(int w, int h) {
     depthTexture = 0;
     FramebufferName = 0;
     programID_ = LoadShaders("../src/GUI/Shaders/DepthRTT.vert",
@@ -20,20 +20,16 @@ ShadowMap::ShadowMap() {
     programID_multi_ = LoadShaders("../src/GUI/Shaders/DepthRTTInstanced.vert",
                                    "../src/GUI/Shaders/DepthRTTInstanced.frag");
 
-    light_direction_ =
-        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f))  // direction
-        * 128.0f;                                        // length
-
     // Get a handle for our "MVP" uniform
     depth_matrix_ID_ = glGetUniformLocation(programID_, "depthMVP");
     depth_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "depthMVP");
 
     // Compute the MVP matrix from the light's point of view
-    depth_projection_matrix_ =
-        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+    //depth_projection_matrix_ =
+    //    glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
-    windowFrameWidth = 4096;
-    windowFrameHeight = 4096;
+    windowFrameWidth = w;
+    windowFrameHeight = h;
 
     // ---------------------------------------------
     // Render Shadow to Texture - specific code begins here
@@ -66,8 +62,8 @@ ShadowMap::ShadowMap() {
     glDrawBuffer(GL_NONE);
 
     // Always check that our framebuffer is ok
-    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        //std::cout << "Framebuffer not OK" << std::endl;
+    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    // { std::cout << "Framebuffer not OK" << std::endl;
     //}
 }
 
@@ -77,6 +73,14 @@ void ShadowMap::add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh) {
 
 void ShadowMap::add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh) {
     multi_meshes_.push_back(std::move(mesh));
+}
+
+void ShadowMap::set_light_direction(glm::vec3 light_direction){
+    light_direction_ = light_direction;
+}
+
+void ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix){
+    depth_projection_matrix_ = depth_projection_matrix;
 }
 
 GLuint &ShadowMap::get_depth_texture() { return depthTexture; }

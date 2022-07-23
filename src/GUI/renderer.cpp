@@ -74,6 +74,10 @@ void MainRenderer::set_window_size(int w, int h) {
     windowFrameWidth = w;
 }
 
+void MainRenderer::set_light_direction(glm::vec3 light_direction){
+    light_direction_ = light_direction;
+}
+
 void MainRenderer::render(GLFWwindow *window) const {
     // Render to the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

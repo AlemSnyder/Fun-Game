@@ -18,18 +18,17 @@ class ShadowMap {
     GLuint programID_multi_;        // def in class
     GLuint depth_matrix_ID_multi_;  // def in class
     GLuint depthTexture;            // def in class
-    GLuint FramebufferName;
-    // TODO all of these things should be defined somewhere else and sent to
-    // this class.
-    glm::vec3 light_direction_;          //! def in class
-    int windowFrameWidth;                //! def in class
-    int windowFrameHeight;               //! def in class
-    glm::mat4 depth_projection_matrix_;  //! def in class
+    GLuint FramebufferName; // def in class
+    // ------ the below are added to the class ------
+    glm::vec3 light_direction_;          // added to class
+    int windowFrameWidth;                // added to class
+    int windowFrameHeight;               // added to class
+    glm::mat4 depth_projection_matrix_;  // added to class
     std::vector<std::shared_ptr<MeshLoader::SingleMesh>> singles_meshes_;
     std::vector<std::shared_ptr<MeshLoader::MultiMesh>> multi_meshes_;
 
    public:
-    ShadowMap();
+    ShadowMap(int w, int h);
 
     void add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh);
 
@@ -38,6 +37,10 @@ class ShadowMap {
     GLuint& get_depth_texture();
 
     GLuint& get_frame_buffer();
+
+    void set_light_direction(glm::vec3 light_direction);
+
+    void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
     void render_shadow_depth_buffer() const;
 };
