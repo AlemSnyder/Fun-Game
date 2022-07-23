@@ -25,7 +25,7 @@ ShadowMap::ShadowMap(int w, int h) {
     depth_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "depthMVP");
 
     // Compute the MVP matrix from the light's point of view
-    //depth_projection_matrix_ =
+    // depth_projection_matrix_ =
     //    glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
     windowFrameWidth = w;
@@ -75,11 +75,13 @@ void ShadowMap::add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh) {
     multi_meshes_.push_back(std::move(mesh));
 }
 
-void ShadowMap::set_light_direction(glm::vec3 light_direction){
+void ShadowMap::set_light_direction(glm::vec3 light_direction) {
     light_direction_ = light_direction;
+    depth_view_matrix_ =
+        glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
-void ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix){
+void ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
     depth_projection_matrix_ = depth_projection_matrix;
 }
 
@@ -103,8 +105,8 @@ void ShadowMap::render_shadow_depth_buffer() const {
     // Use our shader
     glUseProgram(programID_);
 
-    glm::mat4 depth_view_matrix =
-        glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    //glm::mat4 depth_view_matrix =
+    //    glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     // or, for spot light :
     // glm::vec3 lightPos(5, 20, 20);
     // glm::mat4 depthProjectionMatrix =
@@ -112,13 +114,15 @@ void ShadowMap::render_shadow_depth_buffer() const {
     // depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
     // glm::vec3(0,1,0));
 
-    glm::mat4 depthMVP =
-        depth_projection_matrix_ * depth_view_matrix;  // * depthModelMatrix;
+    glm::mat4 depthMVP = depth_projection_matrix_ *
+                         depth_view_matrix_;  // matrix to calculate the length
+                                             // of a shadow in model space
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
     glUniformMatrix4fv(depth_matrix_ID_, 1, GL_FALSE, &depthMVP[0][0]);
 
+    // draw the non-indexed meshes
     for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_) {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -161,6 +165,7 @@ void ShadowMap::render_shadow_depth_buffer() const {
     // in the "MVP" uniform
     glUniformMatrix4fv(depth_matrix_ID_multi_, 1, GL_FALSE, &depthMVP[0][0]);
 
+    // draw the indexed meshes
     for (std::shared_ptr<MeshLoader::MultiMesh> mesh : multi_meshes_) {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -173,8 +178,12 @@ void ShadowMap::render_shadow_depth_buffer() const {
                               (void *)0  // array buffer offset
         );
 
-        // 4th attribute buffer : transform
+        // 2nd attribute buffer : transform
         glEnableVertexAttribArray(3);
+        // this is 3 because reasons
+        // so I don't know how to make a buffer not indexed after it is set to
+        // be indexed. Because attribute 3 is indexed somewhere else there is
+        // no problem here
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
         glVertexAttribPointer(3,         // attribute
                               3,         // size

@@ -69,22 +69,22 @@ void MainRenderer::set_depth_texture(GLuint texture_id) {
     depth_texture_ = texture_id;
 }
 
-void MainRenderer::set_window_size(int w, int h) {
-    windowFrameHeight = h;
-    windowFrameWidth = w;
-}
-
 void MainRenderer::set_light_direction(glm::vec3 light_direction){
     light_direction_ = light_direction;
+    depth_view_matrix_ =
+        glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
 void MainRenderer::render(GLFWwindow *window) const {
     // Render to the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    int width, height;
+    glfwGetWindowSize(window, &width, &height); // get he window size
+
     glViewport(
-        0, 0, windowFrameWidth,
-        windowFrameHeight);  // Render on the whole framebuffer, complete
+        0, 0, width,
+        height);  // Render on the whole framebuffer, complete
                              // from the lower left corner to the upper right
 
     glEnable(GL_CULL_FACE);

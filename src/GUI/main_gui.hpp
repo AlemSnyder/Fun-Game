@@ -168,7 +168,6 @@ int GUITest(World world) {
     MR.set_light_direction(light_direction);
     MR.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
     MR.add_mesh(std::make_shared<StaticMesh>(treesMesh));
-    MR.set_window_size(windowFrameWidth, windowFrameHeight);
     MR.set_depth_texture(SM.get_depth_texture());
     do {
         SM.render_shadow_depth_buffer();
