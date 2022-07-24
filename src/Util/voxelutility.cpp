@@ -74,5 +74,5 @@ int VoxelUtility::from_qb(const char * path,
     free(name);
 
     fclose(file);
-    return 0;
+    return 1;
 }

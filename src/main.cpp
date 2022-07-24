@@ -41,7 +41,7 @@ int test1(const char *path)
 
     World world(materials_json, biome_data);
 
-    world.terrain_main.qb_save_debug(path, world.get_materials());
+    world.terrain_main.qb_save(path);
 
     return 0;
 }
@@ -166,7 +166,6 @@ int GUITest(const char *path)
     World world(path);
 
     return GUI::GUITest(world);
-    
 }
 
 int main(int argc, char **argv)
@@ -184,6 +183,8 @@ int main(int argc, char **argv)
         } else {
             save_all_terrain(biome_data);
         }
+    } else if (std::string(argv[1]) == "--GenerateTerrain") {
+        return test1(argv[2]);
     } else if (std::string(argv[1]) == "--MacroMap") {
         return test2();
     } else if (std::string(argv[1]) == "--SaveTest") {
