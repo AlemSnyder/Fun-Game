@@ -1,5 +1,5 @@
-#ifndef __UNITPATH_HPP__
-#define __UNITPATH_HPP__
+#ifndef __UNIT_PATH_HPP__
+#define __UNIT_PATH_HPP__
 
 #include <cstdint>
 // TODO add comments
