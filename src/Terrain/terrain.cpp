@@ -513,7 +513,7 @@ void Terrain::add_all_adjacent(int xyz) {
         // test if the final tiles is in a valid position
         if (is_valid_pos(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
             Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
-            OnePath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
+            UnitPath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
             //compute and add the path type.
         }
@@ -562,7 +562,7 @@ void Terrain::remove_node_group(NodeGroup* NG){
     }
 }
 
-const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
+const UnitPath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
     int dz = 3;
@@ -585,7 +585,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     uint8_t vertical_direction= z_diff << 1;
 
     bool open;
-    OnePath type(horizontal_direction + vertical_direction);
+    UnitPath type(horizontal_direction + vertical_direction);
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
@@ -633,7 +633,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
         }
     }
 
-    return type & OnePath(open);
+    return type & UnitPath(open);
 }
 
 std::set<const NodeGroup*> Terrain::get_all_node_groups() const {

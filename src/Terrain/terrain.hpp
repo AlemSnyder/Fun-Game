@@ -1,6 +1,6 @@
 #ifndef __TERRAIN_HPP__
 #define __TERRAIN_HPP__
-
+// TODO add comments
 #include <array>
 #include <iostream>
 #include <set>
@@ -12,7 +12,7 @@
 #include <map>
 
 #include "node.hpp"
-#include "onepath.hpp"
+#include "unitpath.hpp"
 #include "tile.hpp"
 #include "node_group.hpp"
 #include "chunk.hpp"
@@ -68,7 +68,7 @@ public:
 
     std::pair<Tile*, Tile*> get_start_end_test();
 
-    const OnePath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
+    const UnitPath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
 
     static float get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
     static float get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2);

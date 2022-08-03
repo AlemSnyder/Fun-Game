@@ -51,7 +51,7 @@ class MainRenderer {
     GLuint depth_bias_ID_;         // def in class
     GLuint shadow_map_ID_;         // def in class
     GLuint light_direction_ID_;  // def in class
-
+// TODO comment these
     GLuint programID_multi_;           // ID of indexed mesh Program
     GLuint matrix_ID_multi_;            // def in class
     GLuint view_matrix_ID_multi_;      // def in class

@@ -11,5 +11,5 @@ fix one path
 Documentation
     tile.hpp
     terrain.hpp
-    onepath.hpp
+    unitpath.hpp
     node.hpp
