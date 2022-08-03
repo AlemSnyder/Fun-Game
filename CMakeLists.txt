@@ -29,7 +29,11 @@ add_executable(Fun_Game ${SOURCES1} ${SOURCES2} ${SOURCES3})
 target_link_libraries(Fun_Game glfw)
 target_link_libraries(Fun_Game OpenGL::GL)
 target_link_libraries(Fun_Game GLEW::GLEW)
-target_link_libraries(Fun_Game glm::glm)
+if (WIN32)
+  target_link_libraries(Fun_Game glm)
+else()
+  target_link_libraries(Fun_Game glm::glm)
+endif()
 
 # Set warning options
 if(MSVC)

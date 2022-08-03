@@ -1,13 +1,13 @@
 #ifndef __TILE_HPP__
 #define __TILE_HPP__
-
+// TODO comments
 #include <functional>
 #include <unordered_set>
 #include <set>
 #include <map>
 #include <cstdint>
 #include "TerrainGeneration/material.hpp"
-#include "onepath.hpp"
+#include "unitpath.hpp"
 //#include <iostream>
 
 class Tile;
@@ -18,9 +18,9 @@ struct TilePCompare{
 
 class Tile {  // this represents a tile in the world
 private:
-    int x; // The x index
-    int y; // The y index
-    int z; // The z index
+    uint16_t x; // The x index
+    uint16_t y; // The y index
+    uint16_t z; // The z index
     // does this need to know where it is?
     uint8_t color_id; // The tile color is determined by this and the material type.
     uint8_t grow_data_high; // Determined by the horizontal manhattan distance from a wall
@@ -31,7 +31,7 @@ private:
     
     bool solid;  // used for can stand, grass edges, etc. Should be the same as mat->solid.
     const Material * mat; // The material of the tile
-    std::map<Tile *,OnePath, TilePCompare> adjacent;//(tile_pair_hash, tile_pair_equals);
+    std::map<Tile *,UnitPath, TilePCompare> adjacent;//(tile_pair_hash, tile_pair_equals);
 
 
 public:
@@ -66,12 +66,12 @@ public:
     uint8_t get_grow_low() const;
     uint8_t get_grow_high() const;
 
-    void add_adjacent(Tile *tile, OnePath type);
-    void add_adjacent(std::map<Tile *, OnePath>::iterator it, Tile *tile, OnePath type);
+    void add_adjacent(Tile *tile, UnitPath type);
+    void add_adjacent(std::map<Tile *, UnitPath>::iterator it, Tile *tile, UnitPath type);
     void clear_adjacent();
 
-    std::map<Tile *,OnePath, TilePCompare> & get_adjacent_map() { return adjacent; };
-    const std::map<Tile *,OnePath, TilePCompare> & get_adjacent_map() const { return adjacent; };
+    std::map<Tile *,UnitPath, TilePCompare> & get_adjacent_map() { return adjacent; };
+    const std::map<Tile *,UnitPath, TilePCompare> & get_adjacent_map() const { return adjacent; };
     std::set<Tile *> get_adjacent_clear(int path_type);
     std::set<const Tile *> get_adjacent_clear(int path_type) const;
 

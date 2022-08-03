@@ -15,7 +15,6 @@
 #include <vector>
 #include <cstring>
 #include <fstream>
-#include <fstream>
 
 #include "../json/json.h"
 #include "node.hpp"
@@ -514,38 +513,13 @@ void Terrain::add_all_adjacent(int xyz) {
         // test if the final tiles is in a valid position
         if (is_valid_pos(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
             Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
-            OnePath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
+            UnitPath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
-            //compute and add the pathtype.
+            //compute and add the path type.
         }
     }
     //std::cout << "adding adjacent" << std::endl;
 }
-
-
-//! should be removed
-std::set<Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t type) {
-    std::set<Tile *> out;
-
-    for (std::pair<Tile *, OnePath> t : tile->get_adjacent_map()) {
-        if (t.second.compatible(type)) {
-            out.insert(t.first);
-        }
-    }
-    return out;
-}
-//! should be removed
-std::set<const Tile *> Terrain::get_adjacent_tiles(const Tile *const tile, uint8_t type) const {
-    std::set<const Tile *> out;
-
-    for (const std::pair<Tile *,OnePath> t : tile->get_adjacent_map()) {
-        if (t.second.compatible(type)) {
-            out.insert(t.first);
-        }
-    }
-    return out;
-}
-
 
 template<class T>
 std::set<Node<const T> *> Terrain::get_adjacent_nodes(const Node<const T> *const node, std::map<const T*, Node<const T>> & nodes, uint8_t path_type) const {
@@ -588,7 +562,7 @@ void Terrain::remove_node_group(NodeGroup* NG){
     }
 }
 
-const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
+const UnitPath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
     int dz = 3;
@@ -611,7 +585,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
     uint8_t vertical_direction= z_diff << 1;
 
     bool open;
-    OnePath type(horizontal_direction + vertical_direction);
+    UnitPath type(horizontal_direction + vertical_direction);
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
@@ -659,7 +633,7 @@ const OnePath Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int
         }
     }
 
-    return type & OnePath(open);
+    return type & UnitPath(open);
 }
 
 std::set<const NodeGroup*> Terrain::get_all_node_groups() const {
@@ -935,7 +909,6 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     file = fopen(path, "rb");
     READ<uint32_t>(void_, file); // version
     //std::cout << void_ << std::endl;
-    (void) void_;
     READ<uint32_t>(void_, file);   // color format RGBA
     //std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file);   // orientation right handed // c
@@ -995,6 +968,7 @@ int Terrain::qb_read(const char * path, const std::map<uint32_t, std::pair<const
     }
     fclose(file);
     std::cout << "    tiles read: " << tiles_read << std::endl;
+    free(name);
     return 0;
 }
 

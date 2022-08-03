@@ -12,7 +12,6 @@ in vec4 ShadowCoord;
 layout(location = 0) out vec3 color;
 
 // Values that stay constant for the whole mesh.
-uniform sampler2D myTextureSampler;
 uniform mat4 MV;
 uniform vec3 LightPosition_worldspace;
 uniform sampler2DShadow shadowMap;
@@ -113,9 +112,5 @@ void main(){
 	
 	color = 
 		// Ambient : simulates indirect lighting
-		MaterialAmbientColor +
-		// Diffuse : "color" of the object
-		visibility * MaterialDiffuseColor * LightColor * LightPower * cosTheta;// +
-		// Specular : reflective highlight, like a mirror
-		//visibility * MaterialSpecularColor * LightColor * LightPower * min(pow(cosAlpha, 5), 1);
+		MaterialAmbientColor + visibility * MaterialDiffuseColor * LightColor * LightPower * cosTheta;
 }

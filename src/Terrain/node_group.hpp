@@ -26,7 +26,7 @@
 #include <list>
 #include <set>
 #include <cstdint>
-#include "onepath.hpp"
+#include "unitpath.hpp"
 #include "tile.hpp"
 
 /**
@@ -54,14 +54,14 @@ public:
      * @param tile origianal tile in this NodeGroup
      * @param path_type most complex path type used to get from any tile to any other tile in this node group
      */
-    NodeGroup(Tile* tile, OnePath path_type);
+    NodeGroup(Tile* tile, UnitPath path_type);
     /**
      * @brief Merge two node groups together
      * 
      * @param other the node group that is added to this one
-     * @return std::map<NodeGroup *, OnePath> adjacent node groups of other
+     * @return std::map<NodeGroup *, UnitPath> adjacent node groups of other
      */
-    std::map<NodeGroup *, OnePath> merge_groups(NodeGroup other);
+    std::map<NodeGroup *, UnitPath> merge_groups(NodeGroup other);
     
     // !void update(); If I modify terrain path finding should not break
     // this should be in chunk though
@@ -77,7 +77,7 @@ public:
      * @param NG The adjacent node group
      * @param path_type The path type between the two node groups
      */
-    void add_adjacent(NodeGroup* NG, OnePath path_type);
+    void add_adjacent(NodeGroup* NG, UnitPath path_type);
     /**
      * @brief Get adjacent node groups that are compatible with path type
      * 
@@ -94,15 +94,15 @@ public:
     /**
      * @brief Get the adjacency map
      * 
-     * @return std::map<NodeGroup *, OnePath> 
+     * @return std::map<NodeGroup *, UnitPath> 
      */
-    std::map<NodeGroup *, OnePath> get_adjacent_map();
+    std::map<NodeGroup *, UnitPath> get_adjacent_map();
     /**
      * @brief Get the adjacency map
      * 
-     * @return std::map<const NodeGroup *, OnePath> 
+     * @return std::map<const NodeGroup *, UnitPath> 
      */
-    std::map<const NodeGroup *, OnePath> get_adjacent_map() const;
+    std::map<const NodeGroup *, UnitPath> get_adjacent_map() const;
     /**
      * @brief Test if two node groups are adjacent
      * 
@@ -140,9 +140,9 @@ public:
     bool operator>(const NodeGroup& other) const;
 private:
     std::set<const Tile*, TilePCompare> tiles;
-    std::map<NodeGroup *, OnePath> adjacent;
+    std::map<NodeGroup *, UnitPath> adjacent;
     float center_x, center_y, center_z; // volumetric center, a weighted average
-    OnePath path_type_; // the path restraints to get form any tile in this Group to any other tile
+    UnitPath path_type_; // the path restraints to get form any tile in this Group to any other tile
 };
 
 #endif
