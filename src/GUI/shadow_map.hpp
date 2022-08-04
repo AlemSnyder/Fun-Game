@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __SHADOW_MAP_HPP__
-#define __SHADOW_MAP_HPP__
+#ifndef __GUI_SHADOW_MAP_HPP__
+#define __GUI_SHADOW_MAP_HPP__
 
 #include <memory>
 
@@ -44,18 +44,18 @@
  */
 class ShadowMap {
    private:
-    GLuint programID_;              // ID of non-indexed mesh Program
-    GLuint depth_matrix_ID_;        // ID of depth matrix for non-indexed Program
-    GLuint programID_multi_;        // ID of indexed mesh Program
-    GLuint depth_matrix_ID_multi_;  // ID of depth matrix for indexed Program
-    GLuint depthTexture;            // ID of depth texture
-    GLuint FramebufferName;         // ID of frame buffer
+    GLuint programID_;                  // ID of non-indexed mesh Program
+    GLuint depth_matrix_ID_;            // ID of depth matrix for non-indexed Program
+    GLuint programID_multi_;            // ID of indexed mesh Program
+    GLuint depth_matrix_ID_multi_;      // ID of depth matrix for indexed Program
+    GLuint depth_texture_;              // ID of depth texture
+    GLuint frame_buffer_name_;          // ID of frame buffer
     // ------ the below are added to the class ------
-    glm::vec3 light_direction_;      // direction of sunlight
-    int shadow_width;                // width of depth texture
-    int shadow_height;               // height of depth texture
-    glm::mat4 depth_projection_matrix_;  // projection matrix of the light source
-    glm::mat4 depth_view_matrix_;        // def in class
+    glm::vec3 light_direction_;         // direction of sunlight
+    uint32_t shadow_width_;             // width of depth texture
+    uint32_t shadow_height_;            // height of depth texture
+    glm::mat4 depth_projection_matrix_; // projection matrix of the light source
+    glm::mat4 depth_view_matrix_;       // convert a point in world space to depth in light direction
     // vector of stored data that describes non-indexed meshes
     std::vector<std::shared_ptr<MeshLoader::SingleMesh>> singles_meshes_;
     // vector of stored data that describes indexed meshes
@@ -89,14 +89,14 @@ class ShadowMap {
      * 
      * @return GLuint& reference to depth texture ID
      */
-    GLuint& get_depth_texture();
+    inline GLuint &ShadowMap::get_depth_texture() { return depth_texture_; }
 
     /**
      * @brief Get the frame buffer ID
      * 
      * @return GLuint& reference to frame buffer ID
      */
-    GLuint& get_frame_buffer();
+    inline GLuint &ShadowMap::get_frame_buffer() { return frame_buffer_name_; }
 
     /**
      * @brief Set the light direction vector

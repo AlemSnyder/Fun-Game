@@ -13,8 +13,8 @@
 
 #include "../GUI/meshloader.hpp"
 
-#ifndef __TERRAIN_MESH_HPP__
-#define __TERRAIN_MESH_HPP__
+#ifndef __TERRAIN_TERRAIN_MESH_HPP__
+#define __TERRAIN_TERRAIN_MESH_HPP__
 
 class TerrainMesh : public MeshLoader::SingleComplexMesh {
 private:
@@ -31,6 +31,7 @@ public:
         element_buffer_ = obj.element_buffer_;
         num_vertices_ = obj.num_vertices_;
     };
+    // copy operator
     TerrainMesh& operator=(const TerrainMesh& obj){
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
@@ -80,23 +81,23 @@ public:
         glDeleteBuffers(1, &element_buffer_);
     }
 
-    GLuint get_color_buffer() const override {
+    inline GLuint get_color_buffer() const override {
         return color_buffer_;
     }
 
-    GLuint get_element_buffer() const override {
+    inline GLuint get_element_buffer() const override {
         return element_buffer_;
     }
 
-    GLuint get_normal_buffer() const override {
+    inline GLuint get_normal_buffer() const override {
         return normal_buffer_;
     }
 
-    GLuint get_vertex_buffer() const override {
+    inline GLuint get_vertex_buffer() const override {
         return vertex_buffer_;
     }
 
-    unsigned int get_num_vertices() const override {
+    inline unsigned int get_num_vertices() const override {
         return num_vertices_;
     }
 };

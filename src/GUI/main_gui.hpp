@@ -122,8 +122,8 @@ int GUITest(World world) {
 
     for (int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
         for (int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
-            int z;
-            if ((z = world.terrain_main.get_Z_solid(x, y) + 1) != 1) {
+            int z = world.terrain_main.get_Z_solid(x, y) + 1;
+            if (z!= 1) {
                 glm::vec3 model(x, y, z);
                 model_matrices.push_back(model);
             }
@@ -157,15 +157,17 @@ int GUITest(World world) {
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f))  // direction
         * 128.0f;                                        // length
 
+    glm::mat4 depth_projection_matrix = glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+
     ShadowMap SM(4096, 4096);
     SM.set_light_direction(light_direction);
-    SM.set_depth_projection_matrix(
-        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f));
+    SM.set_depth_projection_matrix(depth_projection_matrix);
     SM.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
     SM.add_mesh(std::make_shared<StaticMesh>(treesMesh));
 
     MainRenderer MR;
     MR.set_light_direction(light_direction);
+    MR.set_depth_projection_matrix(depth_projection_matrix);
     MR.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
     MR.add_mesh(std::make_shared<StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
@@ -184,7 +186,7 @@ int GUITest(World world) {
         // Set our "renderedTexture" sampler to use Texture Unit 0
         glUniform1i(texID, 0);
 
-        // 1rst attribute buffer : vertices
+        // first attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
         glVertexAttribPointer(0,  // attribute 0. No particular reason for 0,

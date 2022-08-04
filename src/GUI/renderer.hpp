@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __RENDER_HPP__
-#define __RENDER_HPP__
+#ifndef __GUI_RENDER_HPP__
+#define __GUI_RENDER_HPP__
 
 #include <memory>
 
@@ -45,26 +45,24 @@
  */
 class MainRenderer {
    private:
-    GLuint programID_single_;    // ID of non-indexed mesh Program
-    GLuint matrix_ID_;            // def in class
-    GLuint view_matrix_ID_;      // def in class
-    GLuint depth_bias_ID_;         // def in class
-    GLuint shadow_map_ID_;         // def in class
-    GLuint light_direction_ID_;  // def in class
-// TODO comment these
-    GLuint programID_multi_;           // ID of indexed mesh Program
-    GLuint matrix_ID_multi_;            // def in class
-    GLuint view_matrix_ID_multi_;      // def in class
-    GLuint depth_bias_ID_multi_;         // def in class
-    GLuint shadow_map_ID_multi_;         // def in class
-    GLuint light_direction_ID_multi_;  // def in class
-
-    GLuint depth_texture_;  // added to class
-    // TODO all of these things should be defined somewhere else and sent to
-    // this class.
+    GLuint programID_single_;           // ID of non-indexed mesh Program
+    GLuint matrix_ID_;                  // ID of world space to camera space transform matrix
+    GLuint view_matrix_ID_;             // ID of view projection matrix
+    GLuint depth_bias_ID_;              // ID of depth projection matrix
+    GLuint shadow_map_ID_;              // ID of the shadow map
+    GLuint light_direction_ID_;         // ID of the light direction uniform
+    // -------------- indexed meshes -------------------
+    GLuint programID_multi_;            // ID of indexed mesh Program
+    GLuint matrix_ID_multi_;            // ID of world space to camera space transform matrix for indexed meshes
+    GLuint view_matrix_ID_multi_;       // ID of view projection matrix for indexed meshes
+    GLuint depth_bias_ID_multi_;        // ID of depth projection matrix for indexed meshes
+    GLuint shadow_map_ID_multi_;        // ID of the shadow map for indexed meshes
+    GLuint light_direction_ID_multi_;   // ID of the light direction uniform for indexed meshes
+    // ------ the below are added to the class ------
+    GLuint depth_texture_;  // ID of the shadow depth texture
     glm::vec3 light_direction_;          // direction of sun light
-    glm::mat4 depth_projection_matrix_;  //! def in class
-    glm::mat4 depth_view_matrix_;        // def in class
+    glm::mat4 depth_projection_matrix_;  // projection matrix of the light source
+    glm::mat4 depth_view_matrix_;        // convert a point in world space to depth in light direction
     std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
     std::vector<std::shared_ptr<MeshLoader::MultiComplexMesh>> multis_meshes_;
 
@@ -115,7 +113,7 @@ class MainRenderer {
     /**
      * @brief renders the given meshes
      * 
-     * @param window 
+     * @param window the OpenGL window
      */
     void render(GLFWwindow* window) const;
 };

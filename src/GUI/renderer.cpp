@@ -39,15 +39,6 @@ MainRenderer::MainRenderer() {
     light_direction_ID_multi_ =
         glGetUniformLocation(programID_multi_, "LightInvDirection_worldspace");
 
-    light_direction_ =
-        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f))  // direction
-        * 128.0f;                                        // length
-
-    // Compute the MVP matrix from the light's point of view
-    depth_projection_matrix_ =
-        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
-    depth_view_matrix_ =
-        glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
 MainRenderer::~MainRenderer() {
@@ -75,21 +66,25 @@ void MainRenderer::set_light_direction(glm::vec3 light_direction){
         glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
+void MainRenderer::set_depth_projection_matrix(glm::mat4 depth_projection_matrix){
+    depth_projection_matrix_ = depth_projection_matrix;
+}
+
 void MainRenderer::render(GLFWwindow *window) const {
     // Render to the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // get he window size
     int width, height;
-    glfwGetWindowSize(window, &width, &height); // get he window size
+    glfwGetWindowSize(window, &width, &height);
 
-    glViewport(
-        0, 0, width,
-        height);  // Render on the whole framebuffer, complete
-                             // from the lower left corner to the upper right
+    // Render on the whole framebuffer, complete
+    // from the lower left corner to the upper right
+    glViewport(0, 0, width, height);  
 
+    // Cull back-facing triangles -> draw only front-facing triangles
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);  // Cull back-facing triangles -> draw only
-                          // front-facing triangles
+    glCullFace(GL_BACK);
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -97,29 +92,29 @@ void MainRenderer::render(GLFWwindow *window) const {
     // Use our shader
     glUseProgram(programID_single_);
 
-    // Compute the MVP matrix from the light's point of view
-    glm::mat4 depthModelMatrix = glm::mat4(1.0);
     glm::mat4 depthMVP =
-        depth_projection_matrix_ * depth_view_matrix_ * depthModelMatrix;
+        depth_projection_matrix_ * depth_view_matrix_;
 
     // Compute the MVP matrix from keyboard and mouse input
     controls::computeMatricesFromInputs(window);
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
     // glm::mat4 ModelMatrix = glm::mat4(1.0);
-    glm::mat4 MVP = projection_matrix * view_matrix;  // * ModelMatrix;
+    glm::mat4 MVP = projection_matrix * view_matrix;  // Model View Projection
 
-    glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5,
+    // Shadow bias matrix of-sets the shadows
+    glm::mat4 bias_matrix(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5,
                          0.0, 0.5, 0.5, 0.5, 1.0);
 
-    glm::mat4 depthBiasMVP = biasMatrix * depthMVP;
+    glm::mat4 depth_bias_MVP = bias_matrix * depthMVP;
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
     glUniformMatrix4fv(matrix_ID_, 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(view_matrix_ID_, 1, GL_FALSE, &view_matrix[0][0]);
-    glUniformMatrix4fv(depth_bias_ID_, 1, GL_FALSE, &depthBiasMVP[0][0]);
+    glUniformMatrix4fv(depth_bias_ID_, 1, GL_FALSE, &depth_bias_MVP[0][0]);
 
+    // set the light direction uniform
     glUniform3f(light_direction_ID_, light_direction_.x, light_direction_.y,
                 light_direction_.z);
 
@@ -185,11 +180,11 @@ void MainRenderer::render(GLFWwindow *window) const {
     // in the "MVP" uniform
     glUniformMatrix4fv(matrix_ID_multi_, 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(view_matrix_ID_multi_, 1, GL_FALSE, &view_matrix[0][0]);
-    glUniformMatrix4fv(depth_bias_ID_multi_, 1, GL_FALSE, &depthBiasMVP[0][0]);
+    glUniformMatrix4fv(depth_bias_ID_multi_, 1, GL_FALSE, &depth_bias_MVP[0][0]);
     glUniform3f(light_direction_ID_multi_, light_direction_.x,
                 light_direction_.y, light_direction_.z);
 
-    // Bind our texture in Texture Unit 0
+    // Bind our texture in Texture Unit 1
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_ID_multi_, 1);

@@ -14,8 +14,8 @@
 #include "shadow_map.hpp"
 
 ShadowMap::ShadowMap(int w, int h) {
-    depthTexture = 0;
-    FramebufferName = 0;
+    depth_texture_ = 0;
+    frame_buffer_name_ = 0;
     programID_ = LoadShaders("../src/GUI/Shaders/DepthRTT.vert",
                              "../src/GUI/Shaders/DepthRTT.frag");
     programID_multi_ = LoadShaders("../src/GUI/Shaders/DepthRTTInstanced.vert",
@@ -29,8 +29,8 @@ ShadowMap::ShadowMap(int w, int h) {
     // depth_projection_matrix_ =
     //    glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
-    shadow_width = w;
-    shadow_height = h;
+    shadow_width_ = w;
+    shadow_height_ = h;
 
     // ---------------------------------------------
     // Render Shadow to Texture - specific code begins here
@@ -38,17 +38,17 @@ ShadowMap::ShadowMap(int w, int h) {
 
     // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth
     // buffer.
-    FramebufferName = 0;
-    glGenFramebuffers(1, &FramebufferName);
-    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    frame_buffer_name_ = 0;
+    glGenFramebuffers(1, &frame_buffer_name_);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name_);
 
     // Depth texture. Slower than a depth buffer, but you can sample it later in
     // your shader
 
-    glGenTextures(1, &depthTexture);
-    glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, shadow_width,
-                 shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glGenTextures(1, &depth_texture_);
+    glBindTexture(GL_TEXTURE_2D, depth_texture_);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, shadow_width_,
+                 shadow_height_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -57,7 +57,7 @@ ShadowMap::ShadowMap(int w, int h) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE,
                     GL_COMPARE_R_TO_TEXTURE);
 
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_texture_, 0);
 
     // No color output in the bound framebuffer, only depth.
     glDrawBuffer(GL_NONE);
@@ -86,19 +86,15 @@ void ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
     depth_projection_matrix_ = depth_projection_matrix;
 }
 
-GLuint &ShadowMap::get_depth_texture() { return depthTexture; }
-
-GLuint &ShadowMap::get_frame_buffer() { return FramebufferName; }
-
 void ShadowMap::render_shadow_depth_buffer() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-    glViewport(
-        0, 0, shadow_width,
-        shadow_height);  // Render on the whole framebuffer, complete
-                             // from the lower left corner to the upper right
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name_);
+        // Render on the whole framebuffer, complete
+    // from the lower left corner to the upper right
+    glViewport(0, 0, shadow_width_, shadow_height_);  
 
+    // Cull back-facing triangles -> draw only front-facing triangles
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);  // Cull back-facing triangles
+    glCullFace(GL_BACK);
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -115,12 +111,12 @@ void ShadowMap::render_shadow_depth_buffer() const {
     // depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
     // glm::vec3(0,1,0));
 
+    // matrix to calculate the length of a light ray in model space
     glm::mat4 depthMVP = depth_projection_matrix_ *
-                         depth_view_matrix_;  // matrix to calculate the length
-                                             // of a shadow in model space
+                         depth_view_matrix_;  
 
     // Send our transformation to the currently bound shader,
-    // in the "MVP" uniform
+    // in the "MVP" uniform (Model View Projection)
     glUniformMatrix4fv(depth_matrix_ID_, 1, GL_FALSE, &depthMVP[0][0]);
 
     // draw the non-indexed meshes

@@ -35,7 +35,8 @@ int VoxelUtility::from_qb(const char * path,
     int8_t name_len;
     READ<int8_t>(name_len, file);
     std::cout << "name length: " << (int) name_len << std::endl;
-    char* name = (char*) malloc (name_len);
+    //char* name = (char*) malloc (name_len);
+    char* name = new char[name_len];
     fread(name, sizeof(char), name_len, file);
     std::string string_name(name);
     std::cout << "Name: " << string_name << std::endl;
@@ -71,7 +72,8 @@ int VoxelUtility::from_qb(const char * path,
     //free(void_);
     //free(compression);
     //free(name_len);
-    free(name);
+    //free(name);
+    delete[] name;
 
     fclose(file);
     return 1;

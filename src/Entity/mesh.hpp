@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __MESH_HPP__
-#define __MESH_HPP__
+#ifndef __ENTITY_MESH_HPP__
+#define __ENTITY_MESH_HPP__
 
 #include <vector>
 #include <glm/glm.hpp>
@@ -31,13 +31,12 @@
  */
 class Mesh{
 public:
-    Mesh(const char* path);
+    Mesh(std::string path);
     void get_mesh(std::vector<unsigned short> &indices,
                   std::vector<glm::vec3> &indexed_vertices,
                   std::vector<glm::vec3> &indexed_colors,
                   std::vector<glm::vec3> &indexed_normals) const;
 
-    void load_from_qb(const char * path);
     // void load from smaller file
 private:
 
@@ -49,9 +48,10 @@ private:
     std::vector<glm::vec3> indexed_colors_;
     std::vector<glm::vec3> indexed_normals_;
 
-    int get_position(int x, int y, int z) const ;
+    int get_position_(int x, int y, int z) const ;
+    void load_from_qb_(std::string path);
 
-    void generate_mesh(std::vector<uint32_t> data,
+    void generate_mesh_(std::vector<uint32_t> data,
                        std::vector<int> center,
                        std::vector<int> size);
 };

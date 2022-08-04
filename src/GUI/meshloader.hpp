@@ -1,8 +1,8 @@
 // Include GLEW
 #include <GL/glew.h>
 
-#ifndef __MESH_LOADER_HPP__
-#define __MESH_LOADER_HPP__
+#ifndef __GUI_MESH_LOADER_HPP__
+#define __GUI_MESH_LOADER_HPP__
 
 namespace MeshLoader{
 
