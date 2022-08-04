@@ -47,7 +47,7 @@ public:
 
     inline StaticMesh(){};
 
-    inline StaticMesh(std::vector<unsigned short> &indices,
+    StaticMesh(std::vector<unsigned short> &indices,
                 std::vector<glm::vec3> &indexed_vertices,
                 std::vector<glm::vec3> &indexed_colors,
                 std::vector<glm::vec3> &indexed_normals,

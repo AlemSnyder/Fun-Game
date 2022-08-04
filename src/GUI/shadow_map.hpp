@@ -89,14 +89,14 @@ class ShadowMap {
      * 
      * @return GLuint& reference to depth texture ID
      */
-    inline GLuint &ShadowMap::get_depth_texture() { return depth_texture_; }
+    inline GLuint &get_depth_texture() { return depth_texture_; }
 
     /**
      * @brief Get the frame buffer ID
      * 
      * @return GLuint& reference to frame buffer ID
      */
-    inline GLuint &ShadowMap::get_frame_buffer() { return frame_buffer_name_; }
+    inline GLuint &et_frame_buffer() { return frame_buffer_name_; }
 
     /**
      * @brief Set the light direction vector
