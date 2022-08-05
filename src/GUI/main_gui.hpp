@@ -1,3 +1,6 @@
+#ifndef __GUI_MAIN_GUI_HPP__
+#define __GUI_MAIN_GUI_HPP__
+
 #include <vector>
 
 // Include GLEW
@@ -113,24 +116,26 @@ int GUITest(World world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
+    // The mesh of the terrain
     TerrainMesh terrain_mesh(indices, indexed_vertices, indexed_colors,
                              indexed_normals);
 
     // The above is for the wold the below is for trees
 
     std::vector<glm::vec3> model_matrices;
-
+    // generate positions of trees
     for (int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
         for (int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
             int z = world.terrain_main.get_Z_solid(x, y) + 1;
-            if (z!= 1) {
+            if (z!= 1) { // if the position of the ground is not zero
                 glm::vec3 model(x, y, z);
                 model_matrices.push_back(model);
             }
         }
 
     std::cout << "Number of models: " << model_matrices.size() << std::endl;
-
+    // static because the mesh does not have moving parts
+    // this generates the buffer that holds the mesh data
     StaticMesh treesMesh(indices_tree, indexed_vertices_tree,
                          indexed_colors_tree, indexed_normals_tree,
                          model_matrices);
@@ -159,12 +164,14 @@ int GUITest(World world) {
 
     glm::mat4 depth_projection_matrix = glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
+    // Renders the Shadow depth map
     ShadowMap SM(4096, 4096);
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
     SM.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
     SM.add_mesh(std::make_shared<StaticMesh>(treesMesh));
 
+    // renders the world scene
     MainRenderer MR;
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
@@ -225,3 +232,5 @@ int GUITest(World world) {
 }
 
 }  // namespace GUI
+
+#endif

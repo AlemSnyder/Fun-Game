@@ -1,4 +1,4 @@
-// -*- lsst-c++ -*-
+// -*- lsst-color++ -*-
 /*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ void Mesh::load_from_qb_(std::string path){
 
 }
 
-int Mesh::get_position_(int x, int y, int z) const {
-    return ((x * size_[1] + y ) * size_[2] + z);
+int Mesh::get_position_(int mesh_corner, int y, int z) const {
+    return ((mesh_corner * size_[1] + y ) * size_[2] + z);
 }
 
 void Mesh::generate_mesh_(std::vector<uint32_t> data,
@@ -50,64 +50,67 @@ void Mesh::generate_mesh_(std::vector<uint32_t> data,
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // printf("axis: %ld\n", axis);
 
-        const std::size_t u = (axis + 1) % 3;
-        const std::size_t v = (axis + 2) % 3;
+        const std::size_t dims_index_1 = (axis + 1) % 3;
+        const std::size_t dims_index_2 = (axis + 2) % 3;
 
-        // printf("u: %ld, v: %ld\n", u, v);
+        // printf("dims_index_1: %ld, dims_index_2: %ld\n", dims_index_1, dims_index_2);
 
-        int x[3] = {0};
-        int q[3] = {0};
-        std::vector<std::pair<bool, uint32_t>> mask(dims[u] * dims[v]);
-        // printf("dims[u]: %d, dims[v]: %d\n", dims[u], dims[v]);
+        int mesh_corner[3] = {0}; // position of a corner in world space
+        int mesh_size[3] = {0}; // size of mesh in each direction
+        // the color of all tiles at the same "level".
+        std::vector<std::pair<bool, uint32_t>> color_info(dims[dims_index_1] * dims[dims_index_2]);
+        // printf("dims[dims_index_1]: %d, dims[dims_index_2]: %d\n", dims[dims_index_1], dims[dims_index_2]);
 
-        // printf("x: %d, %d, %d\n", x[0], x[1], x[2]);
-        // printf("q: %d, %d, %d\n", q[0], q[1], q[2]);
+        // printf("mesh_corner: %d, %d, %d\n", mesh_corner[0], mesh_corner[1], mesh_corner[2]);
+        // printf("mesh_size: %d, %d, %d\n", mesh_size[0], mesh_size[1], mesh_size[2]);
 
-        // Compute mask
-        q[axis] = 1;
-        for (x[axis] = -1; x[axis] < dims[axis];) {
-            // printf("x: %d, %d, %d\n", x[0], x[1], x[2]);
-            // printf("q: %d, %d, %d\n", q[0], q[1], q[2]);
+        // Compute color_info
+        mesh_size[axis] = 1;
+        for (mesh_corner[axis] = -1; mesh_corner[axis] < dims[axis];) {
+            // printf("mesh_corner: %d, %d, %d\n", mesh_corner[0], mesh_corner[1], mesh_corner[2]);
+            // printf("mesh_size: %d, %d, %d\n", mesh_size[0], mesh_size[1], mesh_size[2]);
 
             std::size_t counter = 0;
-            for (x[v] = 0; x[v] < dims[v]; ++x[v])
-                for (x[u] = 0; x[u] < dims[u]; ++x[u], ++counter) {
-                    const uint32_t a = x[axis] >= 0 
-                                ? data[get_position_(x[0], x[1], x[2])]
+            for (mesh_corner[dims_index_2] = 0; mesh_corner[dims_index_2] < dims[dims_index_2]; ++mesh_corner[dims_index_2])
+                for (mesh_corner[dims_index_1] = 0; mesh_corner[dims_index_1] < dims[dims_index_1]; ++mesh_corner[dims_index_1], ++counter) {
+                    const uint32_t a = mesh_corner[axis] >= 0 
+                                ? data[get_position_(mesh_corner[0], mesh_corner[1], mesh_corner[2])]
                                 : 0;
-                    const uint32_t b = x[axis] < dims[axis] - 1
-                                ? data[get_position_(x[0] + q[0], x[1] + q[1], x[2] + q[2])]
+                    const uint32_t b = mesh_corner[axis] < dims[axis] - 1
+                                ? data[get_position_(mesh_corner[0] + mesh_size[0], mesh_corner[1] + mesh_size[1], mesh_corner[2] + mesh_size[2])]
                                 : 0;
                     const bool ba = a;
                     if (b == ba) // if both solid or both not solid
-                        mask[counter] = std::make_pair(false, 0);
+                        color_info[counter] = std::make_pair(false, 0);
                     else if (ba)
-                        mask[counter] = std::make_pair(true, a);
+                        color_info[counter] = std::make_pair(true, a);
                     else
-                        mask[counter] = std::make_pair(false, b);
+                        color_info[counter] = std::make_pair(false, b);
                 }
 
-            ++x[axis];
+            ++mesh_corner[axis];
 
-            // Generate mesh for mask using lexicographic ordering
+            // Generate mesh for color_info using lexicographic ordering
             int width = 0, height = 0;
 
             counter = 0;
-            for (int j = 0; j < dims[v]; ++j)
-            for (int i = 0; i < dims[u];) {
-                std::pair<bool, uint32_t> c = mask[counter]; //color
-                if (c.second) {
+            for (int i = 0; i < dims[dims_index_1];)
+            for (int j = 0; j < dims[dims_index_2]; ++j) {
+                std::pair<bool, uint32_t> color = color_info[counter]; //color
+                if (color.second) {
                     // Compute width
                     width = 1;
-                    while (c == mask[counter + width] && i + width < dims[u]) {
+                    while (color == color_info[counter + width] && i + width < dims[dims_index_1]) {
                         ++width;
                     }
 
                     // Compute height
                     bool done = false;
-                    for (height = 1; j + height < dims[v]; ++height) {
+                    for (height = 1; j + height < dims[dims_index_2]; ++height) {
+                        // expand until one of the tiles in the next row is not the same color/facing direction
                         for (int k = 0; k < width; ++k)
-                            if (c != mask[counter + k + height * dims[u]]) {
+                            // if the direction and color of this face is different from the direction and color of the final square
+                            if (color != color_info[counter + k + height * dims[dims_index_1]]) {
                                 done = true;
                                 break;
                             }
@@ -116,34 +119,35 @@ void Mesh::generate_mesh_(std::vector<uint32_t> data,
                     }
 
                     // Add quad
-                    x[u] = i;
-                    x[v] = j;
+                    mesh_corner[dims_index_1] = i;
+                    mesh_corner[dims_index_2] = j;
 
-                    int du[3] = {0}, dv[3] = {0};
+                    int off_set_1[3] = {0};
+                    int off_set_2[3] = {0};
 
-                    if (c.first) {
-                        dv[v] = height;
-                        du[u] = width;
+                    if (color.first) { // depending on the normal direction
+                        off_set_2[dims_index_2] = height;
+                        off_set_1[dims_index_1] = width;
                     } else {
-                        du[v] = height;
-                        dv[u] = width;
+                        off_set_1[dims_index_2] = height;
+                        off_set_2[dims_index_1] = width;
                     }
 
                     const std::size_t vertex_size = indexed_vertices_.size();
 
                     indexed_vertices_.push_back(
-                        glm::vec3(x[0], x[1], x[2])+glm_vector);
+                        glm::vec3(mesh_corner[0], mesh_corner[1], mesh_corner[2])+glm_vector);
                     indexed_vertices_.push_back(glm::vec3(
-                        x[0] + du[0], x[1] + du[1], x[2] + du[2])
+                        mesh_corner[0] + off_set_1[0], mesh_corner[1] + off_set_1[1], mesh_corner[2] + off_set_1[2])
                         + glm_vector);
                     indexed_vertices_.push_back(glm::vec3(
-                        x[0] + du[0] + dv[0], x[1] + du[1] + dv[1], x[2] + du[2] + dv[2])
+                        mesh_corner[0] + off_set_1[0] + off_set_2[0], mesh_corner[1] + off_set_1[1] + off_set_2[1], mesh_corner[2] + off_set_1[2] + off_set_2[2])
                         + glm_vector);
                     indexed_vertices_.push_back(glm::vec3(
-                        x[0] + dv[0], x[1] + dv[1], x[2] + dv[2])
+                        mesh_corner[0] + off_set_2[0], mesh_corner[1] + off_set_2[1], mesh_corner[2] + off_set_2[2])
                         + glm_vector);
 
-                    uint32_t int_color = c.second;
+                    uint32_t int_color = color.second;
                     uint32_t red = ( int_color >> 24 ) & 0xFF;
                     uint32_t green = ( int_color >> 16 ) & 0xFF;
                     uint32_t blue = ( int_color >> 8 ) & 0xFF;
@@ -151,7 +155,7 @@ void Mesh::generate_mesh_(std::vector<uint32_t> data,
                     glm::vec3 vector_color( red / 255.0,
                                           green / 255.0,
                                            blue / 255.0);
-                    for (size_t x = 0; x < 4; x++){ // how many corners on a square are there?
+                    for (size_t mesh_corner = 0; mesh_corner < 4; mesh_corner++){ // how many corners on a square are there?
                         indexed_colors_.push_back(vector_color);
                     }
 
@@ -160,7 +164,7 @@ void Mesh::generate_mesh_(std::vector<uint32_t> data,
                                                         - indexed_vertices_[vertex_size+1],
                                                       indexed_vertices_[vertex_size]
                                                         - indexed_vertices_[vertex_size+2]));
-                    for (size_t x = 0; x < 4; x++){ // how many corners on a square are there?
+                    for (size_t mesh_corner = 0; mesh_corner < 4; mesh_corner++){ // how many corners on a square are there?
                         indexed_normals_.push_back(triangle_normal);
                     }
 
@@ -171,9 +175,9 @@ void Mesh::generate_mesh_(std::vector<uint32_t> data,
                     indices_.push_back(vertex_size+3);
                     indices_.push_back(vertex_size);
 
-                    for (int b = 0; b < width; ++b)
-                        for (int a = 0; a < height; ++a)
-                            mask[counter + b + a * dims[u]] = std::make_pair(false, 0);
+                    for (int w = 0; w < width; ++w)
+                        for (int h = 0; h < height; ++h)
+                            color_info[counter + w + h * dims[dims_index_1]] = std::make_pair(false, 0);
 
                     // Increment counters
                     i += width;
@@ -195,6 +199,5 @@ void Mesh::get_mesh(std::vector<unsigned short> &indices,
     indexed_vertices = indexed_vertices_;
     indexed_colors = indexed_colors_;
     indexed_normals = indexed_normals_;
-
 }
 
