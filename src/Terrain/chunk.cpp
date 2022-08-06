@@ -20,7 +20,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter){
     }
     for (NodeGroup& NG : node_groups_){
         for (const Tile* tile_main : NG.get_tiles()){
-            for (const Tile* tile_adjacent : ter->get_adjacent_tiles(tile_main, 31)){
+            for (const Tile* tile_adjacent : tile_main->get_adjacent_clear(31)){
                 if (NodeGroup* to_add = ter->get_node_group(tile_adjacent)){
                     NG.add_adjacent(to_add, 31);
                 }
@@ -33,7 +33,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain * ter){
 
         // to merge = get_adjacent_map()
         std::set<NodeGroup*> to_merge;
-        for (std::pair<NodeGroup *const, OnePath> other : (it)->get_adjacent_map()){
+        for (std::pair<NodeGroup *const, UnitPath> other : (it)->get_adjacent_map()){
             if (contains_nodeGroup(other.first)){
                 to_merge.insert(other.first);
             }
@@ -50,11 +50,11 @@ void Chunk::R_merge(NodeGroup &G1, std::set<NodeGroup*>& to_merge){
     std::set<NodeGroup*> new_merge;
     while(to_merge.size()>0){
         auto G2 = to_merge.begin();
-        std::map<NodeGroup *, OnePath> to_add = G1.merge_groups(**(G2));
+        std::map<NodeGroup *, UnitPath> to_add = G1.merge_groups(**(G2));
         delNodeGroup(**G2);
         new_merge.erase(*G2);
         ter_->add_node_group(&G1);
-        for (std::pair<NodeGroup *const, OnePath> NG : to_add){
+        for (std::pair<NodeGroup *const, UnitPath> NG : to_add){
             if (contains_nodeGroup(NG.first) && &G1 != NG.first){
                 new_merge.insert(NG.first);
             }
@@ -74,7 +74,7 @@ void Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const{
 void Chunk::delNodeGroup(NodeGroup &NG){
     // remove form ter. tile to group map
     ter_->remove_node_group(&NG);
-    for (std::pair<NodeGroup *const, OnePath> &adjacent : NG.get_adjacent_map()){
+    for (std::pair<NodeGroup *const, UnitPath> &adjacent : NG.get_adjacent_map()){
         adjacent.first->remove_adjacent(&NG);
     }
     node_groups_.remove(NG);

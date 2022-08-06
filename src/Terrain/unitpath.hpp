@@ -1,8 +1,8 @@
-#ifndef __ONEPATH_HPP__
-#define __ONEPATH_HPP__
+#ifndef __UNIT_PATH_HPP__
+#define __UNIT_PATH_HPP__
 
 #include <cstdint>
-
+// TODO add comments
 enum class DirectionFlags : uint8_t {
     NONE = 0,
     OPEN = 1 << 0,
@@ -28,7 +28,7 @@ inline DirectionFlags operator~(DirectionFlags val){
 //    return (static_cast<uint8_t>(lhs)) == (static_cast<uint8_t>(rhs));
 //}
 
-class OnePath {  // path type from adjacent nodes
+class UnitPath {  // path type from adjacent nodes
 
     /*
     open
@@ -44,10 +44,10 @@ private:
     DirectionFlags type;
 
 public:
-    // there should be not OnePath pointers
-    OnePath() : type(DirectionFlags::NONE) {}
-    OnePath(uint8_t type_) : type(static_cast<DirectionFlags>(type_)) {}
-    OnePath(DirectionFlags type_) : type(type_) {}
+    // there should be not UnitPath pointers
+    UnitPath() : type(DirectionFlags::NONE) {}
+    UnitPath(uint8_t type_) : type(static_cast<DirectionFlags>(type_)) {}
+    UnitPath(DirectionFlags type_) : type(type_) {}
 
     inline bool is_open() const {
         return ((DirectionFlags::OPEN & type) == DirectionFlags::OPEN);
@@ -89,7 +89,7 @@ public:
     //  32 up and diagonal
     //
 
-    bool operator==(const OnePath other) const {
+    bool operator==(const UnitPath other) const {
         return other.type == this->type;
     }
     bool operator==(const uint8_t other) const {
@@ -98,7 +98,7 @@ public:
     bool operator==(const DirectionFlags other) const {
         return other == this->type;
     }
-    OnePath operator&(const OnePath other) const {
+    UnitPath operator&(const UnitPath other) const {
         return type & other.type;
     }
 };

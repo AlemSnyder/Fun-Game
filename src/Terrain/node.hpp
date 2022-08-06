@@ -2,7 +2,7 @@
 #define __NODE_HPP__
 
 #include <set>
-
+// TODO add comments
 template<class T>
 class Node {  // Used to find paths.
 public:
