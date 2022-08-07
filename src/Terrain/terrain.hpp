@@ -136,6 +136,12 @@ public:
     inline int get_X_MAX() const { return X_MAX; };
     inline int get_Y_MAX() const { return Y_MAX; };
     inline int get_Z_MAX() const { return Z_MAX; };
+    inline std::vector<unsigned int> get_size() const {
+        return {(unsigned int) X_MAX, (unsigned int) Y_MAX, (unsigned int) Z_MAX};
+    }
+    inline std::vector<int> get_offset() const {
+        return {0, 0, 0};
+    }
 
     inline bool in_range(int x, int y, int z) const {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
@@ -179,6 +185,12 @@ public:
         } else {
             return &tiles[xyz];
         }
+    }
+    uint32_t get_voxel(int x, int y, int z) const {
+        if (is_valid_pos(x,y,z)){
+            return tiles[x * Y_MAX * Z_MAX + y * Z_MAX + z].get_color();
+        }
+        return 0;
     }
 
     bool paint(Tile* tile, const Material * mat, uint8_t color_id);

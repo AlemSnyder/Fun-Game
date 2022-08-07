@@ -38,7 +38,7 @@ int GUITest(World world) {
     std::vector<glm::vec3> indexed_vertices_tree;
     std::vector<glm::vec3> indexed_colors_tree;
     std::vector<glm::vec3> indexed_normals_tree;
-    Mesh mesh("../data/Models/DefaultTree.qb");
+    Entity::Mesh mesh("../data/Models/DefaultTree.qb");
     mesh.get_mesh(indices_tree, indexed_vertices_tree, indexed_colors_tree,
                   indexed_normals_tree);
 

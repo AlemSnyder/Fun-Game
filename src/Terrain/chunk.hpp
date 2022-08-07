@@ -72,5 +72,4 @@ private:
     void R_merge(NodeGroup &g1, std::set<NodeGroup*>& to_merge);
 };
 
-
 #endif

@@ -1,12 +1,16 @@
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <cinttypes>
 
 #include "voxelutility.hpp"
 
-int VoxelUtility::from_qb(const char * path,
+namespace VoxelUtility{
+
+int from_qb(const char * path,
             std::vector<uint32_t>& data,
             std::vector<int>& center,
-            std::vector<int>& size){
+            std::vector<uint32_t>& size){
     //Read the tiles from the path specified, and save
 
     //This is partially from goxel with GPL license
@@ -44,7 +48,7 @@ int VoxelUtility::from_qb(const char * path,
     READ<uint32_t>(X_max, file);  // x
     READ<uint32_t>(Z_max, file);  // z
     READ<uint32_t>(Y_max, file);  // y
-    size = {(int) X_max, (int) Y_max, (int) Z_max};
+    size = {X_max, Y_max, Z_max};
     READ<int32_t>(x_center, file); // x
     READ<int32_t>(z_center, file); // z
     READ<int32_t>(y_center, file); // y
@@ -58,13 +62,13 @@ int VoxelUtility::from_qb(const char * path,
         std::cout << "There is compression!" << std::endl;
     } else {
         data.resize(size[0]*size[1]*size[2]);
-        for (int x = 0; x < size[0]; x++)
-        for (int z = 0; z < size[2]; z++)
-        for (int y = size[1] - 1; y >= 0; y--) {
+        for (size_t x = 0; x < size[0]; x++)
+        for (size_t z = 0; z < size[2]; z++)
+        for (size_t y = size[1] - 1; y < size[1]; y--) {
             //int32_t* color = (int32_t*) malloc(32);
             fread(v, sizeof(uint8_t), 4, file);
             //fread(&color, 32, 1, file); // read the color
-            data[(x * size[1] + y) * size[2] + z] = compress_color(v);
+            data[(x * (int) size[1] + y) * size[2] + z] = compress_color(v);
             tiles_read ++;
         }
     }
@@ -78,3 +82,15 @@ int VoxelUtility::from_qb(const char * path,
     fclose(file);
     return 1;
 }
+
+VoxelObject::VoxelObject(const char* path) {
+    data_ = std::vector<uint32_t>(0);
+    center_ = std::vector<int>(0);
+    size_ = std::vector<uint32_t>(0);
+    int test = from_qb(path,
+                       data_,
+                       center_,
+                       size_);
+    ok_ = (test == 1);
+}
+} // namespace VoxelUtility
