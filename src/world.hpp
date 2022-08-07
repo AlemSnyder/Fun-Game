@@ -1,43 +1,119 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+/**
+ * @file world.cpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines World class
+ *
+ */
+
 #ifndef __WORLD_HPP__
 #define __WORLD_HPP__
+
+#include <glm/glm.hpp>
+#include <map>
+#include <vector>
 
 #include "Terrain/terrain.hpp"
 #include "json/json.h"
 
-#include <glm/glm.hpp>
-class World{
-public:
+/**
+ * @brief Holds information regarding terrain, entities, objects, and items
+ *
+ * @details The world holds a Terrain objects, and contains entities like
+ * flora, and fauna. Paced objects, and other things will also be stored in
+ * this class.
+ *
+ */
+class World {
+   public:
+    /**
+     * @brief Construct a new World object
+     *
+     */
     World();
-    World(const char * path);
-    World(Json::Value biome_data, int type); // this one is for testing
+    /**
+     * @brief Construct a new World object from a save
+     *
+     * @param path where world was saved
+     */
+    World(const char *path);
+    /**
+     * @brief Construct a new World object to test biome generation.
+     *
+     * @param biome_data biome parameters
+     * @param type determines the type of terrain to be generated
+     * (see) data/biome_data.json > `biome` > Tile_Data
+     * (see) src/Terrain/TerrainGeneration/land_generator.hpp
+     */
+    World(Json::Value biome_data, int type);
     World(Json::Value materials_json, Json::Value biome_data);
 
-    Terrain terrain_main;
-    void save();
+    // void save(); TODO define save
+    //  this would require creating some sort of file type
 
-    const std::map<int, const Material>* get_materials() const{
+    /**
+     * @brief Get the materials that exist in the world
+     *
+     * @return const std::map<int, const Material>* map of materials_id to
+     * materials pointer
+     */
+    const std::map<int, const Material> *get_materials() const {
         return &materials;
     }
 
-    const Material* get_material(int element_id) const;
+    /**
+     * @brief Get material from material_id
+     * 
+     * @param material_id 
+     * @return const Material* corresponding material
+     */
+    const Material *get_material(int material_id) const;
 
+    /**
+     * @brief Load materials from json data
+     * 
+     * @param material_data data to load from
+     * (see) data/materials.json
+     */
     void init_materials(Json::Value material_data);
 
+    /**
+     * @brief Get the mesh using greedy meshing
+     * 
+     * @param indices index of vertex data drawn in this order
+     * @param indexed_vertices vertex in 3D space
+     * @param indexed_colors color of vertex
+     * @param indexed_normals normal of face vertex is a part of
+     */
     void get_mesh_greedy(std::vector<unsigned short> &indices,
-					std::vector<glm::vec3> &indexed_vertices,
-					std::vector<glm::vec3> &indexed_uvs,
-					std::vector<glm::vec3> &indexed_normals) const;
+                         std::vector<glm::vec3> &indexed_vertices,
+                         std::vector<glm::vec3> &indexed_colors,
+                         std::vector<glm::vec3> &indexed_normals) const;
 
-private:
-    //Json::Value materials;
-
+   private:
+    // terrain in the world
+    Terrain terrain_main;
+    // materials that exist
     std::map<int, const Material> materials;
 
-    const char * path;
-    //const char *name;
-    //const char *another_name;
-
-
+    // all of these things are for saving
+    // const char *path;
+    // const char *name;
+    // const char *another_name;
 };
 
-#endif // __WORLD_HPP__
+#endif  // __WORLD_HPP__

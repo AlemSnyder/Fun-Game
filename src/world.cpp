@@ -1,12 +1,35 @@
+// -*- lsst-c++ -*-
+/*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*/
+
+/**
+ * @file world.cpp
+ * 
+ * @author @AlemSnyder
+ * 
+ * @brief Defines World class
+ * 
+ * 
+ */
+
 #include <fstream>
 #include <cstdint>
 
 #include "Entity/mesh.hpp"
 #include "world.hpp"
 #include "Terrain/terrain.hpp"
-void World::save(){
-    terrain_main.qb_save(path);
-}
+//void World::save(){
+//    terrain_main.qb_save(path);
+//}
 
 const Material* World::get_material(int material_id) const {
     return &materials.at(material_id);

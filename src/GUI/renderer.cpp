@@ -18,20 +18,21 @@
 #include "shader.hpp"
 
 MainRenderer::MainRenderer() {
+    // non-indexed program
     programID_single_ = LoadShaders("../src/GUI/Shaders/ShadowMapping.vert",
                                     "../src/GUI/Shaders/ShadowMapping.frag");
-
+    // indexed program
     programID_multi_ =
         LoadShaders("../src/GUI/Shaders/ShadowMappingInstanced.vert",
                     "../src/GUI/Shaders/ShadowMappingInstanced.frag");
-
+    // ---- non-indexed program ----
     matrix_ID_ = glGetUniformLocation(programID_single_, "MVP");
     view_matrix_ID_ = glGetUniformLocation(programID_single_, "V");
     depth_bias_ID_ = glGetUniformLocation(programID_single_, "DepthBiasMVP");
     shadow_map_ID_ = glGetUniformLocation(programID_single_, "shadowMap");
     light_direction_ID_ =
         glGetUniformLocation(programID_single_, "LightInvDirection_worldspace");
-
+    // ------ indexed program ------
     matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "MVP");
     view_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "V");
     depth_bias_ID_multi_ = glGetUniformLocation(programID_multi_, "DepthBiasMVP");

@@ -1,40 +1,142 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+/**
+ * @file node.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines Node class
+ *
+ * @ingroup Terrain
+ *
+ */
+
 #ifndef __NODE_HPP__
 #define __NODE_HPP__
 
 #include <set>
-// TODO add comments
-template<class T>
+
+/**
+ * @brief A node used to find a path with the A* or breadth first algorithm
+ *
+ * @details A node is used to find a path between two points. Nodes allows for
+ * sorting searchable tiles in a way to select which T should be traveled
+ * through
+ *
+ * @tparam T Underlying object, defines where the nodes exists in space
+ */
+template <class T>
 class Node {  // Used to find paths.
-public:
+   public:
+    /**
+     * @brief Construct a new Node object
+     *
+     * @param tile position of node in space
+     * @param hc theoretical minimum time needed to reach goal
+     */
     Node(T *tile, float hc);
-    Node();// needs to stay but should not be used
+    /**
+     * @brief Construct a new Node object (default initializer)
+     * @deprecated should not be used
+     */
+    Node();
+    /**
+     * @brief Initialize node
+     *
+     * @param tile position of node in space
+     * @param hc theoretical minimum time needed to reach goal
+     */
     void init(T *tile, float hc);
 
-    //inline bool is_open() { return !this->tile->is_solid(); } this should always be true
+    /**
+     * @brief Explore this node
+     *
+     * @param parent where this node was explored from
+     * @param gc time required to reach this node from start
+     */
     void explore(Node<T> *parent, float gc);
-    void explore();  // Explore as if this is the starting position.
-
+    /**
+     * @brief Explore as if this is the starting position.
+     *
+     */
+    void explore();
+    /**
+     * @brief Get the underlying position object
+     *
+     * @return T* underlying position structure
+     */
     T *get_tile() { return tile; }
+    /**
+     * @brief Get the underlying position object
+     *
+     * @return T* underlying position structure
+     */
     const T *get_tile() const { return tile; }
+    /**
+     * @brief Get the parent
+     *
+     * @return Node<T>* previous step in fastest way to get to this nodes
+     */
     Node<T> *get_parent() { return parent_node; }
-
-    float get_current_cots() const { return gCost; } //Time from start to this node
-    float get_predicted_continue_cots() const { return hCost; } //Minimum time from this node to end
-    float get_total_predicted_cost() const { return fCost; } //Minimum time from start to end through this node
-
+    /**
+     * @brief Get the time required to reach this node from start
+     *
+     * @return float time from start to this node
+     */
+    float get_time_cots() const { return gCost; }
+    /**
+     * @brief Get the predicted continue cots
+     *
+     * @return float minimum time from this node to end
+     */
+    float get_predicted_continue_cots() const { return hCost; }
+    /**
+     * @brief Get the predicted total cots
+     *
+     * @return float minimum time from start to end through this node
+     */
+    float get_total_predicted_cost() const { return fCost; }
+    /**
+     * @brief Has this node been explored
+     *
+     * @return true This node has been explored
+     * @return false This node has not been explored
+     */
     bool is_explored() const { return explored; }
-    std::set<const T*> get_adjacent(int path_type) const; //The nodes that can be reached from this one
-    std::set<const T*> get_adjacent() const; //The nodes that can be reached from this one
+    /**
+     * @brief Get the adjacent nodes
+     *
+     * @param path_type path compatible requirements
+     * (see) ./unit_path.hpp
+     * @return std::set<const T *> nodes that can be reached from this one
+     */
+    std::set<const T *> get_adjacent(int path_type) const;
+    /**
+     * @brief Get the adjacent nodes
+     *
+     * @return std::set<const T *> nodes that can be reached from this one
+     */
+    std::set<const T *> get_adjacent() const;
 
-private:
-    T *tile;
-    Node *parent_node;
+   private:
+    T *tile;            // defines position in space
+    Node *parent_node;  // previous step in fastest way to get to this nodes
 
-    float gCost; //Time from start to this node
-    float hCost; //Minimum time from this node to end
-    float fCost; //Minimum time from start to end through this node
-    bool explored;
+    float gCost;    // Time from start to this node
+    float hCost;    // Minimum time from this node to end
+    float fCost;    // Minimum time from start to end through this node
+    bool explored;  // Is there a path from start to this node?
 };
-
 
 #endif

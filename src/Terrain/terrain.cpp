@@ -7,11 +7,9 @@
 #include <chrono>
 #include <ctime>
 #include <deque>
-//#include <list>
 #include <map>
 #include <queue>
 #include <set>
-//#include <unordered_set>
 #include <vector>
 #include <cstring>
 #include <fstream>
@@ -23,7 +21,7 @@
 #include "chunk.hpp"
 
 #include "TerrainGeneration/noise.hpp"
-#include "TerrainGeneration/landgenerator.hpp"
+#include "TerrainGeneration/land_generator.hpp"
 #include "TerrainGeneration/material.hpp"
 #include "TerrainGeneration/tilestamp.hpp"
 
@@ -711,7 +709,7 @@ std::vector<const NodeGroup *> Terrain::get_path_Astar(const NodeGroup *start, c
 std::vector<const NodeGroup *> Terrain::get_path_breadth_first(const NodeGroup *start, const std::set<const NodeGroup *> goal) {
 
     std::function<bool (Node<const NodeGroup> *, Node<const NodeGroup> *)> compare = [](Node<const NodeGroup> *lhs, Node<const NodeGroup> *rhs)->bool {
-        return lhs->get_current_cots() > rhs->get_current_cots();
+        return lhs->get_time_cots() > rhs->get_time_cots();
     };
 
     std::set<const NodeGroup*> search_through = get_all_node_groups();

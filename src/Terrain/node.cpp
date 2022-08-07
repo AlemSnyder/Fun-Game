@@ -18,12 +18,7 @@ Node<T>::Node(T *tile_, float hc) { init(tile_, hc); }
 
 template<class T>
 Node<T>::Node() {
-    parent_node = nullptr;
-    tile = nullptr;
-    gCost = 0;
-    hCost = 0;
-    fCost = gCost + hCost;
-    explored = false;
+    init(nullptr, 0);
 }
 
 template<class T>

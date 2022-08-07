@@ -12,7 +12,7 @@
 */
 
 /**
- * @file landgenerator.hpp
+ * @file land_generator.hpp
  *
  * @brief Defines LandGenerator class.
  *
@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __LandGenerator_HPP__
-#define __LandGenerator_HPP__
+#ifndef __LAND_GENERATOR_HPP__
+#define __LAND_GENERATOR_HPP__
 
 #include <cstdint>
 #include "../../json/json.h"

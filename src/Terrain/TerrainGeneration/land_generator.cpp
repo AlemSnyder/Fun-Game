@@ -22,7 +22,7 @@
 #include "tilestamp.hpp"
 #include "material.hpp"
 
-#include "landgenerator.hpp"
+#include "land_generator.hpp"
 
 LandGenerator::LandGenerator( const std::map<int, const Material> *materials_, Json::Value data){
     materials = materials_;
