@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __MATERIAL_HPP__
-#define __MATERIAL_HPP__
+#ifndef __TERRAIN_TERRAIN_GENERATION_MATERIAL_HPP__
+#define __TERRAIN_TERRAIN_GENERATION_MATERIAL_HPP__
 
 #include <vector>
 #include <cstdint>

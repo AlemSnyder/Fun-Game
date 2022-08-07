@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __CHUNK_HPP__
-#define __CHUNK_HPP__
+#ifndef __TERRAIN_CHUNK_HPP__
+#define __TERRAIN_CHUNK_HPP__
 
 #include <list>
 #include <set>

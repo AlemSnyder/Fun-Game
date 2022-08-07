@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __UNIT_PATH_HPP__
-#define __UNIT_PATH_HPP__
+#ifndef __TERRAIN_UNIT_PATH_HPP__
+#define __TERRAIN_UNIT_PATH_HPP__
 
 #include <cstdint>
 

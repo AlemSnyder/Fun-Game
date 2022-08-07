@@ -11,8 +11,8 @@
 
 #include "../GUI/meshloader.hpp"
 
-#ifndef __TERRAIN_TERRAIN_GENERATION_STATIC_MESH_HPP__
-#define __TERRAIN_TERRAIN_GENERATION_STATIC_MESH_HPP__
+#ifndef __TERRAIN_STATIC_MESH_HPP__
+#define __TERRAIN_STATIC_MESH_HPP__
 
 class StaticMesh : public MeshLoader::MultiComplexMesh {
 private:

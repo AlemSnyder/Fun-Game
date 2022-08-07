@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __LAND_GENERATOR_HPP__
-#define __LAND_GENERATOR_HPP__
+#ifndef __TERRAIN_TERRAIN_GENERATION_LAND_GENERATOR_HPP__
+#define __TERRAIN_TERRAIN_GENERATION_LAND_GENERATOR_HPP__
 
 #include <cstdint>
 #include "../../json/json.h"

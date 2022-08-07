@@ -11,8 +11,8 @@
  *
  */
 
-#ifndef __NOISE_HPP__
-#define __NOISE_HPP__
+#ifndef __TERRAIN_TERRAIN_GENERATION_NOISE_HPP__
+#define __TERRAIN_TERRAIN_GENERATION_NOISE_HPP__
 
 #include <cmath>
 

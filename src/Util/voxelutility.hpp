@@ -1,5 +1,5 @@
-#ifndef __VOXEL_UTILITY_HPP__
-#define __VOXEL_UTILITY_HPP__
+#ifndef __UTIL_VOXEL_UTILITY_HPP__
+#define __UTIL_VOXEL_UTILITY_HPP__
 #include <cstdint>
 #include <iostream>
 #include <fstream>

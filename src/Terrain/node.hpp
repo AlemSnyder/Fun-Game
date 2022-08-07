@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef __NODE_HPP__
-#define __NODE_HPP__
+#ifndef __TERRAIN_NODE_HPP__
+#define __TERRAIN_NODE_HPP__
 
 #include <set>
 

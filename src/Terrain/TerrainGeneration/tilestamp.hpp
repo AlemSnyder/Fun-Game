@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __TILE_STAMP_HPP__
-#define __TILE_STAMP_HPP__
+#ifndef __TERRAIN_TERRAIN_GENERATION_TILE_STAMP_HPP__
+#define __TERRAIN_TERRAIN_GENERATION_TILE_STAMP_HPP__
 
 #include <set>
 #include "material.hpp"

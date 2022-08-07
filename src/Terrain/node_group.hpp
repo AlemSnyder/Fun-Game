@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __NODE_GROUP_HPP__
-#define __NODE_GROUP_HPP__
+#ifndef __TERRAIN_NODE_GROUP_HPP__
+#define __TERRAIN_NODE_GROUP_HPP__
 
 #include <list>
 #include <set>

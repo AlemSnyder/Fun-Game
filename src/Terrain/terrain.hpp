@@ -1,5 +1,5 @@
-#ifndef __TERRAIN_HPP__
-#define __TERRAIN_HPP__
+#ifndef __TERRAIN_TERRAIN_HPP__
+#define __TERRAIN_TERRAIN_HPP__
 // TODO add comments
 #include <stdio.h>
 

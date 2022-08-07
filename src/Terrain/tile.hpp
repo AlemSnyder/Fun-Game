@@ -1,5 +1,5 @@
-#ifndef __TILE_HPP__
-#define __TILE_HPP__
+#ifndef __TERRAIN_TILE_HPP__
+#define __TERRAIN_TILE_HPP__
 // TODO comments
 #include <functional>
 #include <unordered_set>
