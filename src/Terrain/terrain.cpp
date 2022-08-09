@@ -28,11 +28,7 @@
 
 #define DIRT_ID 1 // what am I going to do with this?
 
-int Terrain::X_MAX = 32;
-int Terrain::Y_MAX = 32;
-int Terrain::Z_MAX = 32;
 int Terrain::Area_size = 32;
-int Terrain::seed = 0;
 
 Terrain::Terrain() { init_old(1, 1, 1); seed = 0;}
 
@@ -493,8 +489,8 @@ float Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
 template<class T>
-inline float Terrain::get_G_cost(const T tile, const Node<const T> node){
-    return node.get_current_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
+float Terrain::get_G_cost(const T tile, const Node<const T> node){
+    return node.get_time_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }
 
 void Terrain::add_all_adjacent(int xyz) {
@@ -509,7 +505,7 @@ void Terrain::add_all_adjacent(int xyz) {
         // direction to final tile. can be +1, -1, or 0
         auto [x_d, y_d, z_d] = sop(xyz_, 3, 3, 3);
         // test if the final tiles is in a valid position
-        if (is_valid_pos(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
+        if (in_range(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
             Tile *other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             UnitPath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
             tiles[xyz].add_adjacent(other, path_type);
@@ -828,7 +824,7 @@ uint32_t Terrain::compress_color(uint8_t v[4]){
 
 int Terrain::qb_save_debug(const char * path, const std::map<int, const Material>* materials) {
     int x=0;
-    for (Chunk & c : get_chunks()){
+    for (Chunk & c : chunks){
         std::set<const NodeGroup*> node_groups;
         c.add_nodes_to(node_groups);
         for ( const NodeGroup* NG : node_groups ){

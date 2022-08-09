@@ -103,10 +103,10 @@ class World {
                          std::vector<glm::vec3> &indexed_vertices,
                          std::vector<glm::vec3> &indexed_colors,
                          std::vector<glm::vec3> &indexed_normals) const;
-
-   private:
     // terrain in the world
     Terrain terrain_main;
+    
+   private:
     // materials that exist
     std::map<int, const Material> materials;
 
