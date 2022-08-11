@@ -42,7 +42,7 @@ namespace VoxelUtility{
     int from_qb(const char* path,
                 std::vector<uint32_t>& data,
                 std::vector<int>& center,
-                std::vector<int>& size);
+                std::vector<uint32_t>& size);
 
     template <typename T>
     void WRITE(T v, FILE * file){
