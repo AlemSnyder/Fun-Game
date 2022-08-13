@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cstring>
 
 namespace VoxelUtility{
 
@@ -39,11 +40,6 @@ namespace VoxelUtility{
         }
     };
 
-    int from_qb(const char* path,
-                std::vector<uint32_t>& data,
-                std::vector<int>& center,
-                std::vector<uint32_t>& size);
-
     template <typename T>
     void WRITE(T v, FILE * file){
         fwrite(&v, sizeof(T), 1, file);
@@ -53,8 +49,73 @@ namespace VoxelUtility{
         fread(&v, sizeof(T), 1, file);
     }
 
+    int from_qb(const char* path,
+                std::vector<uint32_t>& data,
+                std::vector<int>& center,
+                std::vector<uint32_t>& size);
+
     inline uint32_t compress_color(uint8_t v[4]){
         return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16 | (uint32_t)v[0] << 24;
+    }
+
+    inline void export_color(uint32_t tile_color, uint8_t color[4]) {
+        color[0] = (tile_color >> 24) & 0xFF;
+        color[1] = (tile_color >> 16) & 0xFF;
+        color[2] = (tile_color >> 8) & 0xFF;
+        color[3] = tile_color & 0xFF;
+    }
+
+    template <typename T>
+    int to_qb(const char* path, T voxel_object){
+        // Saves the tiles in this to the path specified
+
+        std::vector<uint32_t> size = voxel_object.get_size();
+        std::vector<int> offset = voxel_object.get_offset();
+        
+
+        // This is from goxel with GPL license
+        std::cout << "Saving to " << path << "\n";
+        std::cout << "    max X: " << size[0] << std::endl;
+        std::cout << "    max Y: " << size[1] << std::endl;
+        std::cout << "    max Z: " << size[2] << std::endl;
+        FILE *file;
+        unsigned int count, x, y, z;
+        uint8_t v[4];
+
+        count = 1;  // the number of layers
+
+        file = fopen(path, "wb");
+        WRITE<uint32_t>(257, file);  // version
+        WRITE<uint32_t>(0, file);    // color format RGBA
+        WRITE<uint32_t>(1, file);    // orientation right handed // c
+        WRITE<uint32_t>(0, file);    // no compression
+        WRITE<uint32_t>(0, file);    // vmask
+        WRITE<uint32_t>(count, file);
+
+        const char *name = "Main World";
+        WRITE<int8_t>(std::strlen(name), file);
+        fwrite(name, strlen(name), 1, file);
+        WRITE<uint32_t>(size[0], file);      // x
+        WRITE<uint32_t>(size[2], file);      // z
+        WRITE<uint32_t>(size[1], file);      // y
+        WRITE<int32_t>(offset[0], file);     // x
+        WRITE<int32_t>(offset[2], file);     // z
+        WRITE<int32_t>(offset[1], file);     // y
+        // iter = mesh_get_accessor(mesh);
+        int tiles_written = 0;
+        for (x = 0; x < size[0]; x++)
+            for (z = 0; z < size[2]; z++)
+                for (y = size[1] - 1; y < size[1]; y--) {
+                    export_color(voxel_object.get_voxel(x,y,z), v);
+                    if (v[3] != 0x0) {
+                        v[3] = 0xFF;
+                    }
+                    fwrite(v, 4, 1, file);
+                    tiles_written++;
+                }
+        fclose(file);
+        std::cout << "    tiles written: " << tiles_written << std::endl;
+        return 0;
     }
 
 } // namespace VoxelReader

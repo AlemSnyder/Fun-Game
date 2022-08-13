@@ -943,53 +943,7 @@ int Terrain::qb_save_debug(const char *path,
 // Save all tiles as .qb to path.
 int Terrain::qb_save(const char *path) const {
     // Saves the tiles in this to the path specified
-
-    // This is from goxel with GPL license
-    std::cout << "Saving to " << path << "\n";
-    std::cout << "    max X: " << X_MAX << std::endl;
-    std::cout << "    max Y: " << Y_MAX << std::endl;
-    std::cout << "    max Z: " << Z_MAX << std::endl;
-    FILE *file;
-    int count, x, y, z, sop[3];
-    uint8_t v[4];
-
-    count = 1;  // the number of layers
-
-    file = fopen(path, "wb");
-    WRITE<uint32_t>(257, file);  // version
-    WRITE<uint32_t>(0, file);    // color format RGBA
-    WRITE<uint32_t>(1, file);    // orientation right handed // c
-    WRITE<uint32_t>(0, file);    // no compression
-    WRITE<uint32_t>(0, file);    // vmask
-    WRITE<uint32_t>(count, file);
-
-    const char *name = "Main World";
-    WRITE<int8_t>(std::strlen(name), file);
-    fwrite(name, strlen(name), 1, file);
-    WRITE<uint32_t>(X_MAX, file);      // x
-    WRITE<uint32_t>(Z_MAX, file);      // z
-    WRITE<uint32_t>(Y_MAX, file);      // y
-    WRITE<int32_t>(-X_MAX / 2, file);  // x
-    WRITE<int32_t>(0, file);           // z
-    WRITE<int32_t>(-Y_MAX / 2, file);  // y
-    // iter = mesh_get_accessor(mesh);
-    int tiles_written = 0;
-    for (x = 0; x < X_MAX; x++)
-        for (z = 0; z < Z_MAX; z++)
-            for (y = Y_MAX - 1; y >= 0; y--) {
-                sop[0] = x;
-                sop[1] = y;
-                sop[2] = z;
-                export_color(sop, v);
-                if (v[3] != 0x0) {
-                    v[3] = 0xFF;
-                }
-                fwrite(v, 4, 1, file);
-                tiles_written++;
-            }
-    fclose(file);
-    std::cout << "    tiles written: " << tiles_written << std::endl;
-    return 0;
+    return VoxelUtility::to_qb(path, *this);
 }
 
 int Terrain::qb_read(

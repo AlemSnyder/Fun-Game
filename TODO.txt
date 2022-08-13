@@ -1,3 +1,14 @@
-add after effects
-    rivers
-Mountain ranges
+File IO
+    move save to voxel utility
+    test if can open file
+
+parsing args
+
+Terrain generation
+    add after effects
+        rivers
+    Mountain ranges
+    WFC
+        mines/caves
+        towns
+        plants
