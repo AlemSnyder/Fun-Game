@@ -68,11 +68,18 @@ namespace VoxelUtility{
     template <typename T>
     int to_qb(const char* path, T voxel_object){
         // Saves the tiles in this to the path specified
+        file = fopen(path, "wb");
+        if (!file){
+            std::cerr << "Impossible to open " << path
+                    << ". Are you in the right directory?" << std::endl;
+            getchar();
+            fclose(file);
+            return -1;
+        }
 
         std::vector<uint32_t> size = voxel_object.get_size();
         std::vector<int> offset = voxel_object.get_offset();
         
-
         // This is from goxel with GPL license
         std::cout << "Saving to " << path << "\n";
         std::cout << "    max X: " << size[0] << std::endl;
@@ -84,7 +91,6 @@ namespace VoxelUtility{
 
         count = 1;  // the number of layers
 
-        file = fopen(path, "wb");
         WRITE<uint32_t>(257, file);  // version
         WRITE<uint32_t>(0, file);    // color format RGBA
         WRITE<uint32_t>(1, file);    // orientation right handed // c

@@ -12,10 +12,17 @@ int from_qb(const char * path,
             std::vector<int>& center,
             std::vector<uint32_t>& size){
     //Read the tiles from the path specified, and save
+    FILE *file;
+    if (!file){
+        std::cerr << "Impossible to open " << path
+                  << ". Are you in the right directory?" << std::endl;
+        getchar();
+        fclose(file);
+        return -1;
+    }
 
     //This is partially from goxel with GPL license
     std::cout << "Reading form " << path << "\n";
-    FILE *file;
     //int x, y, z; // position in terrain
     uint32_t void_, compression; // void int 32 used to read 32 bites without saving it.
     int32_t x_center, y_center, z_center;
