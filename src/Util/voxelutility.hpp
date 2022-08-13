@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
 #include <cstring>
 
 namespace VoxelUtility{
@@ -68,6 +67,7 @@ namespace VoxelUtility{
     template <typename T>
     int to_qb(const char* path, T voxel_object){
         // Saves the tiles in this to the path specified
+        FILE *file;
         file = fopen(path, "wb");
         if (!file){
             std::cerr << "Impossible to open " << path
@@ -85,7 +85,6 @@ namespace VoxelUtility{
         std::cout << "    max X: " << size[0] << std::endl;
         std::cout << "    max Y: " << size[1] << std::endl;
         std::cout << "    max Z: " << size[2] << std::endl;
-        FILE *file;
         unsigned int count, x, y, z;
         uint8_t v[4];
 

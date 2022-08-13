@@ -1,5 +1,5 @@
 #include <memory>
-#include <exception>
+#include <stdexcept>
 
 // Include GLEW
 #include <GL/glew.h>

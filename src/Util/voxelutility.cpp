@@ -13,6 +13,7 @@ int from_qb(const char * path,
             std::vector<uint32_t>& size){
     //Read the tiles from the path specified, and save
     FILE *file;
+    file = fopen(path, "rb");
     if (!file){
         std::cerr << "Impossible to open " << path
                   << ". Are you in the right directory?" << std::endl;
@@ -28,7 +29,6 @@ int from_qb(const char * path,
     int32_t x_center, y_center, z_center;
     uint8_t v[4];
 
-    file = fopen(path, "rb");
     READ<uint32_t>(void_, file); // version
     //std::cout << void_ << std::endl;
     READ<uint32_t>(void_, file);   // color format RGBA

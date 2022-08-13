@@ -23,8 +23,6 @@
 #ifndef __GUI_RENDER_HPP__
 #define __GUI_RENDER_HPP__
 
-#include <memory>
-
 // Include GLEW
 #include <GL/glew.h>
 

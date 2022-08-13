@@ -23,7 +23,7 @@
 #ifndef __GUI_SHADOW_MAP_HPP__
 #define __GUI_SHADOW_MAP_HPP__
 
-#include <memory>
+#include <vector>
 
 // Include GLEW
 #include <GL/glew.h>

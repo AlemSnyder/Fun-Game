@@ -1,5 +1,4 @@
 #include <memory>
-#include <filesystem>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -9,8 +8,6 @@
 
 // Include GLM
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 #include "../Terrain/terrain_mesh.hpp"
 #include "controls.hpp"
