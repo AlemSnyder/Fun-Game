@@ -19,12 +19,12 @@
 
 MainRenderer::MainRenderer() {
     // non-indexed program
-    programID_single_ = LoadShaders("../src/GUI/Shaders/ShadowMapping.vert",
-                                    "../src/GUI/Shaders/ShadowMapping.frag");
+    programID_single_ = LoadShaders("../Resources/shaders/ShadowMapping.vert",
+                                    "../Resources/shaders/ShadowMapping.frag");
     // indexed program
     programID_multi_ =
-        LoadShaders("../src/GUI/Shaders/ShadowMappingInstanced.vert",
-                    "../src/GUI/Shaders/ShadowMappingInstanced.frag");
+        LoadShaders("../Resources/shaders/ShadowMappingInstanced.vert",
+                    "../Resources/shaders/ShadowMappingInstanced.frag");
     // ---- non-indexed program ----
     matrix_ID_ = glGetUniformLocation(programID_single_, "MVP");
     view_matrix_ID_ = glGetUniformLocation(programID_single_, "V");

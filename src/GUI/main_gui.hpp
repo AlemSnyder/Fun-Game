@@ -154,8 +154,8 @@ int GUITest(World world) {
 
     // Create and compile our GLSL program from the shaders
     GLuint quad_programID =
-        LoadShaders("../src/GUI/Shaders/Passthrough.vert",
-                    "../src/GUI/Shaders/SimpleTexture.frag");
+        LoadShaders("../Resources/shaders/Passthrough.vert",
+                    "../Resources/shaders/SimpleTexture.frag");
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
     glm::vec3 light_direction =
