@@ -1,4 +1,5 @@
 #include <memory>
+#include <filesystem>
 
 // Include GLEW
 #include <GL/glew.h>

@@ -1009,7 +1009,6 @@ int Terrain::qb_read(
 
     std::set<uint32_t> unknown_materials;
 
-    int tiles_read = 0;
     for (int x = 0; x < X_MAX; x++)
     for (int z = 0; z < Z_MAX; z++)
     for (int y = Y_MAX - 1; y >= 0; y--) {
@@ -1025,7 +1024,6 @@ int Terrain::qb_read(
                 auto mat_color = materials->at(color);
                 get_tile(x, y, z)->init({x, y, z}, mat_color.first,
                                         mat_color.second);
-                tiles_read++;
             } else {
                 unknown_materials.insert(color);
                 auto mat_color = materials->at(0);  // else set to air.
@@ -1038,7 +1036,6 @@ int Terrain::qb_read(
         std::cout << "    cannot find color: " << std::hex << std::uppercase
                   << color << std::dec << std::endl;
     }
-    std::cout << "    tiles read: " << tiles_read << std::endl;
 
     return ok;
 }

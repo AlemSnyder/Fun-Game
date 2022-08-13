@@ -1,13 +1,19 @@
-#include <GL/glew.h>
-
-#include <vector>
-#include <fstream>
-#include <iostream>
-
 #include "shader.hpp"
 
-GLuint LoadShaders(const char* vertex_file_path,
-                   const char* fragment_file_path) {
+#include <GL/glew.h>
+
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <vector>
+
+GLuint LoadShaders(const char* vertex_file, const char* fragment_file) {
+    // get the paths
+    std::filesystem::path vertex_file_path =
+        std::filesystem::absolute(vertex_file);
+    std::filesystem::path fragment_file_path =
+        std::filesystem::absolute(fragment_file);
+
     // Create the shaders
     GLuint vertex_shader_ID = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragment_shader_ID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -21,7 +27,8 @@ GLuint LoadShaders(const char* vertex_file_path,
         vertex_shader_code = sstr.str();
         vertex_shader_stream.close();
     } else {
-        std::cerr << "Impossible to open " << vertex_file_path <<". Are you in the right directory?" << std::endl;
+        std::cerr << "Impossible to open " << vertex_file_path
+                  << ". Are you in the right directory?" << std::endl;
         getchar();
         return 0;
     }
@@ -40,7 +47,7 @@ GLuint LoadShaders(const char* vertex_file_path,
     int info_log_length;
 
     // Compile Vertex Shader
-    printf("Compiling shader : %s\n", vertex_file_path);
+    std::cout << "Compiling shader : " << vertex_file_path << std::endl;
     char const* vertex_source_pointer = vertex_shader_code.c_str();
     glShaderSource(vertex_shader_ID, 1, &vertex_source_pointer, NULL);
     glCompileShader(vertex_shader_ID);
@@ -56,7 +63,7 @@ GLuint LoadShaders(const char* vertex_file_path,
     }
 
     // Compile Fragment Shader
-    printf("Compiling shader : %s\n", fragment_file_path);
+    std::cout << "Compiling shader : " << fragment_file_path << std::endl;
     char const* fragment_source_pointer = fragment_shader_code.c_str();
     glShaderSource(fragment_shader_ID, 1, &fragment_source_pointer, NULL);
     glCompileShader(fragment_shader_ID);
