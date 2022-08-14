@@ -24,7 +24,7 @@
 #define __TERRAIN_TERRAIN_GENERATION_LAND_GENERATOR_HPP__
 
 #include <cstdint>
-#include "../../json/json.h"
+#include "../../Packages/json/json.h"
 #include <map>
 #include <math.h>
 #include <string>
