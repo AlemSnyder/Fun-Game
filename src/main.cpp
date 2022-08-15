@@ -16,6 +16,8 @@ GLFWwindow *window;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include "Packages/argh.h"
+
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
 #include "GUI/main_gui.hpp"
@@ -170,30 +172,53 @@ int GUITest(const char *path)
 
 int main(int argc, char **argv)
 {
+    argh::parser cmdl;
+    cmdl.add_params({"-pi", "--path-in", "-po", "--path-out"});
+    cmdl.add_param("biome-name");
+    cmdl.parse(argc, argv);
+    std::string run_function = cmdl(1).str();
+    std::string path_in = cmdl(2).str();
+    std::string path_out = cmdl(3).str();
+
+
+    /*
+    std::cout << argc << std::endl;
+
+    std::cout << "Positional args: " << std::endl;
+    for (auto& pos_arg : cmdl.pos_args())
+        std::cout << '\t' << pos_arg << std::endl;
+
+    std::cout << "Parameters: " << std::endl;
+    for (auto& param : cmdl.params())
+        std::cout << '\t' << param.first << " : " << param.second << std::endl;
+
+    std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and path out = " << path_out << std::endl;
+    */
+
     if (argc == 1) {
-        //return path_finder_test("../SavedTerrain/pathfinder_input.qb",
-        //                        "../SavedTerrain/pathfinder_output.qb");
         return GUITest("../data/Models/DefaultTree.qb");
-    } else if (std::string(argv[1]) == "--TerrainTypes") {
+    } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
         std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
         biome_file >> biome_data;
-        if (argc == 3) {
-            save_terrain(biome_data[argv[2]], argv[2]);
+        std::string biome_name;
+        cmdl("biome-name", "Biome_1") >> biome_name;
+        if (!cmdl[{ "-a", "--all" }]) {
+            save_terrain(biome_data[biome_name], biome_name);
         } else {
             save_all_terrain(biome_data);
         }
-    } else if (std::string(argv[1]) == "--GenerateTerrain") {
-        return test1(argv[2]);
-    } else if (std::string(argv[1]) == "--MacroMap") {
+    } else if (run_function == "GenerateTerrain") {
+        return test1(&path_in[0]);
+    } else if (run_function == "MacroMap") {
         return test2();
-    } else if (std::string(argv[1]) == "--SaveTest") {
-        return save_test(argv[2], argv[3]);
-    } else if (std::string(argv[1]) == "--PathFinder") {
-        return path_finder_test(argv[2], argv[3]);
-    } else if (std::string(argv[1]) == "--GUITest") {
-        return GUITest(argv[2]);
-    } else if (std::string(argv[1]) == "--WorldGen") {
-        return test1(argv[2]);
+    } else if (run_function == "SaveTest") {
+        return save_test(&path_in[0], &path_out[0]);
+    } else if (run_function == "PathFinder") {
+        return path_finder_test(&path_in[0], &path_out[0]);
+    } else if (run_function == "GUITest") {
+        return GUITest(&path_in[0]);
+    } else if (run_function == "WorldGen") {
+        return test1(&path_in[0]);
     }
 }

@@ -19,7 +19,7 @@ int from_qb(const char * path,
                   << ". Are you in the right directory?" << std::endl;
         getchar();
         fclose(file);
-        return -1;
+        return 1;
     }
 
     //This is partially from goxel with GPL license
@@ -87,7 +87,7 @@ int from_qb(const char * path,
     delete[] name;
 
     fclose(file);
-    return 1;
+    return 0;
 }
 
 VoxelObject::VoxelObject(const char* path) {

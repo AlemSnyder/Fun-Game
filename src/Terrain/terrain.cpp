@@ -87,7 +87,11 @@ Terrain::Terrain(const char *path,
                                std::make_pair(&it->second, (uint8_t)color_id)));
         }
     }
-    qb_read(path, &materials);
+    int test = qb_read(path, &materials);
+    if (test == 1){
+        std::cerr << "Could not load terrain" << std::endl;
+        return;
+    }
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         if (can_stand_1(xyz)) {
             add_all_adjacent(xyz);
@@ -954,7 +958,10 @@ int Terrain::qb_read(
     std::vector<uint32_t> size;
 
     int test = VoxelUtility::from_qb(path, data, center, size);
-    bool ok = (test == 1);
+    bool ok = (test == 0);
+    if (!ok){
+        return test;
+    }
 
     X_MAX = size[0];
     Y_MAX = size[1];
