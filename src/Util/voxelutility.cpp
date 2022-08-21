@@ -98,6 +98,6 @@ VoxelObject::VoxelObject(const char* path) {
                        data_,
                        center_,
                        size_);
-    ok_ = (test == 1);
+    ok_ = (test == 0);
 }
 } // namespace VoxelUtility

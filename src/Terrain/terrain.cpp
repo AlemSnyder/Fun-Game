@@ -960,7 +960,7 @@ int Terrain::qb_read(
     int test = VoxelUtility::from_qb(path, data, center, size);
     bool ok = (test == 0);
     if (!ok){
-        return test;
+        return 1;
     }
 
     X_MAX = size[0];
@@ -998,7 +998,7 @@ int Terrain::qb_read(
                   << color << std::dec << std::endl;
     }
 
-    return ok;
+    return !ok;
 }
 
 std::pair<Tile *, Tile *> Terrain::get_start_end_test() {
