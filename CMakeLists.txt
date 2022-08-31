@@ -11,7 +11,7 @@ cmake_policy(SET CMP0072 NEW)
 # set the project name
 project(Fun_Game)
 
-# Find GL packages
+# Find GL ../packages
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
@@ -22,7 +22,11 @@ file(GLOB SOURCES1 "src/*.cpp")
 file(GLOB SOURCES2 "src/**/*.cpp")
 file(GLOB SOURCES3 "src/**/**/*.cpp")
 
-add_executable(Fun_Game ${SOURCES1} ${SOURCES2} ${SOURCES3})
+file(GLOB SOURCES4 "packages/*.cpp")
+file(GLOB SOURCES5 "packages/**/*.cpp")
+file(GLOB SOURCES6 "packages/**/**/*.cpp")
+
+add_executable(Fun_Game ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6})
 
 #target_include_directories(Fun_Game ${GLM_INCLUDE_DIRS})
 

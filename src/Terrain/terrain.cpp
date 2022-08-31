@@ -1,14 +1,7 @@
 #include "terrain.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <algorithm>
-#include <array>
-#include <chrono>
 #include <cstdint>
 #include <cstring>
-//#include <deque>
 #include <fstream>
 #include <map>
 #include <queue>
@@ -17,7 +10,7 @@
 
 #include "../util/voxelutility.hpp"
 #include "../util/time.hpp"
-#include "../packages/json/json.h"
+#include "../../packages/json/json.h"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/material.hpp"
 #include "terrain_generation/noise.hpp"

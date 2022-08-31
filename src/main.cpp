@@ -15,7 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include "Packages/argh.h"
+#include "../packages/argh.h"
 
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
