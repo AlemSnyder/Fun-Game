@@ -22,8 +22,7 @@
  *
  */
 
-#ifndef __TERRAIN_NODE_HPP__
-#define __TERRAIN_NODE_HPP__
+#pragma once
 
 #include <set>
 
@@ -138,5 +137,3 @@ class Node {  // Used to find paths.
     float fCost;    // Minimum time from start to end through this node
     bool explored;  // Is there a path from start to this node?
 };
-
-#endif

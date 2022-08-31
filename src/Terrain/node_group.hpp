@@ -20,8 +20,7 @@
  *
  */
 
-#ifndef __TERRAIN_NODE_GROUP_HPP__
-#define __TERRAIN_NODE_GROUP_HPP__
+#pragma once
 
 #include <list>
 #include <set>
@@ -144,5 +143,3 @@ private:
     float center_x, center_y, center_z; // volumetric center, a weighted average
     UnitPath path_type_; // the path restraints to get form any tile in this Group to any other tile
 };
-
-#endif

@@ -2,32 +2,29 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
 
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstdint>
 #include <cstring>
-#include <ctime>
-#include <deque>
+//#include <deque>
 #include <fstream>
 #include <map>
 #include <queue>
 #include <set>
 #include <vector>
 
-#include "../Util/voxelutility.hpp"
-#include "../Packages/json/json.h"
-#include "TerrainGeneration/land_generator.hpp"
-#include "TerrainGeneration/material.hpp"
-#include "TerrainGeneration/noise.hpp"
-#include "TerrainGeneration/tilestamp.hpp"
+#include "../util/voxelutility.hpp"
+#include "../util/time.hpp"
+#include "../packages/json/json.h"
+#include "terrain_generation/land_generator.hpp"
+#include "terrain_generation/material.hpp"
+#include "terrain_generation/noise.hpp"
+#include "terrain_generation/tilestamp.hpp"
 #include "chunk.hpp"
 #include "node.hpp"
 #include "tile.hpp"
-
-#define DIRT_ID 1  // what am I going to do with this?
 
 int Terrain::Area_size = 32;
 
@@ -112,10 +109,7 @@ void Terrain::init_old(int x, int y, int z) {
 void Terrain::init(int x, int y, int Area_size_, int z, int seed_,
                    const std::map<int, const Material> *materials,
                    Json::Value biome_data, std::vector<int> Terrain_Maps) {
-    auto millisec_since_epoch =
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch())
-            .count();
+    auto millisec_since_epoch = time_util::get_time();
 
     Area_size = Area_size_;
     seed = seed_;
@@ -125,17 +119,9 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_,
 
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
-    // std::cout <<
-    // std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
-    // - millisec_since_epoch << " time tiles resize\n";
-
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         this->get_tile(xyz)->init(sop(xyz), &(*materials).at(0));
     }
-
-    // std::cout <<
-    // std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
-    // - millisec_since_epoch << " time Terrain init\n";
 
     srand(seed);
     std::cout << "start of land Generator" << std::endl;
@@ -152,31 +138,17 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_,
 
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++) {
-            for (unsigned int k = 0;
-                 k <
-                 biome_data["Tile_Data"][Terrain_Maps[j + i * y]]["Land_From"]
-                     .size();
-                 k++) {
-                init_area(i, j,
-                          land_generators[biome_data["Tile_Data"]
-                                                    [Terrain_Maps[j + i * y]]
-                                                    ["Land_From"][k]
-                                                        .asInt()]);
+            int tile_type = Terrain_Maps[j + i * y];
+            Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
+            for (Json::Value generator_macro : macro_types) {
+                init_area(i, j, land_generators[generator_macro.asInt()]);
             }
         }
-
-    // std::cout <<
-    // std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
-    // - millisec_since_epoch << " time init area" << std::endl;
 
     for (unsigned int i = 0;
          i < biome_data["After_Effects"]["Add_To_Top"].size(); i++) {
         add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }
-
-    // std::cout <<
-    // std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
-    // - millisec_since_epoch << " time Add to Top" << std::endl;
 
     // grow_grass();
     init_grass();
@@ -188,10 +160,7 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_,
 
     init_chunks();
 
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                         .count() -
-                     millisec_since_epoch
+    std::cout << time_util::get_time() - millisec_since_epoch
               << " Total time Terrain_init" << std::endl;
 }
 
@@ -416,15 +385,6 @@ void Terrain::stamp_tile_region(int x_start, int y_start, int z_start,
             }
         }
     }
-}
-inline void Terrain::stamp_tile_region(TileStamp tStamp, int x,
-                                       int y) {  // unpack TileStamp
-    stamp_tile_region(
-        tStamp.x_start + x * Area_size + Area_size / 2,
-        tStamp.y_start + y * Area_size + Area_size / 2, tStamp.z_start,
-        tStamp.x_end + x * Area_size + Area_size / 2,
-        tStamp.y_end + y * Area_size + Area_size / 2, tStamp.z_end, tStamp.mat,
-        tStamp.elements_can_stamp, tStamp.color_id);
 }
 
 void Terrain::init_grass() {

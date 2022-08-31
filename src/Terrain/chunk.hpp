@@ -20,8 +20,7 @@
  *
  */
 
-#ifndef __TERRAIN_CHUNK_HPP__
-#define __TERRAIN_CHUNK_HPP__
+#pragma once
 
 #include <list>
 #include <set>
@@ -71,5 +70,3 @@ private:
     bool contains_nodeGroup(NodeGroup*);
     void R_merge(NodeGroup &g1, std::set<NodeGroup*>& to_merge);
 };
-
-#endif

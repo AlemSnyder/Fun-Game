@@ -29,7 +29,7 @@
 #include <map>
 #include <set>
 
-#include "TerrainGeneration/material.hpp"
+#include "terrain_generation/material.hpp"
 #include "unit_path.hpp"
 
 /**

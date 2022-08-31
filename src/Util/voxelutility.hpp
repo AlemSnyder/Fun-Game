@@ -1,5 +1,5 @@
-#ifndef __UTIL_VOXEL_UTILITY_HPP__
-#define __UTIL_VOXEL_UTILITY_HPP__
+#pragma once
+
 #include <cstdint>
 #include <iostream>
 #include <fstream>
@@ -124,5 +124,3 @@ namespace VoxelUtility{
     }
 
 } // namespace VoxelReader
-
-#endif

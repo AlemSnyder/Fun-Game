@@ -35,10 +35,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "TerrainGeneration/land_generator.hpp"
-#include "TerrainGeneration/material.hpp"
-#include "TerrainGeneration/noise.hpp"
-#include "TerrainGeneration/tilestamp.hpp"
+#include "terrain_generation/land_generator.hpp"
+#include "terrain_generation/material.hpp"
+#include "terrain_generation/noise.hpp"
+#include "terrain_generation/tilestamp.hpp"
 #include "chunk.hpp"
 #include "node.hpp"
 #include "node_group.hpp"
@@ -226,14 +226,6 @@ class Terrain {
      * @param t object that has position
      * @return std::array<int, 3> position of the object
      */
-    // template <class T>
-    // static std::array<int, 3> sop(T t) {
-    //     if (std::is_pointer<T>::value) {
-    //         return {t->get_x(), t->get_y(), t->get_z()};
-    //     } else {
-    //         return {t.get_x(), t.get_y(), t.get_z()};
-    //     }
-    // }
     /**
      * @brief generates a 2D 'height' map to use to generate the terrain
      *
@@ -272,7 +264,7 @@ class Terrain {
     void init_area(int area_x, int area_y, LandGenerator gen);
     /**
      * @brief initialized terrain
-     * @deprecated description
+     * @deprecated should only be used to implicitly initialize terrain
      *
      * @param x size in x direction
      * @param y size in y direction
@@ -572,7 +564,14 @@ class Terrain {
      * @param x macro map x position
      * @param y macro map y position
      */
-    void stamp_tile_region(TileStamp tStamp, int x, int y);
+    inline void stamp_tile_region(TileStamp tStamp, int x, int y) {
+    stamp_tile_region(
+        tStamp.x_start + x * Area_size + Area_size / 2,
+        tStamp.y_start + y * Area_size + Area_size / 2, tStamp.z_start,
+        tStamp.x_end + x * Area_size + Area_size / 2,
+        tStamp.y_end + y * Area_size + Area_size / 2, tStamp.z_end, tStamp.mat,
+        tStamp.elements_can_stamp, tStamp.color_id);
+}
     /**
      * @brief Set a group of tiles
      * 

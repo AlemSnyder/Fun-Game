@@ -11,8 +11,7 @@
  *
  */
 
-#ifndef __TERRAIN_TERRAIN_GENERATION_NOISE_HPP__
-#define __TERRAIN_TERRAIN_GENERATION_NOISE_HPP__
+#pragma once
 
 #include <cmath>
 
@@ -73,5 +72,3 @@ private:
     double interpolate_(double a, double b, double x); // cosine interpolation
     double interpolated_noise_(int i, double x, double y);
 };
-
-#endif

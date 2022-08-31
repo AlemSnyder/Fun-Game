@@ -22,7 +22,7 @@
 #include "GUI/main_gui.hpp"
 #include "Terrain/terrain.hpp"
 #include "world.hpp"
-#include "Entity/mesh.hpp"
+#include "entity/mesh.hpp"
 
 #define INITIAL_WINDOW_WIDTH 1024
 #define INITIAL_WINDOW_HEIGHT 768

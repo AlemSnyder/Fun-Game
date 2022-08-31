@@ -21,7 +21,7 @@
 
 #include "../Util/voxelutility.hpp"
 
-namespace Entity{
+namespace entity{
 
 Mesh::Mesh(std::string path) { load_from_qb_(path); }
 
@@ -41,27 +41,5 @@ void Mesh::load_from_qb_(std::string path) {
     generate_mesh_(voxel_object);
 }
 
-void Mesh::generate_mesh_(VoxelUtility::VoxelObject voxel_object){
-    generate_mesh(voxel_object,
-                  indices_,
-                  indexed_vertices_,
-                  indexed_colors_,
-                  indexed_normals_);
-}
-
-int Mesh::get_position_(int x, int y, int z) const {
-    return ((x * size_[1] + y) * size_[2] + z);
-}
-
-void Mesh::get_mesh(std::vector<unsigned short> &indices,
-                    std::vector<glm::vec3> &indexed_vertices,
-                    std::vector<glm::vec3> &indexed_colors,
-                    std::vector<glm::vec3> &indexed_normals) const {
-    indices = indices_;
-    indexed_vertices = indexed_vertices_;
-    indexed_colors = indexed_colors_;
-    indexed_normals = indexed_normals_;
-}
-
-} // namespace Entity
+} // namespace entity
 

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 
-GLuint LoadShaders(const char* vertex_file, const char* fragment_file) {
+GLuint load_shaders(const char* vertex_file, const char* fragment_file) {
     // get the paths
     std::filesystem::path vertex_file_path =
         std::filesystem::absolute(vertex_file);

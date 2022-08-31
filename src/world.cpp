@@ -24,7 +24,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "Entity/mesh.hpp"
+#include "entity/mesh.hpp"
 #include "world.hpp"
 #include "Terrain/terrain.hpp"
 //void World::save(){
@@ -59,7 +59,7 @@ void World::get_mesh_greedy(std::vector<unsigned short> &indices,
 					std::vector<glm::vec3> &indexed_colors,
 					std::vector<glm::vec3> &indexed_normals) const {
 
-    Entity::generate_mesh(terrain_main, indices, indexed_vertices, indexed_colors, indexed_normals);
+    entity::generate_mesh(terrain_main, indices, indexed_vertices, indexed_colors, indexed_normals);
     }
 
 World::World(){

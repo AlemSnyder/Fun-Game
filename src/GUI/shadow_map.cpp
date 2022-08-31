@@ -16,10 +16,10 @@
 ShadowMap::ShadowMap(int w, int h) {
     depth_texture_ = 0;
     frame_buffer_name_ = 0;
-    programID_ = LoadShaders("../Resources/shaders/DepthRTT.vert",
-                             "../Resources/shaders/DepthRTT.frag");
-    programID_multi_ = LoadShaders("../Resources/shaders/DepthRTTInstanced.vert",
-                                   "../Resources/shaders/DepthRTTInstanced.frag");
+    programID_ = load_shaders("../resources/shaders/DepthRTT.vert",
+                             "../resources/shaders/DepthRTT.frag");
+    programID_multi_ = load_shaders("../resources/shaders/DepthRTTInstanced.vert",
+                                   "../resources/shaders/DepthRTTInstanced.frag");
 
     // Get a handle for our "MVP" uniform
     depth_matrix_ID_ = glGetUniformLocation(programID_, "depthMVP");

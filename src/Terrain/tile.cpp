@@ -1,7 +1,8 @@
 #include "tile.hpp"
 #include "terrain.hpp"
 
-#define NUM_GRASS 8
+#define NUM_GRASS 8 //TODO this should be removed
+#define AIR_ID 0
 #define DIRT_ID 1
 
 Tile::Tile() { init({1,1,1}, false); }
@@ -38,7 +39,7 @@ void Tile::set_material(const Material * mat_, uint8_t color_id_){
 // Set the `mat` to `mat_` and update `solid` and `color_id`.
 void Tile::set_material(const Material * mat_){
     mat=mat_;
-    if ( mat->element_id == 1 ){ // being set to dirt
+    if ( mat->element_id == DIRT_ID ){ // being set to dirt
         color_id = (z + (x / 16 + y / 16) % 2 ) / 3 % 2 + NUM_GRASS;
     } else {
         color_id = 0;
@@ -47,7 +48,7 @@ void Tile::set_material(const Material * mat_){
 }
 // If able, set `color_id` to `color_id_`.
 void Tile::set_color_id(uint8_t color_id_){
-    if ( mat->element_id != 1 ){
+    if ( mat->element_id != DIRT_ID ){
         color_id = color_id_;
     } // cannot set the color of dirt
 }
@@ -81,7 +82,7 @@ void Tile::set_grass_color(int grass_grad_length, int grass_mid, std::vector<uin
 }
 // Grow grass if `mat` is dirt.
 void Tile::try_grow_grass(){
-    if (mat->element_id == 1){
+    if (mat->element_id == DIRT_ID){
         grass = true;
         color_id = 0;
     }
@@ -98,7 +99,7 @@ uint8_t Tile::get_color_id() const {
 uint16_t Tile::get_mat_color_id() const{
     // element_id, and color_id are 8 bit this function 
     // concatenates them together, and returns a 16 bit int
-    if (mat->element_id == 0){
+    if (mat->element_id == AIR_ID){
         return 0;
     }
     return mat->element_id << 8 | color_id; 

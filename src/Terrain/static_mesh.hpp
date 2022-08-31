@@ -11,8 +11,7 @@
 
 #include "../GUI/meshloader.hpp"
 
-#ifndef __TERRAIN_STATIC_MESH_HPP__
-#define __TERRAIN_STATIC_MESH_HPP__
+#pragma once
 
 class StaticMesh : public MeshLoader::MultiComplexMesh {
 private:
@@ -88,5 +87,3 @@ public:
         return num_models_;
     }
 };
-
-#endif

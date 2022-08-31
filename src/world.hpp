@@ -57,7 +57,7 @@ class World {
      * @param biome_data biome parameters
      * @param type determines the type of terrain to be generated
      * (see) data/biome_data.json > `biome` > Tile_Data
-     * (see) src/Terrain/TerrainGeneration/land_generator.hpp
+     * (see) src/Terrain/terrain_generation/land_generator.hpp
      */
     World(Json::Value biome_data, int type);
     World(Json::Value materials_json, Json::Value biome_data);

@@ -20,8 +20,7 @@
  *
  */
 
-#ifndef __TERRAIN_TERRAIN_GENERATION_TILE_STAMP_HPP__
-#define __TERRAIN_TERRAIN_GENERATION_TILE_STAMP_HPP__
+#pragma once
 
 #include <set>
 #include "material.hpp"
@@ -48,5 +47,3 @@ struct TileStamp{
     //set of <material ID, color ID> determines what tiles types can be changed.
     std::set<std::pair<int, int>> elements_can_stamp; 
 };
-
-#endif

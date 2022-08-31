@@ -14,7 +14,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include "../Entity/mesh.hpp"
+#include "../entity/mesh.hpp"
 #include "../Terrain/static_mesh.hpp"
 #include "../Terrain/terrain_mesh.hpp"
 #include "../world.hpp"
@@ -38,7 +38,7 @@ int GUITest(World world) {
     std::vector<glm::vec3> indexed_vertices_tree;
     std::vector<glm::vec3> indexed_colors_tree;
     std::vector<glm::vec3> indexed_normals_tree;
-    Entity::Mesh mesh("../data/Models/DefaultTree.qb");
+    entity::Mesh mesh("../data/models/DefaultTree.qb");
     mesh.get_mesh(indices_tree, indexed_vertices_tree, indexed_colors_tree,
                   indexed_normals_tree);
 
@@ -154,8 +154,8 @@ int GUITest(World world) {
 
     // Create and compile our GLSL program from the shaders
     GLuint quad_programID =
-        LoadShaders("../Resources/shaders/Passthrough.vert",
-                    "../Resources/shaders/SimpleTexture.frag");
+        load_shaders("../resources/shaders/Passthrough.vert",
+                    "../resources/shaders/SimpleTexture.frag");
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
     glm::vec3 light_direction =

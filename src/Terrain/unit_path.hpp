@@ -20,8 +20,7 @@
  *
  */
 
-#ifndef __TERRAIN_UNIT_PATH_HPP__
-#define __TERRAIN_UNIT_PATH_HPP__
+#pragma once
 
 #include <cstdint>
 
@@ -139,4 +138,3 @@ class UnitPath {
     }
     UnitPath operator&(const UnitPath other) const { return type & other.type; }
 };
-#endif  // __ONEPATH_HPP__
