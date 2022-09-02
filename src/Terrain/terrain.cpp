@@ -10,7 +10,7 @@
 
 #include "../util/voxelutility.hpp"
 #include "../util/time.hpp"
-#include "../../packages/json/json.h"
+#include "json/json.h"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/material.hpp"
 #include "terrain_generation/noise.hpp"

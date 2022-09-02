@@ -12,12 +12,13 @@
 */
 
 #include <cstdint>
-#include "../../../packages/json/json.h"
 #include <map>
 #include <math.h>
 #include <string>
 #include <iostream>
 #include <string>
+
+#include "json/json.h"
 
 #include "tilestamp.hpp"
 #include "material.hpp"

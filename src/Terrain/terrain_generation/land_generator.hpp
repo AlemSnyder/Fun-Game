@@ -24,11 +24,12 @@
 #define __TERRAIN_TERRAIN_GENERATION_LAND_GENERATOR_HPP__
 
 #include <cstdint>
-#include "../../../packages/json/json.h"
 #include <map>
 #include <math.h>
 #include <string>
 #include <iostream>
+
+#include "json/json.h"
 
 #include "tilestamp.hpp"
 #include "material.hpp"

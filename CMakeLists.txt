@@ -11,6 +11,8 @@ cmake_policy(SET CMP0072 NEW)
 # set the project name
 project(Fun_Game)
 
+include_directories("packages")
+
 # Find GL ../packages
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
