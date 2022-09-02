@@ -28,7 +28,7 @@
 #include <vector>
 
 #include "Terrain/terrain.hpp"
-#include "../packages/json/json.h"
+#include "json/json.h"
 
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
