@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-#include "../Util/voxelutility.hpp"
+#include "../util/voxelutility.hpp"
 
 namespace entity{
 

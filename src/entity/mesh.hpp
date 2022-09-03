@@ -25,7 +25,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-#include "../Util/voxelutility.hpp"
+#include "../util/voxelutility.hpp"
 
 namespace entity {
 
@@ -291,6 +291,6 @@ class Mesh {
 
 };  // class Mesh
 
-};  // namespace entity
+}   // namespace entity
 
 #endif
