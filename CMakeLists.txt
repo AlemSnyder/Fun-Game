@@ -47,3 +47,7 @@ if(MSVC)
 else()
   target_compile_options(Fun_Game PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+# Copy resources and data
+file(COPY "resources" DESTINATION "${CMAKE_BINARY_DIR}")
+file(COPY "data" DESTINATION "${CMAKE_BINARY_DIR}")

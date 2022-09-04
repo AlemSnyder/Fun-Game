@@ -33,11 +33,11 @@ int test1(const char *path)
     // C/gcc/terrain_generation";
 
     Json::Value materials_json;
-    std::ifstream materials_file("../data/materials.json", std::ifstream::in);
+    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
     materials_file >> materials_json;
 
     Json::Value biome_data;
-    std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
 
     World world(materials_json, biome_data);
@@ -51,7 +51,7 @@ int test2()
 {
 
     Json::Value biome_data;
-    std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
 
     terrain::Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
@@ -91,7 +91,7 @@ void save_terrain(Json::Value biome_data, std::string biome_name)
         world.terrain_main.qb_save(path.c_str());
     }
     // Json::Value biome_data;
-    // std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    // std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     // biome_file >> biome_data;
 }
 
@@ -195,10 +195,10 @@ int main(int argc, char **argv)
     */
 
     if (argc == 1) {
-        return GUITest("../data/Models/DefaultTree.qb");
+        return GUITest("./data/Models/DefaultTree.qb");
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
-        std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+        std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
         biome_file >> biome_data;
         std::string biome_name;
         cmdl("biome-name", "Biome_1") >> biome_name;

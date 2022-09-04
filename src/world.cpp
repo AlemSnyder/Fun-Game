@@ -64,7 +64,7 @@ void World::get_mesh_greedy(std::vector<unsigned short> &indices,
 
 World::World(){
     Json::Value materials_json;
-    std::ifstream materials_file("../data/materials.json", std::ifstream::in);
+    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
     materials_file >> materials_json;
 
     init_materials(materials_json);
@@ -75,7 +75,7 @@ World::World(){
     }
 
     Json::Value biome_data;
-    std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
 
     std::cout << "start of terrain\n";
@@ -85,7 +85,7 @@ World::World(){
 
 World::World(const char * path){
     Json::Value materials_json;
-    std::ifstream materials_file("../data/materials.json", std::ifstream::in);
+    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
     materials_file >> materials_json;
 
     init_materials(materials_json);
@@ -118,7 +118,7 @@ World::World(Json::Value materials_json, Json::Value biome_data){
 
 World::World(Json::Value biome_data, int tile_type){
     Json::Value materials_json;
-    std::ifstream materials_file("../data/materials.json", std::ifstream::in);
+    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
     materials_file >> materials_json;
 
     init_materials(materials_json);

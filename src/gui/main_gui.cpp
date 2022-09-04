@@ -37,7 +37,7 @@ int GUITest(World world) {
     std::vector<glm::vec3> indexed_vertices_tree;
     std::vector<glm::vec3> indexed_colors_tree;
     std::vector<glm::vec3> indexed_normals_tree;
-    entity::Mesh mesh("../data/models/DefaultTree.qb");
+    entity::Mesh mesh("./data/models/DefaultTree.qb");
     mesh.get_mesh(indices_tree, indexed_vertices_tree, indexed_colors_tree,
                   indexed_normals_tree);
 
@@ -153,8 +153,8 @@ int GUITest(World world) {
 
     // Create and compile our GLSL program from the shaders
     GLuint quad_programID =
-        load_shaders("../resources/shaders/Passthrough.vert",
-                    "../resources/shaders/SimpleTexture.frag");
+        load_shaders("./resources/shaders/Passthrough.vert",
+                    "./resources/shaders/SimpleTexture.frag");
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
     glm::vec3 light_direction =
