@@ -3,6 +3,8 @@
 #include "tile.hpp"
 #include "node_group.hpp"
 
+namespace terrain {
+
 template<class T>
 void Node<T>::init(T *tile_, float hc) {
     parent_node = nullptr;
@@ -48,4 +50,6 @@ void Node<T>::explore() { // explore as start
 template<class T>
 std::set<const T*> Node<T>::get_adjacent(int path_type) const { // explore as start
     return get_tile()->get_adjacent_clear(path_type);
+}
+
 }

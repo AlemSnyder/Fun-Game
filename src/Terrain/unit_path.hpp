@@ -24,6 +24,8 @@
 
 #include <cstdint>
 
+namespace terrain {
+
 /**
  * @brief enum class defining possible directions between two tiles
  *
@@ -138,3 +140,5 @@ class UnitPath {
     }
     UnitPath operator&(const UnitPath other) const { return type & other.type; }
 };
+
+} // namespace terrain

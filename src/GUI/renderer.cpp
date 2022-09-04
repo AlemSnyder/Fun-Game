@@ -9,7 +9,7 @@
 // Include GLM
 #include <glm/glm.hpp>
 
-#include "../Terrain/terrain_mesh.hpp"
+#include "../terrain/terrain_mesh.hpp"
 #include "controls.hpp"
 #include "meshloader.hpp"
 #include "renderer.hpp"

@@ -13,8 +13,9 @@
 
 #include "../GUI/meshloader.hpp"
 
-#ifndef __TERRAIN_TERRAIN_MESH_HPP__
-#define __TERRAIN_TERRAIN_MESH_HPP__
+#pragma once
+
+namespace terrain {
 
 class TerrainMesh : public MeshLoader::SingleComplexMesh {
 private:
@@ -69,4 +70,4 @@ public:
     }
 };
 
-#endif
+}

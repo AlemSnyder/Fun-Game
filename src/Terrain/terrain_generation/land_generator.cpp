@@ -21,9 +21,13 @@
 #include "json/json.h"
 
 #include "tilestamp.hpp"
-#include "material.hpp"
+#include "../material.hpp"
 
 #include "land_generator.hpp"
+
+namespace terrain {
+
+namespace terrain_generation {
 
 LandGenerator::LandGenerator( const std::map<int, const Material> *materials_, Json::Value data){
     materials = materials_;
@@ -171,3 +175,7 @@ std::array<int, 6> LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, 
     int z_max = rand() % ( Dz + 1) + Sz - Dz/2;
     return {x_min, y_min, 0, x_max, y_max, z_max};
 }
+
+} // namespace terrain_generation
+
+} // namespace terrain

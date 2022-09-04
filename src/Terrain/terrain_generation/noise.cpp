@@ -3,7 +3,9 @@
 
 #define maxPrimeIndex 10
 
-double NoiseGenerator::getValueNoise(double x, double y) {
+namespace terrain {
+
+double terrain_generation::NoiseGenerator::getValueNoise(double x, double y) {
     double total = 0,
             frequency = pow(2, num_octaves_),
             amplitude = 1;
@@ -16,7 +18,7 @@ double NoiseGenerator::getValueNoise(double x, double y) {
     return total / frequency;
 }
 
-double NoiseGenerator::noise_(int i, int x, int y) {
+double terrain_generation::NoiseGenerator::noise_(int i, int x, int y) {
     int n = x + y * 57;
     n = (n << 13) ^ n;
     int a = primes[i][0], b = primes[i][1], c = primes[i][2];
@@ -24,7 +26,7 @@ double NoiseGenerator::noise_(int i, int x, int y) {
     return 1.0 - (double)(t)/1073741824.0;
 }
 
-double NoiseGenerator::smoothed_noise_(int i, int x, int y) {
+double terrain_generation::NoiseGenerator::smoothed_noise_(int i, int x, int y) {
     double corners = (noise_(i, x-1, y-1) + noise_(i, x+1, y-1) +
                         noise_(i, x-1, y+1) + noise_(i, x+1, y+1)) / 16,
             sides = (noise_(i, x-1, y) + noise_(i, x+1, y) + noise_(i, x, y-1) +
@@ -33,13 +35,13 @@ double NoiseGenerator::smoothed_noise_(int i, int x, int y) {
     return corners + sides + center;
 }
 
-double NoiseGenerator::interpolate_(double a, double b, double x) {  // cosine interpolation
+double terrain_generation::NoiseGenerator::interpolate_(double a, double b, double x) {  // cosine interpolation
     double ft = x * 3.1415927,
             f = (1 - cos(ft)) * 0.5;
     return  a*(1-f) + b*f;
 }
 
-double NoiseGenerator::interpolated_noise_(int i, double x, double y) {
+double terrain_generation::NoiseGenerator::interpolated_noise_(int i, double x, double y) {
     int integer_X = x;
     double fractional_X = x - integer_X;
     int integer_Y = y;
@@ -53,3 +55,5 @@ double NoiseGenerator::interpolated_noise_(int i, double x, double y) {
             i2 = interpolate_(v3, v4, fractional_X);
     return interpolate_(i1, i2, fractional_Y);
 }
+
+} // namespace terrain

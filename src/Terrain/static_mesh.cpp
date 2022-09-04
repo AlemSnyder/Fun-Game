@@ -12,6 +12,7 @@
 #include "../GUI/meshloader.hpp"
 #include "static_mesh.hpp"
 
+namespace terrain {
 
 StaticMesh::StaticMesh(std::vector<unsigned short> &indices,
                        std::vector<glm::vec3> &indexed_vertices,
@@ -53,3 +54,5 @@ StaticMesh::StaticMesh(std::vector<unsigned short> &indices,
     num_vertices_ = indices.size();
     num_models_ = model_transforms.size();
 }
+
+} // namespace terrain

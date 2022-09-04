@@ -20,8 +20,7 @@
  *
  */
 
-#ifndef __TERRAIN_TERRAIN_GENERATION_LAND_GENERATOR_HPP__
-#define __TERRAIN_TERRAIN_GENERATION_LAND_GENERATOR_HPP__
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -32,7 +31,11 @@
 #include "json/json.h"
 
 #include "tilestamp.hpp"
-#include "material.hpp"
+#include "../material.hpp"
+
+namespace terrain {
+
+namespace terrain_generation {
 
 /**
  * @brief Reads JSON data and generates TileStamp objects
@@ -111,4 +114,6 @@ private:
     void from_positions(int cr, int csr, TileStamp &ts) const ;
 };
 
-#endif
+} // namespace terrain_generation
+
+} // namspace terrain

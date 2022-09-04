@@ -17,6 +17,10 @@
 
 #define maxPrimeIndex 10 // The length of NoiseGenerator::primes
 
+namespace terrain {
+
+namespace terrain_generation {
+
 /**
  * @brief Generates two dimensional Perlin noise.
  * 
@@ -72,3 +76,7 @@ private:
     double interpolate_(double a, double b, double x); // cosine interpolation
     double interpolated_noise_(int i, double x, double y);
 };
+
+} // namespace terrain_generation
+
+} // namespace terrain

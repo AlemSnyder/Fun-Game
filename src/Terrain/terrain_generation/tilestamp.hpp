@@ -23,7 +23,11 @@
 #pragma once
 
 #include <set>
-#include "material.hpp"
+#include "../material.hpp"
+
+namespace terrain {
+
+namespace terrain_generation {
 
 /**
  * @brief Holds data used to set the material and color of a rectangular prism
@@ -47,3 +51,7 @@ struct TileStamp{
     //set of <material ID, color ID> determines what tiles types can be changed.
     std::set<std::pair<int, int>> elements_can_stamp; 
 };
+
+} // namespace terrain_generation
+
+} // namespace terrain

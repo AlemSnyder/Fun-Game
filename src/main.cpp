@@ -20,7 +20,7 @@
 #include "GUI/controls.hpp"
 #include "GUI/shader.hpp"
 #include "GUI/main_gui.hpp"
-#include "Terrain/terrain.hpp"
+#include "terrain/terrain.hpp"
 #include "world.hpp"
 #include "entity/mesh.hpp"
 
@@ -54,7 +54,7 @@ int test2()
     std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
 
-    Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+    terrain::Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
 
     return 1;
 }
@@ -110,7 +110,7 @@ int path_finder_test(const char *path, const char *save_path)
 
     World world(path);
 
-    std::pair<Tile *, Tile *> start_end =
+    std::pair<terrain::Tile *, terrain::Tile *> start_end =
         world.terrain_main.get_start_end_test();
 
     std::cout << "Start: " << start_end.first->get_x() << ", "
@@ -120,7 +120,7 @@ int path_finder_test(const char *path, const char *save_path)
               << start_end.second->get_y() << ", " << start_end.second->get_z()
               << std::endl;
 
-    std::vector<const Tile *> tile_path =
+    std::vector<const terrain::Tile *> tile_path =
         world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
     std::cout << "    " << (int)tile_path.size() << std::endl;

@@ -20,30 +20,13 @@
  *
  */
 
-#ifndef __TERRAIN_TERRAIN_GENERATION_MATERIAL_HPP__
-#define __TERRAIN_TERRAIN_GENERATION_MATERIAL_HPP__
+#pragma once
 
 #include <vector>
 #include <cstdint>
 #include <string>
 
-/*
-    block types:
-    rock (five types ~)
-    dirt (grass (4) and dirt (3) )
-    mineral types
-        cloth   W most water should go through
-        thatch  W ~W v. w
-        mud     W W v. w
-        wood    M M v. w
-        brick   S S v. w
-        stone   S S v. w
-
-        ladder open and can go up and down
-        closed a placed object blocks this tile
-        open   like a dore or open window
-        air    open and no placed objects
-*/
+namespace terrain {
 
 /**
  * @brief Holds Material data
@@ -66,4 +49,4 @@ struct Material{
     //int8_t deterioration from water
 };
 
-#endif
+}

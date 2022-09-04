@@ -26,6 +26,8 @@
 
 #include <set>
 
+namespace terrain {
+
 /**
  * @brief A node used to find a path with the A* or breadth first algorithm
  *
@@ -137,3 +139,5 @@ class Node {  // Used to find paths.
     float fCost;    // Minimum time from start to end through this node
     bool explored;  // Is there a path from start to this node?
 };
+
+}

@@ -5,6 +5,8 @@
 #define AIR_ID 0
 #define DIRT_ID 1
 
+namespace terrain {
+
 Tile::Tile() { init({1,1,1}, false); }
 Tile::Tile(std::array<int, 3> sop, const Material *mat) { init(sop, mat);}
 Tile::Tile(std::array<int, 3> sop, const Material * mat_, uint8_t color_id_){
@@ -179,3 +181,5 @@ bool TilePCompare::operator() (const Tile* lhs, const Tile* rhs) const{
         return false;
     } else {return lhs->get_z() < rhs->get_z();}
 }
+
+} // namespace terrain

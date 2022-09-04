@@ -22,15 +22,17 @@
  *
  */
 
-#ifndef __TERRAIN_TILE_HPP__
-#define __TERRAIN_TILE_HPP__
+#pragma once
+
 #include <cstdint>
 #include <functional>
 #include <map>
 #include <set>
 
-#include "terrain_generation/material.hpp"
+#include "material.hpp"
 #include "unit_path.hpp"
+
+namespace terrain {
 
 /**
  * @brief forward declaration of tile
@@ -299,4 +301,4 @@ class Tile {
     bool operator>(const Tile other) const;
 };
 
-#endif  // __TILE_HPP__
+} // namespace terrain

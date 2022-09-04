@@ -1,6 +1,8 @@
 #include <cstdint>
 #include "node_group.hpp"
 
+namespace terrain {
+
 NodeGroup::NodeGroup(Tile* tile, UnitPath path_type){
     tiles.insert(tile);
     center_x = tile->get_x();
@@ -77,4 +79,6 @@ bool NodeGroup::operator==(const NodeGroup & other) const{
 }
 bool NodeGroup::operator>(const NodeGroup & other) const{
     return ((**tiles.begin()) > **(other.tiles.begin()));
+}
+
 }

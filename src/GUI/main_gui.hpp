@@ -15,8 +15,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "../entity/mesh.hpp"
-#include "../Terrain/static_mesh.hpp"
-#include "../Terrain/terrain_mesh.hpp"
+#include "../terrain/static_mesh.hpp"
+#include "../terrain/terrain_mesh.hpp"
 #include "../world.hpp"
 #include "controls.hpp"
 #include "renderer.hpp"
@@ -117,7 +117,7 @@ int GUITest(World world) {
     glBindVertexArray(VertexArrayID);
 
     // The mesh of the terrain
-    TerrainMesh terrain_mesh(indices, indexed_vertices, indexed_colors,
+    terrain::TerrainMesh terrain_mesh(indices, indexed_vertices, indexed_colors,
                              indexed_normals);
 
     // The above is for the wold the below is for trees
@@ -136,7 +136,7 @@ int GUITest(World world) {
     std::cout << "Number of models: " << model_matrices.size() << std::endl;
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
-    StaticMesh treesMesh(indices_tree, indexed_vertices_tree,
+    terrain::StaticMesh treesMesh(indices_tree, indexed_vertices_tree,
                          indexed_colors_tree, indexed_normals_tree,
                          model_matrices);
 
@@ -168,15 +168,15 @@ int GUITest(World world) {
     ShadowMap SM(4096, 4096);
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
-    SM.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
-    SM.add_mesh(std::make_shared<StaticMesh>(treesMesh));
+    SM.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh));
+    SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
 
     // renders the world scene
     MainRenderer MR;
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
-    MR.add_mesh(std::make_shared<TerrainMesh>(terrain_mesh));
-    MR.add_mesh(std::make_shared<StaticMesh>(treesMesh));
+    MR.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh));
+    MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
     do {
         SM.render_shadow_depth_buffer();

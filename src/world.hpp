@@ -20,15 +20,15 @@
  *
  */
 
-#ifndef __WORLD_HPP__
-#define __WORLD_HPP__
+#pragma once
 
 #include <glm/glm.hpp>
 #include <map>
 #include <vector>
 
-#include "Terrain/terrain.hpp"
+#include "terrain/terrain.hpp"
 #include "json/json.h"
+
 
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
@@ -57,7 +57,7 @@ class World {
      * @param biome_data biome parameters
      * @param type determines the type of terrain to be generated
      * (see) data/biome_data.json > `biome` > Tile_Data
-     * (see) src/Terrain/terrain_generation/land_generator.hpp
+     * (see) src/terrain/terrain_generation/land_generator.hpp
      */
     World(Json::Value biome_data, int type);
     World(Json::Value materials_json, Json::Value biome_data);
@@ -71,7 +71,7 @@ class World {
      * @return const std::map<int, const Material>* map of materials_id to
      * materials pointer
      */
-    const std::map<int, const Material> *get_materials() const {
+    const std::map<int, const terrain::Material> *get_materials() const {
         return &materials;
     }
 
@@ -81,7 +81,7 @@ class World {
      * @param material_id 
      * @return const Material* corresponding material
      */
-    const Material *get_material(int material_id) const;
+    const terrain::Material *get_material(int material_id) const;
 
     /**
      * @brief Load materials from json data
@@ -104,16 +104,14 @@ class World {
                          std::vector<glm::vec3> &indexed_colors,
                          std::vector<glm::vec3> &indexed_normals) const;
     // terrain in the world
-    Terrain terrain_main;
+    terrain::Terrain terrain_main;
     
    private:
     // materials that exist
-    std::map<int, const Material> materials;
+    std::map<int, const terrain::Material> materials;
 
     // all of these things are for saving
     // const char *path;
     // const char *name;
     // const char *another_name;
 };
-
-#endif  // __WORLD_HPP__

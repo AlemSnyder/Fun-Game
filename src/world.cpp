@@ -26,12 +26,12 @@
 
 #include "entity/mesh.hpp"
 #include "world.hpp"
-#include "Terrain/terrain.hpp"
+#include "terrain/terrain.hpp"
 //void World::save(){
 //    terrain_main.qb_save(path);
 //}
 
-const Material* World::get_material(int material_id) const {
+const terrain::Material* World::get_material(int material_id) const {
     return &materials.at(material_id);
 }
 
@@ -45,7 +45,7 @@ void World::init_materials(Json::Value material_data){
             uint32_t color = std::stoll((*element_it)["colors"][i]["hex"].asCString(), 0, 16);
             color_vector.push_back(std::make_pair(string, color));
         }
-        Material mat{ color_vector, // color
+        terrain::Material mat{ color_vector, // color
                       (uint8_t)(*element_it)["speed"].asInt(), // speed_multiplier
                       (*element_it)["solid"].asBool(), // solid
                       (uint8_t)(*element_it)["id"].asInt(), // element_id
@@ -79,7 +79,7 @@ World::World(){
     biome_file >> biome_data;
 
     std::cout << "start of terrain\n";
-    terrain_main = Terrain();
+    terrain_main = terrain::Terrain();
 
 }
 
@@ -97,7 +97,7 @@ World::World(const char * path){
 
     std::cout << "start of terrain\n";
     
-    terrain_main = Terrain(path, &materials);
+    terrain_main = terrain::Terrain(path, &materials);
 
 }
 
@@ -111,7 +111,9 @@ World::World(Json::Value materials_json, Json::Value biome_data){
 
     std::cout << "start of terrain\n";
 
-    terrain_main = Terrain(6, 6, 32, 128, 5, &materials, biome_data["Biome_1"], grass_grad_data, materials_json["Dirt"]["Gradient"]["midpoint"].asInt());
+    terrain_main = terrain::Terrain(6, 6, 32, 128, 5, &materials, biome_data["Biome_1"],
+                                    grass_grad_data,
+                                    materials_json["Dirt"]["Gradient"]["midpoint"].asInt());
 }
 
 World::World(Json::Value biome_data, int tile_type){
@@ -121,5 +123,5 @@ World::World(Json::Value biome_data, int tile_type){
 
     init_materials(materials_json);
 
-    terrain_main = Terrain(3, 3, 32, 128, 5, tile_type, &materials, biome_data);
+    terrain_main = terrain::Terrain(3, 3, 32, 128, 5, tile_type, &materials, biome_data);
 }

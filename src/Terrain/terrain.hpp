@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef __TERRAIN_TERRAIN_HPP__
-#define __TERRAIN_TERRAIN_HPP__
+#pragma once
+
 #include <stdio.h>
 
 #include <array>
@@ -36,14 +36,16 @@
 #include <vector>
 
 #include "terrain_generation/land_generator.hpp"
-#include "terrain_generation/material.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
+#include "material.hpp"
 #include "chunk.hpp"
 #include "node.hpp"
 #include "node_group.hpp"
 #include "tile.hpp"
 #include "unit_path.hpp"
+
+namespace terrain {
 
 // Forward declaration of Chunk
 class Chunk;
@@ -261,7 +263,7 @@ class Terrain {
      * @param area_y area y coordinate
      * @param gen Generator object that generates tile types
      */
-    void init_area(int area_x, int area_y, LandGenerator gen);
+    void init_area(int area_x, int area_y, terrain_generation::LandGenerator gen);
     /**
      * @brief initialized terrain
      * @deprecated should only be used to implicitly initialize terrain
@@ -564,7 +566,7 @@ class Terrain {
      * @param x macro map x position
      * @param y macro map y position
      */
-    inline void stamp_tile_region(TileStamp tStamp, int x, int y) {
+    inline void stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y) {
     stamp_tile_region(
         tStamp.x_start + x * Area_size + Area_size / 2,
         tStamp.y_start + y * Area_size + Area_size / 2, tStamp.z_start,
@@ -812,4 +814,4 @@ class Terrain {
                       int y, int guess) const;
 };
 
-#endif
+}

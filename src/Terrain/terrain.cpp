@@ -12,12 +12,14 @@
 #include "../util/time.hpp"
 #include "json/json.h"
 #include "terrain_generation/land_generator.hpp"
-#include "terrain_generation/material.hpp"
+#include "material.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
 #include "chunk.hpp"
 #include "node.hpp"
 #include "tile.hpp"
+
+namespace terrain {
 
 int Terrain::Area_size = 32;
 
@@ -120,12 +122,12 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_,
     std::cout << "start of land Generator" << std::endl;
 
     // create a map of int -> LandGenerator
-    std::map<int, LandGenerator> land_generators;
+    std::map<int, terrain_generation::LandGenerator> land_generators;
 
     // for tile macro in data biome
     for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
         // create a land generator for each tile macro
-        LandGenerator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
+        terrain_generation::LandGenerator gen(materials, biome_data["Tile_Macros"][i]["Land_Data"]);
         land_generators.insert(std::make_pair(i, gen));
     }
 
@@ -157,7 +159,7 @@ void Terrain::init(int x, int y, int Area_size_, int z, int seed_,
               << " Total time Terrain_init" << std::endl;
 }
 
-void Terrain::init_area(int area_x, int area_y, LandGenerator gen) {
+void Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen) {
     // int count = 0;
     while (!gen.empty()) {
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
@@ -475,7 +477,7 @@ std::vector<int> Terrain::generate_macro_map(unsigned int size_x,
     int range = terrain_data["Range"].asInt();
     int spacing = terrain_data["Spacing"].asInt();
     out.resize(size_x * size_y, background);
-    NoiseGenerator ng = NoiseGenerator(numOctaves, persistance, 3);
+    terrain_generation::NoiseGenerator ng = terrain_generation::NoiseGenerator(numOctaves, persistance, 3);
 
     for (unsigned int i = 0; i < out.size(); i++) {
         auto [x, y, z] = sop(i, size_x, size_y, 1);
@@ -971,3 +973,5 @@ std::pair<Tile *, Tile *> Terrain::get_start_end_test() {
     }
     return out;
 }
+
+} // namespace terrain

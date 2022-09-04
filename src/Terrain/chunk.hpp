@@ -29,6 +29,7 @@
 #include "node_group.hpp"
 #include "terrain.hpp"
 
+namespace terrain {
 
 class Terrain;
 
@@ -70,3 +71,5 @@ private:
     bool contains_nodeGroup(NodeGroup*);
     void R_merge(NodeGroup &g1, std::set<NodeGroup*>& to_merge);
 };
+
+}

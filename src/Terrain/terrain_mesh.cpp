@@ -9,6 +9,8 @@
 
 #include "terrain_mesh.hpp"
 
+namespace terrain {
+
 TerrainMesh::TerrainMesh(std::vector<unsigned short> &indices,
                 std::vector<glm::vec3> &indexed_vertices,
                 std::vector<glm::vec3> &indexed_colors,
@@ -40,3 +42,5 @@ TerrainMesh::TerrainMesh(std::vector<unsigned short> &indices,
 
         num_vertices_ = indices.size();
     }
+
+}

@@ -13,6 +13,8 @@
 
 #pragma once
 
+namespace terrain {
+
 class StaticMesh : public MeshLoader::MultiComplexMesh {
 private:
     GLuint vertex_buffer_;
@@ -87,3 +89,5 @@ public:
         return num_models_;
     }
 };
+
+}

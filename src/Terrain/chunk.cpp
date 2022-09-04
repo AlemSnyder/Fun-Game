@@ -3,6 +3,8 @@
 
 #include "terrain.hpp"
 
+namespace terrain {
+
 Chunk::Chunk(int bx, int by, int bz, Terrain * ter){
     ter_ = ter;
     Cx_=bx;
@@ -91,4 +93,6 @@ inline bool Chunk::contains_nodeGroup(NodeGroup* NG){
     return (NG->get_center_x() >= size * Cx_ && NG->get_center_x() < size*(1+Cx_) &&
             NG->get_center_y() >= size * Cy_ && NG->get_center_y() < size*(1+Cy_) &&
             NG->get_center_z() >= size * Cz_ && NG->get_center_z() < size*(1+Cz_));
+}
+
 }
