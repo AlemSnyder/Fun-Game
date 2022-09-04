@@ -23,7 +23,7 @@
 #include "shader.hpp"
 #include "shadow_map.hpp"
 
-namespace GUI {
+namespace gui {
 
 int GUITest(World world) {
     std::vector<std::uint16_t> indices;
@@ -231,6 +231,6 @@ int GUITest(World world) {
     return 0;
 }
 
-}  // namespace GUI
+}  // namespace gui
 
 #endif

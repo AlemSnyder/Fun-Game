@@ -9,7 +9,7 @@
 // Include GLM
 #include <glm/glm.hpp>
 
-#include "../GUI/meshloader.hpp"
+#include "../gui/meshloader.hpp"
 
 #pragma once
 

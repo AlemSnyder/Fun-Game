@@ -17,9 +17,9 @@
 
 #include "argh.h"
 
-#include "GUI/controls.hpp"
-#include "GUI/shader.hpp"
-#include "GUI/main_gui.hpp"
+#include "gui/controls.hpp"
+#include "gui/shader.hpp"
+#include "gui/main_gui.hpp"
 #include "terrain/terrain.hpp"
 #include "world.hpp"
 #include "entity/mesh.hpp"
@@ -166,7 +166,7 @@ int GUITest(const char *path)
     std::vector<glm::vec3> indexed_normals;
     World world(path);
 
-    return GUI::GUITest(world);
+    return gui::GUITest(world);
 }
 
 int main(int argc, char **argv)

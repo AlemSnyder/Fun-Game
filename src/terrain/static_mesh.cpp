@@ -9,7 +9,7 @@
 // Include GLM
 #include <glm/glm.hpp>
 
-#include "../GUI/meshloader.hpp"
+#include "../gui/meshloader.hpp"
 #include "static_mesh.hpp"
 
 namespace terrain {
