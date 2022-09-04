@@ -18,9 +18,7 @@
  * @ingroup entity
  *
  */
-
-#ifndef __ENTITY_MESH_HPP__
-#define __ENTITY_MESH_HPP__
+#pragma once
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -292,5 +290,3 @@ class Mesh {
 };  // class Mesh
 
 }   // namespace entity
-
-#endif

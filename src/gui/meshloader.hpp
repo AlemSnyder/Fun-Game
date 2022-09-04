@@ -1,14 +1,13 @@
+#pragma once
+
 // Include GLEW
 #include <GL/glew.h>
-
-#ifndef __GUI_MESH_LOADER_HPP__
-#define __GUI_MESH_LOADER_HPP__
 
 namespace MeshLoader{
 
 /**
  * @brief virtual class for non-indexed mesh
- * 
+ *
  * @details This will be used so that multiple different class types can all
  * be used by a generic mesh rendering function.
  */
@@ -22,7 +21,7 @@ public:
 
 /**
  * @brief virtual class for indexed mesh
- * 
+ *
  * @details This will be used so that multiple different class types can all
  * be used by a generic mesh rendering function.
  */
@@ -38,7 +37,7 @@ public:
 
 /**
  * @brief virtual class for non-indexed mesh
- * 
+ *
  * @details This adds color, and normals to the mesh.
  */
 class SingleComplexMesh : public SingleMesh{
@@ -49,7 +48,7 @@ public:
 
 /**
  * @brief virtual class for indexed mesh
- * 
+ *
  * @details This adds color, and normals to the mesh.
  */
 class MultiComplexMesh : public MultiMesh {
@@ -60,4 +59,3 @@ public:
 
 } // namespace MeshLoader
 
-#endif

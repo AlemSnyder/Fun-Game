@@ -1,5 +1,4 @@
-#ifndef __GUI_MAIN_GUI_HPP__
-#define __GUI_MAIN_GUI_HPP__
+#pragma once
 
 #include <vector>
 
@@ -232,5 +231,3 @@ int GUITest(World world) {
 }
 
 }  // namespace gui
-
-#endif

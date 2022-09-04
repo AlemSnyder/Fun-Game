@@ -19,9 +19,7 @@
  * @ingroup GUI
  *
  */
-
-#ifndef __GUI_RENDER_HPP__
-#define __GUI_RENDER_HPP__
+#pragma once
 
 // Include GLEW
 #include <GL/glew.h>
@@ -39,7 +37,7 @@
  * @details MainRenderer renders the meshes given to it to the screen.
  * this class handles the light direction, applied the meshes, and loading
  * shaders.
- * 
+ *
  */
 class MainRenderer {
    private:
@@ -67,7 +65,7 @@ class MainRenderer {
    public:
     /**
      * @brief Construct a new Main Renderer object
-     * 
+     *
      */
     MainRenderer();
 
@@ -75,45 +73,44 @@ class MainRenderer {
 
     /**
      * @brief adds a non-indexed mesh so it will cast a shadow
-     * 
+     *
      * @param mesh the mesh to add
      */
     void add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh);
 
     /**
      * @brief adds an indexed mesh so it will cast a shadow
-     * 
+     *
      * @param mesh the mesh to add
      */
     void add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh);
 
     /**
      * @brief Set the depth texture ID
-     * 
+     *
      * @param texture_id the depth texture ID
      */
     void set_depth_texture(GLuint texture_id);
 
     /**
      * @brief Set the light direction vector
-     * 
+     *
      * @param light_direction the direction of the light
      */
     void set_light_direction(glm::vec3 light_direction);
 
     /**
      * @brief Set the depth projection matrix
-     * 
+     *
      * @param depth_projection_matrix the projection matrix
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
     /**
      * @brief renders the given meshes
-     * 
+     *
      * @param window the OpenGL window
      */
     void render(GLFWwindow* window) const;
 };
 
-#endif

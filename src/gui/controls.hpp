@@ -1,5 +1,11 @@
-#ifndef __GUI_CONTROLS_HPP__
-#define __GUI_CONTROLS_HPP__
+#pragma once
+
+// Include GLFW
+#include <GLFW/glfw3.h>
+
+// Include GLM
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace controls{
 
@@ -28,4 +34,3 @@ glm::mat4 get_projection_matrix();
 
 } // namespace controls
 
-#endif
