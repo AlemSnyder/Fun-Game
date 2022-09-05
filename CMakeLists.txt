@@ -49,5 +49,18 @@ else()
 endif()
 
 # Copy resources and data
-file(COPY "resources" DESTINATION "${CMAKE_BINARY_DIR}")
-file(COPY "data" DESTINATION "${CMAKE_BINARY_DIR}")
+add_custom_target(resources
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources
+    COMMENT "copying ${CMAKE_SOURCE_DIR}/resources to ${CMAKE_BINARY_DIR}/resources"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+add_custom_target(data
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/data
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data
+    COMMENT "copying ${CMAKE_SOURCE_DIR}/data to ${CMAKE_BINARY_DIR}/data"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+add_dependencies(Fun_Game resources)
+add_dependencies(Fun_Game data)
