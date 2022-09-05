@@ -64,6 +64,9 @@ _deps
 _log
 .cmake
 
+build/*
+!build/README.txt
+
 #
 # Other
 #
