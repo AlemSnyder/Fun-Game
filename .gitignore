@@ -62,12 +62,11 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 _log
+.cmake
 
 #
-# Other 
+# Other
 #
 
 # this is a lot of qb files
 SavedTerrain/*
-
-build/*
