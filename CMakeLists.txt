@@ -1,36 +1,32 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# prefer newer OpenGL
-# https://cmake.org/cmake/help/latest/policy/CMP0072.html
-cmake_policy(SET CMP0072 NEW)
-
 # set the project name
 project(FunGame)
-
-include_directories("packages")
-
-# Find GL ../packages
-find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(glm REQUIRED)
 
 # add the executable
 file(GLOB SOURCES1 "src/*.cpp")
 file(GLOB SOURCES2 "src/**/*.cpp")
 file(GLOB SOURCES3 "src/**/**/*.cpp")
 
-file(GLOB SOURCES4 "packages/*.cpp")
-file(GLOB SOURCES5 "packages/**/*.cpp")
-file(GLOB SOURCES6 "packages/**/**/*.cpp")
+file(GLOB SOURCES4 "vendor/*.cpp")
+file(GLOB SOURCES5 "vendor/**/*.cpp")
+file(GLOB SOURCES6 "vendor/**/**/*.cpp")
 
 add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6})
 
-#target_include_directories(FunGame ${GLM_INCLUDE_DIRS})
+# prefer newer OpenGL
+# https://cmake.org/cmake/help/latest/policy/CMP0072.html
+cmake_policy(SET CMP0072 NEW)
+
+# Find GL packages
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(glm REQUIRED)
 
 target_link_libraries(FunGame glfw)
 target_link_libraries(FunGame OpenGL::GL)
@@ -40,6 +36,9 @@ if (WIN32)
 else()
   target_link_libraries(FunGame glm::glm)
 endif()
+
+# Add vendored packages
+include_directories("vendor")
 
 # Set warning options
 if(MSVC)
