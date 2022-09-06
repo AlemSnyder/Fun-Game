@@ -12,8 +12,8 @@ std::filesystem::path get_root_path();
  * @brief Get the path to a data file
  */
 inline std::filesystem::path
-get_data_path(std::filesystem::path path) {
-    return get_root_path() / "data" / path;
+get_data_path() {
+    return get_root_path() / "data";
 }
 
 /**
@@ -21,15 +21,15 @@ get_data_path(std::filesystem::path path) {
  */
 inline std::ifstream
 open_data_file(std::filesystem::path path) {
-    return std::ifstream(get_data_path(path));
+    return std::ifstream(get_data_path() / path);
 }
 
 /**
  * @brief Get the path to a resource file
  */
 inline std::filesystem::path
-get_resources_path(std::filesystem::path path) {
-    return get_root_path() / "resources" / path;
+get_resources_path() {
+    return get_root_path() / "resources";
 }
 
 /**
@@ -37,7 +37,7 @@ get_resources_path(std::filesystem::path path) {
  */
 inline std::ifstream
 open_resource_file(std::filesystem::path path) {
-    return std::ifstream(get_resources_path(path));
+    return std::ifstream(get_resources_path() / path);
 }
 
 } // namespace files
