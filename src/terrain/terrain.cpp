@@ -39,7 +39,7 @@ Terrain::Terrain(
         grass_mid_ = 0;
     }
     for (size_t i = 0; i < grass_grad_data.size(); i++) {
-        if (i == (size_t)grass_mid_) {
+        if (i == static_cast<size_t>(grass_mid_)) {
             grass_mid = grass_colors.size();
         }
         for (int j = 0; j < grass_grad_data[i]; j++) {
@@ -73,7 +73,9 @@ Terrain::init(
     );
 }
 
-Terrain::Terrain(const std::string path, const std::map<int, const Material>* material) {
+Terrain::Terrain(
+    const std::string path, const std::map<int, const Material>* material
+) {
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials;
     for (auto it = material->begin(); it != material->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -394,8 +396,8 @@ Terrain::stamp_tile_region(
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
                     if (elements_can_stamp.find(std::make_pair(
-                            (int)tile->get_material()->element_id,
-                            (int)tile->get_color_id()
+                            static_cast<int>(tile->get_material()->element_id),
+                            static_cast<int>(tile->get_color_id())
                         ))
                         != elements_can_stamp.end()) {
                         set_tile_material(tile, mat, color_id);
@@ -527,8 +529,8 @@ Terrain::generate_macro_map(
 
     for (unsigned int i = 0; i < out.size(); i++) {
         auto [x, y, z] = sop(i, size_x, size_y, 1);
-        auto p = ng.getValueNoise((double)x * spacing, (double)y * spacing);
-        out[i] = (int)(pow((p + 1), 2) * range);
+        auto p = ng.getValueNoise(static_cast<double>(x) * spacing, static_cast<double>(y) * spacing);
+        out[i] = static_cast<int>((p + 1) * (p + 1) * range);
     }
     for (unsigned int i = 0; i < size_x; i++) {
         for (unsigned int j = 0; j < size_y; j++) {

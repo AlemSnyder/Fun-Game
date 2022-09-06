@@ -26,7 +26,7 @@ terrain_generation::NoiseGenerator::noise_(int i, int x, int y) {
     n = (n << 13) ^ n;
     int a = primes[i][0], b = primes[i][1], c = primes[i][2];
     int t = (n * (n * n * a + b) + c) & 0x7fffffff;
-    return 1.0 - (double)(t) / 1073741824.0;
+    return 1.0 - static_cast<double>(t) / 1073741824.0;
 }
 
 double

@@ -48,7 +48,7 @@ from_qb(
 
     int8_t name_len;
     READ<int8_t>(name_len, file);
-    std::cout << "name length: " << (int)name_len << std::endl;
+    std::cout << "name length: " << static_cast<int>(name_len) << std::endl;
     char* name = new char[name_len];
     fread(name, sizeof(char), name_len, file);
     std::string string_name(name);
@@ -77,7 +77,8 @@ from_qb(
                     // int32_t* color = (int32_t*) malloc(32);
                     fread(v, sizeof(uint8_t), 4, file);
                     // fread(&color, 32, 1, file); // read the color
-                    data[(x * (int)size[1] + y) * size[2] + z] = compress_color(v);
+                    data[(x * static_cast<int>(size[1]) + y) * size[2] + z] =
+                        compress_color(v);
                     tiles_read++;
                 }
     }
