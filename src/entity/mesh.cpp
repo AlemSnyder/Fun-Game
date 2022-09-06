@@ -18,14 +18,15 @@
 #include <glm/glm.hpp>
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace entity {
 
-Mesh::Mesh(std::string path) {
-    load_from_qb_(path);
+Mesh::Mesh(std::filesystem::path path) {
+    load_from_qb_(path.string());
 }
 
 void
