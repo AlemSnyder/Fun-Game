@@ -743,7 +743,7 @@ class Terrain {
      * @return int success status
      */
     int qb_read(
-        const char* path,
+        const std::string path,
         const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
     );
     /**

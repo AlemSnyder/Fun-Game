@@ -53,7 +53,7 @@ READ(T& v, FILE* file) {
 }
 
 int from_qb(
-    const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
+    const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
     std::vector<uint32_t>& size
 );
 
@@ -73,7 +73,7 @@ export_color(uint32_t tile_color, uint8_t color[4]) {
 
 template <typename T>
 int
-to_qb(const char* path, T voxel_object) {
+to_qb(const std::string path, T voxel_object) {
     // Saves the tiles in this to the path specified
     FILE* file;
     file = fopen(path.c_str(), "wb");
