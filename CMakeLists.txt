@@ -12,9 +12,9 @@ file(GLOB SOURCES1 "src/*.cpp")
 file(GLOB SOURCES2 "src/**/*.cpp")
 file(GLOB SOURCES3 "src/**/**/*.cpp")
 
-file(GLOB SOURCES4 "vendor/*.cpp")
-file(GLOB SOURCES5 "vendor/**/*.cpp")
-file(GLOB SOURCES6 "vendor/**/**/*.cpp")
+file(GLOB SOURCES4 "vendor/*.c*")
+file(GLOB SOURCES5 "vendor/**/*.c*")
+file(GLOB SOURCES6 "vendor/**/**/*.c*")
 
 add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6})
 

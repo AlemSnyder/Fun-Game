@@ -3,6 +3,7 @@
 #include "gui/main_gui.hpp"
 #include "gui/shader.hpp"
 #include "terrain/terrain.hpp"
+#include "util/files.hpp"
 #include "world.hpp"
 
 #include <argh.h>
@@ -186,6 +187,8 @@ main(int argc, char** argv) {
     std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and
     path out = " << path_out << std::endl;
     */
+
+    std::cout << "Running from " << files::get_root_path() << "." << std::endl;
 
     if (argc == 1) {
         return GUITest("./data/Models/DefaultTree.qb");
