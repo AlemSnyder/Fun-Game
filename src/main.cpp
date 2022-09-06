@@ -1,3 +1,4 @@
+#include "config.h"
 #include "entity/mesh.hpp"
 #include "gui/controls.hpp"
 #include "gui/main_gui.hpp"
@@ -193,6 +194,8 @@ main(int argc, char** argv) {
     path out = " << path_out << std::endl;
     */
 
+    std::cout << "FunGame v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
+              << VERSION_PATCH << std::endl;
     std::cout << "Running from " << files::get_root_path() << "." << std::endl;
 
     if (argc == 1) {
