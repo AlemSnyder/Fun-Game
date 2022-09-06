@@ -41,22 +41,21 @@ enum class DirectionFlags : uint8_t {
 };
 
 inline DirectionFlags
-operator|(DirectionFlags lhs, DirectionFlags rhs)
-{
-    return static_cast<DirectionFlags>(static_cast<uint8_t>(lhs)
-                                       | static_cast<uint8_t>(rhs));
+operator|(DirectionFlags lhs, DirectionFlags rhs) {
+    return static_cast<DirectionFlags>(
+        static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)
+    );
 }
 
 inline DirectionFlags
-operator&(DirectionFlags lhs, DirectionFlags rhs)
-{
-    return static_cast<DirectionFlags>(static_cast<uint8_t>(lhs)
-                                       & static_cast<uint8_t>(rhs));
+operator&(DirectionFlags lhs, DirectionFlags rhs) {
+    return static_cast<DirectionFlags>(
+        static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)
+    );
 }
 
 inline DirectionFlags
-operator~(DirectionFlags val)
-{
+operator~(DirectionFlags val) {
     return static_cast<DirectionFlags>(~static_cast<uint8_t>(val));
 }
 
@@ -94,45 +93,38 @@ class UnitPath {
     UnitPath(DirectionFlags type_) : type(type_) {}
 
     // is the path open
-    inline bool is_open() const
-    {
+    inline bool is_open() const {
         return ((DirectionFlags::OPEN & type) == DirectionFlags::OPEN);
     }
 
     // is the path vertical, and diagonal
-    inline bool is_up_diagonal() const
-    {
+    inline bool is_up_diagonal() const {
         return ((DirectionFlags::UP_AND_DIAGONAL & type))
                == DirectionFlags::UP_AND_DIAGONAL;
     }
 
     // is the path vertical, but not diagonal
-    inline bool is_up_over() const
-    {
+    inline bool is_up_over() const {
         return ((DirectionFlags::UP_AND_OVER & type)) == DirectionFlags::UP_AND_OVER;
     }
 
     // is the path diagonal, and horizontal
-    inline bool is_diagonal() const
-    {
+    inline bool is_diagonal() const {
         return ((DirectionFlags::HORIZONTAL2 & type)) == DirectionFlags::HORIZONTAL2;
     }
 
     // is the path vertical
-    inline bool is_up() const
-    {
+    inline bool is_up() const {
         return ((DirectionFlags::VERTICAL & type) == DirectionFlags::VERTICAL);
     }
 
     // is the path horizontal
-    inline bool is_level() const
-    {
+    inline bool is_level() const {
         return ((DirectionFlags::VERTICAL & type) == DirectionFlags::NONE);
     }
 
     // set the openness to closed
-    inline void close()
-    {
+    inline void close() {
         type = type
                & (DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
                   | DirectionFlags::VERTICAL);
@@ -150,15 +142,13 @@ class UnitPath {
 
     // is the path compatible with the given test
     // is type a subset of test
-    inline bool compatible(uint8_t test) const
-    {
+    inline bool compatible(uint8_t test) const {
         return compatible(static_cast<DirectionFlags>(test));
     }
 
     bool operator==(const UnitPath other) const { return other.type == this->type; }
 
-    bool operator==(const uint8_t other) const
-    {
+    bool operator==(const uint8_t other) const {
         return static_cast<DirectionFlags>(other) == this->type;
     }
 

@@ -7,10 +7,10 @@
 namespace time_util {
 
 inline int
-get_time()
-{
+get_time() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
-               std::chrono::system_clock::now().time_since_epoch())
+               std::chrono::system_clock::now().time_since_epoch()
+    )
         .count();
 }
 

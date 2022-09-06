@@ -1,18 +1,3 @@
-#include <stdint.h>
-
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <string>
-
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
-#include "argh.h"
 #include "entity/mesh.hpp"
 #include "gui/controls.hpp"
 #include "gui/main_gui.hpp"
@@ -20,16 +5,26 @@
 #include "terrain/terrain.hpp"
 #include "world.hpp"
 
+#include <argh.h>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+
+#include <stdint.h>
+
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
 
 int
-test1(const std::string path)
-{
+test1(const char* path) {
     // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
     // C/gcc/terrain_generation";
 
@@ -49,8 +44,7 @@ test1(const std::string path)
 }
 
 int
-test2()
-{
+test2() {
     Json::Value biome_data;
     std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
@@ -61,8 +55,7 @@ test2()
 }
 
 int
-save_test(const std::string path, const std::string save_path)
-{
+save_test(const char* path, const char* save_path) {
     // path = "../SavedTerrain/pathfinder_input_4.qb";
     // save_path = "../SavedTerrain/save_test.qb";
 
@@ -74,8 +67,7 @@ save_test(const std::string path, const std::string save_path)
 }
 
 void
-save_terrain(Json::Value biome_data, std::string biome_name)
-{
+save_terrain(Json::Value biome_data, std::string biome_name) {
     World world;
 
     std::cout << "Saving " << biome_data["Tile_Data"].size() << " tile types"
@@ -84,8 +76,9 @@ save_terrain(Json::Value biome_data, std::string biome_name)
     // std::cout << biome_data["Tile_Data"] << std::endl;
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-        world.terrain_main.init(3, 3, 32, 128, 5, (int)i, world.get_materials(),
-                                biome_data);
+        world.terrain_main.init(
+            3, 3, 32, 128, 5, (int)i, world.get_materials(), biome_data
+        );
         std::string path("../SavedTerrain/");
         path += biome_name;
         path += "/biome_";
@@ -99,8 +92,7 @@ save_terrain(Json::Value biome_data, std::string biome_name)
 }
 
 void
-save_all_terrain(Json::Value biome_data)
-{
+save_all_terrain(Json::Value biome_data) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
         save_terrain((*biome_type), biome_type.key().asCString());
@@ -108,8 +100,7 @@ save_all_terrain(Json::Value biome_data)
 }
 
 int
-path_finder_test(const std::string path, const std::string save_path)
-{
+path_finder_test(const char* path, const char* save_path) {
     // path = "../SavedTerrain/pathfinder_input.qb";
     // save_path = "../SavedTerrain/pathfinder_output.qb";
 
@@ -148,11 +139,11 @@ path_finder_test(const std::string path, const std::string save_path)
 }
 
 void
-get_mesh(const std::string path, std::vector<std::uint16_t>& indices,
-         std::vector<glm::vec3>& indexed_vertices,
-         std::vector<glm::vec3>& indexed_colors,
-         std::vector<glm::vec3>& indexed_normals)
-{
+get_mesh(
+    const char* path, std::vector<std::uint16_t>& indices,
+    std::vector<glm::vec3>& indexed_vertices, std::vector<glm::vec3>& indexed_colors,
+    std::vector<glm::vec3>& indexed_normals
+) {
     World world(path);
     // World world(path);
     std::cout << "read from file" << std::endl;
@@ -161,8 +152,7 @@ get_mesh(const std::string path, std::vector<std::uint16_t>& indices,
 }
 
 int
-GUITest(const std::string path)
-{
+GUITest(const char* path) {
     std::vector<std::uint16_t> indices;
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
@@ -173,8 +163,7 @@ GUITest(const std::string path)
 }
 
 int
-main(int argc, char** argv)
-{
+main(int argc, char** argv) {
     argh::parser cmdl;
     cmdl.add_params({"-pi", "--path-in", "-po", "--path-out"});
     cmdl.add_param("biome-name");

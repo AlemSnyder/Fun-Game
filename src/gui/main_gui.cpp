@@ -1,14 +1,5 @@
 #include "main_gui.hpp"
 
-#include <vector>
-
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "../entity/mesh.hpp"
 #include "../terrain/static_mesh.hpp"
 #include "../terrain/terrain_mesh.hpp"
@@ -18,15 +9,18 @@
 #include "shader.hpp"
 #include "shadow_map.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <vector>
+
 namespace gui {
 
 int
-GUITest(World world)
-{
+GUITest(World world) {
     std::vector<std::uint16_t> indices;
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
@@ -39,8 +33,9 @@ GUITest(World world)
     std::vector<glm::vec3> indexed_colors_tree;
     std::vector<glm::vec3> indexed_normals_tree;
     entity::Mesh mesh("./data/models/DefaultTree.qb");
-    mesh.get_mesh(indices_tree, indexed_vertices_tree, indexed_colors_tree,
-                  indexed_normals_tree);
+    mesh.get_mesh(
+        indices_tree, indexed_vertices_tree, indexed_colors_tree, indexed_normals_tree
+    );
 
     // Initialise GLFW
     if (!glfwInit()) {
@@ -52,17 +47,22 @@ GUITest(World world)
     glfwWindowHint(GLFW_SAMPLES, 4);               // anti-aliasing of 4
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // set Major
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // and Minor version
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
-                   GL_TRUE); // To make MacOS happy; should not be needed
-    glfwWindowHint(GLFW_OPENGL_PROFILE,
-                   GLFW_OPENGL_CORE_PROFILE); // somehow turning on core profiling
+    glfwWindowHint(
+        GLFW_OPENGL_FORWARD_COMPAT,
+        GL_TRUE
+    ); // To make MacOS happy; should not be needed
+    glfwWindowHint(
+        GLFW_OPENGL_PROFILE,
+        GLFW_OPENGL_CORE_PROFILE
+    ); // somehow turning on core profiling
 
     // Open a window and create its OpenGL context
     // We would expect width and height to be 1024 and 768
     int windowFrameWidth = 1024;
     int windowFrameHeight = 768;
-    GLFWwindow* window = glfwCreateWindow(windowFrameWidth, windowFrameHeight,
-                                          "Mane Window", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(
+        windowFrameWidth, windowFrameHeight, "Mane Window", NULL, NULL
+    );
     if (window == NULL) {
         std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are "
                      "not 3.3 compatible. Try the 2.1 version of the tutorials."
@@ -115,8 +115,9 @@ GUITest(World world)
     glBindVertexArray(VertexArrayID);
 
     // The mesh of the terrain
-    terrain::TerrainMesh terrain_mesh(indices, indexed_vertices, indexed_colors,
-                                      indexed_normals);
+    terrain::TerrainMesh terrain_mesh(
+        indices, indexed_vertices, indexed_colors, indexed_normals
+    );
 
     // The above is for the wold the below is for trees
 
@@ -134,9 +135,10 @@ GUITest(World world)
     std::cout << "Number of models: " << model_matrices.size() << std::endl;
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
-    terrain::StaticMesh treesMesh(indices_tree, indexed_vertices_tree,
-                                  indexed_colors_tree, indexed_normals_tree,
-                                  model_matrices);
+    terrain::StaticMesh treesMesh(
+        indices_tree, indexed_vertices_tree, indexed_colors_tree, indexed_normals_tree,
+        model_matrices
+    );
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
@@ -147,12 +149,15 @@ GUITest(World world)
     GLuint quad_vertexbuffer;
     glGenBuffers(1, &quad_vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data),
-                 g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+    glBufferData(
+        GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data,
+        GL_STATIC_DRAW
+    );
 
     // Create and compile our GLSL program from the shaders
-    GLuint quad_programID = load_shaders("./resources/shaders/Passthrough.vert",
-                                         "./resources/shaders/SimpleTexture.frag");
+    GLuint quad_programID = load_shaders(
+        "./resources/shaders/Passthrough.vert", "./resources/shaders/SimpleTexture.frag"
+    );
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
     glm::vec3 light_direction =
@@ -194,13 +199,14 @@ GUITest(World world)
         // first attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-        glVertexAttribPointer(0,        // attribute 0. No particular reason for 0,
-                                        // but must match the layout in the shader.
-                              3,        // size
-                              GL_FLOAT, // type
-                              GL_FALSE, // normalized?
-                              0,        // stride
-                              (void*)0  // array buffer offset
+        glVertexAttribPointer(
+            0,        // attribute 0. No particular reason for 0,
+                      // but must match the layout in the shader.
+            3,        // size
+            GL_FLOAT, // type
+            GL_FALSE, // normalized?
+            0,        // stride
+            (void*)0  // array buffer offset
         );
 
         // Draw the triangle !

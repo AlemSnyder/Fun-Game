@@ -9,8 +9,7 @@
 #include <vector>
 
 GLuint
-load_shaders(const std::string vertex_file, const std::string fragment_file)
-{
+load_shaders(const char* vertex_file, const char* fragment_file) {
     // get the paths
     std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);
     std::filesystem::path fragment_file_path = std::filesystem::absolute(fragment_file);
@@ -58,8 +57,9 @@ load_shaders(const std::string vertex_file, const std::string fragment_file)
     glGetShaderiv(vertex_shader_ID, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
         std::vector<char> vertex_shader_error_message(info_log_length + 1);
-        glGetShaderInfoLog(vertex_shader_ID, info_log_length, NULL,
-                           &vertex_shader_error_message[0]);
+        glGetShaderInfoLog(
+            vertex_shader_ID, info_log_length, NULL, &vertex_shader_error_message[0]
+        );
         printf("%s\n", &vertex_shader_error_message[0]);
     }
 
@@ -74,8 +74,9 @@ load_shaders(const std::string vertex_file, const std::string fragment_file)
     glGetShaderiv(fragment_shader_ID, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
         std::vector<char> fragment_shader_error_message(info_log_length + 1);
-        glGetShaderInfoLog(fragment_shader_ID, info_log_length, NULL,
-                           &fragment_shader_error_message[0]);
+        glGetShaderInfoLog(
+            fragment_shader_ID, info_log_length, NULL, &fragment_shader_error_message[0]
+        );
         printf("%s\n", &fragment_shader_error_message[0]);
     }
 
@@ -91,8 +92,9 @@ load_shaders(const std::string vertex_file, const std::string fragment_file)
     glGetProgramiv(program_ID, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
         std::vector<char> program_error_message(info_log_length + 1);
-        glGetProgramInfoLog(program_ID, info_log_length, NULL,
-                            &program_error_message[0]);
+        glGetProgramInfoLog(
+            program_ID, info_log_length, NULL, &program_error_message[0]
+        );
         printf("%s\n", &program_error_message[0]);
     }
 

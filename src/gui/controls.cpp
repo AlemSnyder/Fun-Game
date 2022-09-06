@@ -1,28 +1,23 @@
-// Include math constants
-#define _USE_MATH_DEFINES
-#include <cmath>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "controls.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#define _USE_MATH_DEFINES // Include math constants
+#include <cmath>
 
 glm::mat4 view_matrix;
 glm::mat4 projection_matrix;
 
 glm::mat4
-controls::get_view_matrix()
-{
+controls::get_view_matrix() {
     return view_matrix;
 }
 
 glm::mat4
-controls::get_projection_matrix()
-{
+controls::get_projection_matrix() {
     return projection_matrix;
 }
 
@@ -41,8 +36,7 @@ float speed = 10.0f; // 3 units / second
 float mouseSpeed = 0.005f;
 
 void
-controls::computeMatricesFromInputs(GLFWwindow* window)
-{
+controls::computeMatricesFromInputs(GLFWwindow* window) {
     glfwGetWindowSize(window, &width, &height);
 
     // glfwGetTime is called only once, the first time this function is called
@@ -70,12 +64,15 @@ controls::computeMatricesFromInputs(GLFWwindow* window)
         verticalAngle = 4.4;
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
-    glm::vec3 direction(cos(verticalAngle) * sin(horizontalAngle),
-                        cos(verticalAngle) * cos(horizontalAngle), sin(verticalAngle));
+    glm::vec3 direction(
+        cos(verticalAngle) * sin(horizontalAngle),
+        cos(verticalAngle) * cos(horizontalAngle), sin(verticalAngle)
+    );
 
     // Right vector
-    glm::vec3 screen_right = glm::vec3(sin(horizontalAngle - M_PI / 2.0f),
-                                       cos(horizontalAngle - M_PI / 2.0f), 0);
+    glm::vec3 screen_right = glm::vec3(
+        sin(horizontalAngle - M_PI / 2.0f), cos(horizontalAngle - M_PI / 2.0f), 0
+    );
 
     // Up vector
     glm::vec3 screen_up = glm::cross(screen_right, direction);

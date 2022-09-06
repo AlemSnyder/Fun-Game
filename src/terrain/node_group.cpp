@@ -4,8 +4,7 @@
 
 namespace terrain {
 
-NodeGroup::NodeGroup(Tile* tile, UnitPath path_type)
-{
+NodeGroup::NodeGroup(Tile* tile, UnitPath path_type) {
     tiles.insert(tile);
     center_x = tile->get_x();
     center_y = tile->get_y();
@@ -14,8 +13,7 @@ NodeGroup::NodeGroup(Tile* tile, UnitPath path_type)
 }
 
 void
-NodeGroup::add_adjacent(NodeGroup* NG, UnitPath type)
-{
+NodeGroup::add_adjacent(NodeGroup* NG, UnitPath type) {
     if (NG != this) {
         adjacent.insert(std::make_pair(NG, type));
         NG->adjacent.insert(std::make_pair(this, type));
@@ -23,8 +21,7 @@ NodeGroup::add_adjacent(NodeGroup* NG, UnitPath type)
 }
 
 void
-NodeGroup::remove_adjacent(NodeGroup* NG)
-{
+NodeGroup::remove_adjacent(NodeGroup* NG) {
     if (NG != this) {
         adjacent.erase(NG);
         NG->adjacent.erase(this);
@@ -32,20 +29,17 @@ NodeGroup::remove_adjacent(NodeGroup* NG)
 }
 
 std::map<const NodeGroup*, UnitPath>
-NodeGroup::get_adjacent_map() const
-{
+NodeGroup::get_adjacent_map() const {
     return std::map<const NodeGroup*, UnitPath>(adjacent.begin(), adjacent.end());
 }
 
 std::map<NodeGroup*, UnitPath>
-NodeGroup::get_adjacent_map()
-{
+NodeGroup::get_adjacent_map() {
     return adjacent;
 }
 
 std::set<const NodeGroup*>
-NodeGroup::get_adjacent_clear(int path_type) const
-{
+NodeGroup::get_adjacent_clear(int path_type) const {
     std::set<const NodeGroup*> out;
 
     for (const std::pair<NodeGroup*, UnitPath> t : adjacent) {
@@ -57,14 +51,14 @@ NodeGroup::get_adjacent_clear(int path_type) const
 }
 
 std::map<NodeGroup*, UnitPath>
-NodeGroup::merge_groups(NodeGroup other)
-{
-    center_x = (center_x * tiles.size() + other.center_x * other.tiles.size())
-               / (tiles.size() + other.tiles.size());
-    center_y = (center_y * tiles.size() + other.center_y * other.tiles.size())
-               / (tiles.size() + other.tiles.size());
-    center_z = (center_z * tiles.size() + other.center_z * other.tiles.size())
-               / (tiles.size() + other.tiles.size());
+NodeGroup::merge_groups(NodeGroup other) {
+    auto size = tiles.size();
+    auto other_size = other.tiles.size();
+    auto total_size = size + other_size;
+
+    center_x = (center_x * size + other.center_x * other_size) / total_size;
+    center_y = (center_y * size + other.center_y * other_size) / total_size;
+    center_z = (center_z * size + other.center_z * other_size) / total_size;
 
     for (const Tile* t : other.get_tiles()) {
         tiles.insert(t);
@@ -73,56 +67,48 @@ NodeGroup::merge_groups(NodeGroup other)
         add_adjacent(adj.first, adj.second);
     }
     path_type_ =
-        path_type_ & other.path_type_; // restriction of the ways to get between tiles
+        path_type_ & other.path_type_; // restrict the ways to get between tiles
 
     return other.get_adjacent_map();
 }
 
 float
-NodeGroup::get_center_x()
-{
+NodeGroup::get_center_x() {
     return center_x;
 }
 
 float
-NodeGroup::get_center_y()
-{
+NodeGroup::get_center_y() {
     return center_y;
 }
 
 float
-NodeGroup::get_center_z()
-{
+NodeGroup::get_center_z() {
     return center_z;
 }
 
 std::array<float, 3>
-NodeGroup::sop() const
-{
+NodeGroup::sop() const {
     return {center_x, center_y, center_z};
 }
 
 const std::set<const Tile*, TilePCompare>
-NodeGroup::get_tiles() const
-{
+NodeGroup::get_tiles() const {
     return std::set<const Tile*, TilePCompare>(tiles.begin(), tiles.end());
 }
 
 bool
-NodeGroup::adjacent_to(NodeGroup* other) const
-{
+NodeGroup::adjacent_to(NodeGroup* other) const {
     return (adjacent.find(other)) == adjacent.end();
 }
 
 bool
-NodeGroup::operator==(const NodeGroup& other) const
-{
+NodeGroup::operator==(const NodeGroup& other) const {
     return (this == &other);
 }
 
 bool
-NodeGroup::operator>(const NodeGroup& other) const
-{
+NodeGroup::operator>(const NodeGroup& other) const {
     return ((**tiles.begin()) > **(other.tiles.begin()));
 }
 

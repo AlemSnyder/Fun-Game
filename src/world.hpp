@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include "json/json.h"
 #include "terrain/terrain.hpp"
+
+#include <json/json.h>
 
 #include <glm/glm.hpp>
 
@@ -71,8 +72,7 @@ class World {
      * @return const std::map<int, const Material>* map of materials_id to
      * materials pointer
      */
-    const std::map<int, const terrain::Material>* get_materials() const
-    {
+    const std::map<int, const terrain::Material>* get_materials() const {
         return &materials;
     }
 
@@ -100,10 +100,10 @@ class World {
      * @param indexed_colors color of vertex
      * @param indexed_normals normal of face vertex is a part of
      */
-    void get_mesh_greedy(std::vector<unsigned short>& indices,
-                         std::vector<glm::vec3>& indexed_vertices,
-                         std::vector<glm::vec3>& indexed_colors,
-                         std::vector<glm::vec3>& indexed_normals) const;
+    void get_mesh_greedy(
+        std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
+        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+    ) const;
     // terrain in the world
     terrain::Terrain terrain_main;
 

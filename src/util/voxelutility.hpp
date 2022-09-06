@@ -21,13 +21,11 @@ class VoxelObject {
 
     inline bool ok() const { return ok_; }
 
-    inline int get_position(int x, int y, int z) const
-    {
+    inline int get_position(int x, int y, int z) const {
         return ((x * size_[1] + y) * size_[2] + z);
     }
 
-    inline uint32_t get_voxel(uint32_t x, uint32_t y, uint32_t z)
-    {
+    inline uint32_t get_voxel(uint32_t x, uint32_t y, uint32_t z) {
         if ((size_[0] > x) &  // (x >= 0) &
             (size_[1] > y) &  // (y >= 0) &
             (size_[2] > z)) { //& (z >= 0)){
@@ -44,31 +42,29 @@ class VoxelObject {
 
 template <typename T>
 void
-WRITE(T v, FILE* file)
-{
+WRITE(T v, FILE* file) {
     fwrite(&v, sizeof(T), 1, file);
 }
 
 template <typename T>
 void
-READ(T& v, FILE* file)
-{
+READ(T& v, FILE* file) {
     fread(&v, sizeof(T), 1, file);
 }
 
-int from_qb(const std::string path, std::vector<uint32_t>& data,
-            std::vector<int>& center, std::vector<uint32_t>& size);
+int from_qb(
+    const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
+    std::vector<uint32_t>& size
+);
 
 inline uint32_t
-compress_color(uint8_t v[4])
-{
+compress_color(uint8_t v[4]) {
     return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16
            | (uint32_t)v[0] << 24;
 }
 
 inline void
-export_color(uint32_t tile_color, uint8_t color[4])
-{
+export_color(uint32_t tile_color, uint8_t color[4]) {
     color[0] = (tile_color >> 24) & 0xFF;
     color[1] = (tile_color >> 16) & 0xFF;
     color[2] = (tile_color >> 8) & 0xFF;
@@ -77,8 +73,7 @@ export_color(uint32_t tile_color, uint8_t color[4])
 
 template <typename T>
 int
-to_qb(const std::string path, T voxel_object)
-{
+to_qb(const char* path, T voxel_object) {
     // Saves the tiles in this to the path specified
     FILE* file;
     file = fopen(path.c_str(), "wb");

@@ -7,8 +7,7 @@ namespace terrain {
 
 template <class T>
 void
-Node<T>::init(T* tile_, float hc)
-{
+Node<T>::init(T* tile_, float hc) {
     parent_node = nullptr;
     tile = tile_;
     gCost = 0;
@@ -18,21 +17,18 @@ Node<T>::init(T* tile_, float hc)
 }
 
 template <class T>
-Node<T>::Node(T* tile_, float hc)
-{
+Node<T>::Node(T* tile_, float hc) {
     init(tile_, hc);
 }
 
 template <class T>
-Node<T>::Node()
-{
+Node<T>::Node() {
     init(nullptr, 0);
 }
 
 template <class T>
 void
-Node<T>::explore(Node<T>* parent, float gc)
-{ // explore from parent
+Node<T>::explore(Node<T>* parent, float gc) { // explore from parent
     if (explored) {
         if (gCost > gc) {
             this->parent_node = parent;
@@ -49,8 +45,7 @@ Node<T>::explore(Node<T>* parent, float gc)
 
 template <class T>
 void
-Node<T>::explore()
-{ // explore as start
+Node<T>::explore() { // explore as start
     this->parent_node = nullptr;
     gCost = 0; // distance from start should be 0 when this is the start
     fCost = gCost + hCost;
@@ -59,8 +54,7 @@ Node<T>::explore()
 
 template <class T>
 std::set<const T*>
-Node<T>::get_adjacent(int path_type) const
-{ // explore as start
+Node<T>::get_adjacent(int path_type) const { // explore as start
     return get_tile()->get_adjacent_clear(path_type);
 }
 

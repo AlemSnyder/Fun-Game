@@ -1,7 +1,7 @@
 ---
 Language: Cpp
 AccessModifierOffset: -3
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Left
 AlignConsecutiveAssignments: None
 AlignConsecutiveBitFields: None
@@ -50,7 +50,7 @@ BraceWrapping:
   SplitEmptyNamespace: true
 BreakAfterJavaFieldAnnotations: true
 BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: WebKit
+BreakBeforeBraces: Attach
 BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
@@ -81,20 +81,20 @@ IncludeCategories:
   - Regex: '<([A-Za-z0-9\Q/-_\E])+>'
     Priority: 5
     CaseSensitive: false
-  # Headers in <> from specific external libraries.
-  - Regex: "^(<(json|boost|catch2)\/)"
-    Priority: 4
+  # OpenGL headers
+  - Regex: "^(<(gl|glfw|glm)\/)"
+    Priority: 3
+    CaseSensitive: false
+  # Headers in <> from vendored libraries.
+  - Regex: "^(<(json|catch2|argh))"
+    Priority: 2
     CaseSensitive: false
   # Headers in <> with extension.
-  - Regex:           '<([A-Za-z0-9.\Q/-_\E])+>'
-    Priority:        3
+  - Regex: '<([A-Za-z0-9.\Q/-_\E])+>'
+    Priority: 4
     CaseSensitive: false
   # Headers in "" with extension.
-  - Regex:           '"([A-Za-z0-9.\Q/-_\E])+"'
-    Priority:        1
-    CaseSensitive: false
-  # Everything else
-  - Regex: ".*"
+  - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
     Priority: 1
     CaseSensitive: false
 IncludeIsMainRegex: "(Test)?$"

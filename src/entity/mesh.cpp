@@ -24,14 +24,12 @@
 
 namespace entity {
 
-Mesh::Mesh(std::string path)
-{
+Mesh::Mesh(std::string path) {
     load_from_qb_(path);
 }
 
 void
-Mesh::load_from_qb_(std::string path)
-{
+Mesh::load_from_qb_(std::string path) {
     std::vector<uint32_t> data;
     std::vector<int32_t> center;
     // std::vector<int> size;

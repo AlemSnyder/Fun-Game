@@ -38,8 +38,7 @@ class NoiseGenerator {
      * @param persistence the strength of subsequent noise; between 0, and 1
      * @param primeIndex int for randomization (a worse version of a seed)
      */
-    NoiseGenerator(int numOctaves, double persistence, int primeIndex)
-    {
+    NoiseGenerator(int numOctaves, double persistence, int primeIndex) {
         num_octaves_ = numOctaves;
         persistence_ = persistence;
         primeIndex_ = primeIndex % maxPrimeIndex;

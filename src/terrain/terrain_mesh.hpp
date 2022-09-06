@@ -1,17 +1,12 @@
 //! This is a test. The content tent of this class should be transferred into chunk
 
-#include <vector>
-
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "../gui/meshloader.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+#include <vector>
 
 #pragma once
 
@@ -26,8 +21,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     unsigned int num_vertices_;
 
  public:
-    inline TerrainMesh(const TerrainMesh& obj)
-    {
+    inline TerrainMesh(const TerrainMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -36,8 +30,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     };
 
     // copy operator
-    inline TerrainMesh& operator=(const TerrainMesh& obj)
-    {
+    inline TerrainMesh& operator=(const TerrainMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -48,10 +41,10 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
 
     inline TerrainMesh(){};
 
-    TerrainMesh(std::vector<unsigned short>& indices,
-                std::vector<glm::vec3>& indexed_vertices,
-                std::vector<glm::vec3>& indexed_colors,
-                std::vector<glm::vec3>& indexed_normals);
+    TerrainMesh(
+        std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
+        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+    );
 
     inline GLuint get_color_buffer() const override { return color_buffer_; }
 

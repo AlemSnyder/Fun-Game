@@ -1,6 +1,5 @@
 #pragma once
 
-// Include GLEW
 #include <GL/glew.h>
 
 namespace MeshLoader {
