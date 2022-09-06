@@ -1,17 +1,15 @@
-#include <memory>
-#include <stdexcept>
-
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLM
-#include "meshloader.hpp"
-#include "shader.hpp"
 #include "shadow_map.hpp"
 
+#include "meshloader.hpp"
+#include "shader.hpp"
+
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+
+#include <memory>
+#include <stdexcept>
 
 ShadowMap::ShadowMap(int w, int h) {
     depth_texture_ = 0;

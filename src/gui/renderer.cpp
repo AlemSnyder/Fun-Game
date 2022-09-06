@@ -1,19 +1,15 @@
-#include <memory>
+#include "renderer.hpp"
 
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "../terrain/terrain_mesh.hpp"
 #include "controls.hpp"
 #include "meshloader.hpp"
-#include "renderer.hpp"
 #include "shader.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+#include <memory>
 
 MainRenderer::MainRenderer() {
     // non-indexed program

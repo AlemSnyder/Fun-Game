@@ -1,15 +1,11 @@
-// Include math constants
-#define _USE_MATH_DEFINES
-#include <cmath>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "controls.hpp"
 
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#define _USE_MATH_DEFINES // Include math constants
+#include <cmath>
 
 glm::mat4 view_matrix;
 glm::mat4 projection_matrix;

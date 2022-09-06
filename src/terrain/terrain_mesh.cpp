@@ -1,12 +1,8 @@
-// Include GLEW
-#include <GL/glew.h>
 
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "terrain_mesh.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 namespace terrain {

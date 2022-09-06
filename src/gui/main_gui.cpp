@@ -1,14 +1,5 @@
 #include "main_gui.hpp"
 
-#include <vector>
-
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "../entity/mesh.hpp"
 #include "../terrain/static_mesh.hpp"
 #include "../terrain/terrain_mesh.hpp"
@@ -18,9 +9,13 @@
 #include "shader.hpp"
 #include "shadow_map.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+
+#include <vector>
 
 namespace gui {
 

@@ -1,17 +1,3 @@
-#include <stdint.h>
-
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <string>
-
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
 #include "argh.h"
 #include "entity/mesh.hpp"
 #include "gui/controls.hpp"
@@ -20,9 +6,17 @@
 #include "terrain/terrain.hpp"
 #include "world.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <stdint.h>
+
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768

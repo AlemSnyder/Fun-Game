@@ -21,17 +21,14 @@
  */
 #pragma once
 
-#include <vector>
-
-// Include GLEW
-#include <GL/glew.h>
-
-// Include GLM
 #include "meshloader.hpp"
 #include "shader.hpp"
 
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <vector>
 
 /**
  * @brief Renders the shadow from the given meshes.
