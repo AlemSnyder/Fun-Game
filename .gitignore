@@ -35,6 +35,11 @@
 # VSCode
 #
 .vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
 .history/
@@ -57,12 +62,14 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 _log
+.cmake
+
+build/*
+!build/README.txt
 
 #
-# Other 
+# Other
 #
 
 # this is a lot of qb files
 SavedTerrain/*
-
-build/*

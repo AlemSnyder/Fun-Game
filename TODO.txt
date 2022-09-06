@@ -1,3 +1,9 @@
-add after effects
-    rivers
-Mountain ranges
+Terrain generation
+    add after effects
+        rivers
+    Mountain ranges
+    WFC
+        mines/caves
+        towns
+        plants
+

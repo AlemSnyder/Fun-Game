@@ -9,19 +9,20 @@
 
 // Include GLFW
 #include <GLFW/glfw3.h>
-GLFWwindow *window;
 
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include "GUI/controls.hpp"
-#include "GUI/shader.hpp"
-#include "GUI/main_gui.hpp"
-#include "Terrain/terrain.hpp"
+#include "argh.h"
+
+#include "gui/controls.hpp"
+#include "gui/shader.hpp"
+#include "gui/main_gui.hpp"
+#include "terrain/terrain.hpp"
 #include "world.hpp"
-#include "Entity/mesh.hpp"
+#include "entity/mesh.hpp"
 
 #define INITIAL_WINDOW_WIDTH 1024
 #define INITIAL_WINDOW_HEIGHT 768
@@ -32,11 +33,11 @@ int test1(const char *path)
     // C/gcc/terrain_generation";
 
     Json::Value materials_json;
-    std::ifstream materials_file("../data/materials.json", std::ifstream::in);
+    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
     materials_file >> materials_json;
 
     Json::Value biome_data;
-    std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
 
     World world(materials_json, biome_data);
@@ -50,10 +51,10 @@ int test2()
 {
 
     Json::Value biome_data;
-    std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     biome_file >> biome_data;
 
-    Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+    terrain::Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
 
     return 1;
 }
@@ -90,7 +91,7 @@ void save_terrain(Json::Value biome_data, std::string biome_name)
         world.terrain_main.qb_save(path.c_str());
     }
     // Json::Value biome_data;
-    // std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+    // std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     // biome_file >> biome_data;
 }
 
@@ -109,7 +110,7 @@ int path_finder_test(const char *path, const char *save_path)
 
     World world(path);
 
-    std::pair<Tile *, Tile *> start_end =
+    std::pair<terrain::Tile *, terrain::Tile *> start_end =
         world.terrain_main.get_start_end_test();
 
     std::cout << "Start: " << start_end.first->get_x() << ", "
@@ -119,7 +120,7 @@ int path_finder_test(const char *path, const char *save_path)
               << start_end.second->get_y() << ", " << start_end.second->get_z()
               << std::endl;
 
-    std::vector<const Tile *> tile_path =
+    std::vector<const terrain::Tile *> tile_path =
         world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
     std::cout << "    " << (int)tile_path.size() << std::endl;
@@ -165,35 +166,58 @@ int GUITest(const char *path)
     std::vector<glm::vec3> indexed_normals;
     World world(path);
 
-    return GUI::GUITest(world);
+    return gui::GUITest(world);
 }
 
 int main(int argc, char **argv)
 {
+    argh::parser cmdl;
+    cmdl.add_params({"-pi", "--path-in", "-po", "--path-out"});
+    cmdl.add_param("biome-name");
+    cmdl.parse(argc, argv);
+    std::string run_function = cmdl(1).str();
+    std::string path_in = cmdl(2).str();
+    std::string path_out = cmdl(3).str();
+
+
+    /*
+    std::cout << argc << std::endl;
+
+    std::cout << "Positional args: " << std::endl;
+    for (auto& pos_arg : cmdl.pos_args())
+        std::cout << '\t' << pos_arg << std::endl;
+
+    std::cout << "Parameters: " << std::endl;
+    for (auto& param : cmdl.params())
+        std::cout << '\t' << param.first << " : " << param.second << std::endl;
+
+    std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and path out = " << path_out << std::endl;
+    */
+
     if (argc == 1) {
-        //return path_finder_test("../SavedTerrain/pathfinder_input.qb",
-        //                        "../SavedTerrain/pathfinder_output.qb");
-        return GUITest("../data/Models/DefaultTree.qb");
-    } else if (std::string(argv[1]) == "--TerrainTypes") {
+        return GUITest("./data/Models/DefaultTree.qb");
+    } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
-        std::ifstream biome_file("../data/biome_data.json", std::ifstream::in);
+        std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
         biome_file >> biome_data;
-        if (argc == 3) {
-            save_terrain(biome_data[argv[2]], argv[2]);
+        std::string biome_name;
+        cmdl("biome-name", "Biome_1") >> biome_name;
+        if (!cmdl[{ "-a", "--all" }]) {
+            save_terrain(biome_data[biome_name], biome_name);
         } else {
             save_all_terrain(biome_data);
         }
-    } else if (std::string(argv[1]) == "--GenerateTerrain") {
-        return test1(argv[2]);
-    } else if (std::string(argv[1]) == "--MacroMap") {
+    } else if (run_function == "GenerateTerrain") {
+        return test1(&path_in[0]);
+    } else if (run_function == "MacroMap") {
         return test2();
-    } else if (std::string(argv[1]) == "--SaveTest") {
-        return save_test(argv[2], argv[3]);
-    } else if (std::string(argv[1]) == "--PathFinder") {
-        return path_finder_test(argv[2], argv[3]);
-    } else if (std::string(argv[1]) == "--GUITest") {
-        return GUITest(argv[2]);
-    } else if (std::string(argv[1]) == "--WorldGen") {
-        return test1(argv[2]);
+    } else if (run_function == "SaveTest") {
+        return save_test(&path_in[0], &path_out[0]);
+    } else if (run_function == "PathFinder") {
+        return path_finder_test(&path_in[0], &path_out[0]);
+    } else if (run_function == "GUITest") {
+        return GUITest(&path_in[0]);
+    } else if (run_function == "WorldGen") {
+        return test1(&path_in[0]);
     }
 }
