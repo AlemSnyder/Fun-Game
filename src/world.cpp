@@ -25,6 +25,7 @@
 
 #include "entity/mesh.hpp"
 #include "terrain/terrain.hpp"
+#include "util/files.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -75,7 +76,7 @@ World::get_mesh_greedy(
 
 World::World() {
     Json::Value materials_json;
-    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
+    std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
     init_materials(materials_json);
@@ -88,7 +89,7 @@ World::World() {
     }
 
     Json::Value biome_data;
-    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
     std::cout << "start of terrain\n";
@@ -97,7 +98,7 @@ World::World() {
 
 World::World(const std::string path) {
     Json::Value materials_json;
-    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
+    std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
     init_materials(materials_json);
@@ -134,7 +135,7 @@ World::World(Json::Value materials_json, Json::Value biome_data) {
 
 World::World(Json::Value biome_data, int tile_type) {
     Json::Value materials_json;
-    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
+    std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
     init_materials(materials_json);
