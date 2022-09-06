@@ -85,8 +85,9 @@ LandGenerator::get_this_stamp() const {
 void
 LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
     int radius = data_[cr]["Radius"]["radius"].asInt();
-    double distance =
-        (double)(8 * radius) / data_[cr]["Radius"]["number"].asInt() * csr;
+    int number = data_[cr]["Radius"]["number"].asInt();
+
+    double distance = (double)(8 * radius) / number * csr;
     int side = (int)distance / 2 / radius;
     int x_center, y_center;
 
@@ -127,14 +128,11 @@ LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
 
 void
 LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const {
-    int x_center =
-        (1 + 2 * (csr % data_[cr]["Grid"]["number"].asInt())
-        ) * (data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt())
-        - data_[cr]["Grid"]["radius"].asInt();
-    int y_center =
-        (1 + 2 * (csr / data_[cr]["Grid"]["number"].asInt())
-        ) * (data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt())
-        - data_[cr]["Grid"]["radius"].asInt();
+    int number = data_[cr]["Grid"]["number"].asInt();
+    int radius = data_[cr]["Grid"]["radius"].asInt();
+
+    int x_center = (1 + 2 * (csr % number)) * (radius / number) - radius;
+    int y_center = (1 + 2 * (csr / number)) * (radius / number) - radius;
     int DC = data_[cr]["Grid"]["DC"].asInt();
 
     int center[2][2] = {
