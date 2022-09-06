@@ -1,5 +1,6 @@
 #include "shadow_map.hpp"
 
+#include "../util/files.hpp"
 #include "meshloader.hpp"
 #include "shader.hpp"
 
@@ -15,11 +16,12 @@ ShadowMap::ShadowMap(int w, int h) {
     depth_texture_ = 0;
     frame_buffer_name_ = 0;
     programID_ = load_shaders(
-        "./resources/shaders/DepthRTT.vert", "./resources/shaders/DepthRTT.frag"
+        files::get_resources_path() / "shaders" / "DepthRTT.vert",
+        files::get_resources_path() / "shaders" / "DepthRTT.frag"
     );
     programID_multi_ = load_shaders(
-        "./resources/shaders/DepthRTTInstanced.vert",
-        "./resources/shaders/DepthRTTInstanced.frag"
+        files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
+        files::get_resources_path() / "shaders" / "DepthRTTInstanced.frag"
     );
 
     // Get a handle for our "MVP" uniform

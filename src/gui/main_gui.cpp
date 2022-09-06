@@ -158,7 +158,8 @@ GUITest(World world) {
 
     // Create and compile our GLSL program from the shaders
     GLuint quad_programID = load_shaders(
-        "./resources/shaders/Passthrough.vert", "./resources/shaders/SimpleTexture.frag"
+        files::get_resources_path() / "shaders" / "Passthrough.vert",
+        files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
