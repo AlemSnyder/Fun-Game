@@ -48,7 +48,8 @@ LandGenerator::get_num_stamps(Json::Value biome) {
     if (biome["Type"].asCString() == std::string("Positions")) {
         return biome["Positions"].size();
     } else if (biome["Type"].asCString() == std::string("Grid")) {
-        return pow(biome[biome["Type"].asCString()]["number"].asInt(), 2);
+        int num = biome[biome["Type"].asCString()]["number"].asInt();
+        return num * num;
     } else {
         return biome[biome["Type"].asCString()]["number"].asInt();
     }
