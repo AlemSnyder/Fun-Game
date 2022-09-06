@@ -52,12 +52,13 @@ NodeGroup::get_adjacent_clear(int path_type) const {
 
 std::map<NodeGroup*, UnitPath>
 NodeGroup::merge_groups(NodeGroup other) {
-    center_x = (center_x * tiles.size() + other.center_x * other.tiles.size())
-               / (tiles.size() + other.tiles.size());
-    center_y = (center_y * tiles.size() + other.center_y * other.tiles.size())
-               / (tiles.size() + other.tiles.size());
-    center_z = (center_z * tiles.size() + other.center_z * other.tiles.size())
-               / (tiles.size() + other.tiles.size());
+    auto size = tiles.size();
+    auto other_size = other.tiles.size();
+    auto total_size = size + other_size;
+
+    center_x = (center_x * size + other.center_x * other_size) / total_size;
+    center_y = (center_y * size + other.center_y * other_size) / total_size;
+    center_z = (center_z * size + other.center_z * other_size) / total_size;
 
     for (const Tile* t : other.get_tiles()) {
         tiles.insert(t);
@@ -66,7 +67,7 @@ NodeGroup::merge_groups(NodeGroup other) {
         add_adjacent(adj.first, adj.second);
     }
     path_type_ =
-        path_type_ & other.path_type_; // restriction of the ways to get between tiles
+        path_type_ & other.path_type_; // restrict the ways to get between tiles
 
     return other.get_adjacent_map();
 }
