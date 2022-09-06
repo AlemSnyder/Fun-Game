@@ -5,10 +5,11 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 GLuint
-load_shaders(const char* vertex_file, const char* fragment_file)
+load_shaders(const std::string vertex_file, const std::string fragment_file)
 {
     // get the paths
     std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);
