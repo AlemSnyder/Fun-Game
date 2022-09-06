@@ -95,7 +95,7 @@ void
 save_all_terrain(Json::Value biome_data) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
-        save_terrain((*biome_type), biome_type.key().asCString());
+        save_terrain(*biome_type, biome_type.key().asString());
     }
 }
 
