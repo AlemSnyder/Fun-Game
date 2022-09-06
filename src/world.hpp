@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include "json/json.h"
 #include "terrain/terrain.hpp"
+
+#include <json/json.h>
 
 #include <glm/glm.hpp>
 

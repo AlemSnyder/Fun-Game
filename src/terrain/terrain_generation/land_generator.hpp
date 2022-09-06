@@ -23,8 +23,9 @@
 #pragma once
 
 #include "../material.hpp"
-#include "json/json.h"
 #include "tilestamp.hpp"
+
+#include <json/json.h>
 
 #include <math.h>
 

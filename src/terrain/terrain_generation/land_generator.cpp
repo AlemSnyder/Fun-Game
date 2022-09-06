@@ -14,8 +14,9 @@
 #include "land_generator.hpp"
 
 #include "../material.hpp"
-#include "json/json.h"
 #include "tilestamp.hpp"
+
+#include <json/json.h>
 
 #include <math.h>
 
