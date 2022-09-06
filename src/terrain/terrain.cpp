@@ -18,6 +18,7 @@
 #include <map>
 #include <queue>
 #include <set>
+#include <string>
 #include <vector>
 
 namespace terrain {
@@ -72,7 +73,9 @@ Terrain::init(
     );
 }
 
-Terrain::Terrain(const char* path, const std::map<int, const Material>* material) {
+Terrain::Terrain(
+    const std::string path, const std::map<int, const Material>* material
+) {
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials;
     for (auto it = material->begin(); it != material->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -936,7 +939,7 @@ Terrain::compress_color(uint8_t v[4]) {
 
 int
 Terrain::qb_save_debug(
-    const char* path, const std::map<int, const Material>* materials
+    const std::string path, const std::map<int, const Material>* materials
 ) {
     int x = 0;
     for (Chunk& c : chunks) {
@@ -954,14 +957,14 @@ Terrain::qb_save_debug(
 
 // Save all tiles as .qb to path.
 int
-Terrain::qb_save(const char* path) const {
+Terrain::qb_save(const std::string path) const {
     // Saves the tiles in this to the path specified
     return VoxelUtility::to_qb(path, *this);
 }
 
 int
 Terrain::qb_read(
-    const char* path,
+    const std::string path,
     const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
 ) {
     std::vector<uint32_t> data;

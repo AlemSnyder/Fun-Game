@@ -28,6 +28,7 @@
 
 #include <cstdint>
 #include <fstream>
+#include <string>
 
 // void World::save(){
 //     terrain_main.qb_save(path);
@@ -43,19 +44,21 @@ World::init_materials(Json::Value material_data) {
     for (auto element_it = material_data.begin(); element_it != material_data.end();
          element_it++) {
         std::vector<std::pair<const std::string, uint32_t>> color_vector;
-        std::string name = (element_it.key().asCString());
-        for (unsigned int i = 0; i < (*element_it)["colors"].size(); i++) {
-            const char* string = (*element_it)["colors"][i]["name"].asCString();
-            uint32_t color =
-                std::stoll((*element_it)["colors"][i]["hex"].asCString(), 0, 16);
+
+        Json::Value material = *element_it;
+        std::string name = element_it.key().asString();
+        for (unsigned int i = 0; i < material["colors"].size(); i++) {
+            const std::string string = material["colors"][i]["name"].asString();
+            uint32_t color = std::stoll(material["colors"][i]["hex"].asString(), 0, 16);
             color_vector.push_back(std::make_pair(string, color));
         }
+
         terrain::Material mat{
-            color_vector,                            // color
-            (uint8_t)(*element_it)["speed"].asInt(), // speed_multiplier
-            (*element_it)["solid"].asBool(),         // solid
-            (uint8_t)(*element_it)["id"].asInt(),    // element_id
-            name};                                   // name
+            color_vector,                                    // color
+            static_cast<uint8_t>(material["speed"].asInt()), // speed_multiplier
+            material["solid"].asBool(),                      // solid
+            static_cast<uint8_t>(material["id"].asInt()),    // element_id
+            name};                                           // name
         materials.insert(std::make_pair(mat.element_id, mat));
     }
 }
@@ -92,7 +95,7 @@ World::World() {
     terrain_main = terrain::Terrain();
 }
 
-World::World(const char* path) {
+World::World(const std::string path) {
     Json::Value materials_json;
     std::ifstream materials_file("./data/materials.json", std::ifstream::in);
     materials_file >> materials_json;

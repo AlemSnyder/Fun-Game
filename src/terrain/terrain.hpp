@@ -42,6 +42,7 @@
 #include <map>
 #include <set>
 #include <stdexcept>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -81,18 +82,6 @@ class Terrain {
     int grass_grad_length;
     // gradient index of grass not by an edge
     int grass_mid;
-
-    // write to file
-    template <typename T>
-    void WRITE(T v, FILE* file) const {
-        fwrite(&v, sizeof(T), 1, file);
-    }
-
-    // read from file
-    template <typename T>
-    void READ(T& v, FILE* file) const {
-        fread(&v, sizeof(T), 1, file);
-    }
 
     // save color at sop, to color
     void export_color(const int sop[3], uint8_t color[4]) const;
@@ -361,7 +350,7 @@ class Terrain {
      * @param path path to saved terrain
      * @param material materials of the world
      */
-    Terrain(const char* path, const std::map<int, const Material>* material);
+    Terrain(const std::string path, const std::map<int, const Material>* material);
 
     // TODO place block
     /**
@@ -737,14 +726,16 @@ class Terrain {
      * @param materials materials in the terrain for debug materials
      * @return int success status
      */
-    int qb_save_debug(const char* path, const std::map<int, const Material>* materials);
+    int qb_save_debug(
+        const std::string path, const std::map<int, const Material>* materials
+    );
     /**
      * @brief save to path
      *
      * @param path path to save to
      * @return int success status
      */
-    int qb_save(const char* path) const;
+    int qb_save(const std::string path) const;
     /**
      * @brief read from path
      *
@@ -753,7 +744,7 @@ class Terrain {
      * @return int success status
      */
     int qb_read(
-        const char* path,
+        const std::string path,
         const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
     );
     /**

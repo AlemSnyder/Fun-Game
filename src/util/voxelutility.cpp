@@ -3,18 +3,20 @@
 #include <cinttypes>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
+// TODO(nino): lowercase this
 namespace VoxelUtility {
 
 int
 from_qb(
-    const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
+    const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
     std::vector<uint32_t>& size
 ) {
     // Read the tiles from the path specified, and save
     FILE* file;
-    file = fopen(path, "rb");
+    file = fopen(path.c_str(), "rb");
     if (!file) {
         std::cerr << "Impossible to open " << path
                   << ". Are you in the right directory?" << std::endl;
@@ -47,7 +49,6 @@ from_qb(
     int8_t name_len;
     READ<int8_t>(name_len, file);
     std::cout << "name length: " << (int)name_len << std::endl;
-    // char* name = (char*) malloc (name_len);
     char* name = new char[name_len];
     fread(name, sizeof(char), name_len, file);
     std::string string_name(name);
@@ -91,10 +92,11 @@ from_qb(
     return 0;
 }
 
-VoxelObject::VoxelObject(const char* path) {
+VoxelObject::VoxelObject(const std::string path) {
     data_ = std::vector<uint32_t>(0);
     center_ = std::vector<int>(0);
     size_ = std::vector<uint32_t>(0);
+
     int test = from_qb(path, data_, center_, size_);
     ok_ = (test == 0);
 }

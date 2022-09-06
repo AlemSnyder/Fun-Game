@@ -45,12 +45,12 @@ LandGenerator::LandGenerator() {
 
 unsigned int
 LandGenerator::get_num_stamps(Json::Value biome) {
-    if (biome["Type"].asCString() == std::string("Positions")) {
+    if (biome["Type"].asString() == "Positions") {
         return biome["Positions"].size();
-    } else if (biome["Type"].asCString() == std::string("Grid")) {
-        return pow(biome[biome["Type"].asCString()]["number"].asInt(), 2);
+    } else if (biome["Type"].asString() == "Grid") {
+        return pow(biome[biome["Type"].asString()]["number"].asInt(), 2);
     } else {
-        return biome[biome["Type"].asCString()]["number"].asInt();
+        return biome[biome["Type"].asString()]["number"].asInt();
     }
 }
 
@@ -71,7 +71,7 @@ LandGenerator::get_this_stamp() const {
             }
         }
     }
-    std::string type = data_[current_region]["Type"].asCString();
+    std::string type = data_[current_region]["Type"].asString();
 
     if (type == "Positions") {
         from_positions(current_region, current_sub_region, out);

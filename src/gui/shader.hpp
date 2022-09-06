@@ -2,4 +2,7 @@
 
 #include <GL/glew.h>
 
-GLuint load_shaders(const char* vertex_file_path, const char* fragment_file_path);
+#include <string>
+
+GLuint
+load_shaders(const std::string vertex_file_path, const std::string fragment_file_path);
