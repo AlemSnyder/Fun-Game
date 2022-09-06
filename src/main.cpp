@@ -1,4 +1,3 @@
-#include "argh.h"
 #include "entity/mesh.hpp"
 #include "gui/controls.hpp"
 #include "gui/main_gui.hpp"
@@ -6,6 +5,7 @@
 #include "terrain/terrain.hpp"
 #include "world.hpp"
 
+#include <argh.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

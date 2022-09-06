@@ -125,13 +125,26 @@ generate_mesh(
                         // and direction like this: first expands over the
                         // width, then expanding over the height
 
-                        // c c c c c n n n     # c c c c n n n     # # # # #[N]n
-                        // n     # # # # # n n n c c c c c c n n     c c c c c c
-                        // n n     c c c c c c n n     # # # # # c n n c c c c c
-                        // c c n - > c c c c c c c n - > c c c c c c c n - > # #
-                        // # # # c c n c c c c c n n n     c c c c c n n n     c
-                        // c c c c n n n     # # # # # n n n c c n c c n c c c c
-                        // n c c n c c     c c n c c n c c     c c[N]c c n c c
+                        // c c c c c n n n
+                        // # c c c c n n n
+                        // # # # # #[N]n n
+                        // # # # # # n n n
+                        // c c c c c c n n
+                        // c c c c c c n n
+                        // c c c c c c n n
+                        // # # # # # c n n
+                        // c c c c c c c n - >
+                        // c c c c c c c n - >
+                        // c c c c c c c n - >
+                        // # # # # # c c n
+                        // c c c c c n n n
+                        // c c c c c n n n
+                        // c c c c c n n n
+                        // # # # # # n n n
+                        // c c n c c n c c
+                        // c c n c c n c c
+                        // c c n c c n c c
+                        // c c[N]c c n c c
 
                         // Compute width
                         width = 1;
