@@ -28,7 +28,7 @@
 #define INITIAL_WINDOW_HEIGHT 768
 
 int
-test1(const char* path)
+test1(const std::string path)
 {
     // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
     // C/gcc/terrain_generation";
@@ -61,7 +61,7 @@ test2()
 }
 
 int
-save_test(const char* path, const char* save_path)
+save_test(const std::string path, const std::string save_path)
 {
     // path = "../SavedTerrain/pathfinder_input_4.qb";
     // save_path = "../SavedTerrain/save_test.qb";
@@ -108,7 +108,7 @@ save_all_terrain(Json::Value biome_data)
 }
 
 int
-path_finder_test(const char* path, const char* save_path)
+path_finder_test(const std::string path, const std::string save_path)
 {
     // path = "../SavedTerrain/pathfinder_input.qb";
     // save_path = "../SavedTerrain/pathfinder_output.qb";
@@ -148,7 +148,7 @@ path_finder_test(const char* path, const char* save_path)
 }
 
 void
-get_mesh(const char* path, std::vector<std::uint16_t>& indices,
+get_mesh(const std::string path, std::vector<std::uint16_t>& indices,
          std::vector<glm::vec3>& indexed_vertices,
          std::vector<glm::vec3>& indexed_colors,
          std::vector<glm::vec3>& indexed_normals)
@@ -161,7 +161,7 @@ get_mesh(const char* path, std::vector<std::uint16_t>& indices,
 }
 
 int
-GUITest(const char* path)
+GUITest(const std::string path)
 {
     std::vector<std::uint16_t> indices;
     std::vector<glm::vec3> indexed_vertices;

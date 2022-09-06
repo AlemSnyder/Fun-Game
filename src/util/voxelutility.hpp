@@ -4,6 +4,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 namespace VoxelUtility {
@@ -55,8 +56,8 @@ READ(T& v, FILE* file)
     fread(&v, sizeof(T), 1, file);
 }
 
-int from_qb(const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
-            std::vector<uint32_t>& size);
+int from_qb(const std::string path, std::vector<uint32_t>& data,
+            std::vector<int>& center, std::vector<uint32_t>& size);
 
 inline uint32_t
 compress_color(uint8_t v[4])
@@ -76,11 +77,11 @@ export_color(uint32_t tile_color, uint8_t color[4])
 
 template <typename T>
 int
-to_qb(const char* path, T voxel_object)
+to_qb(const std::string path, T voxel_object)
 {
     // Saves the tiles in this to the path specified
     FILE* file;
-    file = fopen(path, "wb");
+    file = fopen(path.c_str(), "wb");
     if (!file) {
         std::cerr << "Impossible to open " << path
                   << ". Are you in the right directory?" << std::endl;

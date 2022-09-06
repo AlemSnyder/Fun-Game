@@ -50,7 +50,7 @@ class World {
      *
      * @param path where world was saved
      */
-    World(const char* path);
+    World(const std::string path);
     /**
      * @brief Construct a new World object to test biome generation.
      *

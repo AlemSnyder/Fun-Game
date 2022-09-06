@@ -3,17 +3,19 @@
 #include <cinttypes>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
+// TODO(nino): lowercase this
 namespace VoxelUtility {
 
 int
-from_qb(const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
+from_qb(const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
         std::vector<uint32_t>& size)
 {
     // Read the tiles from the path specified, and save
     FILE* file;
-    file = fopen(path, "rb");
+    file = fopen(path.c_str(), "rb");
     if (!file) {
         std::cerr << "Impossible to open " << path
                   << ". Are you in the right directory?" << std::endl;

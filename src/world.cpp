@@ -95,7 +95,7 @@ World::World()
     terrain_main = terrain::Terrain();
 }
 
-World::World(const char* path)
+World::World(const std::string path)
 {
     Json::Value materials_json;
     std::ifstream materials_file("./data/materials.json", std::ifstream::in);
