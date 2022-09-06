@@ -6,4 +6,4 @@ namespace gui {
 
 int GUITest(World world);
 
-}  // namespace gui
+} // namespace gui

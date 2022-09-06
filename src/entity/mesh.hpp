@@ -20,10 +20,11 @@
  */
 #pragma once
 
-#include <glm/glm.hpp>
-#include <vector>
-
 #include "../util/voxelutility.hpp"
+
+#include <glm/glm.hpp>
+
+#include <vector>
 
 namespace entity {
 
@@ -38,10 +39,12 @@ namespace entity {
  * @param indexed_normals
  */
 template <class T>
-void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
-                   std::vector<glm::vec3>& indexed_vertices,
-                   std::vector<glm::vec3>& indexed_colors,
-                   std::vector<glm::vec3>& indexed_normals) {
+void
+generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
+              std::vector<glm::vec3>& indexed_vertices,
+              std::vector<glm::vec3>& indexed_colors,
+              std::vector<glm::vec3>& indexed_normals)
+{
     // mesh off set
     std::vector<int> center = voxel_object.get_offset();
     std::vector<uint32_t> dims = voxel_object.get_size();
@@ -51,18 +54,17 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
         const std::size_t dims_index_1 = (axis + 1) % 3;
         const std::size_t dims_index_2 = (axis + 2) % 3;
 
-        int voxel_position[3] = {0};  // position of a voxel in world space
-        int mesh_normal[3] = {0};  // direction that the mesh is not changing in
+        int voxel_position[3] = {0}; // position of a voxel in world space
+        int mesh_normal[3] = {0};    // direction that the mesh is not changing in
 
         // the color of all tiles at the same "level".
-        std::vector<std::pair<bool, uint32_t>> color_info(dims[dims_index_1] *
-                                                          dims[dims_index_2]);
+        std::vector<std::pair<bool, uint32_t>> color_info(dims[dims_index_1]
+                                                          * dims[dims_index_2]);
 
         // Compute color_info
         mesh_normal[axis] = 1;
         // for each layer going in the direction of axis
-        for (voxel_position[axis] = -1;
-             voxel_position[axis] < int(dims[axis]);) {
+        for (voxel_position[axis] = -1; voxel_position[axis] < int(dims[axis]);) {
             std::size_t counter = 0;
             // for each voxel in this level
             for (voxel_position[dims_index_2] = 0;
@@ -74,19 +76,16 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
                     // tile in the level above
                     const uint32_t voxel_above =
                         // if the mesh positions is within the bounds
-                        voxel_position[axis] >= 0
-                            ? voxel_object.get_voxel(voxel_position[0],
-                                                     voxel_position[1],
-                                                     voxel_position[2])
-                            : 0;
+                        voxel_position[axis] >= 0 ? voxel_object.get_voxel(
+                            voxel_position[0], voxel_position[1], voxel_position[2])
+                                                  : 0;
                     // tiles in the level below
                     const uint32_t voxel_below =
                         // if the mesh position is within the bounds
                         voxel_position[axis] < int(dims[axis]) - 1
-                            ? voxel_object.get_voxel(
-                                  voxel_position[0] + mesh_normal[0],
-                                  voxel_position[1] + mesh_normal[1],
-                                  voxel_position[2] + mesh_normal[2])
+                            ? voxel_object.get_voxel(voxel_position[0] + mesh_normal[0],
+                                                     voxel_position[1] + mesh_normal[1],
+                                                     voxel_position[2] + mesh_normal[2])
                             : 0;
                     const bool bool_a = voxel_above;
                     // if both solid or both not solid then don't make
@@ -102,12 +101,11 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
                     // voxel_below is solid make face with voxel_below's color
                     // facing down
                     else {
-                        color_info[counter] =
-                            std::make_pair(false, voxel_below);
+                        color_info[counter] = std::make_pair(false, voxel_below);
                     }
                 }
 
-            ++voxel_position[axis];  // go to the next level
+            ++voxel_position[axis]; // go to the next level
 
             // Generate mesh for color_info using lexicographic ordering
             unsigned int width = 0, height = 0;
@@ -133,14 +131,13 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
 
                         // Compute width
                         width = 1;
-                        while (color == color_info[counter + width] &&
-                               i + width < dims[dims_index_1]) {
+                        while (color == color_info[counter + width]
+                               && i + width < dims[dims_index_1]) {
                             ++width;
                         }
                         // Compute height
                         bool done = false;
-                        for (height = 1; j + height < dims[dims_index_2];
-                             ++height) {
+                        for (height = 1; j + height < dims[dims_index_2]; ++height) {
                             // expand until one of the tiles in the next row is
                             // not the same color/facing direction
                             for (unsigned int k = 0; k < width; ++k) {
@@ -148,15 +145,16 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
                                 // face is different from the direction and
                                 // color of the face currently being tested
                                 std::pair<bool, uint32_t> test_against =
-                                    color_info[counter + k +
-                                               height * dims[dims_index_1]];
+                                    color_info[counter + k
+                                               + height * dims[dims_index_1]];
                                 if (color != test_against) {
                                     done = true;
                                     break;
                                 }
                             }
 
-                            if (done) break;
+                            if (done)
+                                break;
                         }
 
                         // Add quad
@@ -178,27 +176,25 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
 
                         const std::size_t vertex_size = indexed_vertices.size();
 
-                        indexed_vertices.push_back(
-                            glm::vec3(voxel_position[0], voxel_position[1],
-                                      voxel_position[2]) +
-                            off_set);
+                        indexed_vertices.push_back(glm::vec3(voxel_position[0],
+                                                             voxel_position[1],
+                                                             voxel_position[2])
+                                                   + off_set);
                         indexed_vertices.push_back(
                             glm::vec3(voxel_position[0] + off_set_1[0],
                                       voxel_position[1] + off_set_1[1],
-                                      voxel_position[2] + off_set_1[2]) +
-                            off_set);
+                                      voxel_position[2] + off_set_1[2])
+                            + off_set);
                         indexed_vertices.push_back(
-                            glm::vec3(
-                                voxel_position[0] + off_set_1[0] + off_set_2[0],
-                                voxel_position[1] + off_set_1[1] + off_set_2[1],
-                                voxel_position[2] + off_set_1[2] +
-                                    off_set_2[2]) +
-                            off_set);
+                            glm::vec3(voxel_position[0] + off_set_1[0] + off_set_2[0],
+                                      voxel_position[1] + off_set_1[1] + off_set_2[1],
+                                      voxel_position[2] + off_set_1[2] + off_set_2[2])
+                            + off_set);
                         indexed_vertices.push_back(
                             glm::vec3(voxel_position[0] + off_set_2[0],
                                       voxel_position[1] + off_set_2[1],
-                                      voxel_position[2] + off_set_2[2]) +
-                            off_set);
+                                      voxel_position[2] + off_set_2[2])
+                            + off_set);
 
                         uint32_t int_color = color.second;
                         uint32_t red = (int_color >> 24) & 0xFF;
@@ -214,10 +210,10 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
                         }
 
                         glm::vec3 triangle_normal = glm::normalize(
-                            glm::cross(indexed_vertices[vertex_size] -
-                                           indexed_vertices[vertex_size + 1],
-                                       indexed_vertices[vertex_size] -
-                                           indexed_vertices[vertex_size + 2]));
+                            glm::cross(indexed_vertices[vertex_size]
+                                           - indexed_vertices[vertex_size + 1],
+                                       indexed_vertices[vertex_size]
+                                           - indexed_vertices[vertex_size + 2]));
                         // how many corners on a square are there?
                         for (size_t voxel_position = 0; voxel_position < 4;
                              voxel_position++) {
@@ -234,8 +230,7 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
 
                         for (unsigned int w = 0; w < width; ++w)
                             for (unsigned int h = 0; h < height; ++h)
-                                color_info[counter + w +
-                                           h * dims[dims_index_1]] =
+                                color_info[counter + w + h * dims[dims_index_1]] =
                                     std::make_pair(false, 0);
 
                         // Increment counters
@@ -255,12 +250,14 @@ void generate_mesh(T voxel_object, std::vector<uint16_t>& indices,
  *
  */
 class Mesh {
-   public:
+ public:
     Mesh(std::string path);
+
     void get_mesh(std::vector<unsigned short>& indices,
                   std::vector<glm::vec3>& indexed_vertices,
                   std::vector<glm::vec3>& indexed_colors,
-                  std::vector<glm::vec3>& indexed_normals) const {
+                  std::vector<glm::vec3>& indexed_normals) const
+    {
         indices = indices_;
         indexed_vertices = indexed_vertices_;
         indexed_colors = indexed_colors_;
@@ -268,7 +265,7 @@ class Mesh {
     }
 
     // void load from smaller file
-   private:
+ private:
     std::vector<int> size_;
     std::vector<int> center_;
 
@@ -277,16 +274,19 @@ class Mesh {
     std::vector<glm::vec3> indexed_colors_;
     std::vector<glm::vec3> indexed_normals_;
 
-    int get_position_(int x, int y, int z) const {
+    int get_position_(int x, int y, int z) const
+    {
         return ((x * size_[1] + y) * size_[2] + z);
     }
+
     void load_from_qb_(std::string path);
 
-    inline void generate_mesh_(VoxelUtility::VoxelObject voxel_object) {
-        generate_mesh(voxel_object, indices_, indexed_vertices_,
-                      indexed_colors_, indexed_normals_);
+    inline void generate_mesh_(VoxelUtility::VoxelObject voxel_object)
+    {
+        generate_mesh(voxel_object, indices_, indexed_vertices_, indexed_colors_,
+                      indexed_normals_);
     }
 
-};  // class Mesh
+}; // class Mesh
 
-}   // namespace entity
+} // namespace entity

@@ -9,10 +9,6 @@
 #include <GLFW/glfw3.h>
 
 // Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
-
 #include "../entity/mesh.hpp"
 #include "../terrain/static_mesh.hpp"
 #include "../terrain/terrain_mesh.hpp"
@@ -22,16 +18,21 @@
 #include "shader.hpp"
 #include "shadow_map.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 namespace gui {
 
-int GUITest(World world) {
+int
+GUITest(World world)
+{
     std::vector<std::uint16_t> indices;
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
     std::vector<glm::vec3> indexed_normals;
 
-    world.get_mesh_greedy(indices, indexed_vertices, indexed_colors,
-                          indexed_normals);
+    world.get_mesh_greedy(indices, indexed_vertices, indexed_colors, indexed_normals);
 
     std::vector<std::uint16_t> indices_tree;
     std::vector<glm::vec3> indexed_vertices_tree;
@@ -48,14 +49,13 @@ int GUITest(World world) {
         return -1;
     }
 
-    glfwWindowHint(GLFW_SAMPLES, 4);                // anti-aliasing of 4
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);  // set Major
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);  // and Minor version
+    glfwWindowHint(GLFW_SAMPLES, 4);               // anti-aliasing of 4
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // set Major
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // and Minor version
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
-                   GL_TRUE);  // To make MacOS happy; should not be needed
-    glfwWindowHint(
-        GLFW_OPENGL_PROFILE,
-        GLFW_OPENGL_CORE_PROFILE);  // somehow turning on core profiling
+                   GL_TRUE); // To make MacOS happy; should not be needed
+    glfwWindowHint(GLFW_OPENGL_PROFILE,
+                   GLFW_OPENGL_CORE_PROFILE); // somehow turning on core profiling
 
     // Open a window and create its OpenGL context
     // We would expect width and height to be 1024 and 768
@@ -64,10 +64,9 @@ int GUITest(World world) {
     GLFWwindow* window = glfwCreateWindow(windowFrameWidth, windowFrameHeight,
                                           "Mane Window", NULL, NULL);
     if (window == NULL) {
-        std::cerr
-            << "Failed to open GLFW window. If you have an Intel GPU, they are "
-               "not 3.3 compatible. Try the 2.1 version of the tutorials."
-            << std::endl;
+        std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are "
+                     "not 3.3 compatible. Try the 2.1 version of the tutorials."
+                  << std::endl;
         getchar();
         glfwTerminate();
         return -1;
@@ -79,7 +78,7 @@ int GUITest(World world) {
     glfwGetFramebufferSize(window, &windowFrameWidth, &windowFrameHeight);
 
     // Initialize GLEW
-    glewExperimental = true;  // Needed for core profile
+    glewExperimental = true; // Needed for core profile
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to initialize GLEW\n");
         getchar();
@@ -117,7 +116,7 @@ int GUITest(World world) {
 
     // The mesh of the terrain
     terrain::TerrainMesh terrain_mesh(indices, indexed_vertices, indexed_colors,
-                             indexed_normals);
+                                      indexed_normals);
 
     // The above is for the wold the below is for trees
 
@@ -126,7 +125,7 @@ int GUITest(World world) {
     for (int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
         for (int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
             int z = world.terrain_main.get_Z_solid(x, y) + 1;
-            if (z!= 1) { // if the position of the ground is not zero
+            if (z != 1) { // if the position of the ground is not zero
                 glm::vec3 model(x, y, z);
                 model_matrices.push_back(model);
             }
@@ -136,8 +135,8 @@ int GUITest(World world) {
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(indices_tree, indexed_vertices_tree,
-                         indexed_colors_tree, indexed_normals_tree,
-                         model_matrices);
+                                  indexed_colors_tree, indexed_normals_tree,
+                                  model_matrices);
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
@@ -152,16 +151,16 @@ int GUITest(World world) {
                  g_quad_vertex_buffer_data, GL_STATIC_DRAW);
 
     // Create and compile our GLSL program from the shaders
-    GLuint quad_programID =
-        load_shaders("./resources/shaders/Passthrough.vert",
-                    "./resources/shaders/SimpleTexture.frag");
+    GLuint quad_programID = load_shaders("./resources/shaders/Passthrough.vert",
+                                         "./resources/shaders/SimpleTexture.frag");
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
     glm::vec3 light_direction =
-        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f))  // direction
-        * 128.0f;                                        // length
+        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
+        * 128.0f;                                       // length
 
-    glm::mat4 depth_projection_matrix = glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+    glm::mat4 depth_projection_matrix =
+        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
     // Renders the Shadow depth map
     ShadowMap SM(4096, 4096);
@@ -195,18 +194,18 @@ int GUITest(World world) {
         // first attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-        glVertexAttribPointer(0,  // attribute 0. No particular reason for 0,
-                                  // but must match the layout in the shader.
-                              3,         // size
-                              GL_FLOAT,  // type
-                              GL_FALSE,  // normalized?
-                              0,         // stride
-                              (void*)0   // array buffer offset
+        glVertexAttribPointer(0,        // attribute 0. No particular reason for 0,
+                                        // but must match the layout in the shader.
+                              3,        // size
+                              GL_FLOAT, // type
+                              GL_FALSE, // normalized?
+                              0,        // stride
+                              (void*)0  // array buffer offset
         );
 
         // Draw the triangle !
         // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see
-        glDrawArrays(GL_TRIANGLES, 0, 6);  // 2*3 indices starting
+        glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
         // at 0 -> 2 triangles
         glDisableVertexAttribArray(0);
 
@@ -214,9 +213,9 @@ int GUITest(World world) {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-    }  // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-           glfwWindowShouldClose(window) == 0);
+    } // Check if the ESC key was pressed or the window was closed
+    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+           && glfwWindowShouldClose(window) == 0);
 
     // Cleanup VBO and shader
     glDeleteProgram(quad_programID);
@@ -230,4 +229,4 @@ int GUITest(World world) {
     return 0;
 }
 
-}  // namespace gui
+} // namespace gui

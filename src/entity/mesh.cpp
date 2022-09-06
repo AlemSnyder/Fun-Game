@@ -13,33 +13,38 @@
 
 #include "mesh.hpp"
 
-#include <cstdint>
+#include "../util/voxelutility.hpp"
+
 #include <glm/glm.hpp>
+
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "../util/voxelutility.hpp"
+namespace entity {
 
-namespace entity{
+Mesh::Mesh(std::string path)
+{
+    load_from_qb_(path);
+}
 
-Mesh::Mesh(std::string path) { load_from_qb_(path); }
-
-void Mesh::load_from_qb_(std::string path) {
+void
+Mesh::load_from_qb_(std::string path)
+{
     std::vector<uint32_t> data;
     std::vector<int32_t> center;
     // std::vector<int> size;
     VoxelUtility::VoxelObject voxel_object(&path[0]);
-    //int test = VoxelUtility::from_qb(&path[0], data, center, size_);
+    // int test = VoxelUtility::from_qb(&path[0], data, center, size_);
 
     if (!voxel_object.ok()) {
         std::string message("Could not load voxel from ");
         throw std::invalid_argument(message + path);
     }
 
-    //generate_mesh_(data, center, size_);
+    // generate_mesh_(data, center, size_);
     generate_mesh_(voxel_object);
 }
 
 } // namespace entity
-

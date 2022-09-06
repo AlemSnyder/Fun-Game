@@ -22,13 +22,13 @@
 
 #pragma once
 
+#include "json/json.h"
+#include "terrain/terrain.hpp"
+
 #include <glm/glm.hpp>
+
 #include <map>
 #include <vector>
-
-#include "terrain/terrain.hpp"
-#include "json/json.h"
-
 
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
@@ -39,7 +39,7 @@
  *
  */
 class World {
-   public:
+ public:
     /**
      * @brief Construct a new World object
      *
@@ -50,7 +50,7 @@ class World {
      *
      * @param path where world was saved
      */
-    World(const char *path);
+    World(const char* path);
     /**
      * @brief Construct a new World object to test biome generation.
      *
@@ -71,21 +71,22 @@ class World {
      * @return const std::map<int, const Material>* map of materials_id to
      * materials pointer
      */
-    const std::map<int, const terrain::Material> *get_materials() const {
+    const std::map<int, const terrain::Material>* get_materials() const
+    {
         return &materials;
     }
 
     /**
      * @brief Get material from material_id
-     * 
-     * @param material_id 
+     *
+     * @param material_id
      * @return const Material* corresponding material
      */
-    const terrain::Material *get_material(int material_id) const;
+    const terrain::Material* get_material(int material_id) const;
 
     /**
      * @brief Load materials from json data
-     * 
+     *
      * @param material_data data to load from
      * (see) data/materials.json
      */
@@ -93,20 +94,20 @@ class World {
 
     /**
      * @brief Get the mesh using greedy meshing
-     * 
+     *
      * @param indices index of vertex data drawn in this order
      * @param indexed_vertices vertex in 3D space
      * @param indexed_colors color of vertex
      * @param indexed_normals normal of face vertex is a part of
      */
-    void get_mesh_greedy(std::vector<unsigned short> &indices,
-                         std::vector<glm::vec3> &indexed_vertices,
-                         std::vector<glm::vec3> &indexed_colors,
-                         std::vector<glm::vec3> &indexed_normals) const;
+    void get_mesh_greedy(std::vector<unsigned short>& indices,
+                         std::vector<glm::vec3>& indexed_vertices,
+                         std::vector<glm::vec3>& indexed_colors,
+                         std::vector<glm::vec3>& indexed_normals) const;
     // terrain in the world
     terrain::Terrain terrain_main;
-    
-   private:
+
+ private:
     // materials that exist
     std::map<int, const terrain::Material> materials;
 
