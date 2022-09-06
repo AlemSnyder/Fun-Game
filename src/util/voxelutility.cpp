@@ -48,7 +48,6 @@ from_qb(const std::string path, std::vector<uint32_t>& data, std::vector<int>& c
     int8_t name_len;
     READ<int8_t>(name_len, file);
     std::cout << "name length: " << (int)name_len << std::endl;
-    // char* name = (char*) malloc (name_len);
     char* name = new char[name_len];
     fread(name, sizeof(char), name_len, file);
     std::string string_name(name);
@@ -92,11 +91,12 @@ from_qb(const std::string path, std::vector<uint32_t>& data, std::vector<int>& c
     return 0;
 }
 
-VoxelObject::VoxelObject(const char* path)
+VoxelObject::VoxelObject(const std::string path)
 {
     data_ = std::vector<uint32_t>(0);
     center_ = std::vector<int>(0);
     size_ = std::vector<uint32_t>(0);
+
     int test = from_qb(path, data_, center_, size_);
     ok_ = (test == 0);
 }

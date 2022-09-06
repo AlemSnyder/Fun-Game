@@ -17,7 +17,7 @@ class VoxelObject {
     bool ok_;
 
  public:
-    VoxelObject(const char* path);
+    VoxelObject(const std::string path);
 
     inline bool ok() const { return ok_; }
 
