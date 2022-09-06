@@ -529,7 +529,9 @@ Terrain::generate_macro_map(
 
     for (unsigned int i = 0; i < out.size(); i++) {
         auto [x, y, z] = sop(i, size_x, size_y, 1);
-        auto p = ng.getValueNoise(static_cast<double>(x) * spacing, static_cast<double>(y) * spacing);
+        auto p = ng.getValueNoise(
+            static_cast<double>(x) * spacing, static_cast<double>(y) * spacing
+        );
         out[i] = static_cast<int>((p + 1) * (p + 1) * range);
     }
     for (unsigned int i = 0; i < size_x; i++) {
