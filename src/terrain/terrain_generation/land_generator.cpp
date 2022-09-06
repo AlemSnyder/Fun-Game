@@ -48,7 +48,8 @@ LandGenerator::get_num_stamps(Json::Value biome) {
     if (biome["Type"].asString() == "Positions") {
         return biome["Positions"].size();
     } else if (biome["Type"].asString() == "Grid") {
-        return pow(biome[biome["Type"].asString()]["number"].asInt(), 2);
+        int num = biome[biome["Type"].asCString()]["number"].asInt();
+        return num * num;
     } else {
         return biome[biome["Type"].asString()]["number"].asInt();
     }
@@ -57,7 +58,7 @@ LandGenerator::get_num_stamps(Json::Value biome) {
 TileStamp
 LandGenerator::get_this_stamp() const {
     TileStamp out;
-    out.mat = &(*materials).at((int)data_[current_region]["Material_id"].asInt());
+    out.mat = &(*materials).at(data_[current_region]["Material_id"].as<int>());
     out.color_id = data_[current_region]["Color_id"].asInt();
     for (Json::Value::ArrayIndex i = 0; i < data_[current_region]["Can_Stamp"].size();
          i++) {
@@ -88,8 +89,8 @@ LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
     int radius = data_[cr]["Radius"]["radius"].asInt();
     int number = data_[cr]["Radius"]["number"].asInt();
 
-    double distance = (double)(8 * radius) / number * csr;
-    int side = (int)distance / 2 / radius;
+    double distance = static_cast<double>(8 * radius) / number * csr;
+    int side = static_cast<int>(distance) / 2 / radius;
     int x_center, y_center;
 
     if (side == 0) {

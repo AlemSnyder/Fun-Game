@@ -77,7 +77,7 @@ save_terrain(Json::Value biome_data, std::string biome_name) {
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
         world.terrain_main.init(
-            3, 3, 32, 128, 5, (int)i, world.get_materials(), biome_data
+            3, 3, 32, 128, 5, static_cast<int>(i), world.get_materials(), biome_data
         );
         std::string path("../SavedTerrain/");
         path += biome_name;
@@ -119,7 +119,7 @@ path_finder_test(const std::string path, std::string save_path) {
     std::vector<const terrain::Tile*> tile_path =
         world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
-    std::cout << "    " << (int)tile_path.size() << std::endl;
+    std::cout << "    " << static_cast<int>(tile_path.size()) << std::endl;
     if (tile_path.size() == 0) {
         std::cout << "no path" << std::endl;
         world.terrain_main.qb_save_debug(save_path, world.get_materials());
