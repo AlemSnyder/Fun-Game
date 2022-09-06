@@ -3,6 +3,7 @@
 #include "../entity/mesh.hpp"
 #include "../terrain/static_mesh.hpp"
 #include "../terrain/terrain_mesh.hpp"
+#include "../util/files.hpp"
 #include "../world.hpp"
 #include "controls.hpp"
 #include "renderer.hpp"
@@ -32,7 +33,8 @@ GUITest(World world) {
     std::vector<glm::vec3> indexed_vertices_tree;
     std::vector<glm::vec3> indexed_colors_tree;
     std::vector<glm::vec3> indexed_normals_tree;
-    entity::Mesh mesh("./data/models/DefaultTree.qb");
+
+    entity::Mesh mesh(files::get_data_path() / "models" / "DefaultTree.qb");
     mesh.get_mesh(
         indices_tree, indexed_vertices_tree, indexed_colors_tree, indexed_normals_tree
     );
@@ -156,7 +158,8 @@ GUITest(World world) {
 
     // Create and compile our GLSL program from the shaders
     GLuint quad_programID = load_shaders(
-        "./resources/shaders/Passthrough.vert", "./resources/shaders/SimpleTexture.frag"
+        files::get_resources_path() / "shaders" / "Passthrough.vert",
+        files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
     GLuint texID = glGetUniformLocation(quad_programID, "texture");
 

@@ -24,6 +24,7 @@
 
 #include <glm/glm.hpp>
 
+#include <filesystem>
 #include <vector>
 
 namespace entity {
@@ -267,7 +268,7 @@ generate_mesh(
  */
 class Mesh {
  public:
-    Mesh(std::string path);
+    Mesh(std::filesystem::path path);
 
     void get_mesh(
         std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,

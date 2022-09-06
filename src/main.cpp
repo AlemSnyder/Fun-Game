@@ -1,8 +1,10 @@
+#include "config.h"
 #include "entity/mesh.hpp"
 #include "gui/controls.hpp"
 #include "gui/main_gui.hpp"
 #include "gui/shader.hpp"
 #include "terrain/terrain.hpp"
+#include "util/files.hpp"
 #include "world.hpp"
 
 #include <argh.h>
@@ -29,11 +31,11 @@ test1(const std::string path) {
     // C/gcc/terrain_generation";
 
     Json::Value materials_json;
-    std::ifstream materials_file("./data/materials.json", std::ifstream::in);
+    std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
     Json::Value biome_data;
-    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
     World world(materials_json, biome_data);
@@ -46,7 +48,7 @@ test1(const std::string path) {
 int
 test2() {
     Json::Value biome_data;
-    std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
+    std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
     terrain::Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
@@ -79,12 +81,12 @@ save_terrain(Json::Value biome_data, std::string biome_name) {
         world.terrain_main.init(
             3, 3, 32, 128, 5, static_cast<int>(i), world.get_materials(), biome_data
         );
-        std::string path("../SavedTerrain/");
-        path += biome_name;
-        path += "/biome_";
-        path += std::to_string(i);
-        path += ".qb";
-        world.terrain_main.qb_save(path.c_str());
+        std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
+        save_path /= biome_name;
+        save_path /= "biome_";
+        save_path += std::to_string(i);
+        save_path += ".qb";
+        world.terrain_main.qb_save(save_path.string());
     }
     // Json::Value biome_data;
     // std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
@@ -162,6 +164,11 @@ GUITest(const std::string path) {
     return gui::GUITest(world);
 }
 
+inline int
+GUITest(const std::filesystem::path path) {
+    return GUITest(path.string());
+}
+
 int
 main(int argc, char** argv) {
     argh::parser cmdl;
@@ -187,11 +194,15 @@ main(int argc, char** argv) {
     path out = " << path_out << std::endl;
     */
 
+    std::cout << "FunGame v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
+              << VERSION_PATCH << std::endl;
+    std::cout << "Running from " << files::get_root_path() << "." << std::endl;
+
     if (argc == 1) {
-        return GUITest("./data/Models/DefaultTree.qb");
+        return GUITest(files::get_data_path() / "models" / "DefaultTree.qb");
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
-        std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
+        std::ifstream biome_file = files::open_data_file("biome_data.json");
         biome_file >> biome_data;
         std::string biome_name;
         cmdl("biome-name", "Biome_1") >> biome_name;

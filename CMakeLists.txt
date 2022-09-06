@@ -5,16 +5,16 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # set the project name
-project(FunGame)
+project(FunGame VERSION 0.1.0)
 
 # add the executable
 file(GLOB SOURCES1 "src/*.cpp")
 file(GLOB SOURCES2 "src/**/*.cpp")
 file(GLOB SOURCES3 "src/**/**/*.cpp")
 
-file(GLOB SOURCES4 "vendor/*.cpp")
-file(GLOB SOURCES5 "vendor/**/*.cpp")
-file(GLOB SOURCES6 "vendor/**/**/*.cpp")
+file(GLOB SOURCES4 "vendor/*.c*")
+file(GLOB SOURCES5 "vendor/**/*.c*")
+file(GLOB SOURCES6 "vendor/**/**/*.c*")
 
 add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6})
 
@@ -37,8 +37,9 @@ else()
   target_link_libraries(FunGame glm::glm)
 endif()
 
-# Add vendored packages
-include_directories("vendor")
+# Add include dirs for vendored and configured headers
+target_include_directories(FunGame PUBLIC "vendor")
+target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
 # Set warning options
 if(MSVC)
@@ -47,19 +48,29 @@ else()
   target_compile_options(FunGame PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-# Copy resources and data
-add_custom_target(resources
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources
-    COMMENT "copying ${CMAKE_SOURCE_DIR}/resources to ${CMAKE_BINARY_DIR}/resources"
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-)
-add_custom_target(data
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/data
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data
-    COMMENT "copying ${CMAKE_SOURCE_DIR}/data to ${CMAKE_BINARY_DIR}/data"
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-)
+# Resource and data handling
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(SUBDIR_FILE_LOADING 0)
+  message("Debug build, data will be loaded from repo root")
+else()
+  set(SUBDIR_FILE_LOADING 1)
+  message("Debug build, data will be loaded from subdirs")
 
-add_dependencies(FunGame resources)
-add_dependencies(FunGame data)
+  add_custom_target(resources
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources
+      COMMENT "copying ${CMAKE_SOURCE_DIR}/resources to ${CMAKE_BINARY_DIR}/resources"
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  )
+  add_custom_target(data
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/data
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data
+      COMMENT "copying ${CMAKE_SOURCE_DIR}/data to ${CMAKE_BINARY_DIR}/data"
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  )
+
+  add_dependencies(FunGame resources)
+  add_dependencies(FunGame data)
+endif()
+
+configure_file(src/config.h.in config.h)

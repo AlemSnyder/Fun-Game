@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 
 #include "../terrain/terrain_mesh.hpp"
+#include "../util/files.hpp"
 #include "controls.hpp"
 #include "meshloader.hpp"
 #include "shader.hpp"
@@ -14,13 +15,13 @@
 MainRenderer::MainRenderer() {
     // non-indexed program
     programID_single_ = load_shaders(
-        "./resources/shaders/ShadowMapping.vert",
-        "./resources/shaders/ShadowMapping.frag"
+        files::get_resources_path() / "shaders" / "ShadowMapping.vert",
+        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
     );
     // indexed program
     programID_multi_ = load_shaders(
-        "./resources/shaders/ShadowMappingInstanced.vert",
-        "./resources/shaders/ShadowMappingInstanced.frag"
+        files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
+        files::get_resources_path() / "shaders" / "ShadowMappingInstanced.frag"
     );
     // ---- non-indexed program ----
     matrix_ID_ = glGetUniformLocation(programID_single_, "MVP");

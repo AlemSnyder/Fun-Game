@@ -269,7 +269,7 @@ Terrain::get_Z_solid(int x, int y, int z_start) {
     return 0;
 }
 
-inline int
+int
 Terrain::get_Z_solid(int x, int y) {
     return get_Z_solid(x, y, Z_MAX - 1);
 }

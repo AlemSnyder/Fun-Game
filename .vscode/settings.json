@@ -29,6 +29,7 @@
         ".solidarity": "json",
         ".env": "dotenv",
         "*.c": "c",
+        ".clang-tidy": "yaml",
         "iosfwd": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -103,6 +104,8 @@
         "thread": "cpp",
         "typeindex": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "filesystem": "cpp",
+        "CMakeLists.txt": "cmake"
     }
 }
