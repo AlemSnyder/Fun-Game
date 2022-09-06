@@ -1,0 +1,16 @@
+// Version info
+#define VERSION_MAJOR @FunGame_VERSION_MAJOR@
+#define VERSION_MINOR @FunGame_VERSION_MINOR@
+#define VERSION_PATCH @FunGame_VERSION_PATCH@
+
+// Weather to load data and resources from subdirs
+#cmakedefine SUBDIR_FILE_LOADING
+
+// Data and resource paths
+#ifdef SUBDIR_FILE_LOADING
+#    define DATA_PATH      "./data"
+#    define RESOURCES_PATH "./resources"
+#else
+#    define DATA_PATH      "../data"
+#    define RESOURCES_PATH "../resources"
+#endif
