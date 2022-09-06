@@ -17,8 +17,8 @@
 #include <map>
 #include <queue>
 #include <set>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace terrain {
 
@@ -950,7 +950,8 @@ Terrain::compress_color(uint8_t v[4])
 }
 
 int
-Terrain::qb_save_debug(const std::string path, const std::map<int, const Material>* materials)
+Terrain::qb_save_debug(const std::string path,
+                       const std::map<int, const Material>* materials)
 {
     int x = 0;
     for (Chunk& c : chunks) {
