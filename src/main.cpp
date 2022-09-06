@@ -163,6 +163,11 @@ GUITest(const std::string path) {
     return gui::GUITest(world);
 }
 
+inline int
+GUITest(const std::filesystem::path path) {
+    return GUITest(path.string());
+}
+
 int
 main(int argc, char** argv) {
     argh::parser cmdl;
