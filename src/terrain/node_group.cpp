@@ -63,11 +63,13 @@ NodeGroup::merge_groups(NodeGroup other) {
     for (const Tile* t : other.get_tiles()) {
         tiles.insert(t);
     }
+
     for (std::pair<NodeGroup* const, UnitPath> adj : other.get_adjacent_map()) {
         add_adjacent(adj.first, adj.second);
     }
-    path_type_ =
-        path_type_ & other.path_type_; // restrict the ways to get between tiles
+
+    // intersection of the ways to get between tiles
+    path_type_ = path_type_ & other.path_type_;
 
     return other.get_adjacent_map();
 }
