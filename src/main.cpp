@@ -95,7 +95,7 @@ void
 save_all_terrain(Json::Value biome_data) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
-        save_terrain((*biome_type), biome_type.key().asCString());
+        save_terrain(*biome_type, biome_type.key().asString());
     }
 }
 
@@ -201,16 +201,16 @@ main(int argc, char** argv) {
             save_all_terrain(biome_data);
         }
     } else if (run_function == "GenerateTerrain") {
-        return test1(&path_in[0]);
+        return test1(path_in);
     } else if (run_function == "MacroMap") {
         return test2();
     } else if (run_function == "SaveTest") {
-        return save_test(&path_in[0], &path_out[0]);
+        return save_test(path_in, path_out);
     } else if (run_function == "PathFinder") {
-        return path_finder_test(&path_in[0], &path_out[0]);
+        return path_finder_test(path_in, path_out);
     } else if (run_function == "GUITest") {
-        return GUITest(&path_in[0]);
+        return GUITest(path_in);
     } else if (run_function == "WorldGen") {
-        return test1(&path_in[0]);
+        return test1(path_in);
     }
 }
