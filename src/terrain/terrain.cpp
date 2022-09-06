@@ -73,7 +73,9 @@ Terrain::init(
     );
 }
 
-Terrain::Terrain(const std::string path, const std::map<int, const Material>* material) {
+Terrain::Terrain(
+    const std::string path, const std::map<int, const Material>* material
+) {
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials;
     for (auto it = material->begin(); it != material->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {

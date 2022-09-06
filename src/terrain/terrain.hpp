@@ -726,8 +726,9 @@ class Terrain {
      * @param materials materials in the terrain for debug materials
      * @return int success status
      */
-    int qb_save_debug(const std::string path,
-                      const std::map<int, const Material>* materials);
+    int qb_save_debug(
+        const std::string path, const std::map<int, const Material>* materials
+    );
     /**
      * @brief save to path
      *
