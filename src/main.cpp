@@ -191,7 +191,7 @@ main(int argc, char** argv) {
     std::cout << "Running from " << files::get_root_path() << "." << std::endl;
 
     if (argc == 1) {
-        return GUITest(files::get_data_path() / "Models" / "DefaultTree.qb");
+        return GUITest(files::get_data_path() / "models" / "DefaultTree.qb");
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
         std::ifstream biome_file = files::open_data_file("biome_data.json");
