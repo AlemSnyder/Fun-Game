@@ -28,24 +28,22 @@ namespace terrain {
 
 namespace terrain_generation {
 
-LandGenerator::LandGenerator(const std::map<int, const Material>* materials_,
-                             Json::Value data)
-{
+LandGenerator::LandGenerator(
+    const std::map<int, const Material>* materials_, Json::Value data
+) {
     materials = materials_;
     data_ = data;
     current_region = 0;
     current_sub_region = 0;
 }
 
-LandGenerator::LandGenerator()
-{
+LandGenerator::LandGenerator() {
     current_region = 0;
     current_sub_region = 0;
 }
 
 unsigned int
-LandGenerator::get_num_stamps(Json::Value biome)
-{
+LandGenerator::get_num_stamps(Json::Value biome) {
     if (biome["Type"].asCString() == std::string("Positions")) {
         return biome["Positions"].size();
     } else if (biome["Type"].asCString() == std::string("Grid")) {
@@ -56,8 +54,7 @@ LandGenerator::get_num_stamps(Json::Value biome)
 }
 
 TileStamp
-LandGenerator::get_this_stamp() const
-{
+LandGenerator::get_this_stamp() const {
     TileStamp out;
     out.mat = &(*materials).at((int)data_[current_region]["Material_id"].asInt());
     out.color_id = data_[current_region]["Color_id"].asInt();
@@ -86,8 +83,7 @@ LandGenerator::get_this_stamp() const
 }
 
 void
-LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const
-{
+LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
     int radius = data_[cr]["Radius"]["radius"].asInt();
     double distance =
         (double)(8 * radius) / data_[cr]["Radius"]["number"].asInt() * csr;
@@ -116,9 +112,10 @@ LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const
         {x_center + DC, y_center + DC}
     };
 
-    std::array<int, 6> volume =
-        get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-                   data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
+    std::array<int, 6> volume = get_volume(
+        center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
+        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
+    );
 
     ts.x_start = volume[0];
     ts.y_start = volume[1];
@@ -129,16 +126,15 @@ LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const
 }
 
 void
-LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const
-{
-    int x_center = (1 + 2 * (csr % data_[cr]["Grid"]["number"].asInt()))
-                       * (data_[cr]["Grid"]["radius"].asInt()
-                          / data_[cr]["Grid"]["number"].asInt())
-                   - data_[cr]["Grid"]["radius"].asInt();
-    int y_center = (1 + 2 * (csr / data_[cr]["Grid"]["number"].asInt()))
-                       * (data_[cr]["Grid"]["radius"].asInt()
-                          / data_[cr]["Grid"]["number"].asInt())
-                   - data_[cr]["Grid"]["radius"].asInt();
+LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const {
+    int x_center =
+        (1 + 2 * (csr % data_[cr]["Grid"]["number"].asInt())
+        ) * (data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt())
+        - data_[cr]["Grid"]["radius"].asInt();
+    int y_center =
+        (1 + 2 * (csr / data_[cr]["Grid"]["number"].asInt())
+        ) * (data_[cr]["Grid"]["radius"].asInt() / data_[cr]["Grid"]["number"].asInt())
+        - data_[cr]["Grid"]["radius"].asInt();
     int DC = data_[cr]["Grid"]["DC"].asInt();
 
     int center[2][2] = {
@@ -146,9 +142,10 @@ LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const
         {x_center + DC, y_center + DC}
     };
 
-    std::array<int, 6> volume =
-        get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-                   data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
+    std::array<int, 6> volume = get_volume(
+        center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
+        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
+    );
 
     ts.x_start = volume[0];
     ts.y_start = volume[1];
@@ -159,17 +156,17 @@ LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const
 }
 
 void
-LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const
-{
+LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const {
     Json::Value xy_positions = data_[cr]["Positions"][csr];
     int center[2][2] = {
         {xy_positions[0].asInt(), xy_positions[1].asInt()},
         {xy_positions[0].asInt(), xy_positions[1].asInt()}
     };
 
-    std::array<int, 6> volume =
-        get_volume(center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-                   data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt());
+    std::array<int, 6> volume = get_volume(
+        center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
+        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
+    );
 
     ts.x_start = volume[0];
     ts.y_start = volume[1];
@@ -180,8 +177,7 @@ LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const
 }
 
 std::array<int, 6>
-LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const
-{
+LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const {
     int center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
     int center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
     int size_x = rand() % (2 * Dxy + 1) + Sxy - Dxy;

@@ -7,22 +7,21 @@
 namespace terrain {
 
 double
-terrain_generation::NoiseGenerator::getValueNoise(double x, double y)
-{
+terrain_generation::NoiseGenerator::getValueNoise(double x, double y) {
     double total = 0, frequency = pow(2, num_octaves_), amplitude = 1;
     for (int i = 0; i < num_octaves_; ++i) {
         frequency /= 2;
         amplitude *= persistence_;
-        total += interpolated_noise_((primeIndex_ + i) % maxPrimeIndex, x / frequency,
-                                     y / frequency)
+        total += interpolated_noise_(
+                     (primeIndex_ + i) % maxPrimeIndex, x / frequency, y / frequency
+                 )
                  * amplitude;
     }
     return total / frequency;
 }
 
 double
-terrain_generation::NoiseGenerator::noise_(int i, int x, int y)
-{
+terrain_generation::NoiseGenerator::noise_(int i, int x, int y) {
     int n = x + y * 57;
     n = (n << 13) ^ n;
     int a = primes[i][0], b = primes[i][1], c = primes[i][2];
@@ -31,8 +30,7 @@ terrain_generation::NoiseGenerator::noise_(int i, int x, int y)
 }
 
 double
-terrain_generation::NoiseGenerator::smoothed_noise_(int i, int x, int y)
-{
+terrain_generation::NoiseGenerator::smoothed_noise_(int i, int x, int y) {
     double corners = (noise_(i, x - 1, y - 1) + noise_(i, x + 1, y - 1)
                       + noise_(i, x - 1, y + 1) + noise_(i, x + 1, y + 1))
                      / 16,
@@ -44,15 +42,15 @@ terrain_generation::NoiseGenerator::smoothed_noise_(int i, int x, int y)
 }
 
 double
-terrain_generation::NoiseGenerator::interpolate_(double a, double b, double x)
-{ // cosine interpolation
+terrain_generation::NoiseGenerator::interpolate_(
+    double a, double b, double x
+) { // cosine interpolation
     double ft = x * 3.1415927, f = (1 - cos(ft)) * 0.5;
     return a * (1 - f) + b * f;
 }
 
 double
-terrain_generation::NoiseGenerator::interpolated_noise_(int i, double x, double y)
-{
+terrain_generation::NoiseGenerator::interpolated_noise_(int i, double x, double y) {
     int integer_X = x;
     double fractional_X = x - integer_X;
     int integer_Y = y;

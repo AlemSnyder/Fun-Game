@@ -84,23 +84,23 @@ class Terrain {
 
     // write to file
     template <typename T>
-    void WRITE(T v, FILE* file) const
-    {
+    void WRITE(T v, FILE* file) const {
         fwrite(&v, sizeof(T), 1, file);
     }
 
     // read from file
     template <typename T>
-    void READ(T& v, FILE* file) const
-    {
+    void READ(T& v, FILE* file) const {
         fread(&v, sizeof(T), 1, file);
     }
 
     // save color at sop, to color
     void export_color(const int sop[3], uint8_t color[4]) const;
     // find color v in map, and save material to mat_, and color id to color_id
-    void get_mat_from_qb(const std::map<int, const Material>* materials, uint8_t v[4],
-                         Material*& mat_, uint8_t& color_id);
+    void get_mat_from_qb(
+        const std::map<int, const Material>* materials, uint8_t v[4], Material*& mat_,
+        uint8_t& color_id
+    );
     // convert 4 int 8 to 1 int 32 (reversed order)
     uint32_t compress_color(uint8_t v[4]);
     // create unit paths for this tile, and all it's adjacent tiles
@@ -108,9 +108,9 @@ class Terrain {
 
     // trace nodes through parents to reach start
     template <class T>
-    void get_path_through_nodes(Node<const T>* node, std::vector<const T*>& out,
-                                const T* start) const
-    {
+    void get_path_through_nodes(
+        Node<const T>* node, std::vector<const T*>& out, const T* start
+    ) const {
         out.push_back(node->get_tile());
         if (start == node->get_tile()) {
             return;
@@ -170,8 +170,7 @@ class Terrain {
      * @param z z coordinate
      * @return int
      */
-    int pos(int x, int y, int z) const
-    { // for loops should go z than y than x
+    int pos(int x, int y, int z) const { // for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
     }
 
@@ -181,13 +180,11 @@ class Terrain {
      * @param sop coordinate as an array
      * @return int
      */
-    int pos(const std::array<int, 3> sop) const
-    {
+    int pos(const std::array<int, 3> sop) const {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
-    int pos(const int sop[3]) const
-    {
+    int pos(const int sop[3]) const {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
@@ -205,8 +202,7 @@ class Terrain {
      * @param tile tile to find position of
      * @return int
      */
-    int pos(const Tile tile) const
-    {
+    int pos(const Tile tile) const {
         return pos(tile.get_x(), tile.get_y(), tile.get_z());
     }
 
@@ -216,8 +212,7 @@ class Terrain {
      * @param xyz vector index
      * @return const std::array<int, 3> position in space
      */
-    const std::array<int, 3> sop(int xyz)
-    {
+    const std::array<int, 3> sop(int xyz) {
         return {xyz / (Y_MAX * Z_MAX), (xyz / Z_MAX) % Y_MAX, xyz % (Z_MAX)};
     }
 
@@ -230,8 +225,7 @@ class Terrain {
      * @param zm length in z direction
      * @return std::array<int, 3> position in 3D space
      */
-    static std::array<int, 3> sop(int xyz, int xm, int ym, int zm)
-    {
+    static std::array<int, 3> sop(int xyz, int xm, int ym, int zm) {
         if (xyz >= xm * ym * zm) {
             throw std::invalid_argument("index out of range");
         }
@@ -253,8 +247,8 @@ class Terrain {
      * @param map_data json data on how to generate map
      * @return std::vector<int> (size_x * size_y) vector of ints
      */
-    static std::vector<int> generate_macro_map(unsigned int size_x, unsigned int size_y,
-                                               Json::Value map_data);
+    static std::vector<int>
+    generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value map_data);
     /**
      * @brief add material on top of extant voxels
      *
@@ -300,9 +294,11 @@ class Terrain {
      * @param biome_data data on how to generate a biome
      * @param Terrain_Maps macro map defines witch tile types go where
      */
-    void init(int x, int y, int Area_size_, int z, int seed,
-              const std::map<int, const Material>* materials, Json::Value biome_data,
-              std::vector<int> Terrain_Maps);
+    void init(
+        int x, int y, int Area_size_, int z, int seed,
+        const std::map<int, const Material>* materials, Json::Value biome_data,
+        std::vector<int> Terrain_Maps
+    );
     /**
      * @brief Terrain initializer for biome test
      *
@@ -315,9 +311,10 @@ class Terrain {
      * @param material set of materials used in the world
      * @param biome_data json data that contains biome data
      */
-    void init(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-              int tile_type, const std::map<int, const Material>* material,
-              Json::Value biome_data);
+    void init(
+        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
+        const std::map<int, const Material>* material, Json::Value biome_data
+    );
     /**
      * @brief Construct a new Terrain object (default constructor)
      *
@@ -337,9 +334,11 @@ class Terrain {
      * distance
      * @param grass_mid gradient index of grass not effected by an edge
      */
-    Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-            const std::map<int, const Material>* material, Json::Value biome_data,
-            std::vector<int> grass_grad_data, int grass_mid);
+    Terrain(
+        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
+        const std::map<int, const Material>* material, Json::Value biome_data,
+        std::vector<int> grass_grad_data, int grass_mid
+    );
     /**
      * @brief Construct a new Terrain object
      *
@@ -352,9 +351,10 @@ class Terrain {
      * @param material set of materials used in the world
      * @param biome_data json data that contains biome data
      */
-    Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-            int tile_type, const std::map<int, const Material>* material,
-            Json::Value biome_data);
+    Terrain(
+        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
+        const std::map<int, const Material>* material, Json::Value biome_data
+    );
     /**
      * @brief Construct a new Terrain object
      *
@@ -374,9 +374,10 @@ class Terrain {
      * @return std::set<Node<const T> *> adjacent nodes
      */
     template <class T>
-    std::set<Node<const T>*>
-    get_adjacent_nodes(const Node<const T>* const node,
-                       std::map<const T*, Node<const T>>& nodes, uint8_t type) const;
+    std::set<Node<const T>*> get_adjacent_nodes(
+        const Node<const T>* const node, std::map<const T*, Node<const T>>& nodes,
+        uint8_t type
+    ) const;
 
     // std::vector<Chunk> get_chunks() { return chunks; }
     /**
@@ -439,8 +440,7 @@ class Terrain {
      *
      * @return std::vector<unsigned int> vector of sizes
      */
-    inline std::vector<unsigned int> get_size() const
-    {
+    inline std::vector<unsigned int> get_size() const {
         return {(unsigned int)X_MAX, (unsigned int)Y_MAX, (unsigned int)Z_MAX};
     }
 
@@ -460,8 +460,7 @@ class Terrain {
      * @return true tile is in bounds
      * @return false tile is not in bounds
      */
-    inline bool in_range(int x, int y, int z) const
-    {
+    inline bool in_range(int x, int y, int z) const {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
     }
 
@@ -473,8 +472,7 @@ class Terrain {
      * @param z z position
      * @return Tile* tile at given position
      */
-    Tile* get_tile(int x, int y, int z)
-    {
+    Tile* get_tile(int x, int y, int z) {
         if (!in_range(x, y, z)) {
             std::cout << x << ";" << y << ";" << z << "\n";
             throw std::invalid_argument("index out of range");
@@ -483,8 +481,7 @@ class Terrain {
         }
     };
 
-    Tile* get_tile(int xyz)
-    {
+    Tile* get_tile(int xyz) {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
             std::cout << xyz << "\n";
             throw std::invalid_argument("index out of range");
@@ -501,8 +498,7 @@ class Terrain {
      * @param z z position
      * @return Tile* tile at given position
      */
-    const Tile* get_tile(int x, int y, int z) const
-    {
+    const Tile* get_tile(int x, int y, int z) const {
         if ((x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 0)) {
             std::cout << x << ";" << y << ";" << z << "\n";
             throw std::invalid_argument("index out of range");
@@ -517,8 +513,7 @@ class Terrain {
      * @param xyz tile index
      * @return const Tile* tile at index
      */
-    const Tile* get_tile(int xyz) const
-    {
+    const Tile* get_tile(int xyz) const {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
             std::cout << xyz << "\n";
             throw std::invalid_argument("index out of range");
@@ -535,8 +530,7 @@ class Terrain {
      * @param z z position
      * @return uint32_t color or tile
      */
-    uint32_t get_voxel(int x, int y, int z) const
-    {
+    uint32_t get_voxel(int x, int y, int z) const {
         if (in_range(x, y, z)) {
             return tiles[pos(x, y, z)].get_color();
         }
@@ -572,8 +566,7 @@ class Terrain {
      * @param mat materials set to
      * @param color_id color id set to
      */
-    inline void set_tile_material(Tile* tile, const Material* mat, uint8_t color_id)
-    {
+    inline void set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
         tile->set_material(mat);
         tile->set_color_id(color_id);
     }
@@ -589,8 +582,10 @@ class Terrain {
      * @param z_end greater z position
      * @param mat materials to set
      */
-    void set_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end,
-                         int z_end, const Material* mat);
+    void set_tile_region(
+        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        const Material* mat
+    );
 
     /**
      * @brief Set a group of tiles
@@ -599,13 +594,14 @@ class Terrain {
      * @param x macro map x position
      * @param y macro map y position
      */
-    inline void stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y)
-    {
-        stamp_tile_region(tStamp.x_start + x * Area_size + Area_size / 2,
-                          tStamp.y_start + y * Area_size + Area_size / 2,
-                          tStamp.z_start, tStamp.x_end + x * Area_size + Area_size / 2,
-                          tStamp.y_end + y * Area_size + Area_size / 2, tStamp.z_end,
-                          tStamp.mat, tStamp.elements_can_stamp, tStamp.color_id);
+    inline void stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y) {
+        stamp_tile_region(
+            tStamp.x_start + x * Area_size + Area_size / 2,
+            tStamp.y_start + y * Area_size + Area_size / 2, tStamp.z_start,
+            tStamp.x_end + x * Area_size + Area_size / 2,
+            tStamp.y_end + y * Area_size + Area_size / 2, tStamp.z_end, tStamp.mat,
+            tStamp.elements_can_stamp, tStamp.color_id
+        );
     }
 
     /**
@@ -620,8 +616,10 @@ class Terrain {
      * @param mat materials to set
      * @param color_id color id to set
      */
-    void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end,
-                           int z_end, const Material* mat, uint8_t color_id);
+    void stamp_tile_region(
+        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        const Material* mat, uint8_t color_id
+    );
     /**
      * @brief Set a group of tiles
      *
@@ -635,10 +633,11 @@ class Terrain {
      * @param elements_can_stamp type of material that can be changed
      * @param color_id color id to set
      */
-    void stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end,
-                           int z_end, const Material* mat,
-                           std::set<std::pair<int, int>> elements_can_stamp,
-                           uint8_t color_id);
+    void stamp_tile_region(
+        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        const Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
+        uint8_t color_id
+    );
     /**
      * @brief initialize grass
      *
@@ -664,8 +663,7 @@ class Terrain {
      * @return true can stand
      * @return false cannot stand
      */
-    inline bool can_stand_1(int x, int y, int z) const
-    {
+    inline bool can_stand_1(int x, int y, int z) const {
         return can_stand(x, y, z, 1, 1);
     }
 
@@ -754,9 +752,10 @@ class Terrain {
      * @param materials materials in the terrain
      * @return int success status
      */
-    int
-    qb_read(const char* path,
-            const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials);
+    int qb_read(
+        const char* path,
+        const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
+    );
     /**
      * @brief get all nod groups
      *
@@ -778,8 +777,8 @@ class Terrain {
      * @param goal end NodeGroup
      * @return std::vector<const NodeGroup *> path
      */
-    std::vector<const NodeGroup*> get_path_Astar(const NodeGroup* start,
-                                                 const NodeGroup* goal);
+    std::vector<const NodeGroup*>
+    get_path_Astar(const NodeGroup* start, const NodeGroup* goal);
     /**
      * @brief Get a path between start, and any goal using the breadth first algorithm
      *
@@ -787,8 +786,8 @@ class Terrain {
      * @param goal set of excitable goals
      * @return std::vector<const Tile *> path to closest goal
      */
-    std::vector<const Tile*> get_path_breadth_first(const Tile* start,
-                                                    const std::set<const Tile*> goal);
+    std::vector<const Tile*>
+    get_path_breadth_first(const Tile* start, const std::set<const Tile*> goal);
     /**
      * @brief Get a path between start, and any goal using the breadth first algorithm
      *
@@ -796,9 +795,9 @@ class Terrain {
      * @param goal set of excitable goals
      * @return std::vector<const NodeGroup *> path to closest goal
      */
-    std::vector<const NodeGroup*>
-    get_path_breadth_first(const NodeGroup* start,
-                           const std::set<const NodeGroup*> goal);
+    std::vector<const NodeGroup*> get_path_breadth_first(
+        const NodeGroup* start, const std::set<const NodeGroup*> goal
+    );
     /**
      * @brief Get the path from start to a goal optimized by compare
      *
@@ -810,10 +809,11 @@ class Terrain {
      * @return std::vector<const T *> path optimized by compare
      */
     template <class T>
-    std::vector<const T*>
-    get_path(const T* start, const std::set<const T*> goal,
-             const std::set<const T*> search_through,
-             std::function<bool(Node<const T>*, Node<const T>*)> compare) const;
+    std::vector<const T*> get_path(
+        const T* start, const std::set<const T*> goal,
+        const std::set<const T*> search_through,
+        std::function<bool(Node<const T>*, Node<const T>*)> compare
+    ) const;
     /**
      * @brief initialize chunks
      *
@@ -845,8 +845,9 @@ class Terrain {
      * @param guess expected height (for speed)
      * @return int height
      */
-    int get_first_not(const std::set<std::pair<int, int>> materials, int x, int y,
-                      int guess) const;
+    int get_first_not(
+        const std::set<std::pair<int, int>> materials, int x, int y, int guess
+    ) const;
 };
 
 } // namespace terrain

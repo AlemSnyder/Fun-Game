@@ -26,8 +26,7 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
     unsigned int num_models_;
 
  public:
-    inline StaticMesh(const StaticMesh& obj)
-    {
+    inline StaticMesh(const StaticMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -38,8 +37,7 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
     };
 
     // copy operator
-    inline StaticMesh& operator=(const StaticMesh& obj)
-    {
+    inline StaticMesh& operator=(const StaticMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -52,14 +50,13 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
 
     inline StaticMesh(){};
 
-    StaticMesh(std::vector<unsigned short>& indices,
-               std::vector<glm::vec3>& indexed_vertices,
-               std::vector<glm::vec3>& indexed_colors,
-               std::vector<glm::vec3>& indexed_normals,
-               std::vector<glm::vec3>& model_transforms);
+    StaticMesh(
+        std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
+        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals,
+        std::vector<glm::vec3>& model_transforms
+    );
 
-    inline ~StaticMesh()
-    {
+    inline ~StaticMesh() {
         glDeleteBuffers(1, &vertex_buffer_);
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);

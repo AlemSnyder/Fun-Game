@@ -163,8 +163,9 @@ class Tile {
      * @param grass_mid index of color not effected by edge affects
      * @param grass_colors grass color vector
      */
-    void set_grass_color(int grass_grad_length, int grass_mid,
-                         std::vector<uint8_t> grass_colors);
+    void set_grass_color(
+        int grass_grad_length, int grass_mid, std::vector<uint8_t> grass_colors
+    );
 
     // Getters
     /**
@@ -254,8 +255,8 @@ class Tile {
      * @param tile tile to add
      * @param type path type
      */
-    void add_adjacent(std::map<Tile*, UnitPath>::iterator it, Tile* tile,
-                      UnitPath type);
+    void
+    add_adjacent(std::map<Tile*, UnitPath>::iterator it, Tile* tile, UnitPath type);
     /**
      * @brief clear the adjacent tiles
      *
@@ -274,8 +275,7 @@ class Tile {
      *
      * @return std::map<Tile *, UnitPath, TilePCompare>& map of adjacent tile to
      */
-    const std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() const
-    {
+    const std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() const {
         return adjacent;
     };
 
@@ -302,13 +302,11 @@ class Tile {
      */
     inline bool is_solid() const { return solid; }
 
-    bool operator==(const Tile other) const
-    {
+    bool operator==(const Tile other) const {
         return (this->x == other.x && this->y == other.y && this->z == other.z);
     }
 
-    bool operator==(const Tile* other) const
-    {
+    bool operator==(const Tile* other) const {
         return (this->x == other->x && this->y == other->y && this->z == other->z);
     }
 

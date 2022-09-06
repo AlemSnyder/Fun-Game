@@ -1,7 +1,7 @@
 ---
 Language: Cpp
 AccessModifierOffset: -3
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Left
 AlignConsecutiveAssignments: None
 AlignConsecutiveBitFields: None
@@ -50,7 +50,7 @@ BraceWrapping:
   SplitEmptyNamespace: true
 BreakAfterJavaFieldAnnotations: true
 BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: WebKit
+BreakBeforeBraces: Attach
 BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon

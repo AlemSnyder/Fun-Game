@@ -5,8 +5,7 @@
 
 namespace terrain {
 
-Chunk::Chunk(int bx, int by, int bz, Terrain* ter)
-{
+Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
     ter_ = ter;
     Cx_ = bx;
     Cy_ = by;
@@ -17,8 +16,9 @@ Chunk::Chunk(int bx, int by, int bz, Terrain* ter)
                 if (ter->can_stand_1(x, y, z)) {
                     NodeGroup group = NodeGroup(
                         ter->get_tile(x, y, z),
-                        31); // the int determines which paths between two tiles are
-                             // compliant 31 means anything that is not opposite corner.
+                        31
+                    ); // the int determines which paths between two tiles are
+                       // compliant 31 means anything that is not opposite corner.
                     // look at onePath for more information
                     node_groups_.push_back(group);
                     ter->add_node_group(&node_groups_.back());
@@ -49,8 +49,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain* ter)
 }
 
 void
-Chunk::R_merge(NodeGroup& G1, std::set<NodeGroup*>& to_merge)
-{
+Chunk::R_merge(NodeGroup& G1, std::set<NodeGroup*>& to_merge) {
     if (to_merge.size() == 0) {
         return;
     }
@@ -72,8 +71,7 @@ Chunk::R_merge(NodeGroup& G1, std::set<NodeGroup*>& to_merge)
 }
 
 void
-Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const
-{
+Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const {
     for (auto it = node_groups_.begin(); it != node_groups_.end(); it++) {
         auto& elem = *it;
         out.insert(&elem); // Ptr to element
@@ -81,8 +79,7 @@ Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const
 }
 
 void
-Chunk::delNodeGroup(NodeGroup& NG)
-{
+Chunk::delNodeGroup(NodeGroup& NG) {
     // remove form ter. tile to group map
     ter_->remove_node_group(&NG);
     for (std::pair<NodeGroup* const, UnitPath>& adjacent : NG.get_adjacent_map()) {
@@ -92,8 +89,7 @@ Chunk::delNodeGroup(NodeGroup& NG)
 }
 
 void
-Chunk::mergeNodeGroup(NodeGroup& G1, NodeGroup& G2)
-{
+Chunk::mergeNodeGroup(NodeGroup& G1, NodeGroup& G2) {
     G1.merge_groups(G2);
     delNodeGroup(G2);
     // return out;
@@ -101,12 +97,12 @@ Chunk::mergeNodeGroup(NodeGroup& G1, NodeGroup& G2)
 }
 
 inline bool
-Chunk::contains_nodeGroup(NodeGroup* NG)
-{
-    return (NG->get_center_x() >= size * Cx_ && NG->get_center_x() < size * (1 + Cx_)
-            && NG->get_center_y() >= size * Cy_ && NG->get_center_y() < size * (1 + Cy_)
-            && NG->get_center_z() >= size * Cz_
-            && NG->get_center_z() < size * (1 + Cz_));
+Chunk::contains_nodeGroup(NodeGroup* NG) {
+    return (
+        NG->get_center_x() >= size * Cx_ && NG->get_center_x() < size * (1 + Cx_)
+        && NG->get_center_y() >= size * Cy_ && NG->get_center_y() < size * (1 + Cy_)
+        && NG->get_center_z() >= size * Cz_ && NG->get_center_z() < size * (1 + Cz_)
+    );
 }
 
 } // namespace terrain

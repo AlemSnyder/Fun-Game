@@ -23,16 +23,16 @@ namespace terrain {
 
 int Terrain::Area_size = 32;
 
-Terrain::Terrain()
-{
+Terrain::Terrain() {
     init_old(1, 1, 1);
     seed = 0;
 }
 
-Terrain::Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-                 const std::map<int, const Material>* material, Json::Value biome_data,
-                 std::vector<int> grass_grad_data, int grass_mid_)
-{
+Terrain::Terrain(
+    int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
+    const std::map<int, const Material>* material, Json::Value biome_data,
+    std::vector<int> grass_grad_data, int grass_mid_
+) {
     if (grass_mid_ < 0) {
         grass_mid_ = 0;
     }
@@ -45,38 +45,42 @@ Terrain::Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed
         }
     }
     grass_grad_length = grass_colors.size();
-    init(x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
-         generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"]));
+    init(
+        x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
+        generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"])
+    );
 }
 
-Terrain::Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-                 int tile_type, const std::map<int, const Material>* material,
-                 Json::Value biome_data)
-{
+Terrain::Terrain(
+    int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
+    const std::map<int, const Material>* material, Json::Value biome_data
+) {
     init(x_tiles, y_tiles, Area_size_, z_tiles, seed, tile_type, material, biome_data);
 }
 
 void
-Terrain::init(int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-              int tile_type, const std::map<int, const Material>* material,
-              Json::Value biome_data)
-{
+Terrain::init(
+    int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
+    const std::map<int, const Material>* material, Json::Value biome_data
+) {
     std::vector<int> Terrain_Maps;
     Terrain_Maps.resize(x_tiles * y_tiles, 0);
     Terrain_Maps[(x_tiles * y_tiles - 1) / 2] = tile_type;
-    init(x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
-         Terrain_Maps);
+    init(
+        x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data, Terrain_Maps
+    );
 }
 
-Terrain::Terrain(const char* path, const std::map<int, const Material>* material)
-{
+Terrain::Terrain(const char* path, const std::map<int, const Material>* material) {
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials;
     for (auto it = material->begin(); it != material->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
             materials.insert(
                 std::map<uint32_t, std::pair<const Material*, uint8_t>>::value_type(
                     it->second.color.at(color_id).second,
-                    std::make_pair(&it->second, (uint8_t)color_id)));
+                    std::make_pair(&it->second, (uint8_t)color_id)
+                )
+            );
         }
     }
     int test = qb_read(path, &materials);
@@ -93,8 +97,7 @@ Terrain::Terrain(const char* path, const std::map<int, const Material>* material
 }
 
 void
-Terrain::init_old(int x, int y, int z)
-{
+Terrain::init_old(int x, int y, int z) {
     X_MAX = x;
     Y_MAX = y;
     Z_MAX = z;
@@ -105,10 +108,11 @@ Terrain::init_old(int x, int y, int z)
 }
 
 void
-Terrain::init(int x, int y, int Area_size_, int z, int seed_,
-              const std::map<int, const Material>* materials, Json::Value biome_data,
-              std::vector<int> Terrain_Maps)
-{
+Terrain::init(
+    int x, int y, int Area_size_, int z, int seed_,
+    const std::map<int, const Material>* materials, Json::Value biome_data,
+    std::vector<int> Terrain_Maps
+) {
     auto millisec_since_epoch = time_util::get_time();
 
     Area_size = Area_size_;
@@ -133,7 +137,8 @@ Terrain::init(int x, int y, int Area_size_, int z, int seed_,
     for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
         // create a land generator for each tile macro
         terrain_generation::LandGenerator gen(
-            materials, biome_data["Tile_Macros"][i]["Land_Data"]);
+            materials, biome_data["Tile_Macros"][i]["Land_Data"]
+        );
         land_generators.insert(std::make_pair(i, gen));
     }
 
@@ -166,8 +171,7 @@ Terrain::init(int x, int y, int Area_size_, int z, int seed_,
 }
 
 void
-Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen)
-{
+Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen) {
     // int count = 0;
     while (!gen.empty()) {
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
@@ -179,8 +183,7 @@ Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen
 }
 
 void
-Terrain::init_chunks()
-{
+Terrain::init_chunks() {
     for (int xyz = 0;
          xyz < ((X_MAX - 1) / Chunk::size + 1) * ((Y_MAX - 1) / Chunk::size + 1)
                    * ((Z_MAX - 1) / Chunk::size + 1);
@@ -193,9 +196,9 @@ Terrain::init_chunks()
 }
 
 void
-Terrain::add_to_top(Json::Value top_data,
-                    const std::map<int, const Material>* materials)
-{
+Terrain::add_to_top(
+    Json::Value top_data, const std::map<int, const Material>* materials
+) {
     std::set<std::pair<int, int>> material_type;
 
     // std::cout << top_data << std::endl;
@@ -227,16 +230,17 @@ Terrain::add_to_top(Json::Value top_data,
             //  stop_h = get stop height (guess, top_data["how_to_add"])
             int max_height = get_stop_height(guess, top_data["how_to_add"]);
             for (int z = guess; z < max_height; z++) {
-                set_tile_material(get_tile(x, y, z),
-                                  &(*materials).at(top_data["Material_id"].asInt()),
-                                  top_data["Color_id"].asInt());
+                set_tile_material(
+                    get_tile(x, y, z),
+                    &(*materials).at(top_data["Material_id"].asInt()),
+                    top_data["Color_id"].asInt()
+                );
             }
         }
 }
 
 int
-Terrain::get_stop_height(int height, const Json::Value how_to_add)
-{
+Terrain::get_stop_height(int height, const Json::Value how_to_add) {
     for (unsigned int i = 0; i < how_to_add.size(); i++) {
         if (height >= how_to_add[i]["from"][0].asInt()
             && height < how_to_add[i]["from"][1].asInt()) {
@@ -252,8 +256,7 @@ Terrain::get_stop_height(int height, const Json::Value how_to_add)
 }
 
 int
-Terrain::get_Z_solid(int x, int y, int z_start)
-{
+Terrain::get_Z_solid(int x, int y, int z_start) {
     for (int z = z_start; z >= 0; z--) {
         if (this->get_tile(x, y, z)->is_solid()) {
             return z;
@@ -263,36 +266,38 @@ Terrain::get_Z_solid(int x, int y, int z_start)
 }
 
 inline int
-Terrain::get_Z_solid(int x, int y)
-{
+Terrain::get_Z_solid(int x, int y) {
     return get_Z_solid(x, y, Z_MAX - 1);
 }
 
 int
-Terrain::get_first_not(const std::set<std::pair<int, int>> materials, int x, int y,
-                       int guess) const
-{
+Terrain::get_first_not(
+    const std::set<std::pair<int, int>> materials, int x, int y, int guess
+) const {
     if (guess < 1) {
         guess = 1;
     }
     if (guess >= Z_MAX) {
         guess = Z_MAX - 1;
     }
-    if (materials.find(
-            std::make_pair(get_tile(x, y, guess - 1)->get_material()->element_id,
-                           get_tile(x, y, guess - 1)->get_color_id()))
+    if (materials.find(std::make_pair(
+            get_tile(x, y, guess - 1)->get_material()->element_id,
+            get_tile(x, y, guess - 1)->get_color_id()
+        ))
         != materials.end()) {
-        if (materials.find(
-                std::make_pair(get_tile(x, y, guess)->get_material()->element_id,
-                               get_tile(x, y, guess)->get_color_id()))
+        if (materials.find(std::make_pair(
+                get_tile(x, y, guess)->get_material()->element_id,
+                get_tile(x, y, guess)->get_color_id()
+            ))
             == materials.end()) {
             return guess;
         } else {
             // go up
             for (int z = guess + 1; z < Z_MAX; z++) {
-                if (materials.find(
-                        std::make_pair(get_tile(x, y, z)->get_material()->element_id,
-                                       get_tile(x, y, z)->get_color_id()))
+                if (materials.find(std::make_pair(
+                        get_tile(x, y, z)->get_material()->element_id,
+                        get_tile(x, y, z)->get_color_id()
+                    ))
                     == materials.end()) {
                     return z;
                 }
@@ -302,9 +307,10 @@ Terrain::get_first_not(const std::set<std::pair<int, int>> materials, int x, int
     } else {
         // go down
         for (int z = guess - 2; z > 0; z--) {
-            if (materials.find(
-                    std::make_pair(get_tile(x, y, z)->get_material()->element_id,
-                                   get_tile(x, y, z)->get_color_id()))
+            if (materials.find(std::make_pair(
+                    get_tile(x, y, z)->get_material()->element_id,
+                    get_tile(x, y, z)->get_color_id()
+                ))
                 != materials.end()) {
                 return z + 1;
             }
@@ -314,8 +320,7 @@ Terrain::get_first_not(const std::set<std::pair<int, int>> materials, int x, int
 }
 
 bool
-Terrain::can_stand(int x, int y, int z, int dz, int dxy) const
-{
+Terrain::can_stand(int x, int y, int z, int dz, int dxy) const {
     // x,y,z gives the position; dxy is the offset in x or y from the center,
     // and dz is the offset only upward
     if (!in_range(x + dxy - 1, y + dxy - 1, z - 1)
@@ -343,20 +348,17 @@ Terrain::can_stand(int x, int y, int z, int dz, int dxy) const
 }
 
 bool
-Terrain::can_stand(const Tile* tile, int dz, int dxy) const
-{
+Terrain::can_stand(const Tile* tile, int dz, int dxy) const {
     return can_stand(tile->get_x(), tile->get_y(), tile->get_z(), dz, dxy);
 }
 
 bool
-Terrain::can_stand(const Tile tile, int dz, int dxy) const
-{
+Terrain::can_stand(const Tile tile, int dz, int dxy) const {
     return can_stand(tile.get_x(), tile.get_y(), tile.get_z(), dz, dxy);
 }
 
 bool
-Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id)
-{
+Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id) {
     // sets color_id if the material is the same.
     if (tile->get_material()->element_id == mat->element_id) {
         tile->set_color_id(color_id);
@@ -366,8 +368,7 @@ Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id)
 }
 
 bool
-Terrain::player_set_tile_material(int xyz, const Material* mat, uint8_t color_id)
-{
+Terrain::player_set_tile_material(int xyz, const Material* mat, uint8_t color_id) {
     Tile* tile = get_tile(xyz);
     if (tile->get_material()->solid && mat->solid) {
         // Can't change something from one material to another.
@@ -378,11 +379,11 @@ Terrain::player_set_tile_material(int xyz, const Material* mat, uint8_t color_id
 }
 
 void
-Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end,
-                           int z_end, const Material* mat,
-                           std::set<std::pair<int, int>> elements_can_stamp,
-                           uint8_t color_id)
-{
+Terrain::stamp_tile_region(
+    int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+    const Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
+    uint8_t color_id
+) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.
     for (int x = x_start; x < x_end; x++) {
@@ -390,9 +391,10 @@ Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int
             for (int z = z_start; z < z_end; z++) {
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
-                    if (elements_can_stamp.find(
-                            std::make_pair((int)tile->get_material()->element_id,
-                                           (int)tile->get_color_id()))
+                    if (elements_can_stamp.find(std::make_pair(
+                            (int)tile->get_material()->element_id,
+                            (int)tile->get_color_id()
+                        ))
                         != elements_can_stamp.end()) {
                         set_tile_material(tile, mat, color_id);
                         // std::cout << mat->element_id;
@@ -404,9 +406,10 @@ Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int
 }
 
 void
-Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int y_end,
-                           int z_end, const Material* mat, uint8_t color_id)
-{
+Terrain::stamp_tile_region(
+    int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+    const Material* mat, uint8_t color_id
+) {
     // set tiles in region to mat and color_id
     for (int x = x_start; x < x_end; x++) {
         for (int y = y_start; y < y_end; y++) {
@@ -420,8 +423,7 @@ Terrain::stamp_tile_region(int x_start, int y_start, int z_start, int x_end, int
 }
 
 void
-Terrain::init_grass()
-{
+Terrain::init_grass() {
     // Test all ties to see if they can be grass.
     for (int x_ = 0; x_ < X_MAX; x_++)
         for (int y_ = 0; y_ < Y_MAX; y_++)
@@ -449,8 +451,7 @@ Terrain::init_grass()
 
 // .1 sec
 void
-Terrain::grow_all_grass_high()
-{
+Terrain::grow_all_grass_high() {
     // extends higher bound of grass color
     for (Tile& t : tiles) {
         if (t.is_grass()) {
@@ -479,8 +480,7 @@ Terrain::grow_all_grass_high()
 }
 
 void
-Terrain::grow_all_grass_low()
-{
+Terrain::grow_all_grass_low() {
     // extends lower bound of grass color
     for (Tile& t : tiles) { // for tile in sources
         if (t.is_grass()) {
@@ -510,9 +510,9 @@ Terrain::grow_all_grass_low()
 
 // generates a size_x by size_y vector of macro tile types.
 std::vector<int>
-Terrain::generate_macro_map(unsigned int size_x, unsigned int size_y,
-                            Json::Value terrain_data)
-{
+Terrain::generate_macro_map(
+    unsigned int size_x, unsigned int size_y, Json::Value terrain_data
+) {
     std::vector<int> out;
     int background = terrain_data["BackGround"].asInt(); // default terrain type.
     int numOctaves = terrain_data["NumOctaves"].asInt(); // number of octaves
@@ -539,8 +539,7 @@ Terrain::generate_macro_map(unsigned int size_x, unsigned int size_y,
 
 // this should be the same as can_stand(x,y,z,1,1)
 bool
-Terrain::can_stand_1(int xyz) const
-{
+Terrain::can_stand_1(int xyz) const {
     if (xyz % Z_MAX < 1 || xyz >= X_MAX * Y_MAX * Z_MAX) {
         return false;
     }
@@ -548,8 +547,7 @@ Terrain::can_stand_1(int xyz) const
 }
 
 float
-Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2)
-{
+Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
@@ -564,8 +562,7 @@ Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2)
 }
 
 float
-Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2)
-{
+Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
@@ -581,14 +578,12 @@ Terrain::get_H_cost(std::array<int, 3> xyz1, std::array<int, 3> xyz2)
 
 template <class T>
 float
-Terrain::get_G_cost(const T tile, const Node<const T> node)
-{
+Terrain::get_G_cost(const T tile, const Node<const T> node) {
     return node.get_time_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }
 
 void
-Terrain::add_all_adjacent(int xyz)
-{
+Terrain::add_all_adjacent(int xyz) {
     tiles[xyz].clear_adjacent();
 
     for (int xyz_ = 0; xyz_ < 27; xyz_++) {
@@ -602,8 +597,9 @@ Terrain::add_all_adjacent(int xyz)
         // test if the final tiles is in a valid position
         if (in_range(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
             Tile* other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
-            UnitPath path_type = get_path_type(x_c, y_c, z_c, x_c + x_d - 1,
-                                               y_c + y_d - 1, z_c + z_d - 1);
+            UnitPath path_type = get_path_type(
+                x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1
+            );
             tiles[xyz].add_adjacent(other, path_type);
             // compute and add the path type.
         }
@@ -613,24 +609,22 @@ Terrain::add_all_adjacent(int xyz)
 
 template <class T>
 std::set<Node<const T>*>
-Terrain::get_adjacent_nodes(const Node<const T>* const node,
-                            std::map<const T*, Node<const T>>& nodes,
-                            uint8_t path_type) const
-{
+Terrain::get_adjacent_nodes(
+    const Node<const T>* const node, std::map<const T*, Node<const T>>& nodes,
+    uint8_t path_type
+) const {
     std::set<Node<const T>*> out;
     for (const T* t : node->get_adjacent(path_type)) {
         try {
             Node<const T>* tile = &nodes.at(t);
             out.emplace(tile);
-        } catch (const std::out_of_range& e) {
-        }
+        } catch (const std::out_of_range& e) {}
     }
     return out;
 }
 
 NodeGroup*
-Terrain::get_node_group(int xyz)
-{
+Terrain::get_node_group(int xyz) {
     try {
         return tile_to_group.at(xyz);
     } catch (const std::out_of_range& e) {
@@ -639,36 +633,31 @@ Terrain::get_node_group(int xyz)
 }
 
 NodeGroup*
-Terrain::get_node_group(const Tile t)
-{
+Terrain::get_node_group(const Tile t) {
     return get_node_group(pos(t));
 }
 
 NodeGroup*
-Terrain::get_node_group(const Tile* t)
-{
+Terrain::get_node_group(const Tile* t) {
     return get_node_group(pos(t));
 }
 
 void
-Terrain::add_node_group(NodeGroup* NG)
-{
+Terrain::add_node_group(NodeGroup* NG) {
     for (const Tile* t : NG->get_tiles()) {
         tile_to_group[pos(t)] = NG;
     }
 }
 
 void
-Terrain::remove_node_group(NodeGroup* NG)
-{
+Terrain::remove_node_group(NodeGroup* NG) {
     for (const Tile* t : NG->get_tiles()) {
         tile_to_group.erase(pos(t));
     }
 }
 
 const UnitPath
-Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf)
-{
+Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
     int dz = 3;
@@ -736,8 +725,7 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf)
 }
 
 std::set<const NodeGroup*>
-Terrain::get_all_node_groups() const
-{
+Terrain::get_all_node_groups() const {
     std::set<const NodeGroup*> out;
     for (size_t c = 0; c < chunks.size(); c++) {
         chunks[c].add_nodes_to(out);
@@ -746,8 +734,7 @@ Terrain::get_all_node_groups() const
 }
 
 std::vector<const Tile*>
-Terrain::get_path_Astar(const Tile* start_, const Tile* goal_)
-{
+Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
     NodeGroup* goal_node;
     NodeGroup* start_node;
     int goal_z = goal_->get_z();
@@ -802,8 +789,7 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_)
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal)
-{
+Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
@@ -815,9 +801,9 @@ Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal)
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_breadth_first(const NodeGroup* start,
-                                const std::set<const NodeGroup*> goal)
-{
+Terrain::get_path_breadth_first(
+    const NodeGroup* start, const std::set<const NodeGroup*> goal
+) {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_time_cots() > rhs->get_time_cots();
@@ -829,8 +815,7 @@ Terrain::get_path_breadth_first(const NodeGroup* start,
 }
 
 std::vector<const Tile*>
-Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> goal_)
-{
+Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> goal_) {
     std::set<const NodeGroup*> goal_nodes;
     bool NoGoal = true;
     for (const Tile* g : goal_) {
@@ -840,7 +825,8 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
             if (goal_z != 0) {
                 NoGoal = false;
                 goal_nodes.insert(
-                    get_node_group(get_tile(g->get_x(), g->get_y(), goal_z)));
+                    get_node_group(get_tile(g->get_x(), g->get_y(), goal_z))
+                );
             }
         } else {
             NoGoal = false;
@@ -878,16 +864,17 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
 
 template <class T>
 std::vector<const T*>
-Terrain::get_path(const T* start, const std::set<const T*> goal,
-                  const std::set<const T*> search_through,
-                  std::function<bool(Node<const T>*, Node<const T>*)> compare) const
-{
+Terrain::get_path(
+    const T* start, const std::set<const T*> goal,
+    const std::set<const T*> search_through,
+    std::function<bool(Node<const T>*, Node<const T>*)> compare
+) const {
     auto T_compare = [&compare](Node<const T>* lhs, Node<const T>* rhs) {
         return compare(lhs, rhs);
     };
 
-    std::priority_queue<Node<const T>*, std::vector<Node<const T>*>,
-                        decltype(T_compare)>
+    std::priority_queue<
+        Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
         openNodes(T_compare);
 
     std::set<Node<const T>*> searched;
@@ -931,8 +918,7 @@ Terrain::get_path(const T* start, const std::set<const T*> goal,
 
 // Set `color` to the color of the tile at `pos`.
 void
-Terrain::export_color(const int sop[3], uint8_t color[4]) const
-{
+Terrain::export_color(const int sop[3], uint8_t color[4]) const {
     int position = pos(sop);
     uint32_t tile_color = get_tile(position)->get_color();
     color[0] = (tile_color >> 24) & 0xFF;
@@ -942,15 +928,15 @@ Terrain::export_color(const int sop[3], uint8_t color[4]) const
 }
 
 uint32_t
-Terrain::compress_color(uint8_t v[4])
-{
+Terrain::compress_color(uint8_t v[4]) {
     return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16
            | (uint32_t)v[0] << 24;
 }
 
 int
-Terrain::qb_save_debug(const char* path, const std::map<int, const Material>* materials)
-{
+Terrain::qb_save_debug(
+    const char* path, const std::map<int, const Material>* materials
+) {
     int x = 0;
     for (Chunk& c : chunks) {
         std::set<const NodeGroup*> node_groups;
@@ -967,8 +953,7 @@ Terrain::qb_save_debug(const char* path, const std::map<int, const Material>* ma
 
 // Save all tiles as .qb to path.
 int
-Terrain::qb_save(const char* path) const
-{
+Terrain::qb_save(const char* path) const {
     // Saves the tiles in this to the path specified
     return VoxelUtility::to_qb(path, *this);
 }
@@ -976,8 +961,8 @@ Terrain::qb_save(const char* path) const
 int
 Terrain::qb_read(
     const char* path,
-    const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials)
-{
+    const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
+) {
     std::vector<uint32_t> data;
     std::vector<int> center;
     std::vector<uint32_t> size;
@@ -1001,19 +986,22 @@ Terrain::qb_read(
                 uint32_t color = data[pos(x, y, z)];
                 if (color == 0) { // if the qb voxel is transparent.
                     auto mat_color = materials->at(0); // set the materials to air
-                    get_tile(x, y, z)->init({x, y, z}, mat_color.first,
-                                            mat_color.second);
+                    get_tile(x, y, z)->init(
+                        {x, y, z}, mat_color.first, mat_color.second
+                    );
                 } else {
                     // auto CC = compress_color(v);// get the complete color
                     if (materials->count(color)) { // if the color is known
                         auto mat_color = materials->at(color);
-                        get_tile(x, y, z)->init({x, y, z}, mat_color.first,
-                                                mat_color.second);
+                        get_tile(x, y, z)->init(
+                            {x, y, z}, mat_color.first, mat_color.second
+                        );
                     } else {
                         unknown_materials.insert(color);
                         auto mat_color = materials->at(0); // else set to air.
-                        get_tile(x, y, z)->init({x, y, z}, mat_color.first,
-                                                mat_color.second);
+                        get_tile(x, y, z)->init(
+                            {x, y, z}, mat_color.first, mat_color.second
+                        );
                     }
                 }
             }
@@ -1026,8 +1014,7 @@ Terrain::qb_read(
 }
 
 std::pair<Tile*, Tile*>
-Terrain::get_start_end_test()
-{
+Terrain::get_start_end_test() {
     std::pair<Tile*, Tile*> out;
     bool first = true;
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {

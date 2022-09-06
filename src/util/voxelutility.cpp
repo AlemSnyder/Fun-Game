@@ -8,9 +8,10 @@
 namespace VoxelUtility {
 
 int
-from_qb(const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
-        std::vector<uint32_t>& size)
-{
+from_qb(
+    const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
+    std::vector<uint32_t>& size
+) {
     // Read the tiles from the path specified, and save
     FILE* file;
     file = fopen(path, "rb");
@@ -90,8 +91,7 @@ from_qb(const char* path, std::vector<uint32_t>& data, std::vector<int>& center,
     return 0;
 }
 
-VoxelObject::VoxelObject(const char* path)
-{
+VoxelObject::VoxelObject(const char* path) {
     data_ = std::vector<uint32_t>(0);
     center_ = std::vector<int>(0);
     size_ = std::vector<uint32_t>(0);

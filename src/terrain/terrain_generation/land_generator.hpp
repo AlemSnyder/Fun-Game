@@ -83,8 +83,7 @@ class LandGenerator {
     /**
      * @brief increment the data of the Tile Stamp that will be generated
      */
-    void operator++()
-    {
+    void operator++() {
         current_sub_region++;
         if (current_sub_region == get_num_stamps(data_[current_region])) {
             current_region++;
@@ -95,8 +94,7 @@ class LandGenerator {
     /**
      * @brief Resets this land generator
      */
-    void reset()
-    {
+    void reset() {
         current_region = 0;
         current_sub_region = 0;
     };
@@ -110,8 +108,8 @@ class LandGenerator {
 
     unsigned int static get_num_stamps(Json::Value biome);
 
-    std::array<int, 6> get_volume(int center[2][2], int Sxy, int Sz, int Dxy,
-                                  int Dz) const;
+    std::array<int, 6>
+    get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const;
 
     void from_radius(int cr, int csr, TileStamp& ts) const;
     void from_grid(int cr, int csr, TileStamp& ts) const;
