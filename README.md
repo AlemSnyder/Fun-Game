@@ -36,3 +36,12 @@ ninja
 ninja package
 ninja package_source
 ```
+
+## Formatting
+
+POSIX shells only
+
+```sh
+shopt -s extglob                   # For making ** apply to any number of dirs
+clang-format src/**/*.{h,c}pp -i
+```
