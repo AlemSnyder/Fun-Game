@@ -1,9 +1,8 @@
 #pragma once
 
-// Include GLEW
 #include <GL/glew.h>
 
-namespace MeshLoader{
+namespace MeshLoader {
 
 /**
  * @brief virtual class for non-indexed mesh
@@ -11,9 +10,8 @@ namespace MeshLoader{
  * @details This will be used so that multiple different class types can all
  * be used by a generic mesh rendering function.
  */
-class SingleMesh
-{
-public:
+class SingleMesh {
+ public:
     virtual GLuint get_vertex_buffer() const = 0;
     virtual GLuint get_element_buffer() const = 0;
     virtual unsigned int get_num_vertices() const = 0;
@@ -25,13 +23,12 @@ public:
  * @details This will be used so that multiple different class types can all
  * be used by a generic mesh rendering function.
  */
-class MultiMesh
-{
-public:
+class MultiMesh {
+ public:
     virtual GLuint get_vertex_buffer() const = 0;
     virtual GLuint get_element_buffer() const = 0;
     virtual GLuint get_model_transforms() const = 0;
-    virtual unsigned int get_num_vertices() const= 0;
+    virtual unsigned int get_num_vertices() const = 0;
     virtual unsigned int get_num_models() const = 0;
 };
 
@@ -40,8 +37,8 @@ public:
  *
  * @details This adds color, and normals to the mesh.
  */
-class SingleComplexMesh : public SingleMesh{
-public:
+class SingleComplexMesh : public SingleMesh {
+ public:
     virtual GLuint get_normal_buffer() const = 0;
     virtual GLuint get_color_buffer() const = 0;
 };
@@ -52,10 +49,9 @@ public:
  * @details This adds color, and normals to the mesh.
  */
 class MultiComplexMesh : public MultiMesh {
-public:
+ public:
     virtual GLuint get_normal_buffer() const = 0;
     virtual GLuint get_color_buffer() const = 0;
 };
 
 } // namespace MeshLoader
-

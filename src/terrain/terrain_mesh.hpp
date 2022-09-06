@@ -1,39 +1,36 @@
 //! This is a test. The content tent of this class should be transferred into chunk
 
-#include <vector>
+#include "../gui/meshloader.hpp"
 
-// Include GLEW
 #include <GL/glew.h>
-
-// Include GLFW
 #include <GLFW/glfw3.h>
-
-// Include GLM
 #include <glm/glm.hpp>
 
-#include "../gui/meshloader.hpp"
+#include <vector>
 
 #pragma once
 
 namespace terrain {
 
 class TerrainMesh : public MeshLoader::SingleComplexMesh {
-private:
+ private:
     GLuint vertex_buffer_;
     GLuint color_buffer_;
     GLuint normal_buffer_;
     GLuint element_buffer_;
     unsigned int num_vertices_;
-public:
-    inline TerrainMesh(const TerrainMesh& obj){
+
+ public:
+    inline TerrainMesh(const TerrainMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
         element_buffer_ = obj.element_buffer_;
         num_vertices_ = obj.num_vertices_;
     };
+
     // copy operator
-    inline TerrainMesh& operator=(const TerrainMesh& obj){
+    inline TerrainMesh& operator=(const TerrainMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -44,30 +41,20 @@ public:
 
     inline TerrainMesh(){};
 
-    TerrainMesh(std::vector<unsigned short> &indices,
-                std::vector<glm::vec3> &indexed_vertices,
-                std::vector<glm::vec3> &indexed_colors,
-                std::vector<glm::vec3> &indexed_normals);
-    
-    inline GLuint get_color_buffer() const override {
-        return color_buffer_;
-    }
+    TerrainMesh(
+        std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
+        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+    );
 
-    inline GLuint get_element_buffer() const override {
-        return element_buffer_;
-    }
+    inline GLuint get_color_buffer() const override { return color_buffer_; }
 
-    inline GLuint get_normal_buffer() const override {
-        return normal_buffer_;
-    }
+    inline GLuint get_element_buffer() const override { return element_buffer_; }
 
-    inline GLuint get_vertex_buffer() const override {
-        return vertex_buffer_;
-    }
+    inline GLuint get_normal_buffer() const override { return normal_buffer_; }
 
-    inline unsigned int get_num_vertices() const override {
-        return num_vertices_;
-    }
+    inline GLuint get_vertex_buffer() const override { return vertex_buffer_; }
+
+    inline unsigned int get_num_vertices() const override { return num_vertices_; }
 };
 
-}
+} // namespace terrain
