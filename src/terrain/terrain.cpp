@@ -613,16 +613,38 @@ Terrain::add_all_adjacent(int xyz) {
     // std::cout << "adding adjacent" << std::endl;
 }
 
-template <class T>
-std::set<Node<const T>*>
+//std::set<Tile*>
+//Terrain::get_adjacent_clear(unsigned int xyz, int path_type){
+
+//}
+
+//template <class T>
+std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
-    const Node<const T>* const node, std::map<const T*, Node<const T>>& nodes,
-    uint8_t path_type
-) const {
-    std::set<Node<const T>*> out;
-    for (const T* t : node->get_adjacent(path_type)) {
+    const Node<const NodeGroup>* const node,
+    std::map<const NodeGroup*, Node<const NodeGroup>>& nodes,
+    uint8_t path_type) const
+{
+    std::set<Node<const NodeGroup>*> out;
+    for (const NodeGroup* t : node->get_adjacent(path_type)) {
         try {
-            Node<const T>* tile = &nodes.at(t);
+            Node<const NodeGroup>* tile = &nodes.at(t);
+            out.emplace(tile);
+        } catch (const std::out_of_range& e) {}
+    }
+    return out;
+}
+
+std::set<Node<const Tile>*>
+Terrain::get_adjacent_nodes(
+    const Node<const Tile>* node,
+    std::map<const Tile*, Node<const Tile>> &nodes,
+    uint8_t path_type) const
+{
+    std::set<Node<const Tile>*> out;
+    for (const Tile* t : node->get_adjacent(path_type)) {
+        try {
+            Node<const Tile>* tile = &nodes.at(t);
             out.emplace(tile);
         } catch (const std::out_of_range& e) {}
     }
@@ -807,9 +829,9 @@ Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) {
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_breadth_first(
-    const NodeGroup* start, const std::set<const NodeGroup*> goal
-) {
+Terrain::get_path_breadth_first(const NodeGroup* start,
+                                const std::set<const NodeGroup*> goal)
+{
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_time_cots() > rhs->get_time_cots();
@@ -873,8 +895,8 @@ std::vector<const T*>
 Terrain::get_path(
     const T* start, const std::set<const T*> goal,
     const std::set<const T*> search_through,
-    std::function<bool(Node<const T>*, Node<const T>*)> compare
-) const {
+    std::function<bool(Node<const T>*, Node<const T>*)> compare) const
+{
     auto T_compare = [&compare](Node<const T>* lhs, Node<const T>* rhs) {
         return compare(lhs, rhs);
     };

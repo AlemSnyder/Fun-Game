@@ -32,24 +32,28 @@
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
 #include "tile.hpp"
+#include "tile_iterators.hpp"
 #include "unit_path.hpp"
 
 #include <stdio.h>
 
 #include <array>
 #include <cstdint>
-#include <iostream>
+//#include <iostream>
 #include <map>
 #include <set>
 #include <stdexcept>
 #include <string>
-#include <unordered_set>
+//#include <unordered_set>
 #include <vector>
 
 namespace terrain {
 
 // Forward declaration of Chunk
 class Chunk;
+
+// Forward declaration of AdjacentIterator
+class AdjacentIterator;
 
 /**
  * @brief The land in the world.
@@ -59,6 +63,7 @@ class Chunk;
  *
  */
 class Terrain {
+    friend class AdjacentIterator;
  private:
     // vector of voxels in terrain
     std::vector<Tile> tiles;
@@ -95,11 +100,16 @@ class Terrain {
     // create unit paths for this tile, and all it's adjacent tiles
     void add_all_adjacent(int xyz);
 
+    // get set of adjacent tiles with given path type
+    //std::set<Tile*>
+    //get_adjacent_clear(unsigned int xyz, int path_type);
+
     // trace nodes through parents to reach start
     template <class T>
-    void get_path_through_nodes(
-        Node<const T>* node, std::vector<const T*>& out, const T* start
-    ) const {
+    void get_path_through_nodes(Node<const T>* node,
+        std::vector<const T*>& out,
+        const T* start) const
+    {
         out.push_back(node->get_tile());
         if (start == node->get_tile()) {
             return;
@@ -362,9 +372,14 @@ class Terrain {
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    template <class T>
-    std::set<Node<const T>*> get_adjacent_nodes(
-        const Node<const T>* const node, std::map<const T*, Node<const T>>& nodes,
+    //template <class T>
+    std::set<Node<const NodeGroup>*> get_adjacent_nodes(
+        const Node<const NodeGroup>* const node, std::map<const NodeGroup*, Node<const NodeGroup>>& nodes,
+        uint8_t type
+    ) const;
+
+    std::set<Node<const Tile>*> get_adjacent_nodes(
+        const Node<const Tile>* const node, std::map<const Tile*, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 

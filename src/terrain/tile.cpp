@@ -161,49 +161,6 @@ Tile::sop() const {
     return {x, y, z};
 }
 
-void
-Tile::add_adjacent(Tile* tile, UnitPath type) {
-    adjacent.insert(std::make_pair(tile, type));
-}
-
-void
-Tile::add_adjacent(std::map<Tile*, UnitPath>::iterator it, Tile* tile, UnitPath type) {
-    adjacent.insert(it, std::make_pair(tile, type));
-}
-
-void
-Tile::clear_adjacent() {
-    adjacent.clear();
-}
-
-std::set<const Tile*>
-Tile::get_adjacent_clear(int path_type) const {
-    std::set<const Tile*> out;
-
-    for (const std::pair<const Tile*, UnitPath> t : adjacent) {
-        if (t.second.compatible(path_type) && t.second.is_open()) {
-            try {
-                out.insert(t.first);
-            } catch (const std::exception& e) {}
-        }
-    }
-    return out;
-}
-
-std::set<Tile*>
-Tile::get_adjacent_clear(int path_type) {
-    std::set<Tile*> out;
-
-    for (std::pair<Tile*, UnitPath> t : adjacent) {
-        if (t.second.compatible(path_type) && t.second.is_open()) {
-            try {
-                out.insert(t.first);
-            } catch (std::exception& e) {}
-        }
-    }
-    return out;
-}
-
 bool
 Tile::operator>(const Tile other) const {
     if (get_x() < other.get_x()) {

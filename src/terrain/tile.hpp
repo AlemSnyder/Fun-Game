@@ -74,7 +74,7 @@ class Tile {
     bool solid;          // is the tile solid
     const Material* mat; // The material of the tile
     // adjacent tiles
-    std::map<Tile*, UnitPath, TilePCompare> adjacent;
+    // std::map<Tile*, UnitPath, TilePCompare> adjacent;
 
  public:
     /**
@@ -268,16 +268,16 @@ class Tile {
      *
      * @return std::map<Tile *, UnitPath, TilePCompare>& map of adjacent tile to
      */
-    std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() { return adjacent; };
+    //std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() { return adjacent; };
 
     /**
      * @brief Get the adjacency map
      *
      * @return std::map<Tile *, UnitPath, TilePCompare>& map of adjacent tile to
      */
-    const std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() const {
-        return adjacent;
-    };
+    //const std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() const {
+    //    return adjacent;
+    //};
 
     /**
      * @brief Get the adjacent tiles that match the path given
