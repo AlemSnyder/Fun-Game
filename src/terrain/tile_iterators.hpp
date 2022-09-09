@@ -40,7 +40,32 @@ private:
 
     void update_path();
 
-    static int8_t offsets[26];
+    static int8_t offsets[26] = {0b00000000,
+                                 0b00000001,
+                                 0b00000010,
+                                 0b00000100,
+                                 0b00000101,
+                                 0b00000110,
+                                 0b00001000,
+                                 0b00001001,
+                                 0b00001010,
+                                 0b00010000,
+                                 0b00010001,
+                                 0b00010010,
+                                 0b00010100,
+                                 0b00010110,
+                                 0b00011000,
+                                 0b00011001,
+                                 0b00011010,
+                                 0b00100000,
+                                 0b00100001,
+                                 0b00100010,
+                                 0b00100100,
+                                 0b00100101,
+                                 0b00100110,
+                                 0b00101000,
+                                 0b00101001,
+                                 0b00101010 };
 
 public:
     AdjacentIterator(Terrain& parent, unsigned int xyz, UnitPath path_type);
