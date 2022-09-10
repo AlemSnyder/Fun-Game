@@ -2,6 +2,7 @@
 
 #include "terrain.hpp"
 #include "tile.hpp"
+#include "path/tile_iterators.hpp"
 
 namespace terrain {
 
@@ -26,11 +27,15 @@ Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
             }
     for (NodeGroup& NG : node_groups_) {
         for (const Tile* tile_main : NG.get_tiles()) {
-            for (const Tile* tile_adjacent : tile_main->get_adjacent_clear(31)) {
-                if (NodeGroup* to_add = ter->get_node_group(tile_adjacent)) {
+            // TODO the below is wrong
+            for (path::AdjacentIterator it = ter_->get_tile_adjacent_iterator(ter->pos(tile_main), 31); it++; !it.end()){
+                if (NodeGroup* to_add = ter->get_node_group(it.get_pos())) {
                     NG.add_adjacent(to_add, 31);
                 }
+
             }
+            //for (const Tile* tile_adjacent : tile_main->get_adjacent_clear(31)) {
+            //}
         }
     }
 

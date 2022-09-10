@@ -4,7 +4,7 @@
 #include "../util/voxelutility.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
-#include "node.hpp"
+#include "path/node.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
@@ -92,11 +92,11 @@ Terrain::Terrain(
         std::cerr << "Could not load terrain" << std::endl;
         return;
     }
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        if (can_stand_1(xyz)) {
-            add_all_adjacent(xyz);
-        }
-    }
+    //for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    //    if (can_stand_1(xyz)) {
+    //        add_all_adjacent(xyz);
+    //    }
+    //}
     init_chunks();
 }
 
@@ -107,7 +107,7 @@ Terrain::init_old(int x, int y, int z) {
     Z_MAX = z;
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        this->get_tile(xyz)->init(sop(xyz), true);
+        get_tile(xyz)->init(sop(xyz), true);
     }
 }
 
@@ -128,7 +128,7 @@ Terrain::init(
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        this->get_tile(xyz)->init(sop(xyz), &(*materials).at(0));
+        get_tile(xyz)->init(sop(xyz), &(*materials).at(0));
     }
 
     srand(seed);
@@ -162,11 +162,11 @@ Terrain::init(
 
     // grow_grass();
     init_grass();
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        if (can_stand_1(xyz)) {
-            add_all_adjacent(xyz);
-        }
-    }
+    //for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    //    if (can_stand_1(xyz)) {
+    //        add_all_adjacent(xyz);
+    //    }
+    //}
 
     init_chunks();
 
@@ -588,7 +588,15 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
     return node.get_time_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }
 
-void
+int Terrain::pos(const NodeGroup* const node_group) const {
+    auto [x, y, z] = node_group->sop();
+    int px = floor(x) / Chunk::size;
+    int py = floor(y) / Chunk::size;
+    int pz = floor(z) / Chunk::size;
+    return px * Y_MAX / Chunk::size * Z_MAX / Chunk::size + py * Z_MAX / Chunk::size + pz;
+}
+
+/*void
 Terrain::add_all_adjacent(int xyz) {
     tiles[xyz].clear_adjacent();
 
@@ -611,7 +619,7 @@ Terrain::add_all_adjacent(int xyz) {
         }
     }
     // std::cout << "adding adjacent" << std::endl;
-}
+}*/
 
 //std::set<Tile*>
 //Terrain::get_adjacent_clear(unsigned int xyz, int path_type){
@@ -622,13 +630,13 @@ Terrain::add_all_adjacent(int xyz) {
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
-    std::map<const NodeGroup*, Node<const NodeGroup>>& nodes,
+    std::map<size_t, Node<const NodeGroup>>& nodes,
     uint8_t path_type) const
 {
     std::set<Node<const NodeGroup>*> out;
-    for (const NodeGroup* t : node->get_adjacent(path_type)) {
+    for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
         try {
-            Node<const NodeGroup>* tile = &nodes.at(t);
+            Node<const NodeGroup>* tile = &nodes.at(pos(t));
             out.emplace(tile);
         } catch (const std::out_of_range& e) {}
     }
@@ -638,16 +646,25 @@ Terrain::get_adjacent_nodes(
 std::set<Node<const Tile>*>
 Terrain::get_adjacent_nodes(
     const Node<const Tile>* node,
-    std::map<const Tile*, Node<const Tile>> &nodes,
+    std::map<size_t, Node<const Tile>> &nodes,
     uint8_t path_type) const
 {
     std::set<Node<const Tile>*> out;
-    for (const Tile* t : node->get_adjacent(path_type)) {
+    path::AdjacentIterator tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
+    while (!tile_it.end())
+    {
         try {
-            Node<const Tile>* tile = &nodes.at(t);
+            Node<const Tile>* tile = &nodes.at(tile_it.get_pos());
             out.emplace(tile);
         } catch (const std::out_of_range& e) {}
     }
+    
+    //for (const Tile* t : node->get_adjacent(path_type)) {
+    //    try {
+    //        Node<const Tile>* tile = &nodes.at(t);
+    //        out.emplace(tile);
+    //    } catch (const std::out_of_range& e) {}
+    //}
     return out;
 }
 
@@ -685,7 +702,7 @@ Terrain::remove_node_group(NodeGroup* NG) {
 }
 
 const UnitPath
-Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) {
+Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
     int dz = 3;
@@ -907,11 +924,11 @@ Terrain::get_path(
 
     std::set<Node<const T>*> searched;
 
-    std::map<const T*, Node<const T>> nodes; // The nodes that can be walked through
+    std::map<size_t, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
-        nodes[t] = Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()));
+        nodes[pos(t)] = Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()));
     }
-    Node<const T> start_node = nodes[start];
+    Node<const T> start_node = nodes[pos(start)];
     openNodes.push(&start_node); // gotta start somewhere
     start_node.explore();
     // searched.insert(&start_node);

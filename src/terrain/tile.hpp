@@ -25,7 +25,7 @@
 #pragma once
 
 #include "material.hpp"
-#include "unit_path.hpp"
+#include "path/unit_path.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -247,7 +247,7 @@ class Tile {
      * @param tile tile to add
      * @param type path type between tiles
      */
-    void add_adjacent(Tile* tile, UnitPath type);
+    //void add_adjacent(Tile* tile, UnitPath type);
     /**
      * @brief add an adjacent tile (fast)
      *
@@ -255,13 +255,13 @@ class Tile {
      * @param tile tile to add
      * @param type path type
      */
-    void
-    add_adjacent(std::map<Tile*, UnitPath>::iterator it, Tile* tile, UnitPath type);
+    //void
+    //add_adjacent(std::map<Tile*, UnitPath>::iterator it, Tile* tile, UnitPath type);
     /**
      * @brief clear the adjacent tiles
      *
      */
-    void clear_adjacent();
+    //void clear_adjacent();
 
     /**
      * @brief Get the adjacency map
@@ -285,14 +285,14 @@ class Tile {
      * @param path_type path to match
      * @return std::set<Tile *> adjacent tiles that match the path type given
      */
-    std::set<Tile*> get_adjacent_clear(int path_type);
+    //std::set<Tile*> get_adjacent_clear(int path_type);
     /**
      * @brief Get the adjacent tiles that match the path given
      *
      * @param path_type path to match
      * @return std::set<Tile *> adjacent tiles that match the path type given
      */
-    std::set<const Tile*> get_adjacent_clear(int path_type) const;
+    //std::set<const Tile*> get_adjacent_clear(int path_type) const;
 
     /**
      * @brief is this tile solid

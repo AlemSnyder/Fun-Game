@@ -26,14 +26,14 @@
 
 #include "chunk.hpp"
 #include "material.hpp"
-#include "node.hpp"
-#include "node_group.hpp"
+#include "path/node.hpp"
+#include "path/node_group.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
 #include "tile.hpp"
-#include "tile_iterators.hpp"
-#include "unit_path.hpp"
+#include "path/tile_iterators.hpp"
+#include "path/unit_path.hpp"
 
 #include <stdio.h>
 
@@ -98,11 +98,12 @@ class Terrain {
     // convert 4 int 8 to 1 int 32 (reversed order)
     uint32_t compress_color(uint8_t v[4]);
     // create unit paths for this tile, and all it's adjacent tiles
-    void add_all_adjacent(int xyz);
+    //void add_all_adjacent(int xyz);
 
     // get set of adjacent tiles with given path type
     //std::set<Tile*>
     //get_adjacent_clear(unsigned int xyz, int path_type);
+
 
     // trace nodes through parents to reach start
     template <class T>
@@ -132,7 +133,7 @@ class Terrain {
      * @param zf Z end
      * @return const UnitPath path type between the two tile positions
      */
-    const UnitPath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
+    const UnitPath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const;
     /**
      * @brief Get the minimum path time between two positions
      *
@@ -206,12 +207,20 @@ class Terrain {
     }
 
     /**
+     * @brief position of chunk the node group is a part of
+     *
+     * @param node_group node group to find position of chunk
+     * @return int
+     */
+    int pos(const NodeGroup* const node_group) const;
+
+    /**
      * @brief return position in space of given vector index
      *
      * @param xyz vector index
      * @return const std::array<int, 3> position in space
      */
-    const std::array<int, 3> sop(int xyz) {
+    const std::array<int, 3> sop(int xyz) const {
         return {xyz / (Y_MAX * Z_MAX), (xyz / Z_MAX) % Y_MAX, xyz % (Z_MAX)};
     }
 
@@ -363,6 +372,11 @@ class Terrain {
     Terrain(const std::string path, const std::map<int, const Material>* material);
 
     // TODO place block
+
+    inline path::AdjacentIterator get_tile_adjacent_iterator(size_t pos, UnitPath path_type) const {
+        return path::AdjacentIterator(*this, pos, path_type);
+    }
+    
     /**
      * @brief Get the nodes adjacent to this one
      *
@@ -374,12 +388,14 @@ class Terrain {
      */
     //template <class T>
     std::set<Node<const NodeGroup>*> get_adjacent_nodes(
-        const Node<const NodeGroup>* const node, std::map<const NodeGroup*, Node<const NodeGroup>>& nodes,
+        const Node<const NodeGroup>* const node,
+        std::map<size_t, Node<const NodeGroup>>& nodes,
         uint8_t type
     ) const;
 
     std::set<Node<const Tile>*> get_adjacent_nodes(
-        const Node<const Tile>* const node, std::map<const Tile*, Node<const Tile>>& nodes,
+        const Node<const Tile>* const node,
+        std::map<size_t, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 

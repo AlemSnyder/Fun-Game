@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "node_group.hpp"
+#include "path/node_group.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
 

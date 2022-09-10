@@ -1,6 +1,6 @@
 #include "node.cpp"
 #include "node_group.hpp"
-#include "tile.hpp"
+#include "../tile.hpp"
 
 namespace terrain {
 

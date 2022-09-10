@@ -1,7 +1,7 @@
 #include "node.hpp"
 
 #include "node_group.hpp"
-#include "tile.hpp"
+#include "../tile.hpp"
 
 namespace terrain {
 
@@ -52,10 +52,10 @@ Node<T>::explore() { // explore as start
     explored = true;
 }
 
-template <class T>
-std::set<const T*>
-Node<T>::get_adjacent(int path_type) const { // explore as start
-    return get_tile()->get_adjacent_clear(path_type);
-}
+//template <class T>
+//std::set<const T*>
+//Node<T>::get_adjacent(int path_type) const { // explore as start
+//    return get_tile()->get_adjacent_clear(path_type);
+//}
 
 } // namespace terrain
