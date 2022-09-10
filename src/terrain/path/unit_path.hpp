@@ -136,14 +136,19 @@ class UnitPath {
     // return the path represented as a uint8_t
     inline uint8_t get_type() const { return static_cast<uint8_t>(type); }
 
-    // is the path compatible with the given test
-    // is type a subset of test
+    // is this path compatible with the given test
+    // same as is path::type a subset of test
     inline bool compatible(DirectionFlags test) const { return !bool(type & ~test); };
 
-    // is the path compatible with the given test
-    // is type a subset of test
+    // is this path compatible with the given test
+    // same as is path::type a subset of test
     inline bool compatible(uint8_t test) const {
         return compatible(static_cast<DirectionFlags>(test));
+    }
+    // is this path compatible with the given test
+    // same as is path::type a subset of test
+    inline bool compatible(UnitPath test) const {
+        return compatible(test.type);
     }
 
     bool operator==(const UnitPath other) const { return other.type == this->type; }

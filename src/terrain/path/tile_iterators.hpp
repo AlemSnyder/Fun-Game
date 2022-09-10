@@ -35,29 +35,34 @@ class Terrain;
 
 namespace path{
 
-static uint8_t offsets[26];
+//static uint8_t offsets[26];
 
 std::array<int8_t, 3> get_indexed_offsets(uint8_t index);
 
 class AdjacentIterator {
 private:
-    size_t pos_;
+    const size_t pos_;
     uint8_t dpos_;
-    UnitPath path_type_constraint_;
+    const UnitPath path_type_constraint_;
     UnitPath path_type_;
     const Terrain& parent_;
 
     void update_path();
+    void iterate_to_next_available();
 
 public:
     AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type);
     //AdjacentIterator();
     int operator++();
     int operator++(int);
-    bool end();
+    inline bool end(){
+        return dpos_ > 26U;
+    }
     size_t get_pos();
     UnitPath get_path_type();
-    std::array<int8_t, 3> get_relative_position();
+    inline std::array<int8_t, 3> get_relative_position(){
+        return get_indexed_offsets(dpos_);
+    }
     
 };
 

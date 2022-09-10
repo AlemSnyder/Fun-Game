@@ -596,37 +596,6 @@ int Terrain::pos(const NodeGroup* const node_group) const {
     return px * Y_MAX / Chunk::size * Z_MAX / Chunk::size + py * Z_MAX / Chunk::size + pz;
 }
 
-/*void
-Terrain::add_all_adjacent(int xyz) {
-    tiles[xyz].clear_adjacent();
-
-    for (int xyz_ = 0; xyz_ < 27; xyz_++) {
-        if (xyz_ == 13) {
-            continue;
-        }
-        // center of the starting tile.
-        auto [x_c, y_c, z_c] = sop(xyz);
-        // direction to final tile. can be +1, -1, or 0
-        auto [x_d, y_d, z_d] = sop(xyz_, 3, 3, 3);
-        // test if the final tiles is in a valid position
-        if (in_range(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1)) {
-            Tile* other = get_tile(x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1);
-            UnitPath path_type = get_path_type(
-                x_c, y_c, z_c, x_c + x_d - 1, y_c + y_d - 1, z_c + z_d - 1
-            );
-            tiles[xyz].add_adjacent(other, path_type);
-            // compute and add the path type.
-        }
-    }
-    // std::cout << "adding adjacent" << std::endl;
-}*/
-
-//std::set<Tile*>
-//Terrain::get_adjacent_clear(unsigned int xyz, int path_type){
-
-//}
-
-//template <class T>
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
@@ -657,6 +626,7 @@ Terrain::get_adjacent_nodes(
             Node<const Tile>* tile = &nodes.at(tile_it.get_pos());
             out.emplace(tile);
         } catch (const std::out_of_range& e) {}
+        tile_it++;
     }
     
     //for (const Tile* t : node->get_adjacent(path_type)) {
@@ -926,7 +896,7 @@ Terrain::get_path(
 
     std::map<size_t, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
-        nodes[pos(t)] = Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()));
+        nodes.insert({pos(t), Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()))});
     }
     Node<const T> start_node = nodes[pos(start)];
     openNodes.push(&start_node); // gotta start somewhere

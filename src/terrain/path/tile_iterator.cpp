@@ -31,7 +31,7 @@ namespace terrain{
 
 namespace path{
 
-uint8_t offsets[26] = {0b00000000,
+static uint8_t offsets[26] = {0b00000000,
                        0b00000001,
                        0b00000010,
                        0b00000100,
@@ -68,31 +68,20 @@ std::array<int8_t, 3> get_indexed_offsets(uint8_t index){
 }
 
 
-AdjacentIterator::AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type) : parent_(parent){
-    pos_ = xyz;
-    path_type_constraint_ = path_type;
-    //parent_ = parent;
-
+AdjacentIterator::AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type) : pos_(xyz), path_type_constraint_(path_type), parent_(parent){
+    dpos_ = 0;
+    //update_path();
+    iterate_to_next_available();
 }
 
 int AdjacentIterator::operator++(){
-    dpos_++;
-    update_path();
+    iterate_to_next_available();
     return dpos_;
 }
 
 int AdjacentIterator::operator++(int){
-    dpos_++;
-    update_path();
+    iterate_to_next_available();
     return dpos_;
-}
-
-bool AdjacentIterator::end(){
-    return true; // not implemented
-}
-
-inline std::array<int8_t, 3> AdjacentIterator::get_relative_position(){
-    return get_indexed_offsets(dpos_);
 }
 
 void AdjacentIterator::update_path(){
@@ -100,6 +89,16 @@ void AdjacentIterator::update_path(){
     auto [dx, dy, dz] = get_relative_position();
 
     path_type_ = parent_.get_path_type(xs, ys, zs, xs+dx, ys+dy, zs+dz);
+}
+
+void AdjacentIterator::iterate_to_next_available(){
+    do {
+        dpos_++;
+        if (end()){
+            return;
+        }
+        update_path();
+    } while (!path_type_.compatible(path_type_constraint_));
 }
 
 size_t AdjacentIterator::get_pos(){

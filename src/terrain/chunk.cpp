@@ -15,20 +15,19 @@ Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
         for (int y = size * by; y < size * (1 + by); y++)
             for (int z = size * bz; z < size * (1 + bz); z++) {
                 if (ter->can_stand_1(x, y, z)) {
+                    // the int determines which paths between two tiles are
+                    // compliant 31 means anything that is not opposite corner.
+                    // look at onePath for more information
                     NodeGroup group = NodeGroup(
                         ter->get_tile(x, y, z),
-                        31 // the int determines which paths between two tiles are
-                           // compliant 31 means anything that is not opposite corner.
-                           // look at onePath for more information
-                    );
+                        31);
                     node_groups_.push_back(group);
                     ter->add_node_group(&node_groups_.back());
                 }
             }
     for (NodeGroup& NG : node_groups_) {
         for (const Tile* tile_main : NG.get_tiles()) {
-            // TODO the below is wrong
-            for (path::AdjacentIterator it = ter_->get_tile_adjacent_iterator(ter->pos(tile_main), 31); it++; !it.end()){
+            for (path::AdjacentIterator it = ter_->get_tile_adjacent_iterator(ter->pos(tile_main), 31); !it.end(); it++){
                 if (NodeGroup* to_add = ter->get_node_group(it.get_pos())) {
                     NG.add_adjacent(to_add, 31);
                 }

@@ -7,7 +7,7 @@
             "request": "launch",
             // Resolved by CMake Tools:
             "program": "${command:cmake.launchTargetPath}",
-            "args": [],
+            "args": ["PathFinder", "SavedTerrain\\pathfinder_input_1.qb", "SavedTerrain\\pathfinder_output.qb"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [
