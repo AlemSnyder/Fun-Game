@@ -605,7 +605,7 @@ Terrain::get_adjacent_nodes(
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
         try {
-            Node<const NodeGroup>* tile = &nodes.at(pos(t));
+            Node<const NodeGroup>* tile = &nodes.at(pos_for_map(t));
             out.emplace(tile);
         } catch (const std::out_of_range& e) {}
     }
@@ -892,13 +892,13 @@ Terrain::get_path(
         Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
         openNodes(T_compare);
 
-    std::set<Node<const T>*> searched;
+    //std::set<Node<const T>*> searched;
 
     std::map<size_t, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
-        nodes.insert({pos(t), Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()))});
+        nodes.insert({pos_for_map(t), Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()))});
     }
-    Node<const T> start_node = nodes[pos(start)];
+    Node<const T> start_node = nodes[pos_for_map(start)];
     openNodes.push(&start_node); // gotta start somewhere
     start_node.explore();
     // searched.insert(&start_node);
@@ -927,8 +927,8 @@ Terrain::get_path(
             }
         }
     }
-    std::vector<const T*> out;
-    return out;
+    std::vector<const T*> path;
+    return path;
 }
 
 // Set `color` to the color of the tile at `pos`.

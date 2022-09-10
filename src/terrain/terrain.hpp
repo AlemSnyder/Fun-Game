@@ -202,8 +202,45 @@ class Terrain {
      * @param tile tile to find position of
      * @return int
      */
-    int pos(const Tile tile) const {
+    inline int pos(const Tile tile) const {
         return pos(tile.get_x(), tile.get_y(), tile.get_z());
+    }
+
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const Tile tile) const {
+        return pos(tile);
+    }
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const Tile* const tile) const {
+        return pos(tile);
+    }
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const NodeGroup NG) const {
+        return pos(*(NG.get_tiles().begin()));
+    }
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const NodeGroup* const NG) const {
+        return pos(*(NG->get_tiles().begin()));
     }
 
     /**
