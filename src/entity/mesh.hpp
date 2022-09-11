@@ -296,7 +296,7 @@ class Mesh {
 
     void load_from_qb_(std::string path);
 
-    inline void generate_mesh_(VoxelUtility::VoxelObject voxel_object) {
+    inline void generate_mesh_(voxel_utility::VoxelObject voxel_object) {
         generate_mesh(
             voxel_object, indices_, indexed_vertices_, indexed_colors_, indexed_normals_
         );

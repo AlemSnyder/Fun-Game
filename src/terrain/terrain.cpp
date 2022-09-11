@@ -191,13 +191,14 @@ Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen
 
 void
 Terrain::init_chunks() {
+    // chunk length in _ direction
+    unsigned int C_length_X = ((X_MAX - 1) / Chunk::size + 1);
+    unsigned int C_length_Y = ((Y_MAX - 1) / Chunk::size + 1);
+    unsigned int C_length_Z = ((Z_MAX - 1) / Chunk::size + 1);
     for (int xyz = 0;
-         xyz < ((X_MAX - 1) / Chunk::size + 1) * ((Y_MAX - 1) / Chunk::size + 1)
-                   * ((Z_MAX - 1) / Chunk::size + 1);
+         xyz < C_length_X * C_length_Y * C_length_Z;
          xyz += 1) {
-        auto [x, y, z] =
-            sop(xyz, ((X_MAX - 1) / Chunk::size + 1), ((Y_MAX - 1) / Chunk::size + 1),
-                ((Z_MAX - 1) / Chunk::size + 1));
+        auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks.push_back(Chunk(x, y, z, this));
     }
 }
@@ -433,17 +434,17 @@ void
 Terrain::init_grass() {
     // Test all ties to see if they can be grass.
     for (int x_ = 0; x_ < X_MAX; x_++)
-        for (int y_ = 0; y_ < Y_MAX; y_++)
-            for (int z_ = 0; z_ < Z_MAX - 1; z_++) {
-                if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
-                    get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
-                }
-            }
-    int z_ = Z_MAX - 1;
-    for (int x_ = 0; x_ < X_MAX; x_++)
-        for (int y_ = 0; y_ < Y_MAX; y_++) {
+    for (int y_ = 0; y_ < Y_MAX; y_++)
+    for (int z_ = 0; z_ < Z_MAX - 1; z_++) {
+        if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
             get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
         }
+    }
+    int z_ = Z_MAX - 1;
+    for (int x_ = 0; x_ < X_MAX; x_++)
+    for (int y_ = 0; y_ < Y_MAX; y_++) {
+        get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
+    }
     for (int i = 0; i < grass_grad_length; i++) {
         grow_all_grass_high();
     }
@@ -464,23 +465,23 @@ Terrain::grow_all_grass_high() {
         if (t.is_grass()) {
             int level = 0;
             for (int x = -1; x < 2; x++)
-                for (int y = -1; y < 2; y++) {
-                    if (x == 0 && y == 0) {
-                        continue;
+            for (int y = -1; y < 2; y++) {
+                if (x == 0 && y == 0) {
+                    continue;
+                }
+                // safety function to test if you xyz is in range;
+                if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
+                    const Tile* tile =
+                        get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
+                    if (!tile->is_grass()) {
+                        level = grass_grad_length;
+                        break;
                     }
-                    // safety function to test if you xyz is in range;
-                    if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
-                        const Tile* tile =
-                            get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
-                        if (!tile->is_grass()) {
-                            level = grass_grad_length;
-                            break;
-                        }
-                        if (tile->get_grow_high() > level) {
-                            level = tile->get_grow_high();
-                        }
+                    if (tile->get_grow_high() > level) {
+                        level = tile->get_grow_high();
                     }
                 }
+            }
             t.set_grow_data_high(level - 1);
         }
     }
@@ -973,8 +974,7 @@ Terrain::compress_color(uint8_t v[4]) {
 
 int
 Terrain::qb_save_debug(
-    const std::string path, const std::map<int, const Material>* materials
-) {
+    const std::string path) {
     int x = 0;
     for (Chunk& c : chunks) {
         std::set<const NodeGroup*> node_groups;
@@ -993,7 +993,7 @@ Terrain::qb_save_debug(
 int
 Terrain::qb_save(const std::string path) const {
     // Saves the tiles in this to the path specified
-    return VoxelUtility::to_qb(path, *this);
+    return voxel_utility::to_qb(path, *this);
 }
 
 int
@@ -1005,7 +1005,7 @@ Terrain::qb_read(
     std::vector<int> center;
     std::vector<uint32_t> size;
 
-    int test = VoxelUtility::from_qb(path, data, center, size);
+    int test = voxel_utility::from_qb(path, data, center, size);
     bool ok = (test == 0);
     if (!ok) {
         return 1;
@@ -1019,30 +1019,30 @@ Terrain::qb_read(
     std::set<uint32_t> unknown_materials;
 
     for (int x = 0; x < X_MAX; x++)
-        for (int z = 0; z < Z_MAX; z++)
-            for (int y = Y_MAX - 1; y >= 0; y--) {
-                uint32_t color = data[pos(x, y, z)];
-                if (color == 0) { // if the qb voxel is transparent.
-                    auto mat_color = materials->at(0); // set the materials to air
-                    get_tile(x, y, z)->init(
-                        {x, y, z}, mat_color.first, mat_color.second
-                    );
-                } else {
-                    // auto CC = compress_color(v);// get the complete color
-                    if (materials->count(color)) { // if the color is known
-                        auto mat_color = materials->at(color);
-                        get_tile(x, y, z)->init(
-                            {x, y, z}, mat_color.first, mat_color.second
-                        );
-                    } else {
-                        unknown_materials.insert(color);
-                        auto mat_color = materials->at(0); // else set to air.
-                        get_tile(x, y, z)->init(
-                            {x, y, z}, mat_color.first, mat_color.second
-                        );
-                    }
-                }
+    for (int z = 0; z < Z_MAX; z++)
+    for (int y = Y_MAX - 1; y >= 0; y--) {
+        uint32_t color = data[pos(x, y, z)];
+        if (color == 0) { // if the qb voxel is transparent.
+            auto mat_color = materials->at(0); // set the materials to air
+            get_tile(x, y, z)->init(
+                {x, y, z}, mat_color.first, mat_color.second
+            );
+        } else {
+            // auto CC = compress_color(v);// get the complete color
+            if (materials->count(color)) { // if the color is known
+                auto mat_color = materials->at(color);
+                get_tile(x, y, z)->init(
+                    {x, y, z}, mat_color.first, mat_color.second
+                );
+            } else {
+                unknown_materials.insert(color);
+                auto mat_color = materials->at(0); // else set to air.
+                get_tile(x, y, z)->init(
+                    {x, y, z}, mat_color.first, mat_color.second
+                );
             }
+        }
+    }
     for (uint32_t color : unknown_materials) {
         std::cout << "    cannot find color: " << std::hex << std::uppercase << color
                   << std::dec << std::endl;

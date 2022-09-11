@@ -63,7 +63,7 @@ save_test(const std::string path, const std::string save_path) {
 
     World world(path);
 
-    world.terrain_main.qb_save_debug(save_path, world.get_materials());
+    world.terrain_main.qb_save_debug(save_path);
 
     return 0;
 }
@@ -124,7 +124,7 @@ path_finder_test(const std::string path, std::string save_path) {
     std::cout << "    " << static_cast<int>(tile_path.size()) << std::endl;
     if (tile_path.size() == 0) {
         std::cout << "no path" << std::endl;
-        world.terrain_main.qb_save_debug(save_path, world.get_materials());
+        world.terrain_main.qb_save_debug(save_path);
         return 1;
     }
 

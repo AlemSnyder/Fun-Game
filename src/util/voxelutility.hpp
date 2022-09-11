@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace VoxelUtility {
+namespace voxel_utility {
 
 class VoxelObject {
  private:
@@ -131,4 +131,4 @@ to_qb(const std::string path, T voxel_object) {
     return 0;
 }
 
-} // namespace VoxelUtility
+} // namespace voxel_utility

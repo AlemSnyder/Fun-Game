@@ -6,8 +6,7 @@
 #include <string>
 #include <vector>
 
-// TODO(nino): lowercase this
-namespace VoxelUtility {
+namespace voxel_utility {
 
 int
 from_qb(
@@ -101,4 +100,4 @@ VoxelObject::VoxelObject(const std::string path) {
     int test = from_qb(path, data_, center_, size_);
     ok_ = (test == 0);
 }
-} // namespace VoxelUtility
+} // namespace voxel_utility

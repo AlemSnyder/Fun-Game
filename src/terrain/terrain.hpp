@@ -792,7 +792,7 @@ class Terrain {
      * @return int success status
      */
     int qb_save_debug(
-        const std::string path, const std::map<int, const Material>* materials
+        const std::string path
     );
     /**
      * @brief save to path

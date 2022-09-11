@@ -34,8 +34,8 @@ Mesh::load_from_qb_(std::string path) {
     std::vector<uint32_t> data;
     std::vector<int32_t> center;
     // std::vector<int> size;
-    VoxelUtility::VoxelObject voxel_object(&path[0]);
-    // int test = VoxelUtility::from_qb(&path[0], data, center, size_);
+    voxel_utility::VoxelObject voxel_object(&path[0]);
+    // int test = voxel_utility::from_qb(&path[0], data, center, size_);
 
     if (!voxel_object.ok()) {
         std::string message("Could not load voxel from ");
