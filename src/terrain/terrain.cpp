@@ -145,7 +145,7 @@ Terrain::init(
         );
         land_generators.insert(std::make_pair(i, gen));
     }
-
+    // TODO make this faster 4
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++) {
             int tile_type = Terrain_Maps[j + i * y];
@@ -154,20 +154,21 @@ Terrain::init(
                 init_area(i, j, land_generators[generator_macro.asInt()]);
             }
         }
-
+    // TODO make this faster 3
     for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
          i++) {
         add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }
 
     // grow_grass();
+    // TODO make this faster 2
     init_grass();
     //for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
     //    if (can_stand_1(xyz)) {
     //        add_all_adjacent(xyz);
     //    }
     //}
-
+    // TODO make this faster 1
     init_chunks();
 
     std::cout << time_util::get_time() - millisec_since_epoch

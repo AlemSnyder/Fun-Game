@@ -38,7 +38,7 @@ test1(const std::string path) {
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    World world(materials_json, biome_data);
+    World world(materials_json, biome_data, 6, 6);
 
     world.terrain_main.qb_save(path);
 
@@ -153,6 +153,21 @@ get_mesh(
     world.get_mesh_greedy(indices, indexed_vertices, indexed_colors, indexed_normals);
 }
 
+int StressTest() {
+
+    Json::Value materials_json;
+    std::ifstream materials_file = files::open_data_file("materials.json");
+    materials_file >> materials_json;
+
+    Json::Value biome_data;
+    std::ifstream biome_file = files::open_data_file("biome_data.json");
+    biome_file >> biome_data;
+
+    World world(materials_json, biome_data, 12, 12);
+
+    return gui::GUITest(world);
+}
+
 int
 GUITest(const std::string path) {
     std::vector<std::uint16_t> indices;
@@ -215,6 +230,8 @@ main(int argc, char** argv) {
         return test1(path_in);
     } else if (run_function == "MacroMap") {
         return test2();
+    } else if (run_function == "StressTest") {
+        return StressTest();
     } else if (run_function == "SaveTest") {
         return save_test(path_in, path_out);
     } else if (run_function == "PathFinder") {

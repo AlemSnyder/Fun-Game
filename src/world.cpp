@@ -115,7 +115,7 @@ World::World(const std::string path) {
     terrain_main = terrain::Terrain(path, &materials);
 }
 
-World::World(Json::Value materials_json, Json::Value biome_data) {
+World::World(Json::Value materials_json, Json::Value biome_data, unsigned int x_tiles, unsigned int y_tiles) {
     init_materials(materials_json);
 
     std::vector<int> grass_grad_data;
@@ -128,7 +128,7 @@ World::World(Json::Value materials_json, Json::Value biome_data) {
     std::cout << "start of terrain\n";
 
     terrain_main = terrain::Terrain(
-        6, 6, 32, 128, 5, &materials, biome_data["Biome_1"], grass_grad_data,
+        x_tiles, y_tiles, 32, 128, 5, &materials, biome_data["Biome_1"], grass_grad_data,
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     );
 }

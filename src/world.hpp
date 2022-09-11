@@ -61,7 +61,7 @@ class World {
      * (see) src/terrain/terrain_generation/land_generator.hpp
      */
     World(Json::Value biome_data, int type);
-    World(Json::Value materials_json, Json::Value biome_data);
+    World(Json::Value materials_json, Json::Value biome_data, unsigned int x_tiles, unsigned int y_tiles);
 
     // void save(); TODO define save
     //  this would require creating some sort of file type
