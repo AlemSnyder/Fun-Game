@@ -76,10 +76,11 @@ Terrain::init(
 Terrain::Terrain(
     const std::string path, const std::map<int, const Material>* material
 ) {
-    std::map<uint32_t, std::pair<const Material*, uint8_t>> materials;
+    materials_ = material;
+    std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse;
     for (auto it = material->begin(); it != material->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
-            materials.insert(
+            materials_inverse.insert(
                 std::map<uint32_t, std::pair<const Material*, uint8_t>>::value_type(
                     it->second.color.at(color_id).second,
                     std::make_pair(&it->second, (uint8_t)color_id)
@@ -87,7 +88,7 @@ Terrain::Terrain(
             );
         }
     }
-    int test = qb_read(path, &materials);
+    int test = qb_read(path, &materials_inverse);
     if (test == 1) {
         std::cerr << "Could not load terrain" << std::endl;
         return;
@@ -121,6 +122,7 @@ Terrain::init(
 
     Area_size = Area_size_;
     seed = seed_;
+    materials_ = materials;
     X_MAX = x * Area_size;
     Y_MAX = y * Area_size;
     Z_MAX = z;
@@ -128,7 +130,7 @@ Terrain::init(
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        get_tile(xyz)->init(sop(xyz), &(*materials).at(0));
+        get_tile(xyz)->init(sop(xyz), 0);
     }
 
     srand(seed);
@@ -286,12 +288,12 @@ Terrain::get_first_not(
         guess = Z_MAX - 1;
     }
     if (materials.find(std::make_pair(
-            get_tile(x, y, guess - 1)->get_material()->element_id,
+            get_tile(x, y, guess - 1)->get_material_id(),
             get_tile(x, y, guess - 1)->get_color_id()
         ))
         != materials.end()) {
         if (materials.find(std::make_pair(
-                get_tile(x, y, guess)->get_material()->element_id,
+                get_tile(x, y, guess)->get_material_id(),
                 get_tile(x, y, guess)->get_color_id()
             ))
             == materials.end()) {
@@ -300,7 +302,7 @@ Terrain::get_first_not(
             // go up
             for (int z = guess + 1; z < Z_MAX; z++) {
                 if (materials.find(std::make_pair(
-                        get_tile(x, y, z)->get_material()->element_id,
+                        get_tile(x, y, z)->get_material_id(),
                         get_tile(x, y, z)->get_color_id()
                     ))
                     == materials.end()) {
@@ -313,7 +315,7 @@ Terrain::get_first_not(
         // go down
         for (int z = guess - 2; z > 0; z--) {
             if (materials.find(std::make_pair(
-                    get_tile(x, y, z)->get_material()->element_id,
+                    get_tile(x, y, z)->get_material_id(),
                     get_tile(x, y, z)->get_color_id()
                 ))
                 != materials.end()) {
@@ -365,8 +367,8 @@ Terrain::can_stand(const Tile tile, int dz, int dxy) const {
 bool
 Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id) {
     // sets color_id if the material is the same.
-    if (tile->get_material()->element_id == mat->element_id) {
-        tile->set_color_id(color_id);
+    if (tile->get_material_id() == mat->element_id) {
+        tile->set_color_id(color_id, mat);
         return true;
     }
     return false;
@@ -375,7 +377,7 @@ Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id) {
 bool
 Terrain::player_set_tile_material(int xyz, const Material* mat, uint8_t color_id) {
     Tile* tile = get_tile(xyz);
-    if (tile->get_material()->solid && mat->solid) {
+    if (tile->is_solid() && mat->solid) {
         // Can't change something from one material to another.
         return 0;
     }
@@ -397,7 +399,7 @@ Terrain::stamp_tile_region(
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
                     if (elements_can_stamp.find(std::make_pair(
-                            static_cast<int>(tile->get_material()->element_id),
+                            static_cast<int>(tile->get_material_id()),
                             static_cast<int>(tile->get_color_id())
                         ))
                         != elements_can_stamp.end()) {
@@ -932,11 +934,31 @@ Terrain::get_path(
     return path;
 }
 
+uint32_t Terrain::get_voxel(int x, int y, int z) const {
+    // using static ints to prevent dereferencing
+    static unsigned int get_voxel_mat_id = 0;
+    static unsigned int get_voxel_color_id = 0;
+    static uint32_t get_voxel_out_color = 0;
+    if (in_range(x, y, z)) {
+        if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_mat_id) | 
+            (tiles[pos(x, y, z)].get_color_id() != get_voxel_color_id))
+        {
+            get_voxel_mat_id = tiles[pos(x, y, z)].get_material_id();
+            get_voxel_color_id = tiles[pos(x, y, z)].get_color_id();
+            auto mat = materials_->at(get_voxel_mat_id);
+            get_voxel_out_color = mat.color[get_voxel_color_id].second;
+        }
+
+        //auto mat = materials->at(tiles[pos(x, y, z)].get_material_id());
+        return get_voxel_out_color;
+    }
+    return 0;
+}
+
 // Set `color` to the color of the tile at `pos`.
 void
 Terrain::export_color(const int sop[3], uint8_t color[4]) const {
-    int position = pos(sop);
-    uint32_t tile_color = get_tile(position)->get_color();
+    uint32_t tile_color = get_voxel(sop[0], sop[1], sop[2]);
     color[0] = (tile_color >> 24) & 0xFF;
     color[1] = (tile_color >> 16) & 0xFF;
     color[2] = (tile_color >> 8) & 0xFF;
@@ -959,7 +981,7 @@ Terrain::qb_save_debug(
         c.add_nodes_to(node_groups);
         for (const NodeGroup* NG : node_groups) {
             for (const Tile* t : NG->get_tiles()) {
-                set_tile_material(get_tile(pos(t->sop())), &materials->at(7), x % 4);
+                set_tile_material(get_tile(pos(t->sop())), &materials_->at(7), x % 4);
             }
             x++;
         }
@@ -1034,7 +1056,7 @@ Terrain::get_start_end_test() {
     std::pair<Tile*, Tile*> out;
     bool first = true;
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        if (get_tile(xyz)->get_material()->element_id == 7
+        if (get_tile(xyz)->get_material_id() == 7
             && get_tile(xyz)->get_color_id() == 4) {
             if (first) {
                 out.first = get_tile(xyz);

@@ -60,21 +60,25 @@ class Tile {
     uint16_t z; // The z index
     // does this need to know where it is?
     // The tile color is determined by this and the material type.
-    uint8_t color_id;
+    uint8_t color_id_;
     // Determined by the horizontal manhattan distance from a wall
-    uint8_t grow_data_high;
+    uint8_t grow_data_high_;
     // Determined by the horizontal manhattan distance from a edge
-    uint8_t grow_data_low;
+    uint8_t grow_data_low_;
 
-    bool grow_sink;   // not used
-    bool grow_source; // not used
-    bool grass;       // Does this tile obey grass color Gradient?
+    bool grow_sink_;   // not used
+    bool grow_source_; // not used
+    bool grass_;       // Does this tile obey grass color Gradient?
 
     // used for can stand, grass edges, etc. Should be the same as mat->solid.
-    bool solid;          // is the tile solid
-    const Material* mat; // The material of the tile
+    bool solid_;          // is the tile solid
+
+    uint8_t mat_id_; // The material id of the tile
     // adjacent tiles
     // std::map<Tile*, UnitPath, TilePCompare> adjacent;
+
+    //void set_material(uint8_t mat_id, uint8_t color_id bool solid);
+    //void set_material(uint8_t mat_id, uint8_t color_id bool solid);
 
  public:
     /**
@@ -88,7 +92,7 @@ class Tile {
      * @param sop tile position
      * @param mat material of tile
      */
-    Tile(std::array<int, 3> sop, const Material* mat);
+    Tile(std::array<int, 3> sop, const terrain::Material* material);
     /**
      * @brief Construct a new Tile object
      *
@@ -96,49 +100,36 @@ class Tile {
      * @param mat material of tile
      * @param color_id color of tile
      */
-    Tile(std::array<int, 3> sop, const Material* mat, uint8_t color_id);
+    Tile(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color_id);
     /**
      * @brief tile initializer
      *
      * @param sop tile position
-     * @param solid is the tile solid
-     */
-    void init(std::array<int, 3> sop, bool solid);
-    /**
-     * @brief tile initializer
-     *
-     * @param sop tile position
-     * @param mat material of tile
-     */
-    void init(std::array<int, 3> sop, const Material* mat);
-    /**
-     * @brief tile initializer
-     *
-     * @param sop tile position
-     * @param mat material of tile
+     * @param mat_id material id for tile
      * @param color_id color of tile
      */
-    void init(std::array<int, 3> sop, const Material* mat, uint8_t color_id);
+    void init(std::array<int, 3> sop, uint8_t mat_id);
+    void init(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color);
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.
      *
      * @param mat_ material to set
      */
-    void set_material(const Material* mat_);
+    void set_material(const terrain::Material* const materials);
     /**
      * @brief Set the material, and color, and update solid state
      *
      * @param mat_ material to set
      * @param color_id color to set
      */
-    void set_material(const Material* mat_, uint8_t color_id);
+    void set_material(const terrain::Material* const materials, uint8_t color_id);
     /**
      * @brief Set the color id
      *
      * @param color_id color to set
      */
-    void set_color_id(uint8_t color_id);
+    void set_color_id(uint8_t color_id, const terrain::Material* const material);
     /**
      * @brief Set the distance from edge
      *
@@ -173,21 +164,21 @@ class Tile {
      *
      * @return int x position
      */
-    int get_x() const { return x; }
+    inline int get_x() const { return x; }
 
     /**
      * @brief Get the y position
      *
      * @return int y position
      */
-    int get_y() const { return y; }
+    inline int get_y() const { return y; }
 
     /**
      * @brief Get the z position
      *
      * @return int z position
      */
-    int get_z() const { return z; }
+    inline int get_z() const { return z; }
 
     /**
      * @brief coordinate of tile
@@ -202,21 +193,15 @@ class Tile {
      * @return true this tile is grass
      * @return false this tile is not grass
      */
-    bool is_grass() const { return grass; }
+    inline bool is_grass() const { return grass_; }
 
     /**
      * @brief Get the material
      *
      * @return const Material*
      */
-    const Material* get_material() const { return mat; }
+    inline uint8_t get_material_id() const { return mat_id_; }
 
-    /**
-     * @brief Get the color
-     *
-     * @return uint32_t color
-     */
-    uint32_t get_color() const;
     /**
      * @brief Get the color id
      *
@@ -300,13 +285,13 @@ class Tile {
      * @return true the tiles is solid
      * @return false the tile is not solid
      */
-    inline bool is_solid() const { return solid; }
+    inline bool is_solid() const { return solid_; }
 
-    bool operator==(const Tile other) const {
+    inline bool operator==(const Tile other) const {
         return (this->x == other.x && this->y == other.y && this->z == other.z);
     }
 
-    bool operator==(const Tile* other) const {
+    inline bool operator==(const Tile* other) const {
         return (this->x == other->x && this->y == other->y && this->z == other->z);
     }
 

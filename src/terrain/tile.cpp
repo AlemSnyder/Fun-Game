@@ -9,68 +9,68 @@
 namespace terrain {
 
 Tile::Tile() {
-    init({1, 1, 1}, false);
+    init({1, 1, 1}, 0);
 }
 
-Tile::Tile(std::array<int, 3> sop, const Material* mat) {
-    init(sop, mat);
+Tile::Tile(std::array<int, 3> sop, const terrain::Material* const material) {
+    init(sop, material->element_id);
+    set_material(material, 0);
 }
 
-Tile::Tile(std::array<int, 3> sop, const Material* mat_, uint8_t color_id_) {
-    init(sop, mat_, color_id_);
+Tile::Tile(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color_id) {
+    //bool solid = materials[mat_id].solid;
+    init(sop, material->element_id);
+    set_material(material, color_id);
 }
 
 void
-Tile::init(std::array<int, 3> sop, bool solid_) {
+Tile::init(std::array<int, 3> sop, uint8_t mat) {
     // auto sop = Terrain::sop(xyz);
     x = sop[0];
     y = sop[1];
     z = sop[2];
-    solid = solid_;
-    color_id = 0;
-    grow_data_high = 0;
-    grow_data_low = 0;
-    grow_sink = false;
-    grow_source = false;
-    grass = false;
+    solid_ = false;
+    color_id_ = 0;
+    mat_id_ = mat;
+    grow_data_high_ = 0;
+    grow_data_low_ = 0;
+    grow_sink_ = false;
+    grow_source_ = false;
+    grass_ = false;
 }
 
-void
-Tile::init(std::array<int, 3> sop, const Material* mat_) {
-    init(sop, mat_->solid);
-    mat = mat_;
-}
-
-void
-Tile::init(std::array<int, 3> sop, const Material* mat_, uint8_t color_id_) {
-    init(sop, mat_);
-    color_id = color_id_;
+void Tile::init(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color_id){
+    init(sop, material->element_id);
+    set_material(material, color_id);
 }
 
 // Set material, and color_id
 void
-Tile::set_material(const Material* mat_, uint8_t color_id_) {
-    set_material(mat_);
-    set_color_id(color_id_);
+Tile::set_material(const terrain::Material* const material, uint8_t color_id_) {
+    set_material(material);
+    set_color_id(color_id_, material);
 }
 
 // Set the `mat` to `mat_` and update `solid` and `color_id`.
 void
-Tile::set_material(const Material* mat_) {
-    mat = mat_;
-    if (mat->element_id == DIRT_ID) { // being set to dirt
-        color_id = (z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
+Tile::set_material(const terrain::Material* const material) {
+    mat_id_ = material->element_id;
+    if (mat_id_ == DIRT_ID) { // being set to dirt
+        color_id_ = (z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
     } else {
-        color_id = 0;
+        color_id_ = 0;
     }
-    solid = mat->solid;
+    solid_ = material->solid;
 }
 
 // If able, set `color_id` to `color_id_`.
 void
-Tile::set_color_id(uint8_t color_id_) {
-    if (mat->element_id != DIRT_ID) {
-        color_id = color_id_;
+Tile::set_color_id(uint8_t color_id_, const terrain::Material* const material) {
+    if (color_id_ > material->color.size()){
+        return;
+    }
+    if (mat_id_ != DIRT_ID) {
+        color_id_ = color_id_;
     } // cannot set the color of dirt
 }
 
@@ -78,9 +78,9 @@ Tile::set_color_id(uint8_t color_id_) {
 void
 Tile::set_grow_data_high(int num) {
     if (num < 0) {
-        grow_data_high = 0;
+        grow_data_high_ = 0;
     } else {
-        grow_data_high = num;
+        grow_data_high_ = num;
     }
 }
 
@@ -88,9 +88,9 @@ Tile::set_grow_data_high(int num) {
 void
 Tile::set_grow_data_low(int num) {
     if (num < 0) {
-        grow_data_low = 0;
+        grow_data_low_ = 0;
     } else {
-        grow_data_low = num;
+        grow_data_low_ = num;
     }
 }
 
@@ -99,14 +99,14 @@ void
 Tile::set_grass_color(
     int grass_grad_length, int grass_mid, std::vector<uint8_t> grass_colors
 ) {
-    if (grass) {
-        if (grass_grad_length - grow_data_high - 1 < grow_data_low
-            || grow_data_low > grass_mid) {
-            color_id = grass_colors[grow_data_low];
-        } else if (grow_data_high > grass_mid) {
-            color_id = grass_colors[grass_grad_length - grow_data_high - 1];
+    if (grass_) {
+        if (grass_grad_length - grow_data_high_ - 1 < grow_data_low_
+            || grow_data_low_ > grass_mid) {
+            color_id_ = grass_colors[grow_data_low_];
+        } else if (grow_data_high_ > grass_mid) {
+            color_id_ = grass_colors[grass_grad_length - grow_data_high_ - 1];
         } else {
-            color_id = grass_colors[grass_mid];
+            color_id_ = grass_colors[grass_mid];
         }
     }
 }
@@ -114,22 +114,22 @@ Tile::set_grass_color(
 // Grow grass if `mat` is dirt.
 void
 Tile::try_grow_grass() {
-    if (mat->element_id == DIRT_ID) {
-        grass = true;
-        color_id = 0;
+    if (mat_id_ == DIRT_ID) {
+        grass_ = true;
+        color_id_ = 0;
     }
 }
 
 // return the color of this tile.
-uint32_t
-Tile::get_color() const {
-    return (mat->color[color_id]).second;
-}
+//uint32_t
+//Tile::get_color() const {
+//    return (mat->color[color_id]).second;
+//}
 
 // return `color_id`.
 uint8_t
 Tile::get_color_id() const {
-    return color_id;
+    return color_id_;
 }
 
 // returns the element id and the color id as one int
@@ -137,22 +137,22 @@ uint16_t
 Tile::get_mat_color_id() const {
     // element_id, and color_id are 8 bit this function
     // concatenates them together, and returns a 16 bit int
-    if (mat->element_id == AIR_ID) {
+    if (mat_id_ == AIR_ID) {
         return 0;
     }
-    return mat->element_id << 8 | color_id;
+    return mat_id_ << 8 | color_id_;
 }
 
 // return `grow_data_low`
 uint8_t
 Tile::get_grow_low() const {
-    return grow_data_low;
+    return grow_data_low_;
 }
 
 // return `grow_data_high`
 uint8_t
 Tile::get_grow_high() const {
-    return grow_data_high;
+    return grow_data_high_;
 }
 
 // return x, y, z positions as array

@@ -7,7 +7,7 @@
             "request": "launch",
             // Resolved by CMake Tools:
             "program": "${command:cmake.launchTargetPath}",
-            "args": ["StressTest"],
+            "args": ["GUITest", "SavedTerrain\\pathfinder_input.qb"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [

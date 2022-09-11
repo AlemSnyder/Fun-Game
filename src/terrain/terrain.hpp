@@ -88,6 +88,8 @@ class Terrain {
     // gradient index of grass not by an edge
     int grass_mid;
 
+    const std::map<int, const terrain::Material>* materials_;
+
     // save color at sop, to color
     void export_color(const int sop[3], uint8_t color[4]) const;
     // find color v in map, and save material to mat_, and color id to color_id
@@ -587,12 +589,7 @@ class Terrain {
      * @param z z position
      * @return uint32_t color or tile
      */
-    uint32_t get_voxel(int x, int y, int z) const {
-        if (in_range(x, y, z)) {
-            return tiles[pos(x, y, z)].get_color();
-        }
-        return 0;
-    }
+    uint32_t get_voxel(int x, int y, int z) const;
 
     /**
      * @brief charge the color id but not the material of the tile
@@ -625,7 +622,7 @@ class Terrain {
      */
     inline void set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
         tile->set_material(mat);
-        tile->set_color_id(color_id);
+        tile->set_color_id(color_id, mat);
     }
 
     /**
