@@ -28,12 +28,12 @@
 #include "material.hpp"
 #include "path/node.hpp"
 #include "path/node_group.hpp"
+#include "path/tile_iterators.hpp"
+#include "path/unit_path.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
 #include "tile.hpp"
-#include "path/tile_iterators.hpp"
-#include "path/unit_path.hpp"
 
 #include <stdio.h>
 
@@ -64,6 +64,7 @@ class AdjacentIterator;
  */
 class Terrain {
     friend class AdjacentIterator;
+
  private:
     // vector of voxels in terrain
     std::vector<Tile> tiles;
@@ -99,20 +100,19 @@ class Terrain {
     );
     // convert 4 int 8 to 1 int 32 (reversed order)
     uint32_t compress_color(uint8_t v[4]);
+
     // create unit paths for this tile, and all it's adjacent tiles
-    //void add_all_adjacent(int xyz);
+    // void add_all_adjacent(int xyz);
 
     // get set of adjacent tiles with given path type
-    //std::set<Tile*>
-    //get_adjacent_clear(unsigned int xyz, int path_type);
-
+    // std::set<Tile*>
+    // get_adjacent_clear(unsigned int xyz, int path_type);
 
     // trace nodes through parents to reach start
     template <class T>
-    void get_path_through_nodes(Node<const T>* node,
-        std::vector<const T*>& out,
-        const T* start) const
-    {
+    void get_path_through_nodes(
+        Node<const T>* node, std::vector<const T*>& out, const T* start
+    ) const {
         out.push_back(node->get_tile());
         if (start == node->get_tile()) {
             return;
@@ -214,18 +214,16 @@ class Terrain {
      * @param tile
      * @return int
      */
-    inline int pos_for_map(const Tile tile) const {
-        return pos(tile);
-    }
+    inline int pos_for_map(const Tile tile) const { return pos(tile); }
+
     /**
      * @brief unique map index
      *
      * @param tile
      * @return int
      */
-    inline int pos_for_map(const Tile* const tile) const {
-        return pos(tile);
-    }
+    inline int pos_for_map(const Tile* const tile) const { return pos(tile); }
+
     /**
      * @brief unique map index
      *
@@ -235,6 +233,7 @@ class Terrain {
     inline int pos_for_map(const NodeGroup NG) const {
         return pos(*(NG.get_tiles().begin()));
     }
+
     /**
      * @brief unique map index
      *
@@ -412,10 +411,11 @@ class Terrain {
 
     // TODO place block
 
-    inline path::AdjacentIterator get_tile_adjacent_iterator(size_t pos, UnitPath path_type) const {
+    inline path::AdjacentIterator
+    get_tile_adjacent_iterator(size_t pos, UnitPath path_type) const {
         return path::AdjacentIterator(*this, pos, path_type);
     }
-    
+
     /**
      * @brief Get the nodes adjacent to this one
      *
@@ -425,16 +425,14 @@ class Terrain {
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    //template <class T>
+    // template <class T>
     std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
-        std::map<size_t, Node<const NodeGroup>>& nodes,
-        uint8_t type
+        std::map<size_t, Node<const NodeGroup>>& nodes, uint8_t type
     ) const;
 
     std::set<Node<const Tile>*> get_adjacent_nodes(
-        const Node<const Tile>* const node,
-        std::map<size_t, Node<const Tile>>& nodes,
+        const Node<const Tile>* const node, std::map<size_t, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 
@@ -791,9 +789,7 @@ class Terrain {
      * @param materials materials in the terrain for debug materials
      * @return int success status
      */
-    int qb_save_debug(
-        const std::string path
-    );
+    int qb_save_debug(const std::string path);
     /**
      * @brief save to path
      *

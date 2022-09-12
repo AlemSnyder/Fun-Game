@@ -93,11 +93,11 @@ Terrain::Terrain(
         std::cerr << "Could not load terrain" << std::endl;
         return;
     }
-    //for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-    //    if (can_stand_1(xyz)) {
-    //        add_all_adjacent(xyz);
-    //    }
-    //}
+    // for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    //     if (can_stand_1(xyz)) {
+    //         add_all_adjacent(xyz);
+    //     }
+    // }
     init_chunks();
 }
 
@@ -162,12 +162,12 @@ Terrain::init(
     // grow_grass();
     // TODO make this faster 2
     init_grass();
-    //for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-    //    if (can_stand_1(xyz)) {
-    //        add_all_adjacent(xyz);
-    //    }
-    //}
-    // TODO make this faster 1
+    // for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    //     if (can_stand_1(xyz)) {
+    //         add_all_adjacent(xyz);
+    //     }
+    // }
+    //  TODO make this faster 1
     init_chunks();
 
     std::cout << time_util::get_time() - millisec_since_epoch
@@ -192,9 +192,7 @@ Terrain::init_chunks() {
     unsigned int C_length_X = ((X_MAX - 1) / Chunk::size + 1);
     unsigned int C_length_Y = ((Y_MAX - 1) / Chunk::size + 1);
     unsigned int C_length_Z = ((Z_MAX - 1) / Chunk::size + 1);
-    for (int xyz = 0;
-         xyz < C_length_X * C_length_Y * C_length_Z;
-         xyz += 1) {
+    for (int xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks.push_back(Chunk(x, y, z, this));
     }
@@ -431,17 +429,17 @@ void
 Terrain::init_grass() {
     // Test all ties to see if they can be grass.
     for (int x_ = 0; x_ < X_MAX; x_++)
-    for (int y_ = 0; y_ < Y_MAX; y_++)
-    for (int z_ = 0; z_ < Z_MAX - 1; z_++) {
-        if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
-            get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
-        }
-    }
+        for (int y_ = 0; y_ < Y_MAX; y_++)
+            for (int z_ = 0; z_ < Z_MAX - 1; z_++) {
+                if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
+                    get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
+                }
+            }
     int z_ = Z_MAX - 1;
     for (int x_ = 0; x_ < X_MAX; x_++)
-    for (int y_ = 0; y_ < Y_MAX; y_++) {
-        get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
-    }
+        for (int y_ = 0; y_ < Y_MAX; y_++) {
+            get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
+        }
     for (int i = 0; i < grass_grad_length; i++) {
         grow_all_grass_high();
     }
@@ -462,23 +460,23 @@ Terrain::grow_all_grass_high() {
         if (t.is_grass()) {
             int level = 0;
             for (int x = -1; x < 2; x++)
-            for (int y = -1; y < 2; y++) {
-                if (x == 0 && y == 0) {
-                    continue;
-                }
-                // safety function to test if you xyz is in range;
-                if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
-                    const Tile* tile =
-                        get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
-                    if (!tile->is_grass()) {
-                        level = grass_grad_length;
-                        break;
+                for (int y = -1; y < 2; y++) {
+                    if (x == 0 && y == 0) {
+                        continue;
                     }
-                    if (tile->get_grow_high() > level) {
-                        level = tile->get_grow_high();
+                    // safety function to test if you xyz is in range;
+                    if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
+                        const Tile* tile =
+                            get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
+                        if (!tile->is_grass()) {
+                            level = grass_grad_length;
+                            break;
+                        }
+                        if (tile->get_grow_high() > level) {
+                            level = tile->get_grow_high();
+                        }
                     }
                 }
-            }
             t.set_grow_data_high(level - 1);
         }
     }
@@ -589,20 +587,21 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
     return node.get_time_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }
 
-int Terrain::pos(const NodeGroup* const node_group) const {
+int
+Terrain::pos(const NodeGroup* const node_group) const {
     auto [x, y, z] = node_group->sop();
     int px = floor(x) / Chunk::size;
     int py = floor(y) / Chunk::size;
     int pz = floor(z) / Chunk::size;
-    return px * Y_MAX / Chunk::size * Z_MAX / Chunk::size + py * Z_MAX / Chunk::size + pz;
+    return px * Y_MAX / Chunk::size * Z_MAX / Chunk::size + py * Z_MAX / Chunk::size
+           + pz;
 }
 
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
-    std::map<size_t, Node<const NodeGroup>>& nodes,
-    uint8_t path_type) const
-{
+    std::map<size_t, Node<const NodeGroup>>& nodes, uint8_t path_type
+) const {
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
         try {
@@ -615,27 +614,26 @@ Terrain::get_adjacent_nodes(
 
 std::set<Node<const Tile>*>
 Terrain::get_adjacent_nodes(
-    const Node<const Tile>* node,
-    std::map<size_t, Node<const Tile>> &nodes,
-    uint8_t path_type) const
-{
+    const Node<const Tile>* node, std::map<size_t, Node<const Tile>>& nodes,
+    uint8_t path_type
+) const {
     std::set<Node<const Tile>*> out;
-    path::AdjacentIterator tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
-    while (!tile_it.end())
-    {
+    path::AdjacentIterator tile_it =
+        get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
+    while (!tile_it.end()) {
         try {
             Node<const Tile>* tile = &nodes.at(tile_it.get_pos());
             out.emplace(tile);
         } catch (const std::out_of_range& e) {}
         tile_it++;
     }
-    
-    //for (const Tile* t : node->get_adjacent(path_type)) {
-    //    try {
-    //        Node<const Tile>* tile = &nodes.at(t);
-    //        out.emplace(tile);
-    //    } catch (const std::out_of_range& e) {}
-    //}
+
+    // for (const Tile* t : node->get_adjacent(path_type)) {
+    //     try {
+    //         Node<const Tile>* tile = &nodes.at(t);
+    //         out.emplace(tile);
+    //     } catch (const std::out_of_range& e) {}
+    // }
     return out;
 }
 
@@ -817,9 +815,9 @@ Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) {
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_breadth_first(const NodeGroup* start,
-                                const std::set<const NodeGroup*> goal)
-{
+Terrain::get_path_breadth_first(
+    const NodeGroup* start, const std::set<const NodeGroup*> goal
+) {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_time_cots() > rhs->get_time_cots();
@@ -883,8 +881,8 @@ std::vector<const T*>
 Terrain::get_path(
     const T* start, const std::set<const T*> goal,
     const std::set<const T*> search_through,
-    std::function<bool(Node<const T>*, Node<const T>*)> compare) const
-{
+    std::function<bool(Node<const T>*, Node<const T>*)> compare
+) const {
     auto T_compare = [&compare](Node<const T>* lhs, Node<const T>* rhs) {
         return compare(lhs, rhs);
     };
@@ -893,11 +891,14 @@ Terrain::get_path(
         Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
         openNodes(T_compare);
 
-    //std::set<Node<const T>*> searched;
+    // std::set<Node<const T>*> searched;
 
     std::map<size_t, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
-        nodes.insert({pos_for_map(t), Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()))});
+        nodes.insert(
+            {pos_for_map(t),
+             Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()))}
+        );
     }
     Node<const T> start_node = nodes[pos_for_map(start)];
     openNodes.push(&start_node); // gotta start somewhere
@@ -932,22 +933,22 @@ Terrain::get_path(
     return path;
 }
 
-uint32_t Terrain::get_voxel(int x, int y, int z) const {
+uint32_t
+Terrain::get_voxel(int x, int y, int z) const {
     // using static ints to prevent dereferencing
     static unsigned int get_voxel_mat_id = 0;
     static unsigned int get_voxel_color_id = 0;
     static uint32_t get_voxel_out_color = 0;
     if (in_range(x, y, z)) {
-        if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_mat_id) | 
-            (tiles[pos(x, y, z)].get_color_id() != get_voxel_color_id))
-        {
+        if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_mat_id)
+            | (tiles[pos(x, y, z)].get_color_id() != get_voxel_color_id)) {
             get_voxel_mat_id = tiles[pos(x, y, z)].get_material_id();
             get_voxel_color_id = tiles[pos(x, y, z)].get_color_id();
             auto mat = materials_->at(get_voxel_mat_id);
             get_voxel_out_color = mat.color[get_voxel_color_id].second;
         }
 
-        //auto mat = materials->at(tiles[pos(x, y, z)].get_material_id());
+        // auto mat = materials->at(tiles[pos(x, y, z)].get_material_id());
         return get_voxel_out_color;
     }
     return 0;
@@ -970,8 +971,7 @@ Terrain::compress_color(uint8_t v[4]) {
 }
 
 int
-Terrain::qb_save_debug(
-    const std::string path) {
+Terrain::qb_save_debug(const std::string path) {
     int x = 0;
     for (Chunk& c : chunks) {
         std::set<const NodeGroup*> node_groups;
@@ -1016,30 +1016,30 @@ Terrain::qb_read(
     std::set<uint32_t> unknown_materials;
 
     for (int x = 0; x < X_MAX; x++)
-    for (int z = 0; z < Z_MAX; z++)
-    for (int y = Y_MAX - 1; y >= 0; y--) {
-        uint32_t color = data[pos(x, y, z)];
-        if (color == 0) { // if the qb voxel is transparent.
-            auto mat_color = materials->at(0); // set the materials to air
-            get_tile(x, y, z)->init(
-                {x, y, z}, mat_color.first, mat_color.second
-            );
-        } else {
-            // auto CC = compress_color(v);// get the complete color
-            if (materials->count(color)) { // if the color is known
-                auto mat_color = materials->at(color);
-                get_tile(x, y, z)->init(
-                    {x, y, z}, mat_color.first, mat_color.second
-                );
-            } else {
-                unknown_materials.insert(color);
-                auto mat_color = materials->at(0); // else set to air.
-                get_tile(x, y, z)->init(
-                    {x, y, z}, mat_color.first, mat_color.second
-                );
+        for (int z = 0; z < Z_MAX; z++)
+            for (int y = Y_MAX - 1; y >= 0; y--) {
+                uint32_t color = data[pos(x, y, z)];
+                if (color == 0) { // if the qb voxel is transparent.
+                    auto mat_color = materials->at(0); // set the materials to air
+                    get_tile(x, y, z)->init(
+                        {x, y, z}, mat_color.first, mat_color.second
+                    );
+                } else {
+                    // auto CC = compress_color(v);// get the complete color
+                    if (materials->count(color)) { // if the color is known
+                        auto mat_color = materials->at(color);
+                        get_tile(x, y, z)->init(
+                            {x, y, z}, mat_color.first, mat_color.second
+                        );
+                    } else {
+                        unknown_materials.insert(color);
+                        auto mat_color = materials->at(0); // else set to air.
+                        get_tile(x, y, z)->init(
+                            {x, y, z}, mat_color.first, mat_color.second
+                        );
+                    }
+                }
             }
-        }
-    }
     for (uint32_t color : unknown_materials) {
         std::cout << "    cannot find color: " << std::hex << std::uppercase << color
                   << std::dec << std::endl;

@@ -71,7 +71,7 @@ class Tile {
     bool grass_;       // Does this tile obey grass color Gradient?
 
     // used for can stand, grass edges, etc. Should be the same as mat->solid.
-    bool solid_;          // is the tile solid
+    bool solid_; // is the tile solid
 
     uint8_t mat_id_; // The material id of the tile
 
@@ -114,7 +114,8 @@ class Tile {
      * @param material material for tile
      * @param color_id color of tile
      */
-    void init(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id);
+    void
+    init(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id);
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.
