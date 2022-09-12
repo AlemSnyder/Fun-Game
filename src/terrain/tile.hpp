@@ -74,11 +74,6 @@ class Tile {
     bool solid_;          // is the tile solid
 
     uint8_t mat_id_; // The material id of the tile
-    // adjacent tiles
-    // std::map<Tile*, UnitPath, TilePCompare> adjacent;
-
-    //void set_material(uint8_t mat_id, uint8_t color_id bool solid);
-    //void set_material(uint8_t mat_id, uint8_t color_id bool solid);
 
  public:
     /**
@@ -90,26 +85,36 @@ class Tile {
      * @brief Construct a new Tile object
      *
      * @param sop tile position
-     * @param mat material of tile
+     * @param material material of tile
      */
     Tile(std::array<int, 3> sop, const terrain::Material* material);
+
     /**
      * @brief Construct a new Tile object
      *
      * @param sop tile position
-     * @param mat material of tile
+     * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color_id);
+    Tile(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id);
+
     /**
      * @brief tile initializer
      *
      * @param sop tile position
-     * @param mat_id material id for tile
+     * @param material material for tile
+     * color_id_ is set to 0
+     */
+    void init(std::array<int, 3> sop, const terrain::Material* material);
+
+    /**
+     * @brief tile initializer
+     *
+     * @param sop tile position
+     * @param material material for tile
      * @param color_id color of tile
      */
-    void init(std::array<int, 3> sop, uint8_t mat_id);
-    void init(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color);
+    void init(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id);
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.
@@ -208,76 +213,27 @@ class Tile {
      * @return uint8_t color id
      */
     uint8_t get_color_id() const;
+
     /**
      * @brief Get the material, and color id in one
      *
      * @return uint16_t 8 bit material id, and 8 bit color id
      */
     uint16_t get_mat_color_id() const;
+
     /**
      * @brief Get the distance from edge
      *
      * @return uint8_t distance from edge
      */
     uint8_t get_grow_low() const;
+
     /**
      * @brief Get the distance from wall
      *
      * @return uint8_t distance from wall
      */
     uint8_t get_grow_high() const;
-    /**
-     * @brief add an adjacent tile
-     *
-     * @param tile tile to add
-     * @param type path type between tiles
-     */
-    //void add_adjacent(Tile* tile, UnitPath type);
-    /**
-     * @brief add an adjacent tile (fast)
-     *
-     * @param it iterator to position in adjacent tiles
-     * @param tile tile to add
-     * @param type path type
-     */
-    //void
-    //add_adjacent(std::map<Tile*, UnitPath>::iterator it, Tile* tile, UnitPath type);
-    /**
-     * @brief clear the adjacent tiles
-     *
-     */
-    //void clear_adjacent();
-
-    /**
-     * @brief Get the adjacency map
-     *
-     * @return std::map<Tile *, UnitPath, TilePCompare>& map of adjacent tile to
-     */
-    //std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() { return adjacent; };
-
-    /**
-     * @brief Get the adjacency map
-     *
-     * @return std::map<Tile *, UnitPath, TilePCompare>& map of adjacent tile to
-     */
-    //const std::map<Tile*, UnitPath, TilePCompare>& get_adjacent_map() const {
-    //    return adjacent;
-    //};
-
-    /**
-     * @brief Get the adjacent tiles that match the path given
-     *
-     * @param path_type path to match
-     * @return std::set<Tile *> adjacent tiles that match the path type given
-     */
-    //std::set<Tile*> get_adjacent_clear(int path_type);
-    /**
-     * @brief Get the adjacent tiles that match the path given
-     *
-     * @param path_type path to match
-     * @return std::set<Tile *> adjacent tiles that match the path type given
-     */
-    //std::set<const Tile*> get_adjacent_clear(int path_type) const;
 
     /**
      * @brief is this tile solid

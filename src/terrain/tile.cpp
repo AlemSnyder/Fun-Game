@@ -12,26 +12,26 @@ Tile::Tile() {
     init({1, 1, 1}, 0);
 }
 
-Tile::Tile(std::array<int, 3> sop, const terrain::Material* const material) {
-    init(sop, material->element_id);
+Tile::Tile(std::array<int, 3> sop, const terrain::Material* material) {
+    init(sop, material);
     set_material(material, 0);
 }
 
-Tile::Tile(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color_id) {
+Tile::Tile(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id) {
     //bool solid = materials[mat_id].solid;
-    init(sop, material->element_id);
+    init(sop, material);
     set_material(material, color_id);
 }
 
 void
-Tile::init(std::array<int, 3> sop, uint8_t mat) {
+Tile::init(std::array<int, 3> sop, const terrain::Material* mat) {
     // auto sop = Terrain::sop(xyz);
     x = sop[0];
     y = sop[1];
     z = sop[2];
     solid_ = false;
     color_id_ = 0;
-    mat_id_ = mat;
+    mat_id_ = mat->element_id;
     grow_data_high_ = 0;
     grow_data_low_ = 0;
     grow_sink_ = false;
@@ -39,8 +39,8 @@ Tile::init(std::array<int, 3> sop, uint8_t mat) {
     grass_ = false;
 }
 
-void Tile::init(std::array<int, 3> sop, const terrain::Material* const material, uint8_t color_id){
-    init(sop, material->element_id);
+void Tile::init(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id){
+    init(sop, material);
     set_material(material, color_id);
 }
 
@@ -51,7 +51,7 @@ Tile::set_material(const terrain::Material* const material, uint8_t color_id_) {
     set_color_id(color_id_, material);
 }
 
-// Set the `mat` to `mat_` and update `solid` and `color_id`.
+// Set the `mat_id_` to `material->element_id` and update `solid` and `color_id`.
 void
 Tile::set_material(const terrain::Material* const material) {
     mat_id_ = material->element_id;

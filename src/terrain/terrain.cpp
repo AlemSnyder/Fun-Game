@@ -26,7 +26,7 @@ namespace terrain {
 int Terrain::Area_size = 32;
 
 Terrain::Terrain() {
-    init_old(1, 1, 1);
+    init_old(0, 0, 0);
     seed = 0;
 }
 
@@ -106,10 +106,7 @@ Terrain::init_old(int x, int y, int z) {
     X_MAX = x;
     Y_MAX = y;
     Z_MAX = z;
-    tiles.resize(X_MAX * Y_MAX * Z_MAX);
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        get_tile(xyz)->init(sop(xyz), true);
-    }
+    tiles.resize(0);
 }
 
 void
