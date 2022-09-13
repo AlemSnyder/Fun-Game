@@ -74,11 +74,11 @@ Terrain::init(
 }
 
 Terrain::Terrain(
-    const std::string path, const std::map<int, const Material>* material
+    const std::string path, const std::map<int, const Material>* materials
 ) {
-    materials_ = material;
+    materials_ = materials;
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse;
-    for (auto it = material->begin(); it != material->end(); it++) {
+    for (auto it = materials_->begin(); it != materials_->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
             materials_inverse.insert(
                 std::map<uint32_t, std::pair<const Material*, uint8_t>>::value_type(
@@ -93,11 +93,6 @@ Terrain::Terrain(
         std::cerr << "Could not load terrain" << std::endl;
         return;
     }
-    // for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-    //     if (can_stand_1(xyz)) {
-    //         add_all_adjacent(xyz);
-    //     }
-    // }
     init_chunks();
 }
 
@@ -162,11 +157,7 @@ Terrain::init(
     // grow_grass();
     // TODO make this faster 2
     init_grass();
-    // for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-    //     if (can_stand_1(xyz)) {
-    //         add_all_adjacent(xyz);
-    //     }
-    // }
+
     //  TODO make this faster 1
     init_chunks();
 
@@ -192,7 +183,7 @@ Terrain::init_chunks() {
     unsigned int C_length_X = ((X_MAX - 1) / Chunk::size + 1);
     unsigned int C_length_Y = ((Y_MAX - 1) / Chunk::size + 1);
     unsigned int C_length_Z = ((Z_MAX - 1) / Chunk::size + 1);
-    for (int xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
+    for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks.push_back(Chunk(x, y, z, this));
     }
@@ -627,13 +618,6 @@ Terrain::get_adjacent_nodes(
         } catch (const std::out_of_range& e) {}
         tile_it++;
     }
-
-    // for (const Tile* t : node->get_adjacent(path_type)) {
-    //     try {
-    //         Node<const Tile>* tile = &nodes.at(t);
-    //         out.emplace(tile);
-    //     } catch (const std::out_of_range& e) {}
-    // }
     return out;
 }
 

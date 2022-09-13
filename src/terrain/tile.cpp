@@ -74,7 +74,7 @@ Tile::set_color_id(uint8_t color_id, const terrain::Material* const material) {
     if (color_id > material->color.size()) {
         return;
     }
-    if ((mat_id_ != DIRT_ID) | (color_id < 8)) {
+    if ((mat_id_ != DIRT_ID) | (color_id < NUM_GRASS)) {
         color_id_ = color_id;
     } // cannot set the color of dirt
 }
@@ -116,7 +116,7 @@ Tile::set_grass_color(
     }
 }
 
-// Grow grass if `mat` is dirt.
+// Grow grass if `mat_id_` is dirt.
 void
 Tile::try_grow_grass() {
     if (mat_id_ == DIRT_ID) {
@@ -124,12 +124,6 @@ Tile::try_grow_grass() {
         color_id_ = 0;
     }
 }
-
-// return the color of this tile.
-// uint32_t
-// Tile::get_color() const {
-//    return (mat->color[color_id]).second;
-//}
 
 // return `color_id`.
 uint8_t
