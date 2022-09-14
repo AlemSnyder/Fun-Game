@@ -102,10 +102,10 @@ class Tile {
      * @brief tile initializer
      *
      * @param sop tile position
-     * @param material material for tile
+     * @param mat_id material id for tile
      * color_id_ is set to 0
      */
-    void init(std::array<int, 3> sop, const terrain::Material* material);
+    void init(std::array<int, 3> sop, uint8_t mat_id);
 
     /**
      * @brief tile initializer
