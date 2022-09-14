@@ -74,7 +74,7 @@ Tile::set_color_id(uint8_t color_id, const terrain::Material* const material) {
     if (color_id > material->color.size()) {
         return;
     }
-    if ((mat_id_ != DIRT_ID) | (color_id < NUM_GRASS)) {
+    if ((mat_id_ != DIRT_ID) | (color_id_ < NUM_GRASS)) {
         color_id_ = color_id;
     } // cannot set the color of dirt
 }

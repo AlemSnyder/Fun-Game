@@ -122,7 +122,7 @@ Terrain::init(
     tiles.resize(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        get_tile(xyz)->init(sop(xyz), 0);
+        get_tile(xyz)->init(sop(xyz), &materials->at(0), 0);
     }
 
     srand(seed);
@@ -516,24 +516,16 @@ Terrain::grow_grass_recurisive_high(std::set<Tile*> in_grass, int height){
             if (x == 0 && y == 0) { continue; }
             // safety function to test if you xyz is in range;
             if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
-                Tile* adjacent_tile =
-                    get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-                if (adjacent_tile->is_grass()
-                        & (adjacent_tile->get_grow_data_high()
-                            == height)) {
-
+                Tile* adjacent_tile = get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                if (adjacent_tile->is_grass() & (adjacent_tile->get_grow_data_high() == height)) {
                     next_grass_tiles.insert(adjacent_tile);
                     for (int xn = -1; xn < 2; xn++)
                     for (int yn = -1; yn < 2; yn++) {
                         if (xn == 0 && yn == 0) { continue; }
                         // safety function to test if you xyz is in range;
-                        if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
-                            Tile* adjacent_tile_second =
-                                get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-                            if (adjacent_tile_second->is_grass()
-                                    & (adjacent_tile_second->get_grow_data_high()
-                                        < height-1)) {
- 
+                        if (in_range(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z())) {
+                            Tile* adjacent_tile_second = get_tile(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z());
+                            if (adjacent_tile_second->is_grass() & (adjacent_tile_second->get_grow_data_high() < height-1)) {
                                 adjacent_tile_second->set_grow_data_high(height - 1);
                             }
                         }

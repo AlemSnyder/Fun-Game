@@ -619,8 +619,7 @@ class Terrain {
      * @param color_id color id set to
      */
     inline void set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
-        tile->set_material(mat);
-        tile->set_color_id(color_id, mat);
+        tile->set_material(mat, color_id);
     }
 
     /**
