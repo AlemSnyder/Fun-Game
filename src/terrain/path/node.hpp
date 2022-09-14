@@ -123,21 +123,6 @@ class Node { // Used to find paths.
      */
     bool is_explored() const { return explored; }
 
-    /**
-     * @brief Get the adjacent nodes
-     *
-     * @param path_type path compatible requirements
-     * (see) ./unit_path.hpp
-     * @return std::set<const T *> nodes that can be reached from this one
-     */
-    //std::set<const T*> get_adjacent(int path_type) const;
-    /**
-     * @brief Get the adjacent nodes
-     *
-     * @return std::set<const T *> nodes that can be reached from this one
-     */
-    //std::set<const T*> get_adjacent() const;
-
  private:
     T* tile;           // defines position in space
     Node* parent_node; // previous step in fastest way to get to this nodes

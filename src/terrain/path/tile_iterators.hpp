@@ -41,18 +41,17 @@ std::array<int8_t, 3> get_indexed_offsets(uint8_t index);
 
 class AdjacentIterator {
 private:
-    const size_t pos_;
-    uint8_t dpos_;
-    const UnitPath path_type_constraint_;
-    UnitPath path_type_;
     const Terrain& parent_;
+    const UnitPath path_type_constraint_;
+    const size_t pos_;
+    UnitPath path_type_;
+    uint8_t dpos_;
 
     void update_path();
     void iterate_to_next_available();
 
 public:
     AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type);
-    //AdjacentIterator();
     int operator++();
     int operator++(int);
     inline bool end(){

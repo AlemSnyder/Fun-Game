@@ -25,9 +25,8 @@ namespace terrain {
 
 int Terrain::Area_size = 32;
 
-Terrain::Terrain() {
+Terrain::Terrain() : seed(0) {
     init_old(0, 0, 0);
-    seed = 0;
 }
 
 Terrain::Terrain(
@@ -75,8 +74,7 @@ Terrain::init(
 
 Terrain::Terrain(
     const std::string path, const std::map<int, const Material>* materials
-) {
-    materials_ = materials;
+) :  materials_(materials) {
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse;
     for (auto it = materials_->begin(); it != materials_->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -180,9 +178,9 @@ Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen
 void
 Terrain::init_chunks() {
     // chunk length in _ direction
-    unsigned int C_length_X = ((X_MAX - 1) / Chunk::size + 1);
-    unsigned int C_length_Y = ((Y_MAX - 1) / Chunk::size + 1);
-    unsigned int C_length_Z = ((Z_MAX - 1) / Chunk::size + 1);
+    uint32_t C_length_X = ((X_MAX - 1) / Chunk::size + 1);
+    uint32_t C_length_Y = ((Y_MAX - 1) / Chunk::size + 1);
+    uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::size + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks.push_back(Chunk(x, y, z, this));
@@ -584,8 +582,9 @@ Terrain::pos(const NodeGroup* const node_group) const {
     int px = floor(x) / Chunk::size;
     int py = floor(y) / Chunk::size;
     int pz = floor(z) / Chunk::size;
-    return px * Y_MAX / Chunk::size * Z_MAX / Chunk::size + py * Z_MAX / Chunk::size
-           + pz;
+    return (px * Y_MAX / Chunk::size * Z_MAX / Chunk::size)
+         + (py * Z_MAX / Chunk::size)
+         +  pz;
 }
 
 std::set<Node<const NodeGroup>*>
@@ -609,7 +608,7 @@ Terrain::get_adjacent_nodes(
     uint8_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
-    path::AdjacentIterator tile_it =
+    auto tile_it =
         get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
     while (!tile_it.end()) {
         try {
@@ -875,8 +874,6 @@ Terrain::get_path(
         Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
         openNodes(T_compare);
 
-    // std::set<Node<const T>*> searched;
-
     std::map<size_t, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
         nodes.insert(
@@ -887,7 +884,6 @@ Terrain::get_path(
     Node<const T> start_node = nodes[pos_for_map(start)];
     openNodes.push(&start_node); // gotta start somewhere
     start_node.explore();
-    // searched.insert(&start_node);
 
     while (!openNodes.empty()) {
         Node<const T>* choice = openNodes.top();
@@ -905,7 +901,6 @@ Terrain::get_path(
                     return path;
                 }
                 openNodes.push(n); // n can be chose to expand around
-                // searched.insert(n);
             } else {
                 // openNodes.remove n
                 n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
@@ -931,8 +926,6 @@ Terrain::get_voxel(int x, int y, int z) const {
             auto mat = materials_->at(get_voxel_mat_id);
             get_voxel_out_color = mat.color[get_voxel_color_id].second;
         }
-
-        // auto mat = materials->at(tiles[pos(x, y, z)].get_material_id());
         return get_voxel_out_color;
     }
     return 0;

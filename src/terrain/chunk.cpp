@@ -25,7 +25,7 @@ Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
             }
     for (NodeGroup& NG : node_groups_) {
         for (const Tile* tile_main : NG.get_tiles()) {
-            for (path::AdjacentIterator it =
+            for (auto it =
                      ter_->get_tile_adjacent_iterator(ter->pos(tile_main), 31);
                  !it.end(); it++) {
                 if (NodeGroup* to_add = ter->get_node_group(it.get_pos())) {

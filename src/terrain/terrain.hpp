@@ -39,12 +39,10 @@
 
 #include <array>
 #include <cstdint>
-//#include <iostream>
 #include <map>
 #include <set>
 #include <stdexcept>
 #include <string>
-//#include <unordered_set>
 #include <vector>
 
 namespace terrain {
@@ -88,7 +86,7 @@ class Terrain {
     int grass_grad_length;
     // gradient index of grass not by an edge
     int grass_mid;
-
+    // mat of material id to material that describes materials in this terrain
     const std::map<int, const terrain::Material>* materials_;
 
     // save color at sop, to color
@@ -100,13 +98,6 @@ class Terrain {
     );
     // convert 4 int 8 to 1 int 32 (reversed order)
     uint32_t compress_color(uint8_t v[4]);
-
-    // create unit paths for this tile, and all it's adjacent tiles
-    // void add_all_adjacent(int xyz);
-
-    // get set of adjacent tiles with given path type
-    // std::set<Tile*>
-    // get_adjacent_clear(unsigned int xyz, int path_type);
 
     // trace nodes through parents to reach start
     template <class T>
@@ -209,6 +200,14 @@ class Terrain {
     }
 
     /**
+     * @brief position of chunk the node group is a part of
+     *
+     * @param node_group node group to find position of chunk
+     * @return int
+     */
+    int pos(const NodeGroup* const node_group) const;
+
+    /**
      * @brief unique map index
      *
      * @param tile
@@ -243,14 +242,6 @@ class Terrain {
     inline int pos_for_map(const NodeGroup* const NG) const {
         return pos(*(NG->get_tiles().begin()));
     }
-
-    /**
-     * @brief position of chunk the node group is a part of
-     *
-     * @param node_group node group to find position of chunk
-     * @return int
-     */
-    int pos(const NodeGroup* const node_group) const;
 
     /**
      * @brief return position in space of given vector index
