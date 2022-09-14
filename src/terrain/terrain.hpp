@@ -706,6 +706,8 @@ class Terrain {
      */
     void grow_all_grass_low();
 
+    void grow_grass_recurisive_high(std::set<Tile*> in_grass);
+    void grow_grass_recurisive_high(std::set<Tile*> in_grass, int heigth);
     /**
      * @brief test if 1 x 1 x 1 object can stand at the position
      *

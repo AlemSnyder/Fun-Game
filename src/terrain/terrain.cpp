@@ -418,23 +418,39 @@ Terrain::stamp_tile_region(
 
 void
 Terrain::init_grass() {
+
+    std::set<Tile*> all_grass;
+
     // Test all ties to see if they can be grass.
     for (int x_ = 0; x_ < X_MAX; x_++)
         for (int y_ = 0; y_ < Y_MAX; y_++)
             for (int z_ = 0; z_ < Z_MAX - 1; z_++) {
                 if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
                     get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
+                    // if grass add to some set
+                    if (get_tile(x_, y_, z_)->is_grass()){
+                        all_grass.insert(get_tile(x_, y_, z_));
+                    }
+                    // both higher, and lower set
                 }
             }
     int z_ = Z_MAX - 1;
     for (int x_ = 0; x_ < X_MAX; x_++)
         for (int y_ = 0; y_ < Y_MAX; y_++) {
             get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
+            if (get_tile(x_, y_, z_)->is_grass()){
+                all_grass.insert(get_tile(x_, y_, z_));
+            }
+            // same thing here as above
         }
-    for (int i = 0; i < grass_grad_length; i++) {
-        grow_all_grass_high();
-    }
-
+    //for (int i = 0; i < grass_grad_length; i++) {
+        // copy set
+    //    grow_all_grass_high();
+        // have grow_all_grass_high set the new grass to grow
+    //}
+    // time this
+    grow_grass_recurisive_high(all_grass);
+    // and time this to see the speed difference
     for (int i = 0; i < grass_grad_length; i++) {
         grow_all_grass_low();
     }
@@ -442,6 +458,101 @@ Terrain::init_grass() {
         t.set_grass_color(grass_grad_length, grass_mid, grass_colors);
     }
 }
+
+// grow_grass recurisive(set)
+// for tile in set
+//      if tile is a source
+//          add adjacetn tiles to the new set if they are grass and somethign about height
+//          set tile.grass height/source status
+// run grow_grass recurisive(new_set, grass_grad_length)
+void
+Terrain::grow_grass_recurisive_high(std::set<Tile*> all_grass){
+    std::set<Tile*> next_grass_tiles;
+    for (Tile* tile : all_grass){
+        bool is_source = false;
+        for (int x = -1; x < 2; x++)
+        for (int y = -1; y < 2; y++) {
+            if (x == 0 && y == 0) { continue; }
+            // safety function to test if you xyz is in range;
+            if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
+                Tile* adjacent_tile =
+                    get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                if (!adjacent_tile->is_grass()) {
+                    is_source = true;
+                    break;
+                }
+            }
+        }
+        if (is_source){
+            for (int x = -1; x < 2; x++)
+            for (int y = -1; y < 2; y++) {
+                if (x == 0 && y == 0) { continue; }
+                // safety function to test if you xyz is in range;
+                if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
+                    Tile* adjacent_tile =
+                        get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                    if (adjacent_tile->is_grass()
+                            & (adjacent_tile->get_grow_data_high()
+                                < grass_grad_length - 1)) {
+                        adjacent_tile->set_grow_data_high(grass_grad_length - 1);
+                    }
+                }
+            }
+            tile->set_grow_data_high(grass_grad_length);
+            // tile-> grow_sink should be set to true
+            next_grass_tiles.insert(tile);
+        }
+    }
+    grow_grass_recurisive_high(next_grass_tiles, grass_grad_length - 1);
+}
+
+void
+Terrain::grow_grass_recurisive_high(std::set<Tile*> in_grass, int height){
+    if (height == 1) { return; }
+    std::set<Tile*> next_grass_tiles;
+    for (Tile* tile : in_grass){
+        for (int x = -1; x < 2; x++)
+        for (int y = -1; y < 2; y++) {
+            if (x == 0 && y == 0) { continue; }
+            // safety function to test if you xyz is in range;
+            if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
+                Tile* adjacent_tile =
+                    get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                if (adjacent_tile->is_grass()
+                        & (adjacent_tile->get_grow_data_high()
+                            == height)) {
+
+                    next_grass_tiles.insert(adjacent_tile);
+                    for (int xn = -1; xn < 2; xn++)
+                    for (int yn = -1; yn < 2; yn++) {
+                        if (xn == 0 && yn == 0) { continue; }
+                        // safety function to test if you xyz is in range;
+                        if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
+                            Tile* adjacent_tile_second =
+                                get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                            if (adjacent_tile_second->is_grass()
+                                    & (adjacent_tile_second->get_grow_data_high()
+                                        < height-1)) {
+ 
+                                adjacent_tile_second->set_grow_data_high(height - 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    grow_grass_recurisive_high(next_grass_tiles, height - 1);
+}
+
+// grow_grass_recursive(set, int height)
+// for tile in set
+//      if tile grow data high < height
+//          for adjacent tile (only if height != 0)
+//              if this tile is grass, and grow_data_high < height-1
+//                  add adjacent tiles to new set
+//          set tile grass height to height
+// if heigt then run grow_grass_recurisve(new_set, height -1)
 
 // .1 sec
 void
@@ -473,6 +584,7 @@ Terrain::grow_all_grass_high() {
     }
 }
 
+// could just itterate through tiles forward, and backward ug
 void
 Terrain::grow_all_grass_low() {
     // extends lower bound of grass color

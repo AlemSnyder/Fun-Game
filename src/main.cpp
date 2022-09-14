@@ -26,7 +26,7 @@
 #define INITIAL_WINDOW_HEIGHT 768
 
 int
-test1(const std::string path) {
+GenerateTerrain(const std::string path) {
     // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
     // C/gcc/terrain_generation";
 
@@ -46,7 +46,7 @@ test1(const std::string path) {
 }
 
 int
-test2() {
+MacroMap() {
     Json::Value biome_data;
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
@@ -163,7 +163,7 @@ int StressTest() {
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    World world(materials_json, biome_data, 12, 12);
+    World world(materials_json, biome_data, 2, 2);
 
     return gui::GUITest(world);
 }
@@ -227,9 +227,9 @@ main(int argc, char** argv) {
             save_all_terrain(biome_data);
         }
     } else if (run_function == "GenerateTerrain") {
-        return test1(path_in);
+        return GenerateTerrain(path_in);
     } else if (run_function == "MacroMap") {
-        return test2();
+        return MacroMap();
     } else if (run_function == "StressTest") {
         return StressTest();
     } else if (run_function == "SaveTest") {
@@ -238,7 +238,5 @@ main(int argc, char** argv) {
         return path_finder_test(path_in, path_out);
     } else if (run_function == "GUITest") {
         return GUITest(path_in);
-    } else if (run_function == "WorldGen") {
-        return test1(path_in);
     }
 }

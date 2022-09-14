@@ -149,6 +149,14 @@ class Tile {
      */
     void set_grow_data_high(int num);
     /**
+     * @brief Get the distance from edge
+     */
+    inline int get_grow_data_low() const {return grow_data_low_;}
+    /**
+     * @brief Get the distance from wall
+     */
+    inline int get_grow_data_high() const {return grow_data_high_;}
+    /**
      * @brief sets grass to true, and set color id to 1
      *
      */
