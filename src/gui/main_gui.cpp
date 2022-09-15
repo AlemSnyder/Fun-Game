@@ -16,28 +16,32 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <cstdlib>
 #include <vector>
 
 namespace gui {
 
 int
 GUITest(World world) {
-    std::vector<std::uint16_t> indices;
-    std::vector<glm::vec3> indexed_vertices;
-    std::vector<glm::vec3> indexed_colors;
-    std::vector<glm::vec3> indexed_normals;
+    //std::vector<std::uint16_t> indices;
+    //std::vector<glm::vec3> indexed_vertices;
+    //std::vector<glm::vec3> indexed_colors;
+    //std::vector<glm::vec3> indexed_normals;
 
-    world.get_mesh_greedy(indices, indexed_vertices, indexed_colors, indexed_normals);
+    entity::Mesh mesh = world.get_mesh_greedy();
 
-    std::vector<std::uint16_t> indices_tree;
-    std::vector<glm::vec3> indexed_vertices_tree;
-    std::vector<glm::vec3> indexed_colors_tree;
-    std::vector<glm::vec3> indexed_normals_tree;
+    //std::vector<std::uint16_t> indices_tree;
+    //std::vector<glm::vec3> indexed_vertices_tree;
+    //std::vector<glm::vec3> indexed_colors_tree;
+    //std::vector<glm::vec3> indexed_normals_tree;
 
-    entity::Mesh mesh(files::get_data_path() / "models" / "DefaultTree.qb");
-    mesh.get_mesh(
-        indices_tree, indexed_vertices_tree, indexed_colors_tree, indexed_normals_tree
-    );
+    voxel_utility::VoxelObject vo_tree(files::get_data_path() / "models" / "DefaultTree.qb");
+
+    entity::Mesh mesh_trees = entity::generate_mesh(vo_tree);
+
+    //mesh.get_mesh(
+    //    indices_tree, indexed_vertices_tree, indexed_colors_tree, indexed_normals_tree
+    //);
 
     // Initialise GLFW
     if (!glfwInit()) {
@@ -117,9 +121,7 @@ GUITest(World world) {
     glBindVertexArray(VertexArrayID);
 
     // The mesh of the terrain
-    terrain::TerrainMesh terrain_mesh(
-        indices, indexed_vertices, indexed_colors, indexed_normals
-    );
+    terrain::TerrainMesh terrain_mesh(mesh);
 
     // The above is for the wold the below is for trees
 
@@ -137,10 +139,7 @@ GUITest(World world) {
     std::cout << "Number of models: " << model_matrices.size() << std::endl;
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
-    terrain::StaticMesh treesMesh(
-        indices_tree, indexed_vertices_tree, indexed_colors_tree, indexed_normals_tree,
-        model_matrices
-    );
+    terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {

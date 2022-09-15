@@ -1,7 +1,7 @@
 #include "terrain.hpp"
 
 #include "../util/time.hpp"
-#include "../util/voxelutility.hpp"
+#include "../util/voxel_io.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
@@ -915,6 +915,8 @@ Terrain::get_path(
 uint32_t
 Terrain::get_voxel(int x, int y, int z) const {
     // using static ints to prevent dereferencing
+    // The previous material id, and color id are cashed so that materials do 
+    // not need to be dereferenced, and searched through.
     static unsigned int get_voxel_mat_id = 0;
     static unsigned int get_voxel_color_id = 0;
     static uint32_t get_voxel_out_color = 0;

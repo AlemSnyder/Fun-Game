@@ -23,6 +23,7 @@
 #pragma once
 
 #include "terrain/terrain.hpp"
+#include "entity/mesh.hpp"
 
 #include <json/json.h>
 
@@ -95,15 +96,12 @@ class World {
     /**
      * @brief Get the mesh using greedy meshing
      *
-     * @param indices index of vertex data drawn in this order
-     * @param indexed_vertices vertex in 3D space
-     * @param indexed_colors color of vertex
-     * @param indexed_normals normal of face vertex is a part of
+     * @return entity::Mesh the mesh generated
      */
-    void get_mesh_greedy(
-        std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
-        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
-    ) const;
+    inline entity::Mesh
+    get_mesh_greedy() const {
+        return entity::generate_mesh(terrain_main);
+    }
     // terrain in the world
     terrain::Terrain terrain_main;
 

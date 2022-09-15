@@ -1,6 +1,7 @@
 //! This is a test. The content tent of this class should be transferred into chunk
 
 #include "../gui/meshloader.hpp"
+#include "../entity/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -41,10 +42,28 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
 
     inline TerrainMesh(){};
 
+    TerrainMesh(entity::Mesh mesh);
+
     TerrainMesh(
-        std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
-        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+        const std::vector<unsigned short>& indices,
+        const std::vector<glm::vec3>& indexed_vertices,
+        const std::vector<glm::vec3>& indexed_colors,
+        const std::vector<glm::vec3>& indexed_normals
     );
+
+    void init(
+        const std::vector<unsigned short>& indices,
+        const std::vector<glm::vec3>& indexed_vertices,
+        const std::vector<glm::vec3>& indexed_colors,
+        const std::vector<glm::vec3>& indexed_normals
+    );
+
+    inline ~TerrainMesh() {
+        glDeleteBuffers(1, &vertex_buffer_);
+        glDeleteBuffers(1, &color_buffer_);
+        glDeleteBuffers(1, &normal_buffer_);
+        glDeleteBuffers(1, &element_buffer_);
+    }
 
     inline GLuint get_color_buffer() const override { return color_buffer_; }
 

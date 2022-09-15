@@ -64,16 +64,6 @@ World::init_materials(Json::Value material_data) {
     }
 }
 
-void
-World::get_mesh_greedy(
-    std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
-    std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
-) const {
-    entity::generate_mesh(
-        terrain_main, indices, indexed_vertices, indexed_colors, indexed_normals
-    );
-}
-
 World::World() {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
