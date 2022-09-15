@@ -13,7 +13,7 @@
 /**
  * @file mesh.hpp
  *
- * @brief Defines Mesh class
+ * @brief Defines Mesh Struct
  *
  * @ingroup entity
  *
@@ -30,11 +30,10 @@
 namespace entity {
 
 /**
- * @brief Loads a mesh from a qb or compressed mesh into ram.
+ * @brief Holds data that describes now an object is loaded by the shader
  *
  */
-class Mesh {
-public:
+struct Mesh {
     Mesh(std::vector<uint16_t>& indices,
          std::vector<glm::vec3>& indexed_vertices,
          std::vector<glm::vec3>& indexed_colors,
@@ -44,17 +43,21 @@ public:
          indexed_colors_(indexed_colors),
          indexed_normals_(indexed_normals) {}
 
-    // void load from smaller file
+    // defines a bounding box of the mesh
     const std::vector<int> size_;
+    // defines center of mesh for rotating
     const std::vector<int> center_;
 
+    // indices of vertices drawn (vertices used twice can be ignored)
     const std::vector<std::uint16_t> indices_;
+    // position of vertices in mesh space
     const std::vector<glm::vec3> indexed_vertices_;
+    // color of vertex
     const std::vector<glm::vec3> indexed_colors_;
+    // normal direction
     const std::vector<glm::vec3> indexed_normals_;
-private:
 
-}; // class Mesh
+}; // struct Mesh
 
 /**
  * @brief Generates a mesh from the given 3D voxel structure

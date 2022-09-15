@@ -23,25 +23,12 @@ namespace gui {
 
 int
 GUITest(World world) {
-    //std::vector<std::uint16_t> indices;
-    //std::vector<glm::vec3> indexed_vertices;
-    //std::vector<glm::vec3> indexed_colors;
-    //std::vector<glm::vec3> indexed_normals;
 
     entity::Mesh mesh = world.get_mesh_greedy();
-
-    //std::vector<std::uint16_t> indices_tree;
-    //std::vector<glm::vec3> indexed_vertices_tree;
-    //std::vector<glm::vec3> indexed_colors_tree;
-    //std::vector<glm::vec3> indexed_normals_tree;
 
     voxel_utility::VoxelObject vo_tree(files::get_data_path() / "models" / "DefaultTree.qb");
 
     entity::Mesh mesh_trees = entity::generate_mesh(vo_tree);
-
-    //mesh.get_mesh(
-    //    indices_tree, indexed_vertices_tree, indexed_colors_tree, indexed_normals_tree
-    //);
 
     // Initialise GLFW
     if (!glfwInit()) {
