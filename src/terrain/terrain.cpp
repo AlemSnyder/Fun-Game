@@ -74,7 +74,8 @@ Terrain::init(
 
 Terrain::Terrain(
     const std::string path, const std::map<int, const Material>* materials
-) :  materials_(materials) {
+) :
+    materials_(materials) {
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse;
     for (auto it = materials_->begin(); it != materials_->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -582,9 +583,8 @@ Terrain::pos(const NodeGroup* const node_group) const {
     int px = floor(x) / Chunk::size;
     int py = floor(y) / Chunk::size;
     int pz = floor(z) / Chunk::size;
-    return (px * Y_MAX / Chunk::size * Z_MAX / Chunk::size)
-         + (py * Z_MAX / Chunk::size)
-         +  pz;
+    return (px * Y_MAX / Chunk::size * Z_MAX / Chunk::size) + (py * Z_MAX / Chunk::size)
+           + pz;
 }
 
 std::set<Node<const NodeGroup>*>
@@ -608,8 +608,7 @@ Terrain::get_adjacent_nodes(
     uint8_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
-    auto tile_it =
-        get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
+    auto tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
     while (!tile_it.end()) {
         try {
             Node<const Tile>* tile = &nodes.at(tile_it.get_pos());
@@ -915,7 +914,7 @@ Terrain::get_path(
 uint32_t
 Terrain::get_voxel(int x, int y, int z) const {
     // using static ints to prevent dereferencing
-    // The previous material id, and color id are cashed so that materials do 
+    // The previous material id, and color id are cashed so that materials do
     // not need to be dereferenced, and searched through.
     static uint8_t get_voxel_previous_mat_id = 0;
     static uint8_t get_voxel_previous_color_id = 0;
@@ -926,7 +925,8 @@ Terrain::get_voxel(int x, int y, int z) const {
             get_voxel_previous_mat_id = tiles[pos(x, y, z)].get_material_id();
             get_voxel_previous_color_id = tiles[pos(x, y, z)].get_color_id();
             auto mat = materials_->at(get_voxel_previous_mat_id);
-            get_voxel_previous_out_color = mat.color[get_voxel_previous_color_id].second;
+            get_voxel_previous_out_color =
+                mat.color[get_voxel_previous_color_id].second;
         }
         return get_voxel_previous_out_color;
     }
@@ -997,16 +997,16 @@ Terrain::qb_read(
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         auto [x, y, z] = sop(xyz);
         uint32_t color = data[xyz];
-        if (color == 0) { // if the qb voxel is transparent.
+        if (color == 0) {                      // if the qb voxel is transparent.
             auto mat_color = materials->at(0); // set the materials to air
-            tiles.push_back(Tile({x,y,z}, mat_color.first, mat_color.second));
+            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else if (materials->count(color)) { // if the color is known
             auto mat_color = materials->at(color);
-            tiles.push_back(Tile({x,y,z}, mat_color.first, mat_color.second));
+            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else { // the color is unknown
             unknown_materials.insert(color);
             auto mat_color = materials->at(0); // else set to air.
-            tiles.push_back(Tile({x,y,z}, mat_color.first, mat_color.second));
+            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         }
     }
 

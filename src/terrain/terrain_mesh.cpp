@@ -8,10 +8,10 @@
 namespace terrain {
 
 TerrainMesh::TerrainMesh(entity::Mesh mesh) {
-    init(mesh.indices_,
-         mesh.indexed_vertices_,
-         mesh.indexed_colors_,
-         mesh.indexed_normals_);
+    init(
+        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
+        mesh.indexed_normals_
+    );
 }
 
 TerrainMesh::TerrainMesh(
@@ -20,13 +20,11 @@ TerrainMesh::TerrainMesh(
     const std::vector<glm::vec3>& indexed_colors,
     const std::vector<glm::vec3>& indexed_normals
 ) {
-    init(indices,
-         indexed_vertices,
-         indexed_colors,
-         indexed_normals);
+    init(indices, indexed_vertices, indexed_colors, indexed_normals);
 }
 
-void TerrainMesh::init(
+void
+TerrainMesh::init(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::vec3>& indexed_vertices,
     const std::vector<glm::vec3>& indexed_colors,

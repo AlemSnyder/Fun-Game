@@ -1,7 +1,7 @@
 #include "static_mesh.hpp"
 
-#include "../gui/meshloader.hpp"
 #include "../entity/mesh.hpp"
+#include "../gui/meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,13 +11,13 @@
 
 namespace terrain {
 
-StaticMesh::StaticMesh(entity::Mesh mesh,
-                       const std::vector<glm::vec3>& model_transforms) {
-    init(mesh.indices_,
-         mesh.indexed_vertices_,
-         mesh.indexed_colors_,
-         mesh.indexed_normals_,
-         model_transforms);
+StaticMesh::StaticMesh(
+    entity::Mesh mesh, const std::vector<glm::vec3>& model_transforms
+) {
+    init(
+        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
+        mesh.indexed_normals_, model_transforms
+    );
 }
 
 StaticMesh::StaticMesh(
@@ -27,14 +27,11 @@ StaticMesh::StaticMesh(
     const std::vector<glm::vec3>& indexed_normals,
     const std::vector<glm::vec3>& model_transforms
 ) {
-    init(indices,
-         indexed_vertices,
-         indexed_colors,
-         indexed_normals,
-         model_transforms);
+    init(indices, indexed_vertices, indexed_colors, indexed_normals, model_transforms);
 }
 
-void StaticMesh::init(
+void
+StaticMesh::init(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::vec3>& indexed_vertices,
     const std::vector<glm::vec3>& indexed_colors,

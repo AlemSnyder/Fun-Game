@@ -75,7 +75,6 @@ class Tile {
     bool solid_ : 1; // is the tile solid
 
  public:
-
     /**
      * @brief Construct a new Tile object
      *
@@ -83,7 +82,9 @@ class Tile {
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id = 0);
+    Tile(
+        std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id = 0
+    );
 
     // Setters
     /**

@@ -34,14 +34,13 @@ namespace entity {
  *
  */
 struct Mesh {
-    Mesh(std::vector<uint16_t>& indices,
-         std::vector<glm::vec3>& indexed_vertices,
-         std::vector<glm::vec3>& indexed_colors,
-         std::vector<glm::vec3>& indexed_normals) :
-         indices_(indices),
-         indexed_vertices_(indexed_vertices),
-         indexed_colors_(indexed_colors),
-         indexed_normals_(indexed_normals) {}
+    Mesh(
+        std::vector<uint16_t>& indices, std::vector<glm::vec3>& indexed_vertices,
+        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+    ) :
+        indices_(indices),
+        indexed_vertices_(indexed_vertices), indexed_colors_(indexed_colors),
+        indexed_normals_(indexed_normals) {}
 
     // defines a bounding box of the mesh
     const std::vector<int> size_;
@@ -66,7 +65,8 @@ struct Mesh {
  * @param voxel_object
  */
 template <class T>
-Mesh generate_mesh(T voxel_object) {
+Mesh
+generate_mesh(T voxel_object) {
     std::vector<uint16_t> indices;
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
@@ -151,13 +151,13 @@ Mesh generate_mesh(T voxel_object) {
                         // and direction like this: first expands over the
                         // width, then expanding over the height
 
-// clang-format off
+                        // clang-format off
 // c c c c c n n n     # c c c c n n n     # # # # #[n]n n     # # # # # n n n
 // c c c c c c n n     c c c c c c n n     c c c c c c n n     # # # # # c n n
 // c c c c c c c n - > c c c c c c c n - > c c c c c c c n - > # # # # # c c n
 // c c c c c n n n     c c c c c n n n     c c c c c n n n     # # # # # n n n
 // c c n c c n c c     c c n c c n c c     c c n c c n c c     c c[n]c c n c c
-// clang-format on
+                        // clang-format on
 
                         // Compute width
                         width = 1;
@@ -182,7 +182,7 @@ Mesh generate_mesh(T voxel_object) {
                                 }
                             }
                             if (done)
-                            break;
+                                break;
                         }
 
                         // Add quad
@@ -284,10 +284,7 @@ Mesh generate_mesh(T voxel_object) {
                 }
         }
     }
-    return Mesh(indices,
-                indexed_vertices,
-                indexed_colors,
-                indexed_normals);
+    return Mesh(indices, indexed_vertices, indexed_colors, indexed_normals);
 }
 
 } // namespace entity

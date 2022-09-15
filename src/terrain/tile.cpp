@@ -9,21 +9,11 @@
 namespace terrain {
 
 Tile::Tile(
-    std::array<int, 3> sop,
-    const terrain::Material* material,
-    uint8_t color_id = 0) :
-        x(sop[0]),
-        y(sop[1]),
-        z(sop[2]),
-        solid_(false),
-        color_id_(0),
-        mat_id_(0),
-        grow_data_high_(0),
-        grow_data_low_(0),
-        grow_sink_(false),
-        grow_source_(false),
-        grass_(false)
-{
+    std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id = 0
+) :
+    x(sop[0]),
+    y(sop[1]), z(sop[2]), solid_(false), color_id_(0), mat_id_(0), grow_data_high_(0),
+    grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false) {
     // set material should not fail so if material is bad for some reason
     // tile should still be fine.
     set_material(material, color_id);

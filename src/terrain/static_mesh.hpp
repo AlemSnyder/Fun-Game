@@ -1,5 +1,5 @@
-#include "../gui/meshloader.hpp"
 #include "../entity/mesh.hpp"
+#include "../gui/meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -46,8 +46,7 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
 
     inline StaticMesh(){};
 
-    StaticMesh(entity::Mesh mesh,
-               const std::vector<glm::vec3>& model_transforms);
+    StaticMesh(entity::Mesh mesh, const std::vector<glm::vec3>& model_transforms);
 
     StaticMesh(
         const std::vector<unsigned short>& indices,

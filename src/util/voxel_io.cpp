@@ -93,19 +93,15 @@ from_qb(
 }
 
 VoxelObject::VoxelObject(const std::string path) :
-    data_(std::vector<uint32_t>()),
-    center_(std::vector<int>()),
-    size_(std::vector<uint32_t>())
-{
+    data_(std::vector<uint32_t>()), center_(std::vector<int>()),
+    size_(std::vector<uint32_t>()) {
     int test = from_qb(path, data_, center_, size_);
     ok_ = (test == 0);
 }
 
 VoxelObject::VoxelObject(const std::filesystem::path fs_path) :
-    data_(std::vector<uint32_t>()),
-    center_(std::vector<int>()),
-    size_(std::vector<uint32_t>())
-{
+    data_(std::vector<uint32_t>()), center_(std::vector<int>()),
+    size_(std::vector<uint32_t>()) {
     int test = from_qb(fs_path.string(), data_, center_, size_);
     ok_ = (test == 0);
 }

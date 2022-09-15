@@ -1,7 +1,7 @@
 //! This is a test. The content tent of this class should be transferred into chunk
 
-#include "../gui/meshloader.hpp"
 #include "../entity/mesh.hpp"
+#include "../gui/meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

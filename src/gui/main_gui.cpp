@@ -23,10 +23,11 @@ namespace gui {
 
 int
 GUITest(World world) {
-
     auto mesh = world.get_mesh_greedy();
 
-    voxel_utility::VoxelObject default_trees_voxel(files::get_data_path() / "models" / "DefaultTree.qb");
+    voxel_utility::VoxelObject default_trees_voxel(
+        files::get_data_path() / "models" / "DefaultTree.qb"
+    );
 
     auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
