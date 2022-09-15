@@ -117,10 +117,10 @@ Terrain::init(
     Y_MAX = y * Area_size;
     Z_MAX = z;
 
-    tiles.resize(X_MAX * Y_MAX * Z_MAX);
+    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        get_tile(xyz)->init(sop(xyz), 0);
+        tiles.push_back(Tile(sop(xyz), &materials_->at(0)));
     }
 
     srand(seed);
@@ -917,18 +917,18 @@ Terrain::get_voxel(int x, int y, int z) const {
     // using static ints to prevent dereferencing
     // The previous material id, and color id are cashed so that materials do 
     // not need to be dereferenced, and searched through.
-    static unsigned int get_voxel_mat_id = 0;
-    static unsigned int get_voxel_color_id = 0;
-    static uint32_t get_voxel_out_color = 0;
+    static uint8_t get_voxel_previous_mat_id = 0;
+    static uint8_t get_voxel_previous_color_id = 0;
+    static uint32_t get_voxel_previous_out_color = 0;
     if (in_range(x, y, z)) {
-        if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_mat_id)
-            | (tiles[pos(x, y, z)].get_color_id() != get_voxel_color_id)) {
-            get_voxel_mat_id = tiles[pos(x, y, z)].get_material_id();
-            get_voxel_color_id = tiles[pos(x, y, z)].get_color_id();
-            auto mat = materials_->at(get_voxel_mat_id);
-            get_voxel_out_color = mat.color[get_voxel_color_id].second;
+        if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_previous_mat_id)
+            | (tiles[pos(x, y, z)].get_color_id() != get_voxel_previous_color_id)) {
+            get_voxel_previous_mat_id = tiles[pos(x, y, z)].get_material_id();
+            get_voxel_previous_color_id = tiles[pos(x, y, z)].get_color_id();
+            auto mat = materials_->at(get_voxel_previous_mat_id);
+            get_voxel_previous_out_color = mat.color[get_voxel_previous_color_id].second;
         }
-        return get_voxel_out_color;
+        return get_voxel_previous_out_color;
     }
     return 0;
 }
@@ -990,35 +990,26 @@ Terrain::qb_read(
     X_MAX = size[0];
     Y_MAX = size[1];
     Z_MAX = size[2];
-    tiles.resize(X_MAX * Y_MAX * Z_MAX);
+    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
 
     std::set<uint32_t> unknown_materials;
 
-    for (int x = 0; x < X_MAX; x++)
-        for (int z = 0; z < Z_MAX; z++)
-            for (int y = Y_MAX - 1; y >= 0; y--) {
-                uint32_t color = data[pos(x, y, z)];
-                if (color == 0) { // if the qb voxel is transparent.
-                    auto mat_color = materials->at(0); // set the materials to air
-                    get_tile(x, y, z)->init(
-                        {x, y, z}, mat_color.first, mat_color.second
-                    );
-                } else {
-                    // auto CC = compress_color(v);// get the complete color
-                    if (materials->count(color)) { // if the color is known
-                        auto mat_color = materials->at(color);
-                        get_tile(x, y, z)->init(
-                            {x, y, z}, mat_color.first, mat_color.second
-                        );
-                    } else {
-                        unknown_materials.insert(color);
-                        auto mat_color = materials->at(0); // else set to air.
-                        get_tile(x, y, z)->init(
-                            {x, y, z}, mat_color.first, mat_color.second
-                        );
-                    }
-                }
-            }
+    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        auto [x, y, z] = sop(xyz);
+        uint32_t color = data[xyz];
+        if (color == 0) { // if the qb voxel is transparent.
+            auto mat_color = materials->at(0); // set the materials to air
+            tiles.push_back(Tile({x,y,z}, mat_color.first, mat_color.second));
+        } else if (materials->count(color)) { // if the color is known
+            auto mat_color = materials->at(color);
+            tiles.push_back(Tile({x,y,z}, mat_color.first, mat_color.second));
+        } else { // the color is unknown
+            unknown_materials.insert(color);
+            auto mat_color = materials->at(0); // else set to air.
+            tiles.push_back(Tile({x,y,z}, mat_color.first, mat_color.second));
+        }
+    }
+
     for (uint32_t color : unknown_materials) {
         std::cout << "    cannot find color: " << std::hex << std::uppercase << color
                   << std::dec << std::endl;

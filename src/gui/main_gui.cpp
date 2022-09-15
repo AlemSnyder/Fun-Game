@@ -24,11 +24,11 @@ namespace gui {
 int
 GUITest(World world) {
 
-    entity::Mesh mesh = world.get_mesh_greedy();
+    auto mesh = world.get_mesh_greedy();
 
-    voxel_utility::VoxelObject vo_tree(files::get_data_path() / "models" / "DefaultTree.qb");
+    voxel_utility::VoxelObject default_trees_voxel(files::get_data_path() / "models" / "DefaultTree.qb");
 
-    entity::Mesh mesh_trees = entity::generate_mesh(vo_tree);
+    auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
     // Initialise GLFW
     if (!glfwInit()) {

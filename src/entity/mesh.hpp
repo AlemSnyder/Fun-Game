@@ -181,7 +181,8 @@ Mesh generate_mesh(T voxel_object) {
                                     break;
                                 }
                             }
-                            if (done) break;
+                            if (done)
+                            break;
                         }
 
                         // Add quad

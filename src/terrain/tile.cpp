@@ -8,44 +8,24 @@
 
 namespace terrain {
 
-Tile::Tile() {
-    init({1, 1, 1}, 0);
-}
-
-Tile::Tile(std::array<int, 3> sop, const terrain::Material* material) {
-    init(sop, material->element_id);
-    set_material(material, 0);
-}
-
 Tile::Tile(
-    std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id
-) {
-    // bool solid = materials[mat_id].solid;
-    init(sop, material->element_id);
-    set_material(material, color_id);
-}
-
-void
-Tile::init(std::array<int, 3> sop, uint8_t mat_id) {
-    // auto sop = Terrain::sop(xyz);
-    x = sop[0];
-    y = sop[1];
-    z = sop[2];
-    solid_ = false;
-    color_id_ = 0;
-    mat_id_ = mat_id;
-    grow_data_high_ = 0;
-    grow_data_low_ = 0;
-    grow_sink_ = false;
-    grow_source_ = false;
-    grass_ = false;
-}
-
-void
-Tile::init(
-    std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id
-) {
-    init(sop, material->element_id);
+    std::array<int, 3> sop,
+    const terrain::Material* material,
+    uint8_t color_id = 0) :
+        x(sop[0]),
+        y(sop[1]),
+        z(sop[2]),
+        solid_(false),
+        color_id_(0),
+        mat_id_(0),
+        grow_data_high_(0),
+        grow_data_low_(0),
+        grow_sink_(false),
+        grow_source_(false),
+        grass_(false)
+{
+    // set material should not fail so if material is bad for some reason
+    // tile should still be fine.
     set_material(material, color_id);
 }
 
