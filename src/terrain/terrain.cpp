@@ -916,19 +916,19 @@ Terrain::get_voxel(int x, int y, int z) const {
     // using static ints to prevent dereferencing
     // The previous material id, and color id are cashed so that materials do
     // not need to be dereferenced, and searched through.
-    static uint8_t get_voxel_previous_mat_id = 0;
-    static uint8_t get_voxel_previous_color_id = 0;
-    static uint32_t get_voxel_previous_out_color = 0;
+    static uint8_t previous_mat_id = 0;
+    static uint8_t previous_color_id = 0;
+    static uint32_t previous_out_color = 0;
     if (in_range(x, y, z)) {
-        if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_previous_mat_id)
-            || (tiles[pos(x, y, z)].get_color_id() != get_voxel_previous_color_id)) {
-            get_voxel_previous_mat_id = tiles[pos(x, y, z)].get_material_id();
-            get_voxel_previous_color_id = tiles[pos(x, y, z)].get_color_id();
-            auto mat = materials_->at(get_voxel_previous_mat_id);
-            get_voxel_previous_out_color =
-                mat.color[get_voxel_previous_color_id].second;
+        if ((tiles[pos(x, y, z)].get_material_id() != previous_mat_id)
+            || (tiles[pos(x, y, z)].get_color_id() != previous_color_id)) {
+            previous_mat_id = tiles[pos(x, y, z)].get_material_id();
+            previous_color_id = tiles[pos(x, y, z)].get_color_id();
+            auto mat = materials_->at(previous_mat_id);
+            previous_out_color =
+                mat.color[previous_color_id].second;
         }
-        return get_voxel_previous_out_color;
+        return previous_out_color;
     }
     return 0;
 }
