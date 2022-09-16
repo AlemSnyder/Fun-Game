@@ -7,9 +7,11 @@
 
 namespace terrain {
 
-TerrainMesh::TerrainMesh(entity::Mesh mesh) : TerrainMesh(mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
-        mesh.indexed_normals_) {
-}
+TerrainMesh::TerrainMesh(entity::Mesh mesh) :
+    TerrainMesh(
+        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
+        mesh.indexed_normals_
+    ) {}
 
 TerrainMesh::TerrainMesh(
     const std::vector<unsigned short>& indices,

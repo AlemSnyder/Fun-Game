@@ -52,10 +52,7 @@ class VoxelObject {
      * @return uint32_t color
      */
     inline uint32_t get_voxel(uint32_t x, uint32_t y, uint32_t z) const {
-        if ((size_[0] > x) &&
-            (size_[1] > y) &&
-            (size_[2] > z)) {
-
+        if ((size_[0] > x) && (size_[1] > y) && (size_[2] > z)) {
             return data_[get_position(x, y, z)];
         }
         return 0;
