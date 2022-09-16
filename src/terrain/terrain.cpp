@@ -921,7 +921,7 @@ Terrain::get_voxel(int x, int y, int z) const {
     static uint32_t get_voxel_previous_out_color = 0;
     if (in_range(x, y, z)) {
         if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_previous_mat_id)
-            | (tiles[pos(x, y, z)].get_color_id() != get_voxel_previous_color_id)) {
+            || (tiles[pos(x, y, z)].get_color_id() != get_voxel_previous_color_id)) {
             get_voxel_previous_mat_id = tiles[pos(x, y, z)].get_material_id();
             get_voxel_previous_color_id = tiles[pos(x, y, z)].get_color_id();
             auto mat = materials_->at(get_voxel_previous_mat_id);

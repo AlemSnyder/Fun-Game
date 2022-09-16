@@ -86,6 +86,22 @@ class Tile {
         std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id = 0
     );
 
+    // I will format this later or remove it if I can
+    // TODO find vector of materials that uses default initializer
+    // I think it might be node
+    Tile() :
+    x(0U),
+    y(0U),
+    z(0U),
+    mat_id_(0),
+    color_id_(0),
+    grow_data_high_(0),
+    grow_data_low_(0),
+    grow_sink_(false),
+    grow_source_(false),
+    grass_(false),
+    solid_(false){}
+
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.

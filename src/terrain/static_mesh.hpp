@@ -56,14 +56,6 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         const std::vector<glm::vec3>& model_transforms
     );
 
-    void init(
-        const std::vector<unsigned short>& indices,
-        const std::vector<glm::vec3>& indexed_vertices,
-        const std::vector<glm::vec3>& indexed_colors,
-        const std::vector<glm::vec3>& indexed_normals,
-        const std::vector<glm::vec3>& model_transforms
-    );
-
     inline ~StaticMesh() {
         glDeleteBuffers(1, &vertex_buffer_);
         glDeleteBuffers(1, &color_buffer_);

@@ -13,25 +13,9 @@ namespace terrain {
 
 StaticMesh::StaticMesh(
     entity::Mesh mesh, const std::vector<glm::vec3>& model_transforms
-) {
-    init(
-        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
-        mesh.indexed_normals_, model_transforms
-    );
-}
+) : StaticMesh(mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_, mesh.indexed_normals_, model_transforms){}
 
 StaticMesh::StaticMesh(
-    const std::vector<unsigned short>& indices,
-    const std::vector<glm::vec3>& indexed_vertices,
-    const std::vector<glm::vec3>& indexed_colors,
-    const std::vector<glm::vec3>& indexed_normals,
-    const std::vector<glm::vec3>& model_transforms
-) {
-    init(indices, indexed_vertices, indexed_colors, indexed_normals, model_transforms);
-}
-
-void
-StaticMesh::init(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::vec3>& indexed_vertices,
     const std::vector<glm::vec3>& indexed_colors,
