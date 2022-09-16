@@ -402,9 +402,17 @@ class Terrain {
 
     // TODO place block
 
-    inline path::AdjacentIterator
-    get_tile_adjacent_iterator(size_t pos, UnitPath path_type) const {
-        return path::AdjacentIterator(*this, pos, path_type);
+    using iterator = path::AdjacentIterator;
+    /**
+     * @brief Get a tile iterator to adjacent tiles
+     * 
+     * @param pos position of 
+     * @param path_type UnitPath defining acceptable paths
+     * @return iterator 
+     */
+    inline iterator
+    get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const {
+        return iterator(*this, pos, path_type);
     }
 
     /**

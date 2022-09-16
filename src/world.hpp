@@ -64,6 +64,9 @@ class World {
     World(Json::Value biome_data, int type);
     World(Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles, uint32_t y_tiles);
 
+    constexpr static int macro_tile_size = 32;
+    constexpr static int height = 128;
+
     // void save(); TODO define save
     //  this would require creating some sort of file type
 

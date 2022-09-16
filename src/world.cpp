@@ -117,12 +117,8 @@ World::World(Json::Value materials_json, Json::Value biome_data, uint32_t x_tile
 
     std::cout << "start of terrain\n";
 
-    constexpr int macro_tile_size = 32;
-    constexpr int height = 128;
-    constexpr int seed = 5;
-
     terrain_main = terrain::Terrain(
-        x_tiles, y_tiles, macro_tile_size, height, seed, &materials, biome_data["Biome_1"], grass_grad_data,
+        x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"], grass_grad_data,
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     );
 }
@@ -134,10 +130,6 @@ World::World(Json::Value biome_data, int tile_type) {
 
     init_materials(materials_json);
 
-    constexpr int macro_tile_size = 32;
-    constexpr int height = 128;
-    constexpr int seed = 5;
-
     terrain_main =
-        terrain::Terrain(3, 3, macro_tile_size, height, seed, tile_type, &materials, biome_data);
+        terrain::Terrain(3, 3, macro_tile_size, height, 5, tile_type, &materials, biome_data);
 }
