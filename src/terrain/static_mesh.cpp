@@ -25,7 +25,8 @@ StaticMesh::StaticMesh(
     const std::vector<glm::vec3>& indexed_colors,
     const std::vector<glm::vec3>& indexed_normals,
     const std::vector<glm::vec3>& model_transforms
-) {
+) : num_vertices_(indices.size()),
+    num_models_(model_transforms.size()) {
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
@@ -66,8 +67,6 @@ StaticMesh::StaticMesh(
         &model_transforms[0], GL_STATIC_DRAW
     );
 
-    num_vertices_ = indices.size();
-    num_models_ = model_transforms.size();
 }
 
 } // namespace terrain

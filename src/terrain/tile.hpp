@@ -90,7 +90,7 @@ class Tile {
     // TODO find vector of materials that uses default initializer
     // I think it might be node
     Tile() :
-        x(0U), y(0U), z(0U), mat_id_(0), color_id_(0), grow_data_high_(0),
+        x(0), y(0), z(0), mat_id_(0), color_id_(0), grow_data_high_(0),
         grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
         solid_(false) {}
 

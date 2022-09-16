@@ -48,22 +48,15 @@ class Node { // Used to find paths.
      */
     Node(T* tile, float hc) : tile_(tile),
       parent_node_(nullptr),
-      gCost_(0),
-      hCost_(hc),
-      fCost_(gCost_ + hCost_),
+      g_cost_(0),
+      h_cost_(hc),
+      f_cost_(g_cost_ + h_cost_),
       explored_(false){};
     /**
      * @brief Construct a new Node object (default initializer)
      * @deprecated should not be used
      */
     Node() : Node(nullptr, 0) {};
-    /**
-     * @brief Initialize node
-     *
-     * @param tile position of node in space
-     * @param hc theoretical minimum time needed to reach goal
-     */
-    //void init(T* tile, float hc);
 
     /**
      * @brief Explore this node
@@ -83,42 +76,42 @@ class Node { // Used to find paths.
      *
      * @return T* underlying position structure
      */
-    T* get_tile() { return tile_; }
+    inline T* get_tile() { return tile_; }
 
     /**
      * @brief Get the underlying position object
      *
      * @return T* underlying position structure
      */
-    const T* get_tile() const { return tile_; }
+    inline const T* get_tile() const { return tile_; }
 
     /**
      * @brief Get the parent
      *
      * @return Node<T>* previous step in fastest way to get to this nodes
      */
-    Node<T>* get_parent() { return parent_node_; }
+    inline Node<T>* get_parent() { return parent_node_; }
 
     /**
      * @brief Get the time required to reach this node from start
      *
      * @return float time from start to this node
      */
-    float get_time_cots() const { return gCost_; }
+    inline float get_time_cots() const { return g_cost_; }
 
     /**
      * @brief Get the predicted continue cots
      *
      * @return float minimum time from this node to end
      */
-    float get_predicted_continue_cots() const { return hCost_; }
+    inline float get_predicted_continue_cots() const { return h_cost_; }
 
     /**
      * @brief Get the predicted total cots
      *
      * @return float minimum time from start to end through this node
      */
-    float get_total_predicted_cost() const { return fCost_; }
+    inline float get_total_predicted_cost() const { return f_cost_; }
 
     /**
      * @brief Has this node been explored
@@ -126,15 +119,15 @@ class Node { // Used to find paths.
      * @return true This node has been explored
      * @return false This node has not been explored
      */
-    bool is_explored() const { return explored_; }
+    inline bool is_explored() const { return explored_; }
 
  private:
     T* tile_;           // defines position in space
     Node* parent_node_; // previous step in fastest way to get to this nodes
 
-    float gCost_;   // Time from start to this node
-    float hCost_;   // Minimum time from this node to end
-    float fCost_;   // Minimum time from start to end through this node
+    float g_cost_;   // Time from start to this node
+    float h_cost_;   // Minimum time from this node to end
+    float f_cost_;   // Minimum time from start to end through this node
     bool explored_; // Is there a path from start to this node?
 };
 
