@@ -46,9 +46,7 @@ struct Material {
     ) :
         color(color_in),
         speed_multiplier(speed_multiplier_in), solid(solid_in),
-        element_id(element_id_in), name(name_in){
-
-                                   };
+        element_id(element_id_in), name(name_in){};
     // vector of <name hex color> for possible colors
     std::vector<std::pair<const std::string, uint32_t>> color;
     uint8_t speed_multiplier = 1;   // speed on this material compared to base
