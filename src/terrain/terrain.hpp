@@ -26,30 +26,32 @@
 
 #include "chunk.hpp"
 #include "material.hpp"
-#include "node.hpp"
-#include "node_group.hpp"
+#include "path/node.hpp"
+#include "path/node_group.hpp"
+#include "path/tile_iterators.hpp"
+#include "path/unit_path.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
 #include "tile.hpp"
-#include "unit_path.hpp"
 
 #include <stdio.h>
 
 #include <array>
 #include <cstdint>
-#include <iostream>
 #include <map>
 #include <set>
 #include <stdexcept>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 namespace terrain {
 
 // Forward declaration of Chunk
 class Chunk;
+
+// Forward declaration of AdjacentIterator
+class AdjacentIterator;
 
 /**
  * @brief The land in the world.
@@ -59,6 +61,8 @@ class Chunk;
  *
  */
 class Terrain {
+    friend class AdjacentIterator;
+
  private:
     // vector of voxels in terrain
     std::vector<Tile> tiles;
@@ -82,6 +86,8 @@ class Terrain {
     int grass_grad_length;
     // gradient index of grass not by an edge
     int grass_mid;
+    // mat of material id to material that describes materials in this terrain
+    const std::map<int, const terrain::Material>* materials_;
 
     // save color at sop, to color
     void export_color(const int sop[3], uint8_t color[4]) const;
@@ -92,8 +98,6 @@ class Terrain {
     );
     // convert 4 int 8 to 1 int 32 (reversed order)
     uint32_t compress_color(uint8_t v[4]);
-    // create unit paths for this tile, and all it's adjacent tiles
-    void add_all_adjacent(int xyz);
 
     // trace nodes through parents to reach start
     template <class T>
@@ -122,7 +126,7 @@ class Terrain {
      * @param zf Z end
      * @return const UnitPath path type between the two tile positions
      */
-    const UnitPath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf);
+    const UnitPath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const;
     /**
      * @brief Get the minimum path time between two positions
      *
@@ -191,8 +195,52 @@ class Terrain {
      * @param tile tile to find position of
      * @return int
      */
-    int pos(const Tile tile) const {
+    inline int pos(const Tile tile) const {
         return pos(tile.get_x(), tile.get_y(), tile.get_z());
+    }
+
+    /**
+     * @brief position of chunk the node group is a part of
+     *
+     * @param node_group node group to find position of chunk
+     * @return int
+     */
+    int pos(const NodeGroup* const node_group) const;
+
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const Tile tile) const { return pos(tile); }
+
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const Tile* const tile) const { return pos(tile); }
+
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const NodeGroup NG) const {
+        return pos(*(NG.get_tiles().begin()));
+    }
+
+    /**
+     * @brief unique map index
+     *
+     * @param tile
+     * @return int
+     */
+    inline int pos_for_map(const NodeGroup* const NG) const {
+        return pos(*(NG->get_tiles().begin()));
     }
 
     /**
@@ -201,7 +249,7 @@ class Terrain {
      * @param xyz vector index
      * @return const std::array<int, 3> position in space
      */
-    const std::array<int, 3> sop(int xyz) {
+    const std::array<int, 3> sop(int xyz) const {
         return {xyz / (Y_MAX * Z_MAX), (xyz / Z_MAX) % Y_MAX, xyz % (Z_MAX)};
     }
 
@@ -270,7 +318,7 @@ class Terrain {
      * @param y size in y direction
      * @param z size in z direction
      */
-    void init_old(int x, int y, int z);
+    void init(int x, int y, int z);
     /**
      * @brief Terrain initializer
      *
@@ -353,6 +401,21 @@ class Terrain {
     Terrain(const std::string path, const std::map<int, const Material>* material);
 
     // TODO place block
+
+    using iterator = path::AdjacentIterator;
+
+    /**
+     * @brief Get a tile iterator to adjacent tiles
+     *
+     * @param pos position of
+     * @param path_type UnitPath defining acceptable paths
+     * @return iterator
+     */
+    inline iterator
+    get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const {
+        return iterator(*this, pos, path_type);
+    }
+
     /**
      * @brief Get the nodes adjacent to this one
      *
@@ -362,9 +425,14 @@ class Terrain {
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    template <class T>
-    std::set<Node<const T>*> get_adjacent_nodes(
-        const Node<const T>* const node, std::map<const T*, Node<const T>>& nodes,
+    // template <class T>
+    std::set<Node<const NodeGroup>*> get_adjacent_nodes(
+        const Node<const NodeGroup>* const node,
+        std::map<size_t, Node<const NodeGroup>>& nodes, uint8_t type
+    ) const;
+
+    std::set<Node<const Tile>*> get_adjacent_nodes(
+        const Node<const Tile>* const node, std::map<size_t, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 
@@ -519,12 +587,7 @@ class Terrain {
      * @param z z position
      * @return uint32_t color or tile
      */
-    uint32_t get_voxel(int x, int y, int z) const {
-        if (in_range(x, y, z)) {
-            return tiles[pos(x, y, z)].get_color();
-        }
-        return 0;
-    }
+    uint32_t get_voxel(int x, int y, int z) const;
 
     /**
      * @brief charge the color id but not the material of the tile
@@ -557,7 +620,7 @@ class Terrain {
      */
     inline void set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
         tile->set_material(mat);
-        tile->set_color_id(color_id);
+        tile->set_color_id(color_id, mat);
     }
 
     /**
@@ -726,9 +789,7 @@ class Terrain {
      * @param materials materials in the terrain for debug materials
      * @return int success status
      */
-    int qb_save_debug(
-        const std::string path, const std::map<int, const Material>* materials
-    );
+    int qb_save_debug(const std::string path);
     /**
      * @brief save to path
      *

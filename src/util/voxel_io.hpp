@@ -2,12 +2,13 @@
 
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-namespace VoxelUtility {
+namespace voxel_utility {
 
 class VoxelObject {
  private:
@@ -16,27 +17,60 @@ class VoxelObject {
     std::vector<uint32_t> size_;
     bool ok_;
 
- public:
-    VoxelObject(const std::string path);
-
-    inline bool ok() const { return ok_; }
-
     inline int get_position(int x, int y, int z) const {
         return ((x * size_[1] + y) * size_[2] + z);
     }
 
-    inline uint32_t get_voxel(uint32_t x, uint32_t y, uint32_t z) {
-        if ((size_[0] > x) &  // (x >= 0) &
-            (size_[1] > y) &  // (y >= 0) &
-            (size_[2] > z)) { //& (z >= 0)){
+ public:
+    /**
+     * @brief Construct a new Voxel Object object from saved qb
+     *
+     * @param path path to .qb file
+     */
+    VoxelObject(const std::string path);
+    /**
+     * @brief Construct a new Voxel Object object from saved qb
+     *
+     * @param path path to .qb file
+     */
+    VoxelObject(const std::filesystem::path path);
 
+    /**
+     * @brief did this voxel object load correctly
+     *
+     * @return true loaded correctly
+     * @return false failed to load correctly
+     */
+    inline bool ok() const { return ok_; }
+
+    /**
+     * @brief Get the voxel color at given coordinate
+     *
+     * @param x coordinate
+     * @param y coordinate
+     * @param z coordinate
+     * @return uint32_t color
+     */
+    inline uint32_t get_voxel(uint32_t x, uint32_t y, uint32_t z) const {
+        if ((size_[0] > x) && (size_[1] > y) && (size_[2] > z)) {
             return data_[get_position(x, y, z)];
         }
         return 0;
     }
 
+    /**
+     * @brief Get the center of the object
+     * use full to find where to rotate around
+     *
+     * @return std::vector<int>
+     */
     inline std::vector<int> get_offset() const { return center_; }
 
+    /**
+     * @brief Get the size as a vector of length three
+     *
+     * @return std::vector<uint32_t> length in x, y, z
+     */
     inline std::vector<uint32_t> get_size() { return size_; }
 };
 
@@ -131,4 +165,4 @@ to_qb(const std::string path, T voxel_object) {
     return 0;
 }
 
-} // namespace VoxelUtility
+} // namespace voxel_utility

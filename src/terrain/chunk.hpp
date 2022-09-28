@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "node_group.hpp"
+#include "path/node_group.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
 
@@ -43,7 +43,7 @@ class Terrain;
  */
 class Chunk {
  public:
-    static const int8_t size = 16; // number of tiles in each direction
+    static const int8_t SIZE = 16; // number of tiles in each direction
     /**
      * @brief Construct a new Chunk object
      *
@@ -66,7 +66,7 @@ class Chunk {
     void delNodeGroup(NodeGroup& NG);
     void mergeNodeGroup(NodeGroup& g1, NodeGroup& g2);
     uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
-                            // chunk::size to get tile position.
+                            // Chunk::SIZE to get tile position.
     bool contains_nodeGroup(NodeGroup*);
     void R_merge(NodeGroup& g1, std::set<NodeGroup*>& to_merge);
 };

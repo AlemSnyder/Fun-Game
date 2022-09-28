@@ -38,7 +38,7 @@ test1(const std::string path) {
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    World world(materials_json, biome_data);
+    World world(materials_json, biome_data, 6, 6);
 
     world.terrain_main.qb_save(path);
 
@@ -63,7 +63,7 @@ save_test(const std::string path, const std::string save_path) {
 
     World world(path);
 
-    world.terrain_main.qb_save_debug(save_path, world.get_materials());
+    world.terrain_main.qb_save_debug(save_path);
 
     return 0;
 }
@@ -124,7 +124,7 @@ path_finder_test(const std::string path, std::string save_path) {
     std::cout << "    " << static_cast<int>(tile_path.size()) << std::endl;
     if (tile_path.size() == 0) {
         std::cout << "no path" << std::endl;
-        world.terrain_main.qb_save_debug(save_path, world.get_materials());
+        world.terrain_main.qb_save_debug(save_path);
         return 1;
     }
 
@@ -140,17 +140,28 @@ path_finder_test(const std::string path, std::string save_path) {
     return 0;
 }
 
-void
-get_mesh(
-    const std::string path, std::vector<std::uint16_t>& indices,
-    std::vector<glm::vec3>& indexed_vertices, std::vector<glm::vec3>& indexed_colors,
-    std::vector<glm::vec3>& indexed_normals
-) {
+entity::Mesh
+get_mesh(const std::string path) {
     World world(path);
     // World world(path);
     std::cout << "read from file" << std::endl;
 
-    world.get_mesh_greedy(indices, indexed_vertices, indexed_colors, indexed_normals);
+    return world.get_mesh_greedy();
+}
+
+int StressTest() {
+
+    Json::Value materials_json;
+    std::ifstream materials_file = files::open_data_file("materials.json");
+    materials_file >> materials_json;
+
+    Json::Value biome_data;
+    std::ifstream biome_file = files::open_data_file("biome_data.json");
+    biome_file >> biome_data;
+
+    World world(materials_json, biome_data, 12, 12);
+
+    return gui::GUITest(world);
 }
 
 int
@@ -215,6 +226,8 @@ main(int argc, char** argv) {
         return test1(path_in);
     } else if (run_function == "MacroMap") {
         return test2();
+    } else if (run_function == "StressTest") {
+        return StressTest();
     } else if (run_function == "SaveTest") {
         return save_test(path_in, path_out);
     } else if (run_function == "PathFinder") {
