@@ -59,6 +59,8 @@ class Tile {
     uint16_t y; // The y index
     uint16_t z; // The z index
     // does this need to know where it is?
+    // The material id of the tile
+    uint8_t mat_id_;
     // The tile color is determined by this and the material type.
     uint8_t color_id_;
     // Determined by the horizontal manhattan distance from a wall
@@ -66,56 +68,33 @@ class Tile {
     // Determined by the horizontal manhattan distance from a edge
     uint8_t grow_data_low_;
 
-    bool grow_sink_;   // not used
-    bool grow_source_; // not used
-    bool grass_;       // Does this tile obey grass color Gradient?
-
+    bool grow_sink_ : 1;   // not used
+    bool grow_source_ : 1; // not used
+    bool grass_ : 1;       // Does this tile obey grass color Gradient?
     // used for can stand, grass edges, etc. Should be the same as mat->solid.
-    bool solid_; // is the tile solid
-
-    uint8_t mat_id_; // The material id of the tile
+    bool solid_ : 1; // is the tile solid
 
  public:
     /**
-     * @brief Construct a new Tile object (default constructor)
-     *
-     */
-    Tile();
-    /**
-     * @brief Construct a new Tile object
-     *
-     * @param sop tile position
-     * @param material material of tile
-     */
-    Tile(std::array<int, 3> sop, const terrain::Material* material);
-
-    /**
      * @brief Construct a new Tile object
      *
      * @param sop tile position
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id);
+    Tile(
+        std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id = 0
+    );
 
-    /**
-     * @brief tile initializer
-     *
-     * @param sop tile position
-     * @param mat_id material id for tile
-     * color_id_ is set to 0
-     */
-    void init(std::array<int, 3> sop, uint8_t mat_id);
 
-    /**
-     * @brief tile initializer
-     *
-     * @param sop tile position
-     * @param material material for tile
-     * @param color_id color of tile
-     */
-    void
-    init(std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id);
+    // I will format this later or remove it if I can
+    // TODO find vector of materials that uses default initializer
+    // I think it might be node
+    Tile() :
+        x(0), y(0), z(0), mat_id_(0), color_id_(0), grow_data_high_(0),
+        grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
+        solid_(false) {}
+        
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.

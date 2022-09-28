@@ -140,17 +140,13 @@ path_finder_test(const std::string path, std::string save_path) {
     return 0;
 }
 
-void
-get_mesh(
-    const std::string path, std::vector<std::uint16_t>& indices,
-    std::vector<glm::vec3>& indexed_vertices, std::vector<glm::vec3>& indexed_colors,
-    std::vector<glm::vec3>& indexed_normals
-) {
+entity::Mesh
+get_mesh(const std::string path) {
     World world(path);
     // World world(path);
     std::cout << "read from file" << std::endl;
 
-    world.get_mesh_greedy(indices, indexed_vertices, indexed_colors, indexed_normals);
+    return world.get_mesh_greedy();
 }
 
 int StressTest() {

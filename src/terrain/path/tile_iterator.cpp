@@ -68,9 +68,16 @@ std::array<int8_t, 3> get_indexed_offsets(uint8_t index){
 }
 
 
-AdjacentIterator::AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type) : pos_(xyz), path_type_constraint_(path_type), parent_(parent){
-    dpos_ = 0;
-    //update_path();
+AdjacentIterator::AdjacentIterator(
+    const Terrain& parent,
+    unsigned int xyz,
+    UnitPath path_type)
+:
+    parent_(parent),
+    path_type_constraint_(path_type),
+    pos_(xyz),
+    path_type_(0),
+    dpos_(0){
     iterate_to_next_available();
 }
 
@@ -94,9 +101,7 @@ void AdjacentIterator::update_path(){
 void AdjacentIterator::iterate_to_next_available(){
     do {
         dpos_++;
-        if (end()){
-            return;
-        }
+        if ( end() ) return;
         update_path();
     } while (!path_type_.compatible(path_type_constraint_));
 }

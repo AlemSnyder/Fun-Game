@@ -1,4 +1,4 @@
-#include "voxelutility.hpp"
+#include "voxel_io.hpp"
 
 #include <cinttypes>
 #include <fstream>
@@ -93,11 +93,13 @@ from_qb(
 }
 
 VoxelObject::VoxelObject(const std::string path) {
-    data_ = std::vector<uint32_t>(0);
-    center_ = std::vector<int>(0);
-    size_ = std::vector<uint32_t>(0);
-
     int test = from_qb(path, data_, center_, size_);
     ok_ = (test == 0);
 }
+
+VoxelObject::VoxelObject(const std::filesystem::path fs_path) {
+    int test = from_qb(fs_path.string(), data_, center_, size_);
+    ok_ = (test == 0);
+}
+
 } // namespace voxel_utility

@@ -7,9 +7,17 @@
 
 namespace terrain {
 
+TerrainMesh::TerrainMesh(entity::Mesh mesh) :
+    TerrainMesh(
+        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
+        mesh.indexed_normals_
+    ) {}
+
 TerrainMesh::TerrainMesh(
-    std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
-    std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+    const std::vector<unsigned short>& indices,
+    const std::vector<glm::vec3>& indexed_vertices,
+    const std::vector<glm::vec3>& indexed_colors,
+    const std::vector<glm::vec3>& indexed_normals
 ) {
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);

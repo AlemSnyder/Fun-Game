@@ -8,44 +8,15 @@
 
 namespace terrain {
 
-Tile::Tile() {
-    init({1, 1, 1}, 0);
-}
-
-Tile::Tile(std::array<int, 3> sop, const terrain::Material* material) {
-    init(sop, material->element_id);
-    set_material(material, 0);
-}
-
 Tile::Tile(
     std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id
-) {
-    // bool solid = materials[mat_id].solid;
-    init(sop, material->element_id);
-    set_material(material, color_id);
-}
-
-void
-Tile::init(std::array<int, 3> sop, uint8_t mat_id) {
-    // auto sop = Terrain::sop(xyz);
-    x = sop[0];
-    y = sop[1];
-    z = sop[2];
-    solid_ = false;
-    color_id_ = 0;
-    mat_id_ = mat_id;
-    grow_data_high_ = 0;
-    grow_data_low_ = 0;
-    grow_sink_ = false;
-    grow_source_ = false;
-    grass_ = false;
-}
-
-void
-Tile::init(
-    std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id
-) {
-    init(sop, material->element_id);
+) :
+    x(sop[0]),
+    y(sop[1]), z(sop[2]), mat_id_(0), color_id_(0), grow_data_high_(0),
+    grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
+    solid_(false) {
+    // set material should not fail so if material is bad for some reason
+    // tile should still be fine.
     set_material(material, color_id);
 }
 
@@ -71,10 +42,10 @@ Tile::set_material(const terrain::Material* const material) {
 // If able, set `color_id` to `color_id_`.
 void
 Tile::set_color_id(uint8_t color_id, const terrain::Material* const material) {
-    if (color_id > material->color.size()) {
+    if (color_id >= material->color.size()) {
         return;
     }
-    if ((mat_id_ != DIRT_ID) | (color_id_ < NUM_GRASS)) {
+    if ((mat_id_ != DIRT_ID) | (color_id < NUM_GRASS)) {
         color_id_ = color_id;
     } // cannot set the color of dirt
 }

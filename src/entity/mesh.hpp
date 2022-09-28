@@ -13,14 +13,14 @@
 /**
  * @file mesh.hpp
  *
- * @brief Defines Mesh class
+ * @brief Defines Mesh Struct
  *
  * @ingroup entity
  *
  */
 #pragma once
 
-#include "../util/voxelutility.hpp"
+#include "../util/voxel_io.hpp"
 
 #include <glm/glm.hpp>
 
@@ -30,22 +30,47 @@
 namespace entity {
 
 /**
+ * @brief Holds data that describes now an object is loaded by the shader
+ *
+ */
+struct Mesh {
+    Mesh(
+        std::vector<uint16_t>& indices, std::vector<glm::vec3>& indexed_vertices,
+        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+    ) :
+        indices_(indices),
+        indexed_vertices_(indexed_vertices), indexed_colors_(indexed_colors),
+        indexed_normals_(indexed_normals) {}
+
+    // defines a bounding box of the mesh
+    const std::vector<int> size_;
+    // defines center of mesh for rotating
+    const std::vector<int> center_;
+
+    // indices of vertices drawn (vertices used twice can be ignored)
+    const std::vector<std::uint16_t> indices_;
+    // position of vertices in mesh space
+    const std::vector<glm::vec3> indexed_vertices_;
+    // color of vertex
+    const std::vector<glm::vec3> indexed_colors_;
+    // normal direction
+    const std::vector<glm::vec3> indexed_normals_;
+
+}; // struct Mesh
+
+/**
  * @brief Generates a mesh from the given 3D voxel structure
  *
  * @tparam T
  * @param voxel_object
- * @param indices
- * @param indexed_vertices
- * @param indexed_colors
- * @param indexed_normals
  */
 template <class T>
-void
-generate_mesh(
-    T voxel_object, std::vector<uint16_t>& indices,
-    std::vector<glm::vec3>& indexed_vertices, std::vector<glm::vec3>& indexed_colors,
-    std::vector<glm::vec3>& indexed_normals
-) {
+Mesh
+generate_mesh(T voxel_object) {
+    std::vector<uint16_t> indices;
+    std::vector<glm::vec3> indexed_vertices;
+    std::vector<glm::vec3> indexed_colors;
+    std::vector<glm::vec3> indexed_normals;
     // mesh off set
     std::vector<int> center = voxel_object.get_offset();
     std::vector<uint32_t> dims = voxel_object.get_size();
@@ -127,11 +152,11 @@ generate_mesh(
                         // width, then expanding over the height
 
                         // clang-format off
-                        // c c c c c n n n     # c c c c n n n     # # # # #[N]n n     # # # # # n n n
-                        // c c c c c c n n     c c c c c c n n     c c c c c c n n     # # # # # c n n
-                        // c c c c c c c n - > c c c c c c c n - > c c c c c c c n - > # # # # # c c n
-                        // c c c c c n n n     c c c c c n n n     c c c c c n n n     # # # # # n n n
-                        // c c n c c n c c     c c n c c n c c     c c n c c n c c     c c[N]c c n c c
+// c c c c c n n n     # c c c c n n n     # # # # #[n]n n     # # # # # n n n
+// c c c c c c n n     c c c c c c n n     c c c c c c n n     # # # # # c n n
+// c c c c c c c n - > c c c c c c c n - > c c c c c c c n - > # # # # # c c n
+// c c c c c n n n     c c c c c n n n     c c c c c n n n     # # # # # n n n
+// c c n c c n c c     c c n c c n c c     c c n c c n c c     c c[n]c c n c c
                         // clang-format on
 
                         // Compute width
@@ -156,7 +181,6 @@ generate_mesh(
                                     break;
                                 }
                             }
-
                             if (done)
                                 break;
                         }
@@ -260,48 +284,7 @@ generate_mesh(
                 }
         }
     }
+    return Mesh(indices, indexed_vertices, indexed_colors, indexed_normals);
 }
-
-/**
- * @brief Loads a mesh from a qb or compressed mesh into ram.
- *
- */
-class Mesh {
- public:
-    Mesh(std::filesystem::path path);
-
-    void get_mesh(
-        std::vector<unsigned short>& indices, std::vector<glm::vec3>& indexed_vertices,
-        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
-    ) const {
-        indices = indices_;
-        indexed_vertices = indexed_vertices_;
-        indexed_colors = indexed_colors_;
-        indexed_normals = indexed_normals_;
-    }
-
-    // void load from smaller file
- private:
-    std::vector<int> size_;
-    std::vector<int> center_;
-
-    std::vector<std::uint16_t> indices_;
-    std::vector<glm::vec3> indexed_vertices_;
-    std::vector<glm::vec3> indexed_colors_;
-    std::vector<glm::vec3> indexed_normals_;
-
-    int get_position_(int x, int y, int z) const {
-        return ((x * size_[1] + y) * size_[2] + z);
-    }
-
-    void load_from_qb_(std::string path);
-
-    inline void generate_mesh_(voxel_utility::VoxelObject voxel_object) {
-        generate_mesh(
-            voxel_object, indices_, indexed_vertices_, indexed_colors_, indexed_normals_
-        );
-    }
-
-}; // class Mesh
 
 } // namespace entity

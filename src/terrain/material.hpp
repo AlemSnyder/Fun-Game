@@ -39,6 +39,14 @@ namespace terrain {
  * data will be added like how cretin materials respond to weather...
  */
 struct Material {
+    Material(
+        std::vector<std::pair<const std::string, uint32_t>> color_in,
+        uint8_t speed_multiplier_in, bool solid_in, uint8_t element_id_in,
+        std::string name_in
+    ) :
+        color(color_in),
+        speed_multiplier(speed_multiplier_in), solid(solid_in),
+        element_id(element_id_in), name(name_in){};
     // vector of <name hex color> for possible colors
     std::vector<std::pair<const std::string, uint32_t>> color;
     uint8_t speed_multiplier = 1;   // speed on this material compared to base

@@ -1,7 +1,7 @@
 #include "terrain.hpp"
 
 #include "../util/time.hpp"
-#include "../util/voxelutility.hpp"
+#include "../util/voxel_io.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
@@ -25,9 +25,8 @@ namespace terrain {
 
 int Terrain::Area_size = 32;
 
-Terrain::Terrain() {
-    init_old(0, 0, 0);
-    seed = 0;
+Terrain::Terrain() : seed(0) {
+    init(0, 0, 0);
 }
 
 Terrain::Terrain(
@@ -75,8 +74,8 @@ Terrain::init(
 
 Terrain::Terrain(
     const std::string path, const std::map<int, const Material>* materials
-) {
-    materials_ = materials;
+) :
+    materials_(materials) {
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse;
     for (auto it = materials_->begin(); it != materials_->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -96,8 +95,9 @@ Terrain::Terrain(
     init_chunks();
 }
 
+// TODO remove this init, and make initializer lists for world
 void
-Terrain::init_old(int x, int y, int z) {
+Terrain::init(int x, int y, int z) {
     X_MAX = x;
     Y_MAX = y;
     Z_MAX = z;
@@ -119,10 +119,10 @@ Terrain::init(
     Y_MAX = y * Area_size;
     Z_MAX = z;
 
-    tiles.resize(X_MAX * Y_MAX * Z_MAX);
+    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        get_tile(xyz)->init(sop(xyz), &materials->at(0), 0);
+        tiles.push_back(Tile(sop(xyz), &materials_->at(0)));
     }
 
     srand(seed);
@@ -180,9 +180,9 @@ Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen
 void
 Terrain::init_chunks() {
     // chunk length in _ direction
-    unsigned int C_length_X = ((X_MAX - 1) / Chunk::size + 1);
-    unsigned int C_length_Y = ((Y_MAX - 1) / Chunk::size + 1);
-    unsigned int C_length_Z = ((Z_MAX - 1) / Chunk::size + 1);
+    uint32_t C_length_X = ((X_MAX - 1) / Chunk::SIZE + 1);
+    uint32_t C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
+    uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks.push_back(Chunk(x, y, z, this));
@@ -449,7 +449,7 @@ Terrain::init_grass() {
         // have grow_all_grass_high set the new grass to grow
     //}
     // time this
-    grow_grass_recurisive_high(all_grass);
+    grow_grass_recursive_high(all_grass);
     // and time this to see the speed difference
     for (int i = 0; i < grass_grad_length; i++) {
         grow_all_grass_low();
@@ -459,14 +459,14 @@ Terrain::init_grass() {
     }
 }
 
-// grow_grass recurisive(set)
+// grow_grass recursive(set)
 // for tile in set
 //      if tile is a source
-//          add adjacetn tiles to the new set if they are grass and somethign about height
+//          add adjacent tiles to the new set if they are grass and something about height
 //          set tile.grass height/source status
-// run grow_grass recurisive(new_set, grass_grad_length)
+// run grow_grass recursive(new_set, grass_grad_length)
 void
-Terrain::grow_grass_recurisive_high(std::set<Tile*> all_grass){
+Terrain::grow_grass_recursive_high(std::set<Tile*> all_grass){
     std::set<Tile*> next_grass_tiles;
     for (Tile* tile : all_grass){
         bool is_source = false;
@@ -503,11 +503,11 @@ Terrain::grow_grass_recurisive_high(std::set<Tile*> all_grass){
             next_grass_tiles.insert(tile);
         }
     }
-    grow_grass_recurisive_high(next_grass_tiles, grass_grad_length - 1);
+    grow_grass_recursive_high(next_grass_tiles, grass_grad_length - 1);
 }
 
 void
-Terrain::grow_grass_recurisive_high(std::set<Tile*> in_grass, int height){
+Terrain::grow_grass_recursive_high(std::set<Tile*> in_grass, int height){
     if (height == 1) { return; }
     std::set<Tile*> next_grass_tiles;
     for (Tile* tile : in_grass){
@@ -534,7 +534,7 @@ Terrain::grow_grass_recurisive_high(std::set<Tile*> in_grass, int height){
             }
         }
     }
-    grow_grass_recurisive_high(next_grass_tiles, height - 1);
+    grow_grass_recursive_high(next_grass_tiles, height - 1);
 }
 
 // grow_grass_recursive(set, int height)
@@ -544,7 +544,7 @@ Terrain::grow_grass_recurisive_high(std::set<Tile*> in_grass, int height){
 //              if this tile is grass, and grow_data_high < height-1
 //                  add adjacent tiles to new set
 //          set tile grass height to height
-// if heigt then run grow_grass_recurisve(new_set, height -1)
+// if height then run grow_grass_recursive(new_set, height -1)
 
 // .1 sec
 void
@@ -576,7 +576,7 @@ Terrain::grow_all_grass_high() {
     }
 }
 
-// could just itterate through tiles forward, and backward ug
+// could iterate forward, and backward, to get approximate grass
 void
 Terrain::grow_all_grass_low() {
     // extends lower bound of grass color
@@ -685,10 +685,10 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
 int
 Terrain::pos(const NodeGroup* const node_group) const {
     auto [x, y, z] = node_group->sop();
-    int px = floor(x) / Chunk::size;
-    int py = floor(y) / Chunk::size;
-    int pz = floor(z) / Chunk::size;
-    return px * Y_MAX / Chunk::size * Z_MAX / Chunk::size + py * Z_MAX / Chunk::size
+    int px = floor(x) / Chunk::SIZE;
+    int py = floor(y) / Chunk::SIZE;
+    int pz = floor(z) / Chunk::SIZE;
+    return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
            + pz;
 }
 
@@ -713,8 +713,7 @@ Terrain::get_adjacent_nodes(
     uint8_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
-    path::AdjacentIterator tile_it =
-        get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
+    auto tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
     while (!tile_it.end()) {
         try {
             Node<const Tile>* tile = &nodes.at(tile_it.get_pos());
@@ -979,8 +978,6 @@ Terrain::get_path(
         Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
         openNodes(T_compare);
 
-    // std::set<Node<const T>*> searched;
-
     std::map<size_t, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
         nodes.insert(
@@ -991,7 +988,6 @@ Terrain::get_path(
     Node<const T> start_node = nodes[pos_for_map(start)];
     openNodes.push(&start_node); // gotta start somewhere
     start_node.explore();
-    // searched.insert(&start_node);
 
     while (!openNodes.empty()) {
         Node<const T>* choice = openNodes.top();
@@ -1009,7 +1005,6 @@ Terrain::get_path(
                     return path;
                 }
                 openNodes.push(n); // n can be chose to expand around
-                // searched.insert(n);
             } else {
                 // openNodes.remove n
                 n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
@@ -1024,20 +1019,21 @@ Terrain::get_path(
 uint32_t
 Terrain::get_voxel(int x, int y, int z) const {
     // using static ints to prevent dereferencing
-    static unsigned int get_voxel_mat_id = 0;
-    static unsigned int get_voxel_color_id = 0;
-    static uint32_t get_voxel_out_color = 0;
+    // The previous material id, and color id are cashed so that materials do
+    // not need to be dereferenced, and searched through.
+    static uint8_t previous_mat_id = 0;
+    static uint8_t previous_color_id = 0;
+    static uint32_t previous_out_color = 0;
     if (in_range(x, y, z)) {
-        if ((tiles[pos(x, y, z)].get_material_id() != get_voxel_mat_id)
-            | (tiles[pos(x, y, z)].get_color_id() != get_voxel_color_id)) {
-            get_voxel_mat_id = tiles[pos(x, y, z)].get_material_id();
-            get_voxel_color_id = tiles[pos(x, y, z)].get_color_id();
-            auto mat = materials_->at(get_voxel_mat_id);
-            get_voxel_out_color = mat.color[get_voxel_color_id].second;
+        if ((tiles[pos(x, y, z)].get_material_id() != previous_mat_id)
+            || (tiles[pos(x, y, z)].get_color_id() != previous_color_id)) {
+            previous_mat_id = tiles[pos(x, y, z)].get_material_id();
+            previous_color_id = tiles[pos(x, y, z)].get_color_id();
+            auto mat = materials_->at(previous_mat_id);
+            previous_out_color =
+                mat.color[previous_color_id].second;
         }
-
-        // auto mat = materials->at(tiles[pos(x, y, z)].get_material_id());
-        return get_voxel_out_color;
+        return previous_out_color;
     }
     return 0;
 }
@@ -1099,35 +1095,26 @@ Terrain::qb_read(
     X_MAX = size[0];
     Y_MAX = size[1];
     Z_MAX = size[2];
-    tiles.resize(X_MAX * Y_MAX * Z_MAX);
+    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
 
     std::set<uint32_t> unknown_materials;
 
-    for (int x = 0; x < X_MAX; x++)
-        for (int z = 0; z < Z_MAX; z++)
-            for (int y = Y_MAX - 1; y >= 0; y--) {
-                uint32_t color = data[pos(x, y, z)];
-                if (color == 0) { // if the qb voxel is transparent.
-                    auto mat_color = materials->at(0); // set the materials to air
-                    get_tile(x, y, z)->init(
-                        {x, y, z}, mat_color.first, mat_color.second
-                    );
-                } else {
-                    // auto CC = compress_color(v);// get the complete color
-                    if (materials->count(color)) { // if the color is known
-                        auto mat_color = materials->at(color);
-                        get_tile(x, y, z)->init(
-                            {x, y, z}, mat_color.first, mat_color.second
-                        );
-                    } else {
-                        unknown_materials.insert(color);
-                        auto mat_color = materials->at(0); // else set to air.
-                        get_tile(x, y, z)->init(
-                            {x, y, z}, mat_color.first, mat_color.second
-                        );
-                    }
-                }
-            }
+    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        auto [x, y, z] = sop(xyz);
+        uint32_t color = data[xyz];
+        if (color == 0) {                      // if the qb voxel is transparent.
+            auto mat_color = materials->at(0); // set the materials to air
+            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+        } else if (materials->count(color)) { // if the color is known
+            auto mat_color = materials->at(color);
+            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+        } else { // the color is unknown
+            unknown_materials.insert(color);
+            auto mat_color = materials->at(0); // else set to air.
+            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+        }
+    }
+
     for (uint32_t color : unknown_materials) {
         std::cout << "    cannot find color: " << std::hex << std::uppercase << color
                   << std::dec << std::endl;
