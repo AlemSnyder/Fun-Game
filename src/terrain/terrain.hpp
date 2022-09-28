@@ -318,7 +318,7 @@ class Terrain {
      * @param y size in y direction
      * @param z size in z direction
      */
-    void init_old(int x, int y, int z);
+    void init(int x, int y, int z);
     /**
      * @brief Terrain initializer
      *

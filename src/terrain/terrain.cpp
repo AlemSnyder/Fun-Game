@@ -26,7 +26,7 @@ namespace terrain {
 int Terrain::Area_size = 32;
 
 Terrain::Terrain() : seed(0) {
-    init_old(0, 0, 0);
+    init(0, 0, 0);
 }
 
 Terrain::Terrain(
@@ -95,8 +95,9 @@ Terrain::Terrain(
     init_chunks();
 }
 
+// TODO remove this init, and make initializer lists for world
 void
-Terrain::init_old(int x, int y, int z) {
+Terrain::init(int x, int y, int z) {
     X_MAX = x;
     Y_MAX = y;
     Z_MAX = z;
@@ -179,9 +180,9 @@ Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen
 void
 Terrain::init_chunks() {
     // chunk length in _ direction
-    uint32_t C_length_X = ((X_MAX - 1) / Chunk::size + 1);
-    uint32_t C_length_Y = ((Y_MAX - 1) / Chunk::size + 1);
-    uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::size + 1);
+    uint32_t C_length_X = ((X_MAX - 1) / Chunk::SIZE + 1);
+    uint32_t C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
+    uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks.push_back(Chunk(x, y, z, this));
@@ -580,10 +581,10 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
 int
 Terrain::pos(const NodeGroup* const node_group) const {
     auto [x, y, z] = node_group->sop();
-    int px = floor(x) / Chunk::size;
-    int py = floor(y) / Chunk::size;
-    int pz = floor(z) / Chunk::size;
-    return (px * Y_MAX / Chunk::size * Z_MAX / Chunk::size) + (py * Z_MAX / Chunk::size)
+    int px = floor(x) / Chunk::SIZE;
+    int py = floor(y) / Chunk::SIZE;
+    int pz = floor(z) / Chunk::SIZE;
+    return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
            + pz;
 }
 
