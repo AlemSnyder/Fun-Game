@@ -11,9 +11,9 @@ Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
     Cx_ = bx;
     Cy_ = by;
     Cz_ = bz;
-    for (int x = size * bx; x < size * (1 + bx); x++)
-        for (int y = size * by; y < size * (1 + by); y++)
-            for (int z = size * bz; z < size * (1 + bz); z++) {
+    for (int x = SIZE * bx; x < SIZE * (1 + bx); x++)
+        for (int y = SIZE * by; y < SIZE * (1 + by); y++)
+            for (int z = SIZE * bz; z < SIZE * (1 + bz); z++) {
                 if (ter->can_stand_1(x, y, z)) {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
@@ -101,9 +101,9 @@ Chunk::mergeNodeGroup(NodeGroup& G1, NodeGroup& G2) {
 inline bool
 Chunk::contains_nodeGroup(NodeGroup* NG) {
     return (
-        NG->get_center_x() >= size * Cx_ && NG->get_center_x() < size * (1 + Cx_)
-        && NG->get_center_y() >= size * Cy_ && NG->get_center_y() < size * (1 + Cy_)
-        && NG->get_center_z() >= size * Cz_ && NG->get_center_z() < size * (1 + Cz_)
+        NG->get_center_x() >= SIZE * Cx_ && NG->get_center_x() < SIZE * (1 + Cx_)
+        && NG->get_center_y() >= SIZE * Cy_ && NG->get_center_y() < SIZE * (1 + Cy_)
+        && NG->get_center_z() >= SIZE * Cz_ && NG->get_center_z() < SIZE * (1 + Cz_)
     );
 }
 
