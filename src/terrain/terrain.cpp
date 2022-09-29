@@ -9,6 +9,7 @@
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
 #include "tile.hpp"
+#include "terrain_helper.hpp"
 
 #include <json/json.h>
 
@@ -443,174 +444,23 @@ Terrain::init_grass() {
             }
             // same thing here as above
         }
-    auto t1 = time_util::get_time();
-    grow_grass_recursive_high(all_grass);
-    auto t2 = time_util::get_time();
-    std::cout << "time grow grass recursive: " << t2-t1 << "\n";
-    // and time this to see the speed difference
-    for (int i = 0; i < grass_grad_length; i++) {
-        grow_all_grass_low();
-    }
-    auto t3 = time_util::get_time();
-    std::cout << "time grow grass non_recursive: " << t3-t2 << "\n";
+    grow_grass_high(all_grass);
+    grow_grass_low(all_grass);
     for (Tile* t : all_grass) {
         t->set_grass_color(grass_grad_length, grass_mid, grass_colors);
     }
 }
 
-// grow_grass recursive(set)
-// for tile in set
-//      if tile is a source
-//          add adjacent tiles to the new set if they are grass and something about height
-//          set tile.grass height/source status
-// run grow_grass recursive(new_set, grass_grad_length)
 void
-Terrain::grow_grass_recursive_high(std::set<Tile*> all_grass){
-    std::set<Tile*> next_grass_tiles;
-    for (Tile* tile : all_grass){
-        bool is_source = false;
-        for (int x = -1; x < 2; x++)
-        for (int y = -1; y < 2; y++) {
-            if (x == 0 && y == 0) { continue; }
-            // safety function to test if you xyz is in range;
-            if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
-                Tile* adjacent_tile =
-                    get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-                //! depends on high/low
-                if (!adjacent_tile->is_grass()) {
-                    is_source = true;
-                    break;
-                }
-            }
-        }
-        if (is_source){
-            for (int x = -1; x < 2; x++)
-            for (int y = -1; y < 2; y++) {
-                if (x == 0 && y == 0) { continue; }
-                // safety function to test if you xyz is in range;
-                if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
-                    Tile* adjacent_tile =
-                        get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-                    //! depends on high/low
-                    if (adjacent_tile->is_grass()
-                            & (adjacent_tile->get_grow_data_high()
-                                < grass_grad_length - 1)) {
-                        //! depends on high/low
-                        adjacent_tile->set_grow_data_high(grass_grad_length - 1);
-                    }
-                }
-            }
-            //! depends on high/low (just pass functions)
-            tile->set_grow_data_high(grass_grad_length);
-            // tile-> grow_sink should be set to true
-            next_grass_tiles.insert(tile);
-        }
-    }
-    grow_grass_recursive_high(next_grass_tiles, grass_grad_length - 1);
+Terrain::grow_grass_high(std::set<Tile*> all_grass){
+    helper::grow_grass_recursive<helper::edge_detector_high,
+        helper::getter_high, helper::setter_high>(*this, all_grass);
 }
 
 void
-Terrain::grow_grass_recursive_high(std::set<Tile*> in_grass, int height){
-    if (height == 1) { return; }
-    std::set<Tile*> next_grass_tiles;
-    for (Tile* tile : in_grass){
-        for (int x = -1; x < 2; x++)
-        for (int y = -1; y < 2; y++) {
-            if (x == 0 && y == 0) { continue; }
-            // safety function to test if you xyz is in range;
-            if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
-                Tile* adjacent_tile = get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-                //! depends on high/low
-                if (adjacent_tile->is_grass() & (adjacent_tile->get_grow_data_high() == height)) {
-                    next_grass_tiles.insert(adjacent_tile);
-                    for (int xn = -1; xn < 2; xn++)
-                    for (int yn = -1; yn < 2; yn++) {
-                        if (xn == 0 && yn == 0) { continue; }
-                        // safety function to test if you xyz is in range;
-                        if (in_range(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z())) {
-                            Tile* adjacent_tile_second = get_tile(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z());
-                            //! depends on high/low
-                            if (adjacent_tile_second->is_grass() & (adjacent_tile_second->get_grow_data_high() < height-1)) {
-                                //! depends on high/low
-                                adjacent_tile_second->set_grow_data_high(height - 1);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //! depends on high/low (just pass functions)
-    grow_grass_recursive_high(next_grass_tiles, height - 1);
-}
-
-// grow_grass_recursive(set, int height)
-// for tile in set
-//      if tile grow data high < height
-//          for adjacent tile (only if height != 0)
-//              if this tile is grass, and grow_data_high < height-1
-//                  add adjacent tiles to new set
-//          set tile grass height to height
-// if height then run grow_grass_recursive(new_set, height -1)
-
-// .1 sec
-void
-Terrain::grow_all_grass_high() {
-    // extends higher bound of grass color
-    for (Tile& t : tiles) {
-        if (t.is_grass()) {
-            int level = 0;
-            for (int x = -1; x < 2; x++)
-                for (int y = -1; y < 2; y++) {
-                    if (x == 0 && y == 0) {
-                        continue;
-                    }
-                    // safety function to test if you xyz is in range;
-                    if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
-                        const Tile* tile =
-                            get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
-                        if (!tile->is_grass()) {
-                            level = grass_grad_length;
-                            break;
-                        }
-                        if (tile->get_grow_high() > level) {
-                            level = tile->get_grow_high();
-                        }
-                    }
-                }
-            t.set_grow_data_high(level - 1);
-        }
-    }
-}
-
-// could iterate forward, and backward, to get approximate grass
-void
-Terrain::grow_all_grass_low() {
-    // extends lower bound of grass color
-    for (Tile& t : tiles) { // for tile in sources
-        if (t.is_grass()) {
-            int level = 0;
-            for (int x = -1; x < 2; x++)
-                for (int y = -1; y < 2; y++) {
-                    // safety function to test if you xyz is in range;
-                    if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
-                        if (x == 0 && y == 0) {
-                            continue;
-                        }
-                        Tile* tile = get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
-
-                        if (!tile->is_solid()) {
-                            level = grass_grad_length;
-                            break;
-                        }
-                        if (tile->get_grow_low() > level) {
-                            level = tile->get_grow_low();
-                        }
-                    }
-                }
-            t.set_grow_data_low(level - 1);
-        }
-    }
+Terrain::grow_grass_low(std::set<Tile*> all_grass){
+    helper::grow_grass_recursive<helper::edge_detector_low, helper::getter_low,
+        helper::setter_low>(*this, all_grass);
 }
 
 // generates a size_x by size_y vector of macro tile types.
