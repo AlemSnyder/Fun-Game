@@ -443,19 +443,18 @@ Terrain::init_grass() {
             }
             // same thing here as above
         }
-    //for (int i = 0; i < grass_grad_length; i++) {
-        // copy set
-    //    grow_all_grass_high();
-        // have grow_all_grass_high set the new grass to grow
-    //}
-    // time this
+    auto t1 = time_util::get_time();
     grow_grass_recursive_high(all_grass);
+    auto t2 = time_util::get_time();
+    std::cout << "time grow grass recursive: " << t2-t1 << "\n";
     // and time this to see the speed difference
     for (int i = 0; i < grass_grad_length; i++) {
         grow_all_grass_low();
     }
-    for (Tile& t : tiles) {
-        t.set_grass_color(grass_grad_length, grass_mid, grass_colors);
+    auto t3 = time_util::get_time();
+    std::cout << "time grow grass non_recursive: " << t3-t2 << "\n";
+    for (Tile* t : all_grass) {
+        t->set_grass_color(grass_grad_length, grass_mid, grass_colors);
     }
 }
 
@@ -477,6 +476,7 @@ Terrain::grow_grass_recursive_high(std::set<Tile*> all_grass){
             if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
                 Tile* adjacent_tile =
                     get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                //! depends on high/low
                 if (!adjacent_tile->is_grass()) {
                     is_source = true;
                     break;
@@ -491,13 +491,16 @@ Terrain::grow_grass_recursive_high(std::set<Tile*> all_grass){
                 if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
                     Tile* adjacent_tile =
                         get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                    //! depends on high/low
                     if (adjacent_tile->is_grass()
                             & (adjacent_tile->get_grow_data_high()
                                 < grass_grad_length - 1)) {
+                        //! depends on high/low
                         adjacent_tile->set_grow_data_high(grass_grad_length - 1);
                     }
                 }
             }
+            //! depends on high/low (just pass functions)
             tile->set_grow_data_high(grass_grad_length);
             // tile-> grow_sink should be set to true
             next_grass_tiles.insert(tile);
@@ -517,6 +520,7 @@ Terrain::grow_grass_recursive_high(std::set<Tile*> in_grass, int height){
             // safety function to test if you xyz is in range;
             if (in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
                 Tile* adjacent_tile = get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+                //! depends on high/low
                 if (adjacent_tile->is_grass() & (adjacent_tile->get_grow_data_high() == height)) {
                     next_grass_tiles.insert(adjacent_tile);
                     for (int xn = -1; xn < 2; xn++)
@@ -525,7 +529,9 @@ Terrain::grow_grass_recursive_high(std::set<Tile*> in_grass, int height){
                         // safety function to test if you xyz is in range;
                         if (in_range(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z())) {
                             Tile* adjacent_tile_second = get_tile(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z());
+                            //! depends on high/low
                             if (adjacent_tile_second->is_grass() & (adjacent_tile_second->get_grow_data_high() < height-1)) {
+                                //! depends on high/low
                                 adjacent_tile_second->set_grow_data_high(height - 1);
                             }
                         }
@@ -534,6 +540,7 @@ Terrain::grow_grass_recursive_high(std::set<Tile*> in_grass, int height){
             }
         }
     }
+    //! depends on high/low (just pass functions)
     grow_grass_recursive_high(next_grass_tiles, height - 1);
 }
 
