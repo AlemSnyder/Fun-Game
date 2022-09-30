@@ -27,7 +27,7 @@ void grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height){
             // safety function to test if you xyz is in range;
             if (!ter.in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) { continue; }
             Tile* adjacent_tile = ter.get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-            if (adjacent_tile->is_grass() & (getter(adjacent_tile) == height)) {
+            if (adjacent_tile->is_grass() && (getter(adjacent_tile) == height)) {
                 next_grass_tiles.insert(adjacent_tile);
                 for (int xn = -1; xn < 2; xn++)
                 for (int yn = -1; yn < 2; yn++) {
@@ -35,7 +35,7 @@ void grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height){
                     // safety function to test if you xyz is in range;
                     if (!ter.in_range(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z())) { continue; }
                     Tile* adjacent_tile_second = ter.get_tile(adjacent_tile->get_x() + xn, adjacent_tile->get_y() + yn, adjacent_tile->get_z());
-                    if (adjacent_tile_second->is_grass() & (getter(adjacent_tile_second) < height-1)) {
+                    if (adjacent_tile_second->is_grass() && (getter(adjacent_tile_second) < height-1)) {
                         setter(adjacent_tile_second, height - 1);
                     }
                 }
@@ -79,7 +79,7 @@ void grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass){
                 Tile* adjacent_tile =
                     ter.get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
                 if (adjacent_tile->is_grass()
-                        & (getter(adjacent_tile)
+                        && (getter(adjacent_tile)
                             < max_grass - 1)) {
                     setter(adjacent_tile, max_grass - 1);
                 }
