@@ -40,13 +40,13 @@ Terrain::Terrain(
     }
     for (size_t i = 0; i < grass_grad_data.size(); i++) {
         if (i == static_cast<size_t>(grass_mid_)) {
-            grass_mid = grass_colors.size();
+            grass_mid_ = grass_colors_.size();
         }
         for (int j = 0; j < grass_grad_data[i]; j++) {
-            grass_colors.push_back(i);
+            grass_colors_.push_back(i);
         }
     }
-    grass_grad_length = grass_colors.size();
+    grass_grad_length_ = grass_colors_.size();
     init(
         x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
         generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"])
@@ -447,7 +447,7 @@ Terrain::init_grass() {
     grow_grass_high(all_grass);
     grow_grass_low(all_grass);
     for (Tile* t : all_grass) {
-        t->set_grass_color(grass_grad_length, grass_mid, grass_colors);
+        t->set_grass_color(grass_grad_length_, grass_mid_, grass_colors_);
     }
 }
 
@@ -584,7 +584,7 @@ Terrain::get_adjacent_nodes(
 NodeGroup*
 Terrain::get_node_group(int xyz) {
     try {
-        return tile_to_group.at(xyz);
+        return tile_to_group_.at(xyz);
     } catch (const std::out_of_range& e) {
         return nullptr;
     }
@@ -603,14 +603,14 @@ Terrain::get_node_group(const Tile* t) {
 void
 Terrain::add_node_group(NodeGroup* NG) {
     for (const Tile* t : NG->get_tiles()) {
-        tile_to_group[pos(t)] = NG;
+        tile_to_group_[pos(t)] = NG;
     }
 }
 
 void
 Terrain::remove_node_group(NodeGroup* NG) {
     for (const Tile* t : NG->get_tiles()) {
-        tile_to_group.erase(pos(t));
+        tile_to_group_.erase(pos(t));
     }
 }
 

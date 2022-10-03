@@ -79,23 +79,25 @@ class Terrain {
     // seed for randomness
     int seed;
     // map of tile position to the node group it is in
-    std::map<int, NodeGroup*> tile_to_group;
+    std::map<int, NodeGroup*> tile_to_group_;
     // vector that determines grass color from edge distance
-    std::vector<uint8_t> grass_colors;
+    std::vector<uint8_t> grass_colors_;
     // length of grass gradient
-    int grass_grad_length;
+    int grass_grad_length_;
     // gradient index of grass not by an edge
-    int grass_mid;
+    int grass_mid_;
     // mat of material id to material that describes materials in this terrain
     const std::map<int, const terrain::Material>* materials_;
 
     // save color at sop, to color
+    //! static Should be removed
     void export_color(const int sop[3], uint8_t color[4]) const;
     // find color v in map, and save material to mat_, and color id to color_id
     void get_mat_from_qb(
         const std::map<int, const Material>* materials, uint8_t v[4], Material*& mat_,
         uint8_t& color_id
     );
+    //! static should be removed from terrain
     // convert 4 int 8 to 1 int 32 (reversed order)
     uint32_t compress_color(uint8_t v[4]);
 
@@ -319,12 +321,14 @@ class Terrain {
      * @param z size in z direction
      */
     void init(int x, int y, int z);
+
+    // TODO area_size should not be initialized like this
     /**
      * @brief Terrain initializer
      *
      * @param x number of tile areas in x direction
      * @param y number of tile areas in y direction
-     * @param area_size size of each area
+     * @param area_size size of each area 
      * @param z height of terrain
      * @param seed seed for random number generation
      * @param materials materials used in this terrain
@@ -590,7 +594,7 @@ class Terrain {
     uint32_t get_voxel(int x, int y, int z) const;
 
     inline int get_grass_grad_length() const{
-        return grass_grad_length;
+        return grass_grad_length_;
     }
     /**
      * @brief charge the color id but not the material of the tile
