@@ -65,9 +65,9 @@ class Terrain {
 
  private:
     // vector of voxels in terrain
-    std::vector<Tile> tiles;
+    std::vector<Tile> tiles_;
     // vector of chunks in terrain
-    std::vector<Chunk> chunks;
+    std::vector<Chunk> chunks_;
     // length in the x direction
     int X_MAX;
     // length in the y direction
@@ -534,7 +534,7 @@ class Terrain {
             std::cout << x << ";" << y << ";" << z << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[pos(x, y, z)];
+            return &tiles_[pos(x, y, z)];
         }
     };
 
@@ -543,7 +543,7 @@ class Terrain {
             std::cout << xyz << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[xyz];
+            return &tiles_[xyz];
         }
     }
 
@@ -560,7 +560,7 @@ class Terrain {
             std::cout << x << ";" << y << ";" << z << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[pos(x, y, z)];
+            return &tiles_[pos(x, y, z)];
         }
     };
 
@@ -575,7 +575,7 @@ class Terrain {
             std::cout << xyz << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[xyz];
+            return &tiles_[xyz];
         }
     }
 

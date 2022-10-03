@@ -102,7 +102,7 @@ Terrain::init(int x, int y, int z) {
     X_MAX = x;
     Y_MAX = y;
     Z_MAX = z;
-    tiles.resize(0);
+    tiles_.resize(0);
 }
 
 void
@@ -120,10 +120,10 @@ Terrain::init(
     Y_MAX = y * Area_size;
     Z_MAX = z;
 
-    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        tiles.push_back(Tile(sop(xyz), &materials_->at(0)));
+        tiles_.push_back(Tile(sop(xyz), &materials_->at(0)));
     }
 
     srand(seed);
@@ -186,7 +186,7 @@ Terrain::init_chunks() {
     uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
-        chunks.push_back(Chunk(x, y, z, this));
+        chunks_.push_back(Chunk(x, y, z, this));
     }
 }
 
@@ -685,8 +685,8 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
 std::set<const NodeGroup*>
 Terrain::get_all_node_groups() const {
     std::set<const NodeGroup*> out;
-    for (size_t c = 0; c < chunks.size(); c++) {
-        chunks[c].add_nodes_to(out);
+    for (size_t c = 0; c < chunks_.size(); c++) {
+        chunks_[c].add_nodes_to(out);
     }
     return out;
 }
@@ -882,10 +882,10 @@ Terrain::get_voxel(int x, int y, int z) const {
     static uint8_t previous_color_id = 0;
     static uint32_t previous_out_color = 0;
     if (in_range(x, y, z)) {
-        if ((tiles[pos(x, y, z)].get_material_id() != previous_mat_id)
-            || (tiles[pos(x, y, z)].get_color_id() != previous_color_id)) {
-            previous_mat_id = tiles[pos(x, y, z)].get_material_id();
-            previous_color_id = tiles[pos(x, y, z)].get_color_id();
+        if ((tiles_[pos(x, y, z)].get_material_id() != previous_mat_id)
+            || (tiles_[pos(x, y, z)].get_color_id() != previous_color_id)) {
+            previous_mat_id = tiles_[pos(x, y, z)].get_material_id();
+            previous_color_id = tiles_[pos(x, y, z)].get_color_id();
             auto mat = materials_->at(previous_mat_id);
             previous_out_color =
                 mat.color[previous_color_id].second;
@@ -914,7 +914,7 @@ Terrain::compress_color(uint8_t v[4]) {
 int
 Terrain::qb_save_debug(const std::string path) {
     int x = 0;
-    for (Chunk& c : chunks) {
+    for (Chunk& c : chunks_) {
         std::set<const NodeGroup*> node_groups;
         c.add_nodes_to(node_groups);
         for (const NodeGroup* NG : node_groups) {
@@ -952,7 +952,7 @@ Terrain::qb_read(
     X_MAX = size[0];
     Y_MAX = size[1];
     Z_MAX = size[2];
-    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     std::set<uint32_t> unknown_materials;
 
@@ -961,14 +961,14 @@ Terrain::qb_read(
         uint32_t color = data[xyz];
         if (color == 0) {                      // if the qb voxel is transparent.
             auto mat_color = materials->at(0); // set the materials to air
-            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else if (materials->count(color)) { // if the color is known
             auto mat_color = materials->at(color);
-            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else { // the color is unknown
             unknown_materials.insert(color);
             auto mat_color = materials->at(0); // else set to air.
-            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         }
     }
 
