@@ -8,8 +8,8 @@
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
-#include "tile.hpp"
 #include "terrain_helper.hpp"
+#include "tile.hpp"
 
 #include <json/json.h>
 
@@ -155,8 +155,7 @@ Terrain::init(
         add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }
 
-    // grow_grass();
-    // TODO make this faster 2
+    // grows the grass
     init_grass();
 
     //  TODO make this faster 1
@@ -419,7 +418,6 @@ Terrain::stamp_tile_region(
 
 void
 Terrain::init_grass() {
-
     std::set<Tile*> all_grass;
 
     // Test all ties to see if they can be grass.
@@ -429,7 +427,7 @@ Terrain::init_grass() {
                 if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
                     get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
                     // if grass add to some set
-                    if (get_tile(x_, y_, z_)->is_grass()){
+                    if (get_tile(x_, y_, z_)->is_grass()) {
                         all_grass.insert(get_tile(x_, y_, z_));
                     }
                     // both higher, and lower set
@@ -439,7 +437,7 @@ Terrain::init_grass() {
     for (int x_ = 0; x_ < X_MAX; x_++)
         for (int y_ = 0; y_ < Y_MAX; y_++) {
             get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
-            if (get_tile(x_, y_, z_)->is_grass()){
+            if (get_tile(x_, y_, z_)->is_grass()) {
                 all_grass.insert(get_tile(x_, y_, z_));
             }
             // same thing here as above
@@ -452,15 +450,19 @@ Terrain::init_grass() {
 }
 
 void
-Terrain::grow_grass_high(std::set<Tile*> all_grass){
-    helper::grow_grass_recursive<helper::edge_detector_high,
-        helper::getter_high, helper::setter_high>(*this, all_grass);
+Terrain::grow_grass_high(std::set<Tile*> all_grass) {
+    helper::grow_grass_recursive<
+        helper::edge_detector_high, helper::getter_high, helper::setter_high>(
+        *this, all_grass
+    );
 }
 
 void
-Terrain::grow_grass_low(std::set<Tile*> all_grass){
-    helper::grow_grass_recursive<helper::edge_detector_low, helper::getter_low,
-        helper::setter_low>(*this, all_grass);
+Terrain::grow_grass_low(std::set<Tile*> all_grass) {
+    helper::grow_grass_recursive<
+        helper::edge_detector_low, helper::getter_low, helper::setter_low>(
+        *this, all_grass
+    );
 }
 
 // generates a size_x by size_y vector of macro tile types.
@@ -887,8 +889,7 @@ Terrain::get_voxel(int x, int y, int z) const {
             previous_mat_id = tiles_[pos(x, y, z)].get_material_id();
             previous_color_id = tiles_[pos(x, y, z)].get_color_id();
             auto mat = materials_->at(previous_mat_id);
-            previous_out_color =
-                mat.color[previous_color_id].second;
+            previous_out_color = mat.color[previous_color_id].second;
         }
         return previous_out_color;
     }
