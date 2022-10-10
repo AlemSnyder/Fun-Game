@@ -33,13 +33,14 @@ Terrain::Terrain() : seed(0) {
 Terrain::Terrain(
     int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
     const std::map<int, const Material>* material, Json::Value biome_data,
-    std::vector<int> grass_grad_data, int grass_mid_
+    std::vector<int> grass_grad_data, unsigned int grass_mid
 ) {
-    if (grass_mid_ < 0) {
-        grass_mid_ = 0;
+    if (grass_mid >= grass_grad_data.size()) {
+        grass_mid_ = grass_grad_data.size() -1;
     }
+    
     for (size_t i = 0; i < grass_grad_data.size(); i++) {
-        if (i == static_cast<size_t>(grass_mid_)) {
+        if (i == static_cast<size_t>(grass_mid)) {
             grass_mid_ = grass_colors_.size();
         }
         for (int j = 0; j < grass_grad_data[i]; j++) {

@@ -378,7 +378,7 @@ class Terrain {
     Terrain(
         int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
         const std::map<int, const Material>* material, Json::Value biome_data,
-        std::vector<int> grass_grad_data, int grass_mid
+        std::vector<int> grass_grad_data, unsigned int grass_mid
     );
     /**
      * @brief Construct a new Terrain object

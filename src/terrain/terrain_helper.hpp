@@ -50,33 +50,13 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
                 }
                 Tile* adjacent_tile =
                     ter.get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-                if (adjacent_tile->is_grass() && (getter(adjacent_tile) == height)) {
+                // instead of height used maxheight +1
+                if (adjacent_tile->is_grass() && (getter(adjacent_tile) < height)) {
                     // if adjacent tile is on the level below
                     // it should be added to the next iteration
                     next_grass_tiles.insert(adjacent_tile);
                     // and the tiles with height less should have their height set
-                    for (int xn = -1; xn < 2; xn++)
-                        for (int yn = -1; yn < 2; yn++) {
-                            if (xn == 0 && yn == 0) {
-                                continue;
-                            }
-                            // safety function to test if you xyz is in range
-                            if (!ter.in_range(
-                                    adjacent_tile->get_x() + xn,
-                                    adjacent_tile->get_y() + yn, adjacent_tile->get_z()
-                                )) {
-                                continue;
-                            }
-                            Tile* adjacent_tile_second = ter.get_tile(
-                                adjacent_tile->get_x() + xn,
-                                adjacent_tile->get_y() + yn, adjacent_tile->get_z()
-                            );
-                            if (adjacent_tile_second->is_grass()
-                                && (getter(adjacent_tile_second) < height - 1)) {
-                                // set the tile height
-                                setter(adjacent_tile_second, height - 1);
-                            }
-                        }
+                    setter(adjacent_tile, height);
                 }
             }
     }
@@ -128,27 +108,6 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
                 }
             }
         if (is_source) {
-            for (int x = -1; x < 2; x++)
-                for (int y = -1; y < 2; y++) {
-                    // for adjacent in same layer
-                    if (x == 0 && y == 0) {
-                        continue;
-                    }
-                    // safety function to test if you xyz is in range;
-                    if (!ter.in_range(
-                            tile->get_x() + x, tile->get_y() + y, tile->get_z()
-                        )) {
-                        continue;
-                    }
-                    Tile* adjacent_tile = ter.get_tile(
-                        tile->get_x() + x, tile->get_y() + y, tile->get_z()
-                    );
-                    // set the hight to max-1 so they can be found in the next iteration
-                    if (adjacent_tile->is_grass()
-                        && (getter(adjacent_tile) < max_grass - 1)) {
-                        setter(adjacent_tile, max_grass - 1);
-                    }
-                }
             // set the tile grass index to max_grass
             setter(tile, max_grass);
             // tile->grow_sink should be set to true

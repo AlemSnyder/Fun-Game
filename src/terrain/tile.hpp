@@ -148,7 +148,7 @@ class Tile {
      * @param grass_colors grass color vector
      */
     void set_grass_color(
-        int grass_grad_length, int grass_mid, std::vector<uint8_t> grass_colors
+        unsigned int grass_grad_length, unsigned int grass_mid, std::vector<uint8_t> grass_colors
     );
 
     // Getters
