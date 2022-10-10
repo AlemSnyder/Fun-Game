@@ -86,7 +86,6 @@ class Tile {
         std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id = 0
     );
 
-
     // I will format this later or remove it if I can
     // TODO find vector of materials that uses default initializer
     // I think it might be node
@@ -94,7 +93,7 @@ class Tile {
         x(0), y(0), z(0), mat_id_(0), color_id_(0), grow_data_high_(0),
         grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
         solid_(false) {}
-        
+
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.
@@ -127,14 +126,17 @@ class Tile {
      * @param num distance from wall
      */
     void set_grow_data_high(int num);
+
     /**
      * @brief Get the distance from edge
      */
-    inline int get_grow_data_low() const {return grow_data_low_;}
+    inline int get_grow_data_low() const { return grow_data_low_; }
+
     /**
      * @brief Get the distance from wall
      */
-    inline int get_grow_data_high() const {return grow_data_high_;}
+    inline int get_grow_data_high() const { return grow_data_high_; }
+
     /**
      * @brief sets grass to true, and set color id to 1
      *
@@ -148,7 +150,8 @@ class Tile {
      * @param grass_colors grass color vector
      */
     void set_grass_color(
-        unsigned int grass_grad_length, unsigned int grass_mid, std::vector<uint8_t> grass_colors
+        unsigned int grass_grad_length, unsigned int grass_mid,
+        std::vector<uint8_t> grass_colors
     );
 
     // Getters

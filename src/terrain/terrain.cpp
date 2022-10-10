@@ -36,9 +36,9 @@ Terrain::Terrain(
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) {
     if (grass_mid >= grass_grad_data.size()) {
-        grass_mid_ = grass_grad_data.size() -1;
+        grass_mid_ = grass_grad_data.size() - 1;
     }
-    
+
     for (size_t i = 0; i < grass_grad_data.size(); i++) {
         if (i == static_cast<size_t>(grass_mid)) {
             grass_mid_ = grass_colors_.size();

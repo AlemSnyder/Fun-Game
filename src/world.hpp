@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "terrain/terrain.hpp"
 #include "entity/mesh.hpp"
+#include "terrain/terrain.hpp"
 
 #include <json/json.h>
 
@@ -62,7 +62,10 @@ class World {
      * (see) src/terrain/terrain_generation/land_generator.hpp
      */
     World(Json::Value biome_data, int type);
-    World(Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles, uint32_t y_tiles);
+    World(
+        Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
+        uint32_t y_tiles
+    );
 
     constexpr static int macro_tile_size = 32;
     constexpr static int height = 128;
@@ -101,10 +104,10 @@ class World {
      *
      * @return entity::Mesh the mesh generated
      */
-    inline entity::Mesh
-    get_mesh_greedy() const {
+    inline entity::Mesh get_mesh_greedy() const {
         return entity::generate_mesh(terrain_main);
     }
+
     // terrain in the world
     terrain::Terrain terrain_main;
 

@@ -328,7 +328,7 @@ class Terrain {
      *
      * @param x number of tile areas in x direction
      * @param y number of tile areas in y direction
-     * @param area_size size of each area 
+     * @param area_size size of each area
      * @param z height of terrain
      * @param seed seed for random number generation
      * @param materials materials used in this terrain
@@ -593,9 +593,8 @@ class Terrain {
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
-    inline int get_grass_grad_length() const{
-        return grass_grad_length_;
-    }
+    inline int get_grass_grad_length() const { return grass_grad_length_; }
+
     /**
      * @brief charge the color id but not the material of the tile
      *
@@ -711,6 +710,7 @@ class Terrain {
      *
      */
     void grow_grass_low(std::set<Tile*> in_grass);
+
     /**
      * @brief test if 1 x 1 x 1 object can stand at the position
      *
