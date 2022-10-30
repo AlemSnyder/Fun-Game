@@ -37,6 +37,7 @@ Terrain::Terrain(
 ) {
     if (grass_mid >= grass_grad_data.size()) {
         grass_mid_ = grass_grad_data.size() - 1;
+        std::cerr << "Grass Mid (from biome_data.json) not valid";
     }
 
     for (size_t i = 0; i < grass_grad_data.size(); i++) {
@@ -450,21 +451,6 @@ Terrain::init_grass() {
     }
 }
 
-void
-Terrain::grow_grass_high(std::set<Tile*> all_grass) {
-    helper::grow_grass_recursive<
-        helper::edge_detector_high, helper::getter_high, helper::setter_high>(
-        *this, all_grass
-    );
-}
-
-void
-Terrain::grow_grass_low(std::set<Tile*> all_grass) {
-    helper::grow_grass_recursive<
-        helper::edge_detector_low, helper::getter_low, helper::setter_low>(
-        *this, all_grass
-    );
-}
 
 // generates a size_x by size_y vector of macro tile types.
 std::vector<int>

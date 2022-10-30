@@ -704,12 +704,24 @@ class Terrain {
      * @brief set the upper bound for grass color
      *
      */
-    void grow_grass_high(std::set<Tile*> in_grass);
+    inline void
+    Terrain::grow_grass_high(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_high, helper::getter_high, helper::setter_high>(
+            *this, all_grass
+        );
+    }
     /**
      * @brief set the lower bound for grass color
      *
      */
-    void grow_grass_low(std::set<Tile*> in_grass);
+    inline void
+    Terrain::grow_grass_low(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_low, helper::getter_low, helper::setter_low>(
+            *this, all_grass
+        );
+    }
 
     /**
      * @brief test if 1 x 1 x 1 object can stand at the position
