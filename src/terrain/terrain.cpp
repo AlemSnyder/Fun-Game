@@ -452,6 +452,21 @@ Terrain::init_grass() {
 }
 
 
+void
+Terrain::grow_grass_high(std::set<Tile*> all_grass) {
+    helper::grow_grass_recursive<
+        helper::edge_detector_high, helper::getter_high, helper::setter_high>(
+        *this, all_grass);
+}
+
+void
+Terrain::grow_grass_low(std::set<Tile*> all_grass) {
+    helper::grow_grass_recursive<
+        helper::edge_detector_low, helper::getter_low, helper::setter_low>(
+        *this, all_grass
+    );
+}
+
 // generates a size_x by size_y vector of macro tile types.
 std::vector<int>
 Terrain::generate_macro_map(

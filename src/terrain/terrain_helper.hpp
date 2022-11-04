@@ -1,5 +1,7 @@
 // TODO comments
 
+#pragma once
+
 #include "terrain.hpp"
 #include "tile.hpp"
 
@@ -25,17 +27,7 @@ Then next to those tiles set the grass height to hight-1 if this is higher
 than the saved height.
 */
 
-inline Tile* Ninos_horrible_function(Terrain& ter, Tile*tile, int xs, int ys, int zs, int x, int y){
-    if (x == 0 && y == 0) {
-        return nullptr;
-    }
-    // safety function to test if you xyz is in range;
-    if (!ter.in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
-        return nullptr;
-    }
-    Tile* adjacent_tile =
-        ter.get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
-}
+Tile* Ninos_horrible_function(Terrain& ter, Tile*tile, int x, int y);
 
 template <int getter(Tile*), void setter(Tile*, int)>
 void
@@ -50,7 +42,7 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
     for (Tile* tile : in_grass) {
         for (int x = -1; x < 2; x++)
             for (int y = -1; y < 2; y++) {
-                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y)
+                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y);
                 if (adjacent_tile == nullptr){
                     continue;
                 }
@@ -93,7 +85,7 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
         for (int x = -1; x < 2; x++)
             for (int y = -1; y < 2; y++) {
                 // for adjacent in same layer
-                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y)
+                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y);
                 if (adjacent_tile == nullptr){
                     continue;
                 }
