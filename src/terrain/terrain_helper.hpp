@@ -25,6 +25,18 @@ Then next to those tiles set the grass height to hight-1 if this is higher
 than the saved height.
 */
 
+inline Tile* Ninos_horrible_function(Terrain& ter, Tile*tile, int xs, int ys, int zs, int x, int y){
+    if (x == 0 && y == 0) {
+        return nullptr;
+    }
+    // safety function to test if you xyz is in range;
+    if (!ter.in_range(tile->get_x() + x, tile->get_y() + y, tile->get_z())) {
+        return nullptr;
+    }
+    Tile* adjacent_tile =
+        ter.get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
+}
+
 template <int getter(Tile*), void setter(Tile*, int)>
 void
 grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
@@ -38,18 +50,10 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
     for (Tile* tile : in_grass) {
         for (int x = -1; x < 2; x++)
             for (int y = -1; y < 2; y++) {
-                // for adjacent in same layer
-                if (x == 0 && y == 0) {
+                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y)
+                if (adjacent_tile == nullptr){
                     continue;
                 }
-                // safety function to test if you xyz is in range;
-                if (!ter.in_range(
-                        tile->get_x() + x, tile->get_y() + y, tile->get_z()
-                    )) {
-                    continue;
-                }
-                Tile* adjacent_tile =
-                    ter.get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
                 // instead of height used maxheight +1
                 if (adjacent_tile->is_grass() && (getter(adjacent_tile) < height)) {
                     // if adjacent tile is on the level below
@@ -89,17 +93,10 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
         for (int x = -1; x < 2; x++)
             for (int y = -1; y < 2; y++) {
                 // for adjacent in same layer
-                if (x == 0 && y == 0) {
+                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y)
+                if (adjacent_tile == nullptr){
                     continue;
                 }
-                // safety function to test if you xyz is in range;
-                if (!ter.in_range(
-                        tile->get_x() + x, tile->get_y() + y, tile->get_z()
-                    )) {
-                    continue;
-                }
-                Tile* adjacent_tile =
-                    ter.get_tile(tile->get_x() + x, tile->get_y() + y, tile->get_z());
                 // test if that tile is over the edge
                 // (in some cases: not solid, and others: solid and not grass)
                 if (edge_detector(adjacent_tile)) {
