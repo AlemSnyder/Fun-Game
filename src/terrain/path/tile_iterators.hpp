@@ -22,25 +22,26 @@
  *
  */
 
-#include <cstdint>
-#include <utility>
 #include "../terrain.hpp"
 #include "unit_path.hpp"
 
+#include <cstdint>
+#include <utility>
+
 #pragma once
 
-namespace terrain{
+namespace terrain {
 
 class Terrain;
 
-namespace path{
+namespace path {
 
-//static uint8_t offsets[26];
+// static uint8_t offsets[26];
 
 std::array<int8_t, 3> get_indexed_offsets(uint8_t index);
 
 class AdjacentIterator {
-private:
+ private:
     const Terrain& parent_;
     const UnitPath path_type_constraint_;
     const size_t pos_;
@@ -49,20 +50,22 @@ private:
 
     void update_path();
     void iterate_to_next_available();
+    // Is the adjacent position in the bounds of the terrain
+    bool is_valid_end_position();
 
-public:
+ public:
     AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type);
     int operator++();
     int operator++(int);
-    inline bool end(){
-        return dpos_ > 26U;
-    }
+
+    inline bool end() { return dpos_ > 26U; }
+
     size_t get_pos();
     UnitPath get_path_type();
-    inline std::array<int8_t, 3> get_relative_position(){
+
+    inline std::array<int8_t, 3> get_relative_position() {
         return get_indexed_offsets(dpos_);
     }
-    
 };
 
 } // namespace path

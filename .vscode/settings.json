@@ -1,4 +1,6 @@
 {
+    "clang-format.executable": "C:/Users/haile/AppData/Local/Programs/Python/Python39/Scripts/clang-format",
+    "editor.formatOnSave": true,
     "cSpell.words": [
         "Astar",
         "Framebuffer",

@@ -27,7 +27,7 @@ Then next to those tiles set the grass height to hight-1 if this is higher
 than the saved height.
 */
 
-Tile* Ninos_horrible_function(Terrain& ter, Tile*tile, int x, int y);
+Tile* Ninos_horrible_function(Terrain& ter, Tile* tile, int x, int y);
 
 template <int getter(Tile*), void setter(Tile*, int)>
 void
@@ -40,21 +40,22 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
     // the next level down
     std::set<Tile*> next_grass_tiles;
     for (Tile* tile : in_grass) {
-        for (int x = -1; x < 2; x++)
-            for (int y = -1; y < 2; y++) {
-                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y);
-                if (adjacent_tile == nullptr){
-                    continue;
-                }
-                // instead of height used maxheight +1
-                if (adjacent_tile->is_grass() && (getter(adjacent_tile) < height)) {
-                    // if adjacent tile is on the level below
-                    // it should be added to the next iteration
-                    next_grass_tiles.insert(adjacent_tile);
-                    // and the tiles with height less should have their height set
-                    setter(adjacent_tile, height);
-                }
+        for (auto it = ter.get_tile_adjacent_iterator(
+                 ter.pos(tile),
+                 DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+             );
+             !it.end(); it++) {
+            uint16_t pos = it.get_pos();
+            Tile* adjacent_tile = ter.get_tile(pos);
+            // instead of height used maxheight +1
+            if (adjacent_tile->is_grass() && (getter(adjacent_tile) < height)) {
+                // if adjacent tile is on the level below
+                // it should be added to the next iteration
+                next_grass_tiles.insert(adjacent_tile);
+                // and the tiles with height less should have their height set
+                setter(adjacent_tile, height);
             }
+        }
     }
     grow_grass_inner<getter, setter>(ter, next_grass_tiles, height - 1);
 }
@@ -82,20 +83,19 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
     for (Tile* tile : all_grass) {
         // is the tile and edge
         bool is_source = false;
-        for (int x = -1; x < 2; x++)
-            for (int y = -1; y < 2; y++) {
-                // for adjacent in same layer
-                Tile* adjacent_tile = Ninos_horrible_function(ter, tile, x, y);
-                if (adjacent_tile == nullptr){
-                    continue;
-                }
-                // test if that tile is over the edge
-                // (in some cases: not solid, and others: solid and not grass)
-                if (edge_detector(adjacent_tile)) {
-                    is_source = true;
-                    break;
-                }
+        for (auto it = ter.get_tile_adjacent_iterator(
+                 ter.pos(tile),
+                 DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+             );
+             !it.end(); it++) {
+            Tile* adjacent_tile = ter.get_tile(it.get_pos());
+            // test if that tile is over the edge
+            // (in some cases: not solid, and others: solid and not grass)
+            if (edge_detector(adjacent_tile)) {
+                is_source = true;
+                break;
             }
+        }
         if (is_source) {
             // set the tile grass index to max_grass
             setter(tile, max_grass);
