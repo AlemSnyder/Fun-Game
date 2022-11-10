@@ -32,9 +32,10 @@ namespace terrain {
 
 namespace path {
 
-/* We have 26 offsets because 3^3-1 = 26
-   The total number of adjacent cubes is the number cubes in a three by three
-   area minus one for the central cube.
+/* This is a look up table for possible offsets.
+ * We have 26 offsets because 3^3-1 = 26.
+ * The total number of adjacent cubes is the number cubes in a three by three
+ * area minus one for the central cube.
  */
 static uint8_t offsets[26] = {
     0b00000000, 0b00000001, 0b00000010, 0b00000100, 0b00000101, 0b00000110, 0b00001000,
