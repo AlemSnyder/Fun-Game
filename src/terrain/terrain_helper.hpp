@@ -38,8 +38,9 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
     // the next level down
     std::set<Tile*> next_grass_tiles;
     for (Tile* tile : in_grass) {
-        auto it = ter.get_tile_adjacent_iterator( ter.pos(tile),
-            DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2);
+        auto it = ter.get_tile_adjacent_iterator(
+            ter.pos(tile), DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+        );
         for (; !it.end(); it++) {
             uint16_t pos = it.get_pos();
             Tile* adjacent_tile = ter.get_tile(pos);
@@ -79,8 +80,9 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
     for (Tile* tile : all_grass) {
         // is the tile and edge
         bool is_source = false;
-        auto it = ter.get_tile_adjacent_iterator( ter.pos(tile),
-            DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2);
+        auto it = ter.get_tile_adjacent_iterator(
+            ter.pos(tile), DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+        );
         for (; !it.end(); it++) {
             Tile* adjacent_tile = ter.get_tile(it.get_pos());
             // (in some cases: not solid, and others: solid and not grass)
