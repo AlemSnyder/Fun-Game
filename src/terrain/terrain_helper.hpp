@@ -27,8 +27,6 @@ Then next to those tiles set the grass height to hight-1 if this is higher
 than the saved height.
 */
 
-Tile* Ninos_horrible_function(Terrain& ter, Tile* tile, int x, int y);
-
 template <int getter(Tile*), void setter(Tile*, int)>
 void
 grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
@@ -40,11 +38,9 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
     // the next level down
     std::set<Tile*> next_grass_tiles;
     for (Tile* tile : in_grass) {
-        for (auto it = ter.get_tile_adjacent_iterator(
-                 ter.pos(tile),
-                 DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
-             );
-             !it.end(); it++) {
+        auto it = ter.get_tile_adjacent_iterator( ter.pos(tile),
+            DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2);
+        for (; !it.end(); it++) {
             uint16_t pos = it.get_pos();
             Tile* adjacent_tile = ter.get_tile(pos);
             // instead of height used maxheight +1
@@ -83,13 +79,10 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
     for (Tile* tile : all_grass) {
         // is the tile and edge
         bool is_source = false;
-        for (auto it = ter.get_tile_adjacent_iterator(
-                 ter.pos(tile),
-                 DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
-             );
-             !it.end(); it++) {
+        auto it = ter.get_tile_adjacent_iterator( ter.pos(tile),
+            DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2);
+        for (; !it.end(); it++) {
             Tile* adjacent_tile = ter.get_tile(it.get_pos());
-            // test if that tile is over the edge
             // (in some cases: not solid, and others: solid and not grass)
             if (edge_detector(adjacent_tile)) {
                 is_source = true;
