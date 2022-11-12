@@ -140,7 +140,7 @@ path_finder_test(const std::string path, std::string save_path) {
     return 0;
 }
 
-entity::Mesh
+std::vector<entity::Mesh>
 get_mesh(const std::string path) {
     World world(path);
     // World world(path);

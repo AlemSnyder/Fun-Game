@@ -593,6 +593,10 @@ class Terrain {
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
+    const std::vector<Chunk> get_chunks() const {
+        return chunks_;
+    }
+
     inline int get_grass_grad_length() const { return grass_grad_length_; }
 
     /**
@@ -704,14 +708,12 @@ class Terrain {
      * @brief set the upper bound for grass color
      *
      */
-    void
-    grow_grass_high(std::set<Tile*> all_grass);
+    void grow_grass_high(std::set<Tile*> all_grass);
     /**
      * @brief set the lower bound for grass color
      *
      */
-    void
-    grow_grass_low(std::set<Tile*> all_grass);
+    void grow_grass_low(std::set<Tile*> all_grass);
 
     /**
      * @brief test if 1 x 1 x 1 object can stand at the position

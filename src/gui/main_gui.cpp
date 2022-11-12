@@ -108,8 +108,13 @@ GUITest(World world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    // The mesh of the terrain
-    terrain::TerrainMesh terrain_mesh(mesh);
+    // terrain::TerrainMesh terrain_mesh(mesh);
+    //  The mesh of the terrain
+    std::vector<terrain::TerrainMesh> terrain_mesh;
+    for (auto m : mesh) {
+        terrain_mesh.push_back(terrain::TerrainMesh(m));
+    }
+    // TODO make terrain mesh for each chunk
 
     // The above is for the wold the below is for trees
 
@@ -161,14 +166,18 @@ GUITest(World world) {
     ShadowMap SM(4096, 4096);
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
-    SM.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh));
+    for (auto m : terrain_mesh) {
+        SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
+    }
     SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
 
     // renders the world scene
     MainRenderer MR;
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
-    MR.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh));
+    for (auto m : terrain_mesh) {
+        SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
+    }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
     do {

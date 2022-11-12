@@ -104,8 +104,17 @@ class World {
      *
      * @return entity::Mesh the mesh generated
      */
-    inline entity::Mesh get_mesh_greedy() const {
-        return entity::generate_mesh(terrain_main);
+    inline std::vector<entity::Mesh> get_mesh_greedy() const {
+        // TODO should be for each chunk
+        //return entity::generate_mesh(terrain_main);
+        std::vector<entity::Mesh> out;
+        for (const terrain::Chunk &c : terrain_main.get_chunks()){
+            auto chunk_mesh = entity::generate_mesh(c);
+            if (chunk_mesh.indices_.size() > 0){
+                out.push_back(chunk_mesh);
+            }
+        }
+        return out;
     }
 
     // terrain in the world
