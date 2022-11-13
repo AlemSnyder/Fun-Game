@@ -108,13 +108,19 @@ GUITest(World world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    // terrain::TerrainMesh terrain_mesh(mesh);
+    //terrain::TerrainMesh terrain_mesh(mesh[50]);
+    //terrain::TerrainMesh terrain_mesh_2(mesh[51]);
+
     //  The mesh of the terrain
     std::vector<terrain::TerrainMesh> terrain_mesh;
-    for (auto m : mesh) {
-        terrain_mesh.push_back(terrain::TerrainMesh(m));
+    terrain_mesh.resize(mesh.size());
+    // TODO why is the calling delete?
+    for (size_t i = 0; i < terrain_mesh.size(); i++) {
+        //terrain_mesh.push_back(terrain::TerrainMesh(m));
+        terrain_mesh[i].init(mesh[i]);
     }
-    // TODO make terrain mesh for each chunk
+    //terrain_mesh.push_back(terrain::TerrainMesh(mesh[0]));
+    //  TODO make terrain mesh for each chunk
 
     // The above is for the wold the below is for trees
 
@@ -166,7 +172,10 @@ GUITest(World world) {
     ShadowMap SM(4096, 4096);
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
-    for (auto m : terrain_mesh) {
+    //SM.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh[50]));
+    //SM.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh[51]));
+
+    for (auto &m : terrain_mesh) {
         SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
@@ -175,8 +184,11 @@ GUITest(World world) {
     MainRenderer MR;
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
-    for (auto m : terrain_mesh) {
-        SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
+    //MR.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh[50]));
+    //MR.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh[51]));
+
+    for (auto &m : terrain_mesh) {
+        MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());

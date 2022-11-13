@@ -35,13 +35,28 @@
 //     terrain_main.qb_save(path);
 // }
 
+// TODO standardize initialization
+// add initializer lists
+
 const terrain::Material*
 World::get_material(int material_id) const {
     return &materials.at(material_id);
 }
+std::vector<int>
+World::get_grass_grad_data(Json::Value materials_json) {
+    std::vector<int> grass_grad_data;
+    for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
+         i++) {
+        grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
+        ));
+    }
+    return grass_grad_data;
+}
 
-void
+
+std::map<int, const terrain::Material>
 World::init_materials(Json::Value material_data) {
+    std::map<int, const terrain::Material> out;
     for (auto element_it = material_data.begin(); element_it != material_data.end();
          element_it++) {
         std::vector<std::pair<const std::string, uint32_t>> color_vector;
@@ -60,8 +75,9 @@ World::init_materials(Json::Value material_data) {
             material["solid"].asBool(),                      // solid
             static_cast<uint8_t>(material["id"].asInt()),    // element_id
             name};                                           // name
-        materials.insert(std::make_pair(mat.element_id, mat));
+        out.insert(std::make_pair(mat.element_id, mat));
     }
+    return out;
 }
 
 World::World() {
@@ -108,22 +124,13 @@ World::World(const std::string path) {
 World::World(
     Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
     uint32_t y_tiles
-) {
-    init_materials(materials_json);
-
-    std::vector<int> grass_grad_data;
-    for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
-         i++) {
-        grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
-        ));
-    }
-
-    std::cout << "start of terrain\n";
-
-    terrain_main = terrain::Terrain(
+) : materials(init_materials(materials_json)), 
+    terrain_main(
         x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"],
-        grass_grad_data, materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    );
+        get_grass_grad_data(materials_json), materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+    ){
+    
+    std::cout << "world of terrain\n";
 }
 
 World::World(Json::Value biome_data, int tile_type) {

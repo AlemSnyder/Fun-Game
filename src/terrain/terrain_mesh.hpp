@@ -41,8 +41,14 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     }
 
     inline TerrainMesh(){};
-
     TerrainMesh(entity::Mesh mesh);
+    void init(
+        const std::vector<unsigned short>& indices,
+        const std::vector<glm::vec3>& indexed_vertices,
+        const std::vector<glm::vec3>& indexed_colors,
+        const std::vector<glm::vec3>& indexed_normals
+    );
+    void init(entity::Mesh mesh);
 
     TerrainMesh(
         const std::vector<unsigned short>& indices,
