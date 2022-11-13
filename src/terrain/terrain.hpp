@@ -33,6 +33,7 @@
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
+#include "terrain_helper.hpp"
 #include "tile.hpp"
 
 #include <stdio.h>
@@ -51,7 +52,43 @@ namespace terrain {
 class Chunk;
 
 // Forward declaration of AdjacentIterator
-class AdjacentIterator;
+//class AdjacentIterator;
+
+namespace helper {
+
+// high is for if the grass reaches a cliff
+inline bool
+edge_detector_high(Tile* t) {
+    return !t->is_grass() && t->is_solid();
+}
+
+inline void
+setter_high(Tile* t, int set_to) {
+    t->set_grow_data_high(set_to);
+}
+
+inline int
+getter_high(Tile* t) {
+    return t->get_grow_data_high();
+}
+
+// low is for if the grass reaches an edge
+inline bool
+edge_detector_low(Tile* t) {
+    return !t->is_solid();
+}
+
+inline void
+setter_low(Tile* t, int set_to) {
+    t->set_grow_data_low(set_to);
+}
+
+inline int
+getter_low(Tile* t) {
+    return t->get_grow_data_low();
+}
+
+} // namespace terrain_helper
 
 /**
  * @brief The land in the world.
@@ -700,18 +737,28 @@ class Terrain {
      *
      */
     void init_grass();
+
     /**
      * @brief set the upper bound for grass color
      *
      */
-    void
-    grow_grass_high(std::set<Tile*> all_grass);
+    inline void grow_grass_high(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_high, helper::getter_high, helper::setter_high>(
+            *this, all_grass
+        );
+    }
+
     /**
      * @brief set the lower bound for grass color
      *
      */
-    void
-    grow_grass_low(std::set<Tile*> all_grass);
+    inline void grow_grass_low(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_low, helper::getter_low, helper::setter_low>(
+            *this, all_grass
+        );
+    }
 
     /**
      * @brief test if 1 x 1 x 1 object can stand at the position

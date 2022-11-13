@@ -1,6 +1,10 @@
+
+//! This is an implementations file. Anything not implemented below will lead
+//! linker errors.
+
+#include "../tile.hpp"
 #include "node.cpp"
 #include "node_group.hpp"
-#include "../tile.hpp"
 
 namespace terrain {
 

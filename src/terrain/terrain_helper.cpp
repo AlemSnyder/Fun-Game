@@ -1,52 +1,31 @@
-// -*- lsst-c++ -*-
-/*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
-
-/**
- * @file terrain_helper.hpp
- *
- * @author @AlemSnyder
- *
- * @brief Defines Terrain adjacent helper functions
- *
- * @ingroup terrain::helper
- *
- */
-#pragma once
-
+#include "path/unit_path.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
 
 #include <set>
 
-
 namespace terrain {
 namespace helper {
 
-/**
- * @brief  * @brief Recursive function that sets the grass gradient growth color. This 
- * part is inside the iteration
- * 
- * @warning This function should not be called.
- *
- * @tparam getter(Tile*) get the paramater that will be set (grow data high/low)
- * @tparam setter(Tile*, int) set the paramater (grow data high/low)
- * @param ter terrain to do operation on
- * @param in_grass set of all grass at the next height level
- * @param height level of grass gradient being set during this iteration.
- */
+// grow_grass_recursive(set, int height)
+// for tile in set
+//      if tile grow data high < height
+//          for adjacent tile (only if height != 0)
+//              if this tile is grass, and grow_data_high < height-1
+//                  add adjacent tiles to new set
+//          set tile grass height to height
+// if height then run grow_grass_recursive(new_set, height -1)
+
+/*
+used the grow the (grass gradient length - height)th iteration of grass
+given a set of grass tiles gets the adjacent grass tiles that have height
+equal to given hight.
+Then next to those tiles set the grass height to hight-1 if this is higher
+than the saved height.
+*/
 template <int getter(Tile*), void setter(Tile*, int)>
 void
-grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height); /*{
+grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
     // height == 1 this is the end of recursion. Tile is default set to 0
     if (height == 1) {
         return;
@@ -72,20 +51,23 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height); /*{
         }
     }
     grow_grass_inner<getter, setter>(ter, next_grass_tiles, height - 1);
-}*/
+}
 
-/**
- * @brief Recursive function that sets the grass gradient growth color.
- * 
- * @tparam edge_detector(Tile*) 
- * @tparam getter(Tile*) get the paramater that will be set (grow data high/low)
- * @tparam setter(Tile*, int) set the paramater (grow data high/low)
- * @param ter terrain to do operation on
- * @param all_grass set of all grass in terrain
- */
+// grow_grass recursive(set)
+// for tile in set
+//      if tile is a source
+//          add adjacent tiles to the new set if they are grass and something about
+//          height set tile.grass height/source status
+// run grow_grass recursive(new_set, grass_grad_length)
+/*
+used to grow the first iteration of of grass
+given a set of all grass tiles gets the grass tiles that adjacent to an
+edge.
+Then next to those tiles set the grass height to max_hight-1.
+*/
 template <bool edge_detector(Tile*), int getter(Tile*), void setter(Tile*, int)>
 void
-grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass);/* {
+grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
     // set of tiles that are of adjacent to an edge
     // the first level
     std::set<Tile*> next_grass_tiles;
@@ -114,23 +96,9 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass);/* {
         }
     }
     grow_grass_inner<getter, setter>(ter, next_grass_tiles, max_grass - 1);
-}*/
-
-/*inline static void
-grow_grass_recursive_low(Terrain& ter, std::set<Tile*> all_grass) {
-    helper::grow_grass_recursive<
-        helper::edge_detector_low, helper::getter_low, helper::setter_low>(
-        ter, all_grass
-    );
 }
 
-inline static void
-grow_grass_recursive_high(Terrain& ter, std::set<Tile*> all_grass) {
-    helper::grow_grass_recursive<
-        helper::edge_detector_high, helper::getter_high, helper::setter_high>(
-        ter, all_grass
-    );
-}*/
+
 
 } // namespace helper
 
