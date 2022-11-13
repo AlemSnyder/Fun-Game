@@ -113,8 +113,6 @@ class World {
      * @return entity::Mesh the mesh generated
      */
     inline std::vector<entity::Mesh> get_mesh_greedy() const {
-        // TODO should be for each chunk
-        // return entity::generate_mesh(terrain_main);
         std::vector<entity::Mesh> out;
         for (const terrain::Chunk& c : terrain_main.get_chunks()) {
             auto chunk_mesh = entity::generate_mesh(c);
