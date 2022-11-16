@@ -1,6 +1,6 @@
 
 //! This is an implementations file. Anything not implemented below will lead
-//! linker errors.
+//! to linker errors.
 
 #include "../tile.hpp"
 #include "node.cpp"

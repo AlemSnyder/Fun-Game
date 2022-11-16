@@ -12,7 +12,7 @@
  */
 
 //! This is an implementations file. Anything not implemented below will lead
-//! linker errors.
+//! to linker errors.
 
 #include "terrain.hpp"
 #include "terrain_helper.cpp"
@@ -20,9 +20,6 @@
 #include "tile.hpp"
 
 #include <set>
-
-// class Terrain;
-// class Tile;
 
 namespace terrain {
 

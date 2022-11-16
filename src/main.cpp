@@ -159,6 +159,8 @@ int StressTest() {
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
+    // Create world object from material data, biome data, and the number of 
+    // chunks in the x,y direction. Here the size is 2,2.
     World world(materials_json, biome_data, 2, 2);
 
     return gui::GUITest(world);
