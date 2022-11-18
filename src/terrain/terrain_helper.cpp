@@ -98,8 +98,6 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
     grow_grass_inner<getter, setter>(ter, next_grass_tiles, max_grass - 1);
 }
 
-
-
 } // namespace helper
 
 } // namespace terrain

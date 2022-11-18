@@ -52,7 +52,7 @@ namespace terrain {
 class Chunk;
 
 // Forward declaration of AdjacentIterator
-//class AdjacentIterator;
+// class AdjacentIterator;
 
 namespace helper {
 
@@ -88,7 +88,7 @@ getter_low(Tile* t) {
     return t->get_grow_data_low();
 }
 
-} // namespace terrain_helper
+} // namespace helper
 
 /**
  * @brief The land in the world.
