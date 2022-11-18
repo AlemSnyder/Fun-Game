@@ -51,9 +51,6 @@ namespace terrain {
 // Forward declaration of Chunk
 class Chunk;
 
-// Forward declaration of AdjacentIterator
-// class AdjacentIterator;
-
 namespace helper {
 
 // high is for if the grass reaches a cliff
@@ -460,24 +457,29 @@ class Terrain {
     /**
      * @brief Get the nodes adjacent to this one
      *
-     * @tparam T Type of underlying position
      * @param node node to find the adjacent of
      * @param nodes nodes that can be passed through
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    // template <class T>
     std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
         std::map<size_t, Node<const NodeGroup>>& nodes, uint8_t type
     ) const;
 
+    /**
+     * @brief Get the nodes adjacent to this one
+     *
+     * @param node node to find the adjacent of
+     * @param nodes nodes that can be passed through
+     * @param type path type allowed
+     * @return std::set<Node<const T> *> adjacent nodes
+     */
     std::set<Node<const Tile>*> get_adjacent_nodes(
         const Node<const Tile>* const node, std::map<size_t, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 
-    // std::vector<Chunk> get_chunks() { return chunks; }
     /**
      * @brief Get the node group from tile index
      *
