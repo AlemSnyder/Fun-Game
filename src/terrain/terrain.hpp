@@ -33,6 +33,7 @@
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
+#include "terrain_helper.hpp"
 #include "tile.hpp"
 
 #include <stdio.h>
@@ -50,8 +51,41 @@ namespace terrain {
 // Forward declaration of Chunk
 class Chunk;
 
-// Forward declaration of AdjacentIterator
-class AdjacentIterator;
+namespace helper {
+
+// high is for if the grass reaches a cliff
+inline bool
+edge_detector_high(Tile* t) {
+    return !t->is_grass() && t->is_solid();
+}
+
+inline void
+setter_high(Tile* t, int set_to) {
+    t->set_grow_data_high(set_to);
+}
+
+inline int
+getter_high(Tile* t) {
+    return t->get_grow_data_high();
+}
+
+// low is for if the grass reaches an edge
+inline bool
+edge_detector_low(Tile* t) {
+    return !t->is_solid();
+}
+
+inline void
+setter_low(Tile* t, int set_to) {
+    t->set_grow_data_low(set_to);
+}
+
+inline int
+getter_low(Tile* t) {
+    return t->get_grow_data_low();
+}
+
+} // namespace helper
 
 /**
  * @brief The land in the world.
@@ -423,24 +457,29 @@ class Terrain {
     /**
      * @brief Get the nodes adjacent to this one
      *
-     * @tparam T Type of underlying position
      * @param node node to find the adjacent of
      * @param nodes nodes that can be passed through
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    // template <class T>
     std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
         std::map<size_t, Node<const NodeGroup>>& nodes, uint8_t type
     ) const;
 
+    /**
+     * @brief Get the nodes adjacent to this one
+     *
+     * @param node node to find the adjacent of
+     * @param nodes nodes that can be passed through
+     * @param type path type allowed
+     * @return std::set<Node<const T> *> adjacent nodes
+     */
     std::set<Node<const Tile>*> get_adjacent_nodes(
         const Node<const Tile>* const node, std::map<size_t, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 
-    // std::vector<Chunk> get_chunks() { return chunks; }
     /**
      * @brief Get the node group from tile index
      *
@@ -704,16 +743,28 @@ class Terrain {
      *
      */
     void init_grass();
+
     /**
      * @brief set the upper bound for grass color
      *
      */
-    void grow_grass_high(std::set<Tile*> all_grass);
+    inline void grow_grass_high(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_high, helper::getter_high, helper::setter_high>(
+            *this, all_grass
+        );
+    }
+
     /**
      * @brief set the lower bound for grass color
      *
      */
-    void grow_grass_low(std::set<Tile*> all_grass);
+    inline void grow_grass_low(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_low, helper::getter_low, helper::setter_low>(
+            *this, all_grass
+        );
+    }
 
     /**
      * @brief test if 1 x 1 x 1 object can stand at the position

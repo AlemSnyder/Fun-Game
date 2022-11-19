@@ -169,14 +169,11 @@ Terrain::init(
 
 void
 Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen) {
-    // int count = 0;
     while (!gen.empty()) {
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
         ++gen;
-        // count++;
     }
     gen.reset();
-    // std::cout << count << " total stamps\n";
 }
 
 void
@@ -197,8 +194,6 @@ Terrain::add_to_top(
 ) {
     std::set<std::pair<int, int>> material_type;
 
-    // std::cout << top_data << std::endl;
-
     for (Json::Value::ArrayIndex i = 0; i < top_data["above_colors"].size(); i++) {
         int E = top_data["above_colors"][i]["E"].asInt();
         if (top_data["above_colors"][i]["C"].isInt()) {
@@ -211,19 +206,14 @@ Terrain::add_to_top(
         }
     }
 
-    // for (auto p : material_type){
-    //     std::cout << p.first << " " << p.second << std::endl;
-    // }
-
     int guess = 0;
     // for loop
     for (int x = 0; x < X_MAX; x++)
         for (int y = 0; y < Y_MAX; y++) {
             // get first (not) z of material
             guess = get_first_not(material_type, x, y, guess);
-            // std::cout << guess << std::endl;
-            //  if z is between some bounds
-            //  stop_h = get stop height (guess, top_data["how_to_add"])
+            // if z is between some bounds
+            // stop_h = get stop height (guess, top_data["how_to_add"])
             int max_height = get_stop_height(guess, top_data["how_to_add"]);
             for (int z = guess; z < max_height; z++) {
                 set_tile_material(
@@ -240,7 +230,6 @@ Terrain::get_stop_height(int height, const Json::Value how_to_add) {
     for (unsigned int i = 0; i < how_to_add.size(); i++) {
         if (height >= how_to_add[i]["from"][0].asInt()
             && height < how_to_add[i]["from"][1].asInt()) {
-            // std::cout << "fails here" << std::endl;
             if (how_to_add[i]["to"].isInt()) {
                 return how_to_add[i]["to"].asInt();
             } else {
@@ -393,7 +382,6 @@ Terrain::stamp_tile_region(
                         ))
                         != elements_can_stamp.end()) {
                         set_tile_material(tile, mat, color_id);
-                        // std::cout << mat->element_id;
                     }
                 }
             }
@@ -449,22 +437,6 @@ Terrain::init_grass() {
     for (Tile* t : all_grass) {
         t->set_grass_color(grass_grad_length_, grass_mid_, grass_colors_);
     }
-}
-
-
-void
-Terrain::grow_grass_high(std::set<Tile*> all_grass) {
-    helper::grow_grass_recursive<
-        helper::edge_detector_high, helper::getter_high, helper::setter_high>(
-        *this, all_grass);
-}
-
-void
-Terrain::grow_grass_low(std::set<Tile*> all_grass) {
-    helper::grow_grass_recursive<
-        helper::edge_detector_low, helper::getter_low, helper::setter_low>(
-        *this, all_grass
-    );
 }
 
 // generates a size_x by size_y vector of macro tile types.

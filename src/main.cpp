@@ -143,7 +143,6 @@ path_finder_test(const std::string path, std::string save_path) {
 std::vector<entity::Mesh>
 get_mesh(const std::string path) {
     World world(path);
-    // World world(path);
     std::cout << "read from file" << std::endl;
 
     return world.get_mesh_greedy();
@@ -159,6 +158,8 @@ int StressTest() {
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
+    // Create world object from material data, biome data, and the number of 
+    // chunks in the x,y direction. Here the size is 2,2.
     World world(materials_json, biome_data, 2, 2);
 
     return gui::GUITest(world);
@@ -190,7 +191,7 @@ main(int argc, char** argv) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
 
-    /*
+#if 0
     std::cout << argc << std::endl;
 
     std::cout << "Positional args: " << std::endl;
@@ -203,7 +204,7 @@ main(int argc, char** argv) {
 
     std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and
     path out = " << path_out << std::endl;
-    */
+#endif
 
     std::cout << "FunGame v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
               << VERSION_PATCH << std::endl;

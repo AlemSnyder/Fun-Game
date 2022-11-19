@@ -101,22 +101,27 @@ generate_mesh(T voxel_object) {
                      voxel_position[dims_index_1] < int(dims[dims_index_1]);
                      ++voxel_position[dims_index_1], ++counter) {
                     // tile in the level above
-                    const uint32_t voxel_above =
-                        // if the mesh positions is within the bounds
-                        voxel_position[axis] >= 0 ? voxel_object.get_voxel(
+                    const uint32_t voxel_above = voxel_object.get_voxel(
                             voxel_position[0], voxel_position[1], voxel_position[2]
-                        )
-                                                  : 0;
+                        );
+                        // if the mesh positions is within the bounds
+                        //voxel_position[axis] >= 0 ? voxel_object.get_voxel(
+                        //    voxel_position[0], voxel_position[1], voxel_position[2]
+                        //)
+                        //                          : 0;
                     // tiles in the level below
-                    const uint32_t voxel_below =
-                        // if the mesh position is within the bounds
-                        voxel_position[axis] < int(dims[axis]) - 1
-                            ? voxel_object.get_voxel(
+                    const uint32_t voxel_below =voxel_object.get_voxel(
                                 voxel_position[0] + mesh_normal[0],
                                 voxel_position[1] + mesh_normal[1],
-                                voxel_position[2] + mesh_normal[2]
-                            )
-                            : 0;
+                                voxel_position[2] + mesh_normal[2] );
+                        // if the mesh position is within the bounds
+                        //voxel_position[axis] < int(dims[axis]) - 1
+                        //    ? voxel_object.get_voxel(
+                        //        voxel_position[0] + mesh_normal[0],
+                        //        voxel_position[1] + mesh_normal[1],
+                        //        voxel_position[2] + mesh_normal[2]
+                        //    )
+                        //    : 0;
                     const bool bool_a = voxel_above;
                     // if both solid or both not solid then don't make
                     // voxel_above face between the voxels
