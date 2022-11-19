@@ -1,5 +1,6 @@
 #include "tile.hpp"
 
+#include "material.hpp"
 #include "terrain.hpp"
 
 #define NUM_GRASS 8 // TODO this should be removed
@@ -42,10 +43,10 @@ Tile::set_material(const terrain::Material* const material) {
 // If able, set `color_id` to `color_id_`.
 void
 Tile::set_color_id(uint8_t color_id, const terrain::Material* const material) {
-    if (color_id > material->color.size()) {
+    if (color_id >= material->color.size()) {
         return;
     }
-    if ((mat_id_ != DIRT_ID) || (color_id < NUM_GRASS)) {
+    if ((mat_id_ != DIRT_ID) || (color_id < NUM_GRASS && grass_)) {
         color_id_ = color_id;
     } // cannot set the color of dirt
 }
@@ -73,14 +74,22 @@ Tile::set_grow_data_low(int num) {
 // Updates the grass color to account for edge gradient.
 void
 Tile::set_grass_color(
-    int grass_grad_length, int grass_mid, std::vector<uint8_t> grass_colors
+    unsigned int grass_grad_length, unsigned int grass_mid,
+    std::vector<uint8_t> grass_colors
 ) {
     if (grass_) {
-        if (grass_grad_length - grow_data_high_ - 1 < grow_data_low_
-            || grow_data_low_ > grass_mid) {
-            color_id_ = grass_colors[grow_data_low_];
-        } else if (grow_data_high_ > grass_mid) {
-            color_id_ = grass_colors[grass_grad_length - grow_data_high_ - 1];
+        /*
+        crates a gradient between shadow, and light using the gradient defined
+        in the materials json.
+        */
+        unsigned int a = grass_grad_length - grow_data_high_;
+        unsigned int b = grow_data_low_;
+        if (b >= a) {
+            color_id_ = grass_colors[b];
+        } else if (b >= grass_mid) {
+            color_id_ = grass_colors[b];
+        } else if (a <= grass_mid) {
+            color_id_ = grass_colors[a];
         } else {
             color_id_ = grass_colors[grass_mid];
         }

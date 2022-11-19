@@ -26,7 +26,7 @@
 #define INITIAL_WINDOW_HEIGHT 768
 
 int
-test1(const std::string path) {
+GenerateTerrain(const std::string path) {
     // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
     // C/gcc/terrain_generation";
 
@@ -46,7 +46,7 @@ test1(const std::string path) {
 }
 
 int
-test2() {
+MacroMap() {
     Json::Value biome_data;
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
@@ -79,7 +79,7 @@ save_terrain(Json::Value biome_data, std::string biome_name) {
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
         world.terrain_main.init(
-            3, 3, 32, 128, 5, static_cast<int>(i), world.get_materials(), biome_data
+            3, 3, World::macro_tile_size, World::height, 5, static_cast<int>(i), world.get_materials(), biome_data
         );
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
@@ -143,7 +143,6 @@ path_finder_test(const std::string path, std::string save_path) {
 entity::Mesh
 get_mesh(const std::string path) {
     World world(path);
-    // World world(path);
     std::cout << "read from file" << std::endl;
 
     return world.get_mesh_greedy();
@@ -159,7 +158,9 @@ int StressTest() {
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    World world(materials_json, biome_data, 12, 12);
+    // Create world object from material data, biome data, and the number of 
+    // chunks in the x,y direction. Here the size is 2,2.
+    World world(materials_json, biome_data, 2, 2);
 
     return gui::GUITest(world);
 }
@@ -190,7 +191,7 @@ main(int argc, char** argv) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
 
-    /*
+#if 0
     std::cout << argc << std::endl;
 
     std::cout << "Positional args: " << std::endl;
@@ -203,7 +204,7 @@ main(int argc, char** argv) {
 
     std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and
     path out = " << path_out << std::endl;
-    */
+#endif
 
     std::cout << "FunGame v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
               << VERSION_PATCH << std::endl;
@@ -223,9 +224,9 @@ main(int argc, char** argv) {
             save_all_terrain(biome_data);
         }
     } else if (run_function == "GenerateTerrain") {
-        return test1(path_in);
+        return GenerateTerrain(path_in);
     } else if (run_function == "MacroMap") {
-        return test2();
+        return MacroMap();
     } else if (run_function == "StressTest") {
         return StressTest();
     } else if (run_function == "SaveTest") {
@@ -234,7 +235,5 @@ main(int argc, char** argv) {
         return path_finder_test(path_in, path_out);
     } else if (run_function == "GUITest") {
         return GUITest(path_in);
-    } else if (run_function == "WorldGen") {
-        return test1(path_in);
     }
 }

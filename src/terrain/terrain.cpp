@@ -8,6 +8,7 @@
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
+#include "terrain_helper.hpp"
 #include "tile.hpp"
 
 #include <json/json.h>
@@ -32,20 +33,22 @@ Terrain::Terrain() : seed(0) {
 Terrain::Terrain(
     int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
     const std::map<int, const Material>* material, Json::Value biome_data,
-    std::vector<int> grass_grad_data, int grass_mid_
+    std::vector<int> grass_grad_data, unsigned int grass_mid
 ) {
-    if (grass_mid_ < 0) {
-        grass_mid_ = 0;
+    if (grass_mid >= grass_grad_data.size()) {
+        grass_mid_ = grass_grad_data.size() - 1;
+        std::cerr << "Grass Mid (from biome_data.json) not valid";
     }
+
     for (size_t i = 0; i < grass_grad_data.size(); i++) {
-        if (i == static_cast<size_t>(grass_mid_)) {
-            grass_mid = grass_colors.size();
+        if (i == static_cast<size_t>(grass_mid)) {
+            grass_mid_ = grass_colors_.size();
         }
         for (int j = 0; j < grass_grad_data[i]; j++) {
-            grass_colors.push_back(i);
+            grass_colors_.push_back(i);
         }
     }
-    grass_grad_length = grass_colors.size();
+    grass_grad_length_ = grass_colors_.size();
     init(
         x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
         generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"])
@@ -101,7 +104,7 @@ Terrain::init(int x, int y, int z) {
     X_MAX = x;
     Y_MAX = y;
     Z_MAX = z;
-    tiles.resize(0);
+    tiles_.resize(0);
 }
 
 void
@@ -119,10 +122,10 @@ Terrain::init(
     Y_MAX = y * Area_size;
     Z_MAX = z;
 
-    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        tiles.push_back(Tile(sop(xyz), &materials_->at(0)));
+        tiles_.push_back(Tile(sop(xyz), &materials_->at(0)));
     }
 
     srand(seed);
@@ -154,8 +157,7 @@ Terrain::init(
         add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }
 
-    // grow_grass();
-    // TODO make this faster 2
+    // grows the grass
     init_grass();
 
     //  TODO make this faster 1
@@ -167,14 +169,11 @@ Terrain::init(
 
 void
 Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen) {
-    // int count = 0;
     while (!gen.empty()) {
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
         ++gen;
-        // count++;
     }
     gen.reset();
-    // std::cout << count << " total stamps\n";
 }
 
 void
@@ -185,7 +184,7 @@ Terrain::init_chunks() {
     uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
-        chunks.push_back(Chunk(x, y, z, this));
+        chunks_.push_back(Chunk(x, y, z, this));
     }
 }
 
@@ -194,8 +193,6 @@ Terrain::add_to_top(
     Json::Value top_data, const std::map<int, const Material>* materials
 ) {
     std::set<std::pair<int, int>> material_type;
-
-    // std::cout << top_data << std::endl;
 
     for (Json::Value::ArrayIndex i = 0; i < top_data["above_colors"].size(); i++) {
         int E = top_data["above_colors"][i]["E"].asInt();
@@ -209,19 +206,14 @@ Terrain::add_to_top(
         }
     }
 
-    // for (auto p : material_type){
-    //     std::cout << p.first << " " << p.second << std::endl;
-    // }
-
     int guess = 0;
     // for loop
     for (int x = 0; x < X_MAX; x++)
         for (int y = 0; y < Y_MAX; y++) {
             // get first (not) z of material
             guess = get_first_not(material_type, x, y, guess);
-            // std::cout << guess << std::endl;
-            //  if z is between some bounds
-            //  stop_h = get stop height (guess, top_data["how_to_add"])
+            // if z is between some bounds
+            // stop_h = get stop height (guess, top_data["how_to_add"])
             int max_height = get_stop_height(guess, top_data["how_to_add"]);
             for (int z = guess; z < max_height; z++) {
                 set_tile_material(
@@ -238,7 +230,6 @@ Terrain::get_stop_height(int height, const Json::Value how_to_add) {
     for (unsigned int i = 0; i < how_to_add.size(); i++) {
         if (height >= how_to_add[i]["from"][0].asInt()
             && height < how_to_add[i]["from"][1].asInt()) {
-            // std::cout << "fails here" << std::endl;
             if (how_to_add[i]["to"].isInt()) {
                 return how_to_add[i]["to"].asInt();
             } else {
@@ -391,7 +382,6 @@ Terrain::stamp_tile_region(
                         ))
                         != elements_can_stamp.end()) {
                         set_tile_material(tile, mat, color_id);
-                        // std::cout << mat->element_id;
                     }
                 }
             }
@@ -418,87 +408,34 @@ Terrain::stamp_tile_region(
 
 void
 Terrain::init_grass() {
+    std::set<Tile*> all_grass;
+
     // Test all ties to see if they can be grass.
     for (int x_ = 0; x_ < X_MAX; x_++)
         for (int y_ = 0; y_ < Y_MAX; y_++)
             for (int z_ = 0; z_ < Z_MAX - 1; z_++) {
                 if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
                     get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
+                    // if grass add to some set
+                    if (get_tile(x_, y_, z_)->is_grass()) {
+                        all_grass.insert(get_tile(x_, y_, z_));
+                    }
+                    // both higher, and lower set
                 }
             }
     int z_ = Z_MAX - 1;
     for (int x_ = 0; x_ < X_MAX; x_++)
         for (int y_ = 0; y_ < Y_MAX; y_++) {
             get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
+            if (get_tile(x_, y_, z_)->is_grass()) {
+                all_grass.insert(get_tile(x_, y_, z_));
+            }
+            // same thing here as above
         }
-    for (int i = 0; i < grass_grad_length; i++) {
-        grow_all_grass_high();
-    }
-
-    for (int i = 0; i < grass_grad_length; i++) {
-        grow_all_grass_low();
-    }
-    for (Tile& t : tiles) {
-        t.set_grass_color(grass_grad_length, grass_mid, grass_colors);
-    }
-}
-
-// .1 sec
-void
-Terrain::grow_all_grass_high() {
-    // extends higher bound of grass color
-    for (Tile& t : tiles) {
-        if (t.is_grass()) {
-            int level = 0;
-            for (int x = -1; x < 2; x++)
-                for (int y = -1; y < 2; y++) {
-                    if (x == 0 && y == 0) {
-                        continue;
-                    }
-                    // safety function to test if you xyz is in range;
-                    if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
-                        const Tile* tile =
-                            get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
-                        if (!tile->is_grass()) {
-                            level = grass_grad_length;
-                            break;
-                        }
-                        if (tile->get_grow_high() > level) {
-                            level = tile->get_grow_high();
-                        }
-                    }
-                }
-            t.set_grow_data_high(level - 1);
-        }
-    }
-}
-
-void
-Terrain::grow_all_grass_low() {
-    // extends lower bound of grass color
-    for (Tile& t : tiles) { // for tile in sources
-        if (t.is_grass()) {
-            int level = 0;
-            for (int x = -1; x < 2; x++)
-                for (int y = -1; y < 2; y++) {
-                    // safety function to test if you xyz is in range;
-                    if (in_range(t.get_x() + x, t.get_y() + y, t.get_z())) {
-                        if (x == 0 && y == 0) {
-                            continue;
-                        }
-                        Tile* tile = get_tile(t.get_x() + x, t.get_y() + y, t.get_z());
-
-                        if (!tile->is_solid()) {
-                            level = grass_grad_length;
-                            break;
-                        }
-                        if (tile->get_grow_low() > level) {
-                            level = tile->get_grow_low();
-                        }
-                    }
-                }
-            t.set_grow_data_low(level - 1);
-        }
+    grow_grass_high(all_grass);
+    grow_grass_low(all_grass);
+    for (Tile* t : all_grass) {
+        t->set_grass_color(grass_grad_length_, grass_mid_, grass_colors_);
     }
 }
 
@@ -623,7 +560,7 @@ Terrain::get_adjacent_nodes(
 NodeGroup*
 Terrain::get_node_group(int xyz) {
     try {
-        return tile_to_group.at(xyz);
+        return tile_to_group_.at(xyz);
     } catch (const std::out_of_range& e) {
         return nullptr;
     }
@@ -642,14 +579,14 @@ Terrain::get_node_group(const Tile* t) {
 void
 Terrain::add_node_group(NodeGroup* NG) {
     for (const Tile* t : NG->get_tiles()) {
-        tile_to_group[pos(t)] = NG;
+        tile_to_group_[pos(t)] = NG;
     }
 }
 
 void
 Terrain::remove_node_group(NodeGroup* NG) {
     for (const Tile* t : NG->get_tiles()) {
-        tile_to_group.erase(pos(t));
+        tile_to_group_.erase(pos(t));
     }
 }
 
@@ -724,8 +661,8 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
 std::set<const NodeGroup*>
 Terrain::get_all_node_groups() const {
     std::set<const NodeGroup*> out;
-    for (size_t c = 0; c < chunks.size(); c++) {
-        chunks[c].add_nodes_to(out);
+    for (size_t c = 0; c < chunks_.size(); c++) {
+        chunks_[c].add_nodes_to(out);
     }
     return out;
 }
@@ -921,13 +858,12 @@ Terrain::get_voxel(int x, int y, int z) const {
     static uint8_t previous_color_id = 0;
     static uint32_t previous_out_color = 0;
     if (in_range(x, y, z)) {
-        if ((tiles[pos(x, y, z)].get_material_id() != previous_mat_id)
-            || (tiles[pos(x, y, z)].get_color_id() != previous_color_id)) {
-            previous_mat_id = tiles[pos(x, y, z)].get_material_id();
-            previous_color_id = tiles[pos(x, y, z)].get_color_id();
+        if ((tiles_[pos(x, y, z)].get_material_id() != previous_mat_id)
+            || (tiles_[pos(x, y, z)].get_color_id() != previous_color_id)) {
+            previous_mat_id = tiles_[pos(x, y, z)].get_material_id();
+            previous_color_id = tiles_[pos(x, y, z)].get_color_id();
             auto mat = materials_->at(previous_mat_id);
-            previous_out_color =
-                mat.color[previous_color_id].second;
+            previous_out_color = mat.color[previous_color_id].second;
         }
         return previous_out_color;
     }
@@ -953,7 +889,7 @@ Terrain::compress_color(uint8_t v[4]) {
 int
 Terrain::qb_save_debug(const std::string path) {
     int x = 0;
-    for (Chunk& c : chunks) {
+    for (Chunk& c : chunks_) {
         std::set<const NodeGroup*> node_groups;
         c.add_nodes_to(node_groups);
         for (const NodeGroup* NG : node_groups) {
@@ -991,7 +927,7 @@ Terrain::qb_read(
     X_MAX = size[0];
     Y_MAX = size[1];
     Z_MAX = size[2];
-    tiles.reserve(X_MAX * Y_MAX * Z_MAX);
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     std::set<uint32_t> unknown_materials;
 
@@ -1000,14 +936,14 @@ Terrain::qb_read(
         uint32_t color = data[xyz];
         if (color == 0) {                      // if the qb voxel is transparent.
             auto mat_color = materials->at(0); // set the materials to air
-            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else if (materials->count(color)) { // if the color is known
             auto mat_color = materials->at(color);
-            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else { // the color is unknown
             unknown_materials.insert(color);
             auto mat_color = materials->at(0); // else set to air.
-            tiles.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         }
     }
 

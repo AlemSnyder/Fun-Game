@@ -33,6 +33,7 @@
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
+#include "terrain_helper.hpp"
 #include "tile.hpp"
 
 #include <stdio.h>
@@ -50,8 +51,41 @@ namespace terrain {
 // Forward declaration of Chunk
 class Chunk;
 
-// Forward declaration of AdjacentIterator
-class AdjacentIterator;
+namespace helper {
+
+// high is for if the grass reaches a cliff
+inline bool
+edge_detector_high(Tile* t) {
+    return !t->is_grass() && t->is_solid();
+}
+
+inline void
+setter_high(Tile* t, int set_to) {
+    t->set_grow_data_high(set_to);
+}
+
+inline int
+getter_high(Tile* t) {
+    return t->get_grow_data_high();
+}
+
+// low is for if the grass reaches an edge
+inline bool
+edge_detector_low(Tile* t) {
+    return !t->is_solid();
+}
+
+inline void
+setter_low(Tile* t, int set_to) {
+    t->set_grow_data_low(set_to);
+}
+
+inline int
+getter_low(Tile* t) {
+    return t->get_grow_data_low();
+}
+
+} // namespace helper
 
 /**
  * @brief The land in the world.
@@ -65,9 +99,9 @@ class Terrain {
 
  private:
     // vector of voxels in terrain
-    std::vector<Tile> tiles;
+    std::vector<Tile> tiles_;
     // vector of chunks in terrain
-    std::vector<Chunk> chunks;
+    std::vector<Chunk> chunks_;
     // length in the x direction
     int X_MAX;
     // length in the y direction
@@ -79,23 +113,25 @@ class Terrain {
     // seed for randomness
     int seed;
     // map of tile position to the node group it is in
-    std::map<int, NodeGroup*> tile_to_group;
+    std::map<int, NodeGroup*> tile_to_group_;
     // vector that determines grass color from edge distance
-    std::vector<uint8_t> grass_colors;
+    std::vector<uint8_t> grass_colors_;
     // length of grass gradient
-    int grass_grad_length;
+    int grass_grad_length_;
     // gradient index of grass not by an edge
-    int grass_mid;
+    int grass_mid_;
     // mat of material id to material that describes materials in this terrain
     const std::map<int, const terrain::Material>* materials_;
 
     // save color at sop, to color
+    //! static Should be removed
     void export_color(const int sop[3], uint8_t color[4]) const;
     // find color v in map, and save material to mat_, and color id to color_id
     void get_mat_from_qb(
         const std::map<int, const Material>* materials, uint8_t v[4], Material*& mat_,
         uint8_t& color_id
     );
+    //! static should be removed from terrain
     // convert 4 int 8 to 1 int 32 (reversed order)
     uint32_t compress_color(uint8_t v[4]);
 
@@ -319,6 +355,8 @@ class Terrain {
      * @param z size in z direction
      */
     void init(int x, int y, int z);
+
+    // TODO area_size should not be initialized like this
     /**
      * @brief Terrain initializer
      *
@@ -374,7 +412,7 @@ class Terrain {
     Terrain(
         int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
         const std::map<int, const Material>* material, Json::Value biome_data,
-        std::vector<int> grass_grad_data, int grass_mid
+        std::vector<int> grass_grad_data, unsigned int grass_mid
     );
     /**
      * @brief Construct a new Terrain object
@@ -419,24 +457,29 @@ class Terrain {
     /**
      * @brief Get the nodes adjacent to this one
      *
-     * @tparam T Type of underlying position
      * @param node node to find the adjacent of
      * @param nodes nodes that can be passed through
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    // template <class T>
     std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
         std::map<size_t, Node<const NodeGroup>>& nodes, uint8_t type
     ) const;
 
+    /**
+     * @brief Get the nodes adjacent to this one
+     *
+     * @param node node to find the adjacent of
+     * @param nodes nodes that can be passed through
+     * @param type path type allowed
+     * @return std::set<Node<const T> *> adjacent nodes
+     */
     std::set<Node<const Tile>*> get_adjacent_nodes(
         const Node<const Tile>* const node, std::map<size_t, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 
-    // std::vector<Chunk> get_chunks() { return chunks; }
     /**
      * @brief Get the node group from tile index
      *
@@ -534,7 +577,7 @@ class Terrain {
             std::cout << x << ";" << y << ";" << z << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[pos(x, y, z)];
+            return &tiles_[pos(x, y, z)];
         }
     };
 
@@ -543,7 +586,7 @@ class Terrain {
             std::cout << xyz << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[xyz];
+            return &tiles_[xyz];
         }
     }
 
@@ -560,7 +603,7 @@ class Terrain {
             std::cout << x << ";" << y << ";" << z << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[pos(x, y, z)];
+            return &tiles_[pos(x, y, z)];
         }
     };
 
@@ -575,7 +618,7 @@ class Terrain {
             std::cout << xyz << "\n";
             throw std::invalid_argument("index out of range");
         } else {
-            return &tiles[xyz];
+            return &tiles_[xyz];
         }
     }
 
@@ -588,6 +631,8 @@ class Terrain {
      * @return uint32_t color or tile
      */
     uint32_t get_voxel(int x, int y, int z) const;
+
+    inline int get_grass_grad_length() const { return grass_grad_length_; }
 
     /**
      * @brief charge the color id but not the material of the tile
@@ -619,8 +664,7 @@ class Terrain {
      * @param color_id color id set to
      */
     inline void set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
-        tile->set_material(mat);
-        tile->set_color_id(color_id, mat);
+        tile->set_material(mat, color_id);
     }
 
     /**
@@ -695,16 +739,28 @@ class Terrain {
      *
      */
     void init_grass();
+
     /**
      * @brief set the upper bound for grass color
      *
      */
-    void grow_all_grass_high();
+    inline void grow_grass_high(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_high, helper::getter_high, helper::setter_high>(
+            *this, all_grass
+        );
+    }
+
     /**
      * @brief set the lower bound for grass color
      *
      */
-    void grow_all_grass_low();
+    inline void grow_grass_low(std::set<Tile*> all_grass) {
+        helper::grow_grass_recursive<
+            helper::edge_detector_low, helper::getter_low, helper::setter_low>(
+            *this, all_grass
+        );
+    }
 
     /**
      * @brief test if 1 x 1 x 1 object can stand at the position

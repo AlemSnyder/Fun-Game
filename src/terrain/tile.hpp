@@ -126,6 +126,17 @@ class Tile {
      * @param num distance from wall
      */
     void set_grow_data_high(int num);
+
+    /**
+     * @brief Get the distance from edge
+     */
+    inline int get_grow_data_low() const { return grow_data_low_; }
+
+    /**
+     * @brief Get the distance from wall
+     */
+    inline int get_grow_data_high() const { return grow_data_high_; }
+
     /**
      * @brief sets grass to true, and set color id to 1
      *
@@ -139,7 +150,8 @@ class Tile {
      * @param grass_colors grass color vector
      */
     void set_grass_color(
-        int grass_grad_length, int grass_mid, std::vector<uint8_t> grass_colors
+        unsigned int grass_grad_length, unsigned int grass_mid,
+        std::vector<uint8_t> grass_colors
     );
 
     // Getters
