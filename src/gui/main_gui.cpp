@@ -1,8 +1,8 @@
 #include "main_gui.hpp"
 
 #include "../entity/mesh.hpp"
-#include "../terrain/static_mesh.hpp"
-#include "../terrain/terrain_mesh.hpp"
+#include "../entity/static_mesh.hpp"
+#include "../entity/terrain_mesh.hpp"
 #include "../util/files.hpp"
 #include "../world.hpp"
 #include "controls.hpp"

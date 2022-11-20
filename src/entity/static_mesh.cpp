@@ -1,6 +1,6 @@
 #include "static_mesh.hpp"
 
-#include "../entity/mesh.hpp"
+#include "mesh.hpp"
 #include "../gui/meshloader.hpp"
 
 #include <GL/glew.h>

@@ -1,6 +1,4 @@
-//! This is a test. The content tent of this class should be transferred into chunk
-
-#include "../entity/mesh.hpp"
+#include "mesh.hpp"
 #include "../gui/meshloader.hpp"
 
 #include <GL/glew.h>
