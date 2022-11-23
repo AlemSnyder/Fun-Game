@@ -109,11 +109,10 @@ GUITest(World world) {
     glBindVertexArray(VertexArrayID);
 
     //  The mesh of the terrain
-    std::vector<terrain::TerrainMesh> terrain_mesh;
-    terrain_mesh.resize(mesh.size());
-    for (size_t i = 0; i < terrain_mesh.size(); i++) {
-        // terrain_mesh.push_back(terrain::TerrainMesh(m));
-        terrain_mesh[i].init(mesh[i]);
+    std::vector<terrain::TerrainMesh> chunk_meshes;
+    chunk_meshes.resize(mesh.size());
+    for (size_t i = 0; i < chunk_meshes.size(); i++) {
+        chunk_meshes[i].init(mesh[i]);
     }
 
     // The above is for the wold the below is for trees
@@ -167,7 +166,7 @@ GUITest(World world) {
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto& m : terrain_mesh) {
+    for (auto& m : chunk_meshes) {
         SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
@@ -177,7 +176,7 @@ GUITest(World world) {
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto& m : terrain_mesh) {
+    for (auto& m : chunk_meshes) {
         MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
