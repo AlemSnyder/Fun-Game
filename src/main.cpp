@@ -79,7 +79,8 @@ save_terrain(Json::Value biome_data, std::string biome_name) {
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
         world.terrain_main.init(
-            3, 3, World::macro_tile_size, World::height, 5, static_cast<int>(i), world.get_materials(), biome_data
+            3, 3, World::macro_tile_size, World::height, 5, static_cast<int>(i),
+            world.get_materials(), biome_data
         );
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
@@ -148,8 +149,8 @@ get_mesh(const std::string path) {
     return world.get_mesh_greedy();
 }
 
-int StressTest() {
-
+int
+StressTest() {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -158,7 +159,7 @@ int StressTest() {
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    // Create world object from material data, biome data, and the number of 
+    // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
     World world(materials_json, biome_data, 2, 2);
 
@@ -184,9 +185,11 @@ GUITest(const std::filesystem::path path) {
 int
 main(int argc, char** argv) {
     argh::parser cmdl;
+
     cmdl.add_params({"-pi", "--path-in", "-po", "--path-out"});
     cmdl.add_param("biome-name");
     cmdl.parse(argc, argv);
+
     std::string run_function = cmdl(1).str();
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
@@ -202,8 +205,7 @@ main(int argc, char** argv) {
     for (auto& param : cmdl.params())
         std::cout << '\t' << param.first << " : " << param.second << std::endl;
 
-    std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and
-    path out = " << path_out << std::endl;
+    std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and path out = " << path_out << std::endl;
 #endif
 
     std::cout << "FunGame v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
