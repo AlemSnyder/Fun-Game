@@ -5,11 +5,17 @@
 #define VERSION_PATCH @FunGame_VERSION_PATCH@
 /* clang-format on */
 
-// Weather to load data and resources from subdirs
-#cmakedefine DEBUG
+/* Whether to load data and resources from subdirs
+ *
+ * Why is this a function macro?
+ * It prevents silent undefined macro errors.
+ *
+ * https://stackoverflow.com/a/3160643
+ */
+#cmakedefine01 DEBUG()
 
 // Data and resource paths
-#ifdef DEBUG
+#if DEBUG()
 #    define ROOT_DIR_PATH ".."
 #else
 #    define ROOT_DIR_PATH "."
