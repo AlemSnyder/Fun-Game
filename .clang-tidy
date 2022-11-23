@@ -1,10 +1,9 @@
 ---
 Checks: "bugprone-*,clang-analyzer-*,clang-diagnostic-*,concurrency-*,cppcoreguidelines-*,modernize-*,performance-*,portability-*,readability-*,-modernize-use-trailing-return-type"
-WarningsAsErrors: ""
+WarningsAsErrors: false
 HeaderFilterRegex: ""
 AnalyzeTemporaryDtors: false
-FormatStyle: none
-User: Nino Maruszewski
+FormatStyle: file
 CheckOptions:
   llvm-else-after-return.WarnOnConditionVariables: "false"
   modernize-loop-convert.MinConfidence: reasonable
