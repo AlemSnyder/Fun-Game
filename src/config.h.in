@@ -1,14 +1,16 @@
 // Version info
+/* clang-format off */
 #define VERSION_MAJOR @FunGame_VERSION_MAJOR@
 #define VERSION_MINOR @FunGame_VERSION_MINOR@
 #define VERSION_PATCH @FunGame_VERSION_PATCH@
+/* clang-format on */
 
 // Weather to load data and resources from subdirs
-#cmakedefine SUBDIR_FILE_LOADING
+#cmakedefine DEBUG
 
 // Data and resource paths
-#ifdef SUBDIR_FILE_LOADING
-#    define ROOT_DIR_PATH "."
-#else
+#ifdef DEBUG
 #    define ROOT_DIR_PATH ".."
+#else
+#    define ROOT_DIR_PATH "."
 #endif

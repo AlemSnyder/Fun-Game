@@ -50,10 +50,10 @@ endif()
 
 # Resource and data handling
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-  set(SUBDIR_FILE_LOADING 0)
+  set(DEBUG 1)
   message("Debug build, data will be loaded from repo root")
 else()
-  set(SUBDIR_FILE_LOADING 1)
+  set(DEBUG 0)
   message("Debug build, data will be loaded from subdirs")
 
   add_custom_target(resources
