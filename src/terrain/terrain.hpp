@@ -632,9 +632,7 @@ class Terrain {
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
-    const std::vector<Chunk> get_chunks() const {
-        return chunks_;
-    }
+    inline const std::vector<Chunk>& get_chunks() const { return chunks_; }
 
     inline int get_grass_grad_length() const { return grass_grad_length_; }
 
