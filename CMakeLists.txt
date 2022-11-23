@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
+# Generate compile commands
+set(CMAKE_GENERATE_COMPILE_COMMANDS ON)
+
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
