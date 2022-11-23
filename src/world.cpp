@@ -42,6 +42,7 @@ const terrain::Material*
 World::get_material(int material_id) const {
     return &materials.at(material_id);
 }
+
 std::vector<int>
 World::get_grass_grad_data(Json::Value materials_json) {
     std::vector<int> grass_grad_data;
@@ -52,7 +53,6 @@ World::get_grass_grad_data(Json::Value materials_json) {
     }
     return grass_grad_data;
 }
-
 
 std::map<int, const terrain::Material>
 World::init_materials(Json::Value material_data) {
@@ -124,12 +124,13 @@ World::World(const std::string path) {
 World::World(
     Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
     uint32_t y_tiles
-) : materials(init_materials(materials_json)), 
+) :
+    materials(init_materials(materials_json)),
     terrain_main(
         x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"],
-        get_grass_grad_data(materials_json), materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ){
-    
+        get_grass_grad_data(materials_json),
+        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+    ) {
     std::cout << "world of terrain\n";
 }
 

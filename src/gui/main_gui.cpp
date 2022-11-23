@@ -112,7 +112,7 @@ GUITest(World world) {
     std::vector<terrain::TerrainMesh> terrain_mesh;
     terrain_mesh.resize(mesh.size());
     for (size_t i = 0; i < terrain_mesh.size(); i++) {
-        //terrain_mesh.push_back(terrain::TerrainMesh(m));
+        // terrain_mesh.push_back(terrain::TerrainMesh(m));
         terrain_mesh[i].init(mesh[i]);
     }
 
@@ -167,7 +167,7 @@ GUITest(World world) {
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto &m : terrain_mesh) {
+    for (auto& m : terrain_mesh) {
         SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
@@ -177,7 +177,7 @@ GUITest(World world) {
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto &m : terrain_mesh) {
+    for (auto& m : terrain_mesh) {
         MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));

@@ -101,7 +101,7 @@ class World {
 
     /**
      * @brief Get the grass gradient data
-     * 
+     *
      * @param material_json data to load from
      * @return std::vector<int> width of each grass color
      */
@@ -123,14 +123,13 @@ class World {
         return out;
     }
 
-
  private:
     // materials that exist
     std::map<int, const terrain::Material> materials;
+
  public:
     // terrain in the world
     terrain::Terrain terrain_main;
-
 
     // all of these things are for saving
     // const char *path;
