@@ -60,6 +60,34 @@ class Chunk {
      */
     void add_nodes_to(std::set<const NodeGroup*>& out) const;
 
+    /**
+     * @brief Used for getting mesh
+     *
+     * @return std::vector<int> offset of chunk in world space
+     */
+    inline std::vector<int> get_offset() const {
+        return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
+    }
+
+    /**
+     * @brief Get the size of a chunk
+     *
+     * @return std::vector<unsigned int> vector of Chunk::SIZE
+     */
+    inline static std::vector<unsigned int> get_size() {
+        return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
+    }
+
+    /**
+     * @brief Get the color of a tile
+     *
+     * @param x x position in chunk
+     * @param y y position in chunk
+     * @param z z position in chunk
+     * @return uint32_t color or tile color id
+     */
+    uint32_t get_voxel(int x, int y, int z) const;
+
  private:
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;

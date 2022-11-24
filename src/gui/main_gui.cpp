@@ -1,8 +1,8 @@
 #include "main_gui.hpp"
 
 #include "../entity/mesh.hpp"
-#include "../terrain/static_mesh.hpp"
-#include "../terrain/terrain_mesh.hpp"
+#include "../entity/static_mesh.hpp"
+#include "../entity/terrain_mesh.hpp"
 #include "../util/files.hpp"
 #include "../world.hpp"
 #include "controls.hpp"
@@ -108,8 +108,12 @@ GUITest(World world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    // The mesh of the terrain
-    terrain::TerrainMesh terrain_mesh(mesh);
+    //  The mesh of the terrain
+    std::vector<terrain::TerrainMesh> chunk_meshes;
+    chunk_meshes.resize(mesh.size());
+    for (size_t i = 0; i < chunk_meshes.size(); i++) {
+        chunk_meshes[i].init(mesh[i]);
+    }
 
     // The above is for the wold the below is for trees
 
@@ -161,14 +165,20 @@ GUITest(World world) {
     ShadowMap SM(4096, 4096);
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
-    SM.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh));
+
+    for (auto& m : chunk_meshes) {
+        SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
+    }
     SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
 
     // renders the world scene
     MainRenderer MR;
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
-    MR.add_mesh(std::make_shared<terrain::TerrainMesh>(terrain_mesh));
+
+    for (auto& m : chunk_meshes) {
+        MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
+    }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
     do {

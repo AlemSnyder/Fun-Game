@@ -107,4 +107,11 @@ Chunk::contains_nodeGroup(NodeGroup* NG) {
     );
 }
 
+uint32_t
+Chunk::get_voxel(int x, int y, int z) const {
+    return ter_->get_voxel(
+        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+    );
+}
+
 } // namespace terrain

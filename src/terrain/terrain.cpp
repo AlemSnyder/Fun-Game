@@ -91,7 +91,7 @@ Terrain::Terrain(
         }
     }
     int test = qb_read(path, &materials_inverse);
-    if (test == 1) {
+    if (test) {
         std::cerr << "Could not load terrain" << std::endl;
         return;
     }
@@ -918,11 +918,9 @@ Terrain::qb_read(
     std::vector<int> center;
     std::vector<uint32_t> size;
 
-    int test = voxel_utility::from_qb(path, data, center, size);
-    bool ok = (test == 0);
-    if (!ok) {
-        return 1;
-    }
+    int err = voxel_utility::from_qb(path, data, center, size);
+    if (err)
+        return err;
 
     X_MAX = size[0];
     Y_MAX = size[1];
@@ -952,7 +950,7 @@ Terrain::qb_read(
                   << std::dec << std::endl;
     }
 
-    return !ok;
+    return 0;
 }
 
 std::pair<Tile*, Tile*>
