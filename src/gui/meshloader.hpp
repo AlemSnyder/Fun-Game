@@ -12,9 +12,12 @@ namespace MeshLoader {
  */
 class SingleMesh {
  public:
-    virtual GLuint get_vertex_buffer() const = 0;
-    virtual GLuint get_element_buffer() const = 0;
-    virtual unsigned int get_num_vertices() const = 0;
+    virtual GLuint
+    get_vertex_buffer() const = 0;
+    virtual GLuint
+    get_element_buffer() const = 0;
+    virtual unsigned int
+    get_num_vertices() const = 0;
 };
 
 /**
@@ -25,11 +28,16 @@ class SingleMesh {
  */
 class MultiMesh {
  public:
-    virtual GLuint get_vertex_buffer() const = 0;
-    virtual GLuint get_element_buffer() const = 0;
-    virtual GLuint get_model_transforms() const = 0;
-    virtual unsigned int get_num_vertices() const = 0;
-    virtual unsigned int get_num_models() const = 0;
+    virtual GLuint
+    get_vertex_buffer() const = 0;
+    virtual GLuint
+    get_element_buffer() const = 0;
+    virtual GLuint
+    get_model_transforms() const = 0;
+    virtual unsigned int
+    get_num_vertices() const = 0;
+    virtual unsigned int
+    get_num_models() const = 0;
 };
 
 /**
@@ -39,8 +47,10 @@ class MultiMesh {
  */
 class SingleComplexMesh : public SingleMesh {
  public:
-    virtual GLuint get_normal_buffer() const = 0;
-    virtual GLuint get_color_buffer() const = 0;
+    virtual GLuint
+    get_normal_buffer() const = 0;
+    virtual GLuint
+    get_color_buffer() const = 0;
 };
 
 /**
@@ -50,8 +60,10 @@ class SingleComplexMesh : public SingleMesh {
  */
 class MultiComplexMesh : public MultiMesh {
  public:
-    virtual GLuint get_normal_buffer() const = 0;
-    virtual GLuint get_color_buffer() const = 0;
+    virtual GLuint
+    get_normal_buffer() const = 0;
+    virtual GLuint
+    get_color_buffer() const = 0;
 };
 
 } // namespace MeshLoader

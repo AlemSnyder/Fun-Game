@@ -72,46 +72,57 @@ class ShadowMap {
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh);
+    void
+    add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh);
 
     /**
      * @brief adds an indexed mesh so it will cast a shadow
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh);
+    void
+    add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh);
 
     /**
      * @brief Get the depth texture ID
      *
      * @return GLuint& reference to depth texture ID
      */
-    inline GLuint& get_depth_texture() { return depth_texture_; }
+    inline GLuint&
+    get_depth_texture() {
+        return depth_texture_;
+    }
 
     /**
      * @brief Get the frame buffer ID
      *
      * @return GLuint& reference to frame buffer ID
      */
-    inline GLuint& et_frame_buffer() { return frame_buffer_name_; }
+    inline GLuint&
+    et_frame_buffer() {
+        return frame_buffer_name_;
+    }
 
     /**
      * @brief Set the light direction vector
      *
      * @param light_direction the direction of the light
      */
-    void set_light_direction(glm::vec3 light_direction);
+    void
+    set_light_direction(glm::vec3 light_direction);
 
     /**
      * @brief Set the depth projection matrix
      *
      * @param depth_projection_matrix the projection matrix
      */
-    void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
+    void
+    set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
     /**
      * @brief renders the length of the light ray to the depth buffer
      *
      */
-    void render_shadow_depth_buffer() const;
+    void
+    render_shadow_depth_buffer() const;
 };

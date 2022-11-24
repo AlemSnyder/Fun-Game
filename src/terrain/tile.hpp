@@ -45,7 +45,8 @@ class Tile;
  *
  */
 struct TilePCompare {
-    bool operator()(const Tile* lhs, const Tile* rhs) const;
+    bool
+    operator()(const Tile* lhs, const Tile* rhs) const;
 };
 
 /**
@@ -100,48 +101,60 @@ class Tile {
      *
      * @param mat_ material to set
      */
-    void set_material(const terrain::Material* const materials);
+    void
+    set_material(const terrain::Material* const materials);
     /**
      * @brief Set the material, and color, and update solid state
      *
      * @param mat_ material to set
      * @param color_id color to set
      */
-    void set_material(const terrain::Material* const materials, uint8_t color_id);
+    void
+    set_material(const terrain::Material* const materials, uint8_t color_id);
     /**
      * @brief Set the color id
      *
      * @param color_id color to set
      */
-    void set_color_id(uint8_t color_id, const terrain::Material* const material);
+    void
+    set_color_id(uint8_t color_id, const terrain::Material* const material);
     /**
      * @brief Set the distance from edge
      *
      * @param num distance from edge
      */
-    void set_grow_data_low(int num);
+    void
+    set_grow_data_low(int num);
     /**
      * @brief Set the distance from wall
      *
      * @param num distance from wall
      */
-    void set_grow_data_high(int num);
+    void
+    set_grow_data_high(int num);
 
     /**
      * @brief Get the distance from edge
      */
-    inline int get_grow_data_low() const { return grow_data_low_; }
+    inline int
+    get_grow_data_low() const {
+        return grow_data_low_;
+    }
 
     /**
      * @brief Get the distance from wall
      */
-    inline int get_grow_data_high() const { return grow_data_high_; }
+    inline int
+    get_grow_data_high() const {
+        return grow_data_high_;
+    }
 
     /**
      * @brief sets grass to true, and set color id to 1
      *
      */
-    void try_grow_grass();
+    void
+    try_grow_grass();
     /**
      * @brief Set the color id if this tile is grass
      *
@@ -149,7 +162,8 @@ class Tile {
      * @param grass_mid index of color not effected by edge affects
      * @param grass_colors grass color vector
      */
-    void set_grass_color(
+    void
+    set_grass_color(
         unsigned int grass_grad_length, unsigned int grass_mid,
         std::vector<uint8_t> grass_colors
     );
@@ -160,28 +174,38 @@ class Tile {
      *
      * @return int x position
      */
-    inline int get_x() const { return x; }
+    inline int
+    get_x() const {
+        return x;
+    }
 
     /**
      * @brief Get the y position
      *
      * @return int y position
      */
-    inline int get_y() const { return y; }
+    inline int
+    get_y() const {
+        return y;
+    }
 
     /**
      * @brief Get the z position
      *
      * @return int z position
      */
-    inline int get_z() const { return z; }
+    inline int
+    get_z() const {
+        return z;
+    }
 
     /**
      * @brief coordinate of tile
      *
      * @return std::array<int, 3> array of x, y, z
      */
-    std::array<int, 3> sop() const;
+    std::array<int, 3>
+    sop() const;
 
     /**
      * @brief is the tile grass
@@ -189,42 +213,52 @@ class Tile {
      * @return true this tile is grass
      * @return false this tile is not grass
      */
-    inline bool is_grass() const { return grass_; }
+    inline bool
+    is_grass() const {
+        return grass_;
+    }
 
     /**
      * @brief Get the material
      *
      * @return const Material*
      */
-    inline uint8_t get_material_id() const { return mat_id_; }
+    inline uint8_t
+    get_material_id() const {
+        return mat_id_;
+    }
 
     /**
      * @brief Get the color id
      *
      * @return uint8_t color id
      */
-    uint8_t get_color_id() const;
+    uint8_t
+    get_color_id() const;
 
     /**
      * @brief Get the material, and color id in one
      *
      * @return uint16_t 8 bit material id, and 8 bit color id
      */
-    uint16_t get_mat_color_id() const;
+    uint16_t
+    get_mat_color_id() const;
 
     /**
      * @brief Get the distance from edge
      *
      * @return uint8_t distance from edge
      */
-    uint8_t get_grow_low() const;
+    uint8_t
+    get_grow_low() const;
 
     /**
      * @brief Get the distance from wall
      *
      * @return uint8_t distance from wall
      */
-    uint8_t get_grow_high() const;
+    uint8_t
+    get_grow_high() const;
 
     /**
      * @brief is this tile solid
@@ -232,17 +266,23 @@ class Tile {
      * @return true the tiles is solid
      * @return false the tile is not solid
      */
-    inline bool is_solid() const { return solid_; }
+    inline bool
+    is_solid() const {
+        return solid_;
+    }
 
-    inline bool operator==(const Tile other) const {
+    inline bool
+    operator==(const Tile other) const {
         return (this->x == other.x && this->y == other.y && this->z == other.z);
     }
 
-    inline bool operator==(const Tile* other) const {
+    inline bool
+    operator==(const Tile* other) const {
         return (this->x == other->x && this->y == other->y && this->z == other->z);
     }
 
-    bool operator>(const Tile other) const;
+    bool
+    operator>(const Tile other) const;
 };
 
 } // namespace terrain

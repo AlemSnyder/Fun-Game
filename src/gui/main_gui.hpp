@@ -4,6 +4,7 @@
 
 namespace gui {
 
-int GUITest(World world);
+int
+GUITest(World world);
 
 } // namespace gui

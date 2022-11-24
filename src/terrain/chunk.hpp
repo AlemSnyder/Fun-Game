@@ -58,14 +58,16 @@ class Chunk {
      *
      * @param out a set that gets the node groups in this chunk added to it
      */
-    void add_nodes_to(std::set<const NodeGroup*>& out) const;
+    void
+    add_nodes_to(std::set<const NodeGroup*>& out) const;
 
     /**
      * @brief Used for getting mesh
      *
      * @return std::vector<int> offset of chunk in world space
      */
-    inline std::vector<int> get_offset() const {
+    inline std::vector<int>
+    get_offset() const {
         return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
     }
 
@@ -74,7 +76,8 @@ class Chunk {
      *
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
-    inline static std::vector<unsigned int> get_size() {
+    inline static std::vector<unsigned int>
+    get_size() {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
 
@@ -86,17 +89,22 @@ class Chunk {
      * @param z z position in chunk
      * @return uint32_t color or tile color id
      */
-    uint32_t get_voxel(int x, int y, int z) const;
+    uint32_t
+    get_voxel(int x, int y, int z) const;
 
  private:
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
-    void delNodeGroup(NodeGroup& NG);
-    void mergeNodeGroup(NodeGroup& g1, NodeGroup& g2);
+    void
+    delNodeGroup(NodeGroup& NG);
+    void
+    mergeNodeGroup(NodeGroup& g1, NodeGroup& g2);
     uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
                             // Chunk::SIZE to get tile position.
-    bool contains_nodeGroup(NodeGroup*);
-    void R_merge(NodeGroup& g1, std::set<NodeGroup*>& to_merge);
+    bool
+    contains_nodeGroup(NodeGroup*);
+    void
+    R_merge(NodeGroup& g1, std::set<NodeGroup*>& to_merge);
 };
 
 } // namespace terrain

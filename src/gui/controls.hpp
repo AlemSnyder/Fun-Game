@@ -13,14 +13,16 @@ namespace controls {
  *
  * @param window The current OpenGL window (duh)
  */
-void computeMatricesFromInputs(GLFWwindow* window);
+void
+computeMatricesFromInputs(GLFWwindow* window);
 
 /**
  * @brief Get the view matrix
  *
  * @return glm::mat4 projection of world space to camera space
  */
-glm::mat4 get_view_matrix();
+glm::mat4
+get_view_matrix();
 
 /**
  * @brief Get the projection matrix
@@ -28,6 +30,7 @@ glm::mat4 get_view_matrix();
  * @return glm::mat4 homographic projection of world onto view depending on the
  * FOV
  */
-glm::mat4 get_projection_matrix();
+glm::mat4
+get_projection_matrix();
 
 } // namespace controls

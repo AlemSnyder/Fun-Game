@@ -8,7 +8,8 @@ namespace files {
 /**
  * @brief Get the path to the root loading dir.
  */
-std::filesystem::path get_root_path();
+std::filesystem::path
+get_root_path();
 
 /**
  * @brief Get the path to a data file

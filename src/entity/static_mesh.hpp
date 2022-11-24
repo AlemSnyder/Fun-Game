@@ -1,5 +1,5 @@
-#include "mesh.hpp"
 #include "../gui/meshloader.hpp"
+#include "mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -33,7 +33,8 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
     };
 
     // copy operator
-    inline StaticMesh& operator=(const StaticMesh& obj) {
+    inline StaticMesh&
+    operator=(const StaticMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -64,19 +65,40 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         glDeleteBuffers(1, &transforms_buffer_);
     }
 
-    inline GLuint get_color_buffer() const override { return color_buffer_; }
+    inline GLuint
+    get_color_buffer() const override {
+        return color_buffer_;
+    }
 
-    inline GLuint get_element_buffer() const override { return element_buffer_; }
+    inline GLuint
+    get_element_buffer() const override {
+        return element_buffer_;
+    }
 
-    inline GLuint get_normal_buffer() const override { return normal_buffer_; }
+    inline GLuint
+    get_normal_buffer() const override {
+        return normal_buffer_;
+    }
 
-    inline GLuint get_vertex_buffer() const override { return vertex_buffer_; }
+    inline GLuint
+    get_vertex_buffer() const override {
+        return vertex_buffer_;
+    }
 
-    inline GLuint get_model_transforms() const override { return transforms_buffer_; }
+    inline GLuint
+    get_model_transforms() const override {
+        return transforms_buffer_;
+    }
 
-    inline unsigned int get_num_vertices() const override { return num_vertices_; }
+    inline unsigned int
+    get_num_vertices() const override {
+        return num_vertices_;
+    }
 
-    inline unsigned int get_num_models() const override { return num_models_; }
+    inline unsigned int
+    get_num_models() const override {
+        return num_models_;
+    }
 };
 
 } // namespace terrain

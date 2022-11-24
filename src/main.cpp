@@ -96,8 +96,7 @@ save_terrain(
 void
 save_all_terrain(
     // NOLINTNEXTLINE(bugprone-easily-swappable-parameters): local fn
-    const Json::Value& materials_json,
-    Json::Value biome_data
+    const Json::Value& materials_json, Json::Value biome_data
 ) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {

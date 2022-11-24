@@ -51,7 +51,8 @@ class NoiseGenerator {
      * @param y postion in y direction
      * @return double the value of the noise
      */
-    double getValueNoise(double x, double y);
+    double
+    getValueNoise(double x, double y);
 
  private:
     int num_octaves_ = 7;
@@ -71,10 +72,14 @@ class NoiseGenerator {
         {997169939, 842027887, 423882827}
     };
 
-    double noise_(int i, int x, int y);
-    double smoothed_noise_(int i, int x, int y);
-    double interpolate_(double a, double b, double x); // cosine interpolation
-    double interpolated_noise_(int i, double x, double y);
+    double
+    noise_(int i, int x, int y);
+    double
+    smoothed_noise_(int i, int x, int y);
+    double
+    interpolate_(double a, double b, double x); // cosine interpolation
+    double
+    interpolated_noise_(int i, double x, double y);
 };
 
 } // namespace terrain_generation

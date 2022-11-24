@@ -17,7 +17,8 @@ class VoxelObject {
     std::vector<uint32_t> size_;
     bool ok_;
 
-    inline int get_position(int x, int y, int z) const {
+    inline int
+    get_position(int x, int y, int z) const {
         return ((x * size_[1] + y) * size_[2] + z);
     }
 
@@ -41,7 +42,10 @@ class VoxelObject {
      * @return true loaded correctly
      * @return false failed to load correctly
      */
-    inline bool ok() const { return ok_; }
+    inline bool
+    ok() const {
+        return ok_;
+    }
 
     /**
      * @brief Get the voxel color at given coordinate
@@ -51,7 +55,8 @@ class VoxelObject {
      * @param z coordinate
      * @return uint32_t color
      */
-    inline uint32_t get_voxel(uint32_t x, uint32_t y, uint32_t z) const {
+    inline uint32_t
+    get_voxel(uint32_t x, uint32_t y, uint32_t z) const {
         if ((size_[0] > x) && (size_[1] > y) && (size_[2] > z)) {
             return data_[get_position(x, y, z)];
         }
@@ -64,14 +69,20 @@ class VoxelObject {
      *
      * @return std::vector<int>
      */
-    inline std::vector<int> get_offset() const { return center_; }
+    inline std::vector<int>
+    get_offset() const {
+        return center_;
+    }
 
     /**
      * @brief Get the size as a vector of length three
      *
      * @return std::vector<uint32_t> length in x, y, z
      */
-    inline std::vector<uint32_t> get_size() { return size_; }
+    inline std::vector<uint32_t>
+    get_size() {
+        return size_;
+    }
 };
 
 template <typename T>
@@ -86,7 +97,8 @@ READ(T& v, FILE* file) {
     fread(&v, sizeof(T), 1, file);
 }
 
-int from_qb(
+int
+from_qb(
     const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
     std::vector<uint32_t>& size
 );

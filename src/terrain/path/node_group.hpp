@@ -64,7 +64,8 @@ class NodeGroup {
      * @param other the node group that is added to this one
      * @return std::map<NodeGroup *, UnitPath> adjacent node groups of other
      */
-    std::map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
+    std::map<NodeGroup*, UnitPath>
+    merge_groups(NodeGroup other);
 
     // !void update(); If I modify terrain path finding should not break
     // this should be in chunk though
@@ -73,39 +74,45 @@ class NodeGroup {
      *
      * @return The set of tiles
      */
-    const std::set<const Tile*, TilePCompare> get_tiles() const;
+    const std::set<const Tile*, TilePCompare>
+    get_tiles() const;
     /**
      * @brief Add adjacent node group where
      *
      * @param NG The adjacent node group
      * @param path_type The path type between the two node groups
      */
-    void add_adjacent(NodeGroup* NG, UnitPath path_type);
+    void
+    add_adjacent(NodeGroup* NG, UnitPath path_type);
     /**
      * @brief Get adjacent node groups that are compatible with path type
      *
      * @param path_type type of paths that are allowed
      * @return set of adjacent node groups
      */
-    std::set<const NodeGroup*> get_adjacent_clear(int path_type) const;
+    std::set<const NodeGroup*>
+    get_adjacent_clear(int path_type) const;
     /**
      * @brief Remove node group from adjacency
      *
      * @param NG node group to remove
      */
-    void remove_adjacent(NodeGroup* NG);
+    void
+    remove_adjacent(NodeGroup* NG);
     /**
      * @brief Get the adjacency map
      *
      * @return std::map<NodeGroup *, UnitPath>
      */
-    std::map<NodeGroup*, UnitPath> get_adjacent_map();
+    std::map<NodeGroup*, UnitPath>
+    get_adjacent_map();
     /**
      * @brief Get the adjacency map
      *
      * @return std::map<const NodeGroup *, UnitPath>
      */
-    std::map<const NodeGroup*, UnitPath> get_adjacent_map() const;
+    std::map<const NodeGroup*, UnitPath>
+    get_adjacent_map() const;
     /**
      * @brief Test if two node groups are adjacent
      *
@@ -113,34 +120,41 @@ class NodeGroup {
      * @return true if the node groups are adjacent
      * @return false otherwise
      */
-    bool adjacent_to(NodeGroup* other) const;
+    bool
+    adjacent_to(NodeGroup* other) const;
     /**
      * @brief Get the center in the x direction
      *
      * @return float
      */
-    float get_center_x();
+    float
+    get_center_x();
     /**
      * @brief Get the center in the y direction
      *
      * @return float
      */
-    float get_center_y();
+    float
+    get_center_y();
     /**
      * @brief Get the center in the z direction
      *
      * @return float
      */
-    float get_center_z();
+    float
+    get_center_z();
     /**
      * @brief vector to volumetric center
      *
      * @return std::array<float, 3>
      */
-    std::array<float, 3> sop() const;
+    std::array<float, 3>
+    sop() const;
 
-    bool operator==(const NodeGroup& other) const;
-    bool operator>(const NodeGroup& other) const;
+    bool
+    operator==(const NodeGroup& other) const;
+    bool
+    operator>(const NodeGroup& other) const;
 
  private:
     std::set<const Tile*, TilePCompare> tiles;

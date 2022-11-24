@@ -24,20 +24,24 @@
 namespace terrain {
 
 // implementations of start of iteration
-template void helper::grow_grass_recursive<
+template void
+helper::grow_grass_recursive<
     helper::edge_detector_low, helper::getter_low,
     helper::setter_low>(Terrain&, std::set<Tile*>);
 
-template void helper::grow_grass_recursive<
+template void
+helper::grow_grass_recursive<
     helper::edge_detector_high, helper::getter_high,
     helper::setter_high>(Terrain&, std::set<Tile*>);
 
 // implementations of inner recursive loop
-template void helper::grow_grass_inner<helper::getter_low, helper::setter_low>(
+template void
+helper::grow_grass_inner<helper::getter_low, helper::setter_low>(
     Terrain&, std::set<Tile*>, int
 );
 
-template void helper::grow_grass_inner<helper::getter_high, helper::setter_high>(
+template void
+helper::grow_grass_inner<helper::getter_high, helper::setter_high>(
     Terrain&, std::set<Tile*>, int
 );
 

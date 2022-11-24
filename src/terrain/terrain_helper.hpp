@@ -44,7 +44,8 @@ namespace helper {
  * @param height level of grass gradient being set during this iteration.
  */
 template <int getter(Tile*), void setter(Tile*, int)>
-void grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height);
+void
+grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height);
 
 /**
  * @brief Recursive function that sets the grass gradient growth color.
@@ -56,7 +57,8 @@ void grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height);
  * @param all_grass set of all grass in terrain
  */
 template <bool edge_detector(Tile*), int getter(Tile*), void setter(Tile*, int)>
-void grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass);
+void
+grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass);
 
 } // namespace helper
 

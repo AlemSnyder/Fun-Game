@@ -38,7 +38,8 @@ namespace path {
 
 // static uint8_t offsets[26];
 
-std::array<int8_t, 3> get_indexed_offsets(uint8_t index);
+std::array<int8_t, 3>
+get_indexed_offsets(uint8_t index);
 
 class AdjacentIterator {
  private:
@@ -48,22 +49,33 @@ class AdjacentIterator {
     UnitPath path_type_;
     uint8_t dpos_;
 
-    void update_path();
-    void iterate_to_next_available();
+    void
+    update_path();
+    void
+    iterate_to_next_available();
     // Is the adjacent position in the bounds of the terrain
-    bool is_valid_end_position();
+    bool
+    is_valid_end_position();
 
  public:
     AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type);
-    int operator++();
-    int operator++(int);
+    int
+    operator++();
+    int
+    operator++(int);
 
-    inline bool end() { return dpos_ > 26U; }
+    inline bool
+    end() {
+        return dpos_ > 26U;
+    }
 
-    size_t get_pos();
-    UnitPath get_path_type();
+    size_t
+    get_pos();
+    UnitPath
+    get_path_type();
 
-    inline std::array<int8_t, 3> get_relative_position() {
+    inline std::array<int8_t, 3>
+    get_relative_position() {
         return get_indexed_offsets(dpos_);
     }
 };
