@@ -43,6 +43,7 @@ endif()
 # Add include dirs for vendored and configured headers
 target_include_directories(FunGame PUBLIC "vendor")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
+target_include_directories(FunGame PRIVATE "src")
 
 # Set warning options
 if(MSVC)

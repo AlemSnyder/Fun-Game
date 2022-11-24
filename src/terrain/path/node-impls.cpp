@@ -2,9 +2,9 @@
 //! This is an implementations file. Anything not implemented below will lead
 //! to linker errors.
 
-#include "../tile.hpp"
 #include "node.cpp"
 #include "node_group.hpp"
+#include "terrain/tile.hpp"
 
 namespace terrain {
 

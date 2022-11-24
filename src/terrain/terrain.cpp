@@ -1,7 +1,7 @@
 #include "terrain.hpp"
 
-#include "../util/time.hpp"
-#include "../util/voxel_io.hpp"
+#include "util/time.hpp"
+#include "util/voxel_io.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
 #include "path/node.hpp"

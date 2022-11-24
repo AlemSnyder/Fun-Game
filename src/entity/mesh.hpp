@@ -20,7 +20,7 @@
  */
 #pragma once
 
-#include "../util/voxel_io.hpp"
+#include "util/voxel_io.hpp"
 
 #include <glm/glm.hpp>
 

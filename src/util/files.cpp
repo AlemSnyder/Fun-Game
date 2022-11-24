@@ -1,6 +1,6 @@
 #include "files.hpp"
 
-#include "config.h"
+#include "constants.hpp"
 
 #include <whereami.h>
 

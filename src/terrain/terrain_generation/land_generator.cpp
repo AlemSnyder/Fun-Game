@@ -13,7 +13,7 @@
 
 #include "land_generator.hpp"
 
-#include "../material.hpp"
+#include "terrain/material.hpp"
 #include "tilestamp.hpp"
 
 #include <json/json.h>

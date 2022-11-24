@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../tile.hpp"
+#include "terrain/tile.hpp"
 #include "unit_path.hpp"
 
 #include <cstdint>

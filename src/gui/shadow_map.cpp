@@ -1,8 +1,8 @@
 #include "shadow_map.hpp"
 
-#include "../util/files.hpp"
 #include "meshloader.hpp"
 #include "shader.hpp"
+#include "util/files.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

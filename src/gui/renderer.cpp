@@ -1,10 +1,10 @@
 #include "renderer.hpp"
 
-#include "../entity/terrain_mesh.hpp"
-#include "../util/files.hpp"
 #include "controls.hpp"
+#include "entity/terrain_mesh.hpp"
 #include "meshloader.hpp"
 #include "shader.hpp"
+#include "util/files.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

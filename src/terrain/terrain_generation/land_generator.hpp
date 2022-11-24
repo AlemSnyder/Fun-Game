@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../material.hpp"
+#include "terrain/material.hpp"
 #include "tilestamp.hpp"
 
 #include <json/json.h>

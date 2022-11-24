@@ -1,4 +1,4 @@
-#include "../gui/meshloader.hpp"
+#include "gui/meshloader.hpp"
 #include "mesh.hpp"
 
 #include <GL/glew.h>

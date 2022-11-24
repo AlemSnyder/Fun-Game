@@ -22,7 +22,7 @@
  *
  */
 
-#include "../terrain.hpp"
+#include "terrain/terrain.hpp"
 #include "unit_path.hpp"
 
 #include <cstdint>

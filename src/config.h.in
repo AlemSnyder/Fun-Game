@@ -1,4 +1,4 @@
-#include <string_view>
+#pragma once
 
 // Version info
 /* clang-format off */
@@ -15,10 +15,3 @@
  * https://stackoverflow.com/a/3160643
  */
 #cmakedefine01 DEBUG()
-
-// Data and resource paths
-#if DEBUG()
-constexpr std::string_view ROOT_DIR_PATH = "..";
-#else
-constexpr std::string_view ROOT_DIR_PATH = ".";
-#endif

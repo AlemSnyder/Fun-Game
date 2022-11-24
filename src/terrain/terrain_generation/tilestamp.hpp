@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../material.hpp"
+#include "terrain/material.hpp"
 
 #include <set>
 

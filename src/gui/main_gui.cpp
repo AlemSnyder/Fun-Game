@@ -1,14 +1,14 @@
 #include "main_gui.hpp"
 
-#include "../entity/mesh.hpp"
-#include "../entity/static_mesh.hpp"
-#include "../entity/terrain_mesh.hpp"
-#include "../util/files.hpp"
-#include "../world.hpp"
 #include "controls.hpp"
+#include "entity/mesh.hpp"
+#include "entity/static_mesh.hpp"
+#include "entity/terrain_mesh.hpp"
 #include "renderer.hpp"
 #include "shader.hpp"
 #include "shadow_map.hpp"
+#include "util/files.hpp"
+#include "world.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
