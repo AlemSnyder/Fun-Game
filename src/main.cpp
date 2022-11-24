@@ -72,8 +72,6 @@ save_test(const std::string path, const std::string save_path) {
 
 void
 save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name) {
-
-    ;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
