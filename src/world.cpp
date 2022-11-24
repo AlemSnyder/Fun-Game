@@ -31,31 +31,19 @@
 #include <fstream>
 #include <string>
 
-// void World::save(){
-//     terrain_main.qb_save(path);
-// }
-
-// TODO standardize initialization
-// add initializer lists
-
-const terrain::Material*
-World::get_material(int material_id) const {
-    return &materials.at(material_id);
-}
+constexpr uint8_t HEX_COLOR_BASE = 16;
 
 std::vector<int>
-World::get_grass_grad_data(Json::Value materials_json) {
+World::get_grass_grad_data(const Json::Value& materials_json) {
     std::vector<int> grass_grad_data;
-    for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
-         i++) {
-        grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
-        ));
+    for (const auto& grad_level : materials_json["Dirt"]["Gradient"]["levels"]) {
+        grass_grad_data.push_back(grad_level.asInt());
     }
     return grass_grad_data;
 }
 
 std::map<int, const terrain::Material>
-World::init_materials(Json::Value material_data) {
+World::init_materials(const Json::Value& material_data) {
     std::map<int, const terrain::Material> out;
     for (auto element_it = material_data.begin(); element_it != material_data.end();
          element_it++) {
@@ -63,10 +51,12 @@ World::init_materials(Json::Value material_data) {
 
         Json::Value material = *element_it;
         std::string name = element_it.key().asString();
-        for (unsigned int i = 0; i < material["colors"].size(); i++) {
-            const std::string string = material["colors"][i]["name"].asString();
-            uint32_t color = std::stoll(material["colors"][i]["hex"].asString(), 0, 16);
-            color_vector.push_back(std::make_pair(string, color));
+        for (auto& color_data : material["colors"]) {
+            const std::string name = color_data["name"].asString();
+            uint32_t color =
+                std::stoll(color_data["hex"].asString(), nullptr, HEX_COLOR_BASE);
+
+            color_vector.emplace_back(name, color);
         }
 
         terrain::Material mat{
@@ -74,24 +64,21 @@ World::init_materials(Json::Value material_data) {
             static_cast<uint8_t>(material["speed"].asInt()), // speed_multiplier
             material["solid"].asBool(),                      // solid
             static_cast<uint8_t>(material["id"].asInt()),    // element_id
-            name};                                           // name
+            name,                                            // name
+        };
         out.insert(std::make_pair(mat.element_id, mat));
     }
     return out;
 }
 
-World::World(Json::Value materials_json, const std::string path) :
+World::World(const Json::Value& materials_json, const std::string& path) :
     materials(init_materials(materials_json)), terrain_main(path, &materials) {
-    std::vector<int> grass_grad_data;
-    for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
-         i++) {
-        grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
-        ));
-    }
+    // @AlemSnyder WHAT IS DIS
+    std::vector<int> grass_grad_data = get_grass_grad_data(materials_json);
 }
 
 World::World(
-    Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
+    const Json::Value& materials_json, const Json::Value& biome_data, uint32_t x_tiles,
     uint32_t y_tiles
 ) :
     materials(init_materials(materials_json)),
@@ -101,6 +88,8 @@ World::World(
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {}
 
-World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
+World::World(
+    const Json::Value& materials_json, const Json::Value& biome_data, int tile_type
+) :
     materials(init_materials(materials_json)),
     terrain_main(3, 3, macro_tile_size, height, 5, tile_type, &materials, biome_data) {}
