@@ -1,6 +1,6 @@
 #include "renderer.hpp"
 
-#include "../terrain/terrain_mesh.hpp"
+#include "../entity/terrain_mesh.hpp"
 #include "../util/files.hpp"
 #include "controls.hpp"
 #include "meshloader.hpp"

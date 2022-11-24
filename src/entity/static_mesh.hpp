@@ -1,6 +1,4 @@
-//! This is a test. The content tent of this class should be transferred into chunk
-
-#include "../entity/mesh.hpp"
+#include "mesh.hpp"
 #include "../gui/meshloader.hpp"
 
 #include <GL/glew.h>
@@ -13,49 +11,57 @@
 
 namespace terrain {
 
-class TerrainMesh : public MeshLoader::SingleComplexMesh {
+class StaticMesh : public MeshLoader::MultiComplexMesh {
  private:
     GLuint vertex_buffer_;
     GLuint color_buffer_;
     GLuint normal_buffer_;
     GLuint element_buffer_;
+    GLuint transforms_buffer_;
     unsigned int num_vertices_;
+    unsigned int num_models_;
 
  public:
-    inline TerrainMesh(const TerrainMesh& obj) {
+    inline StaticMesh(const StaticMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
         element_buffer_ = obj.element_buffer_;
+        transforms_buffer_ = obj.transforms_buffer_;
         num_vertices_ = obj.num_vertices_;
+        num_models_ = obj.num_models_;
     };
 
     // copy operator
-    inline TerrainMesh& operator=(const TerrainMesh& obj) {
+    inline StaticMesh& operator=(const StaticMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
         element_buffer_ = obj.element_buffer_;
+        transforms_buffer_ = obj.transforms_buffer_;
         num_vertices_ = obj.num_vertices_;
+        num_models_ = obj.num_models_;
         return *this;
     }
 
-    inline TerrainMesh(){};
+    inline StaticMesh(){};
 
-    TerrainMesh(entity::Mesh mesh);
+    StaticMesh(entity::Mesh mesh, const std::vector<glm::vec3>& model_transforms);
 
-    TerrainMesh(
+    StaticMesh(
         const std::vector<unsigned short>& indices,
         const std::vector<glm::vec3>& indexed_vertices,
         const std::vector<glm::vec3>& indexed_colors,
-        const std::vector<glm::vec3>& indexed_normals
+        const std::vector<glm::vec3>& indexed_normals,
+        const std::vector<glm::vec3>& model_transforms
     );
 
-    inline ~TerrainMesh() {
+    inline ~StaticMesh() {
         glDeleteBuffers(1, &vertex_buffer_);
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
+        glDeleteBuffers(1, &transforms_buffer_);
     }
 
     inline GLuint get_color_buffer() const override { return color_buffer_; }
@@ -66,7 +72,11 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
 
     inline GLuint get_vertex_buffer() const override { return vertex_buffer_; }
 
+    inline GLuint get_model_transforms() const override { return transforms_buffer_; }
+
     inline unsigned int get_num_vertices() const override { return num_vertices_; }
+
+    inline unsigned int get_num_models() const override { return num_models_; }
 };
 
 } // namespace terrain
