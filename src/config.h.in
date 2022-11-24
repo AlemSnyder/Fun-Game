@@ -1,3 +1,5 @@
+#include <string_view>
+
 // Version info
 /* clang-format off */
 #define VERSION_MAJOR @FunGame_VERSION_MAJOR@
@@ -16,7 +18,7 @@
 
 // Data and resource paths
 #if DEBUG()
-#    define ROOT_DIR_PATH ".."
+constexpr std::string_view ROOT_DIR_PATH = "..";
 #else
-#    define ROOT_DIR_PATH "."
+constexpr std::string_view ROOT_DIR_PATH = ".";
 #endif

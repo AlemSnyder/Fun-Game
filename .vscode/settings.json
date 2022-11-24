@@ -2,9 +2,11 @@
     "editor.formatOnSave": true,
     "cSpell.words": [
         "Astar",
+        "cmdl",
         "Framebuffer",
         "goxel",
         "lsst",
+        "NOLINTNEXTLINE",
         "Parameteri",
         "Perlin",
         "vmask"
@@ -108,5 +110,7 @@
         "variant": "cpp",
         "filesystem": "cpp",
         "CMakeLists.txt": "cmake"
-    }
+    },
+    "C_Cpp.codeAnalysis.runAutomatically": true,
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true
 }

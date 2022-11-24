@@ -15,21 +15,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <string>
 
-#define INITIAL_WINDOW_WIDTH  1024
-#define INITIAL_WINDOW_HEIGHT 768
-
 int
-GenerateTerrain(const std::string path) {
-    // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
-    // C/gcc/terrain_generation";
-
+GenerateTerrain(const std::string& path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -57,8 +50,10 @@ MacroMap() {
 }
 
 int
-save_test(const std::string path, const std::string save_path) {
-
+save_test(
+    const std::string& path, // NOLINT(bugprone-easily-swappable-parameters): local fn
+    const std::string& save_path
+) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -71,7 +66,9 @@ save_test(const std::string path, const std::string save_path) {
 }
 
 void
-save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name) {
+save_terrain(
+    Json::Value materials_json, Json::Value biome_data, const std::string& biome_name
+) {
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
@@ -94,13 +91,14 @@ save_terrain(Json::Value materials_json, Json::Value biome_data, std::string bio
         save_path += ".qb";
         world.terrain_main.qb_save(save_path.string());
     }
-    // Json::Value biome_data;
-    // std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
-    // biome_file >> biome_data;
 }
 
 void
-save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
+save_all_terrain(
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters): local fn
+    const Json::Value& materials_json,
+    Json::Value biome_data
+) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
         save_terrain(materials_json, *biome_type, biome_type.key().asString());
@@ -108,7 +106,10 @@ save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
 }
 
 int
-path_finder_test(const std::string path, std::string save_path) {
+path_finder_test(
+    const std::string& path, // NOLINT(bugprone-easily-swappable-parameters): local fn
+    const std::string& save_path
+) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -129,16 +130,16 @@ path_finder_test(const std::string path, std::string save_path) {
         world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
     std::cout << "    " << static_cast<int>(tile_path.size()) << std::endl;
-    if (tile_path.size() == 0) {
+    if (tile_path.empty()) {
         std::cout << "no path" << std::endl;
         world.terrain_main.qb_save_debug(save_path);
         return 1;
     }
 
-    for (auto it = tile_path.begin(); it != tile_path.end(); ++it) {
-        std::cout << "    " << (*it)->get_x() << " " << (*it)->get_y() << " "
-                  << (*it)->get_z() << std::endl;
-        world.terrain_main.get_tile(world.terrain_main.pos((*it)->sop()))
+    for (const terrain::Tile* tile : tile_path) {
+        std::cout << "    " << tile->get_x() << " " << tile->get_y() << " "
+                  << tile->get_z() << std::endl;
+        world.terrain_main.get_tile(world.terrain_main.pos(tile->sop()))
             ->set_material(&world.get_materials()->at(7), 5);
     }
 
@@ -148,7 +149,7 @@ path_finder_test(const std::string path, std::string save_path) {
 }
 
 std::vector<entity::Mesh>
-get_mesh(const std::string path) {
+get_mesh(const std::string& path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -176,21 +177,23 @@ StressTest() {
 }
 
 int
-GUITest(const std::string path) {
+GUITest(const std::string& path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
+
     std::vector<std::uint16_t> indices;
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
     std::vector<glm::vec3> indexed_normals;
+
     World world(materials_json, path);
 
     return gui::GUITest(world);
 }
 
 inline int
-GUITest(const std::filesystem::path path) {
+GUITest(const std::filesystem::path& path) {
     return GUITest(path.string());
 }
 
@@ -234,7 +237,7 @@ main(int argc, char** argv) {
         Json::Value materials_json;
         std::ifstream materials_file = files::open_data_file("materials.json");
         materials_file >> materials_json;
-        
+
         cmdl("biome-name", "Biome_1") >> biome_name;
         if (!cmdl[{"-a", "--all"}]) {
             save_terrain(biome_data[biome_name], materials_json, biome_name);
