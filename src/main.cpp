@@ -197,9 +197,11 @@ GUITest(const std::filesystem::path path) {
 int
 main(int argc, char** argv) {
     argh::parser cmdl;
+
     cmdl.add_params({"-pi", "--path-in", "-po", "--path-out"});
     cmdl.add_param("biome-name");
     cmdl.parse(argc, argv);
+
     std::string run_function = cmdl(1).str();
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
@@ -215,8 +217,7 @@ main(int argc, char** argv) {
     for (auto& param : cmdl.params())
         std::cout << '\t' << param.first << " : " << param.second << std::endl;
 
-    std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and
-    path out = " << path_out << std::endl;
+    std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and path out = " << path_out << std::endl;
 #endif
 
     std::cout << "FunGame v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
