@@ -43,16 +43,11 @@
 class World {
  public:
     /**
-     * @brief Construct a new World object
-     *
-     */
-    World();
-    /**
      * @brief Construct a new World object from a save
      *
      * @param path where world was saved
      */
-    World(const std::string path);
+    World(Json::Value materials_json, const std::string path);
     /**
      * @brief Construct a new World object to test biome generation.
      *
@@ -61,7 +56,7 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/terrain_generation/land_generator.hpp
      */
-    World(Json::Value biome_data, int type);
+    World(Json::Value materials_json, Json::Value biome_data, int type);
     World(
         Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
         uint32_t y_tiles

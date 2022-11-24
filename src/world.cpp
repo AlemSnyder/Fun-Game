@@ -80,45 +80,14 @@ World::init_materials(Json::Value material_data) {
     return out;
 }
 
-World::World() {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
-    materials_file >> materials_json;
-
-    init_materials(materials_json);
-
+World::World(Json::Value materials_json, const std::string path) :
+    materials(init_materials(materials_json)), terrain_main(path, &materials) {
     std::vector<int> grass_grad_data;
     for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
          i++) {
         grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
         ));
     }
-
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("biome_data.json");
-    biome_file >> biome_data;
-
-    std::cout << "start of terrain\n";
-    terrain_main = terrain::Terrain();
-}
-
-World::World(const std::string path) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
-    materials_file >> materials_json;
-
-    init_materials(materials_json);
-
-    std::vector<int> grass_grad_data;
-    for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
-         i++) {
-        grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
-        ));
-    }
-
-    std::cout << "start of terrain\n";
-
-    terrain_main = terrain::Terrain(path, &materials);
 }
 
 World::World(
@@ -130,18 +99,8 @@ World::World(
         x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {
-    std::cout << "world of terrain\n";
-}
+    ) {}
 
-World::World(Json::Value biome_data, int tile_type) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
-    materials_file >> materials_json;
-
-    init_materials(materials_json);
-
-    terrain_main = terrain::Terrain(
-        3, 3, macro_tile_size, height, 5, tile_type, &materials, biome_data
-    );
-}
+World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
+    materials(init_materials(materials_json)),
+    terrain_main(3, 3, macro_tile_size, height, 5, tile_type, &materials, biome_data) {}
