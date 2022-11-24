@@ -1,7 +1,5 @@
 #include "terrain.hpp"
 
-#include "util/time.hpp"
-#include "util/voxel_io.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
@@ -10,6 +8,8 @@
 #include "terrain_generation/tilestamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
+#include "util/time.hpp"
+#include "util/voxel_io.hpp"
 
 #include <json/json.h>
 
