@@ -322,6 +322,7 @@ class Terrain {
      */
     static std::vector<int>
     generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value map_data);
+
     /**
      * @brief add material on top of extant voxels
      *
@@ -329,6 +330,21 @@ class Terrain {
      * are added
      * @param material material type to add
      */
+    static std::map<int, terrain_generation::LandGenerator> generate_land_generators(
+        const std::map<int, const Material>* materials, Json::Value biome_data
+    ) {
+        std::map<int, terrain_generation::LandGenerator> land_generators;
+        // for tile macro in data biome
+        for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
+            // create a land generator for each tile macro
+            terrain_generation::LandGenerator gen(
+                materials, biome_data["Tile_Macros"][i]["Land_Data"]
+            );
+            land_generators.insert(std::make_pair(i, gen));
+        }
+        return land_generators;
+    }
+
     void add_to_top(Json::Value to_data, const std::map<int, const Material>* material);
     /**
      * @brief Get the max allowable height of added material
@@ -354,81 +370,26 @@ class Terrain {
      * @param y size in y direction
      * @param z size in z direction
      */
-    void init(int x, int y, int z);
 
     // TODO area_size should not be initialized like this
     /**
-     * @brief Terrain initializer
-     *
-     * @param x number of tile areas in x direction
-     * @param y number of tile areas in y direction
-     * @param area_size size of each area
-     * @param z height of terrain
-     * @param seed seed for random number generation
-     * @param materials materials used in this terrain
-     * @param biome_data data on how to generate a biome
-     * @param Terrain_Maps macro map defines witch tile types go where
-     */
-    void init(
-        int x, int y, int Area_size_, int z, int seed,
-        const std::map<int, const Material>* materials, Json::Value biome_data,
-        std::vector<int> Terrain_Maps
-    );
-    /**
-     * @brief Terrain initializer for biome test
-     *
-     * @param x_tiles number of macro tiles in x direction
-     * @param y_tiles number of macro tiles in y direction
-     * @param Area_size_ size of a macro map tile
-     * @param z_tiles number of voxel tiles in z direction
-     * @param seed seed of random number generator
-     * @param tile_type id of map tile type
-     * @param material set of materials used in the world
-     * @param biome_data json data that contains biome data
-     */
-    void init(
-        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
-        const std::map<int, const Material>* material, Json::Value biome_data
-    );
-    /**
-     * @brief Construct a new Terrain object (default constructor)
-     *
-     */
-    Terrain();
-    /**
      * @brief Construct a new Terrain object
      *
      * @param x_tiles number of macro tiles in x direction
      * @param y_tiles number of macro tiles in y direction
      * @param Area_size_ size of a macro map tile
      * @param z_tiles number of voxel tiles in z direction
-     * @param seed seed of random number generator
      * @param material set of materials used in the world
      * @param biome_data json data that contains biome data
-     * @param grass_grad_data vector that determines grass color from edge
-     * distance
-     * @param grass_mid gradient index of grass not effected by an edge
+     * @param terrain_macro_maps macro map of terrain
+     * @param land_generators defines how each
      */
     Terrain(
-        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
+        int x_tiles, int y_tiles, int Area_size_, int z_tiles,
         const std::map<int, const Material>* material, Json::Value biome_data,
-        std::vector<int> grass_grad_data, unsigned int grass_mid
-    );
-    /**
-     * @brief Construct a new Terrain object
-     *
-     * @param x_tiles number of macro tiles in x direction
-     * @param y_tiles number of macro tiles in y direction
-     * @param Area_size_ size of a macro map tile
-     * @param z_tiles number of voxel tiles in z direction
-     * @param seed seed of random number generator
-     * @param tile_type id of map tile type
-     * @param material set of materials used in the world
-     * @param biome_data json data that contains biome data
-     */
-    Terrain(
-        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
-        const std::map<int, const Material>* material, Json::Value biome_data
+        std::vector<int> terrain_macro_maps,
+        std::map<int, terrain_generation::LandGenerator> land_generators
+
     );
     /**
      * @brief Construct a new Terrain object

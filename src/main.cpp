@@ -58,7 +58,6 @@ MacroMap() {
 
 int
 save_test(const std::string path, const std::string save_path) {
-
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -70,10 +69,11 @@ save_test(const std::string path, const std::string save_path) {
     return 0;
 }
 
-void
-save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name) {
-    std::ifstream materials_file = files::open_data_file("materials.json");
-    materials_file >> materials_json;
+// ! rewrite this when doing terrain generation
+/*void
+save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name)
+{ std::ifstream materials_file = files::open_data_file("materials.json"); materials_file
+>> materials_json;
 
     World world(materials_json, biome_data, 0);
 
@@ -97,15 +97,15 @@ save_terrain(Json::Value materials_json, Json::Value biome_data, std::string bio
     // Json::Value biome_data;
     // std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
     // biome_file >> biome_data;
-}
+}*/
 
-void
+/*void
 save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
         save_terrain(materials_json, *biome_type, biome_type.key().asString());
     }
-}
+}*/
 
 int
 path_finder_test(const std::string path, std::string save_path) {
@@ -227,6 +227,8 @@ main(int argc, char** argv) {
     if (argc == 1) {
         return GUITest(files::get_data_path() / "models" / "DefaultTree.qb");
     } else if (run_function == "TerrainTypes") {
+        return 0;
+        /*
         Json::Value biome_data;
         std::ifstream biome_file = files::open_data_file("biome_data.json");
         biome_file >> biome_data;
@@ -234,13 +236,13 @@ main(int argc, char** argv) {
         Json::Value materials_json;
         std::ifstream materials_file = files::open_data_file("materials.json");
         materials_file >> materials_json;
-        
+
         cmdl("biome-name", "Biome_1") >> biome_name;
         if (!cmdl[{"-a", "--all"}]) {
             save_terrain(biome_data[biome_name], materials_json, biome_name);
         } else {
             save_all_terrain(materials_json, biome_data);
-        }
+        }*/
     } else if (run_function == "GenerateTerrain") {
         return GenerateTerrain(path_in);
     } else if (run_function == "MacroMap") {

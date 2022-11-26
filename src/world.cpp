@@ -31,13 +31,6 @@
 #include <fstream>
 #include <string>
 
-// void World::save(){
-//     terrain_main.qb_save(path);
-// }
-
-// TODO standardize initialization
-// add initializer lists
-
 const terrain::Material*
 World::get_material(int material_id) const {
     return &materials.at(material_id);
@@ -96,11 +89,17 @@ World::World(
 ) :
     materials(init_materials(materials_json)),
     terrain_main(
-        x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"],
-        get_grass_grad_data(materials_json),
-        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+        x_tiles, y_tiles, macro_tile_size, height, &materials, biome_data["Biome_1"],
+        terrain::Terrain::generate_macro_map(
+            x_tiles, y_tiles, biome_data["Terrain_Data"]
+        ),
+        terrain::Terrain::generate_land_generators(&materials, biome_data)
     ) {}
 
 World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
     materials(init_materials(materials_json)),
-    terrain_main(3, 3, macro_tile_size, height, 5, tile_type, &materials, biome_data) {}
+    terrain_main(
+        3, 3, macro_tile_size, height, &materials, biome_data["Biome_1"],
+        {0, 0, 0, 0, tile_type, 0, 0, 0, 0},
+        terrain::Terrain::generate_land_generators(&materials, biome_data)
+    ) {}
