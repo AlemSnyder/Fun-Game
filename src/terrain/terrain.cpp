@@ -26,6 +26,55 @@ namespace terrain {
 
 int Terrain::Area_size = 32;
 
+Terrain::Terrain() : seed(0) {
+    init(0, 0, 0);
+}
+
+Terrain::Terrain(
+    int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
+    const std::map<int, const Material>* material, Json::Value biome_data,
+    std::vector<int> grass_grad_data, unsigned int grass_mid
+) {
+    if (grass_mid >= grass_grad_data.size()) {
+        grass_mid_ = grass_grad_data.size() - 1;
+        std::cerr << "Grass Mid (from biome_data.json) not valid";
+    }
+
+    for (size_t i = 0; i < grass_grad_data.size(); i++) {
+        if (i == static_cast<size_t>(grass_mid)) {
+            grass_mid_ = grass_colors_.size();
+        }
+        for (int j = 0; j < grass_grad_data[i]; j++) {
+            grass_colors_.push_back(i);
+        }
+    }
+    grass_grad_length_ = grass_colors_.size();
+    init(
+        x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
+        generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"])
+    );
+}
+
+Terrain::Terrain(
+    int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
+    const std::map<int, const Material>* material, Json::Value biome_data
+) {
+    init(x_tiles, y_tiles, Area_size_, z_tiles, seed, tile_type, material, biome_data);
+}
+
+void
+Terrain::init(
+    int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int tile_type,
+    const std::map<int, const Material>* material, Json::Value biome_data
+) {
+    std::vector<int> Terrain_Maps;
+    Terrain_Maps.resize(x_tiles * y_tiles, 0);
+    Terrain_Maps[(x_tiles * y_tiles - 1) / 2] = tile_type;
+    init(
+        x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data, Terrain_Maps
+    );
+}
+
 Terrain::Terrain(
     const std::string path, const std::map<int, const Material>* materials
 ) :
@@ -49,24 +98,54 @@ Terrain::Terrain(
     init_chunks();
 }
 
-Terrain::Terrain(
-    int x_tiles, int y_tiles, int Area_size_, int z_tiles,
-    const std::map<int, const Material>* material, Json::Value biome_data, std::vector<int> terrain_macro_maps,
-    std::map<int, terrain_generation::LandGenerator> land_generators
-) : X_MAX(x_tiles * Area_size_), Y_MAX(y_tiles * Area_size_), Z_MAX(z_tiles), materials_(material) {
+// TODO remove this init, and make initializer lists for world
+void
+Terrain::init(int x, int y, int z) {
+    X_MAX = x;
+    Y_MAX = y;
+    Z_MAX = z;
+    tiles_.resize(0);
+}
+
+void
+Terrain::init(
+    int x, int y, int Area_size_, int z, int seed_,
+    const std::map<int, const Material>* materials, Json::Value biome_data,
+    std::vector<int> Terrain_Maps
+) {
+    auto millisec_since_epoch = time_util::get_time();
+
+    Area_size = Area_size_;
+    seed = seed_;
+    materials_ = materials;
+    X_MAX = x * Area_size;
+    Y_MAX = y * Area_size;
+    Z_MAX = z;
+
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         tiles_.push_back(Tile(sop(xyz), &materials_->at(0)));
     }
 
+    srand(seed);
     std::cout << "start of land Generator" << std::endl;
 
+    // create a map of int -> LandGenerator
+    std::map<int, terrain_generation::LandGenerator> land_generators;
 
+    // for tile macro in data biome
+    for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
+        // create a land generator for each tile macro
+        terrain_generation::LandGenerator gen(
+            materials, biome_data["Tile_Macros"][i]["Land_Data"]
+        );
+        land_generators.insert(std::make_pair(i, gen));
+    }
     // TODO make this faster 4
-    for (int i = 0; i < x_tiles; i++)
-        for (int j = 0; j < y_tiles; j++) {
-            int tile_type = terrain_macro_maps[j + i * y_tiles];
+    for (int i = 0; i < x; i++)
+        for (int j = 0; j < y; j++) {
+            int tile_type = Terrain_Maps[j + i * y];
             Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
             for (Json::Value generator_macro : macro_types) {
                 init_area(i, j, land_generators[generator_macro.asInt()]);
@@ -75,7 +154,7 @@ Terrain::Terrain(
     // TODO make this faster 3
     for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
          i++) {
-        add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials_);
+        add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }
 
     // grows the grass
@@ -84,6 +163,8 @@ Terrain::Terrain(
     //  TODO make this faster 1
     init_chunks();
 
+    std::cout << time_util::get_time() - millisec_since_epoch
+              << " Total time Terrain_init" << std::endl;
 }
 
 void
