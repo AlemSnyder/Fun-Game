@@ -306,13 +306,6 @@ class Terrain {
     }
 
     /**
-     * @brief return position of given object
-     *
-     * @tparam T class that has position
-     * @param t object that has position
-     * @return std::array<int, 3> position of the object
-     */
-    /**
      * @brief generates a 2D 'height' map to use to generate the terrain
      *
      * @param size_x number of tile types in x direction
@@ -705,7 +698,8 @@ class Terrain {
 
     /**
      * @brief set the upper bound for grass color
-     *
+     * 
+     * @param all_grass set of pointers to tiles that are grass
      */
     inline void grow_grass_high(std::set<Tile*> all_grass) {
         helper::grow_grass_recursive<
@@ -717,6 +711,7 @@ class Terrain {
     /**
      * @brief set the lower bound for grass color
      *
+     * @param all_grass set of pointers to tiles that are grass
      */
     inline void grow_grass_low(std::set<Tile*> all_grass) {
         helper::grow_grass_recursive<
