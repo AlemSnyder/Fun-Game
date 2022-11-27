@@ -45,6 +45,11 @@ namespace terrain {
  *
  */
 class NodeGroup {
+    std::set<const Tile*, TilePCompare> tiles;
+    std::map<NodeGroup*, UnitPath> adjacent;
+    float center_x, center_y, center_z; // volumetric center, a weighted average
+    UnitPath path_type_; // the path restraints to get form any tile in this Group to
+                         // any other tile
  public:
     /**
      * @brief Construct a new Node Group object
@@ -143,11 +148,7 @@ class NodeGroup {
     bool operator>(const NodeGroup& other) const;
 
  private:
-    std::set<const Tile*, TilePCompare> tiles;
-    std::map<NodeGroup*, UnitPath> adjacent;
-    float center_x, center_y, center_z; // volumetric center, a weighted average
-    UnitPath path_type_; // the path restraints to get form any tile in this Group to
-                         // any other tile
+
 };
 
 } // namespace terrain

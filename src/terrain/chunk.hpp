@@ -42,6 +42,10 @@ class Terrain;
  *
  */
 class Chunk {
+    std::list<NodeGroup> node_groups_;
+    Terrain* ter_;
+    uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
+                            // Chunk::SIZE to get tile position.
  public:
     static const int8_t SIZE = 16; // number of tiles in each direction
     /**
@@ -89,12 +93,9 @@ class Chunk {
     uint32_t get_voxel(int x, int y, int z) const;
 
  private:
-    std::list<NodeGroup> node_groups_;
-    Terrain* ter_;
+
     void delNodeGroup(NodeGroup& NG);
     void mergeNodeGroup(NodeGroup& g1, NodeGroup& g2);
-    uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
-                            // Chunk::SIZE to get tile position.
     bool contains_nodeGroup(NodeGroup*);
     void R_merge(NodeGroup& g1, std::set<NodeGroup*>& to_merge);
 };

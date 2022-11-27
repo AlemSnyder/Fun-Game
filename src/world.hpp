@@ -41,7 +41,19 @@
  *
  */
 class World {
+
+    // materials that exist
+    std::map<int, const terrain::Material> materials;
+
  public:
+    // terrain in the world
+    terrain::Terrain terrain_main;
+
+    // all of these things are for saving
+    // const char *path;
+    // const char *name;
+    // const char *another_name;
+
     /**
      * @brief Construct a new World object from a save
      *
@@ -118,16 +130,4 @@ class World {
         return out;
     }
 
- private:
-    // materials that exist
-    std::map<int, const terrain::Material> materials;
-
- public:
-    // terrain in the world
-    terrain::Terrain terrain_main;
-
-    // all of these things are for saving
-    // const char *path;
-    // const char *name;
-    // const char *another_name;
 };
