@@ -13,10 +13,13 @@ file(GLOB SOURCES2 "src/**/*.cpp")
 file(GLOB SOURCES3 "src/**/**/*.cpp")
 
 file(GLOB SOURCES4 "vendor/*.c*")
-file(GLOB SOURCES5 "vendor/**/*.c*")
-file(GLOB SOURCES6 "vendor/**/**/*.c*")
+file(GLOB SOURCES5 "vendor/json/*.c*")
+# don't want to complie quill this way
+# file(GLOB SOURCES6 "vendor/**/**/*.c*")
 
 add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6})
+
+add_subdirectory("vendor/quill")
 
 # prefer newer OpenGL
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
@@ -31,7 +34,11 @@ find_package(glm REQUIRED)
 target_link_libraries(FunGame glfw)
 target_link_libraries(FunGame OpenGL::GL)
 target_link_libraries(FunGame GLEW::GLEW)
-if (WIN32)
+
+# add quill
+target_link_libraries(FunGame quill::quill)
+
+if(WIN32)
   target_link_libraries(FunGame glm)
 else()
   target_link_libraries(FunGame glm::glm)
@@ -51,22 +58,22 @@ endif()
 # Resource and data handling
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   set(DEBUG 1)
-  message("Debug build, data will be loaded from repo root")
+  message(" Debug build, data will be loaded from repo root ")
 else()
   set(DEBUG 0)
-  message("Debug build, data will be loaded from subdirs")
+  message(" Debug build, data will be loaded from subdirs ")
 
   add_custom_target(resources
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources
-      COMMENT "copying ${CMAKE_SOURCE_DIR}/resources to ${CMAKE_BINARY_DIR}/resources"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources
+    COMMENT " copying ${CMAKE_SOURCE_DIR}/resources to ${CMAKE_BINARY_DIR}/resources "
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   )
   add_custom_target(data
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/data
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data
-      COMMENT "copying ${CMAKE_SOURCE_DIR}/data to ${CMAKE_BINARY_DIR}/data"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/data
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data
+    COMMENT " copying ${CMAKE_SOURCE_DIR}/data to ${CMAKE_BINARY_DIR}/data "
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   )
 
   add_dependencies(FunGame resources)
