@@ -199,7 +199,17 @@ inline int
 LogTest(){
     //quill::enable_console_colours();
     // Does not work a quill config object is required
+    // Get the stdout file handler
+    quill::Handler* file_handler = quill::stdout_handler();
+
+    // Set a custom formatter for this handler
+    file_handler->set_pattern("%(ascii_time) [%(process)] [%(thread)] - %(filename):%(function_name):%(lineno) - %(message)", // format
+                                "%D %H:%M:%S.%Qms",     // timestamp format
+                                quill::Timezone::GmtTime); // timestamp's timezone
+
+    // Config using the custom ts class and the stdout handler
     quill::Config cfg;
+    cfg.default_handlers.emplace_back(file_handler);
     cfg.enable_console_colours = true;
     quill::configure(cfg);
     quill::start();
