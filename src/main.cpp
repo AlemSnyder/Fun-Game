@@ -203,7 +203,7 @@ LogTest(){
     quill::Handler* file_handler = quill::stdout_handler();
 
     // Set a custom formatter for this handler
-    file_handler->set_pattern("%(ascii_time) [%(process)] [%(thread)] - %(filename):%(function_name):%(lineno) - %(message)", // format
+    file_handler->set_pattern("%(ascii_time) [%(process)] [%(thread)] \t%(filename):%(function_name):%(lineno) - %(message)", // format
                                 "%D %H:%M:%S.%Qms",     // timestamp format
                                 quill::Timezone::GmtTime); // timestamp's timezone
 
