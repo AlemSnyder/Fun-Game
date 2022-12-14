@@ -41,7 +41,6 @@
  *
  */
 class World {
-
     // materials that exist
     std::map<int, const terrain::Material> materials;
 

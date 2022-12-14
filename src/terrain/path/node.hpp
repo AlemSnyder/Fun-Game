@@ -46,6 +46,7 @@ class Node { // Used to find paths.
     float h_cost_;   // Minimum time from this node to end
     float f_cost_;   // Minimum time from start to end through this node
     bool explored_; // Is there a path from start to this node?
+    
  public:
     /**
      * @brief Construct a new Node object

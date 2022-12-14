@@ -34,7 +34,7 @@ class NoiseGenerator {
     double persistence_ = 0.5;
     int primeIndex_ = 0;
 
-    const int primes[maxPrimeIndex][3] = {
+    constexpr int32_t PRIMES[maxPrimeIndex][3] = {
         {995615039, 600173719, 701464987},
         {831731269, 162318869, 136250887},
         {174329291, 946737083, 245679977},

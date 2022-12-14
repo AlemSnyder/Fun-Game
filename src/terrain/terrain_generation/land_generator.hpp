@@ -51,7 +51,6 @@ namespace terrain_generation {
  *
  */
 class LandGenerator {
-    
     unsigned int current_region;
     unsigned int current_sub_region;
 
