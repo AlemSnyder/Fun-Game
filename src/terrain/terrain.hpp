@@ -123,30 +123,6 @@ class Terrain {
     // mat of material id to material that describes materials in this terrain
     const std::map<int, const terrain::Material>* materials_;
 
-    // save color at sop, to color
-    //! static Should be removed
-    void export_color(const int sop[3], uint8_t color[4]) const;
-    // find color v in map, and save material to mat_, and color id to color_id
-    void get_mat_from_qb(
-        const std::map<int, const Material>* materials, uint8_t v[4], Material*& mat_,
-        uint8_t& color_id
-    );
-    //! static should be removed from terrain
-    // convert 4 int 8 to 1 int 32 (reversed order)
-    uint32_t compress_color(uint8_t v[4]);
-
-    // trace nodes through parents to reach start
-    template <class T>
-    void get_path_through_nodes(
-        Node<const T>* node, std::vector<const T*>& out, const T* start
-    ) const {
-        out.push_back(node->get_tile());
-        if (start == node->get_tile()) {
-            return;
-        }
-        get_path_through_nodes(node->get_parent(), out, start);
-    }
-
  public:
     // test for path finding
     std::pair<Tile*, Tile*> get_start_end_test();
@@ -305,13 +281,6 @@ class Terrain {
         return {xyz / (ym * zm), (xyz / zm) % ym, xyz % (zm)};
     }
 
-    /**
-     * @brief return position of given object
-     *
-     * @tparam T class that has position
-     * @param t object that has position
-     * @return std::array<int, 3> position of the object
-     */
     /**
      * @brief generates a 2D 'height' map to use to generate the terrain
      *
@@ -744,7 +713,8 @@ class Terrain {
 
     /**
      * @brief set the upper bound for grass color
-     *
+     * 
+     * @param all_grass set of pointers to tiles that are grass
      */
     inline void grow_grass_high(std::set<Tile*> all_grass) {
         helper::grow_grass_recursive<
@@ -756,6 +726,7 @@ class Terrain {
     /**
      * @brief set the lower bound for grass color
      *
+     * @param all_grass set of pointers to tiles that are grass
      */
     inline void grow_grass_low(std::set<Tile*> all_grass) {
         helper::grow_grass_recursive<
@@ -958,6 +929,31 @@ class Terrain {
     int get_first_not(
         const std::set<std::pair<int, int>> materials, int x, int y, int guess
     ) const;
+
+ private:
+    // save color at sop, to color
+    //! static Should be removed
+    void export_color(const int sop[3], uint8_t color[4]) const;
+    // find color v in map, and save material to mat_, and color id to color_id
+    void get_mat_from_qb(
+        const std::map<int, const Material>* materials, uint8_t v[4], Material*& mat_,
+        uint8_t& color_id
+    );
+    //! static should be removed from terrain
+    // convert 4 int 8 to 1 int 32 (reversed order)
+    uint32_t compress_color(uint8_t v[4]);
+
+    // trace nodes through parents to reach start
+    template <class T>
+    void get_path_through_nodes(
+        Node<const T>* node, std::vector<const T*>& out, const T* start
+    ) const {
+        out.push_back(node->get_tile());
+        if (start == node->get_tile()) {
+            return;
+        }
+        get_path_through_nodes(node->get_parent(), out, start);
+    }
 };
 
 } // namespace terrain

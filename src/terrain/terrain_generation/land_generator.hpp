@@ -51,6 +51,12 @@ namespace terrain_generation {
  *
  */
 class LandGenerator {
+    unsigned int current_region;
+    unsigned int current_sub_region;
+
+    Json::Value data_; // this should be a structure
+    const std::map<int, const Material>* materials;
+
  public:
     /**
      * @brief Construct a new LandGenerator object
@@ -101,12 +107,6 @@ class LandGenerator {
     };
 
  private:
-    unsigned int current_region;
-    unsigned int current_sub_region;
-
-    Json::Value data_; // this should be a structure
-    const std::map<int, const Material>* materials;
-
     unsigned int static get_num_stamps(Json::Value biome);
 
     std::array<int, 6>
