@@ -46,6 +46,7 @@ class NoiseGenerator {
         {531736441, 939683957, 810651871},
         {997169939, 842027887, 423882827}
     };
+    
  public:
     /**
      * @brief Construct a new Noise Generator object
