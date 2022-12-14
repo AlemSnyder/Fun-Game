@@ -147,8 +147,6 @@ class NodeGroup {
     bool operator==(const NodeGroup& other) const;
     bool operator>(const NodeGroup& other) const;
 
- private:
-
 };
 
 } // namespace terrain
