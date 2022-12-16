@@ -3,9 +3,9 @@
 #include "gui/controls.hpp"
 #include "gui/main_gui.hpp"
 #include "gui/shader.hpp"
+#include "logging.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
-#include "util/logging_util.hpp"
 #include "world.hpp"
 
 #include <argh.h>
@@ -197,29 +197,8 @@ GUITest(const std::filesystem::path path) {
     return GUITest(path.string());
 }
 
-inline void
-init_logger() {
-    quill::Handler* file_handler = logging_util::create_log_handler();
-
-    // Set a custom formatter for this handler
-    file_handler->set_pattern(
-        "%(ascii_time) [%(process)] [%(thread)] "
-        "\t%(filename):%(function_name):%(lineno) - %(message)", // format
-        "%D %H:%M:%S.%Qms",                                      // timestamp format
-        quill::Timezone::GmtTime
-    ); // timestamp's timezone
-
-    // Config using the custom ts class and the stdout handler
-    quill::Config cfg;
-    cfg.default_handlers.emplace_back(file_handler);
-    cfg.enable_console_colours = true;
-    quill::configure(cfg);
-    quill::start();
-}
-
 inline int
 LogTest() {
-
     quill::Logger* logger = quill::get_logger();
     logger->set_log_level(quill::LogLevel::TraceL3);
 
@@ -253,23 +232,12 @@ main(int argc, char** argv) {
     std::string path_out = cmdl(3).str();
 
     // init logger
-    init_logger();
+    logging::init();
 
     quill::Logger* logger = quill::get_logger();
 
-
-#if 0
-    LOG_TRACE_L3(logger, argc);
-    // I don't know how to log a vector
-    //LOG_TRACE_L3(logger, "Positional args: ", cmdl.pos_args());
-
-    //LOG_TRACE_L3(logger, "Parameters: ", cmdl.params());
-
-    LOG_TRACE_L3(logger, "Running: {}, with path in = {}, and path out = {}", run_function, path_in, path_out);
-#endif
-
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
-    LOG_INFO(logger, "Running from {}.", files::get_root_path().lexically_normal().string());
+    LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
     if (argc == 1) {
         return GUITest(files::get_data_path() / "models" / "DefaultTree.qb");

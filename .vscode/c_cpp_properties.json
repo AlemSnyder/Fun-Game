@@ -4,7 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/build",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/vendor/quill/include",
+                "${workspaceFolder}/vendor/quill/include"
             ],
             "defines": [
                 "_DEBUG",
