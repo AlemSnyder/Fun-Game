@@ -113,7 +113,7 @@ Terrain::init(
     const std::map<int, const Material>* materials, Json::Value biome_data,
     std::vector<int> Terrain_Maps
 ) {
-    auto millisec_since_epoch = time_util::get_time();
+    auto millisec_since_epoch = time_util::epoch_millis();
 
     Area_size = Area_size_;
     seed = seed_;
@@ -163,7 +163,7 @@ Terrain::init(
     //  TODO make this faster 1
     init_chunks();
 
-    std::cout << time_util::get_time() - millisec_since_epoch
+    std::cout << time_util::epoch_millis() - millisec_since_epoch
               << " Total time Terrain_init" << std::endl;
 }
 
