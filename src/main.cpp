@@ -5,6 +5,7 @@
 #include "gui/shader.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
+#include "util/logging_util.hpp"
 #include "world.hpp"
 
 #include <quill/Quill.h>
@@ -200,7 +201,9 @@ LogTest(){
     //quill::enable_console_colours();
     // Does not work a quill config object is required
     // Get the stdout file handler
-    quill::Handler* file_handler = quill::stdout_handler();
+    //quill::Handler* file_handler = quill::stdout_handler();
+
+    quill::Handler* file_handler = logging_util::create_log_handler();
 
     // Set a custom formatter for this handler
     file_handler->set_pattern("%(ascii_time) [%(process)] [%(thread)] \t%(filename):%(function_name):%(lineno) - %(message)", // format

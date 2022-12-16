@@ -14,4 +14,11 @@ get_time() {
         .count();
 }
 
+inline std::chrono::nanoseconds
+get_time_nanoseconds(){
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(
+               std::chrono::system_clock::now().time_since_epoch()
+    );
+}
+
 } // namespace time_util
