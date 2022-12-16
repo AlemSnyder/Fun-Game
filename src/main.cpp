@@ -8,7 +8,6 @@
 #include "util/logging_util.hpp"
 #include "world.hpp"
 
-#include <quill/Quill.h>
 #include <argh.h>
 
 #include <GL/glew.h>
@@ -17,6 +16,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <quill/Quill.h>
 #include <stdint.h>
 
 #include <cstdlib>
@@ -60,7 +60,6 @@ MacroMap() {
 
 int
 save_test(const std::string path, const std::string save_path) {
-
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -73,7 +72,9 @@ save_test(const std::string path, const std::string save_path) {
 }
 
 void
-save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name) {
+save_terrain(
+    Json::Value materials_json, Json::Value biome_data, std::string biome_name
+) {
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
@@ -196,19 +197,17 @@ GUITest(const std::filesystem::path path) {
     return GUITest(path.string());
 }
 
-inline int
-LogTest(){
-    //quill::enable_console_colours();
-    // Does not work a quill config object is required
-    // Get the stdout file handler
-    //quill::Handler* file_handler = quill::stdout_handler();
-
+inline void
+init_logger() {
     quill::Handler* file_handler = logging_util::create_log_handler();
 
     // Set a custom formatter for this handler
-    file_handler->set_pattern("%(ascii_time) [%(process)] [%(thread)] \t%(filename):%(function_name):%(lineno) - %(message)", // format
-                                "%D %H:%M:%S.%Qms",     // timestamp format
-                                quill::Timezone::GmtTime); // timestamp's timezone
+    file_handler->set_pattern(
+        "%(ascii_time) [%(process)] [%(thread)] "
+        "\t%(filename):%(function_name):%(lineno) - %(message)", // format
+        "%D %H:%M:%S.%Qms",                                      // timestamp format
+        quill::Timezone::GmtTime
+    ); // timestamp's timezone
 
     // Config using the custom ts class and the stdout handler
     quill::Config cfg;
@@ -216,6 +215,10 @@ LogTest(){
     cfg.enable_console_colours = true;
     quill::configure(cfg);
     quill::start();
+}
+
+inline int
+LogTest() {
 
     quill::Logger* logger = quill::get_logger();
     logger->set_log_level(quill::LogLevel::TraceL3);
@@ -249,23 +252,24 @@ main(int argc, char** argv) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
 
+    // init logger
+    init_logger();
+
+    quill::Logger* logger = quill::get_logger();
+
+
 #if 0
-    std::cout << argc << std::endl;
+    LOG_TRACE_L3(logger, argc);
+    // I don't know how to log a vector
+    //LOG_TRACE_L3(logger, "Positional args: ", cmdl.pos_args());
 
-    std::cout << "Positional args: " << std::endl;
-    for (auto& pos_arg : cmdl.pos_args())
-        std::cout << '\t' << pos_arg << std::endl;
+    //LOG_TRACE_L3(logger, "Parameters: ", cmdl.params());
 
-    std::cout << "Parameters: " << std::endl;
-    for (auto& param : cmdl.params())
-        std::cout << '\t' << param.first << " : " << param.second << std::endl;
-
-    std::cout << "Running: " << run_function << ", with path in = " << path_in << ", and path out = " << path_out << std::endl;
+    LOG_TRACE_L3(logger, "Running: {}, with path in = {}, and path out = {}", run_function, path_in, path_out);
 #endif
 
-    std::cout << "FunGame v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
-              << VERSION_PATCH << std::endl;
-    std::cout << "Running from " << files::get_root_path() << "." << std::endl;
+    LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+    LOG_INFO(logger, "Running from {}.", files::get_root_path().lexically_normal().string());
 
     if (argc == 1) {
         return GUITest(files::get_data_path() / "models" / "DefaultTree.qb");
@@ -277,7 +281,7 @@ main(int argc, char** argv) {
         Json::Value materials_json;
         std::ifstream materials_file = files::open_data_file("materials.json");
         materials_file >> materials_json;
-        
+
         cmdl("biome-name", "Biome_1") >> biome_name;
         if (!cmdl[{"-a", "--all"}]) {
             save_terrain(biome_data[biome_name], materials_json, biome_name);
