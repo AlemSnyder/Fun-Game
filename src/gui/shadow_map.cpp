@@ -112,14 +112,14 @@ ShadowMap::render_shadow_depth_buffer() const {
     glUseProgram(programID_);
 
     // glm::mat4 depth_view_matrix =
-    //     glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    //     glm::lookAt(light_direction_, glm::ivec3(0, 0, 0), glm::ivec3(0, 1, 0));
     /* For spot light:
      *
-     * glm::vec3 lightPos(5, 20, 20);
+     * glm::ivec3 lightPos(5, 20, 20);
      * glm::mat4 depthProjectionMatrix =
      * glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
      *     depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
-     * glm::vec3(0,1,0));
+     * glm::ivec3(0,1,0));
      */
 
     // matrix to calculate the length of a light ray in model space
@@ -161,14 +161,14 @@ ShadowMap::render_shadow_depth_buffer() const {
     glUseProgram(programID_multi_);
 
     // glm::mat4 depth_view_matrix =
-    //     glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1,
+    //     glm::lookAt(light_direction_, glm::ivec3(0, 0, 0), glm::ivec3(0, 1,
     //     0));
     //  or, for spot light :
-    //  glm::vec3 lightPos(5, 20, 20);
+    //  glm::ivec3 lightPos(5, 20, 20);
     //  glm::mat4 depthProjectionMatrix =
     //  glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
     //  depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
-    //  glm::vec3(0,1,0));
+    //  glm::ivec3(0,1,0));
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform

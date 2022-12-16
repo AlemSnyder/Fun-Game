@@ -117,13 +117,13 @@ GUITest(World world) {
 
     // The above is for the wold the below is for trees
 
-    std::vector<glm::vec3> model_matrices;
+    std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
     for (int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
         for (int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
             int z = world.terrain_main.get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
-                glm::vec3 model(x, y, z);
+                glm::ivec3 model(x, y, z);
                 model_matrices.push_back(model);
             }
         }
@@ -156,7 +156,7 @@ GUITest(World world) {
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
-        * 128.0f;                                       // length
+        * 128.0f;                                        // length
 
     glm::mat4 depth_projection_matrix =
         glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);

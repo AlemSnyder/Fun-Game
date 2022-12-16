@@ -47,7 +47,7 @@ class ShadowMap {
     GLuint depth_texture_;         // ID of depth texture
     GLuint frame_buffer_name_;     // ID of frame buffer
     // ------ the below are added to the class ------
-    glm::vec3 light_direction_;         // direction of sunlight
+    glm::vec3 light_direction_;        // direction of sunlight
     uint32_t shadow_width_;             // width of depth texture
     uint32_t shadow_height_;            // height of depth texture
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source

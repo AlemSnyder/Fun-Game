@@ -58,7 +58,6 @@ MacroMap() {
 
 int
 save_test(const std::string path, const std::string save_path) {
-
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -71,7 +70,9 @@ save_test(const std::string path, const std::string save_path) {
 }
 
 void
-save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name) {
+save_terrain(
+    Json::Value materials_json, Json::Value biome_data, std::string biome_name
+) {
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
@@ -181,9 +182,9 @@ GUITest(const std::string path) {
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
     std::vector<std::uint16_t> indices;
-    std::vector<glm::vec3> indexed_vertices;
-    std::vector<glm::vec3> indexed_colors;
-    std::vector<glm::vec3> indexed_normals;
+    std::vector<glm::ivec3> indexed_vertices;
+    std::vector<glm::ivec3> indexed_colors;
+    std::vector<glm::ivec3> indexed_normals;
     World world(materials_json, path);
 
     return gui::GUITest(world);
@@ -234,7 +235,7 @@ main(int argc, char** argv) {
         Json::Value materials_json;
         std::ifstream materials_file = files::open_data_file("materials.json");
         materials_file >> materials_json;
-        
+
         cmdl("biome-name", "Biome_1") >> biome_name;
         if (!cmdl[{"-a", "--all"}]) {
             save_terrain(biome_data[biome_name], materials_json, biome_name);

@@ -12,7 +12,7 @@
 namespace terrain {
 
 StaticMesh::StaticMesh(
-    entity::Mesh mesh, const std::vector<glm::vec3>& model_transforms
+    entity::Mesh mesh, const std::vector<glm::ivec3>& model_transforms
 ) :
     StaticMesh(
         mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
@@ -21,10 +21,10 @@ StaticMesh::StaticMesh(
 
 StaticMesh::StaticMesh(
     const std::vector<unsigned short>& indices,
-    const std::vector<glm::vec3>& indexed_vertices,
+    const std::vector<glm::ivec3>& indexed_vertices,
     const std::vector<glm::vec3>& indexed_colors,
-    const std::vector<glm::vec3>& indexed_normals,
-    const std::vector<glm::vec3>& model_transforms
+    const std::vector<glm::ivec3>& indexed_normals,
+    const std::vector<glm::ivec3>& model_transforms
 ) :
     num_vertices_(indices.size()),
     num_models_(model_transforms.size()) {
@@ -32,7 +32,7 @@ StaticMesh::StaticMesh(
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3),
+        GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::ivec3),
         &indexed_vertices[0], GL_STATIC_DRAW
     );
 
@@ -48,7 +48,7 @@ StaticMesh::StaticMesh(
     glGenBuffers(1, &normal_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3),
+        GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::ivec3),
         &indexed_normals[0], GL_STATIC_DRAW
     );
 
@@ -64,7 +64,7 @@ StaticMesh::StaticMesh(
     glGenBuffers(1, &transforms_buffer_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, transforms_buffer_);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, model_transforms.size() * sizeof(glm::vec3),
+        GL_ELEMENT_ARRAY_BUFFER, model_transforms.size() * sizeof(glm::ivec3),
         &model_transforms[0], GL_STATIC_DRAW
     );
 }

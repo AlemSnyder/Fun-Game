@@ -35,8 +35,9 @@ namespace entity {
  */
 struct Mesh {
     Mesh(
-        std::vector<uint16_t>& indices, std::vector<glm::vec3>& indexed_vertices,
-        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+        std::vector<uint16_t>& indices, std::vector<glm::ivec3>& indexed_vertices,
+        std::vector<glm::vec3>& indexed_colors,
+        std::vector<glm::ivec3>& indexed_normals
     ) :
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_colors_(indexed_colors),
@@ -50,11 +51,11 @@ struct Mesh {
     // indices of vertices drawn (vertices used twice can be ignored)
     const std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
-    const std::vector<glm::vec3> indexed_vertices_;
+    const std::vector<glm::ivec3> indexed_vertices_;
     // color of vertex
     const std::vector<glm::vec3> indexed_colors_;
     // normal direction
-    const std::vector<glm::vec3> indexed_normals_;
+    const std::vector<glm::ivec3> indexed_normals_;
 
 }; // struct Mesh
 
@@ -68,13 +69,13 @@ template <class T>
 Mesh
 generate_mesh(T voxel_object) {
     std::vector<uint16_t> indices;
-    std::vector<glm::vec3> indexed_vertices;
+    std::vector<glm::ivec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
-    std::vector<glm::vec3> indexed_normals;
+    std::vector<glm::ivec3> indexed_normals;
     // mesh off set
     std::vector<int> center = voxel_object.get_offset();
     std::vector<uint32_t> dims = voxel_object.get_size();
-    glm::vec3 off_set(center[0], center[1], center[2]);
+    glm::ivec3 off_set(center[0], center[1], center[2]);
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;
@@ -198,13 +199,13 @@ generate_mesh(T voxel_object) {
                         const std::size_t vertex_size = indexed_vertices.size();
 
                         indexed_vertices.push_back(
-                            glm::vec3(
+                            glm::ivec3(
                                 voxel_position[0], voxel_position[1], voxel_position[2]
                             )
                             + off_set
                         );
                         indexed_vertices.push_back(
-                            glm::vec3(
+                            glm::ivec3(
                                 voxel_position[0] + off_set_1[0],
                                 voxel_position[1] + off_set_1[1],
                                 voxel_position[2] + off_set_1[2]
@@ -212,7 +213,7 @@ generate_mesh(T voxel_object) {
                             + off_set
                         );
                         indexed_vertices.push_back(
-                            glm::vec3(
+                            glm::ivec3(
                                 voxel_position[0] + off_set_1[0] + off_set_2[0],
                                 voxel_position[1] + off_set_1[1] + off_set_2[1],
                                 voxel_position[2] + off_set_1[2] + off_set_2[2]
@@ -220,7 +221,7 @@ generate_mesh(T voxel_object) {
                             + off_set
                         );
                         indexed_vertices.push_back(
-                            glm::vec3(
+                            glm::ivec3(
                                 voxel_position[0] + off_set_2[0],
                                 voxel_position[1] + off_set_2[1],
                                 voxel_position[2] + off_set_2[2]
@@ -242,12 +243,13 @@ generate_mesh(T voxel_object) {
                             indexed_colors.push_back(vector_color);
                         }
 
-                        glm::vec3 triangle_normal = glm::normalize(glm::cross(
-                            indexed_vertices[vertex_size]
-                                - indexed_vertices[vertex_size + 1],
-                            indexed_vertices[vertex_size]
-                                - indexed_vertices[vertex_size + 2]
-                        ));
+                        glm::ivec3 triangle_normal =
+                            glm::ivec3(glm::normalize(glm::cross(glm::vec3(
+                                indexed_vertices[vertex_size]
+                                    - indexed_vertices[vertex_size + 1]),
+                                glm::vec3(indexed_vertices[vertex_size]
+                                    - indexed_vertices[vertex_size + 2])
+                            )));
                         // how many corners on a square are there?
                         for (size_t voxel_position = 0; voxel_position < 4;
                              voxel_position++) {
