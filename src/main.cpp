@@ -223,16 +223,24 @@ int
 main(int argc, char** argv) {
     argh::parser cmdl;
 
-    cmdl.add_params({"-pi", "--path-in", "-po", "--path-out"});
+    cmdl.add_params({
+        "-i", "--path-in",  // Input file - DOC
+        "-o", "--path-out", // Output file - DOC
+        "-v", "--verbose"   // Verbosity
+    });
     cmdl.add_param("biome-name");
-    cmdl.parse(argc, argv);
+    cmdl.parse(argc, argv, argh::parser::SINGLE_DASH_IS_MULTIFLAG);
 
     std::string run_function = cmdl(1).str();
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
 
     // init logger
-    logging::init();
+    // TODO(nino): need a better arg parser, but allow -vvvv (for example)
+    if (cmdl[{"-v", "--verbose"}])
+        logging::init(quill::LogLevel::TraceL3);
+    else
+        logging::init();
 
     quill::Logger* logger = quill::get_logger();
 

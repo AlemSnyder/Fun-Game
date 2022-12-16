@@ -8,12 +8,6 @@
 #include <filesystem>
 #include <string>
 
-#if DEBUG()
-static constexpr quill::LogLevel DEFAULT_LOG_LEVEL = quill::LogLevel::Debug;
-#else
-static constexpr quill::LogLevel DEFAULT_LOG_LEVEL = quill::LogLevel::Info;
-#endif
-
 static const std::string LOGLINE_FORMAT =
     "%(ascii_time) [%(thread)] [%(fileline:<20)] %(level_name) [%(logger_name:<10)] - "
     "%(message)";
@@ -21,7 +15,7 @@ static const std::string LOGLINE_FORMAT =
 namespace logging {
 
 void
-init() {
+init(quill::LogLevel log_level) {
     // Create the logs directory
     if (!std::filesystem::is_directory(log_dir())) {
         std::filesystem::create_directory(log_dir());
@@ -39,7 +33,7 @@ init() {
         LOGLINE_FORMAT,
         "%F %T.%Qms %z" // ISO 8601 but with space instead of T
     );
-    stdout_handler->set_log_level(DEFAULT_LOG_LEVEL);
+    stdout_handler->set_log_level(log_level);
     stdout_handler->enable_console_colours();
 
     cfg.default_handlers.emplace_back(stdout_handler);
@@ -63,7 +57,7 @@ init() {
         LOGLINE_FORMAT,
         "%FT%T.%Qms %z" // ISO 8601
     );
-    file_handler->set_log_level(DEFAULT_LOG_LEVEL);
+    file_handler->set_log_level(log_level);
 
     cfg.default_handlers.emplace_back(file_handler);
 
