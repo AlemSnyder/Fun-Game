@@ -109,6 +109,8 @@
         "filesystem": "cpp",
         "CMakeLists.txt": "cmake",
         "regex": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "*.def": "cpp",
+        "*.inc": "cpp"
     }
 }

@@ -9,13 +9,17 @@
 #include <string>
 
 static const std::string LOGLINE_FORMAT =
-    "%(ascii_time) [%(thread)] [%(fileline:<20)] %(level_name) [%(logger_name:<10)] - "
+    "%(ascii_time) [%(thread)] [%(fileline:<18)] %(level_name) [%(logger_name:<14)] - "
     "%(message)";
 
 namespace logging {
 
+quill::LogLevel _LOG_LEVEL;
+
 void
 init(quill::LogLevel log_level) {
+    _LOG_LEVEL = log_level;
+
     // Create the logs directory
     if (!std::filesystem::is_directory(log_dir())) {
         std::filesystem::create_directory(log_dir());
