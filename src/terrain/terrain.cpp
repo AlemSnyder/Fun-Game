@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-//static quill::Logger* logger = logging::get_logger("terrain.terrain");
+// static quill::Logger* logger = logging::get_logger("terrain.terrain");
 
 namespace terrain {
 
@@ -868,17 +868,23 @@ Terrain::get_voxel(int x, int y, int z) const {
     static uint8_t previous_mat_id = 0;
     static uint8_t previous_color_id = 0;
     static uint32_t previous_out_color = 0;
-    if (in_range(x, y, z)) {
-        if ((tiles_[pos(x, y, z)].get_material_id() != previous_mat_id)
-            || (tiles_[pos(x, y, z)].get_color_id() != previous_color_id)) {
-            previous_mat_id = tiles_[pos(x, y, z)].get_material_id();
-            previous_color_id = tiles_[pos(x, y, z)].get_color_id();
-            auto mat = materials_->at(previous_mat_id);
-            previous_out_color = mat.color[previous_color_id].second;
-        }
-        return previous_out_color;
+
+    if (!in_range(x, y, z)) {
+        return 0;
     }
-    return 0;
+
+    uint8_t mat_id = tiles_[pos(x, y, z)].get_material_id();
+    uint8_t color_id = tiles_[pos(x, y, z)].get_color_id();
+
+    if (mat_id != previous_mat_id || color_id != previous_color_id) {
+        previous_mat_id = mat_id;
+        previous_color_id = color_id;
+
+        auto mat = materials_->at(previous_mat_id);
+        previous_out_color = mat.color[previous_color_id].second;
+    }
+
+    return previous_out_color;
 }
 
 // Set `color` to the color of the tile at `pos`.
@@ -926,8 +932,8 @@ Terrain::qb_read(
     const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
 ) {
     std::vector<uint32_t> data;
-    std::vector<int> center;
-    std::vector<uint32_t> size;
+    std::array<int32_t, 3> center;
+    std::array<uint32_t, 3> size;
 
     voxel_utility::from_qb(path, data, center, size);
 
@@ -957,8 +963,6 @@ Terrain::qb_read(
     for (uint32_t color : unknown_materials) {
         // is there any way to log hexadecimal
         LOG_WARNING(logger, "Cannot find color: {:x}", color);
-        //std::cout << "    cannot find color: " << std::hex << std::uppercase << color
-        //          << std::dec << std::endl;
     }
 }
 

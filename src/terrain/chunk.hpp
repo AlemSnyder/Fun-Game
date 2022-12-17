@@ -43,7 +43,8 @@ class Terrain;
  */
 class Chunk {
  public:
-    static const int8_t SIZE = 16; // number of tiles in each direction
+    static const uint8_t SIZE = 16; // number of tiles in each direction
+
     /**
      * @brief Construct a new Chunk object
      *
@@ -53,6 +54,7 @@ class Chunk {
      * @param ter the terrain this chunk is in
      */
     Chunk(int bx, int by, int bz, Terrain* ter);
+    
     /**
      * @brief adds node groups in this chunk to out
      *
@@ -65,7 +67,9 @@ class Chunk {
      *
      * @return std::vector<int> offset of chunk in world space
      */
-    inline std::vector<int> get_offset() const {
+    inline std::array<int32_t, 3>
+    get_offset() const
+    {
         return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
     }
 
@@ -74,7 +78,9 @@ class Chunk {
      *
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
-    inline static std::vector<unsigned int> get_size() {
+    inline static std::array<uint32_t, 3>
+    get_size()
+    {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
 

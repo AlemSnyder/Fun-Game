@@ -40,7 +40,8 @@ struct Mesh {
     ) :
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_colors_(indexed_colors),
-        indexed_normals_(indexed_normals) {}
+        indexed_normals_(indexed_normals)
+    {}
 
     // defines a bounding box of the mesh
     const std::vector<int> size_;
@@ -66,15 +67,18 @@ struct Mesh {
  */
 template <class T>
 Mesh
-generate_mesh(T voxel_object) {
+generate_mesh(T voxel_object)
+{
     std::vector<uint16_t> indices;
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
     std::vector<glm::vec3> indexed_normals;
+
     // mesh off set
-    std::vector<int> center = voxel_object.get_offset();
-    std::vector<uint32_t> dims = voxel_object.get_size();
+    std::array<int32_t, 3> center = voxel_object.get_offset();
+    std::array<uint32_t, 3> dims = voxel_object.get_size();
     glm::vec3 off_set(center[0], center[1], center[2]);
+    
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;

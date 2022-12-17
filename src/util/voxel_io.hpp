@@ -1,7 +1,10 @@
 #pragma once
 
 #include "..\logging.hpp"
+#include "bits.hpp"
 
+#include <array>
+#include <bit>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
@@ -17,12 +20,13 @@ static quill::Logger* logger = logging::get_logger("util.voxel_io");
 class VoxelObject {
  private:
     std::vector<uint32_t> data_;
-    std::vector<int> center_;
-    std::vector<uint32_t> size_;
+    std::array<int32_t, 3> center_;
+    std::array<uint32_t, 3> size_;
     bool ok_;
 
     inline int
-    get_position(int x, int y, int z) const {
+    get_position(int x, int y, int z) const
+    {
         return ((x * size_[1] + y) * size_[2] + z);
     }
 
@@ -48,7 +52,8 @@ class VoxelObject {
      * @return false failed to load correctly
      */
     [[nodiscard]] inline bool
-    ok() const noexcept {
+    ok() const noexcept
+    {
         return ok_;
     }
 
@@ -61,7 +66,8 @@ class VoxelObject {
      * @return uint32_t color
      */
     inline uint32_t
-    get_voxel(uint32_t x, uint32_t y, uint32_t z) const {
+    get_voxel(uint32_t x, uint32_t y, uint32_t z) const
+    {
         if ((size_[0] > x) && (size_[1] > y) && (size_[2] > z)) {
             return data_[get_position(x, y, z)];
         }
@@ -72,58 +78,67 @@ class VoxelObject {
      * @brief Get the center of the object
      * use full to find where to rotate around
      *
-     * @return std::vector<int>
+     * @return std::array<int32_t, 3>
      */
-    [[nodiscard]] inline std::vector<int>
-    get_offset() const noexcept {
+    [[nodiscard]] inline std::array<int32_t, 3>
+    get_offset() const noexcept
+    {
         return center_;
     }
 
     /**
-     * @brief Get the size as a vector of length three
+     * @brief Get the size as an array of length three
      *
-     * @return std::vector<uint32_t> length in x, y, z
+     * @return std::array<uint32_t, 3> length in x, y, z
      */
-    [[nodiscard]] inline std::vector<uint32_t>
-    get_size() noexcept {
+    [[nodiscard]] inline std::array<uint32_t, 3>
+    get_size() noexcept
+    {
         return size_;
     }
 };
 
 template <typename T>
 static inline void
-WRITE(T v, FILE* file) noexcept {
+WRITE(T v, FILE* file) noexcept
+{
     std::fwrite(&v, sizeof(T), 1, file);
 }
 
 template <typename T>
 static inline void
-READ(T& v, FILE* file) noexcept {
+READ(T& v, FILE* file) noexcept
+{
     std::fread(&v, sizeof(T), 1, file);
 }
 
 void from_qb(
-    const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
-    std::vector<uint32_t>& size
+    const std::filesystem::path path, std::vector<uint32_t>& data,
+    std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 );
 
 inline uint32_t
-compress_color(uint8_t v[4]) {
-    return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16
-           | (uint32_t)v[0] << 24;
+parse_color(uint32_t color)
+{
+    if (std::endian::native == std::endian::little)
+        return bits::swap(color);
+    else
+        return color;
 }
 
-inline void
-export_color(uint32_t tile_color, uint8_t color[4]) {
-    color[0] = (tile_color >> 24) & 0xFF;
-    color[1] = (tile_color >> 16) & 0xFF;
-    color[2] = (tile_color >> 8) & 0xFF;
-    color[3] = tile_color & 0xFF;
+inline uint32_t
+export_color(uint32_t color)
+{
+    if (std::endian::native == std::endian::little)
+        return bits::swap(color);
+    else
+        return color;
 }
 
 template <typename T>
 int
-to_qb(const std::string path, T voxel_object) {
+to_qb(const std::string path, T voxel_object)
+{
     // Saves the tiles in this to the path specified
     FILE* file;
     file = fopen(path.c_str(), "wb");

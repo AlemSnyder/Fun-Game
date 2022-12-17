@@ -3,8 +3,11 @@
 #include "../exceptions.hpp"
 #include "../logging.hpp"
 
+#include <array>
 #include <cinttypes>
+#include <concepts>
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -14,65 +17,84 @@ static quill::Logger* logger = logging::get_logger("voxel_io");
 
 namespace voxel_utility {
 
+template <std::integral T>
+static inline void
+read_int(std::ifstream& file, T& val) noexcept
+{
+    file.read(reinterpret_cast<char*>(&val), sizeof(val));
+}
+
+template <std::integral T>
+static inline void
+write_int(std::ofstream& file, T& val) noexcept
+{
+    file.write(reinterpret_cast<char*>(&val), sizeof(val));
+}
+
 void
 from_qb(
-    const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
-    std::vector<uint32_t>& size
-) {
+    const std::filesystem::path path, std::vector<uint32_t>& data,
+    std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
+)
+{
     LOG_INFO(logger, "Reading voxels from {}", path);
 
     // Read the tiles from the path specified, and save
-    std::FILE* file = std::fopen(path.c_str(), "rb");
+    std::ifstream file(path, std::ios::in | std::ios::binary);
     if (!file) {
         LOG_ERROR(logger, "Could not open {}. Are you in the write directory?", path);
-        fclose(file);
         throw exc::file_not_found_error(path);
     }
 
-    // int x, y, z; // position in terrain
-    uint32_t void_,
-        compression; // void int 32 used to read 32 bites without saving it.
-    uint8_t v[4];
+    // Header variables
+    uint32_t void_; // void int used to read 32 bites without saving it.
+    uint32_t compression;
 
     LOG_TRACE_L1(logger, "Reading file header");
-    READ<uint32_t>(void_, file);       // version
-    READ<uint32_t>(void_, file);       // color format RGBA
-    READ<uint32_t>(void_, file);       // orientation right handed // c
-    READ<uint32_t>(compression, file); // no compression
-    READ<uint32_t>(void_, file);       // vmask
-    READ<uint32_t>(void_, file);
+
     //  none of these are used
+    read_int(file, void_);       // version
+    read_int(file, void_);       // color format RGBA
+    read_int(file, void_);       // orientation right handed // c
+    read_int(file, compression); // compression
+    read_int(file, void_);       // vmask
+    read_int(file, void_);       // number of layers
+
+    if (compression) {
+        LOG_ERROR(logger, "Cannot parse voxel files with compression");
+        throw exc::not_implemented_error("Cannot parse compressed voxel files");
+    }
 
     LOG_TRACE_L1(logger, "Reading file name");
 
     int8_t name_len;
-    READ<int8_t>(name_len, file);
+    read_int(file, name_len);
 
     LOG_DEBUG(logger, "File name length: {}", name_len);
 
     std::string name(name_len, '\0');
-    fread(name.data(), sizeof(char), name_len, file);
+    file.read(name.data(), name_len);
 
-    LOG_INFO(logger, "Filename: {}", name);
+    LOG_INFO(logger, "Voxel save name: {}", name);
 
     // Get voxel grid size
-    uint32_t X_max, Y_max, Z_max;
+    uint32_t x_max, y_max, z_max;
 
-    READ<uint32_t>(X_max, file); // x
-    READ<uint32_t>(Z_max, file); // z
-    READ<uint32_t>(Y_max, file); // y
+    read_int(file, x_max); // x
+    read_int(file, z_max); // z
+    read_int(file, y_max); // y
 
-    size = {X_max, Y_max, Z_max};
-    data.resize(X_max * Y_max * Z_max);
+    size = {x_max, y_max, z_max};
+    data.resize(x_max * y_max * z_max);
 
-    LOG_DEBUG(logger, "Voxel grid size: {X} x {Y} x {Z}", X_max, Y_max, Z_max);
+    LOG_DEBUG(logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max);
 
     // Get voxel grid center
     int32_t x_center, y_center, z_center;
 
-    READ<int32_t>(x_center, file); // x
-    READ<int32_t>(z_center, file); // z
-    READ<int32_t>(y_center, file); // y
+    read_int(file, x_center); // x
+    read_int(file, z_center); // z
+    read_int(file, y_center); // y
 
     center = {x_center, y_center, z_center};
 
@@ -81,29 +103,24 @@ from_qb(
     );
 
     size_t voxels_read = 0;
-    if (compression) {
-        LOG_ERROR(logger, "Cannot parse voxel files with compression");
-        throw exc::not_implemented_error("Cannot parse compressed voxel files");
-    } else {
-        data.resize(size[0] * size[1] * size[2]);
-        for (size_t x = 0; x < size[0]; x++)
-            for (size_t z = 0; z < size[2]; z++)
-                for (size_t y = size[1] - 1; y < size[1]; y--) {
-                    // int32_t* color = (int32_t*) malloc(32);
-                    fread(v, sizeof(uint8_t), 4, file);
-                    // fread(&color, 32, 1, file); // read the color
-                    data[(x * static_cast<int>(size[1]) + y) * size[2] + z] =
-                        compress_color(v);
-                    voxels_read++;
-                }
-    }
+
+    for (size_t x = 0; x < size[0]; x++)
+        for (size_t z = 0; z < size[2]; z++)
+            for (size_t y = size[1] - 1; y < size[1]; y--) {
+                uint32_t voxel_color;
+                read_int(file, voxel_color);
+
+                data[(x * size[1] + y) * size[2] + z] =
+                    parse_color(voxel_color);
+
+                voxels_read++;
+            }
 
     LOG_INFO(logger, "Voxels read: {}", voxels_read);
-
-    fclose(file);
 }
 
-VoxelObject::VoxelObject(const std::string path) {
+VoxelObject::VoxelObject(const std::string path)
+{
     try {
         from_qb(path, data_, center_, size_);
         ok_ = true;
