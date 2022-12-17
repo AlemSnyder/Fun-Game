@@ -156,7 +156,7 @@ GUITest(World world) {
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
-        * 128.0f;                                        // length
+        * 128.0f;                                       // length
 
     glm::mat4 depth_projection_matrix =
         glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
@@ -185,35 +185,37 @@ GUITest(World world) {
         SM.render_shadow_depth_buffer();
         MR.render(window);
 
-        glViewport(0, 0, 512, 512);
+        if (controls::show_shadow_map(window)) {
+            glViewport(0, 0, 512, 512);
 
-        // Use our shader
-        glUseProgram(quad_programID);
+            // Use our shader
+            glUseProgram(quad_programID);
 
-        // Bind our texture in Texture Unit 0
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, SM.get_depth_texture());
-        // Set our "renderedTexture" sampler to use Texture Unit 0
-        glUniform1i(texID, 0);
+            // Bind our texture in Texture Unit 0
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, SM.get_depth_texture());
+            // Set our "renderedTexture" sampler to use Texture Unit 0
+            glUniform1i(texID, 0);
 
-        // first attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-        glVertexAttribPointer(
-            0,        // attribute 0. No particular reason for 0,
-                      // but must match the layout in the shader.
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
-        );
+            // first attribute buffer : vertices
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+            glVertexAttribPointer(
+                0,        // attribute 0. No particular reason for 0,
+                          // but must match the layout in the shader.
+                3,        // size
+                GL_FLOAT, // type
+                GL_FALSE, // normalized?
+                0,        // stride
+                (void*)0  // array buffer offset
+            );
 
-        // Draw the triangle !
-        // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see
-        glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
-        // at 0 -> 2 triangles
-        glDisableVertexAttribArray(0);
+            // Draw the triangle !
+            // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see
+            glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
+            // at 0 -> 2 triangles
+            glDisableVertexAttribArray(0);
+        }
 
         // Swap buffers
         glfwSwapBuffers(window);

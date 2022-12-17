@@ -121,3 +121,8 @@ controls::computeMatricesFromInputs(GLFWwindow* window) {
     // For the next frame, the "last time" will be "now"
     lastTime = currentTime;
 }
+
+bool
+controls::show_shadow_map(GLFWwindow* window){
+    return glfwGetKey(window, GLFW_KEY_TAB);
+}
