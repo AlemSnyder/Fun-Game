@@ -22,7 +22,10 @@ static const std::string LOGLINE_FORMAT =
 
 namespace logging {
 
-quill::LogLevel _LOG_LEVEL;
+using namespace quill;
+using cc = quill::ConsoleColours;
+
+LogLevel _LOG_LEVEL;
 
 void
 init(quill::LogLevel log_level, bool structured)
@@ -42,9 +45,15 @@ init(quill::LogLevel log_level, bool structured)
 
     // Initialize print handler
     quill::ConsoleColours colors;
-    colors.set_default_colours();
-    // colors.set_colour(quill::LogLevel::Debug, quill::ConsoleColours::black);
-    // colors.set_colour(quill::LogLevel::Info, quill::ConsoleColours::white);
+    colors.set_colour(LogLevel::TraceL3, cc::black);
+    colors.set_colour(LogLevel::TraceL2, cc::black);
+    colors.set_colour(LogLevel::TraceL1, cc::black);
+    colors.set_colour(LogLevel::Debug, cc::white);
+    colors.set_colour(LogLevel::Info, cc::green);
+    colors.set_colour(LogLevel::Warning, cc::yellow | cc::bold);
+    colors.set_colour(LogLevel::Error, cc::red | cc::bold);
+    colors.set_colour(LogLevel::Critical, cc::bold | cc::white | cc::on_red);
+    colors.set_colour(LogLevel::Backtrace, cc::magenta);
 
     auto stdout_handler =
         dynamic_cast<quill::ConsoleHandler*>(quill::stdout_handler("console", colors));
