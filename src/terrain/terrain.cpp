@@ -93,11 +93,16 @@ Terrain::Terrain(
             );
         }
     }
-    int test = qb_read(path, &materials_inverse);
-    if (test) {
+    try {
+        qb_read(path, &materials_inverse);
+    } catch (const std::exception& e) {
+        // TODO catch individual exceptions
+        // TODO logging
         std::cerr << "Could not load terrain" << std::endl;
+        std::cerr << e.what() << '\n';
         return;
     }
+
     init_chunks();
 }
 
@@ -915,7 +920,7 @@ Terrain::qb_save(const std::string path) const {
     return voxel_utility::to_qb(path, *this);
 }
 
-int
+void
 Terrain::qb_read(
     const std::string path,
     const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
@@ -924,9 +929,7 @@ Terrain::qb_read(
     std::vector<int> center;
     std::vector<uint32_t> size;
 
-    int err = voxel_utility::from_qb(path, data, center, size);
-    if (err)
-        return err;
+    voxel_utility::from_qb(path, data, center, size);
 
     X_MAX = size[0];
     Y_MAX = size[1];
@@ -957,8 +960,6 @@ Terrain::qb_read(
         //std::cout << "    cannot find color: " << std::hex << std::uppercase << color
         //          << std::dec << std::endl;
     }
-
-    return 0;
 }
 
 std::pair<Tile*, Tile*>

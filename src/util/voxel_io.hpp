@@ -21,7 +21,8 @@ class VoxelObject {
     std::vector<uint32_t> size_;
     bool ok_;
 
-    inline int get_position(int x, int y, int z) const {
+    inline int
+    get_position(int x, int y, int z) const {
         return ((x * size_[1] + y) * size_[2] + z);
     }
 
@@ -32,12 +33,13 @@ class VoxelObject {
      * @param path path to .qb file
      */
     VoxelObject(const std::string path);
+
     /**
      * @brief Construct a new Voxel Object object from saved qb
      *
      * @param path path to .qb file
      */
-    VoxelObject(const std::filesystem::path path);
+    VoxelObject(const std::filesystem::path path) : VoxelObject(path.string()) {}
 
     /**
      * @brief did this voxel object load correctly
@@ -45,7 +47,10 @@ class VoxelObject {
      * @return true loaded correctly
      * @return false failed to load correctly
      */
-    inline bool ok() const { return ok_; }
+    [[nodiscard]] inline bool
+    ok() const noexcept {
+        return ok_;
+    }
 
     /**
      * @brief Get the voxel color at given coordinate
@@ -55,7 +60,8 @@ class VoxelObject {
      * @param z coordinate
      * @return uint32_t color
      */
-    inline uint32_t get_voxel(uint32_t x, uint32_t y, uint32_t z) const {
+    inline uint32_t
+    get_voxel(uint32_t x, uint32_t y, uint32_t z) const {
         if ((size_[0] > x) && (size_[1] > y) && (size_[2] > z)) {
             return data_[get_position(x, y, z)];
         }
@@ -68,29 +74,35 @@ class VoxelObject {
      *
      * @return std::vector<int>
      */
-    inline std::vector<int> get_offset() const { return center_; }
+    [[nodiscard]] inline std::vector<int>
+    get_offset() const noexcept {
+        return center_;
+    }
 
     /**
      * @brief Get the size as a vector of length three
      *
      * @return std::vector<uint32_t> length in x, y, z
      */
-    inline std::vector<uint32_t> get_size() { return size_; }
+    [[nodiscard]] inline std::vector<uint32_t>
+    get_size() noexcept {
+        return size_;
+    }
 };
 
 template <typename T>
-void
-WRITE(T v, FILE* file) {
-    fwrite(&v, sizeof(T), 1, file);
+static inline void
+WRITE(T v, FILE* file) noexcept {
+    std::fwrite(&v, sizeof(T), 1, file);
 }
 
 template <typename T>
-void
-READ(T& v, FILE* file) {
-    fread(&v, sizeof(T), 1, file);
+static inline void
+READ(T& v, FILE* file) noexcept {
+    std::fread(&v, sizeof(T), 1, file);
 }
 
-int from_qb(
+void from_qb(
     const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
     std::vector<uint32_t>& size
 );

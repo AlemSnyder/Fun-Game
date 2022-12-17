@@ -7,7 +7,8 @@
         "lsst",
         "Parameteri",
         "Perlin",
-        "vmask"
+        "vmask",
+        "voxel"
     ],
     "files.associations": {
         "**/*.html": "html",
