@@ -62,7 +62,7 @@ load_shaders(
     int info_log_length;
 
     // Compile Vertex Shader
-    LOG_INFO(logger, "Compiling vertex shader {}", vertex_file_path);
+    LOG_DEBUG(logger, "Compiling vertex shader {}", vertex_file_path);
 
     char const* vertex_source_pointer = vertex_shader_code.c_str();
     glShaderSource(vertex_shader_id, 1, &vertex_source_pointer, NULL);
@@ -81,7 +81,7 @@ load_shaders(
     }
 
     // Compile Fragment Shader
-    LOG_INFO(logger, "Compiling fragment shader {}", fragment_file_path);
+    LOG_DEBUG(logger, "Compiling fragment shader {}", fragment_file_path);
 
     char const* fragment_source_pointer = fragment_shader_code.c_str();
     glShaderSource(fragment_shader_id, 1, &fragment_source_pointer, NULL);
@@ -101,7 +101,7 @@ load_shaders(
     }
 
     // Link the program
-    LOG_INFO(logger, "Linking shader program");
+    LOG_DEBUG(logger, "Linking shader program");
 
     GLuint program_id = glCreateProgram();
     glAttachShader(program_id, vertex_shader_id);
@@ -126,7 +126,7 @@ load_shaders(
     glDeleteShader(vertex_shader_id);
     glDeleteShader(fragment_shader_id);
 
-    LOG_INFO(logger, "Shader compiled successfully with program ID {}", program_id);
+    LOG_DEBUG(logger, "Shader compiled successfully with program ID {}", program_id);
 
     return program_id;
 }
