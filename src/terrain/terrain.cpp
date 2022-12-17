@@ -91,14 +91,12 @@ Terrain::Terrain(
             );
         }
     }
+
     try {
         qb_read(path, &materials_inverse);
     } catch (const std::exception& e) {
-        // TODO catch individual exceptions
-        // TODO logging
-        std::cerr << "Could not load terrain" << std::endl;
-        std::cerr << e.what() << '\n';
-        return;
+        LOG_ERROR(logger, "Could not load terrain save file due to {}", e.what());
+        throw;
     }
 
     init_chunks();

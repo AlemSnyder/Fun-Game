@@ -28,7 +28,8 @@
 #define INITIAL_WINDOW_HEIGHT 768
 
 int
-GenerateTerrain(const std::string path) {
+GenerateTerrain(const std::string path)
+{
     // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
     // C/gcc/terrain_generation";
 
@@ -48,7 +49,8 @@ GenerateTerrain(const std::string path) {
 }
 
 int
-MacroMap() {
+MacroMap()
+{
     Json::Value biome_data;
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
@@ -59,7 +61,8 @@ MacroMap() {
 }
 
 int
-save_test(const std::string path, const std::string save_path) {
+save_test(const std::string path, const std::string save_path)
+{
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -72,9 +75,8 @@ save_test(const std::string path, const std::string save_path) {
 }
 
 void
-save_terrain(
-    Json::Value materials_json, Json::Value biome_data, std::string biome_name
-) {
+save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name)
+{
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
@@ -103,7 +105,8 @@ save_terrain(
 }
 
 void
-save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
+save_all_terrain(Json::Value materials_json, Json::Value biome_data)
+{
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
         save_terrain(materials_json, *biome_type, biome_type.key().asString());
@@ -111,7 +114,8 @@ save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
 }
 
 int
-path_finder_test(const std::string path, std::string save_path) {
+path_finder_test(const std::string path, std::string save_path)
+{
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -151,7 +155,8 @@ path_finder_test(const std::string path, std::string save_path) {
 }
 
 std::vector<entity::Mesh>
-get_mesh(const std::string path) {
+get_mesh(const std::string path)
+{
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -162,7 +167,8 @@ get_mesh(const std::string path) {
 }
 
 int
-StressTest() {
+StressTest()
+{
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -179,26 +185,34 @@ StressTest() {
 }
 
 int
-GUITest(const std::string path) {
+GUITest(const std::string path)
+{
+    quill::Logger* logger = logging::get_logger();
+
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
-    std::vector<std::uint16_t> indices;
-    std::vector<glm::vec3> indexed_vertices;
-    std::vector<glm::vec3> indexed_colors;
-    std::vector<glm::vec3> indexed_normals;
-    World world(materials_json, path);
 
-    return gui::GUITest(world);
+    World* world;
+    try {
+        world = new World(materials_json, path);
+    } catch (const std::exception& e) {
+        LOG_CRITICAL(logger, "Could not create world!");
+        return 1;
+    }
+
+    return gui::GUITest(*world);
 }
 
 inline int
-GUITest(const std::filesystem::path path) {
+GUITest(const std::filesystem::path path)
+{
     return GUITest(path.string());
 }
 
 inline int
-LogTest() {
+LogTest()
+{
     quill::Logger* logger = quill::get_logger();
     logger->set_log_level(quill::LogLevel::TraceL3);
 
@@ -220,7 +234,8 @@ LogTest() {
 }
 
 int
-main(int argc, char** argv) {
+main(int argc, char** argv)
+{
     argh::parser cmdl;
 
     cmdl.add_params({
@@ -236,7 +251,7 @@ main(int argc, char** argv) {
     std::string path_out = cmdl(3).str();
 
     // init logger
-    quill::detail::set_thread_name("MainThread");
+    logging::set_thread_name("MainThread");
 
     // TODO(nino): need a better arg parser, but allow -vvvv (for example)
     if (cmdl[{"-v", "--verbose"}])

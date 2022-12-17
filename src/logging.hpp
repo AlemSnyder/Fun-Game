@@ -39,6 +39,12 @@ get_logger(std::string name)
     return logger;
 }
 
+inline void
+set_thread_name(std::string name)
+{
+    quill::detail::set_thread_name(name.c_str());
+}
+
 inline std::filesystem::path
 log_dir() noexcept
 {

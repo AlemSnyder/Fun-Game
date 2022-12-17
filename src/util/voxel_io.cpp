@@ -76,7 +76,7 @@ from_qb(
     // Read the tiles from the path specified, and save
     std::ifstream file(path, std::ios::in | std::ios::binary);
     if (!file) {
-        LOG_ERROR(logger, "Could not open {}. Are you in the write directory?", path);
+        LOG_ERROR(logger, "Could not open {}. Are you in the right directory?", path);
         throw exc::file_not_found_error(path);
     }
 
@@ -171,7 +171,7 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
     // Saves the tiles in this to the path specified
     std::ofstream file(path, std::ios::out | std::ios::binary);
     if (!file) {
-        LOG_ERROR(logger, "Could not open {}. Are you in the write directory?", path);
+        LOG_ERROR(logger, "Could not open {}. Are you in the right directory?", path);
         throw exc::file_not_found_error(path);
     }
 
