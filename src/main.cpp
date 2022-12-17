@@ -236,13 +236,15 @@ main(int argc, char** argv) {
     std::string path_out = cmdl(3).str();
 
     // init logger
+    quill::detail::set_thread_name("MainThread");
+
     // TODO(nino): need a better arg parser, but allow -vvvv (for example)
     if (cmdl[{"-v", "--verbose"}])
-        logging::init(quill::LogLevel::TraceL3);
+        logging::init(quill::LogLevel::TraceL3, false);
     else
         logging::init();
 
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::get_logger();
 
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());

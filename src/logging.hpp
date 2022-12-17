@@ -18,7 +18,14 @@ static constexpr quill::LogLevel DEFAULT_LOG_LEVEL = quill::LogLevel::Info;
 extern quill::LogLevel _LOG_LEVEL;
 
 inline quill::Logger*
-get_logger(std::string name) {
+get_logger()
+{
+    return quill::get_logger();
+}
+
+inline quill::Logger*
+get_logger(std::string name)
+{
     quill::Logger* logger;
 
     try {
@@ -26,16 +33,18 @@ get_logger(std::string name) {
     } catch (quill::QuillError&) {
         logger = quill::create_logger(name);
         logger->set_log_level(_LOG_LEVEL);
+        logger->init_backtrace(5, quill::LogLevel::Error);
     }
 
     return logger;
 }
 
 inline std::filesystem::path
-log_dir() noexcept {
+log_dir() noexcept
+{
     return files::get_root_path() / "logs";
 }
 
-void init(quill::LogLevel log_level = DEFAULT_LOG_LEVEL);
+void init(quill::LogLevel log_level = DEFAULT_LOG_LEVEL, bool structured = true);
 
 } // namespace logging

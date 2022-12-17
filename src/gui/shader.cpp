@@ -1,4 +1,5 @@
 #include "shader.hpp"
+
 #include "../logging.hpp"
 
 #include <GL/glew.h>
@@ -8,12 +9,14 @@
 #include <string>
 #include <vector>
 
-static quill::Logger* logger = logging::get_logger("gui.shader");
-
+// TODO(alem): what do we do on error
 GLuint
 load_shaders(
     const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
-) {
+)
+{
+    static quill::Logger* logger = logging::get_logger("shaders");
+
     // get the paths
     std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);
     std::filesystem::path fragment_file_path = std::filesystem::absolute(fragment_file);
@@ -23,7 +26,7 @@ load_shaders(
     GLuint fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 
     // Read the Vertex Shader code from the file
-    LOG_DEBUG(logger, "Loading vertex shader from {}", vertex_file_path);
+    LOG_INFO(logger, "Loading vertex shader from {}", vertex_file_path);
 
     std::string vertex_shader_code;
     std::ifstream vertex_shader_stream(vertex_file_path, std::ios::in);
@@ -40,7 +43,7 @@ load_shaders(
     }
 
     // Read the Fragment Shader code from the file
-    LOG_DEBUG(logger, "Loading fragment shader from {}", vertex_file_path);
+    LOG_INFO(logger, "Loading fragment shader from {}", vertex_file_path);
 
     std::string fragment_shader_code;
     std::ifstream fragment_shader_stream(fragment_file_path, std::ios::in);
@@ -125,7 +128,7 @@ load_shaders(
     glDeleteShader(vertex_shader_id);
     glDeleteShader(fragment_shader_id);
 
-    LOG_DEBUG(logger, "Shader compiled successfully with program ID {}", program_id);
+    LOG_INFO(logger, "Shader compiled successfully with program ID {}", program_id);
 
     return program_id;
 }

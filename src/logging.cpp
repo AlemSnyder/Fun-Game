@@ -8,16 +8,25 @@
 #include <filesystem>
 #include <string>
 
+#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__)                \
+    || defined(QUILL_NO_THREAD_NAME_SUPPORT)
 static const std::string LOGLINE_FORMAT =
-    "%(ascii_time) [%(thread)] [%(fileline:<18)] %(level_name) [%(logger_name:<14)] - "
-    "%(message)";
+    "%(ascii_time) [%(thread:<6)] [%(fileline:<18)] %(level_name) [%(logger_name:<14)] "
+    "- %(message)";
+#else
+static const std::string LOGLINE_FORMAT =
+    "%(ascii_time) [%(thread:<16):%(thread_name:<16)] [%(fileline:<18)] %(level_name) "
+    "[%(logger_name:<14)] - %(message)";
+
+#endif
 
 namespace logging {
 
 quill::LogLevel _LOG_LEVEL;
 
 void
-init(quill::LogLevel log_level) {
+init(quill::LogLevel log_level, bool structured)
+{
     _LOG_LEVEL = log_level;
 
     // Create the logs directory
@@ -32,13 +41,18 @@ init(quill::LogLevel log_level) {
     cfg.default_logger_name = "main";
 
     // Initialize print handler
-    auto stdout_handler = dynamic_cast<quill::ConsoleHandler*>(quill::stdout_handler());
+    quill::ConsoleColours colors;
+    colors.set_default_colours();
+    // colors.set_colour(quill::LogLevel::Debug, quill::ConsoleColours::black);
+    // colors.set_colour(quill::LogLevel::Info, quill::ConsoleColours::white);
+
+    auto stdout_handler =
+        dynamic_cast<quill::ConsoleHandler*>(quill::stdout_handler("console", colors));
     stdout_handler->set_pattern(
         LOGLINE_FORMAT,
         "%F %T.%Qms %z" // ISO 8601 but with space instead of T
     );
     stdout_handler->set_log_level(log_level);
-    stdout_handler->enable_console_colours();
 
     cfg.default_handlers.emplace_back(stdout_handler);
 
@@ -68,10 +82,14 @@ init(quill::LogLevel log_level) {
     // Send the config
     quill::configure(cfg);
 
+    // Set backtrace and log level on the main logger
+    quill::Logger* main_logger = quill::get_logger();
+    main_logger->init_backtrace(5, quill::LogLevel::Error);
+
     // Start the logging backend thread
     quill::start();
 
-    LOG_INFO(quill::get_logger(), "Logging initialized!");
+    LOG_INFO(main_logger, "Logging initialized!");
 }
 
 } // namespace logging

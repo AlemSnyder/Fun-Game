@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "../logging.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
@@ -35,7 +36,6 @@
 #include "terrain_generation/tilestamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
-#include "../logging.hpp"
 
 #include <stdio.h>
 
@@ -49,8 +49,6 @@
 
 namespace terrain {
 
-static quill::Logger* logger = logging::get_logger("terrain.terrain");
-
 // Forward declaration of Chunk
 class Chunk;
 
@@ -58,33 +56,39 @@ namespace helper {
 
 // high is for if the grass reaches a cliff
 inline bool
-edge_detector_high(Tile* t) {
+edge_detector_high(Tile* t)
+{
     return !t->is_grass() && t->is_solid();
 }
 
 inline void
-setter_high(Tile* t, int set_to) {
+setter_high(Tile* t, int set_to)
+{
     t->set_grow_data_high(set_to);
 }
 
 inline int
-getter_high(Tile* t) {
+getter_high(Tile* t)
+{
     return t->get_grow_data_high();
 }
 
 // low is for if the grass reaches an edge
 inline bool
-edge_detector_low(Tile* t) {
+edge_detector_low(Tile* t)
+{
     return !t->is_solid();
 }
 
 inline void
-setter_low(Tile* t, int set_to) {
+setter_low(Tile* t, int set_to)
+{
     t->set_grow_data_low(set_to);
 }
 
 inline int
-getter_low(Tile* t) {
+getter_low(Tile* t)
+{
     return t->get_grow_data_low();
 }
 
@@ -106,11 +110,11 @@ class Terrain {
     // vector of chunks in terrain
     std::vector<Chunk> chunks_;
     // length in the x direction
-    int X_MAX;
+    int32_t X_MAX;
     // length in the y direction
-    int Y_MAX;
+    int32_t Y_MAX;
     // length in the z direction
-    int Z_MAX;
+    int32_t Z_MAX;
     // size of terrain generation tile (see terrain generation)
     static int Area_size;
     // seed for randomness
@@ -125,6 +129,8 @@ class Terrain {
     int grass_mid_;
     // mat of material id to material that describes materials in this terrain
     const std::map<int, const terrain::Material>* materials_;
+    // Our logger
+    quill::Logger* logger = logging::get_logger("terrain");
 
     // save color at sop, to color
     //! static Should be removed
@@ -143,7 +149,8 @@ class Terrain {
     void
     get_path_through_nodes(
         Node<const T>* node, std::vector<const T*>& out, const T* start
-    ) const {
+    ) const
+    {
         out.push_back(node->get_tile());
         if (start == node->get_tile()) {
             return;
@@ -204,7 +211,8 @@ class Terrain {
      * @return int
      */
     int
-    pos(int x, int y, int z) const { // for loops should go z than y than x
+    pos(int x, int y, int z) const
+    { // for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
     }
 
@@ -215,12 +223,14 @@ class Terrain {
      * @return int
      */
     int
-    pos(const std::array<int, 3> sop) const {
+    pos(const std::array<int, 3> sop) const
+    {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
     int
-    pos(const int sop[3]) const {
+    pos(const int sop[3]) const
+    {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
@@ -231,7 +241,8 @@ class Terrain {
      * @return int
      */
     int
-    pos(const Tile* const tile) const {
+    pos(const Tile* const tile) const
+    {
         return pos(tile->sop());
     }
 
@@ -242,7 +253,8 @@ class Terrain {
      * @return int
      */
     inline int
-    pos(const Tile tile) const {
+    pos(const Tile tile) const
+    {
         return pos(tile.get_x(), tile.get_y(), tile.get_z());
     }
 
@@ -261,7 +273,8 @@ class Terrain {
      * @return int
      */
     inline int
-    pos_for_map(const Tile tile) const {
+    pos_for_map(const Tile tile) const
+    {
         return pos(tile);
     }
 
@@ -272,7 +285,8 @@ class Terrain {
      * @return int
      */
     inline int
-    pos_for_map(const Tile* const tile) const {
+    pos_for_map(const Tile* const tile) const
+    {
         return pos(tile);
     }
 
@@ -283,7 +297,8 @@ class Terrain {
      * @return int
      */
     inline int
-    pos_for_map(const NodeGroup NG) const {
+    pos_for_map(const NodeGroup NG) const
+    {
         return pos(*(NG.get_tiles().begin()));
     }
 
@@ -294,7 +309,8 @@ class Terrain {
      * @return int
      */
     inline int
-    pos_for_map(const NodeGroup* const NG) const {
+    pos_for_map(const NodeGroup* const NG) const
+    {
         return pos(*(NG->get_tiles().begin()));
     }
 
@@ -305,7 +321,8 @@ class Terrain {
      * @return const std::array<int, 3> position in space
      */
     const std::array<int, 3>
-    sop(int xyz) const {
+    sop(int xyz) const
+    {
         return {xyz / (Y_MAX * Z_MAX), (xyz / Z_MAX) % Y_MAX, xyz % (Z_MAX)};
     }
 
@@ -319,7 +336,8 @@ class Terrain {
      * @return std::array<int, 3> position in 3D space
      */
     static std::array<int, 3>
-    sop(int xyz, int xm, int ym, int zm) {
+    sop(int xyz, int xm, int ym, int zm)
+    {
         if (xyz >= xm * ym * zm) {
             throw std::invalid_argument("index out of range");
         }
@@ -471,7 +489,8 @@ class Terrain {
      * @return iterator
      */
     inline iterator
-    get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const {
+    get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const
+    {
         return iterator(*this, pos, path_type);
     }
 
@@ -541,7 +560,8 @@ class Terrain {
      * @return int length
      */
     inline int
-    get_X_MAX() const {
+    get_X_MAX() const
+    {
         return X_MAX;
     };
 
@@ -551,7 +571,8 @@ class Terrain {
      * @return int length
      */
     inline int
-    get_Y_MAX() const {
+    get_Y_MAX() const
+    {
         return Y_MAX;
     };
 
@@ -561,7 +582,8 @@ class Terrain {
      * @return int length
      */
     inline int
-    get_Z_MAX() const {
+    get_Z_MAX() const
+    {
         return Z_MAX;
     };
 
@@ -601,7 +623,8 @@ class Terrain {
      * @return false tile is not in bounds
      */
     inline bool
-    in_range(int x, int y, int z) const {
+    in_range(int x, int y, int z) const
+    {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
     }
 
@@ -614,7 +637,8 @@ class Terrain {
      * @return Tile* tile at given position
      */
     Tile*
-    get_tile(int x, int y, int z) {
+    get_tile(int x, int y, int z)
+    {
         if (!in_range(x, y, z)) {
             LOG_CRITICAL(logger, "Tile position ({}, {}, {}), out of range.", x, y, z);
             throw std::invalid_argument("index out of range");
@@ -624,7 +648,8 @@ class Terrain {
     };
 
     Tile*
-    get_tile(int xyz) {
+    get_tile(int xyz)
+    {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
@@ -642,7 +667,8 @@ class Terrain {
      * @return Tile* tile at given position
      */
     const Tile*
-    get_tile(int x, int y, int z) const {
+    get_tile(int x, int y, int z) const
+    {
         if ((x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 0)) {
             LOG_CRITICAL(logger, "Tile position ({}, {}, {}), out of range.", x, y, z);
             throw std::invalid_argument("index out of range");
@@ -658,7 +684,8 @@ class Terrain {
      * @return const Tile* tile at index
      */
     const Tile*
-    get_tile(int xyz) const {
+    get_tile(int xyz) const
+    {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
@@ -678,12 +705,14 @@ class Terrain {
     uint32_t get_voxel(int x, int y, int z) const;
 
     inline const std::vector<Chunk>&
-    get_chunks() const {
+    get_chunks() const
+    {
         return chunks_;
     }
 
     inline int
-    get_grass_grad_length() const {
+    get_grass_grad_length() const
+    {
         return grass_grad_length_;
     }
 
@@ -717,7 +746,8 @@ class Terrain {
      * @param color_id color id set to
      */
     inline void
-    set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
+    set_tile_material(Tile* tile, const Material* mat, uint8_t color_id)
+    {
         tile->set_material(mat, color_id);
     }
 
@@ -745,7 +775,8 @@ class Terrain {
      * @param y macro map y position
      */
     inline void
-    stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y) {
+    stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y)
+    {
         stamp_tile_region(
             tStamp.x_start + x * Area_size + Area_size / 2,
             tStamp.y_start + y * Area_size + Area_size / 2, tStamp.z_start,
@@ -800,7 +831,8 @@ class Terrain {
      *
      */
     inline void
-    grow_grass_high(std::set<Tile*> all_grass) {
+    grow_grass_high(std::set<Tile*> all_grass)
+    {
         helper::grow_grass_recursive<
             helper::edge_detector_high, helper::getter_high, helper::setter_high>(
             *this, all_grass
@@ -812,7 +844,8 @@ class Terrain {
      *
      */
     inline void
-    grow_grass_low(std::set<Tile*> all_grass) {
+    grow_grass_low(std::set<Tile*> all_grass)
+    {
         helper::grow_grass_recursive<
             helper::edge_detector_low, helper::getter_low, helper::setter_low>(
             *this, all_grass
@@ -829,7 +862,8 @@ class Terrain {
      * @return false cannot stand
      */
     inline bool
-    can_stand_1(int x, int y, int z) const {
+    can_stand_1(int x, int y, int z) const
+    {
         return can_stand(x, y, z, 1, 1);
     }
 
@@ -854,7 +888,8 @@ class Terrain {
      * @return false cannot stand
      */
     inline bool
-    can_stand_1(const Tile tile) const {
+    can_stand_1(const Tile tile) const
+    {
         return can_stand(tile, 1, 1);
     }
 
@@ -866,7 +901,8 @@ class Terrain {
      * @return false cannot stand
      */
     bool
-    can_stand_1(const Tile* tile) const {
+    can_stand_1(const Tile* tile) const
+    {
         return can_stand(tile, 1, 1);
     }
 
@@ -907,16 +943,14 @@ class Terrain {
      *
      * @param path path to save to
      * @param materials materials in the terrain for debug materials
-     * @return int success status
      */
-    int qb_save_debug(const std::string path);
+    void qb_save_debug(const std::string path);
     /**
      * @brief save to path
      *
      * @param path path to save to
-     * @return int success status
      */
-    int qb_save(const std::string path) const;
+    void qb_save(const std::string path) const;
     /**
      * @brief read from path
      *
