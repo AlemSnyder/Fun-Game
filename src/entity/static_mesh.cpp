@@ -40,8 +40,8 @@ StaticMesh::StaticMesh(
     glGenBuffers(1, &color_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_colors.size() * sizeof(glm::vec3), indexed_colors.data(),
-        GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, indexed_colors.size() * sizeof(glm::vec3),
+        indexed_colors.data(), GL_STATIC_DRAW
     );
 
     // Generate a buffer for the normal vectors
@@ -56,8 +56,8 @@ StaticMesh::StaticMesh(
     glGenBuffers(1, &element_buffer_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), indices.data(),
-        GL_STATIC_DRAW
+        GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
+        indices.data(), GL_STATIC_DRAW
     );
 
     /// Generate a buffer for the transforms
