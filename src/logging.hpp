@@ -1,3 +1,5 @@
+#pragma once
+
 #include "util/files.hpp"
 
 #include <config.h>

@@ -1,4 +1,5 @@
 #include "voxel_io.hpp"
+#include "../logging.hpp"
 
 #include <cinttypes>
 #include <fstream>
@@ -6,8 +7,11 @@
 #include <string>
 #include <vector>
 
+//static quill::Logger* logger = logging::get_logger("util.voxel_io");
+
 namespace voxel_utility {
 
+//TODO path should be a file system path not string
 int
 from_qb(
     const std::string path, std::vector<uint32_t>& data, std::vector<int>& center,
@@ -17,41 +21,34 @@ from_qb(
     FILE* file;
     file = fopen(path.c_str(), "rb");
     if (!file) {
-        std::cerr << "Impossible to open " << path
-                  << ". Are you in the right directory?" << std::endl;
+        LOG_ERROR(logger, "Impossible to open {}.", path);
         getchar();
         fclose(file);
         return 1;
     }
 
     // This is partially from goxel with GPL license
-    std::cout << "Reading form " << path << "\n";
+    LOG_INFO(logger, "Reading form {}", path);
     // int x, y, z; // position in terrain
     uint32_t void_, compression; // void int 32 used to read 32 bites without saving it.
     int32_t x_center, y_center, z_center;
     uint8_t v[4];
 
     READ<uint32_t>(void_, file); // version
-    // std::cout << void_ << std::endl;
     READ<uint32_t>(void_, file); // color format RGBA
-    // std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file); // orientation right handed // c
-    // std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(compression, file); // no compression
-    // std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file); // vmask
-    // std::cout << void_ << std::endl;(void) void_;
     READ<uint32_t>(void_, file);
-    // std::cout << void_ << std::endl;(void) void_;
     //  none of these are used
 
     int8_t name_len;
     READ<int8_t>(name_len, file);
-    std::cout << "name length: " << static_cast<int>(name_len) << std::endl;
+    LOG_DEBUG(logger, "Name Length: {}", static_cast<int>(name_len));
     char* name = new char[name_len];
     fread(name, sizeof(char), name_len, file);
     std::string string_name(name);
-    std::cout << "Name: " << string_name << std::endl;
+    LOG_DEBUG(logger, "Name: {}", string_name);
     uint32_t X_max, Y_max, Z_max;
     READ<uint32_t>(X_max, file); // x
     READ<uint32_t>(Z_max, file); // z
@@ -61,13 +58,14 @@ from_qb(
     READ<int32_t>(z_center, file); // z
     READ<int32_t>(y_center, file); // y
     center = {x_center, y_center, z_center};
-    std::cout << "    max X: " << X_max << std::endl;
-    std::cout << "    max Y: " << Y_max << std::endl;
-    std::cout << "    max Z: " << Z_max << std::endl;
+    LOG_DEBUG(logger, "Max X: {}", X_max);
+    LOG_DEBUG(logger, "Max Y: {}", Y_max);
+    LOG_DEBUG(logger, "Max Z: {}", Z_max);
     data.resize(X_max * Y_max * Z_max);
-    int tiles_read = 0;
+    int voxels_read = 0;
     if (static_cast<bool>(compression)) {
-        std::cout << "There is compression!" << std::endl;
+        LOG_DEBUG(logger, "Using compression.");
+        LOG_ERROR(logger, "This is not implemented.");
     } else {
         data.resize(size[0] * size[1] * size[2]);
         for (size_t x = 0; x < size[0]; x++)
@@ -78,10 +76,11 @@ from_qb(
                     // fread(&color, 32, 1, file); // read the color
                     data[(x * static_cast<int>(size[1]) + y) * size[2] + z] =
                         compress_color(v);
-                    tiles_read++;
+                    voxels_read++;
                 }
     }
-    std::cout << "Voxels read: " << tiles_read << std::endl;
+    LOG_DEBUG(logger, "Voxels read: {}", voxels_read);
+
     // free(void_);
     // free(compression);
     // free(name_len);

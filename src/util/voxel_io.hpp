@@ -1,5 +1,7 @@
 #pragma once
 
+#include "..\logging.hpp"
+
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
@@ -9,6 +11,8 @@
 #include <vector>
 
 namespace voxel_utility {
+
+static quill::Logger* logger = logging::get_logger("util.voxel_io");
 
 class VoxelObject {
  private:
@@ -112,21 +116,20 @@ to_qb(const std::string path, T voxel_object) {
     FILE* file;
     file = fopen(path.c_str(), "wb");
     if (!file) {
-        std::cerr << "Impossible to open " << path
-                  << ". Are you in the right directory?" << std::endl;
+        LOG_ERROR(logger, "Impossible to open {}.", path);
         getchar();
         fclose(file);
-        return -1;
+        return 1;
     }
 
     std::vector<uint32_t> size = voxel_object.get_size();
     std::vector<int> offset = voxel_object.get_offset();
 
     // This is from goxel with GPL license
-    std::cout << "Saving to " << path << "\n";
-    std::cout << "    max X: " << size[0] << std::endl;
-    std::cout << "    max Y: " << size[1] << std::endl;
-    std::cout << "    max Z: " << size[2] << std::endl;
+    LOG_INFO(logger, "Saving to {}", path);
+    LOG_DEBUG(logger, "Max X: {}", size[0]);
+    LOG_DEBUG(logger, "Max Y: {}", size[1]);
+    LOG_DEBUG(logger, "Max Z: {}", size[2]);
     unsigned int count, x, y, z;
     uint8_t v[4];
 
@@ -149,7 +152,7 @@ to_qb(const std::string path, T voxel_object) {
     WRITE<int32_t>(offset[2], file); // z
     WRITE<int32_t>(offset[1], file); // y
     // iter = mesh_get_accessor(mesh);
-    int tiles_written = 0;
+    int voxels_written = 0;
     for (x = 0; x < size[0]; x++)
         for (z = 0; z < size[2]; z++)
             for (y = size[1] - 1; y < size[1]; y--) {
@@ -158,10 +161,10 @@ to_qb(const std::string path, T voxel_object) {
                     v[3] = 0xFF;
                 }
                 fwrite(v, 4, 1, file);
-                tiles_written++;
+                voxels_written++;
             }
     fclose(file);
-    std::cout << "    tiles written: " << tiles_written << std::endl;
+    LOG_DEBUG(logger, "Voxels written: {}", voxels_written);
     return 0;
 }
 

@@ -1,5 +1,4 @@
 #include "shader.hpp"
-
 #include "../logging.hpp"
 
 #include <GL/glew.h>
@@ -9,7 +8,7 @@
 #include <string>
 #include <vector>
 
-static quill::Logger* logger = logging::get_logger("gui.shaders");
+static quill::Logger* logger = logging::get_logger("gui.shader");
 
 GLuint
 load_shaders(

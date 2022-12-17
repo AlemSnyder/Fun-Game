@@ -35,6 +35,7 @@
 #include "terrain_generation/tilestamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
+#include "../logging.hpp"
 
 #include <stdio.h>
 
@@ -47,6 +48,8 @@
 #include <vector>
 
 namespace terrain {
+
+static quill::Logger* logger = logging::get_logger("terrain.terrain");
 
 // Forward declaration of Chunk
 class Chunk;
@@ -574,7 +577,7 @@ class Terrain {
      */
     Tile* get_tile(int x, int y, int z) {
         if (!in_range(x, y, z)) {
-            std::cout << x << ";" << y << ";" << z << "\n";
+            LOG_CRITICAL(logger, "Tile position ({}, {}, {}), out of range.", x, y, z);
             throw std::invalid_argument("index out of range");
         } else {
             return &tiles_[pos(x, y, z)];
@@ -583,7 +586,7 @@ class Terrain {
 
     Tile* get_tile(int xyz) {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
-            std::cout << xyz << "\n";
+            LOG_CRITICAL(logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         } else {
             return &tiles_[xyz];
@@ -600,7 +603,7 @@ class Terrain {
      */
     const Tile* get_tile(int x, int y, int z) const {
         if ((x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 0)) {
-            std::cout << x << ";" << y << ";" << z << "\n";
+            LOG_CRITICAL(logger, "Tile position ({}, {}, {}), out of range.", x, y, z);
             throw std::invalid_argument("index out of range");
         } else {
             return &tiles_[pos(x, y, z)];
@@ -615,7 +618,7 @@ class Terrain {
      */
     const Tile* get_tile(int xyz) const {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
-            std::cout << xyz << "\n";
+            LOG_CRITICAL(logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         } else {
             return &tiles_[xyz];

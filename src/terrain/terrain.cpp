@@ -1,5 +1,6 @@
 #include "terrain.hpp"
 
+#include "../logging.hpp"
 #include "../util/time.hpp"
 #include "../util/voxel_io.hpp"
 #include "chunk.hpp"
@@ -21,6 +22,8 @@
 #include <set>
 #include <string>
 #include <vector>
+
+//static quill::Logger* logger = logging::get_logger("terrain.terrain");
 
 namespace terrain {
 
@@ -129,7 +132,7 @@ Terrain::init(
     }
 
     srand(seed);
-    std::cout << "start of land Generator" << std::endl;
+    LOG_INFO(logger, "Start of land generator.");
 
     // create a map of int -> LandGenerator
     std::map<int, terrain_generation::LandGenerator> land_generators;
@@ -163,8 +166,10 @@ Terrain::init(
     //  TODO make this faster 1
     init_chunks();
 
-    std::cout << time_util::epoch_millis() - millisec_since_epoch
-              << " Total time Terrain_init" << std::endl;
+    LOG_INFO(
+        logger, "End of land generator. Time elapsed: {}.",
+        time_util::epoch_millis() - millisec_since_epoch
+    );
 }
 
 void
@@ -461,6 +466,7 @@ Terrain::generate_macro_map(
         );
         out[i] = static_cast<int>((p + 1) * (p + 1) * range);
     }
+    // TODO multi line logging
     for (unsigned int i = 0; i < size_x; i++) {
         for (unsigned int j = 0; j < size_y; j++) {
             std::cout << out[j + size_y * i] << " ";
@@ -946,8 +952,10 @@ Terrain::qb_read(
     }
 
     for (uint32_t color : unknown_materials) {
-        std::cout << "    cannot find color: " << std::hex << std::uppercase << color
-                  << std::dec << std::endl;
+        // is there any way to log hexadecimal
+        LOG_WARNING(logger, "Cannot find color: {:x}", color);
+        //std::cout << "    cannot find color: " << std::hex << std::uppercase << color
+        //          << std::dec << std::endl;
     }
 
     return 0;
