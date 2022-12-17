@@ -23,8 +23,6 @@
 #include <string>
 #include <vector>
 
-// static quill::Logger* logger = logging::get_logger("terrain.terrain");
-
 namespace terrain {
 
 int Terrain::Area_size = 32;
@@ -903,7 +901,7 @@ Terrain::compress_color(uint8_t v[4]) {
            | (uint32_t)v[0] << 24;
 }
 
-int
+void
 Terrain::qb_save_debug(const std::string path) {
     int x = 0;
     for (Chunk& c : chunks_) {
@@ -916,14 +914,14 @@ Terrain::qb_save_debug(const std::string path) {
             x++;
         }
     }
-    return qb_save(path);
+    qb_save(path);
 }
 
 // Save all tiles as .qb to path.
-int
+void
 Terrain::qb_save(const std::string path) const {
     // Saves the tiles in this to the path specified
-    return voxel_utility::to_qb(path, *this);
+    voxel_utility::to_qb(path, *this);
 }
 
 void

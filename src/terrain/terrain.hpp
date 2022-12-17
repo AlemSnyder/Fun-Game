@@ -568,20 +568,26 @@ class Terrain {
     /**
      * @brief Get the size of terrain
      *
-     * @return std::vector<unsigned int> vector of sizes
+     * @return std::array<uint32_t, 3> array of sizes
      */
-    inline std::vector<unsigned int>
-    get_size() const {
-        return {(unsigned int)X_MAX, (unsigned int)Y_MAX, (unsigned int)Z_MAX};
+    inline std::array<uint32_t, 3>
+    get_size() const
+    {
+        return {
+            static_cast<uint32_t>(X_MAX),
+            static_cast<uint32_t>(Y_MAX),
+            static_cast<uint32_t>(Z_MAX),
+        };
     }
 
     /**
      * @brief Used for getting mesh
      *
-     * @return std::vector<int> 0 3 times
+     * @return std::array<int32_t, 3> 0 3 times
      */
-    inline std::vector<int>
-    get_offset() const {
+    inline std::array<int32_t, 3>
+    get_offset() const
+    {
         return {0, 0, 0};
     }
 

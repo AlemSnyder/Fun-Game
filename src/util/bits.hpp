@@ -1,7 +1,6 @@
-#include <cinttypes>
+#include <cstdint>
 
 namespace bits {
-
 
 // Favor compiler builtins as they are CPU-specific
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)

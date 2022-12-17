@@ -1,10 +1,9 @@
 #pragma once
 
-#include "..\logging.hpp"
-#include "bits.hpp"
+#include "../logging.hpp"
+#include "../terrain/terrain.hpp"
 
 #include <array>
-#include <bit>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
@@ -15,14 +14,14 @@
 
 namespace voxel_utility {
 
-static quill::Logger* logger = logging::get_logger("util.voxel_io");
-
 class VoxelObject {
  private:
     std::vector<uint32_t> data_;
     std::array<int32_t, 3> center_;
     std::array<uint32_t, 3> size_;
     bool ok_;
+
+    quill::Logger* logger = logging::get_logger("voxel_io");
 
     inline int
     get_position(int x, int y, int z) const
@@ -98,101 +97,11 @@ class VoxelObject {
     }
 };
 
-template <typename T>
-static inline void
-WRITE(T v, FILE* file) noexcept
-{
-    std::fwrite(&v, sizeof(T), 1, file);
-}
-
-template <typename T>
-static inline void
-READ(T& v, FILE* file) noexcept
-{
-    std::fread(&v, sizeof(T), 1, file);
-}
-
 void from_qb(
     const std::filesystem::path path, std::vector<uint32_t>& data,
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 );
 
-inline uint32_t
-parse_color(uint32_t color)
-{
-    if (std::endian::native == std::endian::little)
-        return bits::swap(color);
-    else
-        return color;
-}
-
-inline uint32_t
-export_color(uint32_t color)
-{
-    if (std::endian::native == std::endian::little)
-        return bits::swap(color);
-    else
-        return color;
-}
-
-template <typename T>
-int
-to_qb(const std::string path, T voxel_object)
-{
-    // Saves the tiles in this to the path specified
-    FILE* file;
-    file = fopen(path.c_str(), "wb");
-    if (!file) {
-        LOG_ERROR(logger, "Impossible to open {}.", path);
-        getchar();
-        fclose(file);
-        return 1;
-    }
-
-    std::vector<uint32_t> size = voxel_object.get_size();
-    std::vector<int> offset = voxel_object.get_offset();
-
-    // This is from goxel with GPL license
-    LOG_INFO(logger, "Saving to {}", path);
-    LOG_DEBUG(logger, "Max X: {}", size[0]);
-    LOG_DEBUG(logger, "Max Y: {}", size[1]);
-    LOG_DEBUG(logger, "Max Z: {}", size[2]);
-    unsigned int count, x, y, z;
-    uint8_t v[4];
-
-    count = 1; // the number of layers
-
-    WRITE<uint32_t>(257, file); // version
-    WRITE<uint32_t>(0, file);   // color format RGBA
-    WRITE<uint32_t>(1, file);   // orientation right handed // c
-    WRITE<uint32_t>(0, file);   // no compression
-    WRITE<uint32_t>(0, file);   // vmask
-    WRITE<uint32_t>(count, file);
-
-    const char* name = "Main World";
-    WRITE<int8_t>(std::strlen(name), file);
-    fwrite(name, strlen(name), 1, file);
-    WRITE<uint32_t>(size[0], file);  // x
-    WRITE<uint32_t>(size[2], file);  // z
-    WRITE<uint32_t>(size[1], file);  // y
-    WRITE<int32_t>(offset[0], file); // x
-    WRITE<int32_t>(offset[2], file); // z
-    WRITE<int32_t>(offset[1], file); // y
-    // iter = mesh_get_accessor(mesh);
-    int voxels_written = 0;
-    for (x = 0; x < size[0]; x++)
-        for (z = 0; z < size[2]; z++)
-            for (y = size[1] - 1; y < size[1]; y--) {
-                export_color(voxel_object.get_voxel(x, y, z), v);
-                if (v[3] != 0x0) {
-                    v[3] = 0xFF;
-                }
-                fwrite(v, 4, 1, file);
-                voxels_written++;
-            }
-    fclose(file);
-    LOG_DEBUG(logger, "Voxels written: {}", voxels_written);
-    return 0;
-}
+void to_qb(const std::string path, terrain::Terrain ter, bool compression = false);
 
 } // namespace voxel_utility

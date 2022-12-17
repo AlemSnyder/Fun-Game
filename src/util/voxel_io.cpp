@@ -2,8 +2,10 @@
 
 #include "../exceptions.hpp"
 #include "../logging.hpp"
+#include "bits.hpp"
 
 #include <array>
+#include <bit>
 #include <cinttypes>
 #include <concepts>
 #include <exception>
@@ -12,10 +14,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-static quill::Logger* logger = logging::get_logger("voxel_io");
-
-namespace voxel_utility {
 
 template <std::integral T>
 static inline void
@@ -26,17 +24,53 @@ read_int(std::ifstream& file, T& val) noexcept
 
 template <std::integral T>
 static inline void
-write_int(std::ofstream& file, T& val) noexcept
+write_int(std::ofstream& file, T val) noexcept
 {
     file.write(reinterpret_cast<char*>(&val), sizeof(val));
 }
 
+static inline uint32_t
+parse_color(uint32_t color)
+{
+    // Colors are saved in big endian format
+    if (std::endian::native == std::endian::little)
+        return bits::swap(color);
+    else
+        return color;
+}
+
+static inline uint32_t
+export_color(uint32_t color)
+{
+    // Colors are saved in big endian format
+    if (std::endian::native == std::endian::little)
+        return bits::swap(color);
+    else
+        return color;
+}
+
+namespace voxel_utility {
+
+VoxelObject::VoxelObject(const std::string path)
+{
+    try {
+        from_qb(path, data_, center_, size_);
+        ok_ = true;
+    } catch (const std::exception& e) {
+        LOG_ERROR(logger, "Could not create VoxelObject: {}", e.what());
+        ok_ = false;
+    }
+}
+
+// This is partially from goxel with GPL license
 void
 from_qb(
     const std::filesystem::path path, std::vector<uint32_t>& data,
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 )
 {
+    static quill::Logger* logger = logging::get_logger("voxel_io");
+
     LOG_INFO(logger, "Reading voxels from {}", path);
 
     // Read the tiles from the path specified, and save
@@ -46,7 +80,7 @@ from_qb(
         throw exc::file_not_found_error(path);
     }
 
-    // Header variables
+    // Read file header
     uint32_t void_; // void int used to read 32 bites without saving it.
     uint32_t compression;
 
@@ -65,12 +99,13 @@ from_qb(
         throw exc::not_implemented_error("Cannot parse compressed voxel files");
     }
 
-    LOG_TRACE_L1(logger, "Reading file name");
+    // Read file name
+    LOG_TRACE_L1(logger, "Reading voxel save name");
 
     int8_t name_len;
     read_int(file, name_len);
 
-    LOG_DEBUG(logger, "File name length: {}", name_len);
+    LOG_DEBUG(logger, "Voxel save name length: {}", name_len);
 
     std::string name(name_len, '\0');
     file.read(name.data(), name_len);
@@ -102,16 +137,17 @@ from_qb(
         logger, "Voxel grid center: ({X}, {Y}, {Z})", x_center, y_center, z_center
     );
 
-    size_t voxels_read = 0;
+    // Read the voxels themselves
+    LOG_DEBUG(logger, "Reading voxels");
 
+    size_t voxels_read = 0;
     for (size_t x = 0; x < size[0]; x++)
         for (size_t z = 0; z < size[2]; z++)
             for (size_t y = size[1] - 1; y < size[1]; y--) {
-                uint32_t voxel_color;
-                read_int(file, voxel_color);
+                uint32_t raw_color;
 
-                data[(x * size[1] + y) * size[2] + z] =
-                    parse_color(voxel_color);
+                read_int(file, raw_color);
+                data[(x * x_max + y) * y_max + z] = parse_color(raw_color);
 
                 voxels_read++;
             }
@@ -119,15 +155,86 @@ from_qb(
     LOG_INFO(logger, "Voxels read: {}", voxels_read);
 }
 
-VoxelObject::VoxelObject(const std::string path)
+// This is partially from goxel with GPL license
+void
+to_qb(const std::string path, terrain::Terrain ter, bool compression)
 {
-    try {
-        from_qb(path, data_, center_, size_);
-        ok_ = true;
-    } catch (const std::exception& e) {
-        LOG_ERROR(logger, "Could not create VoxelObject: {}", e.what());
-        ok_ = false;
+    static quill::Logger* logger = logging::get_logger("voxel_io");
+
+    LOG_INFO(logger, "Saving voxels to {}", path);
+
+    if (compression) {
+        LOG_ERROR(logger, "Cannot write voxel files with compression");
+        throw exc::not_implemented_error("Cannot write compressed voxel files");
     }
+
+    // Saves the tiles in this to the path specified
+    std::ofstream file(path, std::ios::out | std::ios::binary);
+    if (!file) {
+        LOG_ERROR(logger, "Could not open {}. Are you in the write directory?", path);
+        throw exc::file_not_found_error(path);
+    }
+
+    std::array<uint32_t, 3> size = ter.get_size();
+    std::array<int32_t, 3> offset = ter.get_offset();
+
+    /*
+        uint8_t v[4]; */
+
+    // Write header
+    uint32_t count = 1; // the number of layers
+
+    LOG_TRACE_L1(logger, "Writing file header");
+
+    write_int(file, 257); // version
+    write_int(file, 0);   // color format RGBA
+    write_int(file, 1);   // orientation right handed // c
+    write_int(file, 0);   // no compression
+    write_int(file, 0);   // vmask
+    write_int(file, count);
+
+    // Write file name
+    LOG_TRACE_L1(logger, "Writing file name");
+
+    const std::string name("Main World");
+    write_int(file, name.length());
+    file.write(name.c_str(), name.length());
+
+    // Write voxel grid size
+    LOG_DEBUG(logger, "Voxel grid size: {X} x {Y} x {Z}", size[0], size[1], size[2]);
+
+    write_int(file, size[0]); // x_max
+    write_int(file, size[2]); // z_max
+    write_int(file, size[1]); // y_max
+
+    // Write voxel grid center
+    LOG_DEBUG(
+        logger, "Voxel grid center: ({X}, {Y}, {Z})", offset[0], offset[1], offset[2]
+    );
+
+    write_int(file, offset[0]); // x_center
+    write_int(file, offset[2]); // z_center
+    write_int(file, offset[1]); // y_center
+
+    // Write the voxels themselves
+    LOG_DEBUG(logger, "Writing voxels");
+
+    size_t voxels_written = 0;
+    for (size_t x = 0; x < size[0]; x++)
+        for (size_t z = 0; z < size[2]; z++)
+            for (size_t y = size[1] - 1; y < size[1]; y--) {
+                uint32_t raw_color = export_color(ter.get_voxel(x, y, z));
+
+                // Alpha is either 0 or 255
+                if (raw_color & 0xff000000)
+                    raw_color |= 0xff000000;
+
+                write_int(file, raw_color);
+
+                voxels_written++;
+            }
+
+    LOG_INFO(logger, "Voxels written: {}", voxels_written);
 }
 
 } // namespace voxel_utility
