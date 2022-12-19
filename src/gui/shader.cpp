@@ -15,8 +15,6 @@ load_shaders(
     const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
 )
 {
-    static quill::Logger* logger = logging::opengl_logger;//logging::get_logger("shaders");
-
     // get the paths
     std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);
     std::filesystem::path fragment_file_path = std::filesystem::absolute(fragment_file);
@@ -26,7 +24,10 @@ load_shaders(
     GLuint fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 
     // Read the Vertex Shader code from the file
-    LOG_INFO(logger, "Loading vertex shader from {}", vertex_file_path);
+    LOG_INFO(
+        logging::opengl_logger, "Loading vertex shader from {}",
+        vertex_file_path.lexically_normal().string()
+    );
 
     std::string vertex_shader_code;
     std::ifstream vertex_shader_stream(vertex_file_path, std::ios::in);
@@ -37,13 +38,17 @@ load_shaders(
         vertex_shader_stream.close();
     } else {
         LOG_ERROR(
-            logger, "Cannot open {}. Are you in the right directory?", vertex_file_path
+            logging::opengl_logger, "Cannot open {}. Are you in the right directory?",
+            vertex_file_path.lexically_normal().string()
         );
         return 0;
     }
 
     // Read the Fragment Shader code from the file
-    LOG_INFO(logger, "Loading fragment shader from {}", vertex_file_path);
+    LOG_INFO(
+        logging::opengl_logger, "Loading fragment shader from {}",
+        vertex_file_path.lexically_normal().string()
+    );
 
     std::string fragment_shader_code;
     std::ifstream fragment_shader_stream(fragment_file_path, std::ios::in);
@@ -54,8 +59,8 @@ load_shaders(
         fragment_shader_stream.close();
     } else {
         LOG_ERROR(
-            logger, "Cannot open {}. Are you in the right directory?",
-            fragment_file_path
+            logging::opengl_logger, "Cannot open {}. Are you in the right directory?",
+            fragment_file_path.lexically_normal().string()
         );
         return 0;
     }
@@ -64,7 +69,10 @@ load_shaders(
     int info_log_length;
 
     // Compile Vertex Shader
-    LOG_DEBUG(logger, "Compiling vertex shader {}", vertex_file_path);
+    LOG_DEBUG(
+        logging::opengl_logger, "Compiling vertex shader {}",
+        vertex_file_path.lexically_normal().string()
+    );
 
     char const* vertex_source_pointer = vertex_shader_code.c_str();
     glShaderSource(vertex_shader_id, 1, &vertex_source_pointer, NULL);
@@ -79,11 +87,17 @@ load_shaders(
             vertex_shader_id, info_log_length, NULL, vertex_shader_error_message.data()
         );
 
-        LOG_WARNING(logger, "Vertex shader error: {}", vertex_shader_error_message);
+        LOG_WARNING(
+            logging::opengl_logger, "Vertex shader error: {}",
+            vertex_shader_error_message
+        );
     }
 
     // Compile Fragment Shader
-    LOG_DEBUG(logger, "Compiling fragment shader {}", fragment_file_path);
+    LOG_DEBUG(
+        logging::opengl_logger, "Compiling fragment shader {}",
+        fragment_file_path.lexically_normal().string()
+    );
 
     char const* fragment_source_pointer = fragment_shader_code.c_str();
     glShaderSource(fragment_shader_id, 1, &fragment_source_pointer, NULL);
@@ -99,11 +113,14 @@ load_shaders(
             fragment_shader_error_message.data()
         );
 
-        LOG_WARNING(logger, "Vertex shader error: {}", fragment_shader_error_message);
+        LOG_WARNING(
+            logging::opengl_logger, "Vertex shader error: {}",
+            fragment_shader_error_message
+        );
     }
 
     // Link the program
-    LOG_DEBUG(logger, "Linking shader program");
+    LOG_DEBUG(logging::opengl_logger, "Linking shader program");
 
     GLuint program_id = glCreateProgram();
     glAttachShader(program_id, vertex_shader_id);
@@ -119,7 +136,10 @@ load_shaders(
             program_id, info_log_length, NULL, program_error_message.data()
         );
 
-        LOG_WARNING(logger, "Shader program linking error: {}", program_error_message);
+        LOG_WARNING(
+            logging::opengl_logger, "Shader program linking error: {}",
+            program_error_message
+        );
     }
 
     glDetachShader(program_id, vertex_shader_id);
@@ -128,7 +148,10 @@ load_shaders(
     glDeleteShader(vertex_shader_id);
     glDeleteShader(fragment_shader_id);
 
-    LOG_INFO(logger, "Shader compiled successfully with program ID {}", program_id);
+    LOG_INFO(
+        logging::opengl_logger, "Shader compiled successfully with program ID {}",
+        program_id
+    );
 
     return program_id;
 }

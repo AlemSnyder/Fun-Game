@@ -21,8 +21,6 @@ class VoxelObject {
     std::array<uint32_t, 3> size_;
     bool ok_;
 
-    //quill::Logger* logger = logging::get_logger("voxel_io");
-
     inline int
     get_position(int x, int y, int z) const
     {
@@ -102,6 +100,7 @@ void from_qb(
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 );
 
-void to_qb(const std::string path, terrain::Terrain ter, bool compression = false);
+void
+to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression = false);
 
 } // namespace voxel_utility

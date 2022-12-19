@@ -57,7 +57,9 @@ VoxelObject::VoxelObject(const std::string path)
         from_qb(path, data_, center_, size_);
         ok_ = true;
     } catch (const std::exception& e) {
-        LOG_ERROR(logging::file_io_logger, "Could not create VoxelObject: {}", e.what());
+        LOG_ERROR(
+            logging::file_io_logger, "Could not create VoxelObject: {}", e.what()
+        );
         ok_ = false;
     }
 }
@@ -69,14 +71,21 @@ from_qb(
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 )
 {
-    //static quill::Logger* logger = logging::get_logger("voxel_io");
+    // static quill::Logger* logger = logging::get_logger("voxel_io");
 
-    LOG_INFO(logging::file_io_logger, "Reading voxels from {}", path);
+    LOG_INFO(
+        logging::file_io_logger, "Reading voxels from {}.",
+        path.lexically_normal().string()
+    );
 
     // Read the tiles from the path specified, and save
     std::ifstream file(path, std::ios::in | std::ios::binary);
     if (!file) {
-        LOG_ERROR(logging::file_io_logger, "Could not open {}. Are you in the right directory?", path);
+        LOG_ERROR(
+            logging::file_io_logger,
+            "Could not open {}. Are you in the right directory?",
+            path.lexically_normal().string()
+        );
         throw exc::file_not_found_error(path);
     }
 
@@ -122,7 +131,9 @@ from_qb(
     size = {x_max, y_max, z_max};
     data.resize(x_max * y_max * z_max);
 
-    LOG_DEBUG(logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max);
+    LOG_DEBUG(
+        logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max
+    );
 
     // Get voxel grid center
     int32_t x_center, y_center, z_center;
@@ -134,7 +145,8 @@ from_qb(
     center = {x_center, y_center, z_center};
 
     LOG_DEBUG(
-        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", x_center, y_center, z_center
+        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})",
+        x_center, y_center, z_center
     );
 
     // Read the voxels themselves
@@ -157,11 +169,14 @@ from_qb(
 
 // This is partially from goxel with GPL license
 void
-to_qb(const std::string path, terrain::Terrain ter, bool compression)
+to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression)
 {
-    //static quill::Logger* logger = logging::get_logger("voxel_io");
+    // static quill::Logger* logger = logging::get_logger("voxel_io");
 
-    LOG_INFO(logging::file_io_logger, "Saving voxels to {}", path);
+    LOG_INFO(
+        logging::file_io_logger, "Saving voxels to {}.",
+        path.lexically_normal().string()
+    );
 
     if (compression) {
         LOG_ERROR(logging::file_io_logger, "Cannot write voxel files with compression");
@@ -171,7 +186,11 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
     // Saves the tiles in this to the path specified
     std::ofstream file(path, std::ios::out | std::ios::binary);
     if (!file) {
-        LOG_ERROR(logging::file_io_logger, "Could not open {}. Are you in the right directory?", path);
+        LOG_ERROR(
+            logging::file_io_logger,
+            "Could not open {}. Are you in the right directory?",
+            path.lexically_normal().string()
+        );
         throw exc::file_not_found_error(path);
     }
 
@@ -201,7 +220,10 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
     file.write(name.c_str(), name.length());
 
     // Write voxel grid size
-    LOG_DEBUG(logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", size[0], size[1], size[2]);
+    LOG_DEBUG(
+        logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}",
+        size[0], size[1], size[2]
+    );
 
     write_int(file, size[0]); // x_max
     write_int(file, size[2]); // z_max
@@ -209,7 +231,8 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
 
     // Write voxel grid center
     LOG_DEBUG(
-        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", offset[0], offset[1], offset[2]
+        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})",
+        offset[0], offset[1], offset[2]
     );
 
     write_int(file, offset[0]); // x_center

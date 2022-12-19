@@ -107,6 +107,13 @@ init(quill::LogLevel log_level, bool structured)
     voxel_logger = quill::create_logger("voxel");
     file_io_logger = quill::create_logger("file io");
 
+    main_logger->set_log_level(log_level);
+    opengl_logger->set_log_level(log_level);
+    terrain_logger->set_log_level(log_level);
+    game_map_logger->set_log_level(log_level);
+    voxel_logger->set_log_level(log_level);
+    file_io_logger->set_log_level(log_level);
+
     // Start the logging backend thread
     quill::start();
 
