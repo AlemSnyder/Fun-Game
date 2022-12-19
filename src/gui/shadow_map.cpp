@@ -134,11 +134,10 @@ ShadowMap::render_shadow_depth_buffer() const {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             0,        // The attribute we want to configure
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -179,11 +178,10 @@ ShadowMap::render_shadow_depth_buffer() const {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             0,        // The attribute we want to configure
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -195,11 +193,10 @@ ShadowMap::render_shadow_depth_buffer() const {
         // be indexed. Because attribute 3 is indexed somewhere else there is
         // no problem here
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             3,        // attribute
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );

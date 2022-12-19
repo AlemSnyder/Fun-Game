@@ -130,11 +130,10 @@ MainRenderer::render(GLFWwindow* window) const {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             0,        // attribute
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -154,11 +153,10 @@ MainRenderer::render(GLFWwindow* window) const {
         // 3rd attribute buffer : normals
         glEnableVertexAttribArray(2);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_normal_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             2,        // attribute
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -198,14 +196,13 @@ MainRenderer::render(GLFWwindow* window) const {
     glUniform1i(shadow_map_ID_multi_, 1);
 
     for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
-        // 1rst attribute buffer : vertices
+        // 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             0,        // attribute
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -225,11 +222,10 @@ MainRenderer::render(GLFWwindow* window) const {
         // 3rd attribute buffer : normals
         glEnableVertexAttribArray(2);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_normal_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             2,        // attribute
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -237,11 +233,10 @@ MainRenderer::render(GLFWwindow* window) const {
         // 4th attribute buffer : transform
         glEnableVertexAttribArray(3);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             3,        // attribute
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
