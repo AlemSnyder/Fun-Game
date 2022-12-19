@@ -147,7 +147,7 @@ from_qb(
                 uint32_t raw_color;
 
                 read_int(file, raw_color);
-                data[(x * x_max + y) * y_max + z] = parse_color(raw_color);
+                data[(x * y_max + y) * z_max + z] = parse_color(raw_color);
 
                 voxels_read++;
             }
