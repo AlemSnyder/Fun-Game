@@ -4,7 +4,7 @@
 layout(location = 0) in ivec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertex_color;
 layout(location = 2) in ivec3 vertexNormal_modelspace;
-// TODO onvert to ivec4
+// TODO convert to ivec4
 layout(location = 3) in ivec3 model_matrix_transform;
 // Output data ; will be interpolated for each fragment.
 out vec3 Vertex_color;
@@ -25,7 +25,7 @@ mat4 rotate = mat4(vec4(0,-1,0,0),vec4(1,0,0,0),vec4(0,0,1,0),vec4(0,0,0,0));
 void
 main() {
 
-    vec4 vertexPosition_modelspace_rotated = rotate * vec4(vertexPosition_modelspace, 1);
+    vec4 vertexPosition_modelspace_rotated = rotate * vec4(vertexPosition_modelspace - vec3(.5,.5,0), 1) + vec4(.5,.5,0,0);
 
     vec4 vertex_postion_model_space_instanced = vertexPosition_modelspace_rotated + 
         vec4(model_matrix_transform, 1);
