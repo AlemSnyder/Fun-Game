@@ -4,6 +4,7 @@
 layout(location = 0) in ivec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertex_color;
 layout(location = 2) in ivec3 vertexNormal_modelspace;
+// TODO onvert to ivec4
 layout(location = 3) in ivec3 model_matrix_transform;
 // Output data ; will be interpolated for each fragment.
 out vec3 Vertex_color;
@@ -19,10 +20,17 @@ uniform mat4 V;
 uniform vec3 LightInvDirection_worldspace;
 uniform mat4 DepthBiasMVP;
 
+mat4 rotate = mat4(vec4(0,-1,0,0),vec4(1,0,0,0),vec4(0,0,1,0),vec4(0,0,0,0));
+
 void
 main() {
-    vec4 vertex_postion_model_space_instanced =
-        vec4(vertexPosition_modelspace + model_matrix_transform, 1);
+
+    vec4 vertexPosition_modelspace_rotated = rotate * vec4(vertexPosition_modelspace, 1);
+
+    vec4 vertex_postion_model_space_instanced = vertexPosition_modelspace_rotated + 
+        vec4(model_matrix_transform, 1);
+
+    vec4 vertexNormal_modelspace_rotated = rotate * vec4(vertexNormal_modelspace, 0);
 
     // Output position of the vertex, in clip space : MVP * position
     gl_Position = MVP * vertex_postion_model_space_instanced;
@@ -41,7 +49,7 @@ main() {
     LightDirection_cameraspace = (V * vec4(LightInvDirection_worldspace, 0)).xyz;
 
     // Normal of the the vertex, in camera space
-    Normal_cameraspace = (V * vec4(vertexNormal_modelspace, 0))
+    Normal_cameraspace = (V * vertexNormal_modelspace_rotated)
                              .xyz; // Only correct if ModelMatrix does not scale the
                                    // model ! Use its inverse transpose if not.
 
