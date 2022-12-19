@@ -57,7 +57,7 @@ VoxelObject::VoxelObject(const std::string path)
         from_qb(path, data_, center_, size_);
         ok_ = true;
     } catch (const std::exception& e) {
-        LOG_ERROR(logger, "Could not create VoxelObject: {}", e.what());
+        LOG_ERROR(logging::file_io_logger, "Could not create VoxelObject: {}", e.what());
         ok_ = false;
     }
 }
@@ -69,14 +69,14 @@ from_qb(
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 )
 {
-    static quill::Logger* logger = logging::get_logger("voxel_io");
+    //static quill::Logger* logger = logging::get_logger("voxel_io");
 
-    LOG_INFO(logger, "Reading voxels from {}", path);
+    LOG_INFO(logging::file_io_logger, "Reading voxels from {}", path);
 
     // Read the tiles from the path specified, and save
     std::ifstream file(path, std::ios::in | std::ios::binary);
     if (!file) {
-        LOG_ERROR(logger, "Could not open {}. Are you in the right directory?", path);
+        LOG_ERROR(logging::file_io_logger, "Could not open {}. Are you in the right directory?", path);
         throw exc::file_not_found_error(path);
     }
 
@@ -84,7 +84,7 @@ from_qb(
     uint32_t void_; // void int used to read 32 bites without saving it.
     uint32_t compression;
 
-    LOG_TRACE_L1(logger, "Reading file header");
+    LOG_TRACE_L1(logging::file_io_logger, "Reading file header");
 
     //  none of these are used
     read_int(file, void_);       // version
@@ -95,22 +95,22 @@ from_qb(
     read_int(file, void_);       // number of layers
 
     if (compression) {
-        LOG_ERROR(logger, "Cannot parse voxel files with compression");
+        LOG_ERROR(logging::file_io_logger, "Cannot parse voxel files with compression");
         throw exc::not_implemented_error("Cannot parse compressed voxel files");
     }
 
     // Read file name
-    LOG_TRACE_L1(logger, "Reading voxel save name");
+    LOG_TRACE_L1(logging::file_io_logger, "Reading voxel save name");
 
     int8_t name_len;
     read_int(file, name_len);
 
-    LOG_DEBUG(logger, "Voxel save name length: {}", name_len);
+    LOG_DEBUG(logging::file_io_logger, "Voxel save name length: {}", name_len);
 
     std::string name(name_len, '\0');
     file.read(name.data(), name_len);
 
-    LOG_INFO(logger, "Voxel save name: {}", name);
+    LOG_INFO(logging::file_io_logger, "Voxel save name: {}", name);
 
     // Get voxel grid size
     uint32_t x_max, y_max, z_max;
@@ -122,7 +122,7 @@ from_qb(
     size = {x_max, y_max, z_max};
     data.resize(x_max * y_max * z_max);
 
-    LOG_DEBUG(logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max);
+    LOG_DEBUG(logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max);
 
     // Get voxel grid center
     int32_t x_center, y_center, z_center;
@@ -134,11 +134,11 @@ from_qb(
     center = {x_center, y_center, z_center};
 
     LOG_DEBUG(
-        logger, "Voxel grid center: ({X}, {Y}, {Z})", x_center, y_center, z_center
+        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", x_center, y_center, z_center
     );
 
     // Read the voxels themselves
-    LOG_DEBUG(logger, "Reading voxels");
+    LOG_DEBUG(logging::file_io_logger, "Reading voxels");
 
     size_t voxels_read = 0;
     for (size_t x = 0; x < size[0]; x++)
@@ -152,26 +152,26 @@ from_qb(
                 voxels_read++;
             }
 
-    LOG_INFO(logger, "Voxels read: {}", voxels_read);
+    LOG_INFO(logging::file_io_logger, "Voxels read: {}", voxels_read);
 }
 
 // This is partially from goxel with GPL license
 void
 to_qb(const std::string path, terrain::Terrain ter, bool compression)
 {
-    static quill::Logger* logger = logging::get_logger("voxel_io");
+    //static quill::Logger* logger = logging::get_logger("voxel_io");
 
-    LOG_INFO(logger, "Saving voxels to {}", path);
+    LOG_INFO(logging::file_io_logger, "Saving voxels to {}", path);
 
     if (compression) {
-        LOG_ERROR(logger, "Cannot write voxel files with compression");
+        LOG_ERROR(logging::file_io_logger, "Cannot write voxel files with compression");
         throw exc::not_implemented_error("Cannot write compressed voxel files");
     }
 
     // Saves the tiles in this to the path specified
     std::ofstream file(path, std::ios::out | std::ios::binary);
     if (!file) {
-        LOG_ERROR(logger, "Could not open {}. Are you in the right directory?", path);
+        LOG_ERROR(logging::file_io_logger, "Could not open {}. Are you in the right directory?", path);
         throw exc::file_not_found_error(path);
     }
 
@@ -184,7 +184,7 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
     // Write header
     uint32_t count = 1; // the number of layers
 
-    LOG_TRACE_L1(logger, "Writing file header");
+    LOG_TRACE_L1(logging::file_io_logger, "Writing file header");
 
     write_int(file, 257); // version
     write_int(file, 0);   // color format RGBA
@@ -194,14 +194,14 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
     write_int(file, count);
 
     // Write file name
-    LOG_TRACE_L1(logger, "Writing file name");
+    LOG_TRACE_L1(logging::file_io_logger, "Writing file name");
 
     const std::string name("Main World");
     write_int(file, name.length());
     file.write(name.c_str(), name.length());
 
     // Write voxel grid size
-    LOG_DEBUG(logger, "Voxel grid size: {X} x {Y} x {Z}", size[0], size[1], size[2]);
+    LOG_DEBUG(logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", size[0], size[1], size[2]);
 
     write_int(file, size[0]); // x_max
     write_int(file, size[2]); // z_max
@@ -209,7 +209,7 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
 
     // Write voxel grid center
     LOG_DEBUG(
-        logger, "Voxel grid center: ({X}, {Y}, {Z})", offset[0], offset[1], offset[2]
+        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", offset[0], offset[1], offset[2]
     );
 
     write_int(file, offset[0]); // x_center
@@ -217,7 +217,7 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
     write_int(file, offset[1]); // y_center
 
     // Write the voxels themselves
-    LOG_DEBUG(logger, "Writing voxels");
+    LOG_DEBUG(logging::file_io_logger, "Writing voxels");
 
     size_t voxels_written = 0;
     for (size_t x = 0; x < size[0]; x++)
@@ -234,7 +234,7 @@ to_qb(const std::string path, terrain::Terrain ter, bool compression)
                 voxels_written++;
             }
 
-    LOG_INFO(logger, "Voxels written: {}", voxels_written);
+    LOG_INFO(logging::file_io_logger, "Voxels written: {}", voxels_written);
 }
 
 } // namespace voxel_utility

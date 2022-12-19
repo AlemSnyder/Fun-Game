@@ -95,7 +95,7 @@ Terrain::Terrain(
     try {
         qb_read(path, &materials_inverse);
     } catch (const std::exception& e) {
-        LOG_ERROR(logger, "Could not load terrain save file due to {}", e.what());
+        LOG_ERROR(logging::terrain_logger, "Could not load terrain save file due to {}", e.what());
         throw;
     }
 
@@ -133,7 +133,7 @@ Terrain::init(
     }
 
     srand(seed);
-    LOG_INFO(logger, "Start of land generator.");
+    LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
     // create a map of int -> LandGenerator
     std::map<int, terrain_generation::LandGenerator> land_generators;
@@ -168,7 +168,7 @@ Terrain::init(
     init_chunks();
 
     LOG_INFO(
-        logger, "End of land generator. Time elapsed: {}.",
+        logging::terrain_logger, "End of land generator. Time elapsed: {}.",
         time_util::epoch_millis() - millisec_since_epoch
     );
 }
@@ -958,7 +958,7 @@ Terrain::qb_read(
 
     for (uint32_t color : unknown_materials) {
         // is there any way to log hexadecimal
-        LOG_WARNING(logger, "Cannot find color: {:x}", color);
+        LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
 }
 

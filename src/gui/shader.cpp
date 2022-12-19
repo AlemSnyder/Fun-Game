@@ -15,7 +15,7 @@ load_shaders(
     const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
 )
 {
-    static quill::Logger* logger = logging::get_logger("shaders");
+    static quill::Logger* logger = logging::opengl_logger;//logging::get_logger("shaders");
 
     // get the paths
     std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);

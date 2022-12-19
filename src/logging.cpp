@@ -27,6 +27,12 @@ using cc = quill::ConsoleColours;
 
 LogLevel _LOG_LEVEL;
 
+quill::Logger* opengl_logger;    // for glfw, glew etc
+quill::Logger* terrain_logger;   // for terrain, chunk, tile class
+quill::Logger* game_map_logger;  // for terrain generation
+quill::Logger* voxel_logger;     // for voxel logic like mesh creation
+quill::Logger* file_io_logger;   // for file io
+
 void
 init(quill::LogLevel log_level, bool structured)
 {
@@ -94,6 +100,12 @@ init(quill::LogLevel log_level, bool structured)
     // Set backtrace and log level on the main logger
     quill::Logger* main_logger = quill::get_logger();
     main_logger->init_backtrace(5, quill::LogLevel::Error);
+
+    opengl_logger = quill::create_logger("shaders");
+    terrain_logger = quill::create_logger("terrain");
+    game_map_logger = quill::create_logger("game map");
+    voxel_logger = quill::create_logger("voxel");
+    file_io_logger = quill::create_logger("file io");
 
     // Start the logging backend thread
     quill::start();

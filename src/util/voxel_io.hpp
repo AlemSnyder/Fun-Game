@@ -21,7 +21,7 @@ class VoxelObject {
     std::array<uint32_t, 3> size_;
     bool ok_;
 
-    quill::Logger* logger = logging::get_logger("voxel_io");
+    //quill::Logger* logger = logging::get_logger("voxel_io");
 
     inline int
     get_position(int x, int y, int z) const
