@@ -182,9 +182,6 @@ GUITest(const std::string path) {
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
     std::vector<std::uint16_t> indices;
-    std::vector<glm::ivec3> indexed_vertices;
-    std::vector<glm::ivec3> indexed_colors;
-    std::vector<glm::ivec3> indexed_normals;
     World world(materials_json, path);
 
     return gui::GUITest(world);

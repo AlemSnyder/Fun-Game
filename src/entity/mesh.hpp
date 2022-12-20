@@ -37,7 +37,7 @@ struct Mesh {
     Mesh(
         std::vector<uint16_t>& indices, std::vector<glm::ivec3>& indexed_vertices,
         std::vector<glm::vec3>& indexed_colors,
-        std::vector<glm::ivec3>& indexed_normals
+        std::vector<glm::i8vec3>& indexed_normals
     ) :
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_colors_(indexed_colors),
@@ -55,7 +55,7 @@ struct Mesh {
     // color of vertex
     const std::vector<glm::vec3> indexed_colors_;
     // normal direction
-    const std::vector<glm::ivec3> indexed_normals_;
+    const std::vector<glm::i8vec3> indexed_normals_;
 
 }; // struct Mesh
 
@@ -71,11 +71,11 @@ generate_mesh(T voxel_object) {
     std::vector<uint16_t> indices;
     std::vector<glm::ivec3> indexed_vertices;
     std::vector<glm::vec3> indexed_colors;
-    std::vector<glm::ivec3> indexed_normals;
+    std::vector<glm::i8vec3> indexed_normals;
     // mesh off set
     std::vector<int> center = voxel_object.get_offset();
     std::vector<uint32_t> dims = voxel_object.get_size();
-    glm::ivec3 off_set(center[0], center[1], center[2]);
+    glm::ivec3 offset(center[0], center[1], center[2]);
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;
@@ -183,17 +183,17 @@ generate_mesh(T voxel_object) {
                         voxel_position[dims_index_1] = i;
                         voxel_position[dims_index_2] = j;
 
-                        int off_set_1[3] = {0};
-                        int off_set_2[3] = {0};
+                        int offset_1[3] = {0};
+                        int offset_2[3] = {0};
 
                         // depending on the normal direction set the width, and
                         // height
                         if (color.first) {
-                            off_set_2[dims_index_2] = height;
-                            off_set_1[dims_index_1] = width;
+                            offset_2[dims_index_2] = height;
+                            offset_1[dims_index_1] = width;
                         } else {
-                            off_set_1[dims_index_2] = height;
-                            off_set_2[dims_index_1] = width;
+                            offset_1[dims_index_2] = height;
+                            offset_2[dims_index_1] = width;
                         }
 
                         const std::size_t vertex_size = indexed_vertices.size();
@@ -202,31 +202,31 @@ generate_mesh(T voxel_object) {
                             glm::ivec3(
                                 voxel_position[0], voxel_position[1], voxel_position[2]
                             )
-                            + off_set
+                            + offset
                         );
                         indexed_vertices.push_back(
                             glm::ivec3(
-                                voxel_position[0] + off_set_1[0],
-                                voxel_position[1] + off_set_1[1],
-                                voxel_position[2] + off_set_1[2]
+                                voxel_position[0] + offset_1[0],
+                                voxel_position[1] + offset_1[1],
+                                voxel_position[2] + offset_1[2]
                             )
-                            + off_set
+                            + offset
                         );
                         indexed_vertices.push_back(
                             glm::ivec3(
-                                voxel_position[0] + off_set_1[0] + off_set_2[0],
-                                voxel_position[1] + off_set_1[1] + off_set_2[1],
-                                voxel_position[2] + off_set_1[2] + off_set_2[2]
+                                voxel_position[0] + offset_1[0] + offset_2[0],
+                                voxel_position[1] + offset_1[1] + offset_2[1],
+                                voxel_position[2] + offset_1[2] + offset_2[2]
                             )
-                            + off_set
+                            + offset
                         );
                         indexed_vertices.push_back(
                             glm::ivec3(
-                                voxel_position[0] + off_set_2[0],
-                                voxel_position[1] + off_set_2[1],
-                                voxel_position[2] + off_set_2[2]
+                                voxel_position[0] + offset_2[0],
+                                voxel_position[1] + offset_2[1],
+                                voxel_position[2] + offset_2[2]
                             )
-                            + off_set
+                            + offset
                         );
 
                         uint32_t int_color = color.second;
@@ -243,7 +243,7 @@ generate_mesh(T voxel_object) {
                             indexed_colors.push_back(vector_color);
                         }
 
-                        glm::ivec3 triangle_normal =
+                        glm::i8vec3 triangle_normal =
                             glm::ivec3(glm::normalize(glm::cross(glm::vec3(
                                 indexed_vertices[vertex_size]
                                     - indexed_vertices[vertex_size + 1]),

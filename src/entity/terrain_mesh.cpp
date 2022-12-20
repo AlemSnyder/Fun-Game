@@ -25,7 +25,7 @@ TerrainMesh::TerrainMesh(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::ivec3>& indexed_vertices,
     const std::vector<glm::vec3>& indexed_colors,
-    const std::vector<glm::ivec3>& indexed_normals
+    const std::vector<glm::i8vec3>& indexed_normals
 ) {
     init(indices, indexed_vertices, indexed_colors, indexed_normals);
 };
@@ -35,7 +35,7 @@ TerrainMesh::init(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::ivec3>& indexed_vertices,
     const std::vector<glm::vec3>& indexed_colors,
-    const std::vector<glm::ivec3>& indexed_normals
+    const std::vector<glm::i8vec3>& indexed_normals
 ) {
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
@@ -57,7 +57,7 @@ TerrainMesh::init(
     glGenBuffers(1, &normal_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::ivec3),
+        GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::i8vec3),
         &indexed_normals[0], GL_STATIC_DRAW
     );
 

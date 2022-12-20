@@ -133,7 +133,7 @@ MainRenderer::render(GLFWwindow* window) const {
         glVertexAttribIPointer(
             0,        // attribute
             3,        // size
-            GL_INT, // type
+            GL_INT,   // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -156,7 +156,7 @@ MainRenderer::render(GLFWwindow* window) const {
         glVertexAttribIPointer(
             2,        // attribute
             3,        // size
-            GL_INT, // type
+            GL_BYTE,  // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -202,7 +202,7 @@ MainRenderer::render(GLFWwindow* window) const {
         glVertexAttribIPointer(
             0,        // attribute
             3,        // size
-            GL_INT, // type
+            GL_INT,   // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -225,7 +225,7 @@ MainRenderer::render(GLFWwindow* window) const {
         glVertexAttribIPointer(
             2,        // attribute
             3,        // size
-            GL_INT, // type
+            GL_BYTE, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -236,7 +236,7 @@ MainRenderer::render(GLFWwindow* window) const {
         glVertexAttribIPointer(
             3,        // attribute
             3,        // size
-            GL_INT, // type
+            GL_INT,   // type
             0,        // stride
             (void*)0  // array buffer offset
         );
