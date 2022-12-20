@@ -77,15 +77,14 @@ save_test(const std::string path, const std::string save_path)
 void
 save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name)
 {
+    quill::Logger* logger = quill::get_logger();
+
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
     World world(materials_json, biome_data, 0);
 
-    std::cout << "Saving " << biome_data["Tile_Data"].size() << " tile types"
-              << std::endl;
-
-    // std::cout << biome_data["Tile_Data"] << std::endl;
+    LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
         world.terrain_main.init(
@@ -99,9 +98,6 @@ save_terrain(Json::Value materials_json, Json::Value biome_data, std::string bio
         save_path += ".qb";
         world.terrain_main.qb_save(save_path.string());
     }
-    // Json::Value biome_data;
-    // std::ifstream biome_file("./data/biome_data.json", std::ifstream::in);
-    // biome_file >> biome_data;
 }
 
 void
@@ -116,6 +112,8 @@ save_all_terrain(Json::Value materials_json, Json::Value biome_data)
 int
 path_finder_test(const std::string path, std::string save_path)
 {
+    quill::Logger* logger = quill::get_logger();
+
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -125,26 +123,31 @@ path_finder_test(const std::string path, std::string save_path)
     std::pair<terrain::Tile*, terrain::Tile*> start_end =
         world.terrain_main.get_start_end_test();
 
-    std::cout << "Start: " << start_end.first->get_x() << ", "
-              << start_end.first->get_y() << ", " << start_end.first->get_z()
-              << std::endl;
-    std::cout << "End:   " << start_end.second->get_x() << ", "
-              << start_end.second->get_y() << ", " << start_end.second->get_z()
-              << std::endl;
+    LOG_INFO(
+        logger, "Start: {}, {}, {}", start_end.first->get_x(), start_end.first->get_y(),
+        start_end.first->get_z()
+    );
+
+    LOG_INFO(
+        logger, "End: {}, {}, {}", start_end.second->get_x(), start_end.second->get_y(),
+        start_end.second->get_z()
+    );
 
     std::vector<const terrain::Tile*> tile_path =
         world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
-    std::cout << "    " << static_cast<int>(tile_path.size()) << std::endl;
+    LOG_INFO(
+        logger, "Path length: {}", static_cast<int>(tile_path.size())
+    );
+
     if (tile_path.size() == 0) {
-        std::cout << "no path" << std::endl;
+        LOG_INFO(
+            logger, "No path");
         world.terrain_main.qb_save_debug(save_path);
         return 1;
     }
 
     for (auto it = tile_path.begin(); it != tile_path.end(); ++it) {
-        std::cout << "    " << (*it)->get_x() << " " << (*it)->get_y() << " "
-                  << (*it)->get_z() << std::endl;
         world.terrain_main.get_tile(world.terrain_main.pos((*it)->sop()))
             ->set_material(&world.get_materials()->at(7), 5);
     }
@@ -161,7 +164,6 @@ get_mesh(const std::string path)
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
     World world(materials_json, path);
-    std::cout << "read from file" << std::endl;
 
     return world.get_mesh_greedy();
 }
