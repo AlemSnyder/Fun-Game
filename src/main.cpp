@@ -238,10 +238,8 @@ main(int argc, char** argv)
     argh::parser cmdl;
 
     cmdl.add_params({
-        "-i", "--path-in",   // Input file - DOC
-        "-o", "--path-out",  // Output file - DOC
         "-v", "--verbose",   // Verbosity
-        "-c", "--no-console" // Disable console logging
+        "-c", "--console"    // Enable console logging
     });
     cmdl.add_param("biome-name");
     cmdl.parse(argc, argv, argh::parser::SINGLE_DASH_IS_MULTIFLAG);
@@ -254,7 +252,7 @@ main(int argc, char** argv)
     logging::set_thread_name("MainThread");
 
     // TODO(nino): need a better arg parser, but allow -vvvv (for example)
-    bool console_log = !cmdl[{"-c", "--no-console"}];
+    bool console_log = cmdl[{"-c", "--console"}];
     if (cmdl[{"-v", "--verbose"}])
         logging::init(console_log, quill::LogLevel::TraceL3, false);
     else

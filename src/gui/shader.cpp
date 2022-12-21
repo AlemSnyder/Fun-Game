@@ -13,8 +13,7 @@
 GLuint
 load_shaders(
     const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
-)
-{
+) {
     // get the paths
     std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);
     std::filesystem::path fragment_file_path = std::filesystem::absolute(fragment_file);
@@ -70,8 +69,7 @@ load_shaders(
 
     // Compile Vertex Shader
     LOG_DEBUG(
-        logging::opengl_logger, "Compiling vertex shader {}",
-        vertex_file_path.string()
+        logging::opengl_logger, "Compiling vertex shader {}", vertex_file_path.string()
     );
 
     char const* vertex_source_pointer = vertex_shader_code.c_str();

@@ -17,21 +17,18 @@
 
 template <std::integral T>
 static inline void
-read_int(std::ifstream& file, T& val) noexcept
-{
+read_int(std::ifstream& file, T& val) noexcept {
     file.read(reinterpret_cast<char*>(&val), sizeof(val));
 }
 
 template <std::integral T>
 static inline void
-write_int(std::ofstream& file, T val) noexcept
-{
+write_int(std::ofstream& file, T val) noexcept {
     file.write(reinterpret_cast<char*>(&val), sizeof(val));
 }
 
 static inline uint32_t
-parse_color(uint32_t color)
-{
+parse_color(uint32_t color) {
     // Colors are saved in big endian format
     if (std::endian::native == std::endian::little)
         return bits::swap(color);
@@ -40,8 +37,7 @@ parse_color(uint32_t color)
 }
 
 static inline uint32_t
-export_color(uint32_t color)
-{
+export_color(uint32_t color) {
     // Colors are saved in big endian format
     if (std::endian::native == std::endian::little)
         return bits::swap(color);
@@ -51,8 +47,7 @@ export_color(uint32_t color)
 
 namespace voxel_utility {
 
-VoxelObject::VoxelObject(const std::string path)
-{
+VoxelObject::VoxelObject(const std::string path) {
     try {
         from_qb(path, data_, center_, size_);
         ok_ = true;
@@ -69,20 +64,15 @@ void
 from_qb(
     const std::filesystem::path path, std::vector<uint32_t>& data,
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
-)
-{
-    LOG_INFO(
-        logging::file_io_logger, "Reading voxels from {}.",
-        path.string()
-    );
+) {
+    LOG_INFO(logging::file_io_logger, "Reading voxels from {}.", path.string());
 
     // Read the tiles from the path specified, and save
     std::ifstream file(path, std::ios::in | std::ios::binary);
     if (!file) {
         LOG_ERROR(
             logging::file_io_logger,
-            "Could not open {}. Are you in the right directory?",
-            path.string()
+            "Could not open {}. Are you in the right directory?", path.string()
         );
         throw exc::file_not_found_error(path);
     }
@@ -143,8 +133,8 @@ from_qb(
     center = {x_center, y_center, z_center};
 
     LOG_DEBUG(
-        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})",
-        x_center, y_center, z_center
+        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", x_center,
+        y_center, z_center
     );
 
     // Read the voxels themselves
@@ -167,12 +157,8 @@ from_qb(
 
 // This is partially from goxel with GPL license
 void
-to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression)
-{
-    LOG_INFO(
-        logging::file_io_logger, "Saving voxels to {}.",
-        path.string()
-    );
+to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression) {
+    LOG_INFO(logging::file_io_logger, "Saving voxels to {}.", path.string());
 
     if (compression) {
         LOG_ERROR(logging::file_io_logger, "Cannot write voxel files with compression");
@@ -184,8 +170,7 @@ to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression)
     if (!file) {
         LOG_ERROR(
             logging::file_io_logger,
-            "Could not open {}. Are you in the right directory?",
-            path.string()
+            "Could not open {}. Are you in the right directory?", path.string()
         );
         throw exc::file_not_found_error(path);
     }
@@ -201,18 +186,18 @@ to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression)
 
     LOG_TRACE_L1(logging::file_io_logger, "Writing file header");
 
-    write_int(file, 257); // version
-    write_int(file, 0);   // color format RGBA
-    write_int(file, 1);   // orientation right handed // c
-    write_int(file, 0);   // no compression
-    write_int(file, 0);   // vmask
+    write_int(file, 257U); // version
+    write_int(file, 0U);   // color format RGBA
+    write_int(file, 1U);   // orientation right handed // c
+    write_int(file, 0U);   // no compression
+    write_int(file, 0U);   // vmask
     write_int(file, count);
 
     // Write file name
     LOG_TRACE_L1(logging::file_io_logger, "Writing file name");
 
     const std::string name("Main World");
-    write_int(file, name.length());
+    write_int<int8_t>(file, name.length());
     file.write(name.c_str(), name.length());
 
     // Write voxel grid size
