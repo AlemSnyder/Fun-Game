@@ -5,7 +5,6 @@
             "includePath": [
                 "${workspaceFolder}/build",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/vendor/quill/include",
                 "${workspaceFolder}/vendor/quill/include"
             ],
             "defines": [
