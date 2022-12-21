@@ -638,11 +638,13 @@ class Terrain {
     get_tile(int x, int y, int z)
     {
         if (!in_range(x, y, z)) {
-            LOG_CRITICAL(logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x, y, z);
+            LOG_CRITICAL(
+                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
+                y, z
+            );
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[pos(x, y, z)];
         }
+        return &tiles_[pos(x, y, z)];
     };
 
     Tile*
@@ -651,9 +653,8 @@ class Terrain {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[xyz];
         }
+        return &tiles_[xyz];
     }
 
     /**
@@ -668,11 +669,13 @@ class Terrain {
     get_tile(int x, int y, int z) const
     {
         if ((x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 0)) {
-            LOG_CRITICAL(logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x, y, z);
+            LOG_CRITICAL(
+                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
+                y, z
+            );
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[pos(x, y, z)];
         }
+        return &tiles_[pos(x, y, z)];
     };
 
     /**
@@ -687,9 +690,8 @@ class Terrain {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[xyz];
         }
+        return &tiles_[xyz];
     }
 
     /**
