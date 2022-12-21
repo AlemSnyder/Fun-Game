@@ -467,13 +467,11 @@ Terrain::generate_macro_map(
         );
         out[i] = static_cast<int>((p + 1) * (p + 1) * range);
     }
-    // TODO multi line logging
-    for (unsigned int i = 0; i < size_x; i++) {
-        for (unsigned int j = 0; j < size_y; j++) {
-            std::cout << out[j + size_y * i] << " ";
-        }
-        std::cout << "\n";
-    }
+
+    // There should be some formatting for map.
+    // it is supposed to be size_x by size_y
+    LOG_INFO(logging::terrain_logger, "Map: {}", out);
+
     return out;
 }
 
