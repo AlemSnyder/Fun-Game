@@ -129,8 +129,6 @@ class Terrain {
     int grass_mid_;
     // mat of material id to material that describes materials in this terrain
     const std::map<int, const terrain::Material>* materials_;
-    // Our logger
-    //quill::Logger* logger = logging::get_logger("terrain");
 
     // save color at sop, to color
     //! static Should be removed

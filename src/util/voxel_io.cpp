@@ -71,8 +71,6 @@ from_qb(
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 )
 {
-    // static quill::Logger* logger = logging::get_logger("voxel_io");
-
     LOG_INFO(
         logging::file_io_logger, "Reading voxels from {}.",
         path.lexically_normal().string()
@@ -171,8 +169,6 @@ from_qb(
 void
 to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression)
 {
-    // static quill::Logger* logger = logging::get_logger("voxel_io");
-
     LOG_INFO(
         logging::file_io_logger, "Saving voxels to {}.",
         path.lexically_normal().string()
