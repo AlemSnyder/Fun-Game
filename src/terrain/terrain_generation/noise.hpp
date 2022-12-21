@@ -14,6 +14,7 @@
 #pragma once
 
 #include <cmath>
+#include <cstdint>
 
 #define maxPrimeIndex 10 // The length of NoiseGenerator::primes
 
@@ -38,7 +39,8 @@ class NoiseGenerator {
      * @param persistence the strength of subsequent noise; between 0, and 1
      * @param primeIndex int for randomization (a worse version of a seed)
      */
-    NoiseGenerator(int numOctaves, double persistence, int primeIndex) {
+    NoiseGenerator(int numOctaves, double persistence, int primeIndex)
+    {
         num_octaves_ = numOctaves;
         persistence_ = persistence;
         primeIndex_ = primeIndex % maxPrimeIndex;
@@ -58,7 +60,7 @@ class NoiseGenerator {
     double persistence_ = 0.5;
     int primeIndex_ = 0;
 
-    int primes[maxPrimeIndex][3] = {
+    static constexpr int32_t primes[maxPrimeIndex][3] = {
         {995615039, 600173719, 701464987},
         {831731269, 162318869, 136250887},
         {174329291, 946737083, 245679977},
