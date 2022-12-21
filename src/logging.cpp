@@ -3,6 +3,7 @@
 #include "config.h"
 #include "util/files.hpp"
 
+#include <quill/handlers/JsonFileHandler.h>
 #include <quill/Quill.h>
 
 #include <filesystem>
@@ -27,11 +28,13 @@ using cc = quill::ConsoleColours;
 
 LogLevel _LOG_LEVEL;
 
-quill::Logger* opengl_logger;    // for glfw, glew etc
-quill::Logger* terrain_logger;   // for terrain, chunk, tile class
-quill::Logger* game_map_logger;  // for terrain generation
-quill::Logger* voxel_logger;     // for voxel logic like mesh creation
-quill::Logger* file_io_logger;   // for file io
+quill::Logger* opengl_logger;   // for glfw, glew etc
+quill::Logger* terrain_logger;  // for terrain, chunk, tile class
+quill::Logger* game_map_logger; // for terrain generation
+quill::Logger* voxel_logger;    // for voxel logic like mesh creation
+quill::Logger* file_io_logger;  // for file io
+
+const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
 void
 init(quill::LogLevel log_level, bool structured)
@@ -72,18 +75,30 @@ init(quill::LogLevel log_level, bool structured)
     cfg.default_handlers.emplace_back(stdout_handler);
 
     // Initialize file handler
+    quill::Handler* file_handler;
 #if DEBUG()
     // Rotate through file handlers to save space
-    quill::Handler* file_handler = quill::rotating_file_handler(
-        log_dir() / "app.log", "a",
+    file_handler = quill::rotating_file_handler(
+        LOG_FILE,
+        "a",             // append
         1024 * 1024 / 2, // 512 KB
         5                // 5 backups
     );
 #else
-    // Create a new log file for each run
-    quill::Handler* file_handler = quill::file_handler(
-        log_dir() / "app.log", "w", quill::FilenameAppend::DateTime
-    );
+    if (structured) {
+        file_handler = quill::create_handler<quill::JsonFileHandler>(
+            LOG_FILE.string(),
+            "w",                            // Create a new file for every run
+            quill::FilenameAppend::DateTime // Append datatime to make file unique
+        );
+    } else {
+        // Create a new log file for each run
+        file_handler = quill::file_handler(
+            LOG_FILE,
+            "w",                            // Create a new file for every run
+            quill::FilenameAppend::DateTime // Append datatime to make file unique
+        );
+    }
 #endif
 
     file_handler->set_pattern(
