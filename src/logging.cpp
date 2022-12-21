@@ -42,9 +42,8 @@ init(quill::LogLevel log_level, bool structured)
     _LOG_LEVEL = log_level;
 
     // Create the logs directory
-    if (!std::filesystem::is_directory(log_dir())) {
+    if (!std::filesystem::is_directory(log_dir()))
         std::filesystem::create_directory(log_dir());
-    }
 
     // Create our config object
     quill::Config cfg;
