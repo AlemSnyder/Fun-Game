@@ -117,9 +117,9 @@ init(quill::LogLevel log_level, bool structured)
 
     opengl_logger = get_logger("shaders");
     terrain_logger = get_logger("terrain");
-    game_map_logger = get_logger("game map");
+    game_map_logger = get_logger("game_map");
     voxel_logger = get_logger("voxel");
-    file_io_logger = get_logger("file io");
+    file_io_logger = get_logger("file_io");
 
     // Start the logging backend thread
     quill::start();
