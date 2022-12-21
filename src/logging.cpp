@@ -37,7 +37,7 @@ quill::Logger* file_io_logger;  // for file io
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
 void
-init(quill::LogLevel log_level, bool structured)
+init(bool console, quill::LogLevel log_level, bool structured)
 {
     _LOG_LEVEL = log_level;
 
@@ -52,30 +52,35 @@ init(quill::LogLevel log_level, bool structured)
     cfg.default_logger_name = "main";
 
     // Initialize print handler
-    quill::ConsoleColours colors;
-    colors.set_colour(LogLevel::TraceL3, cc::black);
-    colors.set_colour(LogLevel::TraceL2, cc::black);
-    colors.set_colour(LogLevel::TraceL1, cc::black);
-    colors.set_colour(LogLevel::Debug, cc::white);
-    colors.set_colour(LogLevel::Info, cc::green);
-    colors.set_colour(LogLevel::Warning, cc::yellow | cc::bold);
-    colors.set_colour(LogLevel::Error, cc::red | cc::bold);
-    colors.set_colour(LogLevel::Critical, cc::bold | cc::white | cc::on_red);
-    colors.set_colour(LogLevel::Backtrace, cc::magenta);
+    if (console) {
+        quill::ConsoleColours colors;
+        colors.set_colour(LogLevel::TraceL3, cc::black);
+        colors.set_colour(LogLevel::TraceL2, cc::black);
+        colors.set_colour(LogLevel::TraceL1, cc::black);
+        colors.set_colour(LogLevel::Debug, cc::white);
+        colors.set_colour(LogLevel::Info, cc::green);
+        colors.set_colour(LogLevel::Warning, cc::yellow | cc::bold);
+        colors.set_colour(LogLevel::Error, cc::red | cc::bold);
+        colors.set_colour(LogLevel::Critical, cc::bold | cc::white | cc::on_red);
+        colors.set_colour(LogLevel::Backtrace, cc::magenta);
 
-    auto stdout_handler =
-        dynamic_cast<quill::ConsoleHandler*>(quill::stdout_handler("console", colors));
-    stdout_handler->set_pattern(
-        LOGLINE_FORMAT,
-        "%F %T.%Qms %z" // ISO 8601 but with space instead of T
-    );
-    stdout_handler->set_log_level(log_level);
+        auto stdout_handler = dynamic_cast<quill::ConsoleHandler*>(
+            quill::stdout_handler("console", colors)
+        );
+        stdout_handler->set_pattern(
+            LOGLINE_FORMAT,
+            "%F %T.%Qms %z" // ISO 8601 but with space instead of T
+        );
+        stdout_handler->set_log_level(log_level);
 
-    cfg.default_handlers.emplace_back(stdout_handler);
+        cfg.default_handlers.emplace_back(stdout_handler);
+    }
 
     // Initialize file handler
     quill::Handler* file_handler;
 #if DEBUG()
+    (void)structured; // Keep the compiler from complaining
+
     // Rotate through file handlers to save space
     file_handler = quill::rotating_file_handler(
         LOG_FILE,

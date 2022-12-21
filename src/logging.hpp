@@ -17,12 +17,14 @@ static constexpr quill::LogLevel DEFAULT_LOG_LEVEL = quill::LogLevel::Info;
 
 extern quill::LogLevel _LOG_LEVEL;
 
-extern quill::Logger* opengl_logger;    // for glfw, glew etc
-extern quill::Logger* terrain_logger;   // for terrain, chunk, tile class
-extern quill::Logger* game_map_logger;  // for terrain generation
-extern quill::Logger* voxel_logger;     // for voxel logic like mesh creation
-extern quill::Logger* file_io_logger;   // for file io
-//extern quill::Logger* lua_logger;     // for lua logging
+extern quill::Logger* opengl_logger;   // for glfw, glew etc
+extern quill::Logger* terrain_logger;  // for terrain, chunk, tile class
+extern quill::Logger* game_map_logger; // for terrain generation
+extern quill::Logger* voxel_logger;    // for voxel logic like mesh creation
+extern quill::Logger* file_io_logger;  // for file io
+#if 0
+extern quill::Logger* lua_logger;     // for lua logging
+#endif
 
 inline quill::Logger*
 get_logger()
@@ -58,6 +60,9 @@ log_dir() noexcept
     return files::get_root_path() / "logs";
 }
 
-void init(quill::LogLevel log_level = DEFAULT_LOG_LEVEL, bool structured = true);
+void init(
+    bool console = true, quill::LogLevel log_level = DEFAULT_LOG_LEVEL,
+    bool structured = true
+);
 
 } // namespace logging
