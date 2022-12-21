@@ -277,11 +277,11 @@ main(int argc, char** argv)
         materials_file >> materials_json;
 
         cmdl("biome-name", "Biome_1") >> biome_name;
-        if (!cmdl[{"-a", "--all"}]) {
-            save_terrain(biome_data[biome_name], materials_json, biome_name);
-        } else {
+
+        if (cmdl[{"-a", "--all"}])
             save_all_terrain(materials_json, biome_data);
-        }
+        else
+            save_terrain(biome_data[biome_name], materials_json, biome_name);
     } else if (run_function == "GenerateTerrain") {
         return GenerateTerrain(path_in);
     } else if (run_function == "MacroMap") {
