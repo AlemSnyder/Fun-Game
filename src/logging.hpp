@@ -62,7 +62,7 @@ log_dir() noexcept
 
 void init(
     bool console = true, quill::LogLevel log_level = DEFAULT_LOG_LEVEL,
-    bool structured = true
+    bool structured = false
 );
 
 } // namespace logging
