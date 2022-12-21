@@ -26,7 +26,7 @@ load_shaders(
     // Read the Vertex Shader code from the file
     LOG_INFO(
         logging::opengl_logger, "Loading vertex shader from {}",
-        vertex_file_path.lexically_normal().string()
+        vertex_file_path.string()
     );
 
     std::string vertex_shader_code;
@@ -39,7 +39,7 @@ load_shaders(
     } else {
         LOG_ERROR(
             logging::opengl_logger, "Cannot open {}. Are you in the right directory?",
-            vertex_file_path.lexically_normal().string()
+            vertex_file_path.string()
         );
         return 0;
     }
@@ -47,7 +47,7 @@ load_shaders(
     // Read the Fragment Shader code from the file
     LOG_INFO(
         logging::opengl_logger, "Loading fragment shader from {}",
-        vertex_file_path.lexically_normal().string()
+        vertex_file_path.string()
     );
 
     std::string fragment_shader_code;
@@ -60,7 +60,7 @@ load_shaders(
     } else {
         LOG_ERROR(
             logging::opengl_logger, "Cannot open {}. Are you in the right directory?",
-            fragment_file_path.lexically_normal().string()
+            fragment_file_path.string()
         );
         return 0;
     }
@@ -71,7 +71,7 @@ load_shaders(
     // Compile Vertex Shader
     LOG_DEBUG(
         logging::opengl_logger, "Compiling vertex shader {}",
-        vertex_file_path.lexically_normal().string()
+        vertex_file_path.string()
     );
 
     char const* vertex_source_pointer = vertex_shader_code.c_str();
@@ -96,7 +96,7 @@ load_shaders(
     // Compile Fragment Shader
     LOG_DEBUG(
         logging::opengl_logger, "Compiling fragment shader {}",
-        fragment_file_path.lexically_normal().string()
+        fragment_file_path.string()
     );
 
     char const* fragment_source_pointer = fragment_shader_code.c_str();

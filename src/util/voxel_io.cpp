@@ -75,7 +75,7 @@ from_qb(
 
     LOG_INFO(
         logging::file_io_logger, "Reading voxels from {}.",
-        path.lexically_normal().string()
+        path.string()
     );
 
     // Read the tiles from the path specified, and save
@@ -84,7 +84,7 @@ from_qb(
         LOG_ERROR(
             logging::file_io_logger,
             "Could not open {}. Are you in the right directory?",
-            path.lexically_normal().string()
+            path.string()
         );
         throw exc::file_not_found_error(path);
     }
@@ -175,7 +175,7 @@ to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression)
 
     LOG_INFO(
         logging::file_io_logger, "Saving voxels to {}.",
-        path.lexically_normal().string()
+        path.string()
     );
 
     if (compression) {
@@ -189,7 +189,7 @@ to_qb(const std::filesystem::path path, terrain::Terrain ter, bool compression)
         LOG_ERROR(
             logging::file_io_logger,
             "Could not open {}. Are you in the right directory?",
-            path.lexically_normal().string()
+            path.string()
         );
         throw exc::file_not_found_error(path);
     }
