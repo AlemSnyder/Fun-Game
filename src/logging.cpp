@@ -116,11 +116,11 @@ init(quill::LogLevel log_level, bool structured)
     quill::Logger* main_logger = quill::get_logger();
     main_logger->init_backtrace(5, quill::LogLevel::Error);
 
-    opengl_logger = quill::create_logger("shaders");
-    terrain_logger = quill::create_logger("terrain");
-    game_map_logger = quill::create_logger("game map");
-    voxel_logger = quill::create_logger("voxel");
-    file_io_logger = quill::create_logger("file io");
+    opengl_logger = get_logger("shaders");
+    terrain_logger = get_logger("terrain");
+    game_map_logger = get_logger("game map");
+    voxel_logger = get_logger("voxel");
+    file_io_logger = get_logger("file io");
 
     main_logger->set_log_level(log_level);
     opengl_logger->set_log_level(log_level);

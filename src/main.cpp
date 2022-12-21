@@ -136,13 +136,10 @@ path_finder_test(const std::string path, std::string save_path)
     std::vector<const terrain::Tile*> tile_path =
         world.terrain_main.get_path_Astar(start_end.first, start_end.second);
 
-    LOG_INFO(
-        logger, "Path length: {}", static_cast<int>(tile_path.size())
-    );
+    LOG_INFO(logger, "Path length: {}", tile_path.size());
 
     if (tile_path.size() == 0) {
-        LOG_INFO(
-            logger, "No path");
+        LOG_INFO(logger, "No path");
         world.terrain_main.qb_save_debug(save_path);
         return 1;
     }
