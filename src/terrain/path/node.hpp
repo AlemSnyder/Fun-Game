@@ -39,6 +39,14 @@ namespace terrain {
  */
 template <class T>
 class Node { // Used to find paths.
+    T* tile_;           // defines position in space
+    Node* parent_node_; // previous step in fastest way to get to this nodes
+
+    float g_cost_;   // Time from start to this node
+    float h_cost_;   // Minimum time from this node to end
+    float f_cost_;   // Minimum time from start to end through this node
+    bool explored_; // Is there a path from start to this node?
+    
  public:
     /**
      * @brief Construct a new Node object
@@ -121,14 +129,6 @@ class Node { // Used to find paths.
      */
     inline bool is_explored() const { return explored_; }
 
- private:
-    T* tile_;           // defines position in space
-    Node* parent_node_; // previous step in fastest way to get to this nodes
-
-    float g_cost_;   // Time from start to this node
-    float h_cost_;   // Minimum time from this node to end
-    float f_cost_;   // Minimum time from start to end through this node
-    bool explored_; // Is there a path from start to this node?
 };
 
 } // namespace terrain
