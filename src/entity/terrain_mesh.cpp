@@ -42,15 +42,15 @@ TerrainMesh::init(
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
     glBufferData(
         GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::ivec3),
-        &indexed_vertices[0], GL_STATIC_DRAW
+        indexed_vertices.data(), GL_STATIC_DRAW
     );
 
     // A buffer for the colors
     glGenBuffers(1, &color_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_colors.size() * sizeof(glm::vec3), &indexed_colors[0],
-        GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, indexed_colors.size() * sizeof(glm::vec3),
+        indexed_colors.data(), GL_STATIC_DRAW
     );
 
     // Generate a buffer for the normal vectors
@@ -58,15 +58,15 @@ TerrainMesh::init(
     glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_);
     glBufferData(
         GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::ivec3),
-        &indexed_normals[0], GL_STATIC_DRAW
+        indexed_normals.data(), GL_STATIC_DRAW
     );
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &element_buffer_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0],
-        GL_STATIC_DRAW
+        GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
+        indices.data(), GL_STATIC_DRAW
     );
 
     num_vertices_ = indices.size();
