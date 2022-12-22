@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "../logging.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
@@ -55,33 +56,39 @@ namespace helper {
 
 // high is for if the grass reaches a cliff
 inline bool
-edge_detector_high(Tile* t) {
+edge_detector_high(Tile* t)
+{
     return !t->is_grass() && t->is_solid();
 }
 
 inline void
-setter_high(Tile* t, int set_to) {
+setter_high(Tile* t, int set_to)
+{
     t->set_grow_data_high(set_to);
 }
 
 inline int
-getter_high(Tile* t) {
+getter_high(Tile* t)
+{
     return t->get_grow_data_high();
 }
 
 // low is for if the grass reaches an edge
 inline bool
-edge_detector_low(Tile* t) {
+edge_detector_low(Tile* t)
+{
     return !t->is_solid();
 }
 
 inline void
-setter_low(Tile* t, int set_to) {
+setter_low(Tile* t, int set_to)
+{
     t->set_grow_data_low(set_to);
 }
 
 inline int
-getter_low(Tile* t) {
+getter_low(Tile* t)
+{
     return t->get_grow_data_low();
 }
 
@@ -103,11 +110,11 @@ class Terrain {
     // vector of chunks in terrain
     std::vector<Chunk> chunks_;
     // length in the x direction
-    int X_MAX;
+    int32_t X_MAX;
     // length in the y direction
-    int Y_MAX;
+    int32_t Y_MAX;
     // length in the z direction
-    int Z_MAX;
+    int32_t Z_MAX;
     // size of terrain generation tile (see terrain generation)
     static int Area_size;
     // seed for randomness
@@ -175,7 +182,9 @@ class Terrain {
      * @param z z coordinate
      * @return int
      */
-    int pos(int x, int y, int z) const { // for loops should go z than y than x
+    int
+    pos(int x, int y, int z) const
+    { // for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
     }
 
@@ -185,11 +194,15 @@ class Terrain {
      * @param sop coordinate as an array
      * @return int
      */
-    int pos(const std::array<int, 3> sop) const {
+    int
+    pos(const std::array<int, 3> sop) const
+    {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
-    int pos(const int sop[3]) const {
+    int
+    pos(const int sop[3]) const
+    {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
@@ -199,7 +212,11 @@ class Terrain {
      * @param tile tile to find position of
      * @return int
      */
-    int pos(const Tile* const tile) const { return pos(tile->sop()); }
+    int
+    pos(const Tile* const tile) const
+    {
+        return pos(tile->sop());
+    }
 
     /**
      * @brief position in tiles vector of given tile
@@ -207,7 +224,9 @@ class Terrain {
      * @param tile tile to find position of
      * @return int
      */
-    inline int pos(const Tile tile) const {
+    inline int
+    pos(const Tile tile) const
+    {
         return pos(tile.get_x(), tile.get_y(), tile.get_z());
     }
 
@@ -225,7 +244,11 @@ class Terrain {
      * @param tile
      * @return int
      */
-    inline int pos_for_map(const Tile tile) const { return pos(tile); }
+    inline int
+    pos_for_map(const Tile tile) const
+    {
+        return pos(tile);
+    }
 
     /**
      * @brief unique map index
@@ -233,7 +256,11 @@ class Terrain {
      * @param tile
      * @return int
      */
-    inline int pos_for_map(const Tile* const tile) const { return pos(tile); }
+    inline int
+    pos_for_map(const Tile* const tile) const
+    {
+        return pos(tile);
+    }
 
     /**
      * @brief unique map index
@@ -241,7 +268,9 @@ class Terrain {
      * @param tile
      * @return int
      */
-    inline int pos_for_map(const NodeGroup NG) const {
+    inline int
+    pos_for_map(const NodeGroup NG) const
+    {
         return pos(*(NG.get_tiles().begin()));
     }
 
@@ -251,7 +280,9 @@ class Terrain {
      * @param tile
      * @return int
      */
-    inline int pos_for_map(const NodeGroup* const NG) const {
+    inline int
+    pos_for_map(const NodeGroup* const NG) const
+    {
         return pos(*(NG->get_tiles().begin()));
     }
 
@@ -261,7 +292,9 @@ class Terrain {
      * @param xyz vector index
      * @return const std::array<int, 3> position in space
      */
-    const std::array<int, 3> sop(int xyz) const {
+    const std::array<int, 3>
+    sop(int xyz) const
+    {
         return {xyz / (Y_MAX * Z_MAX), (xyz / Z_MAX) % Y_MAX, xyz % (Z_MAX)};
     }
 
@@ -274,7 +307,9 @@ class Terrain {
      * @param zm length in z direction
      * @return std::array<int, 3> position in 3D space
      */
-    static std::array<int, 3> sop(int xyz, int xm, int ym, int zm) {
+    static std::array<int, 3>
+    sop(int xyz, int xm, int ym, int zm)
+    {
         if (xyz >= xm * ym * zm) {
             throw std::invalid_argument("index out of range");
         }
@@ -419,7 +454,8 @@ class Terrain {
      * @return iterator
      */
     inline iterator
-    get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const {
+    get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const
+    {
         return iterator(*this, pos, path_type);
     }
 
@@ -488,37 +524,59 @@ class Terrain {
      *
      * @return int length
      */
-    inline int get_X_MAX() const { return X_MAX; };
+    inline int
+    get_X_MAX() const
+    {
+        return X_MAX;
+    };
 
     /**
      * @brief Get length of terrain in x direction
      *
      * @return int length
      */
-    inline int get_Y_MAX() const { return Y_MAX; };
+    inline int
+    get_Y_MAX() const
+    {
+        return Y_MAX;
+    };
 
     /**
      * @brief Get length of terrain in x direction
      *
      * @return int length
      */
-    inline int get_Z_MAX() const { return Z_MAX; };
+    inline int
+    get_Z_MAX() const
+    {
+        return Z_MAX;
+    };
 
     /**
      * @brief Get the size of terrain
      *
-     * @return std::vector<unsigned int> vector of sizes
+     * @return std::array<uint32_t, 3> array of sizes
      */
-    inline std::vector<unsigned int> get_size() const {
-        return {(unsigned int)X_MAX, (unsigned int)Y_MAX, (unsigned int)Z_MAX};
+    inline std::array<uint32_t, 3>
+    get_size() const
+    {
+        return {
+            static_cast<uint32_t>(X_MAX),
+            static_cast<uint32_t>(Y_MAX),
+            static_cast<uint32_t>(Z_MAX),
+        };
     }
 
     /**
      * @brief Used for getting mesh
      *
-     * @return std::vector<int> 0 3 times
+     * @return std::array<int32_t, 3> 0 3 times
      */
-    inline std::vector<int> get_offset() const { return {0, 0, 0}; }
+    inline std::array<int32_t, 3>
+    get_offset() const
+    {
+        return {0, 0, 0};
+    }
 
     /**
      * @brief test if tile position is within terrain bounds
@@ -529,7 +587,9 @@ class Terrain {
      * @return true tile is in bounds
      * @return false tile is not in bounds
      */
-    inline bool in_range(int x, int y, int z) const {
+    inline bool
+    in_range(int x, int y, int z) const
+    {
         return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
     }
 
@@ -541,22 +601,27 @@ class Terrain {
      * @param z z position
      * @return Tile* tile at given position
      */
-    Tile* get_tile(int x, int y, int z) {
+    Tile*
+    get_tile(int x, int y, int z)
+    {
         if (!in_range(x, y, z)) {
-            std::cout << x << ";" << y << ";" << z << "\n";
+            LOG_CRITICAL(
+                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
+                y, z
+            );
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[pos(x, y, z)];
         }
+        return &tiles_[pos(x, y, z)];
     };
 
-    Tile* get_tile(int xyz) {
+    Tile*
+    get_tile(int xyz)
+    {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
-            std::cout << xyz << "\n";
+            LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[xyz];
         }
+        return &tiles_[xyz];
     }
 
     /**
@@ -567,13 +632,17 @@ class Terrain {
      * @param z z position
      * @return Tile* tile at given position
      */
-    const Tile* get_tile(int x, int y, int z) const {
+    const Tile*
+    get_tile(int x, int y, int z) const
+    {
         if ((x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 0)) {
-            std::cout << x << ";" << y << ";" << z << "\n";
+            LOG_CRITICAL(
+                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
+                y, z
+            );
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[pos(x, y, z)];
         }
+        return &tiles_[pos(x, y, z)];
     };
 
     /**
@@ -582,13 +651,14 @@ class Terrain {
      * @param xyz tile index
      * @return const Tile* tile at index
      */
-    const Tile* get_tile(int xyz) const {
+    const Tile*
+    get_tile(int xyz) const
+    {
         if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
-            std::cout << xyz << "\n";
+            LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
-        } else {
-            return &tiles_[xyz];
         }
+        return &tiles_[xyz];
     }
 
     /**
@@ -601,9 +671,17 @@ class Terrain {
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
-    inline const std::vector<Chunk>& get_chunks() const { return chunks_; }
+    inline const std::vector<Chunk>&
+    get_chunks() const
+    {
+        return chunks_;
+    }
 
-    inline int get_grass_grad_length() const { return grass_grad_length_; }
+    inline int
+    get_grass_grad_length() const
+    {
+        return grass_grad_length_;
+    }
 
     /**
      * @brief charge the color id but not the material of the tile
@@ -634,7 +712,9 @@ class Terrain {
      * @param mat materials set to
      * @param color_id color id set to
      */
-    inline void set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
+    inline void
+    set_tile_material(Tile* tile, const Material* mat, uint8_t color_id)
+    {
         tile->set_material(mat, color_id);
     }
 
@@ -661,7 +741,9 @@ class Terrain {
      * @param x macro map x position
      * @param y macro map y position
      */
-    inline void stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y) {
+    inline void
+    stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y)
+    {
         stamp_tile_region(
             tStamp.x_start + x * Area_size + Area_size / 2,
             tStamp.y_start + y * Area_size + Area_size / 2, tStamp.z_start,
@@ -716,7 +798,9 @@ class Terrain {
      * 
      * @param all_grass set of pointers to tiles that are grass
      */
-    inline void grow_grass_high(std::set<Tile*> all_grass) {
+    inline void
+    grow_grass_high(std::set<Tile*> all_grass)
+    {
         helper::grow_grass_recursive<
             helper::edge_detector_high, helper::getter_high, helper::setter_high>(
             *this, all_grass
@@ -728,7 +812,9 @@ class Terrain {
      *
      * @param all_grass set of pointers to tiles that are grass
      */
-    inline void grow_grass_low(std::set<Tile*> all_grass) {
+    inline void
+    grow_grass_low(std::set<Tile*> all_grass)
+    {
         helper::grow_grass_recursive<
             helper::edge_detector_low, helper::getter_low, helper::setter_low>(
             *this, all_grass
@@ -744,7 +830,9 @@ class Terrain {
      * @return true can stand
      * @return false cannot stand
      */
-    inline bool can_stand_1(int x, int y, int z) const {
+    inline bool
+    can_stand_1(int x, int y, int z) const
+    {
         return can_stand(x, y, z, 1, 1);
     }
 
@@ -768,7 +856,11 @@ class Terrain {
      * @return true can stand
      * @return false cannot stand
      */
-    inline bool can_stand_1(const Tile tile) const { return can_stand(tile, 1, 1); }
+    inline bool
+    can_stand_1(const Tile tile) const
+    {
+        return can_stand(tile, 1, 1);
+    }
 
     /**
      * @brief test if 1 x 1 x 1 object can stand at given tile
@@ -777,7 +869,11 @@ class Terrain {
      * @return true can stand
      * @return false cannot stand
      */
-    bool can_stand_1(const Tile* tile) const { return can_stand(tile, 1, 1); }
+    bool
+    can_stand_1(const Tile* tile) const
+    {
+        return can_stand(tile, 1, 1);
+    }
 
     /**
      * @brief test if dxy x dyx x dz object can stand at given position
@@ -816,24 +912,21 @@ class Terrain {
      *
      * @param path path to save to
      * @param materials materials in the terrain for debug materials
-     * @return int success status
      */
-    int qb_save_debug(const std::string path);
+    void qb_save_debug(const std::string path);
     /**
      * @brief save to path
      *
      * @param path path to save to
-     * @return int success status
      */
-    int qb_save(const std::string path) const;
+    void qb_save(const std::string path) const;
     /**
      * @brief read from path
      *
      * @param path path to read from
      * @param materials materials in the terrain
-     * @return int success status
      */
-    int qb_read(
+    void qb_read(
         const std::string path,
         const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
     );

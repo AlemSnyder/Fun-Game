@@ -19,7 +19,7 @@ AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterReturnType: TopLevelDefinitions
+AlwaysBreakAfterReturnType: AllDefinitions
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: Yes
 AttributeMacros:
@@ -28,7 +28,6 @@ BasedOnStyle: "LLVM"
 BinPackArguments: true
 BinPackParameters: true
 BitFieldColonSpacing: Both
-# BraceWrapping is ignored as BreakBeforeBraces != Custom
 BraceWrapping:
   AfterCaseLabel: false
   AfterClass: false
@@ -45,7 +44,7 @@ BraceWrapping:
   BeforeLambdaBody: false
   BeforeWhile: false
   IndentBraces: false
-  SplitEmptyFunction: true
+  SplitEmptyFunction: false
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
 BreakAfterJavaFieldAnnotations: true
@@ -57,7 +56,7 @@ BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 ColumnLimit: 88
-CommentPragmas: "^ IWYU pragma:"
+CommentPragmas: "^( IWYU pragma:| NOLINT)"
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -126,7 +125,7 @@ PenaltyExcessCharacter: 1000000
 PenaltyIndentedWhitespace: 0
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
-PPIndentWidth: -1
+PPIndentWidth: 2
 QualifierAlignment: Leave
 ReferenceAlignment: Pointer
 ReflowComments: true

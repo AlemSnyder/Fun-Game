@@ -5,6 +5,7 @@
 #include "../entity/terrain_mesh.hpp"
 #include "../util/files.hpp"
 #include "../world.hpp"
+#include "../logging.hpp"
 #include "controls.hpp"
 #include "renderer.hpp"
 #include "shader.hpp"
@@ -128,7 +129,7 @@ GUITest(World world) {
             }
         }
 
-    std::cout << "Number of models: " << model_matrices.size() << std::endl;
+    LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(mesh_trees, model_matrices);

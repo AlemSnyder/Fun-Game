@@ -7,7 +7,8 @@
         "lsst",
         "Parameteri",
         "Perlin",
-        "vmask"
+        "vmask",
+        "voxel"
     ],
     "files.associations": {
         "**/*.html": "html",
@@ -107,6 +108,10 @@
         "valarray": "cpp",
         "variant": "cpp",
         "filesystem": "cpp",
-        "CMakeLists.txt": "cmake"
+        "CMakeLists.txt": "cmake",
+        "regex": "cpp",
+        "future": "cpp",
+        "*.def": "cpp",
+        "*.inc": "cpp"
     }
 }
