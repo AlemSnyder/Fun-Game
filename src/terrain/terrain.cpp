@@ -1,5 +1,6 @@
 #include "terrain.hpp"
 
+#include "../logging.hpp"
 #include "../util/time.hpp"
 #include "../util/voxel_io.hpp"
 #include "chunk.hpp"
@@ -90,11 +91,17 @@ Terrain::Terrain(
             );
         }
     }
-    int test = qb_read(path, &materials_inverse);
-    if (test) {
-        std::cerr << "Could not load terrain" << std::endl;
-        return;
+
+    try {
+        qb_read(path, &materials_inverse);
+    } catch (const std::exception& e) {
+        LOG_ERROR(
+            logging::terrain_logger, "Could not load terrain save file due to {}",
+            e.what()
+        );
+        throw;
     }
+
     init_chunks();
 }
 
@@ -113,7 +120,7 @@ Terrain::init(
     const std::map<int, const Material>* materials, Json::Value biome_data,
     std::vector<int> Terrain_Maps
 ) {
-    auto millisec_since_epoch = time_util::get_time();
+    auto millisec_since_epoch = time_util::epoch_millis();
 
     Area_size = Area_size_;
     seed = seed_;
@@ -129,7 +136,7 @@ Terrain::init(
     }
 
     srand(seed);
-    std::cout << "start of land Generator" << std::endl;
+    LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
     // create a map of int -> LandGenerator
     std::map<int, terrain_generation::LandGenerator> land_generators;
@@ -163,8 +170,10 @@ Terrain::init(
     //  TODO make this faster 1
     init_chunks();
 
-    std::cout << time_util::get_time() - millisec_since_epoch
-              << " Total time Terrain_init" << std::endl;
+    LOG_INFO(
+        logging::terrain_logger, "End of land generator. Time elapsed: {}.",
+        time_util::epoch_millis() - millisec_since_epoch
+    );
 }
 
 void
@@ -461,12 +470,11 @@ Terrain::generate_macro_map(
         );
         out[i] = static_cast<int>((p + 1) * (p + 1) * range);
     }
-    for (unsigned int i = 0; i < size_x; i++) {
-        for (unsigned int j = 0; j < size_y; j++) {
-            std::cout << out[j + size_y * i] << " ";
-        }
-        std::cout << "\n";
-    }
+
+    // There should be some formatting for map.
+    // it is supposed to be size_x by size_y
+    LOG_INFO(logging::terrain_logger, "Map: {}", out);
+
     return out;
 }
 
@@ -672,7 +680,8 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
     NodeGroup* goal_node;
     NodeGroup* start_node;
     int goal_z = goal_->get_z();
-    Tile* goal;
+    const Tile* goal;
+
     if (!can_stand_1(goal_)) {
         goal_z = get_Z_solid(goal_->get_x(), goal_->get_y()) + 1;
         if (goal_z != 0) {
@@ -681,10 +690,12 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
             return std::vector<const Tile*>();
         }
     } else {
-        return std::vector<const Tile*>();
+        goal = goal_;
     }
+
     int start_z = start_->get_z();
-    Tile* start;
+    const Tile* start;
+
     if (!can_stand_1(start_)) {
         start_z = get_Z_solid(start_->get_x(), start_->get_y()) + 1;
         if (start_z != 0) {
@@ -693,21 +704,20 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
             return std::vector<const Tile*>();
         }
     } else {
-        return std::vector<const Tile*>();
+        start = start_;
     }
 
-    if (!(goal_node = get_node_group(goal))) {
+    if (!(goal_node = get_node_group(goal)))
         return std::vector<const Tile*>();
-    }
-    if (!(start_node = get_node_group(start))) {
+
+    if (!(start_node = get_node_group(start)))
         return std::vector<const Tile*>();
-    }
 
     std::vector<const NodeGroup*> Node_path = get_path_Astar(start_node, goal_node);
     // if Node_path is empty then return
-    if (Node_path.size() == 0) {
+    if (Node_path.size() == 0)
         return std::vector<const Tile*>();
-    }
+
     std::set<const Tile*> search_through;
     for (const NodeGroup* NG : Node_path) {
         auto tiles = NG->get_tiles();
@@ -751,24 +761,24 @@ Terrain::get_path_breadth_first(
 std::vector<const Tile*>
 Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> goal_) {
     std::set<const NodeGroup*> goal_nodes;
-    bool NoGoal = true;
+    bool no_goal = true;
     for (const Tile* g : goal_) {
         int goal_z = g->get_z();
-        if (!can_stand_1(g)) {
+        if (can_stand_1(g)) {
+            no_goal = false;
+            goal_nodes.insert(get_node_group(g));
+        } else {
             goal_z = get_Z_solid(g->get_x(), g->get_y()) + 1;
             if (goal_z != 0) {
-                NoGoal = false;
+                no_goal = false;
                 goal_nodes.insert(
                     get_node_group(get_tile(g->get_x(), g->get_y(), goal_z))
                 );
             }
-        } else {
-            NoGoal = false;
-            goal_nodes.insert(get_node_group(g));
         }
     }
-    if (NoGoal) { // in this case there is no valid z position at one of the
-                  // given x, y positions
+    if (no_goal) { // in this case there is no valid z position at one of the
+                   // given x, y positions
         return std::vector<const Tile*>();
     }
 
@@ -830,6 +840,7 @@ Terrain::get_path(
         for (Node<const T>* n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
+
             if (!n->is_explored()) {
                 n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
                 if (goal.find(n->get_tile()) != goal.end()) {
@@ -839,9 +850,19 @@ Terrain::get_path(
                 }
                 openNodes.push(n); // n can be chose to expand around
             } else {
-                // openNodes.remove n
-                n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
-                // openNodes.add n
+                if (n->get_time_cots() > get_G_cost(*(n->get_tile()), *choice)) {
+                    n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
+
+                    // will update open nodes if the fastest path has changed.
+                    std::make_heap(
+                        const_cast<Node<const T>**>(&openNodes.top()),
+                        const_cast<Node<const T>**>(&openNodes.top())
+                            + openNodes.size(),
+                        T_compare
+                    );
+                } else {
+                    n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
+                }
             }
         }
     }
@@ -857,17 +878,22 @@ Terrain::get_voxel(int x, int y, int z) const {
     static uint8_t previous_mat_id = 0;
     static uint8_t previous_color_id = 0;
     static uint32_t previous_out_color = 0;
-    if (in_range(x, y, z)) {
-        if ((tiles_[pos(x, y, z)].get_material_id() != previous_mat_id)
-            || (tiles_[pos(x, y, z)].get_color_id() != previous_color_id)) {
-            previous_mat_id = tiles_[pos(x, y, z)].get_material_id();
-            previous_color_id = tiles_[pos(x, y, z)].get_color_id();
-            auto mat = materials_->at(previous_mat_id);
-            previous_out_color = mat.color[previous_color_id].second;
-        }
-        return previous_out_color;
+
+    if (!in_range(x, y, z))
+        return 0;
+
+    uint8_t mat_id = tiles_[pos(x, y, z)].get_material_id();
+    uint8_t color_id = tiles_[pos(x, y, z)].get_color_id();
+
+    if (mat_id != previous_mat_id || color_id != previous_color_id) {
+        previous_mat_id = mat_id;
+        previous_color_id = color_id;
+
+        auto mat = materials_->at(previous_mat_id);
+        previous_out_color = mat.color[previous_color_id].second;
     }
-    return 0;
+
+    return previous_out_color;
 }
 
 // Set `color` to the color of the tile at `pos`.
@@ -886,7 +912,7 @@ Terrain::compress_color(uint8_t v[4]) {
            | (uint32_t)v[0] << 24;
 }
 
-int
+void
 Terrain::qb_save_debug(const std::string path) {
     int x = 0;
     for (Chunk& c : chunks_) {
@@ -899,28 +925,26 @@ Terrain::qb_save_debug(const std::string path) {
             x++;
         }
     }
-    return qb_save(path);
+    qb_save(path);
 }
 
 // Save all tiles as .qb to path.
-int
+void
 Terrain::qb_save(const std::string path) const {
     // Saves the tiles in this to the path specified
-    return voxel_utility::to_qb(path, *this);
+    voxel_utility::to_qb(path, *this);
 }
 
-int
+void
 Terrain::qb_read(
     const std::string path,
     const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
 ) {
     std::vector<uint32_t> data;
-    std::vector<int> center;
-    std::vector<uint32_t> size;
+    std::array<int32_t, 3> center;
+    std::array<uint32_t, 3> size;
 
-    int err = voxel_utility::from_qb(path, data, center, size);
-    if (err)
-        return err;
+    voxel_utility::from_qb(path, data, center, size);
 
     X_MAX = size[0];
     Y_MAX = size[1];
@@ -946,11 +970,9 @@ Terrain::qb_read(
     }
 
     for (uint32_t color : unknown_materials) {
-        std::cout << "    cannot find color: " << std::hex << std::uppercase << color
-                  << std::dec << std::endl;
+        // is there any way to log hexadecimal
+        LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
-
-    return 0;
 }
 
 std::pair<Tile*, Tile*>
