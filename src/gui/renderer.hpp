@@ -58,7 +58,7 @@ class MainRenderer {
                                       // meshes
     // ------ the below are added to the class ------
     GLuint depth_texture_;              // ID of the shadow depth texture
-    glm::vec3 light_direction_;        // direction of sun light
+    glm::vec3 light_direction_;         // direction of sun light
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
                                   // direction
