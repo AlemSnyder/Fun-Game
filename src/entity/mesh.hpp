@@ -20,7 +20,7 @@
  */
 #pragma once
 
-#include "../util/voxel_io.hpp"
+#include "../util/voxel.hpp"
 
 #include <glm/glm.hpp>
 
@@ -63,10 +63,11 @@ struct Mesh {
 /**
  * @brief Generates a mesh from the given 3D voxel structure
  *
- * @tparam T
+ * @tparam T is_base_of voxel_utility::VoxelLike, T
  * @param voxel_object
  */
 template <class T>
+requires std::is_base_of<voxel_utility::VoxelLike, T>::value
 Mesh
 generate_mesh(T voxel_object)
 {
