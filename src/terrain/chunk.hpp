@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "../util/voxel_io.hpp"
 #include "path/node_group.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
@@ -41,7 +42,7 @@ class Terrain;
  * modifications can be made.
  *
  */
-class Chunk {
+class Chunk : public voxel_utility::VoxelLike {
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
     uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
@@ -82,7 +83,7 @@ class Chunk {
      *
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
-    inline static std::array<uint32_t, 3>
+    inline std::array<uint32_t, 3>
     get_size()
     {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};

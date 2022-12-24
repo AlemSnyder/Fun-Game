@@ -7,3 +7,6 @@ Terrain generation
         towns
         plants
 
+GUI
+    deal with rotation
+    used texture map

@@ -25,6 +25,7 @@
 #pragma once
 
 #include "../logging.hpp"
+#include "../util/voxel_io.hpp"
 #include "chunk.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
@@ -101,7 +102,7 @@ getter_low(Tile* t)
  * path-finding and its own generation.
  *
  */
-class Terrain {
+class Terrain : public voxel_utility::VoxelLike {
     friend class AdjacentIterator;
 
  private:
