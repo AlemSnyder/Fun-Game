@@ -36,6 +36,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
         element_buffer_ = obj.element_buffer_;
+        color_texture_ = obj.color_texture_;
         num_vertices_ = obj.num_vertices_;
         return *this;
     }
@@ -47,7 +48,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_colors,
         const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_data
+        const std::vector<uint32_t>& color_texture
     );
     void init(entity::Mesh mesh);
 
@@ -56,7 +57,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_colors,
         const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_data
+        const std::vector<uint32_t>& color_texture
     );
 
     inline ~TerrainMesh() {
@@ -64,6 +65,8 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
+        glDeleteBuffers(1, &color_texture_);
+
     }
 
     inline GLuint get_color_buffer() const override { return color_buffer_; }

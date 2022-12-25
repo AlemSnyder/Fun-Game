@@ -204,9 +204,9 @@ MainRenderer::render(GLFWwindow* window) const {
 
     for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
 
-        //glActiveTexture(GL_TEXTURE2);
-        //glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
-        //glUniform1i(color_map_ID_multi_, 2);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
+        glUniform1i(color_map_ID_multi_, 2);
 
         // 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);

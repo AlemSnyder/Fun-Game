@@ -17,8 +17,8 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
     GLuint color_buffer_;
     GLuint normal_buffer_;
     GLuint element_buffer_;
-    GLuint transforms_buffer_;
     GLuint color_texture_;
+    GLuint transforms_buffer_;
     unsigned int num_vertices_;
     unsigned int num_models_;
 
