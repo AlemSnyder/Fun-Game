@@ -71,7 +71,7 @@ StaticMesh::StaticMesh(
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, color_map.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, color_map.data());
-    glGenerateMipmap(GL_TEXTURE_2D);
+    glGenerateMipmap(GL_TEXTURE_1D);
 
     /// Generate a buffer for the transforms
     glGenBuffers(1, &transforms_buffer_);

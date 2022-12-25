@@ -2,11 +2,11 @@
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in ivec3 vertexPosition_modelspace;
-layout(location = 1) in int vertex_color_id;
+layout(location = 1) in uint vertex_color_id;
 layout(location = 2) in ivec3 vertexNormal_modelspace;
 
 // Output data ; will be interpolated for each fragment.
-out int Vertex_color_id;
+out uint Vertex_color_id;
 out vec3 Position_worldspace;
 out vec3 Normal_cameraspace;
 out vec3 EyeDirection_cameraspace;

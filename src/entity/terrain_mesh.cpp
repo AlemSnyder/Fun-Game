@@ -65,15 +65,15 @@ TerrainMesh::init(
     
     // Generate a texture
     glGenTextures(1, &color_texture_);
-    glBindTexture(GL_TEXTURE_2D, color_texture_);
+    glBindTexture(GL_TEXTURE_1D, color_texture_);
     // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);	
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, color_map.size(), 1, 0, GL_RGB, GL_UNSIGNED_BYTE, color_map.data());
-    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, color_map.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, color_map.data());
+    glGenerateMipmap(GL_TEXTURE_1D);
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &element_buffer_);
