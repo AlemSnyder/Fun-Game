@@ -21,7 +21,7 @@ MainRenderer::MainRenderer() {
     // indexed program
     programID_multi_ = load_shaders(
         files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
-        files::get_resources_path() / "shaders" / "ShadowMappingInstanced.frag"
+        files::get_resources_path() / "shaders" / "ShadowMapping.frag" //"ShadowMappingInstanced.frag"
     );
     // ---- non-indexed program ----
     matrix_ID_ = glGetUniformLocation(programID_single_, "MVP");
@@ -36,7 +36,7 @@ MainRenderer::MainRenderer() {
     view_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "V");
     depth_bias_ID_multi_ = glGetUniformLocation(programID_multi_, "DepthBiasMVP");
     shadow_map_ID_multi_ = glGetUniformLocation(programID_multi_, "shadowMap");
-    color_map_ID_multi_ = glGetUniformLocation(programID_single_, "meshColors");
+    color_map_ID_multi_ = glGetUniformLocation(programID_multi_, "meshColors");
     light_direction_ID_multi_ =
         glGetUniformLocation(programID_multi_, "LightInvDirection_worldspace");
 }
@@ -131,7 +131,7 @@ MainRenderer::render(GLFWwindow* window) const {
     for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_) {
 
         glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, mesh->get_color_texture());
+        glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_, 2);
 
         // 1rst attribute buffer : vertices
@@ -148,11 +148,10 @@ MainRenderer::render(GLFWwindow* window) const {
         // 2nd attribute buffer : colors
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_color_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             1,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            1,        // size
+            GL_UNSIGNED_SHORT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -205,9 +204,9 @@ MainRenderer::render(GLFWwindow* window) const {
 
     for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
 
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, mesh->get_color_texture());
-        glUniform1i(color_map_ID_multi_, 2);
+        //glActiveTexture(GL_TEXTURE2);
+        //glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
+        //glUniform1i(color_map_ID_multi_, 2);
 
         // 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -223,11 +222,10 @@ MainRenderer::render(GLFWwindow* window) const {
         // 2nd attribute buffer : UVs
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_color_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             1,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            1,        // size
+            GL_UNSIGNED_SHORT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -272,4 +270,7 @@ MainRenderer::render(GLFWwindow* window) const {
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(3);
+    glVertexAttribDivisor(3, 0);
+
+
 }

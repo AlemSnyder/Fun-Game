@@ -1,7 +1,7 @@
 #version 450 core
 
-// Interpolated values from the vertex shaders
 flat in uint Vertex_color_id;
+// Interpolated values from the vertex shaders
 in vec3 Position_worldspace;
 in vec3 Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
@@ -42,12 +42,12 @@ main() {
     vec3 LightColor = vec3(1, 1, 1);
     float LightPower = 1.0f;
 
-    vec3 Vertex_color = vec3(texelFetch(meshColors, int(Vertex_color_id), 0).rgb) / 255.0;
+    vec3 Vertex_color = vec3(texelFetch(meshColors, int(Vertex_color_id), 0).rgb);
 
     // Material properties
     vec3 MaterialDiffuseColor = Vertex_color * 0.6;
     vec3 MaterialAmbientColor = vec3(0.5, 0.5, 0.5) * MaterialDiffuseColor;
-    vec3 MaterialSpecularColor = vec3(0.3, 0.3, 0.3);
+    //vec3 MaterialSpecularColor = vec3(0.3, 0.3, 0.3);
 
     // Distance to the light
     // float distance = length( LightPosition_worldspace - Position_worldspace );
@@ -64,14 +64,14 @@ main() {
     float cosTheta = clamp(dot(n, l), 0, 1);
 
     // Eye vector (towards the camera)
-    vec3 E = normalize(EyeDirection_cameraspace);
+    // vec3 E = normalize(EyeDirection_cameraspace);
     // Direction in which the triangle reflects the light
-    vec3 R = reflect(-l, n);
+    // vec3 R = reflect(-l, n);
     // Cosine of the angle between the Eye vector and the Reflect vector,
     // clamped to 0
     //  - Looking into the reflection -> 1
     //  - Looking elsewhere -> < 1
-    float cosAlpha = clamp(dot(E, R), 0, 1);
+    // float cosAlpha = clamp(dot(E, R), 0, 1);
 
     float visibility = 1.0;
 

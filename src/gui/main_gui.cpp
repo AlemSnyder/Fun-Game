@@ -129,10 +129,16 @@ GUITest(World world) {
             }
         }
 
+    assert(glGetError() == GL_NO_ERROR);
+
     LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
+
+    assert(glGetError() == GL_NO_ERROR);
+
+    LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
@@ -182,6 +188,8 @@ GUITest(World world) {
     }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
+    LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
+
     do {
         SM.render_shadow_depth_buffer();
         MR.render(window);

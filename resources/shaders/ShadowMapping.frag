@@ -1,7 +1,7 @@
 #version 450 core
 
-// Interpolated values from the vertex shaders
 flat in uint Vertex_color_id;
+// Interpolated values from the vertex shaders
 in vec3 Position_worldspace;
 in vec3 Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
@@ -42,7 +42,6 @@ main() {
     vec3 LightColor = vec3(1, 1, 1);
     float LightPower = 1.0f;
 
-    // vec3 Vertex_color = vec3(texelFetch(meshColors, Vertex_color_id).rgb)/255.0;
     vec3 Vertex_color = vec3(texelFetch(meshColors, int(Vertex_color_id), 0).rgb);
 
     // Material properties
@@ -65,9 +64,9 @@ main() {
     float cosTheta = clamp(dot(n, l), 0, 1);
 
     // Eye vector (towards the camera)
-    // ivec3 E = normalize(EyeDirection_cameraspace);
+    // vec3 E = normalize(EyeDirection_cameraspace);
     // Direction in which the triangle reflects the light
-    // ivec3 R = reflect(-l,n);
+    // vec3 R = reflect(-l,n);
     // Cosine of the angle between the Eye vector and the Reflect vector,
     // clamped to 0
     //  - Looking into the reflection -> 1
