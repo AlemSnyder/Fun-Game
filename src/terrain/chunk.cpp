@@ -3,6 +3,7 @@
 #include "path/tile_iterators.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
+#include "material.hpp"
 
 namespace terrain {
 
@@ -112,6 +113,18 @@ Chunk::get_voxel(int x, int y, int z) const {
     return ter_->get_voxel(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );
+}
+
+uint16_t
+Chunk::get_voxel_color_id(int x, int y, int z) const {
+    return ter_->get_voxel_color_id(
+        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+    );
+}
+
+const std::vector<uint32_t>&
+Chunk::get_color_ids() const {
+    return color_ids_map;
 }
 
 } // namespace terrain

@@ -645,6 +645,10 @@ class Terrain : public voxel_utility::VoxelLike {
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
+    inline uint16_t get_voxel_color_id(int x, int y, int z) const{
+        return colors_inverse_map.at(get_voxel(x,y,z));
+    }
+
     inline const std::vector<Chunk>&
     get_chunks() const {
         return chunks_;
@@ -989,18 +993,6 @@ class Terrain : public voxel_utility::VoxelLike {
     ) const;
 
  private:
-    // save color at sop, to color
-    //! static Should be removed
-    void export_color(const int sop[3], uint8_t color[4]) const;
-    // find color v in map, and save material to mat_, and color id to color_id
-    void get_mat_from_qb(
-        const std::map<int, const Material>* materials, uint8_t v[4], Material*& mat_,
-        uint8_t& color_id
-    );
-    //! static should be removed from terrain
-    // convert 4 int 8 to 1 int 32 (reversed order)
-    uint32_t compress_color(uint8_t v[4]);
-
     // trace nodes through parents to reach start
     template <class T>
     void

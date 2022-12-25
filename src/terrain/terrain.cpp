@@ -897,7 +897,7 @@ Terrain::get_voxel(int x, int y, int z) const {
 }
 
 // Set `color` to the color of the tile at `pos`.
-void
+/*void
 Terrain::export_color(const int sop[3], uint8_t color[4]) const {
     uint32_t tile_color = get_voxel(sop[0], sop[1], sop[2]);
     color[0] = (tile_color >> 24) & 0xFF;
@@ -910,7 +910,7 @@ uint32_t
 Terrain::compress_color(uint8_t v[4]) {
     return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16
            | (uint32_t)v[0] << 24;
-}
+}*/
 
 void
 Terrain::qb_save_debug(const std::string path) {

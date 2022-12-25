@@ -1,7 +1,7 @@
-#version 330 core
+#version 450 core
 
 // Interpolated values from the vertex shaders
-in vec3 Vertex_color;
+flat in int Vertex_color_id;
 in vec3 Position_worldspace;
 in vec3 Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
@@ -15,6 +15,7 @@ layout(location = 0) out vec3 color;
 // uniform sampler2D myTextureSampler;
 uniform vec3 LightPosition_worldspace;
 uniform sampler2DShadow shadowMap;
+uniform sampler2D meshColors;
 
 vec2 poissonDisk[16] = vec2[](
     vec2(-0.94201624, -0.39906216), vec2(0.94558609, -0.76890725),
@@ -40,6 +41,9 @@ main() {
     // Light emission properties
     vec3 LightColor = vec3(1, 1, 1);
     float LightPower = 1.0f;
+
+    // vec3 Vertex_color = vec3(texelFetch(meshColors, Vertex_color_id).rgb)/255.0;
+    vec3 Vertex_color = texelFetch(meshColors, ivec2(5,0), 0).rgb
 
     // Material properties
     vec3 MaterialDiffuseColor = Vertex_color * 0.6;

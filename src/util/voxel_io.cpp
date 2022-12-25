@@ -17,17 +17,7 @@
 
 namespace voxel_utility {
 
-VoxelObject::VoxelObject(const std::string path) {
-    try {
-        from_qb(path, data_, center_, size_);
-        ok_ = true;
-    } catch (const std::exception& e) {
-        LOG_ERROR(
-            logging::file_io_logger, "Could not create VoxelObject: {}", e.what()
-        );
-        ok_ = false;
-    }
-}
+
 
 void
 from_qb(

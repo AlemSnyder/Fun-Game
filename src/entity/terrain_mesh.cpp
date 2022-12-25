@@ -10,32 +10,34 @@ namespace terrain {
 void
 TerrainMesh::init(entity::Mesh mesh) {
     init(
-        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
-        mesh.indexed_normals_
+        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_color_ids_,
+        mesh.indexed_normals_, mesh.color_map_
     );
 }
 
 TerrainMesh::TerrainMesh(entity::Mesh mesh) :
     TerrainMesh(
-        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
-        mesh.indexed_normals_
+        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_color_ids_,
+        mesh.indexed_normals_, mesh.color_map_
     ) {}
 
 TerrainMesh::TerrainMesh(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::ivec3>& indexed_vertices,
-    const std::vector<glm::vec3>& indexed_colors,
-    const std::vector<glm::i8vec3>& indexed_normals
+    const std::vector<uint16_t>& indexed_colors,
+    const std::vector<glm::i8vec3>& indexed_normals,
+    const std::vector<uint32_t>& color_map
 ) {
-    init(indices, indexed_vertices, indexed_colors, indexed_normals);
+    init(indices, indexed_vertices, indexed_colors, indexed_normals, color_map);
 };
 
 void
 TerrainMesh::init(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::ivec3>& indexed_vertices,
-    const std::vector<glm::vec3>& indexed_colors,
-    const std::vector<glm::i8vec3>& indexed_normals
+    const std::vector<uint16_t>& indexed_colors,
+    const std::vector<glm::i8vec3>& indexed_normals,
+    const std::vector<uint32_t>& color_map
 ) {
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
@@ -60,6 +62,18 @@ TerrainMesh::init(
         GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::i8vec3),
         indexed_normals.data(), GL_STATIC_DRAW
     );
+    
+    // Generate a texture
+    glGenTextures(1, &color_texture_);
+    glBindTexture(GL_TEXTURE_2D, color_texture_);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the texture
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, color_map.size(), 1, 0, GL_RGB, GL_UNSIGNED_BYTE, color_map.data());
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &element_buffer_);

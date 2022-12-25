@@ -15,15 +15,16 @@ StaticMesh::StaticMesh(
     entity::Mesh mesh, const std::vector<glm::ivec3>& model_transforms
 ) :
     StaticMesh(
-        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_colors_,
-        mesh.indexed_normals_, model_transforms
+        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_color_ids_,
+        mesh.indexed_normals_, mesh.color_map_, model_transforms
     ) {}
 
 StaticMesh::StaticMesh(
     const std::vector<unsigned short>& indices,
     const std::vector<glm::ivec3>& indexed_vertices,
-    const std::vector<glm::vec3>& indexed_colors,
+    const std::vector<uint16_t>& indexed_color_ids,
     const std::vector<glm::i8vec3>& indexed_normals,
+    const std::vector<uint32_t>& color_map,
     const std::vector<glm::ivec3>& model_transforms
 ) :
     num_vertices_(indices.size()),
@@ -40,8 +41,8 @@ StaticMesh::StaticMesh(
     glGenBuffers(1, &color_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_colors.size() * sizeof(glm::vec3),
-        indexed_colors.data(), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, indexed_color_ids.size() * sizeof(uint16_t),
+        indexed_color_ids.data(), GL_STATIC_DRAW
     );
 
     // Generate a buffer for the normal vectors
@@ -59,6 +60,18 @@ StaticMesh::StaticMesh(
         GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
         indices.data(), GL_STATIC_DRAW
     );
+
+    // Generate a texture
+    glGenTextures(1, &color_texture_);
+    glBindTexture(GL_TEXTURE_1D, color_texture_);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);	
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the texture
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, color_map.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, color_map.data());
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     /// Generate a buffer for the transforms
     glGenBuffers(1, &transforms_buffer_);

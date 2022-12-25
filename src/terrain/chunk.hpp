@@ -59,7 +59,7 @@ class Chunk : public voxel_utility::VoxelLike {
      * @param ter the terrain this chunk is in
      */
     Chunk(int bx, int by, int bz, Terrain* ter);
-    
+
     /**
      * @brief adds node groups in this chunk to out
      *
@@ -73,8 +73,7 @@ class Chunk : public voxel_utility::VoxelLike {
      * @return std::vector<int> offset of chunk in world space
      */
     inline std::array<int32_t, 3>
-    get_offset() const
-    {
+    get_offset() const {
         return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
     }
 
@@ -84,8 +83,7 @@ class Chunk : public voxel_utility::VoxelLike {
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
     inline std::array<uint32_t, 3>
-    get_size()
-    {
+    get_size() {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
 
@@ -99,8 +97,11 @@ class Chunk : public voxel_utility::VoxelLike {
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
- private:
+    uint16_t get_voxel_color_id(int x, int y, int z) const;
 
+    [[nodiscard]] const std::vector<uint32_t>& get_color_ids() const;
+
+ private:
     void delNodeGroup(NodeGroup& NG);
     void mergeNodeGroup(NodeGroup& g1, NodeGroup& g2);
     bool contains_nodeGroup(NodeGroup*);

@@ -1,12 +1,12 @@
-#version 330 core
+#version 450 core
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in ivec3 vertexPosition_modelspace;
-layout(location = 1) in vec3 vertex_color;
+layout(location = 1) in int vertex_color_id;
 layout(location = 2) in ivec3 vertexNormal_modelspace;
 
 // Output data ; will be interpolated for each fragment.
-out vec3 Vertex_color;
+out int Vertex_color_id;
 out vec3 Position_worldspace;
 out vec3 Normal_cameraspace;
 out vec3 EyeDirection_cameraspace;
@@ -43,5 +43,5 @@ main() {
                                    // model ! Use its inverse transpose if not.
 
     // UV of the vertex. No special space for this one.
-    Vertex_color = vertex_color;
+    Vertex_color_id = vertex_color_id;
 }

@@ -28,6 +28,7 @@ MainRenderer::MainRenderer() {
     view_matrix_ID_ = glGetUniformLocation(programID_single_, "V");
     depth_bias_ID_ = glGetUniformLocation(programID_single_, "DepthBiasMVP");
     shadow_map_ID_ = glGetUniformLocation(programID_single_, "shadowMap");
+    color_map_ID_ = glGetUniformLocation(programID_single_, "meshColors");
     light_direction_ID_ =
         glGetUniformLocation(programID_single_, "LightInvDirection_worldspace");
     // ------ indexed program ------
@@ -35,6 +36,7 @@ MainRenderer::MainRenderer() {
     view_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "V");
     depth_bias_ID_multi_ = glGetUniformLocation(programID_multi_, "DepthBiasMVP");
     shadow_map_ID_multi_ = glGetUniformLocation(programID_multi_, "shadowMap");
+    color_map_ID_multi_ = glGetUniformLocation(programID_single_, "meshColors");
     light_direction_ID_multi_ =
         glGetUniformLocation(programID_multi_, "LightInvDirection_worldspace");
 }
@@ -121,12 +123,17 @@ MainRenderer::render(GLFWwindow* window) const {
         light_direction_ID_, light_direction_.x, light_direction_.y, light_direction_.z
     );
 
-    // Bind our texture in Texture Unit 1
+    // Bind Shadow Texture to Texture Unit 1
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_ID_, 1);
 
     for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_) {
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, mesh->get_color_texture());
+        glUniform1i(color_map_ID_, 2);
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -175,6 +182,7 @@ MainRenderer::render(GLFWwindow* window) const {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
+        //glDisable(GL_TEXTURE_2D);
     }
 
     // Use our shader
@@ -196,6 +204,11 @@ MainRenderer::render(GLFWwindow* window) const {
     glUniform1i(shadow_map_ID_multi_, 1);
 
     for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, mesh->get_color_texture());
+        glUniform1i(color_map_ID_multi_, 2);
+
         // 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
