@@ -1,5 +1,6 @@
 #include "../gui/meshloader.hpp"
 #include "mesh.hpp"
+#include "static_mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -28,6 +29,15 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         element_buffer_ = obj.element_buffer_;
         num_vertices_ = obj.num_vertices_;
         color_texture_ = obj.color_texture_;
+    };
+
+    inline TerrainMesh(const StaticMesh& obj) {
+        vertex_buffer_ = obj.get_vertex_buffer();
+        color_buffer_ = obj.get_color_buffer();
+        normal_buffer_ = obj.get_normal_buffer();
+        element_buffer_ = obj.get_element_buffer();
+        num_vertices_ = obj.get_num_vertices();
+        color_texture_ = obj.get_color_texture();
     };
 
     // copy operator
@@ -65,7 +75,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
-        glDeleteBuffers(1, &color_texture_);
+        glDeleteTextures(1, &color_texture_);
 
     }
 

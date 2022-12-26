@@ -40,8 +40,8 @@ GUITest(World world) {
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4);               // anti-aliasing of 4
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // set Major
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // and Minor version
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // set Major
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); // and Minor version
     glfwWindowHint(
         GLFW_OPENGL_FORWARD_COMPAT,
         GL_TRUE
@@ -93,7 +93,7 @@ GUITest(World world) {
     // Turn on VSync
     glfwSwapInterval(1);
 
-    // Dark blue background
+    // Light blue background
     glClearColor(0.42f, 0.79f, 0.94f, 0.0f);
 
     // Enable depth test

@@ -104,7 +104,7 @@ StaticMesh::StaticMesh(
     // load and generate the texture
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, float_colors.size(), 0, GL_RGBA, GL_FLOAT, float_colors.data());
     assert(glGetError() == GL_NO_ERROR);
-    //glGenerateMipmap(GL_TEXTURE_1D);
+    glGenerateMipmap(GL_TEXTURE_1D);
     //assert(glGetError() == GL_NO_ERROR);
 
     /// Generate a buffer for the transforms

@@ -65,7 +65,7 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
-        glDeleteBuffers(1, &color_texture_);
+        glDeleteTextures(1, &color_texture_);
         glDeleteBuffers(1, &transforms_buffer_);
     }
 
