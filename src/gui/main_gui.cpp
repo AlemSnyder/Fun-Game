@@ -10,6 +10,7 @@
 #include "renderer.hpp"
 #include "shader.hpp"
 #include "shadow_map.hpp"
+#include "gui_logging.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -32,10 +33,15 @@ GUITest(World world) {
 
     auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
+    //glEnable( GL_DEBUG_OUTPUT );
+    //glDebugMessageCallback( MessageCallback, 0 );
+
     // Initialise GLFW
+    glewExperimental = true; // Needed for core profile
     if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW!" << std::endl;
+        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
         getchar();
+        glfwTerminate();
         return -1;
     }
 
@@ -59,9 +65,7 @@ GUITest(World world) {
         windowFrameWidth, windowFrameHeight, "Mane Window", NULL, NULL
     );
     if (window == NULL) {
-        std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are "
-                     "not 3.3 compatible. Try the 2.1 version of the tutorials."
-                  << std::endl;
+        LOG_CRITICAL(logging::opengl_logger, "Failed to open GLFW window");
         getchar();
         glfwTerminate();
         return -1;
