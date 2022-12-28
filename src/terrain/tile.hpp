@@ -143,7 +143,8 @@ class Tile {
      */
     void try_grow_grass();
     /**
-     * @brief Set the color id if this tile is grass
+     * @brief Set the color id if this tile is grass. Updates the grass color to account
+     * for edge gradient. The gradient mimics shadows caused by cliffs.
      *
      * @param grass_grad_length total length of grass gradient
      * @param grass_mid index of color not effected by edge affects
@@ -196,7 +197,10 @@ class Tile {
      *
      * @return const Material*
      */
-    inline uint8_t get_material_id() const { return mat_id_; }
+    inline uint8_t
+    get_material_id() const {
+        return mat_id_;
+    }
 
     /**
      * @brief Get the color id
@@ -220,11 +224,13 @@ class Tile {
      */
     inline bool is_solid() const { return solid_; }
 
-    inline bool operator==(const Tile other) const {
+    inline bool
+    operator==(const Tile other) const {
         return (this->x == other.x && this->y == other.y && this->z == other.z);
     }
 
-    inline bool operator==(const Tile* other) const {
+    inline bool
+    operator==(const Tile* other) const {
         return (this->x == other->x && this->y == other->y && this->z == other->z);
     }
 

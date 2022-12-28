@@ -71,18 +71,34 @@ Tile::set_grow_data_low(int num) {
     }
 }
 
-// Updates the grass color to account for edge gradient.
 void
 Tile::set_grass_color(
     unsigned int grass_grad_length, unsigned int grass_mid,
     std::vector<uint8_t> grass_colors
 ) {
     if (grass_) {
-        /*
-        crates a gradient between shadow, and light using the gradient defined
-        in the materials json.
-        */
-        unsigned int a = grass_grad_length - grow_data_high_;
+        // This is how the gradient is determined.
+        // clang-format off
+/*
+      /     /  <- grow_data_high_         / <-------- grow_data_high_   
+     /     /                             /     /                        
+    /     /                             /     /                         
+-------------- <- grass_mid      or -------------- <- grass_mid         
+  /     /                             /     /                           
+ /     /                             /     /                            
+/ < ------------- grow_data_low_    /     / <-------- grow_data_low_    
+
+            /                                   /                       
+           /                                   /                        
+          /                                   /                         
+   -------                       or          /                         
+  /                                         /                          
+ /                                         /                           
+/                                         /                            
+
+*/
+        // clang-format on
+        unsigned int a = grass_grad_length - grow_data_high_ - 1;
         unsigned int b = grow_data_low_;
         if (b >= a) {
             color_id_ = grass_colors[b];
