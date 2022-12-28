@@ -59,7 +59,10 @@ AdjacentIterator::AdjacentIterator(
 ) :
     parent_(parent),
     path_type_constraint_(path_type), pos_(xyz), path_type_(0), dpos_(0) {
-    iterate_to_next_available();
+    update_path();
+    if(!path_type_.compatible(path_type_constraint_) || !is_valid_end_position()) {
+        iterate_to_next_available();
+    }
 }
 
 int

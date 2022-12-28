@@ -617,11 +617,16 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     // This is because Directional flags are defined as follows:
     // 32   16  8  4  2 1
     // VH2 VH1  V H2 H1 O
-    uint8_t horizontal_direction = (x_diff + y_diff) << (1 + 2 * z_diff);
-    uint8_t vertical_direction = z_diff << 1;
+    uint8_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
+    uint8_t vertical_direction = z_diff << 3;
+    UnitPath type;
+    if (horizontal_direction == 0){
+        type = vertical_direction;
+    } else {
+        type = horizontal_direction;
+    }
 
     bool open;
-    UnitPath type(horizontal_direction + vertical_direction);
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
@@ -663,7 +668,7 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
         }
     }
 
-    return type & UnitPath(open);
+    return type | UnitPath(open);
 }
 
 std::set<const NodeGroup*>
