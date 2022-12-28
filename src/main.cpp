@@ -186,24 +186,6 @@ StressTest()
 }
 
 int
-GrassCheck(){
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
-    materials_file >> materials_json;
-
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("biome_data.json");
-    biome_file >> biome_data;
-
-    // Create world object from material data, biome data, and the number of
-    // chunks in the x,y direction. Here the size is 2,2.
-    World world(materials_json, biome_data, 2, 2);
-    voxel_utility::to_qb(std::filesystem::path("test_output.qb"), world.terrain_main);
-
-    return 0;
-}
-
-int
 GUITest(const std::string path)
 {
     quill::Logger* logger = logging::get_logger();
@@ -314,7 +296,5 @@ main(int argc, char** argv)
         return GUITest(path_in);
     } else if (run_function == "Logging") {
         return LogTest();
-    } else if (run_function == "GrassCheck"){
-        return GrassCheck();
     }
 }
