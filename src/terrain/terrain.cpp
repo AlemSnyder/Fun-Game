@@ -441,8 +441,8 @@ Terrain::init_grass() {
             }
             // same thing here as above
         }
-    grow_grass_high(all_grass);
     grow_grass_low(all_grass);
+    grow_grass_high(all_grass);
     for (Tile* t : all_grass) {
         t->set_grass_color(grass_grad_length_, grass_mid_, grass_colors_);
     }
@@ -611,6 +611,10 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     uint8_t x_diff = abs(xs - xf);
     uint8_t y_diff = abs(ys - yf);
     uint8_t z_diff = abs(zs - zf);
+
+    if (x_diff > 1 || y_diff > 1 || z_diff > 1){
+        LOG_ERROR(logging::terrain_logger, "diff is greater than one!!");
+    }
 
     // If there is a change in the horizontal position, then everything should
     // be bit shifted by 3, and if not, by 1.

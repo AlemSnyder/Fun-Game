@@ -213,20 +213,6 @@ class Tile {
     uint16_t get_mat_color_id() const;
 
     /**
-     * @brief Get the distance from edge
-     *
-     * @return uint8_t distance from edge
-     */
-    uint8_t get_grow_low() const;
-
-    /**
-     * @brief Get the distance from wall
-     *
-     * @return uint8_t distance from wall
-     */
-    uint8_t get_grow_high() const;
-
-    /**
      * @brief is this tile solid
      *
      * @return true the tiles is solid

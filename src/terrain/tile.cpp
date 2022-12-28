@@ -122,18 +122,6 @@ Tile::get_mat_color_id() const {
     return mat_id_ << 8 | color_id_;
 }
 
-// return `grow_data_low`
-uint8_t
-Tile::get_grow_low() const {
-    return grow_data_low_;
-}
-
-// return `grow_data_high`
-uint8_t
-Tile::get_grow_high() const {
-    return grow_data_high_;
-}
-
 // return x, y, z positions as array
 std::array<int, 3>
 Tile::sop() const {
