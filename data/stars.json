@@ -1,0 +1,27 @@
+{
+    "planets": {
+        "brightness_scale": 1,
+        "data":[
+            {
+                "radius":1.5,
+                "brightness":1,
+                "phase":2.7
+            }
+        ]
+    },
+    "stars": {
+        "brightness_scale": 1,
+        "data":[
+            {
+                "theta":186,
+                "thi":5,
+                "brightness":1
+            },
+            {
+                "theta":95,
+                "thi":78,
+                "brightness": 0.1
+            }
+        ]
+    }
+}
