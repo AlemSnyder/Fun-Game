@@ -81,6 +81,30 @@ Tile::set_grass_color(
     // This is how the gradient is determined.
     // clang-format off
 /*
+a = air, g = grass, s = solid
+
+[a] [a] [g] [g]   [g]   [g]           [g]   [g]   [g] [g] [s] [s]       
+[-] [-] [n] [n-1] [n-2] [...]       [...] [n-2] [n-1] [n] [-] [-]       
+                                                                        
+grow data high                        grow data low                     
+- - \                                   / - -                           
+     \                                 /                                
+      \                               /                                 
+grow data high is reversed
+
+distance from air ->
+|    //=======/
+|   //       / 
+|~~//~~~~~~~/~~
+| //       /   
+|//-------/    
+<- distance to solid
+heigh_influence /
+low_influence  //
+grass_mid      ~~
+
+The if statements convert the data as follows, to get the grass color index
+
       /     /  <- grow_data_high_         / <-------- grow_data_high_   
      /     /                             /     /                        
     /     /                             /     /                         
@@ -92,10 +116,10 @@ Tile::set_grass_color(
             /                                   /                       
            /                                   /                        
           /                                   /                         
-   -------                       or          /                         
-  /                                         /                          
- /                                         /                           
-/                                         /                            
+   -------                       or          /                          
+  /                                         /                           
+ /                                         /                            
+/                                         /                             
 
 */
     // clang-format on
