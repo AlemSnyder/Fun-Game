@@ -3,14 +3,14 @@
 #include "../entity/mesh.hpp"
 #include "../entity/static_mesh.hpp"
 #include "../entity/terrain_mesh.hpp"
+#include "../logging.hpp"
 #include "../util/files.hpp"
 #include "../world.hpp"
-#include "../logging.hpp"
 #include "controls.hpp"
+#include "gui_logging.hpp"
 #include "renderer.hpp"
 #include "shader.hpp"
 #include "shadow_map.hpp"
-#include "gui_logging.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -33,8 +33,17 @@ GUITest(World world) {
 
     auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
-    //glEnable( GL_DEBUG_OUTPUT );
-    //glDebugMessageCallback( MessageCallback, 0 );
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    int context_flag;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
+    if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(message_callback, 0);
+        glDebugMessageControl(
+            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
+        );
+    }
 
     // Initialise GLFW
     glewExperimental = true; // Needed for core profile
@@ -133,16 +142,10 @@ GUITest(World world) {
             }
         }
 
-    assert(glGetError() == GL_NO_ERROR);
-
     LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
-
-    assert(glGetError() == GL_NO_ERROR);
-
-    LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
@@ -192,7 +195,6 @@ GUITest(World world) {
     }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
-    LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
 
     do {
         SM.render_shadow_depth_buffer();

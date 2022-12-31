@@ -30,7 +30,6 @@ StaticMesh::StaticMesh(
 ) :
     num_vertices_(indices.size()),
     num_models_(model_transforms.size()) {
-    assert(glGetError() == GL_NO_ERROR);
 
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
@@ -39,7 +38,6 @@ StaticMesh::StaticMesh(
         GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::ivec3),
         indexed_vertices.data(), GL_STATIC_DRAW
     );
-    assert(glGetError() == GL_NO_ERROR);
 
     // A buffer for the colors
     glGenBuffers(1, &color_buffer_);
@@ -48,7 +46,6 @@ StaticMesh::StaticMesh(
         GL_ARRAY_BUFFER, indexed_color_ids.size() * sizeof(uint16_t),
         indexed_color_ids.data(), GL_STATIC_DRAW
     );
-    assert(glGetError() == GL_NO_ERROR);
 
     // Generate a buffer for the normal vectors
     glGenBuffers(1, &normal_buffer_);
@@ -57,7 +54,6 @@ StaticMesh::StaticMesh(
         GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::i8vec3),
         indexed_normals.data(), GL_STATIC_DRAW
     );
-    assert(glGetError() == GL_NO_ERROR);
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &element_buffer_);
@@ -66,7 +62,6 @@ StaticMesh::StaticMesh(
         GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
         indices.data(), GL_STATIC_DRAW
     );
-    assert(glGetError() == GL_NO_ERROR);
 
     // Generate a texture
     std::vector<std::array<float, 4>> float_colors;
@@ -82,30 +77,17 @@ StaticMesh::StaticMesh(
         float_colors.push_back(vector_color);
     }
 
-    assert(glGetError() == GL_NO_ERROR);
     LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
-    //LOG_DEBUG(logging::opengl_logger, "color texture id before {}", color_texture_);
     glGenTextures(1, &color_texture_);
-    assert(glGetError() == GL_NO_ERROR);
-    //LOG_DEBUG(logging::opengl_logger, "color texture id after binding {}", color_texture_);
     glBindTexture(GL_TEXTURE_1D, color_texture_);
-    assert(glGetError() == GL_NO_ERROR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    assert(glGetError() == GL_NO_ERROR);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    assert(glGetError() == GL_NO_ERROR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    assert(glGetError() == GL_NO_ERROR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    assert(glGetError() == GL_NO_ERROR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    assert(glGetError() == GL_NO_ERROR);
     // load and generate the texture
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, float_colors.size(), 0, GL_RGBA, GL_FLOAT, float_colors.data());
-    assert(glGetError() == GL_NO_ERROR);
     glGenerateMipmap(GL_TEXTURE_1D);
-    //assert(glGetError() == GL_NO_ERROR);
 
     /// Generate a buffer for the transforms
     glGenBuffers(1, &transforms_buffer_);
