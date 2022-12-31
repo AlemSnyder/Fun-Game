@@ -18,18 +18,18 @@ namespace voxel_utility {
 // TODO make this file 1k lines long
 
 template <std::integral T>
-static inline void
+inline void
 read_int(std::ifstream& file, T& val) noexcept {
     file.read(reinterpret_cast<char*>(&val), sizeof(val));
 }
 
 template <std::integral T>
-static inline void
+inline void
 write_int(std::ofstream& file, T val) noexcept {
     file.write(reinterpret_cast<char*>(&val), sizeof(val));
 }
 
-static inline uint32_t
+inline uint32_t
 parse_color(uint32_t color) {
     // Colors are saved in big endian format
     if (std::endian::native == std::endian::little)
@@ -38,7 +38,7 @@ parse_color(uint32_t color) {
         return color;
 }
 
-static inline uint32_t
+inline uint32_t
 export_color(uint32_t color) {
     // Colors are saved in big endian format
     if (std::endian::native == std::endian::little)
@@ -53,7 +53,7 @@ void from_qb(
 );
 
 template<typename T>
-requires std::is_base_of<VoxelLike, T>::value
+requires std::is_base_of<VoxelBase, T>::value
 void
 to_qb(const std::filesystem::path path, T ter, bool compression = false) {
     LOG_INFO(logging::file_io_logger, "Saving voxels to {}.", path.string());

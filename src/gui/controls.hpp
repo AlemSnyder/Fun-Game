@@ -30,6 +30,8 @@ glm::mat4 get_view_matrix();
  */
 glm::mat4 get_projection_matrix();
 
-bool show_shadow_map(GLFWwindow* window);
-
+inline bool
+show_shadow_map(GLFWwindow* window){
+    return glfwGetKey(window, GLFW_KEY_TAB);
+}
 } // namespace controls

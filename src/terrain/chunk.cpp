@@ -122,9 +122,4 @@ Chunk::get_voxel_color_id(int x, int y, int z) const {
     );
 }
 
-const std::vector<uint32_t>&
-Chunk::get_color_ids() const {
-    return color_ids_map;
-}
-
 } // namespace terrain

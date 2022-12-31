@@ -76,9 +76,10 @@ Tile::set_grass_color(
     unsigned int grass_grad_length, unsigned int grass_mid,
     std::vector<uint8_t> grass_colors
 ) {
-    if (grass_) {
-        // This is how the gradient is determined.
-        // clang-format off
+    if (!grass_)
+        return;
+    // This is how the gradient is determined.
+    // clang-format off
 /*
       /     /  <- grow_data_high_         / <-------- grow_data_high_   
      /     /                             /     /                        
@@ -97,18 +98,17 @@ Tile::set_grass_color(
 /                                         /                            
 
 */
-        // clang-format on
-        unsigned int a = grass_grad_length - grow_data_high_ - 1;
-        unsigned int b = grow_data_low_;
-        if (b >= a) {
-            color_id_ = grass_colors[b];
-        } else if (b >= grass_mid) {
-            color_id_ = grass_colors[b];
-        } else if (a <= grass_mid) {
-            color_id_ = grass_colors[a];
-        } else {
-            color_id_ = grass_colors[grass_mid];
-        }
+    // clang-format on
+    unsigned int heigh_influence = grass_grad_length - grow_data_high_ - 1;
+    unsigned int low_influence = grow_data_low_;
+    if (low_influence >= heigh_influence) {
+        color_id_ = grass_colors[low_influence];
+    } else if (low_influence >= grass_mid) {
+        color_id_ = grass_colors[low_influence];
+    } else if (heigh_influence <= grass_mid) {
+        color_id_ = grass_colors[heigh_influence];
+    } else {
+        color_id_ = grass_colors[grass_mid];
     }
 }
 

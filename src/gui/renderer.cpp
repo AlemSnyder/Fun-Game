@@ -21,7 +21,7 @@ MainRenderer::MainRenderer() {
     // indexed program
     programID_multi_ = load_shaders(
         files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
-        files::get_resources_path() / "shaders" / "ShadowMapping.frag" //"ShadowMappingInstanced.frag"
+        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
     );
     // ---- non-indexed program ----
     matrix_ID_ = glGetUniformLocation(programID_single_, "MVP");
@@ -178,10 +178,6 @@ MainRenderer::render(GLFWwindow* window) const {
             (void*)0                  // element array buffer offset
         );
 
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
-        //glDisable(GL_TEXTURE_2D);
     }
 
     // Use our shader
@@ -271,6 +267,7 @@ MainRenderer::render(GLFWwindow* window) const {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(3);
     glVertexAttribDivisor(3, 0);
+    glDisable(GL_TEXTURE2);
 
 
 }

@@ -1,6 +1,3 @@
-    
-    
-    
 #include "voxel.hpp"
 #include "voxel_io.hpp"
 

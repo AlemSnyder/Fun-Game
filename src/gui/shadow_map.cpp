@@ -21,7 +21,7 @@ ShadowMap::ShadowMap(int w, int h) {
     );
     programID_multi_ = load_shaders(
         files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
-        files::get_resources_path() / "shaders" / "DepthRTTInstanced.frag"
+        files::get_resources_path() / "shaders" / "DepthRTT.frag"
     );
 
     // Get a handle for our "MVP" uniform
@@ -111,17 +111,6 @@ ShadowMap::render_shadow_depth_buffer() const {
     // Use our shader
     glUseProgram(programID_);
 
-    // glm::mat4 depth_view_matrix =
-    //     glm::lookAt(light_direction_, glm::ivec3(0, 0, 0), glm::ivec3(0, 1, 0));
-    /* For spot light:
-     *
-     * glm::ivec3 lightPos(5, 20, 20);
-     * glm::mat4 depthProjectionMatrix =
-     * glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
-     *     depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
-     * glm::ivec3(0,1,0));
-     */
-
     // matrix to calculate the length of a light ray in model space
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
@@ -158,16 +147,6 @@ ShadowMap::render_shadow_depth_buffer() const {
 
     // Use our shader
     glUseProgram(programID_multi_);
-
-    // glm::mat4 depth_view_matrix =
-    //     glm::lookAt(light_direction_, glm::ivec3(0, 0, 0), glm::ivec3(0, 1,
-    //     0));
-    //  or, for spot light :
-    //  glm::ivec3 lightPos(5, 20, 20);
-    //  glm::mat4 depthProjectionMatrix =
-    //  glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
-    //  depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
-    //  glm::ivec3(0,1,0));
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform

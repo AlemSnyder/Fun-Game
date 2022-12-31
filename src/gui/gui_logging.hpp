@@ -13,14 +13,10 @@ namespace gui {
 // (if were are going to do this line by line, then we should get the line in the log
 // file) We are using a gl call back on all messages.
 void GLAPIENTRY
-MessageCallback(
+message_callback(
     GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length,
     const char* message, const void* userParam
 ) {
-    // ignore non-significant error/warning codes
-    if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
-        return;
-
     std::string source_sting;
     std::string type_string;
     // clang-format off

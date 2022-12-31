@@ -608,13 +608,9 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     // so what is going on? Only god knows.
     // abs(_s - _f) returns zero or one depending on wether the final and
     // initial positions are the same. same as bool (_s != _f)
-    uint8_t x_diff = abs(xs - xf);
-    uint8_t y_diff = abs(ys - yf);
-    uint8_t z_diff = abs(zs - zf);
-
-    if (x_diff > 1 || y_diff > 1 || z_diff > 1){
-        LOG_ERROR(logging::terrain_logger, "diff is greater than one!!");
-    }
+    uint8_t x_diff = abs(xs - xf); // difference in x direction
+    uint8_t y_diff = abs(ys - yf); // difference in y direction
+    uint8_t z_diff = abs(zs - zf); // difference in z direction
 
     // If there is a change in the horizontal position, then everything should
     // be bit shifted by 3, and if not, by 1.
@@ -624,11 +620,10 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     uint8_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
     uint8_t vertical_direction = z_diff << 3;
     UnitPath type;
-    if (horizontal_direction == 0){
+    if (horizontal_direction == 0)
         type = vertical_direction;
-    } else {
+    else
         type = horizontal_direction;
-    }
 
     bool open;
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
@@ -905,22 +900,6 @@ Terrain::get_voxel(int x, int y, int z) const {
     return previous_out_color;
 }
 
-// Set `color` to the color of the tile at `pos`.
-/*void
-Terrain::export_color(const int sop[3], uint8_t color[4]) const {
-    uint32_t tile_color = get_voxel(sop[0], sop[1], sop[2]);
-    color[0] = (tile_color >> 24) & 0xFF;
-    color[1] = (tile_color >> 16) & 0xFF;
-    color[2] = (tile_color >> 8) & 0xFF;
-    color[3] = tile_color & 0xFF;
-}
-
-uint32_t
-Terrain::compress_color(uint8_t v[4]) {
-    return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16
-           | (uint32_t)v[0] << 24;
-}*/
-
 void
 Terrain::qb_save_debug(const std::string path) {
     int x = 0;
@@ -941,7 +920,7 @@ Terrain::qb_save_debug(const std::string path) {
 void
 Terrain::qb_save(const std::string path) const {
     // Saves the tiles in this to the path specified
-    voxel_utility::to_qb(path, *this);
+    voxel_utility::to_qb(std::filesystem::path(path), *this);
 }
 
 void

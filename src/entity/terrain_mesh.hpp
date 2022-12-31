@@ -22,23 +22,21 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     unsigned int num_vertices_;
 
  public:
-    inline TerrainMesh(const TerrainMesh& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        color_buffer_ = obj.color_buffer_;
-        normal_buffer_ = obj.normal_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        num_vertices_ = obj.num_vertices_;
-        color_texture_ = obj.color_texture_;
-    };
+    inline TerrainMesh(const TerrainMesh& obj) :
+        vertex_buffer_(obj.get_vertex_buffer()),
+        color_buffer_(obj.get_color_buffer()),
+        normal_buffer_(obj.get_normal_buffer()),
+        element_buffer_(obj.get_element_buffer()),
+        color_texture_(obj.get_color_texture()),
+        num_vertices_(obj.get_num_vertices()){};
 
-    inline TerrainMesh(const StaticMesh& obj) {
-        vertex_buffer_ = obj.get_vertex_buffer();
-        color_buffer_ = obj.get_color_buffer();
-        normal_buffer_ = obj.get_normal_buffer();
-        element_buffer_ = obj.get_element_buffer();
-        num_vertices_ = obj.get_num_vertices();
-        color_texture_ = obj.get_color_texture();
-    };
+    inline TerrainMesh(const StaticMesh& obj) :
+        vertex_buffer_(obj.get_vertex_buffer()),
+        color_buffer_(obj.get_color_buffer()),
+        normal_buffer_(obj.get_normal_buffer()),
+        element_buffer_(obj.get_element_buffer()),
+        color_texture_(obj.get_color_texture()),
+        num_vertices_(obj.get_num_vertices()){};
 
     // copy operator
     inline TerrainMesh& operator=(const TerrainMesh& obj) {
@@ -76,20 +74,37 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
         glDeleteTextures(1, &color_texture_);
-
     }
 
-    inline GLuint get_color_buffer() const override { return color_buffer_; }
+    inline GLuint
+    get_color_buffer() const override {
+        return color_buffer_;
+    }
 
-    inline GLuint get_element_buffer() const override { return element_buffer_; }
+    inline GLuint
+    get_element_buffer() const override {
+        return element_buffer_;
+    }
 
-    inline GLuint get_normal_buffer() const override { return normal_buffer_; }
+    inline GLuint
+    get_normal_buffer() const override {
+        return normal_buffer_;
+    }
 
-    inline GLuint get_vertex_buffer() const override { return vertex_buffer_; }
+    inline GLuint
+    get_vertex_buffer() const override {
+        return vertex_buffer_;
+    }
 
-    inline GLuint get_color_texture() const override { return color_texture_; }
+    inline GLuint
+    get_color_texture() const override {
+        return color_texture_;
+    }
 
-    inline unsigned int get_num_vertices() const override { return num_vertices_; }
+    inline unsigned int
+    get_num_vertices() const override {
+        return num_vertices_;
+    }
 };
 
 } // namespace terrain
