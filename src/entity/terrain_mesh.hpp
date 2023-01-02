@@ -39,7 +39,8 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         num_vertices_(obj.get_num_vertices()){};
 
     // copy operator
-    inline TerrainMesh& operator=(const TerrainMesh& obj) {
+    inline TerrainMesh&
+    operator=(const TerrainMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -76,32 +77,32 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteTextures(1, &color_texture_);
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_color_buffer() const override {
         return color_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_element_buffer() const override {
         return element_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_normal_buffer() const override {
         return normal_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_vertex_buffer() const override {
         return vertex_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_color_texture() const override {
         return color_texture_;
     }
 
-    inline unsigned int
+    [[nodiscard]] inline unsigned int
     get_num_vertices() const override {
         return num_vertices_;
     }

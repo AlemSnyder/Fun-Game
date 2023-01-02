@@ -61,7 +61,7 @@ struct Material {
     // int8_t deterioration from water
 };
 
-class Terrain_Color_Mapping {
+class TerrainColorMapping {
  private:
     // color map
     //  index -> color vector
@@ -70,16 +70,17 @@ class Terrain_Color_Mapping {
     static std::unordered_map<uint32_t, uint16_t> colors_inverse_map;
 
  public:
-    static void
-    assign_color_mapping(const std::map<int, const Material>* materials);
+    static void assign_color_mapping(const std::map<int, const Material>* materials);
 
-    inline static std::vector<uint32_t>& get_color_ids_map(){
+    inline static std::vector<uint32_t>&
+    get_color_ids_map() {
         return color_ids_map;
     }
-    inline static std::unordered_map<uint32_t, uint16_t> get_colors_inverse_map() {
+
+    inline static std::unordered_map<uint32_t, uint16_t>
+    get_colors_inverse_map() {
         return colors_inverse_map;
     }
-
 };
 
 } // namespace terrain

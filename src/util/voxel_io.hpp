@@ -52,8 +52,7 @@ void from_qb(
     std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
 );
 
-template<typename T>
-requires std::is_base_of<VoxelBase, T>::value
+template<VoxelLike T>
 void
 to_qb(const std::filesystem::path path, T ter, bool compression = false) {
     LOG_INFO(logging::file_io_logger, "Saving voxels to {}.", path.string());

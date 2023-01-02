@@ -33,12 +33,14 @@ GUITest(World world) {
 
     auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
+    // initialize logging
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-    int context_flag;
+    GLint context_flag;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
     if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        // set gl message call back function
         glDebugMessageCallback(message_callback, 0);
         glDebugMessageControl(
             GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE

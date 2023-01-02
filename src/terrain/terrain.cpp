@@ -613,7 +613,7 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     uint8_t z_diff = abs(zs - zf); // difference in z direction
 
     // If there is a change in the horizontal position, then everything should
-    // be bit shifted by 3, and if not, by 1.
+    // be bit shifted by 4, and if not, by 1.
     // This is because Directional flags are defined as follows:
     // 32   16  8  4  2 1
     // VH2 VH1  V H2 H1 O
