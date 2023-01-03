@@ -7,9 +7,12 @@
 #include "../world.hpp"
 #include "../logging.hpp"
 #include "controls.hpp"
-#include "renderer.hpp"
+#include "render/renderer.hpp"
 #include "shader.hpp"
-#include "shadow_map.hpp"
+#include "screen_data.hpp"
+#include "sky_data.hpp"
+#include "render/shadow_map.hpp"
+#include "render/sky.hpp"
 #include "gui_logging.hpp"
 
 #include <GL/glew.h>
@@ -100,12 +103,6 @@ GUITest(World world) {
     // Light blue background
     glClearColor(0.42f, 0.79f, 0.94f, 0.0f);
 
-    // Enable depth test
-    glEnable(GL_DEPTH_TEST);
-
-    // Accept fragment if it closer to the camera than the former one
-    glDepthFunc(GL_LESS);
-
     // Cull triangles which normal is not towards the camera
     glEnable(GL_CULL_FACE);
 
@@ -192,10 +189,28 @@ GUITest(World world) {
     }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
+
+    std::vector<glm::vec3> stars;
+    stars.push_back(glm::vec3(234,68,5));
+    stars.push_back(glm::vec3(234.5,69,5));
+    stars.push_back(glm::vec3(224,65,5));
+    stars.push_back(glm::vec3(230,66,10));
+
+    sky::SkyData sky_data(stars);
+    ScreenData screen_data;
+
+    sky::SkyRenderer SR(sky_data, screen_data);
+
     LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
 
     do {
+        // Clear the screen
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        controls::computeMatricesFromInputs(window);
+
         SM.render_shadow_depth_buffer();
+        SR.render(window);
         MR.render(window);
 
         if (controls::show_shadow_map(window)) {

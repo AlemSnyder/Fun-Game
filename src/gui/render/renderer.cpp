@@ -1,10 +1,10 @@
 #include "renderer.hpp"
 
-#include "../entity/terrain_mesh.hpp"
-#include "../util/files.hpp"
-#include "controls.hpp"
-#include "meshloader.hpp"
-#include "shader.hpp"
+#include "../../entity/terrain_mesh.hpp"
+#include "../../util/files.hpp"
+#include "../controls.hpp"
+#include "../meshloader.hpp"
+#include "../shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -89,9 +89,13 @@ MainRenderer::render(GLFWwindow* window) const {
     // Cull back-facing triangles -> draw only front-facing triangles
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    // Enable writing to depth texture
+    glDepthMask(GL_TRUE);  
+    // Enable depth test
+    glEnable(GL_DEPTH_TEST);
 
-    // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Accept fragment if it closer to the camera than the former one
+    glDepthFunc(GL_LESS);
 
     // Use our shader
     glUseProgram(programID_single_);
@@ -99,7 +103,6 @@ MainRenderer::render(GLFWwindow* window) const {
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
     // Compute the MVP matrix from keyboard and mouse input
-    controls::computeMatricesFromInputs(window);
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
     // glm::mat4 ModelMatrix = glm::mat4(1.0);

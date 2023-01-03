@@ -1,14 +1,15 @@
 #version 450 core
 
 // Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 vertexPosition_modelspace;
-uniform mat4 inverseViewProgection;
+layout(location = 0) in vec3 pos;
+uniform mat4 MVP;
+uniform mat4 V;
 
 // Output data ; will be interpolated for each fragment.
-out vec3 EyeDirectionModelSpace;
+out vec2 EyeDirectionScreenSpace;
 
 void
 main() {
-    gl_Position = vec4(vertexPosition_modelspace, 1);
-    EyeDirectionModelSpace = (vertexPosition_modelspace * inverseViewProgection).xy;
+    gl_Position = vec4(pos, 1);
+    EyeDirectionScreenSpace = pos.xy;
 }

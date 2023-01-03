@@ -1,45 +1,45 @@
 #version 450 core
 
 // Ouput data
-layout(location = 0) out vec4 color;
+layout(location = 0) out vec3 color;
 
 uniform sampler1D stars;
+uniform mat4 MVP;
+uniform mat4 V;
+uniform int number_of_stars;
 
-in vec3 EyeDirectionModelSpace;
+in vec2 EyeDirectionScreenSpace;
 
-int
-get_brightness(vec3 EyeDirection, vec3 star){
-    // rad from cross product
+float
+get_brightness(vec2 EyeDirectionScreen, vec2 StarDirectionScreen, float brightness){
+    // computed in the screen
 
-    // direction to star from angle
-    vec3 n = {cos(star.x), sin(star.x)cos(star.y), sin(star.x)sin(star.y)}
+    // distance from pixel to star.
+    float len = length(EyeDirectionScreen-StarDirectionScreen);
 
-    // Direction of the light (from the fragment to the light)
-    vec3 l = normalize(EyeDirection);
-    // Cosine of the angle between the normal and the light direction,
-    // clamped above 0
-    //  - light is at the vertical of the triangle -> 1
-    //  - light is perpendiular to the triangle -> 0
-    //  - light is behind the triangle -> 0
-    float cosTheta = clamp(dot(n, l), 0, 1);
-
-    // not just 2-angle
-    return star.z-cosTheta;
+    // return the brightness
+    return brightness - len;
 }
 
 void
 main(){
 
-    int brightness = 0
-    for (int i = 0, i < some_length, i++){
-        vec3 star = texelFetch(stars, i, 0);
-        next_brightness = get_brightness(EyeDirectionModelSpace, star);
-        if (next_brightness > brightness){
-            brightness = next_brightness
-        }
-    }
+    //int brightness = 0
+    //for (int i = 0, i < number_of_stars, i++){
+    //    vec3 star = texelFetch(stars, i, 0);
+    //    vec3 direction = {cos(star.x), sin(star.x)cos(star.y), sin(star.x)sin(star.y)}
 
-    brightness = clamp(brightness, 0.0, 1.0);
+    //    StarDirection_cameraspace = vec3(0, 0, 0) - (MVP * direction).xyz;
 
-    color = {brightness,brightness,brightness,1}
+    //    next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace.xy, star.z);
+    //    if (next_brightness > brightness){
+    //        brightness = next_brightness
+    //    }
+    //}
+
+    //brightness = clamp(brightness, 0.0, 1.0);
+
+    color = vec3(EyeDirectionScreenSpace.x, EyeDirectionScreenSpace.y, 1);
+
+    //color = {brightness,brightness,brightness,1}
 }
