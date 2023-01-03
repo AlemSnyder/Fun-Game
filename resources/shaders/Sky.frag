@@ -27,9 +27,10 @@ main(){
     float brightness = 0;
     for (int i = 0; i < number_of_stars; ++i){
         vec3 star = texelFetch(stars, i, 0).rgb;
-        vec4 direction = {cos(star.x), sin(star.x)*cos(star.y), sin(star.x)*sin(star.y),0};
+        vec4 direction = {cos(radians(star.x)), sin(radians(star.x))*cos(radians(star.y)), sin(radians(star.x))*sin(radians(star.y)),0};
 
         //vec3 StarDirection_cameraspace = vec3(0, 0, 0) - (MVP * direction).xyz;
+        // TODO Should be projection matrix * direction
         vec3 StarDirection_cameraspace = (MVP * direction).xyz;
 
         float next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace.xy, star.z);
