@@ -6,10 +6,10 @@ gui::ScreenData::ScreenData() {
 
     std::vector<glm::vec3> vertices;
 
-    vertices.push_back(glm::vec3(-1,-1,1));
-    vertices.push_back(glm::vec3(-1,1,1));
-    vertices.push_back(glm::vec3(1,1,1));
-    vertices.push_back(glm::vec3(1,-1,1));
+    vertices.push_back(glm::vec3(-1,-1,0));
+    vertices.push_back(glm::vec3(-1,1,0));
+    vertices.push_back(glm::vec3(1,1,0));
+    vertices.push_back(glm::vec3(1,-1,0));
 
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);

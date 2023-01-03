@@ -51,6 +51,7 @@ class SkyRenderer {
     GLuint view_matrix_ID_; // ID of view projection matrix
     GLuint star_texture_;   // ID of star texture
     GLuint start_num_ID_;
+    GLuint vertexbuffer_;
 
     sky::SkyData sky_data_;
     ScreenData screen_data_;
