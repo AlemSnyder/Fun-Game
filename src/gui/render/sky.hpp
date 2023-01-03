@@ -50,11 +50,10 @@ class SkyRenderer {
     GLuint matrix_ID_;      // ID of world space to camera space transform matrix
     GLuint view_matrix_ID_; // ID of view projection matrix
     GLuint star_texture_;   // ID of star texture
-    GLuint start_num_ID_;
-    GLuint vertexbuffer_;
+    GLuint star_num_ID_;    // ID of number of stars
 
-    sky::SkyData sky_data_;
-    ScreenData screen_data_;
+    sky::SkyData& sky_data_;  // reference to star data
+    ScreenData& screen_data_; // reference to star data
 
  public:
     /**
@@ -63,7 +62,7 @@ class SkyRenderer {
      */
     SkyRenderer();
 
-    SkyRenderer(SkyData sky_data, ScreenData screen_data);
+    SkyRenderer(SkyData& sky_data, ScreenData& screen_data);
 
     ~SkyRenderer();
 

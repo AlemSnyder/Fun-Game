@@ -25,8 +25,8 @@ gui::ScreenData::ScreenData() {
 
     indices.push_back(0U);
     indices.push_back(1U);
-    indices.push_back(2U);
     indices.push_back(3U);
+    indices.push_back(2U);
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &element_buffer_);

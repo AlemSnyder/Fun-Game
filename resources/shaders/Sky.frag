@@ -18,28 +18,36 @@ get_brightness(vec2 EyeDirectionScreen, vec2 StarDirectionScreen, float brightne
     float len = length(EyeDirectionScreen-StarDirectionScreen);
 
     // return the brightness
-    return brightness - len;
+    return brightness/5 - len*100;
 }
 
 void
 main(){
 
-    //int brightness = 0
-    //for (int i = 0, i < number_of_stars, i++){
-    //    vec3 star = texelFetch(stars, i, 0);
-    //    vec3 direction = {cos(star.x), sin(star.x)cos(star.y), sin(star.x)sin(star.y)}
+    float brightness = 0;
+    for (int i = 0; i < number_of_stars; ++i){
+        vec3 star = texelFetch(stars, i, 0).rgb;
+        vec4 direction = {cos(star.x), sin(star.x)*cos(star.y), sin(star.x)*sin(star.y),0};
 
-    //    StarDirection_cameraspace = vec3(0, 0, 0) - (MVP * direction).xyz;
+        //vec3 StarDirection_cameraspace = vec3(0, 0, 0) - (MVP * direction).xyz;
+        vec3 StarDirection_cameraspace = (MVP * direction).xyz;
 
-    //    next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace.xy, star.z);
-    //    if (next_brightness > brightness){
-    //        brightness = next_brightness
-    //    }
-    //}
+        float next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace.xy, star.z);
+        if (next_brightness > brightness){
+            brightness = next_brightness;
+        }
+    }
 
-    //brightness = clamp(brightness, 0.0, 1.0);
+    //vec3 star = texelFetch(stars, 0, 0).rgb;
+    //vec4 direction = {cos(star.x), sin(star.x)*cos(star.y), sin(star.x)*sin(star.y),0};
 
-    color = vec3(EyeDirectionScreenSpace.x, EyeDirectionScreenSpace.y, 1);
+    //vec3 StarDirection_cameraspace = vec3(0, 0, 0) - (MVP * direction).xyz;
 
-    //color = {brightness,brightness,brightness,1}
+    //float brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace.xy, star.z);
+
+    brightness = clamp(brightness, 0.0, 1.0);
+
+    //color = vec3(EyeDirectionScreenSpace.x, EyeDirectionScreenSpace.y, 1);
+
+    color = vec3(brightness,brightness,brightness);
 }
