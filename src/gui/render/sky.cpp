@@ -49,8 +49,11 @@ SkyRenderer::render(GLFWwindow* window) const {
     // Use our shader
     glUseProgram(programID_);
 
-
     // Compute the MVP matrix from keyboard and mouse input
+    glm::mat4 pixel_window = {width/2,0,0,width/2,
+                            0, height/2,0,height,
+                            0,0,0,0,
+                            0,0,0,1};
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
     glm::mat4 MVP = projection_matrix * view_matrix; // Model View Projection
@@ -58,7 +61,7 @@ SkyRenderer::render(GLFWwindow* window) const {
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
     glUniformMatrix4fv(matrix_ID_, 1, GL_FALSE, &MVP[0][0]);
-    glUniformMatrix4fv(view_matrix_ID_, 1, GL_FALSE, &view_matrix[0][0]);
+    glUniformMatrix4fv(view_matrix_ID_, 1, GL_FALSE, &pixel_window[0][0]);
 
     glUniform1i(star_num_ID_, sky_data_.get_num_stars());
 

@@ -11,5 +11,5 @@ out vec2 EyeDirectionScreenSpace;
 void
 main() {
     gl_Position = vec4(pos, 1);
-    EyeDirectionScreenSpace = pos.xy;
+    EyeDirectionScreenSpace = (V * vec4(pos, 1)).xy;
 }

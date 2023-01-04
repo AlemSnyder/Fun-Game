@@ -18,7 +18,7 @@ get_brightness(vec2 EyeDirectionScreen, vec2 StarDirectionScreen, float brightne
     float len = length(EyeDirectionScreen-StarDirectionScreen);
 
     // return the brightness
-    return brightness/5 - len*100;
+    return brightness/10 - len;
 }
 
 void
@@ -29,22 +29,13 @@ main(){
         vec3 star = texelFetch(stars, i, 0).rgb;
         vec4 direction = {cos(radians(star.x)), sin(radians(star.x))*cos(radians(star.y)), sin(radians(star.x))*sin(radians(star.y)),0};
 
-        //vec3 StarDirection_cameraspace = vec3(0, 0, 0) - (MVP * direction).xyz;
-        // TODO Should be projection matrix * direction
-        vec3 StarDirection_cameraspace = (MVP * direction).xyz;
+        vec2 StarDirection_cameraspace = (V * vec4(-(MVP * direction).xy, 0, 1)).xy;
 
-        float next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace.xy, star.z);
+        float next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace, star.z);
         if (next_brightness > brightness){
             brightness = next_brightness;
         }
     }
-
-    //vec3 star = texelFetch(stars, 0, 0).rgb;
-    //vec4 direction = {cos(star.x), sin(star.x)*cos(star.y), sin(star.x)*sin(star.y),0};
-
-    //vec3 StarDirection_cameraspace = vec3(0, 0, 0) - (MVP * direction).xyz;
-
-    //float brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace.xy, star.z);
 
     brightness = clamp(brightness, 0.0, 1.0);
 
