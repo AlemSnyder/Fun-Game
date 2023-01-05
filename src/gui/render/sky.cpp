@@ -50,9 +50,9 @@ SkyRenderer::render(GLFWwindow* window) const {
     glUseProgram(programID_);
 
     // Compute the MVP matrix from keyboard and mouse input
-    glm::mat4 pixel_window = {width/2,0,0,width/2,
-                            0, height/2,0,height,
-                            0,0,0,0,
+    glm::mat4 pixel_window = {width/2,0,0,0,
+                            0, height/2,0,0,
+                            0,0,1,0,
                             0,0,0,1};
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
