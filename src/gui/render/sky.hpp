@@ -22,8 +22,8 @@
 #pragma once
 
 #include "../meshloader.hpp"
-#include "../sky_data.hpp"
-#include "../screen_data.hpp"
+#include "../data_structures/screen_data.hpp"
+#include "../data_structures/sky_data.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -46,14 +46,15 @@ namespace sky {
  */
 class SkyRenderer {
  private:
-    GLuint programID_;      // ID of non-indexed mesh Program
-    GLuint matrix_ID_;      // ID of world space to camera space transform matrix
-    GLuint view_matrix_ID_; // ID of view projection matrix
-    GLuint star_texture_;   // ID of star texture
-    GLuint star_num_ID_;    // ID of number of stars
+    GLuint programID_;                 // ID of Program
+    GLuint matrix_view_projection_ID_; // ID of world space to camera space transform
+                                       // matrix
+    GLuint pixel_matrix_ID_;           // ID of view space to pixel space matrix
+    GLuint star_texture_;              // ID of star texture
+    GLuint star_num_ID_;               // ID of number of stars
 
     sky::SkyData& sky_data_;  // reference to star data
-    ScreenData& screen_data_; // reference to star data
+    ScreenData& screen_data_; // reference to screen data
 
  public:
     /**
@@ -62,6 +63,7 @@ class SkyRenderer {
      */
     SkyRenderer();
 
+    // TODO remove this
     SkyRenderer(SkyData& sky_data, ScreenData& screen_data);
 
     ~SkyRenderer();

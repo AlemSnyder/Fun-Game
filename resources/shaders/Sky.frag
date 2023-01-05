@@ -5,7 +5,7 @@ layout(location = 0) out vec3 color;
 
 uniform sampler1D stars;
 uniform mat4 MVP;
-uniform mat4 V;
+uniform mat4 pixel_projection;
 uniform int number_of_stars;
 
 in vec2 EyeDirectionScreenSpace;
@@ -35,7 +35,7 @@ main(){
             continue;
         }
 
-        vec2 StarDirection_cameraspace = (V * vec4((direction_projected).xy/direction_projected.w, 0, 1)).xy;
+        vec2 StarDirection_cameraspace = (pixel_projection * vec4((direction_projected).xy/direction_projected.w, 0, 1)).xy;
 
         float next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace, star.z);
         if (next_brightness > brightness){

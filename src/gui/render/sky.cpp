@@ -5,7 +5,7 @@
 #include "../controls.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
-#include "../sky_data.hpp"
+#include "../data_structures/sky_data.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -15,6 +15,21 @@ namespace gui {
 
 namespace sky {
 
+/*SkyRenderer::SkyRenderer(){
+
+    sky_data_; //read from json
+    screen_data_; //default
+    programID_ = load_shaders(
+        files::get_resources_path() / "shaders" / "Sky.vert",
+        files::get_resources_path() / "shaders" / "Sky.frag"
+    );
+    // ---- set uniforms ----
+    matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
+    pixel_matrix_ID_ = glGetUniformLocation(programID_, "V");
+    star_texture_ = glGetUniformLocation(programID_, "stars");
+    star_num_ID_ = glGetUniformLocation(programID_, "number_of_stars");
+}*/
+
 SkyRenderer::SkyRenderer(SkyData& sky_data, ScreenData& screen_data) :
     sky_data_(sky_data), screen_data_(screen_data) {
     // get the program
@@ -23,8 +38,8 @@ SkyRenderer::SkyRenderer(SkyData& sky_data, ScreenData& screen_data) :
         files::get_resources_path() / "shaders" / "Sky.frag"
     );
     // ---- set uniforms ----
-    matrix_ID_ = glGetUniformLocation(programID_, "MVP");
-    view_matrix_ID_ = glGetUniformLocation(programID_, "V");
+    matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
+    pixel_matrix_ID_ = glGetUniformLocation(programID_, "pixel_projection");
     star_texture_ = glGetUniformLocation(programID_, "stars");
     star_num_ID_ = glGetUniformLocation(programID_, "number_of_stars");
 
@@ -60,8 +75,8 @@ SkyRenderer::render(GLFWwindow* window) const {
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
-    glUniformMatrix4fv(matrix_ID_, 1, GL_FALSE, &MVP[0][0]);
-    glUniformMatrix4fv(view_matrix_ID_, 1, GL_FALSE, &pixel_window[0][0]);
+    glUniformMatrix4fv(matrix_view_projection_ID_, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(pixel_matrix_ID_, 1, GL_FALSE, &pixel_window[0][0]);
 
     glUniform1i(star_num_ID_, sky_data_.get_num_stars());
 
