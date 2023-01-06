@@ -1,3 +1,7 @@
+//! This is a "data" class. Its purpose is to send data to the gpu for that
+// reason it should be moved into gui/data_structures
+// Also no namespace terrain
+
 #include "../gui/meshloader.hpp"
 #include "mesh.hpp"
 #include "static_mesh.hpp"
@@ -41,7 +45,8 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     };
 
     // copy operator
-    inline TerrainMesh& operator=(const TerrainMesh& obj) {
+    inline TerrainMesh&
+    operator=(const TerrainMesh& obj) {
         vertex_buffer_ = obj.vertex_buffer_;
         color_buffer_ = obj.color_buffer_;
         normal_buffer_ = obj.normal_buffer_;
@@ -76,20 +81,37 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
         glDeleteTextures(1, &color_texture_);
-
     }
 
-    inline GLuint get_color_buffer() const override { return color_buffer_; }
+    inline GLuint
+    get_color_buffer() const override {
+        return color_buffer_;
+    }
 
-    inline GLuint get_element_buffer() const override { return element_buffer_; }
+    inline GLuint
+    get_element_buffer() const override {
+        return element_buffer_;
+    }
 
-    inline GLuint get_normal_buffer() const override { return normal_buffer_; }
+    inline GLuint
+    get_normal_buffer() const override {
+        return normal_buffer_;
+    }
 
-    inline GLuint get_vertex_buffer() const override { return vertex_buffer_; }
+    inline GLuint
+    get_vertex_buffer() const override {
+        return vertex_buffer_;
+    }
 
-    inline GLuint get_color_texture() const override { return color_texture_; }
+    inline GLuint
+    get_color_texture() const override {
+        return color_texture_;
+    }
 
-    inline unsigned int get_num_vertices() const override { return num_vertices_; }
+    inline unsigned int
+    get_num_vertices() const override {
+        return num_vertices_;
+    }
 };
 
 } // namespace terrain
