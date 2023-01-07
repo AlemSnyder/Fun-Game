@@ -109,9 +109,7 @@ SkyRenderer::render(GLFWwindow* window) const {
     );
 
     glDisableVertexAttribArray(0);
-    // glDisableVertexAttribArray(1);
-    // glDisableVertexAttribArray(2);
-
+    
     // Use our shader
     glUseProgram(programID_);
 }

@@ -88,27 +88,17 @@ TerrainMesh::init(
         float_colors.push_back(vector_color);
     }
     
-    //LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     // Generate a texture
     glGenTextures(1, &color_texture_);
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     glBindTexture(GL_TEXTURE_1D, color_texture_);
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     // set the texture wrapping/filtering options (on the currently bound texture object)
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     // load and generate the texture
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, float_colors.size(), 0, GL_RGBA, GL_FLOAT, float_colors.data());
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
     glGenerateMipmap(GL_TEXTURE_1D);
-    //LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
 }
 
 } // namespace terrain

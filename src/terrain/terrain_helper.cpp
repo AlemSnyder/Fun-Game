@@ -87,7 +87,7 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
                 break;
             }
         }
-        if (is_source && (getter(tile) < max_grass)) {
+        if (is_source && getter(tile) < max_grass) {
             // set the tile grass index to max_grass
             setter(tile, max_grass);
             // tile->grow_sink should be set to true

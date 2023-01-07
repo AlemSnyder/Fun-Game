@@ -35,15 +35,15 @@ namespace entity {
  */
 struct Mesh {
     Mesh(
-        const std::vector<uint16_t>& indices, const std::vector<glm::ivec3>& indexed_vertices,
+        const std::vector<uint16_t>& indices,
+        const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_color_ids,
         const std::vector<glm::i8vec3>& indexed_normals,
         const std::vector<uint32_t>& color_map
     ) :
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
-        indexed_normals_(indexed_normals), color_map_(color_map)
-    {}
+        indexed_normals_(indexed_normals), color_map_(color_map) {}
 
     // defines a bounding box of the mesh
     const std::vector<int> size_;
@@ -69,11 +69,9 @@ struct Mesh {
  * @tparam T is_base_of voxel_utility::VoxelLike, T
  * @param voxel_object
  */
-template <class T>
-requires std::is_base_of<voxel_utility::VoxelLike, T>::value
+template <voxel_utility::VoxelLike T>
 Mesh
-generate_mesh(T voxel_object)
-{
+generate_mesh(T voxel_object) {
     std::vector<uint16_t> indices;
     std::vector<glm::ivec3> indexed_vertices;
     std::vector<uint16_t> indexed_colors;
@@ -236,27 +234,25 @@ generate_mesh(T voxel_object)
                             + offset
                         );
 
-                        //uint32_t int_color = color.second;
-                        //uint32_t red = (int_color >> 24) & 0xFF;
-                        //uint32_t green = (int_color >> 16) & 0xFF;
-                        //uint32_t blue = (int_color >> 8) & 0xFF;
-                        // the last one >> 0 is A
-                        //glm::vec3 vector_color(
-                        //    red / 255.0, green / 255.0, blue / 255.0
-                        //);
                         // how many corners on a square are there?
                         for (size_t voxel_position = 0; voxel_position < 4;
                              voxel_position++) {
                             indexed_colors.push_back(color.second);
                         }
 
-                        glm::i8vec3 triangle_normal =
-                            glm::ivec3(glm::normalize(glm::cross(glm::vec3(
-                                indexed_vertices[vertex_size]
-                                    - indexed_vertices[vertex_size + 1]),
-                                glm::vec3(indexed_vertices[vertex_size]
-                                    - indexed_vertices[vertex_size + 2])
-                            )));
+                        glm::i8vec3 triangle_normal = glm::i8vec3(
+                            glm::normalize(glm::cross(
+                                glm::vec3(
+                                    indexed_vertices[vertex_size]
+                                    - indexed_vertices[vertex_size + 1]
+                                ),
+                                glm::vec3(
+                                    indexed_vertices[vertex_size]
+                                    - indexed_vertices[vertex_size + 2]
+                                )
+                            ))
+                            + glm::vec3(.5, .5, .5)
+                        );
                         // how many corners on a square are there?
                         for (size_t voxel_position = 0; voxel_position < 4;
                              voxel_position++) {
@@ -286,7 +282,10 @@ generate_mesh(T voxel_object)
                 }
         }
     }
-    return Mesh(indices, indexed_vertices, indexed_colors, indexed_normals, voxel_object.get_color_ids());
+    return Mesh(
+        indices, indexed_vertices, indexed_colors, indexed_normals,
+        voxel_object.get_color_ids()
+    );
 }
 
 } // namespace entity

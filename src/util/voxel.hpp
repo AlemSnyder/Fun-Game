@@ -8,7 +8,7 @@
 
 namespace voxel_utility {
 
-class VoxelLike {
+class VoxelBase {
  public:
     uint32_t get_voxel(int x, int y, int z) const;
     uint16_t get_voxel_color_id(int x, int y, int z) const;
@@ -17,16 +17,18 @@ class VoxelLike {
     std::array<int32_t, 3> get_offset() const;
 };
 
-class VoxelObject : VoxelLike {
+template <class T>
+concept VoxelLike = std::is_base_of<voxel_utility::VoxelBase, T>::value;
+
+class VoxelObject : VoxelBase {
  private:
-    //std::vector<uint32_t> data_;
     std::vector<uint16_t> data_;
     std::vector<uint32_t> colors_;
     std::array<int32_t, 3> center_;
     std::array<uint32_t, 3> size_;
     bool ok_;
 
-    inline int
+    [[nodiscard]] inline int
     get_position(int x, int y, int z) const {
         return ((x * size_[1] + y) * size_[2] + z);
     }
@@ -73,7 +75,7 @@ class VoxelObject : VoxelLike {
      * @param z z position
      * @return uint16_t
      */
-    inline uint16_t
+    [[nodiscard]] inline uint16_t
     get_voxel_color_id(int32_t x, int32_t y, int32_t z) const {
         if (x < 0 || y < 0 || z < 0){
             return 0;
@@ -91,7 +93,7 @@ class VoxelObject : VoxelLike {
      * @param z coordinate
      * @return uint32_t color
      */
-    inline uint32_t
+    [[nodiscard]] inline uint32_t
     get_voxel(int32_t x, int32_t y, int32_t z) const {
         return colors_[get_voxel_color_id(x, y, z)];
     }

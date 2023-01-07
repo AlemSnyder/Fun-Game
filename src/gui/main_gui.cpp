@@ -3,9 +3,9 @@
 #include "../entity/mesh.hpp"
 #include "../entity/static_mesh.hpp"
 #include "../entity/terrain_mesh.hpp"
+#include "../logging.hpp"
 #include "../util/files.hpp"
 #include "../world.hpp"
-#include "../logging.hpp"
 #include "controls.hpp"
 #include "render/renderer.hpp"
 #include "shader.hpp"
@@ -36,8 +36,19 @@ GUITest(World world) {
 
     auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
-    //glEnable( GL_DEBUG_OUTPUT );
-    //glDebugMessageCallback( MessageCallback, 0 );
+    // initialize logging
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    GLint context_flag;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
+    if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        // set gl message call back function
+        glDebugMessageCallback(message_callback, 0);
+        glDebugMessageControl(
+            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
+        );
+    }
 
     // Initialise GLFW
     glewExperimental = true; // Needed for core profile
@@ -130,16 +141,10 @@ GUITest(World world) {
             }
         }
 
-    assert(glGetError() == GL_NO_ERROR);
-
     LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
-
-    assert(glGetError() == GL_NO_ERROR);
-
-    LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {

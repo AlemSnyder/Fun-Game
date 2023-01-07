@@ -97,7 +97,7 @@ getter_low(Tile* t) {
  * path-finding and its own generation.
  *
  */
-class Terrain : public voxel_utility::VoxelLike {
+class Terrain : public voxel_utility::VoxelBase {
     friend class AdjacentIterator;
 
  private:
@@ -645,8 +645,9 @@ class Terrain : public voxel_utility::VoxelLike {
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
-    inline uint16_t get_voxel_color_id(int x, int y, int z) const{
-        return colors_inverse_map.at(get_voxel(x,y,z));
+    inline uint16_t
+    get_voxel_color_id(int x, int y, int z) const {
+        return TerrainColorMapping::get_colors_inverse_map().at(get_voxel(x, y, z));
     }
 
     inline const std::vector<Chunk>&

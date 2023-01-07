@@ -42,7 +42,7 @@ class Terrain;
  * modifications can be made.
  *
  */
-class Chunk : public voxel_utility::VoxelLike {
+class Chunk : public voxel_utility::VoxelBase {
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
     uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
@@ -93,13 +93,29 @@ class Chunk : public voxel_utility::VoxelLike {
      * @param x x position in chunk
      * @param y y position in chunk
      * @param z z position in chunk
-     * @return uint32_t color or tile color id
+     * @return uint32_t tile color id
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
+    /**
+     * @brief Get the voxel color id
+     *
+     * @param x x position in chunk
+     * @param y y position in chunk
+     * @param z z position in chunk
+     * @return uint16_t color id
+     */
     uint16_t get_voxel_color_id(int x, int y, int z) const;
 
-    [[nodiscard]] const std::vector<uint32_t>& get_color_ids() const;
+    /**
+     * @brief Get the colors used in terrain.
+     *
+     * @return const std::vector<uint32_t>&
+     */
+    [[nodiscard]] const inline std::vector<uint32_t>&
+    get_color_ids() const {
+        return TerrainColorMapping::get_color_ids_map();
+    }
 
  private:
     void delNodeGroup(NodeGroup& NG);
