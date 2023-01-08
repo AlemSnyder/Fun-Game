@@ -38,7 +38,7 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
             ter.pos(tile), DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
         );
         for (; !it.end(); it++) {
-            uint16_t pos = it.get_pos();
+            size_t pos = it.get_pos();
             Tile* adjacent_tile = ter.get_tile(pos);
             // instead of height used maxheight +1
             if (adjacent_tile->is_grass() && (getter(adjacent_tile) < height)) {
@@ -87,7 +87,7 @@ grow_grass_recursive(Terrain& ter, std::set<Tile*> all_grass) {
                 break;
             }
         }
-        if (is_source) {
+        if (is_source && getter(tile) < max_grass) {
             // set the tile grass index to max_grass
             setter(tile, max_grass);
             // tile->grow_sink should be set to true

@@ -71,28 +71,68 @@ Tile::set_grow_data_low(int num) {
     }
 }
 
-// Updates the grass color to account for edge gradient.
 void
 Tile::set_grass_color(
     unsigned int grass_grad_length, unsigned int grass_mid,
     std::vector<uint8_t> grass_colors
 ) {
-    if (grass_) {
-        /*
-        crates a gradient between shadow, and light using the gradient defined
-        in the materials json.
-        */
-        unsigned int a = grass_grad_length - grow_data_high_;
-        unsigned int b = grow_data_low_;
-        if (b >= a) {
-            color_id_ = grass_colors[b];
-        } else if (b >= grass_mid) {
-            color_id_ = grass_colors[b];
-        } else if (a <= grass_mid) {
-            color_id_ = grass_colors[a];
-        } else {
-            color_id_ = grass_colors[grass_mid];
-        }
+    if (!grass_)
+        return;
+    // This is how the gradient is determined.
+    // clang-format off
+/*
+a = air, g = grass, s = solid
+
+[a] [a] [g] [g]   [g]   [g]           [g]   [g]   [g] [g] [s] [s]       
+[-] [-] [n] [n-1] [n-2] [...]       [...] [n-2] [n-1] [n] [-] [-]       
+                                                                        
+grow data high                        grow data low                     
+- - \                                   / - -                           
+     \                                 /                                
+      \                               /                                 
+grow data high is reversed
+
+distance from air ->
+|    //=======/
+|   //       / 
+|~~//~~~~~~~/~~
+| //       /   
+|//-------/    
+<- distance to solid
+heigh_influence /
+low_influence  //
+grass_mid      ~~
+
+The if statements convert the data as follows, to get the grass color index
+
+      /     /  <- grow_data_high_         / <-------- grow_data_high_   
+     /     /                             /     /                        
+    /     /                             /     /                         
+-------------- <- grass_mid      or -------------- <- grass_mid         
+  /     /                             /     /                           
+ /     /                             /     /                            
+/ < ------------- grow_data_low_    /     / <-------- grow_data_low_    
+
+            /                                   /                       
+           /                                   /                        
+          /                                   /                         
+   -------                       or          /                          
+  /                                         /                           
+ /                                         /                            
+/                                         /                             
+
+*/
+    // clang-format on
+    unsigned int heigh_influence = grass_grad_length - grow_data_high_ - 1;
+    unsigned int low_influence = grow_data_low_;
+    if (low_influence >= heigh_influence) {
+        color_id_ = grass_colors[low_influence];
+    } else if (low_influence >= grass_mid) {
+        color_id_ = grass_colors[low_influence];
+    } else if (heigh_influence <= grass_mid) {
+        color_id_ = grass_colors[heigh_influence];
+    } else {
+        color_id_ = grass_colors[grass_mid];
     }
 }
 
@@ -120,18 +160,6 @@ Tile::get_mat_color_id() const {
         return 0;
     }
     return mat_id_ << 8 | color_id_;
-}
-
-// return `grow_data_low`
-uint8_t
-Tile::get_grow_low() const {
-    return grow_data_low_;
-}
-
-// return `grow_data_high`
-uint8_t
-Tile::get_grow_high() const {
-    return grow_data_high_;
 }
 
 // return x, y, z positions as array

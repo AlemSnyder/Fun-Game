@@ -441,8 +441,8 @@ Terrain::init_grass() {
             }
             // same thing here as above
         }
-    grow_grass_high(all_grass);
     grow_grass_low(all_grass);
+    grow_grass_high(all_grass);
     for (Tile* t : all_grass) {
         t->set_grass_color(grass_grad_length_, grass_mid_, grass_colors_);
     }
@@ -608,20 +608,24 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     // so what is going on? Only god knows.
     // abs(_s - _f) returns zero or one depending on wether the final and
     // initial positions are the same. same as bool (_s != _f)
-    uint8_t x_diff = abs(xs - xf);
-    uint8_t y_diff = abs(ys - yf);
-    uint8_t z_diff = abs(zs - zf);
+    uint8_t x_diff = abs(xs - xf); // difference in x direction
+    uint8_t y_diff = abs(ys - yf); // difference in y direction
+    uint8_t z_diff = abs(zs - zf); // difference in z direction
 
     // If there is a change in the horizontal position, then everything should
-    // be bit shifted by 3, and if not, by 1.
+    // be bit shifted by 4, and if not, by 1.
     // This is because Directional flags are defined as follows:
     // 32   16  8  4  2 1
     // VH2 VH1  V H2 H1 O
-    uint8_t horizontal_direction = (x_diff + y_diff) << (1 + 2 * z_diff);
-    uint8_t vertical_direction = z_diff << 1;
+    uint8_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
+    uint8_t vertical_direction = z_diff << 3;
+    UnitPath type;
+    if (horizontal_direction == 0)
+        type = vertical_direction;
+    else
+        type = horizontal_direction;
 
     bool open;
-    UnitPath type(horizontal_direction + vertical_direction);
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
@@ -663,7 +667,7 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
         }
     }
 
-    return type & UnitPath(open);
+    return type | UnitPath(open);
 }
 
 std::set<const NodeGroup*>
@@ -896,22 +900,6 @@ Terrain::get_voxel(int x, int y, int z) const {
     return previous_out_color;
 }
 
-// Set `color` to the color of the tile at `pos`.
-void
-Terrain::export_color(const int sop[3], uint8_t color[4]) const {
-    uint32_t tile_color = get_voxel(sop[0], sop[1], sop[2]);
-    color[0] = (tile_color >> 24) & 0xFF;
-    color[1] = (tile_color >> 16) & 0xFF;
-    color[2] = (tile_color >> 8) & 0xFF;
-    color[3] = tile_color & 0xFF;
-}
-
-uint32_t
-Terrain::compress_color(uint8_t v[4]) {
-    return (uint32_t)v[3] | (uint32_t)v[2] << 8 | (uint32_t)v[1] << 16
-           | (uint32_t)v[0] << 24;
-}
-
 void
 Terrain::qb_save_debug(const std::string path) {
     int x = 0;
@@ -932,7 +920,7 @@ Terrain::qb_save_debug(const std::string path) {
 void
 Terrain::qb_save(const std::string path) const {
     // Saves the tiles in this to the path specified
-    voxel_utility::to_qb(path, *this);
+    voxel_utility::to_qb(std::filesystem::path(path), *this);
 }
 
 void

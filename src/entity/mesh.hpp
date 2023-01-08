@@ -20,7 +20,7 @@
  */
 #pragma once
 
-#include "../util/voxel_io.hpp"
+#include "../util/voxel.hpp"
 
 #include <glm/glm.hpp>
 
@@ -35,13 +35,15 @@ namespace entity {
  */
 struct Mesh {
     Mesh(
-        std::vector<uint16_t>& indices, std::vector<glm::vec3>& indexed_vertices,
-        std::vector<glm::vec3>& indexed_colors, std::vector<glm::vec3>& indexed_normals
+        const std::vector<uint16_t>& indices,
+        const std::vector<glm::ivec3>& indexed_vertices,
+        const std::vector<uint16_t>& indexed_color_ids,
+        const std::vector<glm::i8vec3>& indexed_normals,
+        const std::vector<uint32_t>& color_map
     ) :
         indices_(indices),
-        indexed_vertices_(indexed_vertices), indexed_colors_(indexed_colors),
-        indexed_normals_(indexed_normals)
-    {}
+        indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
+        indexed_normals_(indexed_normals), color_map_(color_map) {}
 
     // defines a bounding box of the mesh
     const std::vector<int> size_;
@@ -51,34 +53,34 @@ struct Mesh {
     // indices of vertices drawn (vertices used twice can be ignored)
     const std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
-    const std::vector<glm::vec3> indexed_vertices_;
+    const std::vector<glm::ivec3> indexed_vertices_;
     // color of vertex
-    const std::vector<glm::vec3> indexed_colors_;
+    const std::vector<uint16_t> indexed_color_ids_;
     // normal direction
-    const std::vector<glm::vec3> indexed_normals_;
+    const std::vector<glm::i8vec3> indexed_normals_;
+    // color map
+    const std::vector<uint32_t> color_map_;
 
 }; // struct Mesh
 
 /**
  * @brief Generates a mesh from the given 3D voxel structure
  *
- * @tparam T
+ * @tparam T is_base_of voxel_utility::VoxelLike, T
  * @param voxel_object
  */
-template <class T>
+template <voxel_utility::VoxelLike T>
 Mesh
-generate_mesh(T voxel_object)
-{
+generate_mesh(T voxel_object) {
     std::vector<uint16_t> indices;
-    std::vector<glm::vec3> indexed_vertices;
-    std::vector<glm::vec3> indexed_colors;
-    std::vector<glm::vec3> indexed_normals;
+    std::vector<glm::ivec3> indexed_vertices;
+    std::vector<uint16_t> indexed_colors;
 
+    std::vector<glm::i8vec3> indexed_normals;
     // mesh off set
     std::array<int32_t, 3> center = voxel_object.get_offset();
     std::array<uint32_t, 3> dims = voxel_object.get_size();
-    glm::vec3 off_set(center[0], center[1], center[2]);
-    
+    glm::ivec3 offset(center[0], center[1], center[2]);
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;
@@ -88,7 +90,7 @@ generate_mesh(T voxel_object)
         int mesh_normal[3] = {0};    // direction that the mesh is not changing in
 
         // the color of all tiles at the same "level".
-        std::vector<std::pair<bool, uint32_t>> color_info(
+        std::vector<std::pair<bool, uint16_t>> color_info(
             dims[dims_index_1] * dims[dims_index_2]
         );
 
@@ -105,11 +107,11 @@ generate_mesh(T voxel_object)
                      voxel_position[dims_index_1] < int(dims[dims_index_1]);
                      ++voxel_position[dims_index_1], ++counter) {
                     // tile in the level above
-                    const uint32_t voxel_above = voxel_object.get_voxel(
+                    const uint16_t voxel_above = voxel_object.get_voxel_color_id(
                         voxel_position[0], voxel_position[1], voxel_position[2]
                     );
                     // tiles in the level below
-                    const uint32_t voxel_below = voxel_object.get_voxel(
+                    const uint16_t voxel_below = voxel_object.get_voxel_color_id(
                         voxel_position[0] + mesh_normal[0],
                         voxel_position[1] + mesh_normal[1],
                         voxel_position[2] + mesh_normal[2]
@@ -141,7 +143,7 @@ generate_mesh(T voxel_object)
             for (unsigned int j = 0; j < dims[dims_index_2]; ++j)
                 for (unsigned int i = 0; i < dims[dims_index_1];) {
                     // color and direction of the face between two voxels
-                    std::pair<bool, uint32_t> color = color_info[counter];
+                    std::pair<bool, uint16_t> color = color_info[counter];
                     // if there is a face between two voxels
                     if (color.second) {
                         // find the size of all faces that have the same color
@@ -171,7 +173,7 @@ generate_mesh(T voxel_object)
                                 // if the direction and color of the original
                                 // face is different from the direction and
                                 // color of the face currently being tested
-                                std::pair<bool, uint32_t> test_against = color_info
+                                std::pair<bool, uint16_t> test_against = color_info
                                     [counter + k + height * dims[dims_index_1]];
                                 if (color != test_against) {
                                     done = true;
@@ -186,72 +188,71 @@ generate_mesh(T voxel_object)
                         voxel_position[dims_index_1] = i;
                         voxel_position[dims_index_2] = j;
 
-                        int off_set_1[3] = {0};
-                        int off_set_2[3] = {0};
+                        int offset_1[3] = {0};
+                        int offset_2[3] = {0};
 
                         // depending on the normal direction set the width, and
                         // height
                         if (color.first) {
-                            off_set_2[dims_index_2] = height;
-                            off_set_1[dims_index_1] = width;
+                            offset_2[dims_index_2] = height;
+                            offset_1[dims_index_1] = width;
                         } else {
-                            off_set_1[dims_index_2] = height;
-                            off_set_2[dims_index_1] = width;
+                            offset_1[dims_index_2] = height;
+                            offset_2[dims_index_1] = width;
                         }
 
                         const std::size_t vertex_size = indexed_vertices.size();
 
                         indexed_vertices.push_back(
-                            glm::vec3(
+                            glm::ivec3(
                                 voxel_position[0], voxel_position[1], voxel_position[2]
                             )
-                            + off_set
+                            + offset
                         );
                         indexed_vertices.push_back(
-                            glm::vec3(
-                                voxel_position[0] + off_set_1[0],
-                                voxel_position[1] + off_set_1[1],
-                                voxel_position[2] + off_set_1[2]
+                            glm::ivec3(
+                                voxel_position[0] + offset_1[0],
+                                voxel_position[1] + offset_1[1],
+                                voxel_position[2] + offset_1[2]
                             )
-                            + off_set
+                            + offset
                         );
                         indexed_vertices.push_back(
-                            glm::vec3(
-                                voxel_position[0] + off_set_1[0] + off_set_2[0],
-                                voxel_position[1] + off_set_1[1] + off_set_2[1],
-                                voxel_position[2] + off_set_1[2] + off_set_2[2]
+                            glm::ivec3(
+                                voxel_position[0] + offset_1[0] + offset_2[0],
+                                voxel_position[1] + offset_1[1] + offset_2[1],
+                                voxel_position[2] + offset_1[2] + offset_2[2]
                             )
-                            + off_set
+                            + offset
                         );
                         indexed_vertices.push_back(
-                            glm::vec3(
-                                voxel_position[0] + off_set_2[0],
-                                voxel_position[1] + off_set_2[1],
-                                voxel_position[2] + off_set_2[2]
+                            glm::ivec3(
+                                voxel_position[0] + offset_2[0],
+                                voxel_position[1] + offset_2[1],
+                                voxel_position[2] + offset_2[2]
                             )
-                            + off_set
+                            + offset
                         );
 
-                        uint32_t int_color = color.second;
-                        uint32_t red = (int_color >> 24) & 0xFF;
-                        uint32_t green = (int_color >> 16) & 0xFF;
-                        uint32_t blue = (int_color >> 8) & 0xFF;
-                        // the last one >> 0 is A
-                        glm::vec3 vector_color(
-                            red / 255.0, green / 255.0, blue / 255.0
-                        );
                         // how many corners on a square are there?
                         for (size_t voxel_position = 0; voxel_position < 4;
                              voxel_position++) {
-                            indexed_colors.push_back(vector_color);
+                            indexed_colors.push_back(color.second);
                         }
 
-                        glm::vec3 triangle_normal = glm::normalize(glm::cross(
-                            indexed_vertices[vertex_size]
-                                - indexed_vertices[vertex_size + 1],
-                            indexed_vertices[vertex_size]
-                                - indexed_vertices[vertex_size + 2]
-                        ));
+                        glm::i8vec3 triangle_normal = glm::i8vec3(
+                            glm::normalize(glm::cross(
+                                glm::vec3(
+                                    indexed_vertices[vertex_size]
+                                    - indexed_vertices[vertex_size + 1]
+                                ),
+                                glm::vec3(
+                                    indexed_vertices[vertex_size]
+                                    - indexed_vertices[vertex_size + 2]
+                                )
+                            ))
+                            + glm::vec3(.5, .5, .5)
+                        );
                         // how many corners on a square are there?
                         for (size_t voxel_position = 0; voxel_position < 4;
                              voxel_position++) {
@@ -281,7 +282,10 @@ generate_mesh(T voxel_object)
                 }
         }
     }
-    return Mesh(indices, indexed_vertices, indexed_colors, indexed_normals);
+    return Mesh(
+        indices, indexed_vertices, indexed_colors, indexed_normals,
+        voxel_object.get_color_ids()
+    );
 }
 
 } // namespace entity

@@ -21,13 +21,14 @@ MainRenderer::MainRenderer() {
     // indexed program
     programID_multi_ = load_shaders(
         files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
-        files::get_resources_path() / "shaders" / "ShadowMappingInstanced.frag"
+        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
     );
     // ---- non-indexed program ----
     matrix_ID_ = glGetUniformLocation(programID_single_, "MVP");
     view_matrix_ID_ = glGetUniformLocation(programID_single_, "V");
     depth_bias_ID_ = glGetUniformLocation(programID_single_, "DepthBiasMVP");
     shadow_map_ID_ = glGetUniformLocation(programID_single_, "shadowMap");
+    color_map_ID_ = glGetUniformLocation(programID_single_, "meshColors");
     light_direction_ID_ =
         glGetUniformLocation(programID_single_, "LightInvDirection_worldspace");
     // ------ indexed program ------
@@ -35,6 +36,7 @@ MainRenderer::MainRenderer() {
     view_matrix_ID_multi_ = glGetUniformLocation(programID_multi_, "V");
     depth_bias_ID_multi_ = glGetUniformLocation(programID_multi_, "DepthBiasMVP");
     shadow_map_ID_multi_ = glGetUniformLocation(programID_multi_, "shadowMap");
+    color_map_ID_multi_ = glGetUniformLocation(programID_multi_, "meshColors");
     light_direction_ID_multi_ =
         glGetUniformLocation(programID_multi_, "LightInvDirection_worldspace");
 }
@@ -121,46 +123,47 @@ MainRenderer::render(GLFWwindow* window) const {
         light_direction_ID_, light_direction_.x, light_direction_.y, light_direction_.z
     );
 
-    // Bind our texture in Texture Unit 1
+    // Bind Shadow Texture to Texture Unit 1
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_ID_, 1);
 
     for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_) {
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
+        glUniform1i(color_map_ID_, 2);
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
-            0,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
+        glVertexAttribIPointer(
+            0,       // attribute
+            3,       // size
+            GL_INT,  // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
 
         // 2nd attribute buffer : colors
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_color_buffer());
-        glVertexAttribPointer(
-            1,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
+        glVertexAttribIPointer(
+            1,                 // attribute
+            1,                 // size
+            GL_UNSIGNED_SHORT, // type
+            0,                 // stride
+            (void*)0           // array buffer offset
         );
 
         // 3rd attribute buffer : normals
         glEnableVertexAttribArray(2);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_normal_buffer());
-        glVertexAttribPointer(
-            2,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
+        glVertexAttribIPointer(
+            2,       // attribute
+            3,       // size
+            GL_BYTE, // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
 
         // Index buffer
@@ -173,10 +176,6 @@ MainRenderer::render(GLFWwindow* window) const {
             GL_UNSIGNED_SHORT,        // type
             (void*)0                  // element array buffer offset
         );
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
     }
 
     // Use our shader
@@ -198,52 +197,52 @@ MainRenderer::render(GLFWwindow* window) const {
     glUniform1i(shadow_map_ID_multi_, 1);
 
     for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
-        // 1rst attribute buffer : vertices
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
+        glUniform1i(color_map_ID_multi_, 2);
+
+        // 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
-            0,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
+        glVertexAttribIPointer(
+            0,       // attribute
+            3,       // size
+            GL_INT,  // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
 
         // 2nd attribute buffer : UVs
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_color_buffer());
-        glVertexAttribPointer(
-            1,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
+        glVertexAttribIPointer(
+            1,                 // attribute
+            1,                 // size
+            GL_UNSIGNED_SHORT, // type
+            0,                 // stride
+            (void*)0           // array buffer offset
         );
 
         // 3rd attribute buffer : normals
         glEnableVertexAttribArray(2);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_normal_buffer());
-        glVertexAttribPointer(
-            2,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
+        glVertexAttribIPointer(
+            2,       // attribute
+            3,       // size
+            GL_BYTE, // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
 
         // 4th attribute buffer : transform
         glEnableVertexAttribArray(3);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
-        glVertexAttribPointer(
-            3,        // attribute
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
+        glVertexAttribIPointer(
+            3,       // attribute
+            3,       // size
+            GL_INT,  // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
         glVertexAttribDivisor(3, 1);
 
@@ -264,4 +263,6 @@ MainRenderer::render(GLFWwindow* window) const {
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(3);
+    glVertexAttribDivisor(3, 0);
+    glDisable(GL_TEXTURE2);
 }

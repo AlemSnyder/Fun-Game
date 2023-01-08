@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "../util/voxel_io.hpp"
 #include "path/node_group.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
@@ -41,7 +42,7 @@ class Terrain;
  * modifications can be made.
  *
  */
-class Chunk {
+class Chunk : public voxel_utility::VoxelBase {
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
     uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
@@ -58,7 +59,7 @@ class Chunk {
      * @param ter the terrain this chunk is in
      */
     Chunk(int bx, int by, int bz, Terrain* ter);
-    
+
     /**
      * @brief adds node groups in this chunk to out
      *
@@ -72,8 +73,7 @@ class Chunk {
      * @return std::vector<int> offset of chunk in world space
      */
     inline std::array<int32_t, 3>
-    get_offset() const
-    {
+    get_offset() const {
         return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
     }
 
@@ -82,9 +82,8 @@ class Chunk {
      *
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
-    inline static std::array<uint32_t, 3>
-    get_size()
-    {
+    inline std::array<uint32_t, 3>
+    get_size() {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
 
@@ -94,12 +93,31 @@ class Chunk {
      * @param x x position in chunk
      * @param y y position in chunk
      * @param z z position in chunk
-     * @return uint32_t color or tile color id
+     * @return uint32_t tile color id
      */
     uint32_t get_voxel(int x, int y, int z) const;
 
- private:
+    /**
+     * @brief Get the voxel color id
+     *
+     * @param x x position in chunk
+     * @param y y position in chunk
+     * @param z z position in chunk
+     * @return uint16_t color id
+     */
+    uint16_t get_voxel_color_id(int x, int y, int z) const;
 
+    /**
+     * @brief Get the colors used in terrain.
+     *
+     * @return const std::vector<uint32_t>&
+     */
+    [[nodiscard]] const inline std::vector<uint32_t>&
+    get_color_ids() const {
+        return TerrainColorMapping::get_color_ids_map();
+    }
+
+ private:
     void delNodeGroup(NodeGroup& NG);
     void mergeNodeGroup(NodeGroup& g1, NodeGroup& g2);
     bool contains_nodeGroup(NodeGroup*);

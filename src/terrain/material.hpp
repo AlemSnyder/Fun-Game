@@ -22,8 +22,12 @@
 
 #pragma once
 
+#include "../logging.hpp"
+
 #include <cstdint>
+#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace terrain {
@@ -55,6 +59,28 @@ struct Material {
     const std::string name = "Air"; // The material name
     // int8_t deterioration from wind
     // int8_t deterioration from water
+};
+
+class TerrainColorMapping {
+ private:
+    // color map
+    //  index -> color vector
+    static std::vector<uint32_t> color_ids_map;
+    // color -> index
+    static std::unordered_map<uint32_t, uint16_t> colors_inverse_map;
+
+ public:
+    static void assign_color_mapping(const std::map<int, const Material>* materials);
+
+    inline static std::vector<uint32_t>&
+    get_color_ids_map() {
+        return color_ids_map;
+    }
+
+    inline static std::unordered_map<uint32_t, uint16_t>
+    get_colors_inverse_map() {
+        return colors_inverse_map;
+    }
 };
 
 } // namespace terrain

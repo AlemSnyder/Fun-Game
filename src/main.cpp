@@ -7,6 +7,7 @@
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
 #include "world.hpp"
+#include "util/voxel_io.hpp"
 
 #include <argh.h>
 
@@ -23,6 +24,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
@@ -61,8 +63,7 @@ MacroMap()
 }
 
 int
-save_test(const std::string path, const std::string save_path)
-{
+save_test(const std::string path, const std::string save_path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -75,8 +76,9 @@ save_test(const std::string path, const std::string save_path)
 }
 
 void
-save_terrain(Json::Value materials_json, Json::Value biome_data, std::string biome_name)
-{
+save_terrain(
+    Json::Value materials_json, Json::Value biome_data, std::string biome_name
+) {
     quill::Logger* logger = quill::get_logger();
 
     std::ifstream materials_file = files::open_data_file("materials.json");

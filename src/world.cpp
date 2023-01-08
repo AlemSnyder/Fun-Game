@@ -24,6 +24,7 @@
 #include "world.hpp"
 
 #include "entity/mesh.hpp"
+#include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
 
@@ -77,6 +78,8 @@ World::init_materials(Json::Value material_data) {
             name};                                           // name
         out.insert(std::make_pair(mat.element_id, mat));
     }
+
+    terrain::TerrainColorMapping::assign_color_mapping(&out);
     return out;
 }
 

@@ -21,7 +21,7 @@ ShadowMap::ShadowMap(int w, int h) {
     );
     programID_multi_ = load_shaders(
         files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
-        files::get_resources_path() / "shaders" / "DepthRTTInstanced.frag"
+        files::get_resources_path() / "shaders" / "DepthRTT.frag"
     );
 
     // Get a handle for our "MVP" uniform
@@ -111,17 +111,6 @@ ShadowMap::render_shadow_depth_buffer() const {
     // Use our shader
     glUseProgram(programID_);
 
-    // glm::mat4 depth_view_matrix =
-    //     glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    /* For spot light:
-     *
-     * glm::vec3 lightPos(5, 20, 20);
-     * glm::mat4 depthProjectionMatrix =
-     * glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
-     *     depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
-     * glm::vec3(0,1,0));
-     */
-
     // matrix to calculate the length of a light ray in model space
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
@@ -134,11 +123,10 @@ ShadowMap::render_shadow_depth_buffer() const {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             0,        // The attribute we want to configure
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -160,16 +148,6 @@ ShadowMap::render_shadow_depth_buffer() const {
     // Use our shader
     glUseProgram(programID_multi_);
 
-    // glm::mat4 depth_view_matrix =
-    //     glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1,
-    //     0));
-    //  or, for spot light :
-    //  glm::vec3 lightPos(5, 20, 20);
-    //  glm::mat4 depthProjectionMatrix =
-    //  glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f); glm::mat4
-    //  depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir,
-    //  glm::vec3(0,1,0));
-
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
     glUniformMatrix4fv(depth_matrix_ID_multi_, 1, GL_FALSE, &depthMVP[0][0]);
@@ -179,11 +157,10 @@ ShadowMap::render_shadow_depth_buffer() const {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             0,        // The attribute we want to configure
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
@@ -195,11 +172,10 @@ ShadowMap::render_shadow_depth_buffer() const {
         // be indexed. Because attribute 3 is indexed somewhere else there is
         // no problem here
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
-        glVertexAttribPointer(
+        glVertexAttribIPointer(
             3,        // attribute
             3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
+            GL_INT, // type
             0,        // stride
             (void*)0  // array buffer offset
         );
