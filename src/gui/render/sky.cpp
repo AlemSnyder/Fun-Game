@@ -6,19 +6,20 @@
 #include "../meshloader.hpp"
 #include "../shader.hpp"
 #include "../data_structures/sky_data.hpp"
+#include "../../util/files.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <filesystem>
+
 namespace gui {
 
 namespace sky {
 
-/*SkyRenderer::SkyRenderer(){
+SkyRenderer::SkyRenderer() : sky_data_(files::get_data_path() / "stars.json"), screen_data_(){
 
-    sky_data_; //read from json
-    screen_data_; //default
     programID_ = load_shaders(
         files::get_resources_path() / "shaders" / "Sky.vert",
         files::get_resources_path() / "shaders" / "Sky.frag"
@@ -28,9 +29,9 @@ namespace sky {
     pixel_matrix_ID_ = glGetUniformLocation(programID_, "V");
     star_texture_ = glGetUniformLocation(programID_, "stars");
     star_num_ID_ = glGetUniformLocation(programID_, "number_of_stars");
-}*/
+}
 
-SkyRenderer::SkyRenderer(SkyData& sky_data, ScreenData& screen_data) :
+/*SkyRenderer::SkyRenderer(SkyData& sky_data, ScreenData& screen_data) :
     sky_data_(sky_data), screen_data_(screen_data) {
     // get the program
     programID_ = load_shaders(
@@ -43,7 +44,7 @@ SkyRenderer::SkyRenderer(SkyData& sky_data, ScreenData& screen_data) :
     star_texture_ = glGetUniformLocation(programID_, "stars");
     star_num_ID_ = glGetUniformLocation(programID_, "number_of_stars");
 
-}
+}*/
 
 SkyRenderer::~SkyRenderer() {
     glDeleteProgram(programID_);

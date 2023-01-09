@@ -195,16 +195,16 @@ GUITest(World world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
-    std::vector<glm::vec3> stars;
-    stars.push_back(glm::vec3(234,68,5));
-    stars.push_back(glm::vec3(234.5,69,5));
-    stars.push_back(glm::vec3(224,65,5));
-    stars.push_back(glm::vec3(230,66,10));
+    //std::vector<glm::vec3> stars;
+    //stars.push_back(glm::vec3(234,68,5));
+    //stars.push_back(glm::vec3(234.5,69,5));
+    //stars.push_back(glm::vec3(224,65,5));
+    //stars.push_back(glm::vec3(230,66,10));
 
-    sky::SkyData sky_data(stars);
-    ScreenData screen_data;
+    //sky::SkyData sky_data;
+    //ScreenData screen_data;
 
-    sky::SkyRenderer SR(sky_data, screen_data);
+    sky::SkyRenderer SR;
 
     LOG_INFO(logging::opengl_logger, "GL error code: {}", glGetError());
 

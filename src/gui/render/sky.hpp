@@ -53,8 +53,8 @@ class SkyRenderer {
     GLuint star_texture_;              // ID of star texture
     GLuint star_num_ID_;               // ID of number of stars
 
-    sky::SkyData& sky_data_;  // reference to star data
-    ScreenData& screen_data_; // reference to screen data
+    sky::SkyData sky_data_;  // reference to star data
+    ScreenData screen_data_; // reference to screen data
 
  public:
     /**
@@ -65,7 +65,7 @@ class SkyRenderer {
 
     // TODO remove this
     // all skys have the same stars, and screen
-    SkyRenderer(SkyData& sky_data, ScreenData& screen_data);
+    //SkyRenderer(SkyData& sky_data, ScreenData& screen_data);
 
     ~SkyRenderer();
 

@@ -10,17 +10,27 @@
         ]
     },
     "stars": {
-        "brightness_scale": 1,
+        "brightness_scale": 1.0,
         "data":[
             {
-                "theta":186,
-                "thi":5,
-                "brightness":1
+                "theta":234.0,
+                "phi":68.0,
+                "brightness":5.0
             },
             {
-                "theta":95,
-                "thi":78,
-                "brightness": 0.1
+                "theta":234.5,
+                "phi":69.0,
+                "brightness": 5.0
+            },
+            {
+                "theta":224.0,
+                "phi":65.0,
+                "brightness": 5.0
+            },
+            {
+                "theta":230.0,
+                "phi":66.0,
+                "brightness": 10.0
             }
         ]
     }

@@ -18,8 +18,9 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <quill/Quill.h>
-#include <stdint.h>
+#include <json/json.h>
 
+#include <stdint.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>

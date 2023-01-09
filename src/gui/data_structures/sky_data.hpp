@@ -3,6 +3,9 @@
 #include <glm/glm.hpp>
 
 #include <vector>
+#include <json/json.h>
+
+#include <filesystem>
 
 #pragma once
 
@@ -53,13 +56,17 @@ class SkyData {
      * 
      * @param stars vector of theta, phi, brightness that describes stars
      */
-    SkyData(const std::vector<glm::vec3>& stars);
+    //SkyData(const std::vector<glm::vec3>& stars);
+
+    SkyData(std::filesystem::path path);
 
     /**
      * @brief Destroy the Sky Data object
      * 
      */
-    inline ~SkyData() { glDeleteTextures(1, &stars_texture_); }
+    inline ~SkyData() { 
+        glDeleteTextures(1, &stars_texture_);
+    }
 
     /**
      * @brief Get the stars texture id
