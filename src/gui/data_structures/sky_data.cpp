@@ -42,7 +42,7 @@ SkyData::SkyData(std::filesystem::path path) {
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
     glTexImage1D(
-        GL_TEXTURE_1D, 0, GL_RGB32F, stars.size(), 0, GL_RGB, GL_FLOAT, stars.data()
+        GL_TEXTURE_1D, 0, GL_RGB32F, num_stars_, 0, GL_RGB, GL_FLOAT, stars.data()
     );
     glGenerateMipmap(GL_TEXTURE_1D);
 }

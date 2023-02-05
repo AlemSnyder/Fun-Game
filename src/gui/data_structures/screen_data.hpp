@@ -20,13 +20,11 @@ class ScreenData {
     /**
      * @brief Construct a new Screen Data object
      * 
+     * @warning You shouldn't do this. This will delete the buffer from the gpu
+     * 
      * @param obj 
      */
-    inline ScreenData(const ScreenData& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        num_vertices_ = obj.num_vertices_;
-    };
+    ScreenData(const ScreenData& obj) = delete;
 
     /**
      * @brief The copy operator
@@ -36,12 +34,7 @@ class ScreenData {
      * @param obj 
      * @return ScreenData&
      */
-    inline ScreenData& operator=(const ScreenData& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        num_vertices_ = obj.num_vertices_;
-        return *this;
-    }
+    ScreenData& operator=(const ScreenData& obj) = delete;
     /**
      * @brief Construct a new Screen Data object, default constructor
      * 

@@ -26,25 +26,10 @@ SkyRenderer::SkyRenderer() : sky_data_(files::get_data_path() / "stars.json"), s
     );
     // ---- set uniforms ----
     matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
-    pixel_matrix_ID_ = glGetUniformLocation(programID_, "V");
-    star_texture_ = glGetUniformLocation(programID_, "stars");
-    star_num_ID_ = glGetUniformLocation(programID_, "number_of_stars");
-}
-
-/*SkyRenderer::SkyRenderer(SkyData& sky_data, ScreenData& screen_data) :
-    sky_data_(sky_data), screen_data_(screen_data) {
-    // get the program
-    programID_ = load_shaders(
-        files::get_resources_path() / "shaders" / "Sky.vert",
-        files::get_resources_path() / "shaders" / "Sky.frag"
-    );
-    // ---- set uniforms ----
-    matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
     pixel_matrix_ID_ = glGetUniformLocation(programID_, "pixel_projection");
     star_texture_ = glGetUniformLocation(programID_, "stars");
     star_num_ID_ = glGetUniformLocation(programID_, "number_of_stars");
-
-}*/
+}
 
 SkyRenderer::~SkyRenderer() {
     glDeleteProgram(programID_);

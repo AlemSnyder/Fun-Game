@@ -63,10 +63,6 @@ class SkyRenderer {
      */
     SkyRenderer();
 
-    // TODO remove this
-    // all skys have the same stars, and screen
-    //SkyRenderer(SkyData& sky_data, ScreenData& screen_data);
-
     ~SkyRenderer();
 
     /**

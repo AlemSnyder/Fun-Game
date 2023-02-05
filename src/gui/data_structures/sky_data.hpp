@@ -26,10 +26,7 @@ class SkyData {
      * 
      * @param obj 
      */
-    inline SkyData(const SkyData& obj) {
-        stars_texture_ = obj.stars_texture_;
-        num_stars_ = obj.num_stars_;
-    };
+    SkyData(const SkyData& obj) = delete;
 
     /**
      * @brief The copy operator
@@ -39,24 +36,14 @@ class SkyData {
      * @param obj 
      * @return SkyData& 
      */
-    inline SkyData&
-    operator=(const SkyData& obj) {
-        stars_texture_ = obj.stars_texture_;
-        num_stars_ = obj.num_stars_;
-        return *this;
-    }
+    SkyData&
+    operator=(const SkyData& obj) = delete;
 
     /**
      * @brief Construct a new Sky Data object, default constructor
      * 
      */
     inline SkyData(){};
-    /**
-     * @brief Construct a new Sky Data object
-     * 
-     * @param stars vector of theta, phi, brightness that describes stars
-     */
-    //SkyData(const std::vector<glm::vec3>& stars);
 
     SkyData(std::filesystem::path path);
 
