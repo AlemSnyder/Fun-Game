@@ -27,7 +27,7 @@ main(){
     float brightness = 0;
     for (int i = 0; i < number_of_stars; ++i){
         vec3 star = texelFetch(stars, i, 0).rgb;
-        vec4 direction = {cos(radians(star.x)), sin(radians(star.x))*cos(radians(star.y)), sin(radians(star.x))*sin(radians(star.y)),0};
+        vec4 direction = {cos(radians(star.x))*sin(radians(star.y)), sin(radians(star.x))*sin(radians(star.y)), cos(radians(star.y)),0};
 
         vec4 direction_projected = (MVP * direction);
 
