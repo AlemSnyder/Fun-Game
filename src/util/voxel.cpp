@@ -29,6 +29,7 @@ VoxelObject::VoxelObject(const std::filesystem::path path){
             colors_.push_back(color);
         }
         
+        // This works as begin() - end() == size()
         data_.push_back(idx);
     }
     if (colors_.size() > 1U << 15){
