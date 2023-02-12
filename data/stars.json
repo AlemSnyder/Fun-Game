@@ -15,22 +15,26 @@
             {
                 "theta":234.0,
                 "phi":68.0,
-                "brightness":5.0
+                "brightness":5.0,
+                "age":1
             },
             {
                 "theta":234.5,
                 "phi":69.0,
-                "brightness": 5.0
+                "brightness": 5.0,
+                "age":0.5
             },
             {
                 "theta":224.0,
                 "phi":65.0,
-                "brightness": 5.0
+                "brightness": 5.0,
+                "age":0.5
             },
             {
                 "theta":230.0,
                 "phi":66.0,
-                "brightness": 10.0
+                "brightness": 10.0,
+                "age":0
             }
         ]
     }

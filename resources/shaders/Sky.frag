@@ -18,15 +18,24 @@ get_brightness(vec2 EyeDirectionScreen, vec2 StarDirectionScreen, float brightne
     float len = length(EyeDirectionScreen-StarDirectionScreen);
 
     // return the brightness
-    return brightness - len;
+    return clamp(brightness - len, 0.0, 1.0);
+}
+
+vec3
+star_color(float brightness, float age){
+    float red = mix(1, .7, age);
+    float green = mix(.8, .7, age);
+    float blue = mix(.5, 1, age);
+    return vec3(brightness*red,brightness*green,brightness*blue);
+    //return vec3(brightness,brightness,brightness);
 }
 
 void
 main(){
 
-    float brightness = 0;
+    vec3 brightness = {0.0,0.0,0.0};
     for (int i = 0; i < number_of_stars; ++i){
-        vec3 star = texelFetch(stars, i, 0).rgb;
+        vec4 star = texelFetch(stars, i, 0);
         vec4 direction = {cos(radians(star.x))*sin(radians(star.y)), sin(radians(star.x))*sin(radians(star.y)), cos(radians(star.y)),0};
 
         vec4 direction_projected = (MVP * direction);
@@ -38,14 +47,21 @@ main(){
         vec2 StarDirection_cameraspace = (pixel_projection * vec4((direction_projected).xy/direction_projected.w, 0, 1)).xy;
 
         float next_brightness = get_brightness(EyeDirectionScreenSpace, StarDirection_cameraspace, star.z);
-        if (next_brightness > brightness){
-            brightness = next_brightness;
-        }
+
+        //next_color = star_color(next_brightness, star.w);
+
+        brightness = brightness + star_color(next_brightness, star.w);
+
+        //if (next_brightness > brightness){
+        //    brightness = next_brightness;
+        //}
     }
 
-    brightness = clamp(brightness, 0.0, 1.0);
+    brightness.x = clamp(brightness.x, 0.0, 1.0);
+    brightness.y = clamp(brightness.y, 0.0, 1.0);
+    brightness.z = clamp(brightness.z, 0.0, 1.0);
 
-    color = vec3(brightness,brightness,brightness);
+    color = brightness;//vec3(brightness,brightness,brightness);
     /*
     if (abs(EyeDirectionScreenSpace.x - EyeDirectionScreenSpace.y) < 4){
         color = vec3(1, 1, 1);

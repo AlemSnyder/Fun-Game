@@ -17,14 +17,15 @@ SkyData::SkyData(std::filesystem::path path) {
     Json::Value stars_json;
     std::ifstream stars_file = files::open_data_file(path);
     stars_file >> stars_json;
-    std::vector<glm::vec3> stars;
+    std::vector<glm::vec4> stars;
 
     for (Json::Value::ArrayIndex i = 0; i < stars_json["stars"]["data"].size(); i++) {
         Json::Value star = stars_json["stars"]["data"][i];
-        glm::vec3 star_vector(
+        glm::vec4 star_vector(
             star["theta"].asFloat(),
             star["phi"].asFloat(),
-            star["brightness"].asFloat()
+            star["brightness"].asFloat(),
+            star["age"].asFloat()
         );
         stars.push_back(star_vector);
     }
@@ -42,7 +43,7 @@ SkyData::SkyData(std::filesystem::path path) {
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
     glTexImage1D(
-        GL_TEXTURE_1D, 0, GL_RGB32F, num_stars_, 0, GL_RGB, GL_FLOAT, stars.data()
+        GL_TEXTURE_1D, 0, GL_RGBA32F, num_stars_, 0, GL_RGBA, GL_FLOAT, stars.data()
     );
     glGenerateMipmap(GL_TEXTURE_1D);
 }
