@@ -207,7 +207,9 @@ class Tile {
      *
      * @return uint8_t color id
      */
-    [[nodiscard]] uint8_t get_color_id() const;
+    [[nodiscard]] inline uint8_t get_color_id() const {
+        return color_id_;
+    }
 
     /**
      * @brief Get the material, and color id in one

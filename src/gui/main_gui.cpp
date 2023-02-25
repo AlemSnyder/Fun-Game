@@ -27,6 +27,9 @@ int
 GUITest(World world) {
     auto mesh = world.get_mesh_greedy();
 
+    LOG_INFO(logging::opengl_logger, "End of world get mesh greedy");
+
+
     voxel_utility::VoxelObject default_trees_voxel(
         files::get_data_path() / "models" / "DefaultTree.qb"
     );

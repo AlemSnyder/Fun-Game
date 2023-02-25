@@ -1,4 +1,5 @@
 #include "terrain.hpp"
+#include "terrain_base.hpp"
 
 #include "../logging.hpp"
 #include "../util/time.hpp"
@@ -24,8 +25,6 @@
 #include <vector>
 
 namespace terrain {
-
-int Terrain::Area_size = 32;
 
 Terrain::Terrain() : seed(0) {
     init(0, 0, 0);
@@ -78,8 +77,8 @@ Terrain::init(
 
 Terrain::Terrain(
     const std::string path, const std::map<int, const Material>* materials
-) :
-    materials_(materials) {
+) {
+    materials_ = materials;
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse;
     for (auto it = materials_->begin(); it != materials_->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -149,6 +148,11 @@ Terrain::init(
         );
         land_generators.insert(std::make_pair(i, gen));
     }
+
+    LOG_INFO(
+        logging::terrain_logger, "End of land generator: create macro tile generator."
+    );
+
     // TODO make this faster 4
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++) {
@@ -158,14 +162,21 @@ Terrain::init(
                 init_area(i, j, land_generators[generator_macro.asInt()]);
             }
         }
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles .");
+
     // TODO make this faster 3
     for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
          i++) {
         add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }
 
+    LOG_INFO(logging::terrain_logger, "End of land generator: top layer placement.");
+
     // grows the grass
     init_grass();
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
 
     //  TODO make this faster 1
     init_chunks();
@@ -874,6 +885,7 @@ Terrain::get_path(
     return path;
 }
 
+/*
 uint32_t
 Terrain::get_voxel(int x, int y, int z) const {
     // using static ints to prevent dereferencing
@@ -898,7 +910,7 @@ Terrain::get_voxel(int x, int y, int z) const {
     }
 
     return previous_out_color;
-}
+}*/
 
 void
 Terrain::qb_save_debug(const std::string path) {

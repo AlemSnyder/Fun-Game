@@ -37,6 +37,7 @@
 #include "terrain_generation/noise.hpp"
 #include "terrain_generation/tilestamp.hpp"
 #include "terrain_helper.hpp"
+#include "terrain_base.hpp"
 #include "tile.hpp"
 
 #include <stdio.h>
@@ -97,34 +98,14 @@ getter_low(Tile* t) {
  * path-finding and its own generation.
  *
  */
-class Terrain : public voxel_utility::VoxelBase {
+class Terrain : public TerrainBase {
     friend class AdjacentIterator;
 
  private:
-    // vector of voxels in terrain
-    std::vector<Tile> tiles_;
-    // vector of chunks in terrain
     std::vector<Chunk> chunks_;
-    // length in the x direction
-    int32_t X_MAX;
-    // length in the y direction
-    int32_t Y_MAX;
-    // length in the z direction
-    int32_t Z_MAX;
-    // size of terrain generation tile (see terrain generation)
-    static int Area_size;
+    std::map<int, NodeGroup*> tile_to_group_;
     // seed for randomness
     int seed;
-    // map of tile position to the node group it is in
-    std::map<int, NodeGroup*> tile_to_group_;
-    // vector that determines grass color from edge distance
-    std::vector<uint8_t> grass_colors_;
-    // length of grass gradient
-    int grass_grad_length_;
-    // gradient index of grass not by an edge
-    int grass_mid_;
-    // mat of material id to material that describes materials in this terrain
-    const std::map<int, const terrain::Material>* materials_;
 
  public:
     // test for path finding
@@ -170,56 +151,8 @@ class Terrain : public voxel_utility::VoxelBase {
     template <class T>
     static float get_G_cost(const T tile, const Node<const T> node);
 
-    /**
-     * @brief position in tiles vector of given tile position
-     *
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
-     * @return int
-     */
-    int
-    pos(int x, int y, int z) const { // for loops should go z than y than x
-        return x * Y_MAX * Z_MAX + y * Z_MAX + z;
-    }
-
-    /**
-     * @brief position in tiles vector of given tile position
-     *
-     * @param sop coordinate as an array
-     * @return int
-     */
-    int
-    pos(const std::array<int, 3> sop) const {
-        return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
-    }
-
-    int
-    pos(const int sop[3]) const {
-        return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
-    }
-
-    /**
-     * @brief position in tiles vector of given tile
-     *
-     * @param tile tile to find position of
-     * @return int
-     */
-    int
-    pos(const Tile* const tile) const {
-        return pos(tile->sop());
-    }
-
-    /**
-     * @brief position in tiles vector of given tile
-     *
-     * @param tile tile to find position of
-     * @return int
-     */
-    inline int
-    pos(const Tile tile) const {
-        return pos(tile.get_x(), tile.get_y(), tile.get_z());
-    }
+    using TerrainBase::pos;
+    using TerrainBase::pos_for_map;
 
     /**
      * @brief position of chunk the node group is a part of
@@ -228,28 +161,6 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return int
      */
     int pos(const NodeGroup* const node_group) const;
-
-    /**
-     * @brief unique map index
-     *
-     * @param tile
-     * @return int
-     */
-    inline int
-    pos_for_map(const Tile tile) const {
-        return pos(tile);
-    }
-
-    /**
-     * @brief unique map index
-     *
-     * @param tile
-     * @return int
-     */
-    inline int
-    pos_for_map(const Tile* const tile) const {
-        return pos(tile);
-    }
 
     /**
      * @brief unique map index
@@ -271,34 +182,6 @@ class Terrain : public voxel_utility::VoxelBase {
     inline int
     pos_for_map(const NodeGroup* const NG) const {
         return pos(*(NG->get_tiles().begin()));
-    }
-
-    /**
-     * @brief return position in space of given vector index
-     *
-     * @param xyz vector index
-     * @return const std::array<int, 3> position in space
-     */
-    const std::array<int, 3>
-    sop(int xyz) const {
-        return {xyz / (Y_MAX * Z_MAX), (xyz / Z_MAX) % Y_MAX, xyz % (Z_MAX)};
-    }
-
-    /**
-     * @brief return position in space of given index
-     *
-     * @param xyz index
-     * @param xm length in x direction
-     * @param ym length in y direction
-     * @param zm length in z direction
-     * @return std::array<int, 3> position in 3D space
-     */
-    static std::array<int, 3>
-    sop(int xyz, int xm, int ym, int zm) {
-        if (xyz >= xm * ym * zm) {
-            throw std::invalid_argument("index out of range");
-        }
-        return {xyz / (ym * zm), (xyz / zm) % ym, xyz % (zm)};
     }
 
     /**
@@ -502,153 +385,6 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param NG NodeGroup to remove
      */
     void remove_node_group(NodeGroup* NG);
-
-    /**
-     * @brief Get length of terrain in x direction
-     *
-     * @return int length
-     */
-    inline int
-    get_X_MAX() const {
-        return X_MAX;
-    };
-
-    /**
-     * @brief Get length of terrain in x direction
-     *
-     * @return int length
-     */
-    inline int
-    get_Y_MAX() const {
-        return Y_MAX;
-    };
-
-    /**
-     * @brief Get length of terrain in x direction
-     *
-     * @return int length
-     */
-    inline int
-    get_Z_MAX() const {
-        return Z_MAX;
-    };
-
-    /**
-     * @brief Get the size of terrain
-     *
-     * @return std::array<uint32_t, 3> array of sizes
-     */
-    inline std::array<uint32_t, 3>
-    get_size() const {
-        return {
-            static_cast<uint32_t>(X_MAX),
-            static_cast<uint32_t>(Y_MAX),
-            static_cast<uint32_t>(Z_MAX),
-        };
-    }
-
-    /**
-     * @brief Used for getting mesh
-     *
-     * @return std::array<int32_t, 3> 0 3 times
-     */
-    inline std::array<int32_t, 3>
-    get_offset() const {
-        return {0, 0, 0};
-    }
-
-    /**
-     * @brief test if tile position is within terrain bounds
-     *
-     * @param x x position
-     * @param y y position
-     * @param z z position
-     * @return true tile is in bounds
-     * @return false tile is not in bounds
-     */
-    inline bool
-    in_range(int x, int y, int z) const {
-        return (x < X_MAX && x >= 0 && y < Y_MAX && y >= 0 && z < Z_MAX && z >= 0);
-    }
-
-    /**
-     * @brief Get the tile object at the given position
-     *
-     * @param x x position
-     * @param y y position
-     * @param z z position
-     * @return Tile* tile at given position
-     */
-    Tile*
-    get_tile(int x, int y, int z) {
-        if (!in_range(x, y, z)) {
-            LOG_CRITICAL(
-                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
-                y, z
-            );
-            throw std::invalid_argument("index out of range");
-        }
-        return &tiles_[pos(x, y, z)];
-    };
-
-    Tile*
-    get_tile(int xyz) {
-        if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
-            LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
-            throw std::invalid_argument("index out of range");
-        }
-        return &tiles_[xyz];
-    }
-
-    /**
-     * @brief Get the tile at the given position
-     *
-     * @param x x position
-     * @param y y position
-     * @param z z position
-     * @return Tile* tile at given position
-     */
-    const Tile*
-    get_tile(int x, int y, int z) const {
-        if ((x >= X_MAX || x < 0 || y >= Y_MAX || y < 0 || z >= Z_MAX || z < 0)) {
-            LOG_CRITICAL(
-                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
-                y, z
-            );
-            throw std::invalid_argument("index out of range");
-        }
-        return &tiles_[pos(x, y, z)];
-    };
-
-    /**
-     * @brief Get the tile at the given index
-     *
-     * @param xyz tile index
-     * @return const Tile* tile at index
-     */
-    const Tile*
-    get_tile(int xyz) const {
-        if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
-            LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
-            throw std::invalid_argument("index out of range");
-        }
-        return &tiles_[xyz];
-    }
-
-    /**
-     * @brief Get the color of a tile
-     *
-     * @param x x position
-     * @param y y position
-     * @param z z position
-     * @return uint32_t color or tile
-     */
-    uint32_t get_voxel(int x, int y, int z) const;
-
-    inline uint16_t
-    get_voxel_color_id(int x, int y, int z) const {
-        return TerrainColorMapping::get_colors_inverse_map().at(get_voxel(x, y, z));
-    }
 
     inline const std::vector<Chunk>&
     get_chunks() const {

@@ -1,4 +1,7 @@
+
 #include "material.hpp"
+
+#include "../logging.hpp"
 
 namespace terrain {
 
@@ -12,7 +15,7 @@ TerrainColorMapping::assign_color_mapping(const std::map<int, const Material>* m
     colors_inverse_map.clear();
 
     // TODO @AlemSnyder
-    //GetIntegerv(GL_MAX_TEXTURE_SIZE, *mas_texture_size)
+    // GetIntegerv(GL_MAX_TEXTURE_SIZE, *mas_texture_size)
     // The above size is probably a better upper bound as it comes from the
     // texture size.
     // max_size = min((1U << 15), mas_texture_size);
@@ -43,7 +46,7 @@ TerrainColorMapping::assign_color_mapping(const std::map<int, const Material>* m
                 color_ids_map.push_back(color);
                 // add to inverse colors
                 colors_inverse_map[color] = j;
-                if (color_ids_map.size() > (1U << 15)-1)
+                if (color_ids_map.size() > (1U << 15) - 1)
                     return;
             }
         }

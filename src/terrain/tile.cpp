@@ -146,10 +146,7 @@ Tile::try_grow_grass() {
 }
 
 // return `color_id`.
-uint8_t
-Tile::get_color_id() const {
-    return color_id_;
-}
+
 
 // returns the element id and the color id as one int
 uint16_t
