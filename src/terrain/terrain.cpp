@@ -36,19 +36,19 @@ Terrain::Terrain(
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) {
     if (grass_mid >= grass_grad_data.size()) {
-        grass_mid_ = grass_grad_data.size() - 1;
+        terrain_base_.grass_mid_ = grass_grad_data.size() - 1;
         std::cerr << "Grass Mid (from biome_data.json) not valid";
     }
 
     for (size_t i = 0; i < grass_grad_data.size(); i++) {
         if (i == static_cast<size_t>(grass_mid)) {
-            grass_mid_ = grass_colors_.size();
+            terrain_base_.grass_mid_ = terrain_base_.grass_colors_.size();
         }
         for (int j = 0; j < grass_grad_data[i]; j++) {
-            grass_colors_.push_back(i);
+            terrain_base_.grass_colors_.push_back(i);
         }
     }
-    grass_grad_length_ = grass_colors_.size();
+    terrain_base_.grass_grad_length_ = terrain_base_.grass_colors_.size();
     init(
         x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
         generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"])
@@ -78,9 +78,9 @@ Terrain::init(
 Terrain::Terrain(
     const std::string path, const std::map<int, const Material>* materials
 ) {
-    materials_ = materials;
+    terrain_base_.materials_ = materials;
     std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse;
-    for (auto it = materials_->begin(); it != materials_->end(); it++) {
+    for (auto it = terrain_base_.materials_->begin(); it != terrain_base_.materials_->end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
             materials_inverse.insert(
                 std::map<uint32_t, std::pair<const Material*, uint8_t>>::value_type(
@@ -107,10 +107,10 @@ Terrain::Terrain(
 // TODO remove this init, and make initializer lists for world
 void
 Terrain::init(int x, int y, int z) {
-    X_MAX = x;
-    Y_MAX = y;
-    Z_MAX = z;
-    tiles_.resize(0);
+    terrain_base_.X_MAX = x;
+    terrain_base_.Z_MAX = z;
+    terrain_base_.Y_MAX = y;
+    terrain_base_.tiles_.resize(0);
 }
 
 void
@@ -121,17 +121,17 @@ Terrain::init(
 ) {
     auto millisec_since_epoch = time_util::epoch_millis();
 
-    Area_size = Area_size_;
+    terrain_base_.Area_size = Area_size_;
     seed = seed_;
-    materials_ = materials;
-    X_MAX = x * Area_size;
-    Y_MAX = y * Area_size;
-    Z_MAX = z;
+    terrain_base_.materials_ = materials;
+    terrain_base_.X_MAX = x * terrain_base_.Area_size;
+    terrain_base_.Y_MAX = y * terrain_base_.Area_size;
+    terrain_base_.Z_MAX = z;
 
-    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+    terrain_base_.tiles_.reserve(terrain_base_.X_MAX * terrain_base_.Y_MAX * terrain_base_.Z_MAX);
 
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        tiles_.push_back(Tile(sop(xyz), &materials_->at(0)));
+    for (int xyz = 0; xyz < terrain_base_.X_MAX * terrain_base_.Y_MAX * terrain_base_.Z_MAX; xyz++) {
+        terrain_base_.tiles_.push_back(Tile(sop(xyz), &terrain_base_.materials_->at(0)));
     }
 
     srand(seed);
@@ -199,9 +199,9 @@ Terrain::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen
 void
 Terrain::init_chunks() {
     // chunk length in _ direction
-    uint32_t C_length_X = ((X_MAX - 1) / Chunk::SIZE + 1);
-    uint32_t C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
-    uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
+    uint32_t C_length_X = ((terrain_base_.X_MAX - 1) / Chunk::SIZE + 1);
+    uint32_t C_length_Y = ((terrain_base_.Y_MAX - 1) / Chunk::SIZE + 1);
+    uint32_t C_length_Z = ((terrain_base_.Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks_.push_back(Chunk(x, y, z, this));
@@ -228,8 +228,8 @@ Terrain::add_to_top(
 
     int guess = 0;
     // for loop
-    for (int x = 0; x < X_MAX; x++)
-        for (int y = 0; y < Y_MAX; y++) {
+    for (int x = 0; x < terrain_base_.X_MAX; x++)
+        for (int y = 0; y < terrain_base_.Y_MAX; y++) {
             // get first (not) z of material
             guess = get_first_not(material_type, x, y, guess);
             // if z is between some bounds
@@ -272,7 +272,7 @@ Terrain::get_Z_solid(int x, int y, int z_start) {
 
 int
 Terrain::get_Z_solid(int x, int y) {
-    return get_Z_solid(x, y, Z_MAX - 1);
+    return get_Z_solid(x, y, terrain_base_.Z_MAX - 1);
 }
 
 int
@@ -282,8 +282,8 @@ Terrain::get_first_not(
     if (guess < 1) {
         guess = 1;
     }
-    if (guess >= Z_MAX) {
-        guess = Z_MAX - 1;
+    if (guess >= terrain_base_.Z_MAX) {
+        guess = terrain_base_.Z_MAX - 1;
     }
     if (materials.find(std::make_pair(
             get_tile(x, y, guess - 1)->get_material_id(),
@@ -298,7 +298,7 @@ Terrain::get_first_not(
             return guess;
         } else {
             // go up
-            for (int z = guess + 1; z < Z_MAX; z++) {
+            for (int z = guess + 1; z < terrain_base_.Z_MAX; z++) {
                 if (materials.find(std::make_pair(
                         get_tile(x, y, z)->get_material_id(),
                         get_tile(x, y, z)->get_color_id()
@@ -307,7 +307,7 @@ Terrain::get_first_not(
                     return z;
                 }
             }
-            return Z_MAX; // -1?
+            return terrain_base_.Z_MAX; // -1?
         }
     } else {
         // go down
@@ -431,9 +431,9 @@ Terrain::init_grass() {
     std::set<Tile*> all_grass;
 
     // Test all ties to see if they can be grass.
-    for (int x_ = 0; x_ < X_MAX; x_++)
-        for (int y_ = 0; y_ < Y_MAX; y_++)
-            for (int z_ = 0; z_ < Z_MAX - 1; z_++) {
+    for (int x_ = 0; x_ < terrain_base_.X_MAX; x_++)
+        for (int y_ = 0; y_ < terrain_base_.Y_MAX; y_++)
+            for (int z_ = 0; z_ < terrain_base_.Z_MAX - 1; z_++) {
                 if (!get_tile(x_, y_, z_ + 1)->is_solid()) {
                     get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
                     // if grass add to some set
@@ -443,9 +443,9 @@ Terrain::init_grass() {
                     // both higher, and lower set
                 }
             }
-    int z_ = Z_MAX - 1;
-    for (int x_ = 0; x_ < X_MAX; x_++)
-        for (int y_ = 0; y_ < Y_MAX; y_++) {
+    int z_ = terrain_base_.Z_MAX - 1;
+    for (int x_ = 0; x_ < terrain_base_.X_MAX; x_++)
+        for (int y_ = 0; y_ < terrain_base_.Y_MAX; y_++) {
             get_tile(x_, y_, z_)->try_grow_grass(); // add to sources and sinks
             if (get_tile(x_, y_, z_)->is_grass()) {
                 all_grass.insert(get_tile(x_, y_, z_));
@@ -455,7 +455,7 @@ Terrain::init_grass() {
     grow_grass_low(all_grass);
     grow_grass_high(all_grass);
     for (Tile* t : all_grass) {
-        t->set_grass_color(grass_grad_length_, grass_mid_, grass_colors_);
+        t->set_grass_color(terrain_base_.grass_grad_length_, terrain_base_.grass_mid_, terrain_base_.grass_colors_);
     }
 }
 
@@ -492,7 +492,7 @@ Terrain::generate_macro_map(
 // this should be the same as can_stand(x,y,z,1,1)
 bool
 Terrain::can_stand_1(int xyz) const {
-    if (xyz % Z_MAX < 1 || xyz >= X_MAX * Y_MAX * Z_MAX) {
+    if (xyz % terrain_base_.Z_MAX < 1 || xyz >= terrain_base_.X_MAX * terrain_base_.Y_MAX * terrain_base_.Z_MAX) {
         return false;
     }
     return (!get_tile(xyz)->is_solid() && get_tile(xyz - 1)->is_solid());
@@ -540,7 +540,7 @@ Terrain::pos(const NodeGroup* const node_group) const {
     int px = floor(x) / Chunk::SIZE;
     int py = floor(y) / Chunk::SIZE;
     int pz = floor(z) / Chunk::SIZE;
-    return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
+    return (px * terrain_base_.Y_MAX / Chunk::SIZE * terrain_base_.Z_MAX / Chunk::SIZE) + (py * terrain_base_.Z_MAX / Chunk::SIZE)
            + pz;
 }
 
@@ -920,7 +920,7 @@ Terrain::qb_save_debug(const std::string path) {
         c.add_nodes_to(node_groups);
         for (const NodeGroup* NG : node_groups) {
             for (const Tile* t : NG->get_tiles()) {
-                set_tile_material(get_tile(pos(t->sop())), &materials_->at(7), x % 4);
+                set_tile_material(get_tile(pos(t->sop())), &terrain_base_.materials_->at(7), x % 4);
             }
             x++;
         }
@@ -946,26 +946,26 @@ Terrain::qb_read(
 
     voxel_utility::from_qb(path, data, center, size);
 
-    X_MAX = size[0];
-    Y_MAX = size[1];
-    Z_MAX = size[2];
-    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+    terrain_base_.X_MAX = size[0];
+    terrain_base_.Y_MAX = size[1];
+    terrain_base_.Z_MAX = size[2];
+    terrain_base_.tiles_.reserve(terrain_base_.X_MAX * terrain_base_.Y_MAX * terrain_base_.Z_MAX);
 
     std::set<uint32_t> unknown_materials;
 
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    for (int xyz = 0; xyz < terrain_base_.X_MAX * terrain_base_.Y_MAX * terrain_base_.Z_MAX; xyz++) {
         auto [x, y, z] = sop(xyz);
         uint32_t color = data[xyz];
         if (color == 0) {                      // if the qb voxel is transparent.
             auto mat_color = materials->at(0); // set the materials to air
-            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            terrain_base_.tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else if (materials->count(color)) { // if the color is known
             auto mat_color = materials->at(color);
-            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            terrain_base_.tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else { // the color is unknown
             unknown_materials.insert(color);
             auto mat_color = materials->at(0); // else set to air.
-            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            terrain_base_.tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         }
     }
 
@@ -979,7 +979,7 @@ std::pair<Tile*, Tile*>
 Terrain::get_start_end_test() {
     std::pair<Tile*, Tile*> out;
     bool first = true;
-    for (int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    for (int xyz = 0; xyz < terrain_base_.X_MAX * terrain_base_.Y_MAX * terrain_base_.Z_MAX; xyz++) {
         if (get_tile(xyz)->get_material_id() == 7
             && get_tile(xyz)->get_color_id() == 4) {
             if (first) {

@@ -24,7 +24,7 @@
 
 #include "../util/voxel_io.hpp"
 #include "path/node_group.hpp"
-#include "terrain.hpp"
+#include "terrain_base.hpp"
 #include "tile.hpp"
 
 #include <list>
@@ -45,6 +45,7 @@ class Terrain;
 class Chunk : public voxel_utility::VoxelBase {
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
+    TerrainBase* terrain_base_;
     uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
                             // Chunk::SIZE to get tile position.
  public:
@@ -72,7 +73,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @return std::vector<int> offset of chunk in world space
      */
-    inline std::array<int32_t, 3>
+    [[nodiscard]] inline std::array<int32_t, 3>
     get_offset() const {
         return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
     }
@@ -82,7 +83,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
-    inline std::array<uint32_t, 3>
+    [[nodiscard]] inline std::array<uint32_t, 3>
     get_size() {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
@@ -95,7 +96,11 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param z z position in chunk
      * @return uint32_t tile color id
      */
-    uint32_t get_voxel(int x, int y, int z) const;
+    [[nodiscard]] inline uint32_t get_voxel(int x, int y, int z) const{
+        return terrain_base_->get_voxel(
+            x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+        );
+    }
 
     /**
      * @brief Get the voxel color id
@@ -105,7 +110,11 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param z z position in chunk
      * @return uint16_t color id
      */
-    uint16_t get_voxel_color_id(int x, int y, int z) const;
+    [[nodiscard]] inline uint16_t get_voxel_color_id(int x, int y, int z) const {
+        return terrain_base_->get_voxel_color_id(
+            x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+        );
+    }
 
     /**
      * @brief Get the colors used in terrain.

@@ -22,13 +22,12 @@
  *
  */
 
-#include "../terrain.hpp"
+#pragma once
+
 #include "unit_path.hpp"
 
 #include <cstdint>
 #include <utility>
-
-#pragma once
 
 namespace terrain {
 

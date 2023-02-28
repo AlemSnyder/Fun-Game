@@ -53,7 +53,8 @@ namespace terrain {
  *
  */
 class TerrainBase : public voxel_utility::VoxelBase {
-    friend class AdjacentIterator;
+    friend class Terrain;
+    friend class Chunk;
 
  protected:
     // vector of voxels in terrain

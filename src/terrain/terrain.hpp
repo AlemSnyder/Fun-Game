@@ -98,10 +98,13 @@ getter_low(Tile* t) {
  * path-finding and its own generation.
  *
  */
-class Terrain : public TerrainBase {
+class Terrain : voxel_utility::VoxelBase{
     friend class AdjacentIterator;
+    friend class Chuck;
 
  private:
+
+    TerrainBase terrain_base_;
     std::vector<Chunk> chunks_;
     std::map<int, NodeGroup*> tile_to_group_;
     // seed for randomness
@@ -151,8 +154,8 @@ class Terrain : public TerrainBase {
     template <class T>
     static float get_G_cost(const T tile, const Node<const T> node);
 
-    using TerrainBase::pos;
-    using TerrainBase::pos_for_map;
+    //using TerrainBase::pos;
+    //using TerrainBase::pos_for_map;
 
     /**
      * @brief position of chunk the node group is a part of
@@ -170,7 +173,7 @@ class Terrain : public TerrainBase {
      */
     inline int
     pos_for_map(const NodeGroup NG) const {
-        return pos(*(NG.get_tiles().begin()));
+        return terrain_base_.pos(*(NG.get_tiles().begin()));
     }
 
     /**
@@ -181,7 +184,7 @@ class Terrain : public TerrainBase {
      */
     inline int
     pos_for_map(const NodeGroup* const NG) const {
-        return pos(*(NG->get_tiles().begin()));
+        return terrain_base_.pos(*(NG->get_tiles().begin()));
     }
 
     /**
@@ -312,6 +315,10 @@ class Terrain : public TerrainBase {
 
     // TODO place block
 
+    [[nodiscard]] inline TerrainBase* get_base(){
+        return &terrain_base_;
+    }
+
     using iterator = path::AdjacentIterator;
 
     /**
@@ -393,7 +400,7 @@ class Terrain : public TerrainBase {
 
     inline int
     get_grass_grad_length() const {
-        return grass_grad_length_;
+        return terrain_base_.grass_grad_length_;
     }
 
     /**
@@ -455,6 +462,7 @@ class Terrain : public TerrainBase {
      */
     inline void
     stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y) {
+        int32_t Area_size = terrain_base_.Area_size;
         stamp_tile_region(
             tStamp.x_start + x * Area_size + Area_size / 2,
             tStamp.y_start + y * Area_size + Area_size / 2, tStamp.z_start,
@@ -728,6 +736,110 @@ class Terrain : public TerrainBase {
     int get_first_not(
         const std::set<std::pair<int, int>> materials, int x, int y, int guess
     ) const;
+
+    inline int
+    pos(int x, int y, int z) const { // for loops should go z than y than x
+        return terrain_base_.pos(x,y,z);
+    }
+
+    inline int
+    pos(const std::array<int, 3> sop) const {
+        return terrain_base_.pos(sop);
+    }
+
+    inline int
+    pos(const int sop[3]) const {
+        return terrain_base_.pos(sop);
+    }
+
+    inline int
+    pos(const Tile* const tile) const {
+        return terrain_base_.pos(tile);
+    }
+
+    inline int
+    pos(const Tile tile) const {
+        return terrain_base_.pos(tile);
+    }
+
+    inline int
+    pos_for_map(const Tile tile) const {
+        return pos(tile);
+    }
+
+    inline int
+    pos_for_map(const Tile* const tile) const {
+        return pos(tile);
+    }
+
+    inline const std::array<int, 3>
+    sop(int xyz) const {
+        return terrain_base_.sop(xyz);
+    }
+
+    inline static std::array<int, 3>
+    sop(int xyz, int xm, int ym, int zm) {
+        return TerrainBase::sop(xyz, xm, ym, zm);
+    }
+
+    inline int
+    get_X_MAX() const {
+        return terrain_base_.get_X_MAX();
+    };
+
+    inline int
+    get_Y_MAX() const {
+        return terrain_base_.get_Y_MAX();
+    };
+
+    inline int
+    get_Z_MAX() const {
+        return terrain_base_.get_Z_MAX();
+    };
+
+    inline std::array<uint32_t, 3>
+    get_size() const {
+        return terrain_base_.get_size();
+    }
+
+    inline std::array<int32_t, 3>
+    get_offset() const {
+        return terrain_base_.get_offset();
+    }
+
+    inline bool
+    in_range(int x, int y, int z) const {
+        return terrain_base_.in_range(x,y,z);
+    }
+
+    inline Tile*
+    get_tile(int x, int y, int z) {
+        return terrain_base_.get_tile(x,y,z);
+    };
+
+    inline Tile*
+    get_tile(int xyz) {
+        return terrain_base_.get_tile(xyz);
+    }
+
+    inline const Tile*
+    get_tile(int x, int y, int z) const {
+        return terrain_base_.get_tile(x,y,z);
+    };
+
+    inline const Tile*
+    get_tile(int xyz) const {
+        return terrain_base_.get_tile(xyz);
+    }
+
+    inline uint32_t get_voxel(int x, int y, int z) const {
+        return terrain_base_.get_voxel(x,y,z);
+    }
+
+    inline uint16_t
+    get_voxel_color_id(int x, int y, int z) const {
+        return terrain_base_.get_voxel_color_id(x,y,z);
+    }
 
  private:
     // trace nodes through parents to reach start

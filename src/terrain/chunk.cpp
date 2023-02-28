@@ -9,6 +9,7 @@ namespace terrain {
 
 Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
     ter_ = ter;
+    terrain_base_ = ter_->get_base();
     Cx_ = bx;
     Cy_ = by;
     Cz_ = bz;
@@ -105,20 +106,6 @@ Chunk::contains_nodeGroup(NodeGroup* NG) {
         NG->get_center_x() >= SIZE * Cx_ && NG->get_center_x() < SIZE * (1 + Cx_)
         && NG->get_center_y() >= SIZE * Cy_ && NG->get_center_y() < SIZE * (1 + Cy_)
         && NG->get_center_z() >= SIZE * Cz_ && NG->get_center_z() < SIZE * (1 + Cz_)
-    );
-}
-
-uint32_t
-Chunk::get_voxel(int x, int y, int z) const {
-    return ter_->get_voxel(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
-}
-
-uint16_t
-Chunk::get_voxel_color_id(int x, int y, int z) const {
-    return ter_->get_voxel_color_id(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );
 }
 
