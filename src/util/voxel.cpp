@@ -17,23 +17,20 @@ VoxelObject::VoxelObject(const std::filesystem::path path){
     // empty should always have index 0;
     colors_.push_back(0);
     for (std::size_t i = 0; i < voxel_colors.size(); i++){
-        uint16_t j = 0;
-        for (; j < colors_.size(); j++) {
-            if (colors_[j] == voxel_colors[i]){
-                goto on_break;
-            }
-        }
-        // no break
-        // voxel_colors[i] is not in colors
-        // we should add it to colors
-        // the index is the length of colors because it will be appended
-        j = colors_.size();
-        // add the color
-        colors_.push_back(voxel_colors[i]);
-        
-        on_break:
-        data_.push_back(j);
+        const auto& color = voxel_colors[i];
 
+        auto loc = std::find(colors_.begin(), colors_.end(), color);
+        auto idx = std::distance(colors_.begin(), loc);
+
+        if (loc == colors_.end()) {
+            // not found
+            // voxel_colors[i] is not in colors
+            // add the color
+            colors_.push_back(color);
+        }
+        
+        // This works as begin() - end() == size()
+        data_.push_back(idx);
     }
     if (colors_.size() > 1U << 15){
         LOG_ERROR(
