@@ -59,8 +59,6 @@ class TerrainBase : public voxel_utility::VoxelBase {
  protected:
     // vector of voxels in terrain
     std::vector<Tile> tiles_;
-    // vector of chunks in terrain
-    //std::vector<Chunk> chunks_;
     // length in the x direction
     int32_t X_MAX;
     // length in the y direction
@@ -359,16 +357,12 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     inline uint16_t
     get_voxel_color_id(int x, int y, int z) const {
-
+        // if not in range, then considered to be air
         if (!in_range(x, y, z))
             return 0;
-
-        uint8_t mat_id = tiles_[pos(x, y, z)].get_material_id();
-        uint8_t color_id = tiles_[pos(x, y, z)].get_color_id();
-
-        return ((uint16_t) mat_id << 8) | (uint16_t)color_id;
-
-        return TerrainColorMapping::get_colors_inverse_map().at(get_voxel(x, y, z));
+        // use mat color id for voxel color id because the tile has that data
+        // it is therefore just a look up. (pointer dereference)
+        return get_tile(x,y,z)->get_mat_color_id();
     }
 
 };

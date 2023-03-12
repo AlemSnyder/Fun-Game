@@ -69,38 +69,40 @@ class Mesh {
     std::vector<uint32_t> color_map_;
 
  public:
-    void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
 
+    //void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
+    
+    // x, y, z length of the mesh
     [[nodiscard]] inline std::vector<int>
     get_size() const {
         return size_;
     }
-
+    // center of mesh
     [[nodiscard]] inline std::vector<int>
     get_center() const {
         return center_;
     }
-
+    // indices of each vertex that is drawn
     [[nodiscard]] inline std::vector<std::uint16_t>
     get_indices() const {
         return indices_;
     }
-
+    // position of vertices in mesh space
     [[nodiscard]] inline std::vector<glm::ivec3>
     get_indexed_vertices() const {
         return indexed_vertices_;
     }
-
+    // color of vertex
     [[nodiscard]] inline std::vector<std::uint16_t>
     get_indexed_color_ids() const {
         return indexed_color_ids_;
     }
-
+    // normal direction
     [[nodiscard]] inline std::vector<glm::i8vec3>
     get_indexed_normals() const {
         return indexed_normals_;
     }
-
+    // color mapping from color id (vector index) to 8 bit color
     [[nodiscard]] inline std::vector<uint32_t>
     get_color_map() const {
         return color_map_;
@@ -347,12 +349,10 @@ generate_mesh(T voxel_object) {
                 }
         }
     }
-    entity::Mesh m = Mesh(
+    return Mesh(
         indices, indexed_vertices, indexed_colors, indexed_normals,
         voxel_object.get_color_ids()
     );
-
-    return m;
 }
 
 } // namespace entity
