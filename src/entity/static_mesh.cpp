@@ -16,8 +16,8 @@ StaticMesh::StaticMesh(
     entity::Mesh mesh, const std::vector<glm::ivec3>& model_transforms
 ) :
     StaticMesh(
-        mesh.indices_, mesh.indexed_vertices_, mesh.indexed_color_ids_,
-        mesh.indexed_normals_, mesh.color_map_, model_transforms
+        mesh.get_indices(), mesh.get_indexed_vertices(), mesh.get_indexed_color_ids(),
+        mesh.get_indexed_normals(), mesh.get_color_map(), model_transforms
     ) {}
 
 StaticMesh::StaticMesh(

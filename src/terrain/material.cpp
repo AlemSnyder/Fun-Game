@@ -5,7 +5,9 @@
 
 namespace terrain {
 
+// color id to color for all materials
 std::vector<uint32_t> TerrainColorMapping::color_ids_map;
+// 8 bit color to color id
 std::unordered_map<uint32_t, uint16_t> TerrainColorMapping::colors_inverse_map;
 
 void

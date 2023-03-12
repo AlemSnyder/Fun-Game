@@ -359,6 +359,15 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     inline uint16_t
     get_voxel_color_id(int x, int y, int z) const {
+
+        if (!in_range(x, y, z))
+            return 0;
+
+        uint8_t mat_id = tiles_[pos(x, y, z)].get_material_id();
+        uint8_t color_id = tiles_[pos(x, y, z)].get_color_id();
+
+        return ((uint16_t) mat_id << 8) | (uint16_t)color_id;
+
         return TerrainColorMapping::get_colors_inverse_map().at(get_voxel(x, y, z));
     }
 

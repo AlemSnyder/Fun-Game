@@ -41,6 +41,7 @@ GUITest(World world) {
     GLint context_flag;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
     if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        LOG_INFO(logging::opengl_logger, "GLFW Logging with debug");
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         // set gl message call back function
@@ -49,6 +50,8 @@ GUITest(World world) {
             GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
         );
     }
+
+    LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
 
     // Initialise GLFW
     glewExperimental = true; // Needed for core profile
@@ -89,6 +92,8 @@ GUITest(World world) {
     // But on MacOS X with a retina screen it'll be 1024*2 and 768*2, so we get
     // the actual framebuffer size:
     glfwGetFramebufferSize(window, &windowFrameWidth, &windowFrameHeight);
+
+    LOG_INFO(logging::opengl_logger, "Window initialized");
 
     // Initialize GLEW
     glewExperimental = true; // Needed for core profile
@@ -133,6 +138,8 @@ GUITest(World world) {
     for (size_t i = 0; i < chunk_meshes.size(); i++) {
         chunk_meshes[i].init(mesh[i]);
     }
+
+    LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
 
     // The above is for the wold the below is for trees
 

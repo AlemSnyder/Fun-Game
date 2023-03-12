@@ -24,6 +24,7 @@
 
 #include "entity/mesh.hpp"
 #include "terrain/terrain.hpp"
+#include "terrain/material.hpp"
 
 #include <json/json.h>
 
@@ -122,7 +123,13 @@ class World {
         std::vector<entity::Mesh> out;
         for (const terrain::Chunk& c : terrain_main.get_chunks()) {
             auto chunk_mesh = entity::generate_mesh(c);
-            if (chunk_mesh.indices_.size() > 0) {
+
+            chunk_mesh.change_color_indexing(materials, terrain::TerrainColorMapping::get_colors_inverse_map());
+            
+            if (chunk_mesh.get_indices().size() > 0) {
+
+                
+
                 out.push_back(chunk_mesh);
             }
         }

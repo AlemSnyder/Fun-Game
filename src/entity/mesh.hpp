@@ -21,9 +21,12 @@
 #pragma once
 
 #include "../util/voxel.hpp"
+#include "../terrain/terrain.hpp"
 
 #include <glm/glm.hpp>
 
+#include <map>
+#include <unordered_map>
 #include <filesystem>
 #include <vector>
 
@@ -33,7 +36,8 @@ namespace entity {
  * @brief Holds data that describes now an object is loaded by the shader
  *
  */
-struct Mesh {
+class Mesh {
+ public:
     Mesh(
         const std::vector<uint16_t>& indices,
         const std::vector<glm::ivec3>& indexed_vertices,
@@ -45,23 +49,58 @@ struct Mesh {
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
 
+ protected:
+
     // defines a bounding box of the mesh
-    const std::vector<int> size_;
+    std::vector<int> size_;
     // defines center of mesh for rotating
-    const std::vector<int> center_;
+    std::vector<int> center_;
 
     // indices of vertices drawn (vertices used twice can be ignored)
-    const std::vector<std::uint16_t> indices_;
+    std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
-    const std::vector<glm::ivec3> indexed_vertices_;
+    std::vector<glm::ivec3> indexed_vertices_;
     // color of vertex
-    const std::vector<uint16_t> indexed_color_ids_;
+    std::vector<uint16_t> indexed_color_ids_;
     // normal direction
-    const std::vector<glm::i8vec3> indexed_normals_;
+    std::vector<glm::i8vec3> indexed_normals_;
     // color map
-    const std::vector<uint32_t> color_map_;
+    std::vector<uint32_t> color_map_;
 
-}; // struct Mesh
+ public:
+    void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
+
+    [[nodiscard]] inline std::vector<int> get_size() const {
+        return size_;
+    }
+
+    [[nodiscard]] inline std::vector<int> get_center() const {
+        return center_;
+    }
+
+    [[nodiscard]] inline std::vector<std::uint16_t> get_indices() const {
+        return indices_;
+    }
+
+    [[nodiscard]] inline std::vector<glm::ivec3> get_indexed_vertices() const {
+        return indexed_vertices_;
+    }
+
+    [[nodiscard]] inline std::vector<std::uint16_t> get_indexed_color_ids() const {
+        return indexed_color_ids_;
+    }
+
+    [[nodiscard]] inline std::vector<glm::i8vec3> get_indexed_normals() const {
+        return indexed_normals_;
+    }
+
+    [[nodiscard]] inline std::vector<uint32_t> get_color_map() const {
+        return color_map_;
+    }
+
+    void change_color_indexing(std::map<int, const terrain::Material>, std::unordered_map<uint32_t, uint16_t> mapping);
+
+}; // class Mesh
 
 /**
  * @brief Generates a mesh from the given 3D voxel structure
@@ -282,10 +321,12 @@ generate_mesh(T voxel_object) {
                 }
         }
     }
-    return Mesh(
+    entity::Mesh m = Mesh(
         indices, indexed_vertices, indexed_colors, indexed_normals,
         voxel_object.get_color_ids()
     );
+
+    return m;
 }
 
 } // namespace entity
