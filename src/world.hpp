@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include "entity/mesh.hpp"
-#include "terrain/terrain.hpp"
+// #include "entity/mesh.hpp"
 #include "terrain/material.hpp"
+#include "terrain/terrain.hpp"
 
 #include <json/json.h>
 
@@ -32,6 +32,11 @@
 
 #include <map>
 #include <vector>
+
+// forward declaration of entity::Mesh
+namespace entity {
+class Mesh;
+}
 
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
@@ -86,7 +91,8 @@ class World {
      * @return const std::map<int, const Material>* map of materials_id to
      * materials pointer
      */
-    const std::map<int, const terrain::Material>* get_materials() const {
+    const std::map<int, const terrain::Material>*
+    get_materials() const {
         return &materials;
     }
 
@@ -119,20 +125,5 @@ class World {
      *
      * @return entity::Mesh the mesh generated
      */
-    inline std::vector<entity::Mesh> get_mesh_greedy() const {
-        std::vector<entity::Mesh> out;
-        for (const terrain::Chunk& c : terrain_main.get_chunks()) {
-            auto chunk_mesh = entity::generate_mesh(c);
-
-            chunk_mesh.change_color_indexing(materials, terrain::TerrainColorMapping::get_colors_inverse_map());
-            
-            if (chunk_mesh.get_indices().size() > 0) {
-
-                
-
-                out.push_back(chunk_mesh);
-            }
-        }
-        return out;
-    }
+    std::vector<entity::Mesh> get_mesh_greedy() const;
 };

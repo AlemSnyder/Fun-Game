@@ -22,6 +22,7 @@
 
 #include "../terrain/terrain.hpp"
 #include "../util/voxel.hpp"
+#include "../world.hpp"
 
 #include <glm/glm.hpp>
 
@@ -49,13 +50,14 @@ class Mesh {
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
 
+    friend World;
+
  protected:
-    // defines a bounding box of the mesh
+    // x, y, z length of the mesh
     std::vector<int> size_;
     // defines center of mesh for rotating
     std::vector<int> center_;
-
-    // indices of vertices drawn (vertices used twice can be ignored)
+    // indices of each vertex that is drawn
     std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
     std::vector<glm::ivec3> indexed_vertices_;
@@ -104,6 +106,21 @@ class Mesh {
         return color_map_;
     }
 
+ private:
+    /**
+     * @brief Set the color indexing to what the GPU uses
+     *
+     * @details When meshing a chunk the data of tiles is compared. The tile
+     * does not store the color id that corresponds to the color texture on the
+     * gpu. Instead of converting each tile's material and color to color id in
+     * generate_mesh_greedy, it is done later when there are less values to
+     * iterate over.
+     *
+     * That is what this function does. Converts the material and color to the
+     * color id used on the GPU.
+     *
+     * @param map
+     */
     void change_color_indexing(
         std::map<int, const terrain::Material>,
         std::unordered_map<uint32_t, uint16_t> mapping

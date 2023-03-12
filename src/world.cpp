@@ -107,3 +107,19 @@ World::World(
 World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
     materials(init_materials(materials_json)),
     terrain_main(3, 3, macro_tile_size, height, 5, tile_type, &materials, biome_data) {}
+
+
+std::vector<entity::Mesh> World::get_mesh_greedy() const {
+        std::vector<entity::Mesh> out;
+        for (const terrain::Chunk& c : terrain_main.get_chunks()) {
+            auto chunk_mesh = entity::generate_mesh(c);
+
+            chunk_mesh.change_color_indexing(materials,
+                terrain::TerrainColorMapping::get_colors_inverse_map());
+            
+            if (chunk_mesh.get_indices().size() > 0) {
+                out.push_back(chunk_mesh);
+            }
+        }
+        return out;
+    }
