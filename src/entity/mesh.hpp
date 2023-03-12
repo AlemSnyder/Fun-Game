@@ -20,14 +20,14 @@
  */
 #pragma once
 
-#include "../util/voxel.hpp"
 #include "../terrain/terrain.hpp"
+#include "../util/voxel.hpp"
 
 #include <glm/glm.hpp>
 
+#include <filesystem>
 #include <map>
 #include <unordered_map>
-#include <filesystem>
 #include <vector>
 
 namespace entity {
@@ -50,7 +50,6 @@ class Mesh {
         indexed_normals_(indexed_normals), color_map_(color_map) {}
 
  protected:
-
     // defines a bounding box of the mesh
     std::vector<int> size_;
     // defines center of mesh for rotating
@@ -70,35 +69,45 @@ class Mesh {
  public:
     void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
 
-    [[nodiscard]] inline std::vector<int> get_size() const {
+    [[nodiscard]] inline std::vector<int>
+    get_size() const {
         return size_;
     }
 
-    [[nodiscard]] inline std::vector<int> get_center() const {
+    [[nodiscard]] inline std::vector<int>
+    get_center() const {
         return center_;
     }
 
-    [[nodiscard]] inline std::vector<std::uint16_t> get_indices() const {
+    [[nodiscard]] inline std::vector<std::uint16_t>
+    get_indices() const {
         return indices_;
     }
 
-    [[nodiscard]] inline std::vector<glm::ivec3> get_indexed_vertices() const {
+    [[nodiscard]] inline std::vector<glm::ivec3>
+    get_indexed_vertices() const {
         return indexed_vertices_;
     }
 
-    [[nodiscard]] inline std::vector<std::uint16_t> get_indexed_color_ids() const {
+    [[nodiscard]] inline std::vector<std::uint16_t>
+    get_indexed_color_ids() const {
         return indexed_color_ids_;
     }
 
-    [[nodiscard]] inline std::vector<glm::i8vec3> get_indexed_normals() const {
+    [[nodiscard]] inline std::vector<glm::i8vec3>
+    get_indexed_normals() const {
         return indexed_normals_;
     }
 
-    [[nodiscard]] inline std::vector<uint32_t> get_color_map() const {
+    [[nodiscard]] inline std::vector<uint32_t>
+    get_color_map() const {
         return color_map_;
     }
 
-    void change_color_indexing(std::map<int, const terrain::Material>, std::unordered_map<uint32_t, uint16_t> mapping);
+    void change_color_indexing(
+        std::map<int, const terrain::Material>,
+        std::unordered_map<uint32_t, uint16_t> mapping
+    );
 
 }; // class Mesh
 

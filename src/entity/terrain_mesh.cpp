@@ -1,5 +1,6 @@
 
 #include "terrain_mesh.hpp"
+
 #include "../logging.hpp"
 
 #include <GL/glew.h>
@@ -76,28 +77,32 @@ TerrainMesh::init(
 
     // Generate a texture
     std::vector<std::array<float, 4>> float_colors;
-    for( uint32_t int_color: color_map){
+    for (uint32_t int_color : color_map) {
         uint32_t red = (int_color >> 24) & 0xFF;
         uint32_t green = (int_color >> 16) & 0xFF;
         uint32_t blue = (int_color >> 8) & 0xFF;
-        uint32_t alpha = (int_color) & 0xFF;
+        uint32_t alpha = (int_color)&0xFF;
         // the last one >> 0 is A
-        std::array<float, 4> vector_color({
-            red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f
-        });
+        std::array<float, 4> vector_color(
+            {red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f}
+        );
         float_colors.push_back(vector_color);
     }
-    
+
     // Generate a texture
     glGenTextures(1, &color_texture_);
     glBindTexture(GL_TEXTURE_1D, color_texture_);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+    // set the texture wrapping/filtering options (on the currently bound texture
+    // object)
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, float_colors.size(), 0, GL_RGBA, GL_FLOAT, float_colors.data());
+    glTexImage1D(
+        GL_TEXTURE_1D, 0, GL_RGBA32F, float_colors.size(), 0, GL_RGBA, GL_FLOAT,
+        float_colors.data()
+    );
     glGenerateMipmap(GL_TEXTURE_1D);
 }
 
