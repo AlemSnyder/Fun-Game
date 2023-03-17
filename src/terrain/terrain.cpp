@@ -629,45 +629,6 @@ Terrain::qb_save(const std::string path) const {
     voxel_utility::to_qb(std::filesystem::path(path), *this);
 }
 
-/*void
-Terrain::qb_read(
-    const std::string path,
-    const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
-) {
-    std::vector<uint32_t> data;
-    std::array<int32_t, 3> center;
-    std::array<uint32_t, 3> size;
-
-    voxel_utility::from_qb(path, data, center, size);
-
-    terrain_base_.X_MAX = size[0];
-    terrain_base_.Y_MAX = size[1];
-    terrain_base_.Z_MAX = size[2];
-    terrain_base_.tiles_.reserve(terrain_base_.X_MAX * terrain_base_.Y_MAX *
-terrain_base_.Z_MAX);
-
-    std::set<uint32_t> unknown_materials;
-
-    for (int xyz = 0; xyz < terrain_base_.X_MAX * terrain_base_.Y_MAX *
-terrain_base_.Z_MAX; xyz++) { auto [x, y, z] = sop(xyz); uint32_t color = data[xyz]; if
-(color == 0) {                      // if the qb voxel is transparent. auto mat_color =
-materials->at(0); // set the materials to air terrain_base_.tiles_.push_back(Tile({x, y,
-z}, mat_color.first, mat_color.second)); } else if (materials->count(color)) { // if the
-color is known auto mat_color = materials->at(color);
-            terrain_base_.tiles_.push_back(Tile({x, y, z}, mat_color.first,
-mat_color.second)); } else { // the color is unknown unknown_materials.insert(color);
-            auto mat_color = materials->at(0); // else set to air.
-            terrain_base_.tiles_.push_back(Tile({x, y, z}, mat_color.first,
-mat_color.second));
-        }
-    }
-
-    for (uint32_t color : unknown_materials) {
-        // is there any way to log hexadecimal
-        LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
-    }
-}*/
-
 std::pair<Tile*, Tile*>
 Terrain::get_start_end_test() {
     std::pair<Tile*, Tile*> out;

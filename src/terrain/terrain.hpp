@@ -52,9 +52,6 @@
 
 namespace terrain {
 
-// Forward declaration of Chunk
-//class Chunk;
-
 namespace helper {
 
 // high is for if the grass reaches a cliff
@@ -100,10 +97,8 @@ getter_low(Tile* t) {
  */
 class Terrain : public TerrainBase {
     friend class AdjacentIterator;
-    //    friend class Chunk;
 
  private:
-//    TerrainBase terrain_base_;
     std::vector<Chunk> chunks_;
     std::map<int, NodeGroup*> tile_to_group_;
     // seed for randomness
@@ -329,11 +324,6 @@ class Terrain : public TerrainBase {
     get_chunks() const {
         return chunks_;
     }
-
-    //inline int
-    //get_grass_grad_length() const {
-    //    return terrain_base_.grass_grad_length_;
-    //}
 
     /**
      * @brief charge the color id but not the material of the tile
