@@ -22,8 +22,6 @@
 
 #pragma once
 
-//#include "../logging.hpp"
-
 #include <cstdint>
 #include <map>
 #include <string>
@@ -64,13 +62,13 @@ struct Material {
 class TerrainColorMapping {
  private:
     // color map
-    //  index -> color vector
+    // index -> color vector
     static std::vector<uint32_t> color_ids_map;
     // color -> index
     static std::unordered_map<uint32_t, uint16_t> colors_inverse_map;
 
  public:
-    static void assign_color_mapping(const std::map<int, const Material>* materials);
+    static void assign_color_mapping(const std::map<uint8_t, const Material>* materials);
 
     inline static std::vector<uint32_t>&
     get_color_ids_map() {

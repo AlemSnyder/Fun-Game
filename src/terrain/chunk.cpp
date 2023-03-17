@@ -1,18 +1,21 @@
 #include "chunk.hpp"
 
+#include "material.hpp"
 #include "path/tile_iterators.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
-#include "material.hpp"
+#include "terrain_base.hpp"
 
 namespace terrain {
 
-Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
-    ter_ = ter;
-    terrain_base_ = ter_->get_base();
-    Cx_ = bx;
-    Cy_ = by;
-    Cz_ = bz;
+Chunk::Chunk(int bx, int by, int bz, Terrain* ter) :
+    ter_(ter), terrain_base_(ter_->get_base()),
+    Cx_(bx), Cy_(by), Cz_(bz) {
+    // ter_ = ter;
+    // terrain_base_ = ter_->get_base();
+    //Cx_ = bx;
+    //Cy_ = by;
+    //Cz_ = bz;
     for (int x = SIZE * bx; x < SIZE * (1 + bx); x++)
         for (int y = SIZE * by; y < SIZE * (1 + by); y++)
             for (int z = SIZE * bz; z < SIZE * (1 + bz); z++) {

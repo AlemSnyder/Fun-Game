@@ -54,9 +54,9 @@ class Mesh {
 
  protected:
     // x, y, z length of the mesh
-    std::vector<int> size_;
+    std::vector<uint16_t> size_;
     // defines center of mesh for rotating
-    std::vector<int> center_;
+    std::vector<int16_t> center_;
     // indices of each vertex that is drawn
     std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
@@ -73,37 +73,37 @@ class Mesh {
     //void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
     
     // x, y, z length of the mesh
-    [[nodiscard]] inline std::vector<int>
+    [[nodiscard]] inline const std::vector<uint16_t>&
     get_size() const {
         return size_;
     }
     // center of mesh
-    [[nodiscard]] inline std::vector<int>
+    [[nodiscard]] inline const std::vector<int16_t>&
     get_center() const {
         return center_;
     }
     // indices of each vertex that is drawn
-    [[nodiscard]] inline std::vector<std::uint16_t>
+    [[nodiscard]] inline const std::vector<std::uint16_t>&
     get_indices() const {
         return indices_;
     }
     // position of vertices in mesh space
-    [[nodiscard]] inline std::vector<glm::ivec3>
+    [[nodiscard]] inline const std::vector<glm::ivec3>&
     get_indexed_vertices() const {
         return indexed_vertices_;
     }
     // color of vertex
-    [[nodiscard]] inline std::vector<std::uint16_t>
+    [[nodiscard]] inline const std::vector<std::uint16_t>&
     get_indexed_color_ids() const {
         return indexed_color_ids_;
     }
     // normal direction
-    [[nodiscard]] inline std::vector<glm::i8vec3>
+    [[nodiscard]] inline const std::vector<glm::i8vec3>&
     get_indexed_normals() const {
         return indexed_normals_;
     }
     // color mapping from color id (vector index) to 8 bit color
-    [[nodiscard]] inline std::vector<uint32_t>
+    [[nodiscard]] inline const std::vector<uint32_t>&
     get_color_map() const {
         return color_map_;
     }
@@ -124,7 +124,7 @@ class Mesh {
      * @param map
      */
     void change_color_indexing(
-        std::map<int, const terrain::Material>,
+        std::map<uint8_t, const terrain::Material>,
         std::unordered_map<uint32_t, uint16_t> mapping
     );
 

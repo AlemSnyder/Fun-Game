@@ -27,7 +27,7 @@ int
 GUITest(World world) {
     auto mesh = world.get_mesh_greedy();
 
-    LOG_INFO(logging::opengl_logger, "End of world get mesh greedy");
+    LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
 
 
     voxel_utility::VoxelObject default_trees_voxel(
@@ -145,9 +145,9 @@ GUITest(World world) {
 
     std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
-    for (int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
-        for (int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
-            int z = world.terrain_main.get_Z_solid(x, y) + 1;
+    for (unsigned int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
+        for (unsigned int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
+            unsigned int z = world.terrain_main.get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec3 model(x, y, z);
                 model_matrices.push_back(model);

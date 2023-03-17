@@ -138,4 +138,17 @@ to_qb(const std::filesystem::path path, T ter, bool compression = false) {
     LOG_INFO(logging::file_io_logger, "Voxels written: {}", voxels_written);
 }
 
+inline qb_data from_qb(
+    const std::filesystem::path path
+){
+    std::vector<uint32_t> data;
+    std::array<int32_t, 3> center;
+    std::array<uint32_t, 3> size;
+
+    from_qb(path, data, center, size);
+
+    return qb_data(data, center, size);
+
+}
+
 } // namespace voxel_utility

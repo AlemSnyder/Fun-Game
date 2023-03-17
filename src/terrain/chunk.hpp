@@ -96,11 +96,7 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param z z position in chunk
      * @return uint32_t tile color id
      */
-    [[nodiscard]] inline uint32_t get_voxel(int x, int y, int z) const{
-        return terrain_base_->get_voxel(
-            x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-        );
-    }
+    [[nodiscard]] inline uint32_t get_voxel(int x, int y, int z) const;
 
     /**
      * @brief Get the voxel color id
@@ -110,11 +106,7 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param z z position in chunk
      * @return uint16_t color id
      */
-    [[nodiscard]] inline uint16_t get_voxel_color_id(int x, int y, int z) const {
-        return terrain_base_->get_voxel_color_id(
-            x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-        );
-    }
+    [[nodiscard]] inline uint16_t get_voxel_color_id(int x, int y, int z) const;
 
     /**
      * @brief Get the colors used in terrain.
@@ -134,3 +126,17 @@ class Chunk : public voxel_utility::VoxelBase {
 };
 
 } // namespace terrain
+
+#include "terrain.hpp"
+
+inline uint32_t terrain::Chunk::get_voxel(int x, int y, int z) const {
+    return terrain_base_->get_voxel(
+        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+    );
+}
+
+inline uint16_t terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
+    return terrain_base_->get_voxel_color_id(
+        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+    );
+}

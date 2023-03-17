@@ -48,7 +48,7 @@ class Mesh;
  */
 class World {
     // materials that exist
-    std::map<int, const terrain::Material> materials;
+    std::map<uint8_t, const terrain::Material> materials;
 
  public:
     // terrain in the world
@@ -91,7 +91,7 @@ class World {
      * @return const std::map<int, const Material>* map of materials_id to
      * materials pointer
      */
-    const std::map<int, const terrain::Material>*
+    const std::map<uint8_t, const terrain::Material>*
     get_materials() const {
         return &materials;
     }
@@ -110,7 +110,7 @@ class World {
      * @param material_data data to load from
      * (see) data/materials.json
      */
-    std::map<int, const terrain::Material> init_materials(Json::Value material_data);
+    std::map<uint8_t, const terrain::Material> init_materials(Json::Value material_data);
 
     /**
      * @brief Get the grass gradient data

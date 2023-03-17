@@ -11,7 +11,7 @@ std::vector<uint32_t> TerrainColorMapping::color_ids_map;
 std::unordered_map<uint32_t, uint16_t> TerrainColorMapping::colors_inverse_map;
 
 void
-TerrainColorMapping::assign_color_mapping(const std::map<int, const Material>* materials
+TerrainColorMapping::assign_color_mapping(const std::map<uint8_t, const Material>* materials
 ) {
     color_ids_map.clear();
     colors_inverse_map.clear();

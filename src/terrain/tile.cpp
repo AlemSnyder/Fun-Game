@@ -10,7 +10,7 @@
 namespace terrain {
 
 Tile::Tile(
-    std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id
+    std::array<uint16_t, 3> sop, const terrain::Material* material, uint8_t color_id
 ) :
     x(sop[0]),
     y(sop[1]), z(sop[2]), mat_id_(0), color_id_(0), grow_data_high_(0),
@@ -145,9 +145,6 @@ Tile::try_grow_grass() {
     }
 }
 
-// return `color_id`.
-
-
 // returns the element id and the color id as one int
 uint16_t
 Tile::get_mat_color_id() const {
@@ -160,7 +157,7 @@ Tile::get_mat_color_id() const {
 }
 
 // return x, y, z positions as array
-std::array<int, 3>
+std::array<uint16_t, 3>
 Tile::sop() const {
     return {x, y, z};
 }

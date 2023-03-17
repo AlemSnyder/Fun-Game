@@ -55,9 +55,9 @@ World::get_grass_grad_data(Json::Value materials_json) {
     return grass_grad_data;
 }
 
-std::map<int, const terrain::Material>
+std::map<uint8_t, const terrain::Material>
 World::init_materials(Json::Value material_data) {
-    std::map<int, const terrain::Material> out;
+    std::map<uint8_t, const terrain::Material> out;
     for (auto element_it = material_data.begin(); element_it != material_data.end();
          element_it++) {
         std::vector<std::pair<const std::string, uint32_t>> color_vector;
@@ -84,13 +84,17 @@ World::init_materials(Json::Value material_data) {
 }
 
 World::World(Json::Value materials_json, const std::string path) :
-    materials(init_materials(materials_json)), terrain_main(path, &materials) {
-    std::vector<int> grass_grad_data;
-    for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
-         i++) {
-        grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
-        ));
-    }
+    materials(init_materials(materials_json)),
+    terrain_main(
+        path, &materials, get_grass_grad_data(materials_json),
+        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+    ) {
+    // std::vector<int> grass_grad_data;
+    // for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
+    //      i++) {
+    //     grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
+    //     ));
+    // }
 }
 
 World::World(
@@ -106,20 +110,23 @@ World::World(
 
 World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
     materials(init_materials(materials_json)),
-    terrain_main(3, 3, macro_tile_size, height, 5, tile_type, &materials, biome_data) {}
+    terrain_main(macro_tile_size, height, 5, tile_type, &materials, biome_data["Biome_1"],
+        get_grass_grad_data(materials_json),
+        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()) {}
 
+std::vector<entity::Mesh>
+World::get_mesh_greedy() const {
+    std::vector<entity::Mesh> out;
+    for (const terrain::Chunk& c : terrain_main.get_chunks()) {
+        auto chunk_mesh = entity::generate_mesh(c);
 
-std::vector<entity::Mesh> World::get_mesh_greedy() const {
-        std::vector<entity::Mesh> out;
-        for (const terrain::Chunk& c : terrain_main.get_chunks()) {
-            auto chunk_mesh = entity::generate_mesh(c);
+        chunk_mesh.change_color_indexing(
+            materials, terrain::TerrainColorMapping::get_colors_inverse_map()
+        );
 
-            chunk_mesh.change_color_indexing(materials,
-                terrain::TerrainColorMapping::get_colors_inverse_map());
-            
-            if (chunk_mesh.get_indices().size() > 0) {
-                out.push_back(chunk_mesh);
-            }
+        if (chunk_mesh.get_indices().size() > 0) {
+            out.push_back(chunk_mesh);
         }
-        return out;
     }
+    return out;
+}

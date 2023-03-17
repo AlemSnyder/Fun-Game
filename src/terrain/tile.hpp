@@ -83,7 +83,7 @@ class Tile {
      * @param color_id color of tile
      */
     Tile(
-        std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id = 0
+        std::array<uint16_t, 3> sop, const terrain::Material* material, uint8_t color_id = 0
     );
 
     // I will format this later or remove it if I can
@@ -161,28 +161,28 @@ class Tile {
      *
      * @return int x position
      */
-    [[nodiscard]] inline int get_x() const { return x; }
+    [[nodiscard]] inline uint16_t get_x() const { return x; }
 
     /**
      * @brief Get the y position
      *
      * @return int y position
      */
-    [[nodiscard]] inline int get_y() const { return y; }
+    [[nodiscard]] inline uint16_t get_y() const { return y; }
 
     /**
      * @brief Get the z position
      *
      * @return int z position
      */
-    [[nodiscard]] inline int get_z() const { return z; }
+    [[nodiscard]] inline uint16_t get_z() const { return z; }
 
     /**
      * @brief coordinate of tile
      *
      * @return std::array<int, 3> array of x, y, z
      */
-    [[nodiscard]] std::array<int, 3> sop() const;
+    [[nodiscard]] std::array<uint16_t, 3> sop() const;
 
     /**
      * @brief is the tile grass

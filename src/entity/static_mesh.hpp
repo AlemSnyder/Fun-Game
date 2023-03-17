@@ -19,8 +19,8 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
     GLuint element_buffer_;
     GLuint color_texture_;
     GLuint transforms_buffer_;
-    unsigned int num_vertices_;
-    unsigned int num_models_;
+    uint32_t num_vertices_;
+    uint32_t num_models_;
 
  public:
     inline StaticMesh(const StaticMesh& obj) {
@@ -100,12 +100,12 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         return transforms_buffer_;
     }
 
-    inline unsigned int
+    inline uint32_t
     get_num_vertices() const override {
         return num_vertices_;
     }
 
-    inline unsigned int
+    inline uint32_t
     get_num_models() const override {
         return num_models_;
     }

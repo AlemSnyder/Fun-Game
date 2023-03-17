@@ -57,7 +57,7 @@ MacroMap()
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    terrain::Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+    terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
 
     return 1;
 }
@@ -88,6 +88,8 @@ save_terrain(
 
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
+#if 0
+
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
         world.terrain_main.init(
             3, 3, World::macro_tile_size, World::height, 5, static_cast<int>(i),
@@ -100,6 +102,9 @@ save_terrain(
         save_path += ".qb";
         world.terrain_main.qb_save(save_path.string());
     }
+
+#endif
+
 }
 
 void

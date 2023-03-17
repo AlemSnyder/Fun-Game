@@ -55,7 +55,7 @@ class LandGenerator {
     unsigned int current_sub_region;
 
     Json::Value data_; // this should be a structure
-    const std::map<int, const Material>* materials;
+    const std::map<uint8_t, const Material>* materials;
 
  public:
     /**
@@ -64,7 +64,7 @@ class LandGenerator {
      * @param materials the materials used in this biome
      * @param data the description of how tiles stamps should be generated
      */
-    LandGenerator(const std::map<int, const Material>* materials, Json::Value data);
+    LandGenerator(const std::map<uint8_t, const Material>* materials, Json::Value data);
     /**
      * @brief Construct a new LandGenerator object (default constructor)
      *

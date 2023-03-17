@@ -119,4 +119,10 @@ class VoxelObject : VoxelBase {
     }
 };
 
+struct qb_data{
+    std::vector<uint32_t> data;
+    std::array<int32_t, 3> center;
+    std::array<uint32_t, 3> size;
+};
+
 } // namespace voxel_utility

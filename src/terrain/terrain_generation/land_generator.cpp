@@ -30,7 +30,7 @@ namespace terrain {
 namespace terrain_generation {
 
 LandGenerator::LandGenerator(
-    const std::map<int, const Material>* materials_, Json::Value data
+    const std::map<uint8_t, const Material>* materials_, Json::Value data
 )
 {
     materials = materials_;
