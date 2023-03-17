@@ -355,4 +355,7 @@ generate_mesh(T voxel_object) {
     );
 }
 
+std::vector<std::array<float, 4>>
+convert_color_data(const std::vector<uint32_t> color_map);
+
 } // namespace entity

@@ -76,18 +76,8 @@ TerrainMesh::init(
     num_vertices_ = indices.size();
 
     // Generate a texture
-    std::vector<std::array<float, 4>> float_colors;
-    for (uint32_t int_color : color_map) {
-        uint32_t red = (int_color >> 24) & 0xFF;
-        uint32_t green = (int_color >> 16) & 0xFF;
-        uint32_t blue = (int_color >> 8) & 0xFF;
-        uint32_t alpha = (int_color)&0xFF;
-        // the last one >> 0 is A
-        std::array<float, 4> vector_color(
-            {red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f}
-        );
-        float_colors.push_back(vector_color);
-    }
+    std::vector<std::array<float, 4>> float_colors =
+        entity::convert_color_data(color_map);
 
     // Generate a texture
     glGenTextures(1, &color_texture_);
