@@ -53,7 +53,7 @@
 namespace terrain {
 
 // Forward declaration of Chunk
-class Chunk;
+//class Chunk;
 
 namespace helper {
 
@@ -98,18 +98,23 @@ getter_low(Tile* t) {
  * path-finding and its own generation.
  *
  */
-class Terrain : public voxel_utility::VoxelBase {
+class Terrain : public TerrainBase {
     friend class AdjacentIterator;
     //    friend class Chunk;
 
  private:
-    TerrainBase terrain_base_;
+//    TerrainBase terrain_base_;
     std::vector<Chunk> chunks_;
     std::map<int, NodeGroup*> tile_to_group_;
     // seed for randomness
     int seed;
 
  public:
+
+    using TerrainBase::pos;
+    using TerrainBase::pos_for_map;
+
+
     // test for path finding
     std::pair<Tile*, Tile*> get_start_end_test();
 
@@ -169,7 +174,7 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     inline uint32_t
     pos_for_map(const NodeGroup NG) const {
-        return terrain_base_.pos(*(NG.get_tiles().begin()));
+        return pos(*(NG.get_tiles().begin()));
     }
 
     /**
@@ -180,7 +185,7 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     inline uint32_t
     pos_for_map(const NodeGroup* const NG) const {
-        return terrain_base_.pos(*(NG->get_tiles().begin()));
+        return pos(*(NG->get_tiles().begin()));
     }
 
     /**
@@ -241,10 +246,10 @@ class Terrain : public voxel_utility::VoxelBase {
 
     // TODO place block
 
-    [[nodiscard]] inline TerrainBase*
-    get_base() {
-        return &terrain_base_;
-    }
+    //[[nodiscard]] inline TerrainBase*
+    //get_base() {
+    //    return &terrain_base_;
+    //}
 
     using iterator = path::AdjacentIterator;
 
@@ -325,10 +330,10 @@ class Terrain : public voxel_utility::VoxelBase {
         return chunks_;
     }
 
-    inline int
-    get_grass_grad_length() const {
-        return terrain_base_.grass_grad_length_;
-    }
+    //inline int
+    //get_grass_grad_length() const {
+    //    return terrain_base_.grass_grad_length_;
+    //}
 
     /**
      * @brief charge the color id but not the material of the tile
@@ -573,111 +578,6 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     int get_Z_solid(int x, int y, int z);
 
-    inline uint32_t
-    pos(int x, int y, int z) const { // for loops should go z than y than x
-        return terrain_base_.pos(x, y, z);
-    }
-
-    inline uint32_t
-    pos(const std::array<uint16_t, 3> sop) const {
-        return terrain_base_.pos(sop);
-    }
-
-    inline uint32_t
-    pos(const uint16_t sop[3]) const {
-        return terrain_base_.pos(sop);
-    }
-
-    inline uint32_t
-    pos(const Tile* const tile) const {
-        return terrain_base_.pos(tile);
-    }
-
-    inline uint32_t
-    pos(const Tile tile) const {
-        return terrain_base_.pos(tile);
-    }
-
-    inline uint32_t
-    pos_for_map(const Tile tile) const {
-        return pos(tile);
-    }
-
-    inline uint32_t
-    pos_for_map(const Tile* const tile) const {
-        return pos(tile);
-    }
-
-    inline const std::array<uint16_t, 3>
-    sop(uint32_t xyz) const {
-        return terrain_base_.sop(xyz);
-    }
-
-    inline static std::array<uint16_t, 3>
-    sop(uint16_t xyz, uint16_t xm, uint16_t ym, uint16_t zm) {
-        return TerrainBase::sop(xyz, xm, ym, zm);
-    }
-
-    inline uint32_t
-    get_X_MAX() const {
-        return terrain_base_.get_X_MAX();
-    };
-
-    inline uint32_t
-    get_Y_MAX() const {
-        return terrain_base_.get_Y_MAX();
-    };
-
-    inline uint32_t
-    get_Z_MAX() const {
-        return terrain_base_.get_Z_MAX();
-    };
-
-    inline std::array<uint32_t, 3>
-    get_size() const {
-        return terrain_base_.get_size();
-    }
-
-    inline std::array<int32_t, 3>
-    get_offset() const {
-        return terrain_base_.get_offset();
-    }
-
-    inline bool
-    in_range(int x, int y, int z) const {
-        return terrain_base_.in_range(x, y, z);
-    }
-
-    inline Tile*
-    get_tile(int x, int y, int z) {
-        return terrain_base_.get_tile(x, y, z);
-    };
-
-    inline Tile*
-    get_tile(int xyz) {
-        return terrain_base_.get_tile(xyz);
-    }
-
-    inline const Tile*
-    get_tile(int x, int y, int z) const {
-        return terrain_base_.get_tile(x, y, z);
-    };
-
-    inline const Tile*
-    get_tile(int xyz) const {
-        return terrain_base_.get_tile(xyz);
-    }
-
-    inline uint32_t
-    get_voxel(int x, int y, int z) const {
-        return terrain_base_.get_voxel(x, y, z);
-    }
-
-    inline uint16_t
-    get_voxel_color_id(int x, int y, int z) const {
-        return terrain_base_.get_voxel_color_id(x, y, z);
-    }
-
  private:
     // trace nodes through parents to reach start
     template <class T>
@@ -694,3 +594,15 @@ class Terrain : public voxel_utility::VoxelBase {
 };
 
 } // namespace terrain
+
+inline uint32_t terrain::Chunk::get_voxel(int x, int y, int z) const {
+    return ter_->get_voxel(
+        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+    );
+}
+
+inline uint16_t terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
+    return ter_->get_voxel_color_id(
+        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
+    );
+}

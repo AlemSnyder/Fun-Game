@@ -22,10 +22,8 @@
 
 #pragma once
 
-#include "../util/voxel_io.hpp"
 #include "path/node_group.hpp"
-#include "terrain_base.hpp"
-#include "tile.hpp"
+#include "../util/voxel.hpp"
 
 #include <list>
 #include <set>
@@ -45,7 +43,7 @@ class Terrain;
 class Chunk : public voxel_utility::VoxelBase {
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
-    TerrainBase* terrain_base_;
+    //TerrainBase* terrain_base_;
     uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
                             // Chunk::SIZE to get tile position.
  public:
@@ -127,16 +125,5 @@ class Chunk : public voxel_utility::VoxelBase {
 
 } // namespace terrain
 
-#include "terrain.hpp"
+//#include "terrain.hpp"
 
-inline uint32_t terrain::Chunk::get_voxel(int x, int y, int z) const {
-    return terrain_base_->get_voxel(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
-}
-
-inline uint16_t terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
-    return terrain_base_->get_voxel_color_id(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
-}

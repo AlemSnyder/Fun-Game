@@ -55,8 +55,6 @@ namespace terrain {
  *
  */
 class TerrainBase : public voxel_utility::VoxelBase {
-    friend class Terrain;
-    friend class Chunk;
 
  protected:
     // vector of voxels in terrain
@@ -504,6 +502,26 @@ class TerrainBase : public voxel_utility::VoxelBase {
     int get_first_not(
         const std::set<std::pair<int, int>> materials, int x, int y, int guess
     ) const;
+
+    inline uint8_t
+    get_grass_grad_length() const {
+        return grass_grad_length_;
+    }
+
+    inline uint8_t
+    get_grass_mid() const {
+        return grass_mid_;
+    }
+
+    inline std::vector<uint8_t>
+    get_grass_colors() const {
+        return grass_colors_;
+    }
+
+    inline const std::map<uint8_t, const terrain::Material>*
+    get_materials() const {
+        return materials_;
+    }
 
     /**
      * @brief initialize area of terrain
