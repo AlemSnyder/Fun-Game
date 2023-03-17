@@ -32,8 +32,6 @@
 int
 GenerateTerrain(const std::string path)
 {
-    // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
-    // C/gcc/terrain_generation";
 
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");

@@ -183,24 +183,6 @@ class Terrain : public voxel_utility::VoxelBase {
         return terrain_base_.pos(*(NG->get_tiles().begin()));
     }
 
-    // TODO area_size should not be initialized like this
-    /**
-     * @brief Terrain initializer
-     *
-     * @param x number of tile areas in x direction
-     * @param y number of tile areas in y direction
-     * @param area_size size of each area
-     * @param z height of terrain
-     * @param seed seed for random number generation
-     * @param materials materials used in this terrain
-     * @param biome_data data on how to generate a biome
-     * @param Terrain_Maps macro map defines witch tile types go where
-     */
-    // void init(
-    //     int x, int y, int Area_size_, int z, int seed,
-    //     const std::map<uint8_t, const Material>* materials, Json::Value biome_data,
-    //     std::vector<int> Terrain_Maps
-    //);
     /**
      * @brief Terrain initializer for biome test
      *
@@ -244,26 +226,8 @@ class Terrain : public voxel_utility::VoxelBase {
     Terrain(
         int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
         const std::map<uint8_t, const Material>* material, Json::Value biome_data,
-        std::vector<int> grass_grad_data, unsigned int grass_mid//,
-//        std::vector<int> Terrain_Maps
+        std::vector<int> grass_grad_data, unsigned int grass_mid
     );
-    /**
-     * @brief Construct a new Terrain object
-     *
-     * @param x_tiles number of macro tiles in x direction
-     * @param y_tiles number of macro tiles in y direction
-     * @param Area_size_ size of a macro map tile
-     * @param z_tiles number of voxel tiles in z direction
-     * @param seed seed of random number generator
-     * @param tile_type id of map tile type
-     * @param material set of materials used in the world
-     * @param biome_data json data that contains biome data
-     */
-    // Terrain(
-    //     int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed, int
-    //     tile_type, const std::map<uint8_t, const Material>* material, Json::Value
-    //     biome_data
-    //);
     /**
      * @brief Construct a new Terrain object
      *
@@ -528,16 +492,6 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param path path to save to
      */
     void qb_save(const std::string path) const;
-    /**
-     * @brief read from path
-     *
-     * @param path path to read from
-     * @param materials materials in the terrain
-     */
-    void qb_read(
-        const std::string path,
-        const std::map<uint32_t, std::pair<const Material*, uint8_t>>* materials
-    );
     /**
      * @brief get all nod groups
      *

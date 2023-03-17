@@ -32,13 +32,6 @@
 #include <fstream>
 #include <string>
 
-// void World::save(){
-//     terrain_main.qb_save(path);
-// }
-
-// TODO standardize initialization
-// add initializer lists
-
 const terrain::Material*
 World::get_material(int material_id) const {
     return &materials.at(material_id);
@@ -89,12 +82,6 @@ World::World(Json::Value materials_json, const std::string path) :
         path, &materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
-    // std::vector<int> grass_grad_data;
-    // for (unsigned int i = 0; i < materials_json["Dirt"]["Gradient"]["levels"].size();
-    //      i++) {
-    //     grass_grad_data.push_back(materials_json["Dirt"]["Gradient"]["levels"][i].asInt(
-    //     ));
-    // }
 }
 
 World::World(

@@ -27,10 +27,6 @@
 
 namespace terrain {
 
-// needs to stay, but be changed
-// Terrain::Terrain(int x_tiles, int y_tiles, int Area_size_, int z_tiles)
-//    : seed(0), terrain_base_(x_tiles, y_tiles, Area_size_, z_tiles) {}
-
 // most important initializer
 Terrain::Terrain(
     int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed_,
@@ -41,10 +37,6 @@ Terrain::Terrain(
         material, grass_grad_data, grass_mid, x_tiles, y_tiles, Area_size_, z_tiles
     ),
     seed(seed_) {
-    //    init(
-    //        x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
-    //        generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"])
-    //    );
 }
 
 Terrain::Terrain(
@@ -57,10 +49,6 @@ Terrain::Terrain(
         {0, 0, 0, 0, tile_type, 0, 0, 0, 0}
     ),
     seed(seed_) {
-    //    init(
-    //        x_tiles, y_tiles, Area_size_, z_tiles, seed, material, biome_data,
-    //        generate_macro_map(x_tiles, y_tiles, biome_data["Terrain_Data"])
-    //    );
 }
 
 Terrain::Terrain(
@@ -83,56 +71,6 @@ Terrain::Terrain(
     ),
     seed(seed_) {
     auto millisec_since_epoch = time_util::epoch_millis();
-
-    // terrain_base_.initialize with biome_data
-
-    /*
-
-    for (int xyz = 0;
-         xyz < terrain_base_.X_MAX * terrain_base_.Y_MAX * terrain_base_.Z_MAX; xyz++) {
-        terrain_base_.tiles_.push_back(Tile(sop(xyz), &terrain_base_.materials_->at(0))
-        );
-    }
-
-    srand(seed);
-    LOG_INFO(logging::terrain_logger, "Start of land generator.");
-
-    // create a map of int -> LandGenerator
-    std::map<int, terrain_generation::LandGenerator> land_generators;
-
-    // for tile macro in data biome
-    for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
-        // create a land generator for each tile macro
-        terrain_generation::LandGenerator gen(
-            materials, biome_data["Tile_Macros"][i]["Land_Data"]
-        );
-        land_generators.insert(std::make_pair(i, gen));
-    }
-
-    LOG_INFO(
-        logging::terrain_logger, "End of land generator: create macro tile generator."
-    );
-
-    // TODO make this faster 4
-    for (int i = 0; i < x; i++)
-        for (int j = 0; j < y; j++) {
-            int tile_type = Terrain_Maps[j + i * y];
-            Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
-            for (Json::Value generator_macro : macro_types) {
-                init_area(i, j, land_generators[generator_macro.asInt()]);
-            }
-        }
-
-    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles .");
-
-    // TODO make this faster 3
-    for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
-         i++) {
-        add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
-    }
-
-    LOG_INFO(logging::terrain_logger, "End of land generator: top layer placement.");
-    */
 
     // grows the grass
     init_grass();
