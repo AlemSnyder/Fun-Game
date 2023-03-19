@@ -57,7 +57,7 @@ MacroMap()
 
     terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
 
-    return 1;
+    return 0;
 }
 
 int
@@ -82,17 +82,11 @@ save_terrain(
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
-    World world(materials_json, biome_data, 0);
-
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
-#if 0
-
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-        world.terrain_main.init(
-            3, 3, World::macro_tile_size, World::height, 5, static_cast<int>(i),
-            world.get_materials(), biome_data
-        );
+
+        World world(materials_json, biome_data, i);
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
         save_path /= "biome_";
@@ -100,8 +94,6 @@ save_terrain(
         save_path += ".qb";
         world.terrain_main.qb_save(save_path.string());
     }
-
-#endif
 
 }
 
@@ -299,5 +291,8 @@ main(int argc, char** argv)
         return GUITest(path_in);
     } else if (run_function == "Logging") {
         return LogTest();
+    } else {
+        std::cout << "No known command" << std::endl;
+        return 0;
     }
 }
