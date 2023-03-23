@@ -42,6 +42,12 @@
 !.vscode/*.code-snippets
 !.vscode/c_cpp_properties.json
 
+#vendor
+vendor/imgui/*
+!vendor/imgui/**.cpp
+!vendor/imgui/**.h
+!vendor/imgui/**.hpp
+
 # Local History for Visual Studio Code
 .history/
 

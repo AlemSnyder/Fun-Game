@@ -6,8 +6,8 @@
 #include "logging.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
-#include "world.hpp"
 #include "util/voxel_io.hpp"
+#include "world.hpp"
 
 #include <argh.h>
 
@@ -18,21 +18,20 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <quill/Quill.h>
-#include <stdint.h>
+#include <imgui/imgui.h>
 
+#include <stdint.h>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <filesystem>
 
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
 
 int
-GenerateTerrain(const std::string path)
-{
-
+GenerateTerrain(const std::string path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -49,13 +48,14 @@ GenerateTerrain(const std::string path)
 }
 
 int
-MacroMap()
-{
+MacroMap() {
     Json::Value biome_data;
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+    terrain::TerrainBase::generate_macro_map(
+        64, 64, biome_data["Biome_1"]["Terrain_Data"]
+    );
 
     return 0;
 }
@@ -85,7 +85,6 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-
         World world(materials_json, biome_data, i);
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
@@ -94,12 +93,10 @@ save_terrain(
         save_path += ".qb";
         world.terrain_main.qb_save(save_path.string());
     }
-
 }
 
 void
-save_all_terrain(Json::Value materials_json, Json::Value biome_data)
-{
+save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
         save_terrain(materials_json, *biome_type, biome_type.key().asString());
@@ -107,8 +104,7 @@ save_all_terrain(Json::Value materials_json, Json::Value biome_data)
 }
 
 int
-path_finder_test(const std::string path, std::string save_path)
-{
+path_finder_test(const std::string path, std::string save_path) {
     quill::Logger* logger = quill::get_logger();
 
     Json::Value materials_json;
@@ -152,8 +148,7 @@ path_finder_test(const std::string path, std::string save_path)
 }
 
 std::vector<entity::Mesh>
-get_mesh(const std::string path)
-{
+get_mesh(const std::string path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -163,8 +158,7 @@ get_mesh(const std::string path)
 }
 
 int
-StressTest()
-{
+StressTest() {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -181,8 +175,7 @@ StressTest()
 }
 
 int
-GUITest(const std::string path)
-{
+GUITest(const std::string path) {
     quill::Logger* logger = logging::get_logger();
 
     Json::Value materials_json;
@@ -201,14 +194,47 @@ GUITest(const std::string path)
 }
 
 inline int
-GUITest(const std::filesystem::path path)
-{
+GUITest(const std::filesystem::path path) {
     return GUITest(path.string());
 }
 
 inline int
-LogTest()
-{
+imguiTest() {
+
+    quill::Logger* logger = logging::get_logger();
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+
+    // Build atlas
+    unsigned char* tex_pixels = NULL;
+    int tex_w, tex_h;
+    io.Fonts->GetTexDataAsRGBA32(&tex_pixels, &tex_w, &tex_h);
+
+    for (int n = 0; n < 20; n++)
+    {
+        LOG_INFO(logger, "NewFrame() %d", n);
+        io.DisplaySize = ImVec2(1920, 1080);
+        io.DeltaTime = 1.0f / 60.0f;
+        ImGui::NewFrame();
+
+        static float f = 0.0f;
+        ImGui::Text("Hello, world!");
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::ShowDemoWindow(NULL);
+
+        ImGui::Render();
+    }
+
+    LOG_INFO(logger, "DestroyContext()");
+    ImGui::DestroyContext();
+    return 0;
+}
+
+inline int
+LogTest() {
     quill::Logger* logger = quill::get_logger();
     logger->set_log_level(quill::LogLevel::TraceL3);
 
@@ -230,13 +256,12 @@ LogTest()
 }
 
 int
-main(int argc, char** argv)
-{
+main(int argc, char** argv) {
     argh::parser cmdl;
 
     cmdl.add_params({
-        "-v", "--verbose",   // Verbosity
-        "-c", "--console"    // Enable console logging
+        "-v", "--verbose", // Verbosity
+        "-c", "--console"  // Enable console logging
     });
     cmdl.add_param("biome-name");
     cmdl.parse(argc, argv, argh::parser::SINGLE_DASH_IS_MULTIFLAG);
@@ -291,6 +316,8 @@ main(int argc, char** argv)
         return GUITest(path_in);
     } else if (run_function == "Logging") {
         return LogTest();
+    } else if (run_function == "imguiTest"){
+        return imguiTest();
     } else {
         std::cout << "No known command" << std::endl;
         return 0;
