@@ -15,9 +15,11 @@ file(GLOB SOURCES3 "src/**/**/*.cpp")
 file(GLOB SOURCES4 "vendor/*.c*")
 file(GLOB SOURCES5 "vendor/json/*.c*")
 file(GLOB SOURCES6 "vendor/imgui/*.c*")
+file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
 # don't want to complie quill this way
 # file(GLOB SOURCES6 "vendor/**/**/*.c*")
-add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6})
+add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 add_subdirectory("vendor/quill")
 

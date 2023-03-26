@@ -2,6 +2,7 @@
 #include "entity/mesh.hpp"
 #include "gui/controls.hpp"
 #include "gui/main_gui.hpp"
+#include "gui/ui/main_ui.hpp"
 #include "gui/shader.hpp"
 #include "logging.hpp"
 #include "terrain/terrain.hpp"
@@ -196,41 +197,6 @@ GUITest(const std::string path) {
 inline int
 GUITest(const std::filesystem::path path) {
     return GUITest(path.string());
-}
-
-inline int
-imguiTest() {
-
-    quill::Logger* logger = logging::get_logger();
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-
-    // Build atlas
-    unsigned char* tex_pixels = NULL;
-    int tex_w, tex_h;
-    io.Fonts->GetTexDataAsRGBA32(&tex_pixels, &tex_w, &tex_h);
-
-    for (int n = 0; n < 20; n++)
-    {
-        LOG_INFO(logger, "NewFrame() %d", n);
-        io.DisplaySize = ImVec2(1920, 1080);
-        io.DeltaTime = 1.0f / 60.0f;
-        ImGui::NewFrame();
-
-        static float f = 0.0f;
-        ImGui::Text("Hello, world!");
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::ShowDemoWindow(NULL);
-
-        ImGui::Render();
-    }
-
-    LOG_INFO(logger, "DestroyContext()");
-    ImGui::DestroyContext();
-    return 0;
 }
 
 inline int
