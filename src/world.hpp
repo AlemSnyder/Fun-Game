@@ -25,6 +25,7 @@
 // #include "entity/mesh.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
+#include "entity/terrain_mesh.hpp"
 
 #include <json/json.h>
 
@@ -50,9 +51,27 @@ class World {
     // materials that exist
     std::map<uint8_t, const terrain::Material> materials;
 
- public:
     // terrain in the world
     terrain::Terrain terrain_main;
+
+    // TerrainMesh for each chunk in terrain
+    std::vector<terrain::TerrainMesh> chunks_mesh;
+
+    // chunks_mesh like attorneys general
+
+ public:
+
+    const terrain::Terrain& get_terrain_main() const {
+        return terrain_main;
+    }
+
+    terrain::Terrain& get_terrain_main() {
+        return terrain_main;
+    }
+
+    const std::vector<terrain::TerrainMesh>& get_chunks_mesh() const{
+        return chunks_mesh;
+    }
 
     // all of these things are for saving
     // const char *path;
@@ -126,4 +145,18 @@ class World {
      * @return entity::Mesh the mesh generated
      */
     std::vector<entity::Mesh> get_mesh_greedy() const;
+
+    /**
+     * @brief update all chunk mesh
+     * 
+     */
+    void update_all_chunk_mesh();
+
+    // Could mark this inline
+    void
+    update_single_mesh(uint16_t chunk_pos);
+
+    inline void qb_save_debug(std::string path){
+        terrain_main.qb_save_debug(path);
+    }
 };

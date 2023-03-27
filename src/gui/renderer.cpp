@@ -129,6 +129,9 @@ MainRenderer::render(GLFWwindow* window) const {
     glUniform1i(shadow_map_ID_, 1);
 
     for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_) {
+
+        if (!mesh->do_render()){continue;}
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_, 2);
@@ -197,6 +200,9 @@ MainRenderer::render(GLFWwindow* window) const {
     glUniform1i(shadow_map_ID_multi_, 1);
 
     for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
+
+        if (!mesh->do_render()){continue;}
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_multi_, 2);

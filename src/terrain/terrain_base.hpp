@@ -83,7 +83,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         int y_tiles = 1, int area_size = 32, int z_tiles = 1
     ) :
         X_MAX(x_tiles * area_size),
-        Y_MAX(y_tiles * area_size), Z_MAX(z_tiles * area_size), area_size(area_size),
+        Y_MAX(y_tiles * area_size), Z_MAX(z_tiles), area_size(area_size),
         materials_(materials) {
         tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 

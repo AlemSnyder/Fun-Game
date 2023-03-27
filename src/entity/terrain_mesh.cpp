@@ -29,7 +29,7 @@ TerrainMesh::TerrainMesh(
     const std::vector<uint16_t>& indexed_color_ids,
     const std::vector<glm::i8vec3>& indexed_normals,
     const std::vector<uint32_t>& color_map
-) {
+) : vertex_buffer_(0), color_buffer_(0), normal_buffer_(0), element_buffer_(0), color_texture_(0), num_vertices_(indices.size()), do_render_(false) {
     init(indices, indexed_vertices, indexed_color_ids, indexed_normals, color_map);
 };
 
@@ -41,6 +41,21 @@ TerrainMesh::init(
     const std::vector<glm::i8vec3>& indexed_normals,
     const std::vector<uint32_t>& color_map
 ) {
+    // clear all buffers
+    GLuint buffers [4] = {vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
+    glDeleteBuffers(4, buffers);
+
+    // if indices are none so if there is no vertices that would be sent to the graphics card
+    //     then there is no reason to create a buffer
+    // create a bool do_render, set to false when
+    do_render_ = (indices.size() != 0);
+
+    num_vertices_ = indices.size();
+
+    if (!do_render_){
+        return;
+    }
+
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
@@ -72,8 +87,6 @@ TerrainMesh::init(
         GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
         indices.data(), GL_STATIC_DRAW
     );
-
-    num_vertices_ = indices.size();
 
     // Generate a texture
     std::vector<std::array<float, 4>> float_colors =

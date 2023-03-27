@@ -99,7 +99,7 @@ Terrain::init_chunks() {
 }
 
 int
-Terrain::get_Z_solid(int x, int y, int z_start) {
+Terrain::get_Z_solid(int x, int y, int z_start) const {
     for (int z = z_start; z >= 0; z--) {
         if (this->get_tile(x, y, z)->is_solid()) {
             return z;
@@ -109,7 +109,7 @@ Terrain::get_Z_solid(int x, int y, int z_start) {
 }
 
 int
-Terrain::get_Z_solid(int x, int y) {
+Terrain::get_Z_solid(int x, int y) const {
     return get_Z_solid(x, y, Z_MAX - 1);
 }
 
@@ -316,6 +316,25 @@ Terrain::get_node_group(const Tile* t) {
     return get_node_group(pos(t));
 }
 
+const NodeGroup*
+Terrain::get_node_group(int xyz) const {
+    try {
+        return tile_to_group_.at(xyz);
+    } catch (const std::out_of_range& e) {
+        return nullptr;
+    }
+}
+
+const NodeGroup*
+Terrain::get_node_group(const Tile t) const {
+    return get_node_group(pos(t));
+}
+
+const NodeGroup*
+Terrain::get_node_group(const Tile* t) const {
+    return get_node_group(pos(t));
+}
+
 void
 Terrain::add_node_group(NodeGroup* NG) {
     for (const Tile* t : NG->get_tiles()) {
@@ -412,9 +431,9 @@ Terrain::get_all_node_groups() const {
 }
 
 std::vector<const Tile*>
-Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
-    NodeGroup* goal_node;
-    NodeGroup* start_node;
+Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) const {
+    const NodeGroup* goal_node;
+    const NodeGroup* start_node;
     int goal_z = goal_->get_z();
     const Tile* goal;
 
@@ -469,7 +488,7 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) {
+Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
@@ -481,9 +500,9 @@ Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) {
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_breadth_first(
+Terrain::get_path_breadth_first (
     const NodeGroup* start, const std::set<const NodeGroup*> goal
-) {
+) const {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_time_cots() > rhs->get_time_cots();
@@ -629,9 +648,9 @@ Terrain::qb_save(const std::string path) const {
     voxel_utility::to_qb(std::filesystem::path(path), *this);
 }
 
-std::pair<Tile*, Tile*>
-Terrain::get_start_end_test() {
-    std::pair<Tile*, Tile*> out;
+std::pair<const Tile*, const Tile*>
+Terrain::get_start_end_test() const {
+    std::pair<const Tile*, const Tile*> out;
     bool first = true;
     for (uint32_t xyz = 0;
          xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {

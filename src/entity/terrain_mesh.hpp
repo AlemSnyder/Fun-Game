@@ -20,23 +20,24 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     GLuint element_buffer_;
     GLuint color_texture_;
     unsigned int num_vertices_;
+    bool do_render_;
 
  public:
     inline TerrainMesh(const TerrainMesh& obj) :
-        vertex_buffer_(obj.get_vertex_buffer()),
-        color_buffer_(obj.get_color_buffer()),
+        vertex_buffer_(obj.get_vertex_buffer()), color_buffer_(obj.get_color_buffer()),
         normal_buffer_(obj.get_normal_buffer()),
         element_buffer_(obj.get_element_buffer()),
         color_texture_(obj.get_color_texture()),
-        num_vertices_(obj.get_num_vertices()){};
+        num_vertices_(obj.get_num_vertices()),
+        do_render_(obj.do_render()){};
 
     inline TerrainMesh(const StaticMesh& obj) :
-        vertex_buffer_(obj.get_vertex_buffer()),
-        color_buffer_(obj.get_color_buffer()),
+        vertex_buffer_(obj.get_vertex_buffer()), color_buffer_(obj.get_color_buffer()),
         normal_buffer_(obj.get_normal_buffer()),
         element_buffer_(obj.get_element_buffer()),
         color_texture_(obj.get_color_texture()),
-        num_vertices_(obj.get_num_vertices()){};
+        num_vertices_(obj.get_num_vertices()),
+        do_render_(obj.do_render()){};
 
     // copy operator
     inline TerrainMesh&
@@ -47,11 +48,16 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         element_buffer_ = obj.element_buffer_;
         color_texture_ = obj.color_texture_;
         num_vertices_ = obj.num_vertices_;
+        do_render_ = obj.do_render_;
         return *this;
     }
 
-    inline TerrainMesh(){};
+    inline TerrainMesh() :
+        vertex_buffer_(0), color_buffer_(0), normal_buffer_(0), element_buffer_(0),
+        num_vertices_(0), do_render_(false){};
     TerrainMesh(entity::Mesh mesh);
+
+    // init inplace is required because these cannot be copied.
     void init(
         const std::vector<unsigned short>& indices,
         const std::vector<glm::ivec3>& indexed_vertices,
@@ -75,6 +81,11 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
         glDeleteTextures(1, &color_texture_);
+    }
+
+    bool
+    do_render() const override {
+        return do_render_;
     }
 
     [[nodiscard]] inline GLuint

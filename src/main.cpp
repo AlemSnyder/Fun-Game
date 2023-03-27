@@ -43,7 +43,7 @@ GenerateTerrain(const std::string path)
 
     World world(materials_json, biome_data, 6, 6);
 
-    world.terrain_main.qb_save(path);
+    world.get_terrain_main().qb_save(path);
 
     return 0;
 }
@@ -68,7 +68,7 @@ save_test(const std::string path, const std::string save_path) {
 
     World world(materials_json, path);
 
-    world.terrain_main.qb_save_debug(save_path);
+    world.qb_save_debug(save_path);
 
     return 0;
 }
@@ -92,7 +92,7 @@ save_terrain(
         save_path /= "biome_";
         save_path += std::to_string(i);
         save_path += ".qb";
-        world.terrain_main.qb_save(save_path.string());
+        world.get_terrain_main().qb_save(save_path.string());
     }
 
 }
@@ -117,8 +117,8 @@ path_finder_test(const std::string path, std::string save_path)
 
     World world(materials_json, path);
 
-    std::pair<terrain::Tile*, terrain::Tile*> start_end =
-        world.terrain_main.get_start_end_test();
+    std::pair<const terrain::Tile*, const terrain::Tile*> start_end =
+        world.get_terrain_main().get_start_end_test();
 
     LOG_INFO(
         logger, "Start: {}, {}, {}", start_end.first->get_x(), start_end.first->get_y(),
@@ -131,26 +131,27 @@ path_finder_test(const std::string path, std::string save_path)
     );
 
     std::vector<const terrain::Tile*> tile_path =
-        world.terrain_main.get_path_Astar(start_end.first, start_end.second);
+        world.get_terrain_main().get_path_Astar(start_end.first, start_end.second);
 
     LOG_INFO(logger, "Path length: {}", tile_path.size());
 
     if (tile_path.size() == 0) {
         LOG_INFO(logger, "No path");
-        world.terrain_main.qb_save_debug(save_path);
+        world.qb_save_debug(save_path);
         return 1;
     }
 
-    for (auto it = tile_path.begin(); it != tile_path.end(); ++it) {
-        world.terrain_main.get_tile(world.terrain_main.pos((*it)->sop()))
+    for (const terrain::Tile* tile : tile_path) {
+        world.get_terrain_main().get_tile(world.get_terrain_main().pos(tile))
             ->set_material(&world.get_materials()->at(7), 5);
     }
 
-    world.terrain_main.qb_save(save_path);
+    world.get_terrain_main().qb_save(save_path);
 
     return 0;
 }
 
+/*
 std::vector<entity::Mesh>
 get_mesh(const std::string path)
 {
@@ -160,7 +161,7 @@ get_mesh(const std::string path)
     World world(materials_json, path);
 
     return world.get_mesh_greedy();
-}
+}*/
 
 int
 StressTest()

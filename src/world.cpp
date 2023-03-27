@@ -81,8 +81,7 @@ World::World(Json::Value materials_json, const std::string path) :
     terrain_main(
         path, &materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {
-}
+    ) {chunks_mesh.resize(terrain_main.get_chunks().size());}
 
 World::World(
     Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
@@ -93,14 +92,17 @@ World::World(
         x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {}
+    ) {chunks_mesh.resize(terrain_main.get_chunks().size());}
 
 World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
     materials(init_materials(materials_json)),
-    terrain_main(macro_tile_size, height, 5, tile_type, &materials, biome_data["Biome_1"],
+    terrain_main(
+        macro_tile_size, height, 5, tile_type, &materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
-        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()) {}
+        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+    ) {chunks_mesh.resize(terrain_main.get_chunks().size());}
 
+// ! deprecated
 std::vector<entity::Mesh>
 World::get_mesh_greedy() const {
     std::vector<entity::Mesh> out;
@@ -116,4 +118,29 @@ World::get_mesh_greedy() const {
         }
     }
     return out;
+}
+
+void
+World::update_all_chunk_mesh() {
+    const std::vector<terrain::Chunk>& chunks = terrain_main.get_chunks();
+    for (size_t i = 0; i < chunks.size(); i++) {
+        entity::Mesh chunk_mesh = entity::generate_mesh(chunks[i]);
+
+        chunk_mesh.change_color_indexing(
+            materials, terrain::TerrainColorMapping::get_colors_inverse_map()
+        );
+
+        chunks_mesh[i].init(chunk_mesh);
+    }
+}
+
+void
+World::update_single_mesh(uint16_t chunk_pos) {
+    entity::Mesh chunk_mesh = entity::generate_mesh(terrain_main.get_chunks()[chunk_pos]);
+
+    chunk_mesh.change_color_indexing(
+        materials, terrain::TerrainColorMapping::get_colors_inverse_map()
+    );
+
+    chunks_mesh[chunk_pos].init(chunk_mesh);
 }

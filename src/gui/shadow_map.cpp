@@ -120,6 +120,9 @@ ShadowMap::render_shadow_depth_buffer() const {
 
     // draw the non-indexed meshes
     for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_) {
+
+        if (!mesh->do_render()){continue;}
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -154,6 +157,9 @@ ShadowMap::render_shadow_depth_buffer() const {
 
     // draw the indexed meshes
     for (std::shared_ptr<MeshLoader::MultiMesh> mesh : multi_meshes_) {
+
+        if (!mesh->do_render()){continue;}
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());

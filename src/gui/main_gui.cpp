@@ -25,7 +25,7 @@ namespace gui {
 
 int
 GUITest(World world) {
-    auto mesh = world.get_mesh_greedy();
+    //auto mesh = world.get_mesh_greedy();
 
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
 
@@ -133,21 +133,18 @@ GUITest(World world) {
     glBindVertexArray(VertexArrayID);
 
     //  The mesh of the terrain
-    std::vector<terrain::TerrainMesh> chunk_meshes;
-    chunk_meshes.resize(mesh.size());
-    for (size_t i = 0; i < chunk_meshes.size(); i++) {
-        chunk_meshes[i].init(mesh[i]);
-    }
+    world.update_all_chunk_mesh();
+    const std::vector<terrain::TerrainMesh>& chunks_mesh = world.get_chunks_mesh();
 
     LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
 
-    // The above is for the wold the below is for trees
+    // The above is for the world the below is for trees
 
     std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
-    for (unsigned int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
-        for (unsigned int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
-            unsigned int z = world.terrain_main.get_Z_solid(x, y) + 1;
+    for (unsigned int x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
+        for (unsigned int y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
+            unsigned int z = world.get_terrain_main().get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec3 model(x, y, z);
                 model_matrices.push_back(model);
@@ -192,7 +189,7 @@ GUITest(World world) {
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto& m : chunk_meshes) {
+    for (auto& m : chunks_mesh) {
         SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
@@ -202,7 +199,7 @@ GUITest(World world) {
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto& m : chunk_meshes) {
+    for (auto& m : chunks_mesh) {
         MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
     }
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));

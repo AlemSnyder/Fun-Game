@@ -22,7 +22,6 @@
 
 #include "../terrain/terrain.hpp"
 #include "../util/voxel.hpp"
-#include "../world.hpp"
 
 #include <glm/glm.hpp>
 
@@ -49,8 +48,6 @@ class Mesh {
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
-
-    friend World;
 
  protected:
     // x, y, z length of the mesh
@@ -108,7 +105,6 @@ class Mesh {
         return color_map_;
     }
 
- private:
     /**
      * @brief Set the color indexing to what the GPU uses
      *
