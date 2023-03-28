@@ -156,6 +156,25 @@ class World {
     void
     update_single_mesh(uint16_t chunk_pos);
 
+    // set a region to given material, and color
+    void set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id);
+
+    // set a region to given material, and color
+    void set_tiles();
+
+    void
+    stamp_tile_region(
+        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        const terrain::Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
+        uint8_t color_id
+    );
+
+    void
+    stamp_tile_region(
+        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        const terrain::Material* mat, uint8_t color_id
+    );
+
     inline void qb_save_debug(std::string path){
         terrain_main.qb_save_debug(path);
     }

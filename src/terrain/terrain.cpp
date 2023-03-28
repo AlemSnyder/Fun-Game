@@ -265,6 +265,15 @@ Terrain::pos(const NodeGroup* const node_group) const {
            + (py * Z_MAX / Chunk::SIZE) + pz;
 }
 
+uint16_t
+Terrain::get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const {
+    int px = floor(x) / Chunk::SIZE;
+    int py = floor(y) / Chunk::SIZE;
+    int pz = floor(z) / Chunk::SIZE;
+    return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE)
+           + (py * Z_MAX / Chunk::SIZE) + pz;
+}
+
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,

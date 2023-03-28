@@ -81,7 +81,9 @@ World::World(Json::Value materials_json, const std::string path) :
     terrain_main(
         path, &materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {chunks_mesh.resize(terrain_main.get_chunks().size());}
+    ) {
+    chunks_mesh.resize(terrain_main.get_chunks().size());
+}
 
 World::World(
     Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
@@ -92,7 +94,9 @@ World::World(
         x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {chunks_mesh.resize(terrain_main.get_chunks().size());}
+    ) {
+    chunks_mesh.resize(terrain_main.get_chunks().size());
+}
 
 World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
     materials(init_materials(materials_json)),
@@ -100,7 +104,9 @@ World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) 
         macro_tile_size, height, 5, tile_type, &materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {chunks_mesh.resize(terrain_main.get_chunks().size());}
+    ) {
+    chunks_mesh.resize(terrain_main.get_chunks().size());
+}
 
 // ! deprecated
 std::vector<entity::Mesh>
@@ -136,11 +142,62 @@ World::update_all_chunk_mesh() {
 
 void
 World::update_single_mesh(uint16_t chunk_pos) {
-    entity::Mesh chunk_mesh = entity::generate_mesh(terrain_main.get_chunks()[chunk_pos]);
+    const std::vector<terrain::Chunk>& chunks = terrain_main.get_chunks();
+    entity::Mesh chunk_mesh =
+        entity::generate_mesh(chunks[chunk_pos]);
 
     chunk_mesh.change_color_indexing(
         materials, terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
     chunks_mesh[chunk_pos].init(chunk_mesh);
+}
+
+void
+World::set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id) {
+    terrain_main.get_tile(pos)->set_material(mat, color_id);
+
+    auto [x, y, z] = terrain_main.sop(pos);
+
+    uint16_t chunk_pos = terrain_main.get_chunk_from_tile(x, y, z);
+    update_single_mesh(chunk_pos);
+
+    // do some math:
+    // if the tile is on the edge of a chunk then both chunks must be updated.
+    uint8_t edge_case = x % terrain::Chunk::SIZE;
+    if (( edge_case == 0)) {
+        if (terrain_main.in_range(x - 1, y, z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(x - 1, y, z);
+            update_single_mesh(chunk_pos);
+        }
+    } else if ( edge_case == terrain::Chunk::SIZE - 1) {
+        if (terrain_main.in_range(x + 1, y, z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(x + 1, y, z);
+            update_single_mesh(chunk_pos);
+        }
+    }
+    edge_case = y % terrain::Chunk::SIZE;
+    if ((edge_case == 0)) {
+        if (terrain_main.in_range(x, y - 1, z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(x, y - 1, z);
+            update_single_mesh(chunk_pos);
+        }
+    } else if (edge_case == terrain::Chunk::SIZE - 1) {
+        if (terrain_main.in_range(x, y + 1, z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(x, y + 1, z);
+            update_single_mesh(chunk_pos);
+        }
+    }
+    edge_case = z % terrain::Chunk::SIZE;
+    if ((edge_case == 0)) {
+        if (terrain_main.in_range(x, y, z - 1)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(x, y, z - 1);
+            update_single_mesh(chunk_pos);
+        }
+    } else if (edge_case == terrain::Chunk::SIZE - 1) {
+        if (terrain_main.in_range(x, y, z + 1)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(x, y, z + 1);
+            update_single_mesh(chunk_pos);
+        }
+    }
 }

@@ -24,7 +24,7 @@
 namespace gui {
 
 int
-GUITest(World world) {
+GUITest(World& world) {
     //auto mesh = world.get_mesh_greedy();
 
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
@@ -205,6 +205,8 @@ GUITest(World world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
+    unsigned int frame_id = 0;
+
     do {
         SM.render_shadow_depth_buffer();
         MR.render(window);
@@ -244,6 +246,11 @@ GUITest(World world) {
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        if (frame_id % 16 == 0){
+            world.set_tile(frame_id / 16, world.get_material(7), 0);
+        }
+        frame_id ++;
 
     } // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
