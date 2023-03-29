@@ -69,42 +69,47 @@ class Mesh {
     std::vector<uint32_t> color_map_;
 
  public:
+    // void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
 
-    //void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
-    
     // x, y, z length of the mesh
     [[nodiscard]] inline const std::vector<uint16_t>&
-    get_size() const {
+    get_size() const noexcept {
         return size_;
     }
+
     // center of mesh
     [[nodiscard]] inline const std::vector<int16_t>&
-    get_center() const {
+    get_center() const noexcept {
         return center_;
     }
+
     // indices of each vertex that is drawn
     [[nodiscard]] inline const std::vector<std::uint16_t>&
-    get_indices() const {
+    get_indices() const noexcept {
         return indices_;
     }
+
     // position of vertices in mesh space
     [[nodiscard]] inline const std::vector<glm::ivec3>&
-    get_indexed_vertices() const {
+    get_indexed_vertices() const noexcept {
         return indexed_vertices_;
     }
+
     // color of vertex
     [[nodiscard]] inline const std::vector<std::uint16_t>&
-    get_indexed_color_ids() const {
+    get_indexed_color_ids() const noexcept {
         return indexed_color_ids_;
     }
+
     // normal direction
     [[nodiscard]] inline const std::vector<glm::i8vec3>&
-    get_indexed_normals() const {
+    get_indexed_normals() const noexcept {
         return indexed_normals_;
     }
+
     // color mapping from color id (vector index) to 8 bit color
     [[nodiscard]] inline const std::vector<uint32_t>&
-    get_color_map() const {
+    get_color_map() const noexcept {
         return color_map_;
     }
 
@@ -124,8 +129,8 @@ class Mesh {
      * @param map
      */
     void change_color_indexing(
-        std::map<uint8_t, const terrain::Material>,
-        std::unordered_map<uint32_t, uint16_t> mapping
+        const std::map<uint8_t, const terrain::Material>& materials,
+        const std::unordered_map<uint32_t, uint16_t>& mapping
     );
 
 }; // class Mesh
@@ -356,6 +361,6 @@ generate_mesh(T voxel_object) {
 }
 
 std::vector<std::array<float, 4>>
-convert_color_data(const std::vector<uint32_t> color_map);
+convert_color_data(const std::vector<uint32_t>& color_map);
 
 } // namespace entity

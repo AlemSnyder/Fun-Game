@@ -23,16 +23,14 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
 
  public:
     inline TerrainMesh(const TerrainMesh& obj) :
-        vertex_buffer_(obj.get_vertex_buffer()),
-        color_buffer_(obj.get_color_buffer()),
+        vertex_buffer_(obj.get_vertex_buffer()), color_buffer_(obj.get_color_buffer()),
         normal_buffer_(obj.get_normal_buffer()),
         element_buffer_(obj.get_element_buffer()),
         color_texture_(obj.get_color_texture()),
         num_vertices_(obj.get_num_vertices()){};
 
     inline TerrainMesh(const StaticMesh& obj) :
-        vertex_buffer_(obj.get_vertex_buffer()),
-        color_buffer_(obj.get_color_buffer()),
+        vertex_buffer_(obj.get_vertex_buffer()), color_buffer_(obj.get_color_buffer()),
         normal_buffer_(obj.get_normal_buffer()),
         element_buffer_(obj.get_element_buffer()),
         color_texture_(obj.get_color_texture()),
@@ -56,8 +54,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         const std::vector<unsigned short>& indices,
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_colors,
-        const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_texture
+        const std::vector<glm::i8vec3>& indexed_normals, GLuint color_texture
     );
     void init(entity::Mesh mesh);
 
@@ -65,8 +62,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         const std::vector<unsigned short>& indices,
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_colors,
-        const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_texture
+        const std::vector<glm::i8vec3>& indexed_normals, GLuint color_texture
     );
 
     inline ~TerrainMesh() {
@@ -74,7 +70,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
-        glDeleteTextures(1, &color_texture_);
+        // glDeleteTextures(1, &color_texture_);
     }
 
     [[nodiscard]] inline GLuint

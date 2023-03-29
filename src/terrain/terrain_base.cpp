@@ -10,7 +10,7 @@ namespace terrain {
 void
 TerrainBase::qb_read(
     std::vector<uint32_t> data,
-    std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse
+    const std::map<uint32_t, std::pair<const Material*, uint8_t>>& materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
@@ -33,7 +33,6 @@ TerrainBase::qb_read(
     }
 
     for (uint32_t color : unknown_materials) {
-        // is there any way to log hexadecimal
         LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
 }
@@ -44,8 +43,7 @@ TerrainBase::get_first_not(
 ) const {
     if (guess < 1) {
         guess = 1;
-    }
-    if ((uint32_t)guess >= Z_MAX) {
+    } else if ((uint32_t)guess >= Z_MAX) {
         guess = Z_MAX - 1;
     }
     if (materials.find(std::make_pair(
@@ -89,17 +87,17 @@ TerrainBase::get_first_not(
 
 void
 TerrainBase::add_to_top(
-    Json::Value top_data, const std::map<uint8_t, const Material>* materials
+    const Json::Value& top_data, const std::map<uint8_t, const Material>& materials
 ) {
     std::set<std::pair<int, int>> material_type;
 
-    for (Json::Value::ArrayIndex i = 0; i < top_data["above_colors"].size(); i++) {
-        int E = top_data["above_colors"][i]["E"].asInt();
-        if (top_data["above_colors"][i]["C"].isInt()) {
-            int C = top_data["above_colors"][i]["C"].asInt();
+    for (auto color_data : top_data["above_colors"]) {
+        int E = color_data["E"].asInt();
+        if (color_data["C"].isInt()) {
+            int C = color_data["C"].asInt();
             material_type.insert(std::make_pair(E, C));
-        } else if (top_data["above_colors"][i]["C"].asBool()) {
-            for (unsigned int C = 0; C < (*materials).at(E).color.size(); C++) {
+        } else if (color_data["C"].asBool()) {
+            for (unsigned int C = 0; C < materials.at(E).color.size(); C++) {
                 material_type.insert(std::make_pair(E, C));
             }
         }
@@ -116,7 +114,7 @@ TerrainBase::add_to_top(
             int max_height = get_stop_height(guess, top_data["how_to_add"]);
             for (int z = guess; z < max_height; z++) {
                 get_tile(x, y, z)->set_material(
-                    &(*materials).at(top_data["Material_id"].asInt()),
+                    &materials.at(top_data["Material_id"].asInt()),
                     top_data["Color_id"].asInt()
                 );
             }
@@ -178,7 +176,7 @@ TerrainBase::init_area(int area_x, int area_y, terrain_generation::LandGenerator
 // generates a size_x by size_y vector of macro tile types.
 std::vector<int>
 TerrainBase::generate_macro_map(
-    unsigned int size_x, unsigned int size_y, Json::Value terrain_data
+    unsigned int size_x, unsigned int size_y, Json::Value& terrain_data
 ) {
     std::vector<int> out;
     int background = terrain_data["BackGround"].asInt(); // default terrain type.
@@ -190,7 +188,7 @@ TerrainBase::generate_macro_map(
     terrain_generation::NoiseGenerator ng =
         terrain_generation::NoiseGenerator(numOctaves, persistance, 3);
 
-    for (unsigned int i = 0; i < out.size(); i++) {
+    for (size_t i = 0; i < out.size(); i++) {
         auto [x, y, z] = sop(i, size_x, size_y, 1);
         auto p = ng.getValueNoise(
             static_cast<double>(x) * spacing, static_cast<double>(y) * spacing
@@ -206,14 +204,14 @@ TerrainBase::generate_macro_map(
 }
 
 int
-TerrainBase::get_stop_height(int height, const Json::Value how_to_add) {
-    for (unsigned int i = 0; i < how_to_add.size(); i++) {
-        if (height >= how_to_add[i]["from"][0].asInt()
-            && height < how_to_add[i]["from"][1].asInt()) {
-            if (how_to_add[i]["to"].isInt()) {
-                return how_to_add[i]["to"].asInt();
+TerrainBase::get_stop_height(int height, const Json::Value& how_to_add) {
+    for (auto& add_data : how_to_add) {
+        if (height >= add_data["from"][0].asInt()
+            && height < add_data["from"][1].asInt()) {
+            if (add_data["to"].isInt()) {
+                return add_data["to"].asInt();
             } else {
-                return height + how_to_add[i]["add"].asInt();
+                return height + add_data["add"].asInt();
             }
         }
     }

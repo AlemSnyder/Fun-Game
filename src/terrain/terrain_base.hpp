@@ -55,7 +55,6 @@ namespace terrain {
  *
  */
 class TerrainBase : public voxel_utility::VoxelBase {
-
  protected:
     // vector of voxels in terrain
     std::vector<Tile> tiles_;
@@ -192,7 +191,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         // TODO make this faster 3
         for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
              i++) {
-            add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
+            add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], (*materials));
         }
 
         LOG_INFO(
@@ -202,7 +201,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     void qb_read(
         std::vector<uint32_t> data,
-        std::map<uint32_t, std::pair<const Material*, uint8_t>> materials_inverse
+        const std::map<uint32_t, std::pair<const Material*, uint8_t>>& materials_inverse
     );
 
     /**
@@ -592,8 +591,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * are added
      * @param material material type to add
      */
-    void
-    add_to_top(Json::Value to_data, const std::map<uint8_t, const Material>* material);
+    void add_to_top(
+        const Json::Value& to_data, const std::map<uint8_t, const Material>& material
+    );
 
     /**
      * @brief generates a 2D 'height' map to use to generate the terrain
@@ -604,7 +604,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return std::vector<int> (size_x * size_y) vector of ints
      */
     static std::vector<int>
-    generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value map_data);
+    generate_macro_map(unsigned int size_x, unsigned int size_y, Json::Value& map_data);
 
     /**
      * @brief Get the max allowable height of added material
@@ -613,7 +613,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param how_to_add json data that defines biome generation
      * @return int max height
      */
-    static int get_stop_height(int height, const Json::Value how_to_add);
+    static int get_stop_height(int height, const Json::Value& how_to_add);
 };
 
 } // namespace terrain

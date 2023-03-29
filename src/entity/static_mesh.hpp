@@ -70,43 +70,43 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         glDeleteBuffers(1, &transforms_buffer_);
     }
 
-    inline GLuint
-    get_color_buffer() const override {
+    [[nodiscard]] inline GLuint
+    get_color_buffer() const noexcept override {
         return color_buffer_;
     }
 
-    inline GLuint
-    get_element_buffer() const override {
+    [[nodiscard]] inline GLuint
+    get_element_buffer() const noexcept override {
         return element_buffer_;
     }
 
-    inline GLuint
-    get_normal_buffer() const override {
+    [[nodiscard]] inline GLuint
+    get_normal_buffer() const noexcept override {
         return normal_buffer_;
     }
 
-    inline GLuint
-    get_vertex_buffer() const override {
+    [[nodiscard]] inline GLuint
+    get_vertex_buffer() const noexcept override {
         return vertex_buffer_;
     }
 
-    inline GLuint
-    get_color_texture() const override {
+    [[nodiscard]] inline GLuint
+    get_color_texture() const noexcept override {
         return color_texture_;
     }
 
-    inline GLuint
-    get_model_transforms() const override {
+    [[nodiscard]] inline GLuint
+    get_model_transforms() const noexcept override {
         return transforms_buffer_;
     }
 
-    inline uint32_t
-    get_num_vertices() const override {
+    [[nodiscard]] inline uint32_t
+    get_num_vertices() const noexcept override {
         return num_vertices_;
     }
 
-    inline uint32_t
-    get_num_models() const override {
+    [[nodiscard]] inline uint32_t
+    get_num_models() const noexcept override {
         return num_models_;
     }
 };

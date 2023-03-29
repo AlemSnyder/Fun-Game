@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "path/node_group.hpp"
 #include "../util/voxel.hpp"
+#include "path/node_group.hpp"
 
 #include <list>
 #include <set>
@@ -123,6 +123,3 @@ class Chunk : public voxel_utility::VoxelBase {
 };
 
 } // namespace terrain
-
-//#include "terrain.hpp"
-
