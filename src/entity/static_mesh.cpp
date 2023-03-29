@@ -93,9 +93,4 @@ StaticMesh::StaticMesh(
     );
 }
 
-bool
-StaticMesh::do_render() const {
-    return do_render_;
-}
-
 } // namespace terrain

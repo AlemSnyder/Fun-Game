@@ -76,47 +76,50 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         glDeleteBuffers(1, &transforms_buffer_);
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_color_buffer() const override {
         return color_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_element_buffer() const override {
         return element_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_normal_buffer() const override {
         return normal_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_vertex_buffer() const override {
         return vertex_buffer_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_color_texture() const override {
         return color_texture_;
     }
 
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_model_transforms() const override {
         return transforms_buffer_;
     }
 
-    inline uint32_t
+    [[nodiscard]] inline uint32_t
     get_num_vertices() const override {
         return num_vertices_;
     }
 
-    inline uint32_t
+    [[nodiscard]] inline uint32_t
     get_num_models() const override {
         return num_models_;
     }
 
-    bool do_render() const override;
+    [[nodiscard]] inline bool
+    do_render() const override {
+        return do_render_;
+    };
 };
 
 } // namespace terrain

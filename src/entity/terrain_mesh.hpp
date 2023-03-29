@@ -83,7 +83,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteTextures(1, &color_texture_);
     }
 
-    bool
+    [[nodiscard]] inline bool
     do_render() const override {
         return do_render_;
     }
