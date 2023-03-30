@@ -57,7 +57,11 @@ TerrainColorMapping::assign_color_mapping(
             }
         }
     }
+}
 
+unsigned int
+TerrainColorMapping::assign_color_texture() {
+    
     glDeleteTextures(1, &color_texture_);
 
     // Generate a texture
@@ -79,6 +83,8 @@ TerrainColorMapping::assign_color_mapping(
         float_colors.data()
     );
     glGenerateMipmap(GL_TEXTURE_1D);
+    
+    return color_texture_;
 }
 
 } // namespace terrain

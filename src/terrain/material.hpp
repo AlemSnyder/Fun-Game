@@ -29,7 +29,7 @@
 #include <vector>
 
 // not including all of glew
-using GLuint_p = unsigned int;
+// using GLuint_p = unsigned int;
 
 namespace terrain {
 
@@ -75,6 +75,8 @@ class TerrainColorMapping {
  public:
     static void assign_color_mapping(const std::map<uint8_t, const Material>& materials
     );
+    // may discard
+    static unsigned int assign_color_texture();
 
     inline static std::vector<uint32_t>&
     get_color_ids_map() {
@@ -86,7 +88,7 @@ class TerrainColorMapping {
         return colors_inverse_map;
     }
 
-    inline static GLuint_p
+    inline static unsigned int
     get_color_texture() {
         return color_texture_;
     };

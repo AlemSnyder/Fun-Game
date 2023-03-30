@@ -2,20 +2,19 @@
 #include "terrain_mesh.hpp"
 
 #include "../logging.hpp"
+//#include "../terrain/material.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-namespace terrain {
-
-TerrainMesh::TerrainMesh(entity::Mesh mesh) {
+terrain::TerrainMesh::TerrainMesh(entity::Mesh mesh) {
     init(mesh);
 }
 
 void
-TerrainMesh::init(entity::Mesh mesh) {
-    color_texture_ = TerrainColorMapping::get_color_texture();
+terrain::TerrainMesh::init(entity::Mesh mesh) {
+    color_texture_mesh_ = 0;//terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
@@ -50,5 +49,3 @@ TerrainMesh::init(entity::Mesh mesh) {
 
     num_vertices_ = mesh.get_indices().size();
 }
-
-} // namespace terrain

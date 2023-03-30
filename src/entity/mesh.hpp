@@ -20,9 +20,8 @@
  */
 #pragma once
 
-#include "../terrain/terrain.hpp"
 #include "../util/voxel.hpp"
-#include "../world.hpp"
+#include "../terrain/material.hpp"
 
 #include <glm/glm.hpp>
 
@@ -50,7 +49,7 @@ class Mesh {
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
 
-    friend World;
+    //friend World;
 
  protected:
     // x, y, z length of the mesh
@@ -113,7 +112,8 @@ class Mesh {
         return color_map_;
     }
 
- private:
+// private:
+// set the back to private when world::get_mesh_greedy is removed in the next pr.
     /**
      * @brief Set the color indexing to what the GPU uses
      *

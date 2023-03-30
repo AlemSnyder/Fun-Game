@@ -127,6 +127,9 @@ GUITest(World world) {
     // Cull triangles which normal is not towards the camera
     glEnable(GL_CULL_FACE);
 
+    // send color texture to gpu
+    terrain::TerrainColorMapping::assign_color_texture();
+
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);

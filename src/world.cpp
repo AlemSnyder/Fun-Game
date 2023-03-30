@@ -72,7 +72,7 @@ World::init_materials(Json::Value material_data) {
         out.insert(std::make_pair(mat.element_id, mat));
     }
 
-    terrain::TerrainColorMapping::assign_color_mapping(&out);
+    terrain::TerrainColorMapping::assign_color_mapping(out);
     return out;
 }
 
