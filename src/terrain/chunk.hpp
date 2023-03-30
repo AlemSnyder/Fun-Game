@@ -93,7 +93,7 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param z z position in chunk
      * @return uint32_t tile color id
      */
-    [[nodiscard]] inline uint32_t get_voxel(int x, int y, int z) const;
+    [[nodiscard]] uint32_t get_voxel(int x, int y, int z) const;
 
     /**
      * @brief Get the voxel color id
@@ -103,7 +103,7 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param z z position in chunk
      * @return uint16_t color id
      */
-    [[nodiscard]] inline uint16_t get_voxel_color_id(int x, int y, int z) const;
+    [[nodiscard]] uint16_t get_voxel_color_id(int x, int y, int z) const;
 
     /**
      * @brief Get the colors used in terrain.
