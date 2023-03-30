@@ -2,7 +2,7 @@
 #include "terrain_mesh.hpp"
 
 #include "../logging.hpp"
-//#include "../terrain/material.hpp"
+#include "../terrain/material.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,7 +14,7 @@ terrain::TerrainMesh::TerrainMesh(entity::Mesh mesh) {
 
 void
 terrain::TerrainMesh::init(entity::Mesh mesh) {
-    color_texture_mesh_ = 0;//terrain::TerrainColorMapping::get_color_texture();
+    color_texture_mesh_ = terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);

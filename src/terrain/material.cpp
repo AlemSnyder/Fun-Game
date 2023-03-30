@@ -12,6 +12,8 @@ namespace terrain {
 std::vector<uint32_t> TerrainColorMapping::color_ids_map;
 // 8 bit color to color id
 std::unordered_map<uint32_t, uint16_t> TerrainColorMapping::colors_inverse_map;
+// id of the color texture sent to opengl
+GLuint_p TerrainColorMapping::color_texture_;
 
 void
 TerrainColorMapping::assign_color_mapping(
@@ -59,7 +61,7 @@ TerrainColorMapping::assign_color_mapping(
     }
 }
 
-unsigned int
+GLuint_p
 TerrainColorMapping::assign_color_texture() {
     
     glDeleteTextures(1, &color_texture_);
