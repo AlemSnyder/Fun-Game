@@ -45,7 +45,7 @@ class Mesh {
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_color_ids,
         const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_map
+        const std::vector<ColorInt>& color_map
     ) :
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
@@ -67,7 +67,7 @@ class Mesh {
     // normal direction
     std::vector<glm::i8vec3> indexed_normals_;
     // color map
-    std::vector<uint32_t> color_map_;
+    std::vector<ColorInt> color_map_;
 
  public:
 
@@ -130,8 +130,8 @@ class Mesh {
      * @param map
      */
     void change_color_indexing(
-        const std::map<uint8_t, const terrain::Material>& materials,
-        const std::unordered_map<uint32_t, uint16_t>& mapping
+        const std::map<MaterialId, const terrain::Material>& materials,
+        const std::unordered_map<ColorInt, uint16_t>& mapping
     );
 
 }; // class Mesh

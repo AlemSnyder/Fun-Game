@@ -147,9 +147,9 @@ GUITest(World world) {
 
     std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
-    for (uint32_t x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
-        for (uint32_t y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
-            uint32_t z = world.terrain_main.get_Z_solid(x, y) + 1;
+    for (size_t x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
+        for (size_t y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
+            size_t z = world.terrain_main.get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec3 model(x, y, z);
                 model_matrices.push_back(model);

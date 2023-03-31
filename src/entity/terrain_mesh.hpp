@@ -29,13 +29,6 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         color_texture_mesh_(obj.get_color_texture()),
         num_vertices_(obj.get_num_vertices()){};
 
-//    inline TerrainMesh(const StaticMesh& obj) :
-//        vertex_buffer_(obj.get_vertex_buffer()), color_buffer_(obj.get_color_buffer()),
-//        normal_buffer_(obj.get_normal_buffer()),
-//        element_buffer_(obj.get_element_buffer()),
-//        color_texture_mesh_(obj.get_color_texture()),
-//        num_vertices_(obj.get_num_vertices()){};
-
     // copy operator
     inline TerrainMesh&
     operator=(const TerrainMesh& obj) {

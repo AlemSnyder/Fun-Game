@@ -7,6 +7,8 @@ using Dim = uint16_t;
 
 // four chanels of 8 bits
 using ColorInt = uint32_t;
+// color chanels as vec of ints
+using color_t = glm::u8vec4;
 // four chanels of floats
 using ColorFloat = glm::vec4; // std::array<float, 4>;
 

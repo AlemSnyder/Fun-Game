@@ -39,6 +39,16 @@ Terrain::Terrain(
     ),
     seed(seed_) {}
 
+// This function aims to generate a test that demonstrates the given terrain type
+// to do this a three by three area where the given type is generated in the
+// center is given
+//
+// 0,   0,  0
+// 0, type, 0
+// 0,   0,  0
+//
+// Is how the world map should look.
+
 Terrain::Terrain(
     int area_size, int z_tiles, int tile_type, int seed_,
     const std::map<MaterialId, const Material>& material, const Json::Value biome_data,
@@ -86,9 +96,9 @@ Terrain::Terrain(
 void
 Terrain::init_chunks() {
     // chunk length in _ direction
-    uint32_t C_length_X = ((X_MAX - 1) / Chunk::SIZE + 1);
-    uint32_t C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
-    uint32_t C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
+    Dim C_length_X = ((X_MAX - 1) / Chunk::SIZE + 1);
+    Dim C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
+    Dim C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
         auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
         chunks_.push_back(Chunk(x, y, z, this));
@@ -207,7 +217,7 @@ Terrain::init_grass() {
 // this should be the same as can_stand(x,y,z,1,1)
 bool
 Terrain::can_stand_1(int xyz) const {
-    if ((uint32_t)xyz % Z_MAX < 1 || (uint32_t)xyz >= X_MAX * Y_MAX * Z_MAX) {
+    if (static_cast<uint32_t>(xyz) % Z_MAX < 1 || static_cast<uint32_t>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
         return false;
     }
     return (!get_tile(xyz)->is_solid() && get_tile(xyz - 1)->is_solid());
@@ -629,8 +639,8 @@ std::pair<Tile*, Tile*>
 Terrain::get_start_end_test() {
     std::pair<Tile*, Tile*> out;
     bool first = true;
-    for (uint32_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        if (get_tile(xyz)->get_material_id() == 7
+    for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        if (get_tile(xyz)->get_material_id() == DEBUG_MATERIAL
             && get_tile(xyz)->get_color_id() == 4) {
             if (first) {
                 out.first = get_tile(xyz);

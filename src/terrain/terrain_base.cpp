@@ -38,13 +38,64 @@ TerrainBase::qb_read(
     }
 }
 
+TerrainBase::TerrainBase(
+    int x, int y, int Area_size, int z,
+    const std::map<uint8_t, const Material>& materials, const Json::Value& biome_data,
+    std::vector<int> grass_grad_data, unsigned int grass_mid,
+    std::vector<int> Terrain_Maps
+) :
+    TerrainBase(materials, grass_grad_data, grass_mid, x, y, Area_size, z) {
+    for (unsigned int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+        tiles_.push_back(Tile(sop(xyz), &materials_.at(0)));
+    }
+
+    // srand(seed);
+    LOG_INFO(logging::terrain_logger, "Start of land generator.");
+
+    // create a map of int -> LandGenerator
+    std::map<int, terrain_generation::LandGenerator> land_generators;
+
+    // for tile macro in data biome
+    for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
+        // create a land generator for each tile macro
+        terrain_generation::LandGenerator gen(
+            materials, biome_data["Tile_Macros"][i]["Land_Data"]
+        );
+        land_generators.insert(std::make_pair(i, gen));
+    }
+
+    LOG_INFO(
+        logging::terrain_logger, "End of land generator: create macro tile generator."
+    );
+
+    // TODO make this faster 4
+    for (int i = 0; i < x; i++)
+        for (int j = 0; j < y; j++) {
+            int tile_type = Terrain_Maps[j + i * y];
+            Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
+            for (Json::Value generator_macro : macro_types) {
+                init_area(i, j, land_generators.at(generator_macro.asInt()));
+            }
+        }
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles .");
+
+    // TODO make this faster 3
+    for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
+         i++) {
+        add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
+    }
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: top layer placement.");
+}
+
 int
 TerrainBase::get_first_not(
     const std::set<std::pair<MaterialId, ColorId>>& materials, int x, int y, int guess
 ) const {
     if (guess < 1) {
         guess = 1;
-    } else if ((uint32_t)guess >= Z_MAX) {
+    } else if ((Dim)guess >= Z_MAX) {
         guess = Z_MAX - 1;
     }
     if (has_tile_material(materials, x, y, guess - 1)) {
@@ -114,8 +165,8 @@ TerrainBase::add_to_top(
 void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-    const Material* mat, std::set<std::pair<MaterialId, ColorId>> elements_can_stamp,
-    uint8_t color_id
+    const Material* mat,
+    const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp, uint8_t color_id
 ) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.

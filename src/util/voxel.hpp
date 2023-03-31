@@ -10,9 +10,9 @@ namespace voxel_utility {
 
 class VoxelBase {
  public:
-    uint32_t get_voxel(int x, int y, int z) const;
+    ColorInt get_voxel(int x, int y, int z) const;
     uint16_t get_voxel_color_id(int x, int y, int z) const;
-    std::vector<uint32_t> get_color_ids() const;
+    std::vector<ColorInt> get_color_ids() const;
     std::array<uint32_t, 3> get_size() const;
     std::array<int32_t, 3> get_offset() const;
 };
@@ -23,7 +23,7 @@ concept VoxelLike = std::is_base_of<voxel_utility::VoxelBase, T>::value;
 class VoxelObject : VoxelBase {
  private:
     std::vector<uint16_t> data_;
-    std::vector<uint32_t> colors_;
+    std::vector<ColorInt> colors_;
     std::array<int32_t, 3> center_;
     std::array<uint32_t, 3> size_;
     bool ok_;
@@ -61,9 +61,9 @@ class VoxelObject : VoxelBase {
     /**
      * @brief Get the color ids vector
      * 
-     * @return std::vector<uint32_t> 
+     * @return std::vector<ColorInt> 
      */
-    [[nodiscard]] inline const std::vector<uint32_t>&
+    [[nodiscard]] inline const std::vector<ColorInt>&
     get_color_ids() const {
         return colors_;
     }
@@ -91,9 +91,9 @@ class VoxelObject : VoxelBase {
      * @param x coordinate
      * @param y coordinate
      * @param z coordinate
-     * @return uint32_t color
+     * @return ColorInt color
      */
-    [[nodiscard]] inline uint32_t
+    [[nodiscard]] inline ColorInt
     get_voxel(int32_t x, int32_t y, int32_t z) const {
         return colors_[get_voxel_color_id(x, y, z)];
     }
@@ -120,7 +120,7 @@ class VoxelObject : VoxelBase {
 };
 
 struct qb_data{
-    std::vector<uint32_t> data;
+    std::vector<ColorInt> data;
     std::array<int32_t, 3> center;
     std::array<uint32_t, 3> size;
 };
