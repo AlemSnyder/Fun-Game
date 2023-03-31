@@ -5,12 +5,17 @@
 
 namespace color {
 
+// the amount to bitshift color int to gets each channel
+constexpr int bit_shift = sizeof(Color_int_t)*2;
+// 1 for the size of the color channel
+constexpr Color_int_t bits_place = (1 << bit_shift) -1 ;
+
 inline Color_float_t
 convert_color_data(Color_int_t int_color) {
-    uint32_t red = (int_color >> 24) & 0xFF;
-    uint32_t green = (int_color >> 16) & 0xFF;
-    uint32_t blue = (int_color >> 8) & 0xFF;
-    uint32_t alpha = (int_color)&0xFF;
+    uint32_t red   = (int_color >> bit_shift*3) & bits_place;
+    uint32_t green = (int_color >> bit_shift*2) & bits_place;
+    uint32_t blue  = (int_color >> bit_shift)   & bits_place;
+    uint32_t alpha = (int_color)                & bits_place;
     // the last one >> 0 is A
     Color_float_t vector_color(
         {red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f}
