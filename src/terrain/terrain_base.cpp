@@ -104,7 +104,7 @@ TerrainBase::add_to_top(
             guess = get_first_not(material_type, x, y, guess);
             // if z is between some bounds
             // stop_h = get stop height (guess, top_data["how_to_add"])
-            int max_height = get_stop_height(guess, top_data["how_to_add"]);
+            unsigned int max_height = get_stop_height(guess, top_data["how_to_add"]);
             for (size_t z = guess; z < max_height; z++) {
                 get_tile(x, y, z)->set_material(
                     &materials.at(top_data["Material_id"].asInt()),

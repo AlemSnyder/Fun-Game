@@ -30,15 +30,15 @@ namespace terrain {
 namespace terrain_generation {
 
 LandGenerator::LandGenerator(
-    const std::map<Material_id_t, const Material>& materials_, Json::Value data
-) :
+    const std::map<Material_id_t, const Material>& materials_, const Json::Value data
+) : current_region(0), current_sub_region(0),
     materials(materials_),
-    data_(data), current_region(0), current_sub_region(0) {}
+    data_(data) {}
 
 //LandGenerator::LandGenerator() : current_region(0), current_sub_region(0) {}
 
 unsigned int
-LandGenerator::get_num_stamps(Json::Value biome) {
+LandGenerator::get_num_stamps(const Json::Value biome) {
     if (biome["Type"].asString() == "Positions") {
         return biome["Positions"].size();
     } else if (biome["Type"].asString() == "Grid") {

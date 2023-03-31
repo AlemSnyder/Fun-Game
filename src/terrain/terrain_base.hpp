@@ -185,7 +185,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
                 Json::Value macro_types =
                     biome_data["Tile_Data"][tile_type]["Land_From"];
                 for (Json::Value generator_macro : macro_types) {
-                    init_area(i, j, land_generators[generator_macro.asInt()]);
+                    init_area(i, j, land_generators.at(generator_macro.asInt()));
                 }
             }
 
@@ -584,7 +584,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const Material* mat, std::set<std::pair<Material_id_t, Color_id_t>> elements_can_stamp,
+        const Material* mat,
+        std::set<std::pair<Material_id_t, Color_id_t>> elements_can_stamp,
         Color_id_t color_id
     );
 
@@ -596,7 +597,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param material material type to add
      */
     void add_to_top(
-        const Json::Value& to_data, const std::map<Material_id_t, const Material>& material
+        const Json::Value& to_data,
+        const std::map<Material_id_t, const Material>& material
     );
 
     /**

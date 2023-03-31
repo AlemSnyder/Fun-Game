@@ -364,7 +364,7 @@ generate_mesh(T voxel_object) {
 
 inline std::vector<Color_float_t>
 convert_color_data(const std::vector<Color_int_t>& color_map){
-    color::convert_color_data(color_map);
+    return color::convert_color_data(color_map);
 }
 
 } // namespace entity

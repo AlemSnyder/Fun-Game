@@ -55,8 +55,8 @@ class LandGenerator {
     unsigned int current_region;
     unsigned int current_sub_region;
 
-    Json::Value data_; // this should be a structure
     const std::map<Material_id_t, const Material>& materials;
+    Json::Value data_; // this should be a structure
 
  public:
     /**
