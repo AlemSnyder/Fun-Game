@@ -20,10 +20,10 @@
  */
 #pragma once
 
-#include "../constants.hpp"
+#include "../terrain/material.hpp"
+#include "../types.hpp"
 #include "../util/color.hpp"
 #include "../util/voxel.hpp"
-#include "../terrain/material.hpp"
 
 #include <glm/glm.hpp>
 
@@ -51,7 +51,7 @@ class Mesh {
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
 
-    //friend World;
+    // friend World;
 
  protected:
     // x, y, z length of the mesh
@@ -70,10 +70,9 @@ class Mesh {
     std::vector<uint32_t> color_map_;
 
  public:
-    // void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
 
     // x, y, z length of the mesh
-    [[nodiscard]] inline const glm::ivec3 &
+    [[nodiscard]] inline const glm::ivec3&
     get_size() const noexcept {
         return size_;
     }
@@ -114,8 +113,8 @@ class Mesh {
         return color_map_;
     }
 
-// private:
-// set the back to private when world::get_mesh_greedy is removed in the next pr.
+    // private:
+    // set this back to private when world::get_mesh_greedy is removed in the next pr.
     /**
      * @brief Set the color indexing to what the GPU uses
      *
@@ -362,8 +361,8 @@ generate_mesh(T voxel_object) {
     );
 }
 
-inline std::vector<Color_float_t>
-convert_color_data(const std::vector<Color_int_t>& color_map){
+inline std::vector<ColorFloat>
+convert_color_data(const std::vector<ColorInt>& color_map) {
     return color::convert_color_data(color_map);
 }
 

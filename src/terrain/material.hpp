@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../constants.hpp"
+#include "../types.hpp"
 
 #include <cstdint>
 #include <map>
@@ -47,15 +47,15 @@ namespace terrain {
  */
 struct Material {
     Material(
-        std::vector<std::pair<const std::string, Color_int_t>> color_in,
-        uint8_t speed_multiplier_in, bool solid_in, Material_id_t element_id_in,
+        std::vector<std::pair<const std::string, ColorInt>> color_in,
+        uint8_t speed_multiplier_in, bool solid_in, MaterialId element_id_in,
         std::string name_in
     ) :
         color(color_in),
         speed_multiplier(speed_multiplier_in), solid(solid_in),
         element_id(element_id_in), name(name_in){};
     // vector of <name hex color> for possible colors
-    std::vector<std::pair<const std::string, Color_int_t>> color;
+    std::vector<std::pair<const std::string, ColorInt>> color;
     uint8_t speed_multiplier = 1;   // speed on this material compared to base
     bool solid = false;             // Is the material solid?
     uint8_t element_id = 0;         // The ID of the material (Air is 0)
@@ -68,24 +68,24 @@ class TerrainColorMapping {
  private:
     // color map
     // index -> color vector
-    static std::vector<Color_int_t> color_ids_map;
+    static std::vector<ColorInt> color_ids_map;
     // color -> index
-    static std::unordered_map<Color_int_t, uint16_t> colors_inverse_map;
+    static std::unordered_map<ColorInt, uint16_t> colors_inverse_map;
     // texture id saved on gpu.
     static GLuint_p color_texture_;
 
  public:
-    static void assign_color_mapping(const std::map<Material_id_t, const Material>& materials
-    );
+    static void
+    assign_color_mapping(const std::map<MaterialId, const Material>& materials);
     // may discard
     static GLuint_p assign_color_texture();
 
-    inline static std::vector<Color_int_t>&
+    inline static std::vector<ColorInt>&
     get_color_ids_map() {
         return color_ids_map;
     }
 
-    inline static std::unordered_map<Color_int_t, uint16_t>
+    inline static std::unordered_map<ColorInt, uint16_t>
     get_colors_inverse_map() {
         return colors_inverse_map;
     }

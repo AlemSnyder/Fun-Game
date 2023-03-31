@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "../constants.hpp"
 #include "../logging.hpp"
+#include "../types.hpp"
 #include "../util/voxel.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
@@ -74,11 +74,11 @@ class TerrainBase : public voxel_utility::VoxelBase {
     // gradient index of grass not by an edge
     uint8_t grass_mid_;
     // mat of material id to material that describes materials in this terrain
-    const std::map<Material_id_t, const terrain::Material>& materials_;
+    const std::map<MaterialId, const terrain::Material>& materials_;
 
  public:
     TerrainBase(
-        const std::map<Material_id_t, const terrain::Material>& materials,
+        const std::map<MaterialId, const terrain::Material>& materials,
         const std::vector<int>& grass_grad_data, unsigned int grass_mid,
         int x_tiles = 1, int y_tiles = 1, int area_size = 32, int z_tiles = 1
     ) :
@@ -104,7 +104,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     }
 
     TerrainBase(
-        const std::map<Material_id_t, const Material>& materials,
+        const std::map<MaterialId, const Material>& materials,
         std::vector<int> grass_grad_data, unsigned int grass_mid,
         voxel_utility::qb_data data
     ) :
@@ -112,15 +112,14 @@ class TerrainBase : public voxel_utility::VoxelBase {
             materials, grass_grad_data, grass_mid, data.size[0], data.size[1], 32,
             data.size[2]
         ) {
-        std::map<Color_int_t, std::pair<const Material*, Color_id_t>> materials_inverse;
+        std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
         for (auto it = materials_.begin(); it != materials_.end(); it++) {
             for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
                 materials_inverse.insert(
-                    std::map<Color_int_t, std::pair<const Material*, Color_id_t>>::
-                        value_type(
-                            it->second.color.at(color_id).second,
-                            std::make_pair(&it->second, (Color_id_t)color_id)
-                        )
+                    std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
+                        it->second.color.at(color_id).second,
+                        std::make_pair(&it->second, (ColorId)color_id)
+                    )
                 );
             }
         }
@@ -138,7 +137,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     TerrainBase(
         int x, int y, int Area_size, int z,
-        const std::map<Material_id_t, const Material>& materials,
+        const std::map<MaterialId, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid
     ) :
@@ -502,7 +501,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return int height
      */
     int get_first_not(
-        const std::set<std::pair<Material_id_t, Color_id_t>>& materials, int x, int y,
+        const std::set<std::pair<MaterialId, ColorId>>& materials, int x, int y,
         int guess
     ) const;
 
@@ -521,7 +520,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return grass_colors_;
     }
 
-    inline const std::map<Material_id_t, const terrain::Material>&
+    inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const {
         return materials_;
     }
@@ -585,8 +584,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
         const Material* mat,
-        std::set<std::pair<Material_id_t, Color_id_t>> elements_can_stamp,
-        Color_id_t color_id
+        std::set<std::pair<MaterialId, ColorId>> elements_can_stamp, ColorId color_id
     );
 
     /**
@@ -597,8 +595,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param material material type to add
      */
     void add_to_top(
-        const Json::Value& to_data,
-        const std::map<Material_id_t, const Material>& material
+        const Json::Value& to_data, const std::map<MaterialId, const Material>& material
     );
 
     /**
@@ -624,19 +621,18 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     inline bool
     has_tile_material(
-        const std::set<std::pair<Material_id_t, Color_id_t>>& material_test, int x,
-        int y, int z
+        const std::set<std::pair<MaterialId, ColorId>>& material_test, int x, int y,
+        int z
     ) const {
         return has_tile_material(material_test, get_tile(x, y, z));
     }
 
     inline bool
     has_tile_material(
-        const std::set<std::pair<Material_id_t, Color_id_t>>& material_test,
-        const Tile* tile
+        const std::set<std::pair<MaterialId, ColorId>>& material_test, const Tile* tile
     ) const {
-        Material_id_t mat_id = tile->get_material_id();
-        Color_id_t color_id = tile->get_color_id();
+        MaterialId mat_id = tile->get_material_id();
+        ColorId color_id = tile->get_color_id();
 
         return (
             material_test.find(std::make_pair(mat_id, color_id)) != material_test.end()

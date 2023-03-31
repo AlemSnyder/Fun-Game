@@ -49,8 +49,8 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     }
 
     inline TerrainMesh(){};
-    TerrainMesh(entity::Mesh mesh);
-    void init(entity::Mesh mesh);
+    TerrainMesh(const entity::Mesh& mesh);
+    void init(const entity::Mesh& mesh);
 
     inline ~TerrainMesh() {
         glDeleteBuffers(1, &vertex_buffer_);

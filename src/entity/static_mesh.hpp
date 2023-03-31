@@ -48,17 +48,8 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         return *this;
     }
 
-    inline StaticMesh(){};
-
-    StaticMesh(entity::Mesh mesh, const std::vector<glm::ivec3>& model_transforms);
-
     StaticMesh(
-        const std::vector<unsigned short>& indices,
-        const std::vector<glm::ivec3>& indexed_vertices,
-        const std::vector<uint16_t>& indexed_colors,
-        const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_texture,
-        const std::vector<glm::ivec3>& model_transforms
+        const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
     );
 
     inline ~StaticMesh() {

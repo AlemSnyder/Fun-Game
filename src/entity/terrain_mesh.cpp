@@ -8,12 +8,12 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-terrain::TerrainMesh::TerrainMesh(entity::Mesh mesh) {
+terrain::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
     init(mesh);
 }
 
 void
-terrain::TerrainMesh::init(entity::Mesh mesh) {
+terrain::TerrainMesh::init(const entity::Mesh& mesh) {
     color_texture_mesh_ = terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);

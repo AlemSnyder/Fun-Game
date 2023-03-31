@@ -1,7 +1,7 @@
 #include "terrain_base.hpp"
 
-#include "../constants.hpp"
 #include "../logging.hpp"
+#include "../types.hpp"
 #include "terrain_generation/noise.hpp"
 
 // move add_to_top
@@ -10,17 +10,16 @@ namespace terrain {
 
 void
 TerrainBase::qb_read(
-    std::vector<Color_int_t> data,
-    const std::map<Color_int_t, std::pair<const Material*, Color_id_t>>&
-        materials_inverse
+    std::vector<ColorInt> data,
+    const std::map<ColorInt, std::pair<const Material*, ColorId>>& materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
-    std::set<Color_int_t> unknown_colors;
+    std::set<ColorInt> unknown_colors;
 
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         auto [x, y, z] = sop(xyz);
-        Color_int_t color = data[xyz];
+        ColorInt color = data[xyz];
         if (color == 0) {                             // if the qb voxel is transparent.
             auto mat_color = materials_inverse.at(0); // set the materials to air
             tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
@@ -34,15 +33,14 @@ TerrainBase::qb_read(
         }
     }
 
-    for (Color_int_t color : unknown_colors) {
+    for (ColorInt color : unknown_colors) {
         LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
 }
 
 int
 TerrainBase::get_first_not(
-    const std::set<std::pair<Material_id_t, Color_id_t>>& materials, int x, int y,
-    int guess
+    const std::set<std::pair<MaterialId, ColorId>>& materials, int x, int y, int guess
 ) const {
     if (guess < 1) {
         guess = 1;
@@ -54,7 +52,7 @@ TerrainBase::get_first_not(
             return guess;
         } else {
             // go up
-            for (Dim_t z = guess + 1; z < Z_MAX; z++) {
+            for (Dim z = guess + 1; z < Z_MAX; z++) {
                 if (has_tile_material(materials, x, y, z)) {
                     return z;
                 }
@@ -64,7 +62,7 @@ TerrainBase::get_first_not(
         }
     } else {
         // go down
-        for (Dim_t z = guess - 2; z > 0; z--) {
+        for (Dim z = guess - 2; z > 0; z--) {
             if (has_tile_material(materials, x, y, z)) {
                 return z + 1;
             }
@@ -75,28 +73,27 @@ TerrainBase::get_first_not(
 
 void
 TerrainBase::add_to_top(
-    const Json::Value& top_data,
-    const std::map<Material_id_t, const Material>& materials
+    const Json::Value& top_data, const std::map<MaterialId, const Material>& materials
 ) {
-    std::set<std::pair<Material_id_t, Color_id_t>> material_type;
+    std::set<std::pair<MaterialId, ColorId>> material_type;
     // std::vector<uint16> mat colors
 
     for (auto color_data : top_data["above_colors"]) {
         // element id
-        Material_id_t E = color_data["E"].asInt();
+        MaterialId E = color_data["E"].asInt();
         if (color_data["C"].isInt()) {
             // color id
-            Color_id_t C = color_data["C"].asInt();
+            ColorId C = color_data["C"].asInt();
             material_type.insert(std::make_pair(E, C));
         } else if (color_data["C"].asBool()) {
             // add all color ids
-            for (Color_id_t C = 0; C < materials.at(E).color.size(); C++) {
+            for (ColorId C = 0; C < materials.at(E).color.size(); C++) {
                 material_type.insert(std::make_pair(E, C));
             }
         }
     }
 
-    Dim_t guess = 0;
+    Dim guess = 0;
     // for loop
     for (size_t x = 0; x < X_MAX; x++)
         for (size_t y = 0; y < Y_MAX; y++) {
@@ -117,7 +114,7 @@ TerrainBase::add_to_top(
 void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-    const Material* mat, std::set<std::pair<Material_id_t, Color_id_t>> elements_can_stamp,
+    const Material* mat, std::set<std::pair<MaterialId, ColorId>> elements_can_stamp,
     uint8_t color_id
 ) {
     // set tiles in region to mat and color_id if the current material is in

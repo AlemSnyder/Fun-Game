@@ -9,9 +9,9 @@
 namespace terrain {
 
 // color id to color for all materials
-std::vector<uint32_t> TerrainColorMapping::color_ids_map;
+std::vector<ColorInt> TerrainColorMapping::color_ids_map;
 // 8 bit color to color id
-std::unordered_map<uint32_t, uint16_t> TerrainColorMapping::colors_inverse_map;
+std::unordered_map<ColorInt, uint16_t> TerrainColorMapping::colors_inverse_map;
 // id of the color texture sent to opengl
 GLuint_p TerrainColorMapping::color_texture_;
 
@@ -26,8 +26,9 @@ TerrainColorMapping::assign_color_mapping(
     // GetIntegerv(GL_MAX_TEXTURE_SIZE, *mas_texture_size)
     // The above size is probably a better upper bound as it comes from the
     // texture size.
+    // then use:
     // max_size = min((1U << 15), mas_texture_size);
-    // but it if fix this then I should probably switch from a 1D texture
+    // but if I fix this then I should probably switch from a 1D texture
     // to a 2D texture, and that seems like a lot of work.
 
     if (materials.size() > (1U << 15)) {
@@ -67,7 +68,7 @@ TerrainColorMapping::assign_color_texture() {
     glDeleteTextures(1, &color_texture_);
 
     // Generate a texture
-    std::vector<std::array<float, 4>> float_colors =
+    std::vector<ColorFloat> float_colors =
         entity::convert_color_data(color_ids_map);
 
     // Generate a texture

@@ -1,6 +1,7 @@
 #include "terrain.hpp"
 
 #include "../logging.hpp"
+#include "../types.hpp"
 #include "../util/time.hpp"
 #include "../util/voxel.hpp"
 #include "../util/voxel_io.hpp"
@@ -13,7 +14,6 @@
 #include "terrain_generation/tilestamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
-#include "../constants.hpp"
 
 #include <json/json.h>
 
@@ -31,8 +31,8 @@ namespace terrain {
 // most important initializer
 Terrain::Terrain(
     int x_tiles, int y_tiles, int area_size, int z_tiles, int seed_,
-    const std::map<Material_id_t, const Material>& material, std::vector<int> grass_grad_data,
-    unsigned int grass_mid
+    const std::map<MaterialId, const Material>& material,
+    std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(
         material, grass_grad_data, grass_mid, x_tiles, y_tiles, area_size, z_tiles
@@ -41,7 +41,7 @@ Terrain::Terrain(
 
 Terrain::Terrain(
     int area_size, int z_tiles, int tile_type, int seed_,
-    const std::map<Material_id_t, const Material>& material, const Json::Value biome_data,
+    const std::map<MaterialId, const Material>& material, const Json::Value biome_data,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(
@@ -51,7 +51,7 @@ Terrain::Terrain(
     seed(seed_) {}
 
 Terrain::Terrain(
-    const std::string path, const std::map<Material_id_t, const Material>& materials,
+    const std::string path, const std::map<MaterialId, const Material>& materials,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(materials, grass_grad_data, grass_mid, voxel_utility::from_qb(path)) {
@@ -601,14 +601,15 @@ Terrain::get_path(
 void
 Terrain::qb_save_debug(const std::string path) {
     // used to determine a debug color for each node group
-    int debug_color = 0;
+    size_t debug_color = 0;
     for (Chunk& c : chunks_) {
         std::set<const NodeGroup*> node_groups;
         c.add_nodes_to(node_groups);
         for (const NodeGroup* NG : node_groups) {
             for (const Tile* t : NG->get_tiles()) {
                 set_tile_material(
-                    get_tile(pos(t->sop())), &get_materials().at(DEBUG_MATERIAL), debug_color % NUM_DEBUG_COLORS
+                    get_tile(pos(t->sop())), &get_materials().at(DEBUG_MATERIAL),
+                    debug_color % NUM_DEBUG_COLORS
                 );
             }
             debug_color++;

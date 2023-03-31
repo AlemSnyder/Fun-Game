@@ -30,12 +30,12 @@ namespace terrain {
 namespace terrain_generation {
 
 LandGenerator::LandGenerator(
-    const std::map<Material_id_t, const Material>& materials_, const Json::Value data
-) : current_region(0), current_sub_region(0),
-    materials(materials_),
-    data_(data) {}
+    const std::map<MaterialId, const Material>& materials_, const Json::Value data
+) :
+    current_region(0),
+    current_sub_region(0), materials(materials_), data_(data) {}
 
-//LandGenerator::LandGenerator() : current_region(0), current_sub_region(0) {}
+// LandGenerator::LandGenerator() : current_region(0), current_sub_region(0) {}
 
 unsigned int
 LandGenerator::get_num_stamps(const Json::Value biome) {
@@ -52,7 +52,7 @@ LandGenerator::get_num_stamps(const Json::Value biome) {
 TileStamp
 LandGenerator::get_this_stamp() const {
     TileStamp out;
-    out.mat = & materials.at(data_[current_region]["Material_id"].as<int>());
+    out.mat = &materials.at(data_[current_region]["Material_id"].as<int>());
     out.color_id = data_[current_region]["Color_id"].asInt();
     for (Json::Value::ArrayIndex i = 0; i < data_[current_region]["Can_Stamp"].size();
          i++) {
