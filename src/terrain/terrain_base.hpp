@@ -79,8 +79,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
  public:
     TerrainBase(
         const std::map<Material_id_t, const terrain::Material>& materials,
-        const std::vector<int>& grass_grad_data, unsigned int grass_mid, int x_tiles = 1,
-        int y_tiles = 1, int area_size = 32, int z_tiles = 1
+        const std::vector<int>& grass_grad_data, unsigned int grass_mid,
+        int x_tiles = 1, int y_tiles = 1, int area_size = 32, int z_tiles = 1
     ) :
         X_MAX(x_tiles * area_size),
         Y_MAX(y_tiles * area_size), Z_MAX(z_tiles * area_size), area_size(area_size),
@@ -116,10 +116,11 @@ class TerrainBase : public voxel_utility::VoxelBase {
         for (auto it = materials_.begin(); it != materials_.end(); it++) {
             for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
                 materials_inverse.insert(
-                    std::map<Color_int_t, std::pair<const Material*, Color_id_t>>::value_type(
-                        it->second.color.at(color_id).second,
-                        std::make_pair(&it->second, (Color_id_t)color_id)
-                    )
+                    std::map<Color_int_t, std::pair<const Material*, Color_id_t>>::
+                        value_type(
+                            it->second.color.at(color_id).second,
+                            std::make_pair(&it->second, (Color_id_t)color_id)
+                        )
                 );
             }
         }
@@ -137,8 +138,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     TerrainBase(
         int x, int y, int Area_size, int z,
-        const std::map<Material_id_t, const Material>& materials, const Json::Value& biome_data,
-        std::vector<int> grass_grad_data, unsigned int grass_mid
+        const std::map<Material_id_t, const Material>& materials,
+        const Json::Value& biome_data, std::vector<int> grass_grad_data,
+        unsigned int grass_mid
     ) :
         TerrainBase(
             x, y, Area_size, z, materials, biome_data, grass_grad_data, grass_mid,
@@ -147,9 +149,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     TerrainBase(
         int x, int y, int Area_size, int z,
-        const std::map<uint8_t, const Material>& materials, const Json::Value& biome_data,
-        std::vector<int> grass_grad_data, unsigned int grass_mid,
-        std::vector<int> Terrain_Maps
+        const std::map<uint8_t, const Material>& materials,
+        const Json::Value& biome_data, std::vector<int> grass_grad_data,
+        unsigned int grass_mid, std::vector<int> Terrain_Maps
     ) :
         TerrainBase(materials, grass_grad_data, grass_mid, x, y, Area_size, z) {
         for (unsigned int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
@@ -500,7 +502,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return int height
      */
     int get_first_not(
-        const std::set<std::pair<int, int>> materials, int x, int y, int guess
+        const std::set<std::pair<Material_id_t, Color_id_t>>& materials, int x, int y,
+        int guess
     ) const;
 
     inline uint8_t
@@ -581,8 +584,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
-        uint8_t color_id
+        const Material* mat, std::set<std::pair<Material_id_t, Color_id_t>> elements_can_stamp,
+        Color_id_t color_id
     );
 
     /**
@@ -593,7 +596,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param material material type to add
      */
     void add_to_top(
-        const Json::Value& to_data, const std::map<uint8_t, const Material>& material
+        const Json::Value& to_data, const std::map<Material_id_t, const Material>& material
     );
 
     /**
@@ -604,8 +607,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param map_data json data on how to generate map
      * @return std::vector<int> (size_x * size_y) vector of ints
      */
-    static std::vector<int>
-    generate_macro_map(unsigned int size_x, unsigned int size_y, const Json::Value& map_data);
+    static std::vector<int> generate_macro_map(
+        unsigned int size_x, unsigned int size_y, const Json::Value& map_data
+    );
 
     /**
      * @brief Get the max allowable height of added material
@@ -615,6 +619,27 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return int max height
      */
     static int get_stop_height(int height, const Json::Value& how_to_add);
+
+    inline bool
+    has_tile_material(
+        const std::set<std::pair<Material_id_t, Color_id_t>>& material_test, int x,
+        int y, int z
+    ) const {
+        return has_tile_material(material_test, get_tile(x, y, z));
+    }
+
+    inline bool
+    has_tile_material(
+        const std::set<std::pair<Material_id_t, Color_id_t>>& material_test,
+        const Tile* tile
+    ) const {
+        Material_id_t mat_id = tile->get_material_id();
+        Color_id_t color_id = tile->get_color_id();
+
+        return (
+            material_test.find(std::make_pair(mat_id, color_id)) != material_test.end()
+        );
+    }
 };
 
 } // namespace terrain

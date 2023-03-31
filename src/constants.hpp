@@ -1,3 +1,4 @@
+#include <array>
 #include <cstdint>
 
 #define DEBUG_MATERIAL 7

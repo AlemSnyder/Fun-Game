@@ -11,7 +11,8 @@ namespace terrain {
 void
 TerrainBase::qb_read(
     std::vector<Color_int_t> data,
-    const std::map<Color_int_t, std::pair<const Material*, Color_id_t>>& materials_inverse
+    const std::map<Color_int_t, std::pair<const Material*, Color_id_t>>&
+        materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
@@ -40,45 +41,31 @@ TerrainBase::qb_read(
 
 int
 TerrainBase::get_first_not(
-    const std::set<std::pair<int, int>> materials, int x, int y, int guess
+    const std::set<std::pair<Material_id_t, Color_id_t>>& materials, int x, int y,
+    int guess
 ) const {
     if (guess < 1) {
         guess = 1;
     } else if ((uint32_t)guess >= Z_MAX) {
         guess = Z_MAX - 1;
     }
-    if (materials.find(std::make_pair(
-            get_tile(x, y, guess - 1)->get_material_id(),
-            get_tile(x, y, guess - 1)->get_color_id()
-        ))
-        != materials.end()) {
-        if (materials.find(std::make_pair(
-                get_tile(x, y, guess)->get_material_id(),
-                get_tile(x, y, guess)->get_color_id()
-            ))
-            == materials.end()) {
+    if (has_tile_material(materials, x, y, guess - 1)) {
+        if (has_tile_material(materials, x, y, guess)) {
             return guess;
         } else {
             // go up
             for (Dim_t z = guess + 1; z < Z_MAX; z++) {
-                if (materials.find(std::make_pair(
-                        get_tile(x, y, z)->get_material_id(),
-                        get_tile(x, y, z)->get_color_id()
-                    ))
-                    == materials.end()) {
+                if (has_tile_material(materials, x, y, z)) {
                     return z;
                 }
             }
-            return Z_MAX; // -1?
+            return Z_MAX; // -1? should not be minus one, but one should consider that
+                          // this is a possible return value
         }
     } else {
         // go down
         for (Dim_t z = guess - 2; z > 0; z--) {
-            if (materials.find(std::make_pair(
-                    get_tile(x, y, z)->get_material_id(),
-                    get_tile(x, y, z)->get_color_id()
-                ))
-                != materials.end()) {
+            if (has_tile_material(materials, x, y, z)) {
                 return z + 1;
             }
         }
@@ -88,21 +75,22 @@ TerrainBase::get_first_not(
 
 void
 TerrainBase::add_to_top(
-    const Json::Value& top_data, const std::map<Material_id_t, const Material>& materials
+    const Json::Value& top_data,
+    const std::map<Material_id_t, const Material>& materials
 ) {
-    std::set<std::pair<int, int>> material_type;
+    std::set<std::pair<Material_id_t, Color_id_t>> material_type;
     // std::vector<uint16> mat colors
 
     for (auto color_data : top_data["above_colors"]) {
         // element id
-        int E = color_data["E"].asInt();
+        Material_id_t E = color_data["E"].asInt();
         if (color_data["C"].isInt()) {
             // color id
-            int C = color_data["C"].asInt();
+            Color_id_t C = color_data["C"].asInt();
             material_type.insert(std::make_pair(E, C));
         } else if (color_data["C"].asBool()) {
             // add all color ids
-            for (unsigned int C = 0; C < materials.at(E).color.size(); C++) {
+            for (Color_id_t C = 0; C < materials.at(E).color.size(); C++) {
                 material_type.insert(std::make_pair(E, C));
             }
         }
@@ -129,7 +117,7 @@ TerrainBase::add_to_top(
 void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-    const Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
+    const Material* mat, std::set<std::pair<Material_id_t, Color_id_t>> elements_can_stamp,
     uint8_t color_id
 ) {
     // set tiles in region to mat and color_id if the current material is in
@@ -139,11 +127,7 @@ TerrainBase::stamp_tile_region(
             for (ssize_t z = z_start; z < z_end; z++) {
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
-                    if (elements_can_stamp.find(std::make_pair(
-                            static_cast<int>(tile->get_material_id()),
-                            static_cast<int>(tile->get_color_id())
-                        ))
-                        != elements_can_stamp.end()) {
+                    if (has_tile_material(elements_can_stamp, tile)) {
                         tile->set_material(mat, color_id);
                     }
                 }

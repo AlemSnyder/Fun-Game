@@ -48,9 +48,9 @@ struct TileStamp {
     int z_end;   // Upper bound in the z direction.
 
     const Material* mat; // Material that tiles will be set to.
-    uint8_t color_id;    // color that tiles will be set to.
+    Color_id_t color_id;    // color that tiles will be set to.
     // set of <material ID, color ID> determines what tiles types can be changed.
-    std::set<std::pair<int, int>> elements_can_stamp;
+    std::set<std::pair<Material_id_t, Color_id_t>> elements_can_stamp;
 };
 
 } // namespace terrain_generation

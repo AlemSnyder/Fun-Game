@@ -20,6 +20,8 @@
  */
 #pragma once
 
+#include "../constants.hpp"
+#include "../util/color.hpp"
 #include "../util/voxel.hpp"
 #include "../terrain/material.hpp"
 
@@ -53,9 +55,9 @@ class Mesh {
 
  protected:
     // x, y, z length of the mesh
-    std::vector<uint16_t> size_;
+    glm::ivec3 size_;
     // defines center of mesh for rotating
-    std::vector<int16_t> center_;
+    glm::ivec3 center_;
     // indices of each vertex that is drawn
     std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
@@ -71,13 +73,13 @@ class Mesh {
     // void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
 
     // x, y, z length of the mesh
-    [[nodiscard]] inline const std::vector<uint16_t>&
+    [[nodiscard]] inline const glm::ivec3 &
     get_size() const noexcept {
         return size_;
     }
 
     // center of mesh
-    [[nodiscard]] inline const std::vector<int16_t>&
+    [[nodiscard]] inline const glm::ivec3&
     get_center() const noexcept {
         return center_;
     }
@@ -360,7 +362,9 @@ generate_mesh(T voxel_object) {
     );
 }
 
-std::vector<std::array<float, 4>>
-convert_color_data(const std::vector<uint32_t>& color_map);
+inline std::vector<Color_float_t>
+convert_color_data(const std::vector<Color_int_t>& color_map){
+    color::convert_color_data(color_map);
+}
 
 } // namespace entity
