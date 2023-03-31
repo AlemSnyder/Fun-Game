@@ -13,6 +13,7 @@
 #include "terrain_generation/tilestamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
+#include "../constants.hpp"
 
 #include <json/json.h>
 
@@ -30,7 +31,7 @@ namespace terrain {
 // most important initializer
 Terrain::Terrain(
     int x_tiles, int y_tiles, int area_size, int z_tiles, int seed_,
-    const std::map<uint8_t, const Material>* material, std::vector<int> grass_grad_data,
+    const std::map<Material_id_t, const Material>& material, std::vector<int> grass_grad_data,
     unsigned int grass_mid
 ) :
     TerrainBase(
@@ -40,7 +41,7 @@ Terrain::Terrain(
 
 Terrain::Terrain(
     int area_size, int z_tiles, int tile_type, int seed_,
-    const std::map<uint8_t, const Material>* material, Json::Value biome_data,
+    const std::map<Material_id_t, const Material>& material, const Json::Value biome_data,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(
@@ -50,7 +51,7 @@ Terrain::Terrain(
     seed(seed_) {}
 
 Terrain::Terrain(
-    const std::string path, const std::map<uint8_t, const Material>* materials,
+    const std::string path, const std::map<Material_id_t, const Material>& materials,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(materials, grass_grad_data, grass_mid, voxel_utility::from_qb(path)) {
@@ -61,7 +62,7 @@ Terrain::Terrain(
 
 Terrain::Terrain(
     int x, int y, int Area_size_, int z, int seed_,
-    const std::map<uint8_t, const Material>* materials, Json::Value biome_data,
+    const std::map<uint8_t, const Material>& materials, const Json::Value biome_data,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(x, y, Area_size_, z, materials, biome_data, grass_grad_data, grass_mid),
@@ -173,9 +174,9 @@ Terrain::init_grass() {
     std::set<Tile*> all_grass;
 
     // Test all ties to see if they can be grass.
-    for (uint32_t x = 0; x < X_MAX; x++)
-        for (uint32_t y = 0; y < Y_MAX; y++)
-            for (uint32_t z = 0; z < Z_MAX - 1; z++) {
+    for (size_t x = 0; x < X_MAX; x++)
+        for (size_t y = 0; y < Y_MAX; y++)
+            for (size_t z = 0; z < Z_MAX - 1; z++) {
                 if (!get_tile(x, y, z + 1)->is_solid()) {
                     get_tile(x, y, z)->try_grow_grass(); // add to sources and sinks
                     // if grass add to some set
@@ -185,9 +186,9 @@ Terrain::init_grass() {
                     // both higher, and lower set
                 }
             }
-    uint32_t z = Z_MAX - 1;
-    for (uint32_t x = 0; x < X_MAX; x++)
-        for (uint32_t y = 0; y < Y_MAX; y++) {
+    size_t z = Z_MAX - 1;
+    for (size_t x = 0; x < X_MAX; x++)
+        for (size_t y = 0; y < Y_MAX; y++) {
             get_tile(x, y, z)->try_grow_grass(); // add to sources and sinks
             if (get_tile(x, y, z)->is_grass()) {
                 all_grass.insert(get_tile(x, y, z));
@@ -599,17 +600,18 @@ Terrain::get_path(
 
 void
 Terrain::qb_save_debug(const std::string path) {
-    int x = 0;
+    // used to determine a debug color for each node group
+    int debug_color = 0;
     for (Chunk& c : chunks_) {
         std::set<const NodeGroup*> node_groups;
         c.add_nodes_to(node_groups);
         for (const NodeGroup* NG : node_groups) {
             for (const Tile* t : NG->get_tiles()) {
                 set_tile_material(
-                    get_tile(pos(t->sop())), &get_materials()->at(7), x % 4
+                    get_tile(pos(t->sop())), &get_materials().at(DEBUG_MATERIAL), debug_color % NUM_DEBUG_COLORS
                 );
             }
-            x++;
+            debug_color++;
         }
     }
     qb_save(path);

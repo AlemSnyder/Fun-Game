@@ -1,5 +1,6 @@
 #include "terrain_base.hpp"
 
+#include "../constants.hpp"
 #include "../logging.hpp"
 #include "terrain_generation/noise.hpp"
 
@@ -9,16 +10,16 @@ namespace terrain {
 
 void
 TerrainBase::qb_read(
-    std::vector<uint32_t> data,
-    const std::map<uint32_t, std::pair<const Material*, uint8_t>>& materials_inverse
+    std::vector<Color_int_t> data,
+    const std::map<Color_int_t, std::pair<const Material*, Color_id_t>>& materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
-    std::set<uint32_t> unknown_materials;
+    std::set<Color_int_t> unknown_colors;
 
-    for (uint32_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         auto [x, y, z] = sop(xyz);
-        uint32_t color = data[xyz];
+        Color_int_t color = data[xyz];
         if (color == 0) {                             // if the qb voxel is transparent.
             auto mat_color = materials_inverse.at(0); // set the materials to air
             tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
@@ -26,13 +27,13 @@ TerrainBase::qb_read(
             auto mat_color = materials_inverse.at(color);
             tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         } else { // the color is unknown
-            unknown_materials.insert(color);
+            unknown_colors.insert(color);
             auto mat_color = materials_inverse.at(0); // else set to air.
             tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
         }
     }
 
-    for (uint32_t color : unknown_materials) {
+    for (Color_int_t color : unknown_colors) {
         LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
 }
@@ -59,7 +60,7 @@ TerrainBase::get_first_not(
             return guess;
         } else {
             // go up
-            for (uint16_t z = guess + 1; z < Z_MAX; z++) {
+            for (Dim_t z = guess + 1; z < Z_MAX; z++) {
                 if (materials.find(std::make_pair(
                         get_tile(x, y, z)->get_material_id(),
                         get_tile(x, y, z)->get_color_id()
@@ -72,7 +73,7 @@ TerrainBase::get_first_not(
         }
     } else {
         // go down
-        for (uint16_t z = guess - 2; z > 0; z--) {
+        for (Dim_t z = guess - 2; z > 0; z--) {
             if (materials.find(std::make_pair(
                     get_tile(x, y, z)->get_material_id(),
                     get_tile(x, y, z)->get_color_id()
@@ -87,32 +88,36 @@ TerrainBase::get_first_not(
 
 void
 TerrainBase::add_to_top(
-    const Json::Value& top_data, const std::map<uint8_t, const Material>& materials
+    const Json::Value& top_data, const std::map<Material_id_t, const Material>& materials
 ) {
     std::set<std::pair<int, int>> material_type;
+    // std::vector<uint16> mat colors
 
     for (auto color_data : top_data["above_colors"]) {
+        // element id
         int E = color_data["E"].asInt();
         if (color_data["C"].isInt()) {
+            // color id
             int C = color_data["C"].asInt();
             material_type.insert(std::make_pair(E, C));
         } else if (color_data["C"].asBool()) {
+            // add all color ids
             for (unsigned int C = 0; C < materials.at(E).color.size(); C++) {
                 material_type.insert(std::make_pair(E, C));
             }
         }
     }
 
-    uint16_t guess = 0;
+    Dim_t guess = 0;
     // for loop
-    for (uint16_t x = 0; x < X_MAX; x++)
-        for (uint16_t y = 0; y < Y_MAX; y++) {
+    for (size_t x = 0; x < X_MAX; x++)
+        for (size_t y = 0; y < Y_MAX; y++) {
             // get first (not) z of material
             guess = get_first_not(material_type, x, y, guess);
             // if z is between some bounds
             // stop_h = get stop height (guess, top_data["how_to_add"])
             int max_height = get_stop_height(guess, top_data["how_to_add"]);
-            for (int z = guess; z < max_height; z++) {
+            for (size_t z = guess; z < max_height; z++) {
                 get_tile(x, y, z)->set_material(
                     &materials.at(top_data["Material_id"].asInt()),
                     top_data["Color_id"].asInt()
@@ -129,9 +134,9 @@ TerrainBase::stamp_tile_region(
 ) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.
-    for (int x = x_start; x < x_end; x++) {
-        for (int y = y_start; y < y_end; y++) {
-            for (int z = z_start; z < z_end; z++) {
+    for (ssize_t x = x_start; x < x_end; x++) {
+        for (ssize_t y = y_start; y < y_end; y++) {
+            for (ssize_t z = z_start; z < z_end; z++) {
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
                     if (elements_can_stamp.find(std::make_pair(
@@ -153,9 +158,9 @@ TerrainBase::stamp_tile_region(
     const Material* mat, uint8_t color_id
 ) {
     // set tiles in region to mat and color_id
-    for (int x = x_start; x < x_end; x++) {
-        for (int y = y_start; y < y_end; y++) {
-            for (int z = z_start; z < z_end; z++) {
+    for (ssize_t x = x_start; x < x_end; x++) {
+        for (ssize_t y = y_start; y < y_end; y++) {
+            for (ssize_t z = z_start; z < z_end; z++) {
                 if (in_range(x, y, z)) {
                     get_tile(x, y, z)->set_material(mat, color_id);
                 }
@@ -168,7 +173,7 @@ void
 TerrainBase::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen) {
     while (!gen.empty()) {
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
-        ++gen;
+        gen.next();
     }
     gen.reset();
 }
@@ -176,7 +181,7 @@ TerrainBase::init_area(int area_x, int area_y, terrain_generation::LandGenerator
 // generates a size_x by size_y vector of macro tile types.
 std::vector<int>
 TerrainBase::generate_macro_map(
-    unsigned int size_x, unsigned int size_y, Json::Value& terrain_data
+    unsigned int size_x, unsigned int size_y, const Json::Value& terrain_data
 ) {
     std::vector<int> out;
     int background = terrain_data["BackGround"].asInt(); // default terrain type.

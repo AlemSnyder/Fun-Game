@@ -79,7 +79,7 @@ World::init_materials(Json::Value material_data) {
 World::World(Json::Value materials_json, const std::string path) :
     materials(init_materials(materials_json)),
     terrain_main(
-        path, &materials, get_grass_grad_data(materials_json),
+        path, materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
 }
@@ -90,14 +90,14 @@ World::World(
 ) :
     materials(init_materials(materials_json)),
     terrain_main(
-        x_tiles, y_tiles, macro_tile_size, height, 5, &materials, biome_data["Biome_1"],
+        x_tiles, y_tiles, macro_tile_size, height, 5, materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {}
 
 World::World(Json::Value materials_json, Json::Value biome_data, int tile_type) :
     materials(init_materials(materials_json)),
-    terrain_main(macro_tile_size, height, 5, tile_type, &materials, biome_data["Biome_1"],
+    terrain_main(macro_tile_size, height, 5, tile_type, materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()) {}
 

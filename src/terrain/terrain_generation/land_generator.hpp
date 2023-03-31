@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "../../constants.hpp"
 #include "../material.hpp"
 #include "tilestamp.hpp"
 
@@ -55,7 +56,7 @@ class LandGenerator {
     unsigned int current_sub_region;
 
     Json::Value data_; // this should be a structure
-    const std::map<uint8_t, const Material>* materials;
+    const std::map<Material_id_t, const Material>& materials;
 
  public:
     /**
@@ -64,13 +65,13 @@ class LandGenerator {
      * @param materials the materials used in this biome
      * @param data the description of how tiles stamps should be generated
      */
-    LandGenerator(const std::map<uint8_t, const Material>* materials, Json::Value data);
+    LandGenerator(const std::map<Material_id_t, const Material>& materials, const Json::Value data);
     /**
      * @brief Construct a new LandGenerator object (default constructor)
      *
      * This should not be used.
      */
-    LandGenerator();
+//    LandGenerator();
 
     /**
      * @brief Test if iteration is complete
@@ -90,18 +91,12 @@ class LandGenerator {
     /**
      * @brief increment the data of the Tile Stamp that will be generated
      */
-    void operator++() {
-        current_sub_region++;
-        if (current_sub_region == get_num_stamps(data_[current_region])) {
-            current_region++;
-            current_sub_region = 0;
-        }
-    }
+    void next();
 
     /**
      * @brief Resets this land generator
      */
-    void reset() {
+    inline void reset() {
         current_region = 0;
         current_sub_region = 0;
     };

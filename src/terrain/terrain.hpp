@@ -197,7 +197,7 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         int Area_size_, int z_tiles, int seed_, int tile_type,
-        const std::map<uint8_t, const Material>* material, Json::Value biome_data,
+        const std::map<Material_id_t, const Material>& material, const Json::Value biome_data,
         std::vector<int> grass_grad_data, unsigned int grass_mid
     );
     /**
@@ -206,7 +206,7 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-        const std::map<uint8_t, const Material>* material,
+        const std::map<Material_id_t, const Material>& material,
         std::vector<int> grass_grad_data, unsigned int grass_mid
     );
     /**
@@ -225,7 +225,7 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-        const std::map<uint8_t, const Material>* material, Json::Value biome_data,
+        const std::map<Material_id_t, const Material>& material, const Json::Value biome_data,
         std::vector<int> grass_grad_data, unsigned int grass_mid
     );
     /**
@@ -235,7 +235,7 @@ class Terrain : public TerrainBase {
      * @param material materials of the world
      */
     Terrain(
-        const std::string path, const std::map<uint8_t, const Material>* material,
+        const std::string path, const std::map<Material_id_t, const Material>& material,
         std::vector<int> grass_grad_data, unsigned int grass_mid
     );
 

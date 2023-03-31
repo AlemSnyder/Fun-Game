@@ -108,11 +108,11 @@ controls::computeMatricesFromInputs(GLFWwindow* window) {
                             // up a callback for this. It's a bit too complicated for
                             // this beginner's tutorial, so it's disabled instead.
 
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <->
-    // 1000 units
+    // Projection matrix : 45° Field of View, 4:3 ratio, 
     projection_matrix = glm::perspective(glm::radians(FoV),
+        // ratio defined by screen width and height
         static_cast<float>(width) / static_cast<float>(height),
-        0.1f, 1000.0f);
+        0.1f, 1000.0f); // display range : 0.1 unit <-> 1000 units
     // Camera matrix
     view_matrix = glm::lookAt(
         position,             // Camera is here
