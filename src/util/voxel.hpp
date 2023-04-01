@@ -1,5 +1,8 @@
 #pragma once
 
+#include "glm/glm.hpp"
+#include "../types.hpp"
+
 #include <array>
 #include <cstdint>
 #include <filesystem>
@@ -13,8 +16,8 @@ class VoxelBase {
     ColorInt get_voxel(int x, int y, int z) const;
     uint16_t get_voxel_color_id(int x, int y, int z) const;
     std::vector<ColorInt> get_color_ids() const;
-    std::array<uint32_t, 3> get_size() const;
-    std::array<int32_t, 3> get_offset() const;
+    glm::u32vec3 get_size() const;
+    glm::i32vec3 get_offset() const;
 };
 
 template <class T>
@@ -24,13 +27,13 @@ class VoxelObject : VoxelBase {
  private:
     std::vector<uint16_t> data_;
     std::vector<ColorInt> colors_;
-    std::array<int32_t, 3> center_;
-    std::array<uint32_t, 3> size_;
+    glm::i32vec3 center_;
+    glm::u32vec3 size_;
     bool ok_;
 
     [[nodiscard]] inline int
     get_position(int x, int y, int z) const {
-        return ((x * size_[1] + y) * size_[2] + z);
+        return ((x * size_.y + y) * size_.z + z);
     }
 
  public:
@@ -58,18 +61,20 @@ class VoxelObject : VoxelBase {
     ok() const noexcept {
         return ok_;
     }
+
     /**
      * @brief Get the color ids vector
-     * 
-     * @return std::vector<ColorInt> 
+     *
+     * @return std::vector<ColorInt>
      */
     [[nodiscard]] inline const std::vector<ColorInt>&
     get_color_ids() const {
         return colors_;
     }
+
     /**
      * @brief Get the voxel color id
-     * 
+     *
      * @param x x position
      * @param y y position
      * @param z z position
@@ -77,14 +82,17 @@ class VoxelObject : VoxelBase {
      */
     [[nodiscard]] inline uint16_t
     get_voxel_color_id(int32_t x, int32_t y, int32_t z) const {
-        if (x < 0 || y < 0 || z < 0){
+        if (x < 0 || y < 0 || z < 0) {
             return 0;
         }
-        if ((size_[0] > (size_t)x) && (size_[1] > (size_t)y) && (size_[2] > (size_t)z)) {
+        if ((size_.x > static_cast<glm::uint32>(x))
+            && (size_.y > static_cast<glm::uint32>(y))
+            && (size_.z > static_cast<glm::uint32>(z))) {
             return data_[get_position(x, y, z)];
         }
         return 0;
     }
+
     /**
      * @brief Get the voxel color at given coordinate
      *
@@ -97,13 +105,14 @@ class VoxelObject : VoxelBase {
     get_voxel(int32_t x, int32_t y, int32_t z) const {
         return colors_[get_voxel_color_id(x, y, z)];
     }
+
     /**
      * @brief Get the center of the object
      * use full to find where to rotate around
      *
-     * @return std::array<int32_t, 3>
+     * @return glm::i32vec3
      */
-    [[nodiscard]] inline std::array<int32_t, 3>
+    [[nodiscard]] inline glm::i32vec3
     get_offset() const noexcept {
         return center_;
     }
@@ -111,18 +120,18 @@ class VoxelObject : VoxelBase {
     /**
      * @brief Get the size as an array of length three
      *
-     * @return std::array<uint32_t, 3> length in x, y, z
+     * @return glm::u32vec3 length in x, y, z
      */
-    [[nodiscard]] inline std::array<uint32_t, 3>
+    [[nodiscard]] inline glm::u32vec3
     get_size() noexcept {
         return size_;
     }
 };
 
-struct qb_data{
+struct qb_data {
     std::vector<ColorInt> data;
-    std::array<int32_t, 3> center;
-    std::array<uint32_t, 3> size;
+    glm::i32vec3 center;
+    glm::u32vec3 size;
 };
 
 } // namespace voxel_utility

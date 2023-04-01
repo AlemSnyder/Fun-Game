@@ -70,7 +70,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @return std::vector<int> offset of chunk in world space
      */
-    [[nodiscard]] inline std::array<int32_t, 3>
+    [[nodiscard]] inline glm::i32vec3
     get_offset() const {
         return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
     }
@@ -80,7 +80,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
-    [[nodiscard]] inline std::array<Dim, 3>
+    [[nodiscard]] inline glm::u32vec3
     get_size() {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }

@@ -151,9 +151,9 @@ generate_mesh(T voxel_object) {
 
     std::vector<glm::i8vec3> indexed_normals;
     // mesh off set
-    std::array<int32_t, 3> center = voxel_object.get_offset();
-    std::array<uint32_t, 3> dims = voxel_object.get_size();
-    glm::ivec3 offset(center[0], center[1], center[2]);
+    glm::i32vec3 center = voxel_object.get_offset();
+    glm::u32vec3 dims = voxel_object.get_size();
+    glm::ivec3 offset(center.x, center.y, center.z);
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;

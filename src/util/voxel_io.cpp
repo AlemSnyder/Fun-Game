@@ -23,7 +23,7 @@ namespace voxel_utility {
 void
 from_qb(
     const std::filesystem::path path, std::vector<ColorInt>& data,
-    std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
+    glm::i32vec3& center, glm::u32vec3& size
 ) {
     LOG_INFO(logging::file_io_logger, "Reading voxels from {}.", path.string());
 

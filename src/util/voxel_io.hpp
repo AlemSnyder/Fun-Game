@@ -49,7 +49,7 @@ export_color(ColorInt color) {
 
 void from_qb(
     const std::filesystem::path path, std::vector<ColorInt>& data,
-    std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
+    glm::i32vec3& center, glm::u32vec3& size
 );
 
 template<VoxelLike T>
@@ -72,8 +72,8 @@ to_qb(const std::filesystem::path path, T ter, bool compression = false) {
         throw exc::file_not_found_error(path);
     }
 
-    std::array<uint32_t, 3> size = ter.get_size();
-    std::array<int32_t, 3> offset = ter.get_offset();
+    glm::u32vec3 size = ter.get_size();
+    glm::i32vec3 offset = ter.get_offset();
 
 
     // Write header
@@ -140,8 +140,8 @@ inline qb_data from_qb(
     const std::filesystem::path path
 ){
     std::vector<ColorInt> data;
-    std::array<int32_t, 3> center;
-    std::array<uint32_t, 3> size;
+    glm::i32vec3 center;
+    glm::u32vec3 size;
 
     from_qb(path, data, center, size);
 

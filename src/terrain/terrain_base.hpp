@@ -297,16 +297,12 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief Get the size of terrain
      *
      * @details overloaded so must use base class definition.
-     * 
+     *
      * @return std::array<uint32_t, 3> array of sizes
      */
-    inline std::array<uint32_t, 3>
+    inline glm::u32vec3
     get_size() const {
-        return {
-            static_cast<uint32_t>(X_MAX),
-            static_cast<uint32_t>(Y_MAX),
-            static_cast<uint32_t>(Z_MAX),
-        };
+        return { X_MAX, Y_MAX, Z_MAX };
     }
 
     /**
@@ -314,7 +310,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return std::array<int32_t, 3> 0 3 times
      */
-    inline std::array<int32_t, 3>
+    inline glm::i32vec3
     get_offset() const {
         return {0, 0, 0};
     }
@@ -331,8 +327,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     inline bool
     in_range(int x, int y, int z) const {
         return (
-            (Dim)x < X_MAX && x >= 0 && (Dim)y < Y_MAX && y >= 0
-            && (Dim)z < Z_MAX && z >= 0
+            (Dim)x < X_MAX && x >= 0 && (Dim)y < Y_MAX && y >= 0 && (Dim)z < Z_MAX
+            && z >= 0
         );
     }
 
@@ -375,8 +371,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     inline const Tile*
     get_tile(int x, int y, int z) const {
-        if ((static_cast<Dim>(x) >= X_MAX || x < 0 || static_cast<Dim>(y) >= Y_MAX || y < 0
-             || static_cast<Dim>(z) >= Z_MAX || z < 0)) {
+        if ((static_cast<Dim>(x) >= X_MAX || x < 0 || static_cast<Dim>(y) >= Y_MAX
+             || y < 0 || static_cast<Dim>(z) >= Z_MAX || z < 0)) {
             LOG_CRITICAL(
                 logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
                 y, z

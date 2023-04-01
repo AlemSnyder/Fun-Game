@@ -186,7 +186,7 @@ Terrain::init_grass() {
     // Test all ties to see if they can be grass.
     for (size_t x = 0; x < X_MAX; x++)
         for (size_t y = 0; y < Y_MAX; y++)
-            for (size_t z = 0; z < Z_MAX - 1; z++) {
+            for (size_t z = 0; z < static_cast<Dim>(Z_MAX - 1); z++) {
                 if (!get_tile(x, y, z + 1)->is_solid()) {
                     get_tile(x, y, z)->try_grow_grass(); // add to sources and sinks
                     // if grass add to some set
