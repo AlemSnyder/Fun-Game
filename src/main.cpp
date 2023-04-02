@@ -55,6 +55,7 @@ MacroMap()
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
+    // test terrain generation in a region of 64 by 64
     terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
 
     return 0;

@@ -51,20 +51,8 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         return *this;
     }
 
-    inline StaticMesh() :
-        vertex_buffer_(0), color_buffer_(0), normal_buffer_(0), element_buffer_(0),
-        color_texture_(0), transforms_buffer_(0), num_vertices_(0), num_models_(0),
-        do_render_(false){};
-
-    StaticMesh(entity::Mesh mesh, const std::vector<glm::ivec3>& model_transforms);
-
     StaticMesh(
-        const std::vector<unsigned short>& indices,
-        const std::vector<glm::ivec3>& indexed_vertices,
-        const std::vector<uint16_t>& indexed_colors,
-        const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_texture,
-        const std::vector<glm::ivec3>& model_transforms
+        const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
     );
 
     inline ~StaticMesh() {
@@ -77,42 +65,42 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
     }
 
     [[nodiscard]] inline GLuint
-    get_color_buffer() const override {
+    get_color_buffer() const noexcept override {
         return color_buffer_;
     }
 
     [[nodiscard]] inline GLuint
-    get_element_buffer() const override {
+    get_element_buffer() const noexcept override {
         return element_buffer_;
     }
 
     [[nodiscard]] inline GLuint
-    get_normal_buffer() const override {
+    get_normal_buffer() const noexcept override {
         return normal_buffer_;
     }
 
     [[nodiscard]] inline GLuint
-    get_vertex_buffer() const override {
+    get_vertex_buffer() const noexcept override {
         return vertex_buffer_;
     }
 
     [[nodiscard]] inline GLuint
-    get_color_texture() const override {
+    get_color_texture() const noexcept override {
         return color_texture_;
     }
 
     [[nodiscard]] inline GLuint
-    get_model_transforms() const override {
+    get_model_transforms() const noexcept override {
         return transforms_buffer_;
     }
 
     [[nodiscard]] inline uint32_t
-    get_num_vertices() const override {
+    get_num_vertices() const noexcept override {
         return num_vertices_;
     }
 
     [[nodiscard]] inline uint32_t
-    get_num_models() const override {
+    get_num_models() const noexcept override {
         return num_models_;
     }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../types.hpp"
 #include "../logging.hpp"
 #include "../exceptions.hpp"
 #include "bits.hpp"
@@ -10,7 +11,6 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-//#include <iostream>
 #include <string>
 #include <vector>
 
@@ -29,8 +29,8 @@ write_int(std::ofstream& file, T val) noexcept {
     file.write(reinterpret_cast<char*>(&val), sizeof(val));
 }
 
-inline uint32_t
-parse_color(uint32_t color) {
+inline ColorInt
+parse_color(ColorInt color) {
     // Colors are saved in big endian format
     if (std::endian::native == std::endian::little)
         return bits::swap(color);
@@ -38,8 +38,8 @@ parse_color(uint32_t color) {
         return color;
 }
 
-inline uint32_t
-export_color(uint32_t color) {
+inline ColorInt
+export_color(ColorInt color) {
     // Colors are saved in big endian format
     if (std::endian::native == std::endian::little)
         return bits::swap(color);
@@ -48,8 +48,8 @@ export_color(uint32_t color) {
 }
 
 void from_qb(
-    const std::filesystem::path path, std::vector<uint32_t>& data,
-    std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
+    const std::filesystem::path path, std::vector<ColorInt>& data,
+    glm::i32vec3& center, glm::u32vec3& size
 );
 
 template<VoxelLike T>
@@ -72,11 +72,9 @@ to_qb(const std::filesystem::path path, T ter, bool compression = false) {
         throw exc::file_not_found_error(path);
     }
 
-    std::array<uint32_t, 3> size = ter.get_size();
-    std::array<int32_t, 3> offset = ter.get_offset();
+    glm::u32vec3 size = ter.get_size();
+    glm::i32vec3 offset = ter.get_offset();
 
-    /*
-        uint8_t v[4]; */
 
     // Write header
     uint32_t count = 1; // the number of layers
@@ -124,7 +122,7 @@ to_qb(const std::filesystem::path path, T ter, bool compression = false) {
     for (size_t x = 0; x < size[0]; x++)
         for (size_t z = 0; z < size[2]; z++)
             for (size_t y = size[1] - 1; y < size[1]; y--) {
-                uint32_t raw_color = export_color(ter.get_voxel(x, y, z));
+                ColorInt raw_color = export_color(ter.get_voxel(x, y, z));
 
                 // Alpha is either 0 or 255
                 if (raw_color & 0xff000000)
@@ -141,9 +139,9 @@ to_qb(const std::filesystem::path path, T ter, bool compression = false) {
 inline qb_data from_qb(
     const std::filesystem::path path
 ){
-    std::vector<uint32_t> data;
-    std::array<int32_t, 3> center;
-    std::array<uint32_t, 3> size;
+    std::vector<ColorInt> data;
+    glm::i32vec3 center;
+    glm::u32vec3 size;
 
     from_qb(path, data, center, size);
 

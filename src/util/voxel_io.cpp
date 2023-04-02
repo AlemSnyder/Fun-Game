@@ -1,5 +1,6 @@
 #include "voxel_io.hpp"
 
+#include "../types.hpp"
 #include "../exceptions.hpp"
 #include "../logging.hpp"
 #include "bits.hpp"
@@ -21,8 +22,8 @@ namespace voxel_utility {
 
 void
 from_qb(
-    const std::filesystem::path path, std::vector<uint32_t>& data,
-    std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
+    const std::filesystem::path path, std::vector<ColorInt>& data,
+    glm::i32vec3& center, glm::u32vec3& size
 ) {
     LOG_INFO(logging::file_io_logger, "Reading voxels from {}.", path.string());
 

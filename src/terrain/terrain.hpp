@@ -105,10 +105,8 @@ class Terrain : public TerrainBase {
     int seed;
 
  public:
-
     using TerrainBase::pos;
     using TerrainBase::pos_for_map;
-
 
     // test for path finding
     std::pair<const Tile*, const Tile*> get_start_end_test() const;
@@ -197,8 +195,9 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         int Area_size_, int z_tiles, int seed_, int tile_type,
-        const std::map<uint8_t, const Material>* material, Json::Value biome_data,
-        std::vector<int> grass_grad_data, unsigned int grass_mid
+        const std::map<MaterialId, const Material>& material,
+        const Json::Value biome_data, std::vector<int> grass_grad_data,
+        unsigned int grass_mid
     );
     /**
      * @brief Construct a new Terrain object (most default constructor)
@@ -206,7 +205,7 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-        const std::map<uint8_t, const Material>* material,
+        const std::map<MaterialId, const Material>& material,
         std::vector<int> grass_grad_data, unsigned int grass_mid
     );
     /**
@@ -225,8 +224,9 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
-        const std::map<uint8_t, const Material>* material, Json::Value biome_data,
-        std::vector<int> grass_grad_data, unsigned int grass_mid
+        const std::map<MaterialId, const Material>& material,
+        const Json::Value biome_data, std::vector<int> grass_grad_data,
+        unsigned int grass_mid
     );
     /**
      * @brief Construct a new Terrain object
@@ -235,14 +235,14 @@ class Terrain : public TerrainBase {
      * @param material materials of the world
      */
     Terrain(
-        const std::string path, const std::map<uint8_t, const Material>* material,
+        const std::string path, const std::map<MaterialId, const Material>& material,
         std::vector<int> grass_grad_data, unsigned int grass_mid
     );
 
     // TODO place block
 
     //[[nodiscard]] inline TerrainBase*
-    //get_base() {
+    // get_base() {
     //    return &terrain_base_;
     //}
 
@@ -615,15 +615,3 @@ class Terrain : public TerrainBase {
 };
 
 } // namespace terrain
-
-inline uint32_t terrain::Chunk::get_voxel(int x, int y, int z) const {
-    return ter_->get_voxel(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
-}
-
-inline uint16_t terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
-    return ter_->get_voxel_color_id(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
-}

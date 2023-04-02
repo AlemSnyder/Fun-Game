@@ -29,7 +29,6 @@ GUITest(World& world) {
 
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
 
-
     voxel_utility::VoxelObject default_trees_voxel(
         files::get_data_path() / "models" / "DefaultTree.qb"
     );
@@ -128,6 +127,9 @@ GUITest(World& world) {
     // Cull triangles which normal is not towards the camera
     glEnable(GL_CULL_FACE);
 
+    // send color texture to gpu
+    terrain::TerrainColorMapping::assign_color_texture();
+
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -142,9 +144,9 @@ GUITest(World& world) {
 
     std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
-    for (unsigned int x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
-        for (unsigned int y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
-            unsigned int z = world.get_terrain_main().get_Z_solid(x, y) + 1;
+    for (size_t x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
+        for (size_t y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
+            size_t z = world.get_terrain_main().get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec3 model(x, y, z);
                 model_matrices.push_back(model);

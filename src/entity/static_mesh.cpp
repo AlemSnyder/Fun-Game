@@ -2,6 +2,7 @@
 
 #include "../gui/meshloader.hpp"
 #include "../logging.hpp"
+#include "../types.hpp"
 #include "mesh.hpp"
 
 #include <GL/glew.h>
@@ -13,63 +14,61 @@
 namespace terrain {
 
 StaticMesh::StaticMesh(
-    entity::Mesh mesh, const std::vector<glm::ivec3>& model_transforms
-) :
-    StaticMesh(
-        mesh.get_indices(), mesh.get_indexed_vertices(), mesh.get_indexed_color_ids(),
-        mesh.get_indexed_normals(), mesh.get_color_map(), model_transforms
-    ) {}
+    const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
+) {
 
-StaticMesh::StaticMesh(
-    const std::vector<unsigned short>& indices,
-    const std::vector<glm::ivec3>& indexed_vertices,
-    const std::vector<uint16_t>& indexed_color_ids,
-    const std::vector<glm::i8vec3>& indexed_normals,
-    const std::vector<uint32_t>& color_map,
-    const std::vector<glm::ivec3>& model_transforms
-) :
-    vertex_buffer_(0),
-    color_buffer_(0), normal_buffer_(0), element_buffer_(0),
-    color_texture_(0), transforms_buffer_(0), num_vertices_(indices.size()),
-    num_models_(model_transforms.size()), do_render_(false) {
-    do_render_ = (num_vertices_ != 0);
+    // clear all buffers
+    GLuint buffers [4] = {vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
+    glDeleteBuffers(4, buffers);
+
+    // if indices are none so if there is no vertices that would be sent to the graphics card
+    //     then there is no reason to create a buffer
+    // create a bool do_render, set to false when
+    num_vertices_ = mesh.get_indices().size();
+    num_models_ = model_transforms.size();
+    do_render_ = (num_vertices_ != 0 && num_models_ != 0);
+
+    if (!do_render_){
+        return;
+    }
+
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::ivec3),
-        indexed_vertices.data(), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, mesh.get_indexed_vertices().size() * sizeof(glm::ivec3),
+        mesh.get_indexed_vertices().data(), GL_STATIC_DRAW
     );
 
     // A buffer for the colors
     glGenBuffers(1, &color_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_color_ids.size() * sizeof(uint16_t),
-        indexed_color_ids.data(), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, mesh.get_indexed_color_ids().size() * sizeof(uint16_t),
+        mesh.get_indexed_color_ids().data(), GL_STATIC_DRAW
     );
 
     // Generate a buffer for the normal vectors
     glGenBuffers(1, &normal_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::i8vec3),
-        indexed_normals.data(), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, mesh.get_indexed_normals().size() * sizeof(glm::i8vec3),
+        mesh.get_indexed_normals().data(), GL_STATIC_DRAW
     );
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &element_buffer_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
-        indices.data(), GL_STATIC_DRAW
+        GL_ELEMENT_ARRAY_BUFFER, mesh.get_indices().size() * sizeof(unsigned short),
+        mesh.get_indices().data(), GL_STATIC_DRAW
     );
 
     // Generate a texture
-    std::vector<std::array<float, 4>> float_colors =
-        entity::convert_color_data(color_map);
+    std::vector<ColorFloat> float_colors =
+        entity::convert_color_data(mesh.get_color_map());
 
-    LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
+    // LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
     glGenTextures(1, &color_texture_);
     glBindTexture(GL_TEXTURE_1D, color_texture_);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

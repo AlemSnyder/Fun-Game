@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "../types.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
 
@@ -55,9 +56,9 @@ struct TilePCompare {
  */
 class Tile {
  private:
-    uint16_t x; // The x index
-    uint16_t y; // The y index
-    uint16_t z; // The z index
+    Dim x; // The x index
+    Dim y; // The y index
+    Dim z; // The z index
     // does this need to know where it is?
     // The material id of the tile
     uint8_t mat_id_;
@@ -83,7 +84,7 @@ class Tile {
      * @param color_id color of tile
      */
     Tile(
-        std::array<uint16_t, 3> sop, const terrain::Material* material, uint8_t color_id = 0
+        std::array<Dim, 3> sop, const terrain::Material* material, uint8_t color_id = 0
     );
 
     // I will format this later or remove it if I can
@@ -130,12 +131,18 @@ class Tile {
     /**
      * @brief Get the distance from edge
      */
-    [[nodiscard]] inline int get_grow_data_low() const { return grow_data_low_; }
+    [[nodiscard]] inline int
+    get_grow_data_low() const {
+        return grow_data_low_;
+    }
 
     /**
      * @brief Get the distance from wall
      */
-    [[nodiscard]] inline int get_grow_data_high() const { return grow_data_high_; }
+    [[nodiscard]] inline int
+    get_grow_data_high() const {
+        return grow_data_high_;
+    }
 
     /**
      * @brief sets grass to true, and set color id to 1
@@ -161,28 +168,37 @@ class Tile {
      *
      * @return int x position
      */
-    [[nodiscard]] inline uint16_t get_x() const { return x; }
+    [[nodiscard]] inline Dim
+    get_x() const {
+        return x;
+    }
 
     /**
      * @brief Get the y position
      *
      * @return int y position
      */
-    [[nodiscard]] inline uint16_t get_y() const { return y; }
+    [[nodiscard]] inline Dim
+    get_y() const {
+        return y;
+    }
 
     /**
      * @brief Get the z position
      *
      * @return int z position
      */
-    [[nodiscard]] inline uint16_t get_z() const { return z; }
+    [[nodiscard]] inline Dim
+    get_z() const {
+        return z;
+    }
 
     /**
      * @brief coordinate of tile
      *
      * @return std::array<int, 3> array of x, y, z
      */
-    [[nodiscard]] std::array<uint16_t, 3> sop() const;
+    [[nodiscard]] std::array<Dim, 3> sop() const;
 
     /**
      * @brief is the tile grass
@@ -190,14 +206,17 @@ class Tile {
      * @return true this tile is grass
      * @return false this tile is not grass
      */
-    [[nodiscard]] inline bool is_grass() const { return grass_; }
+    [[nodiscard]] inline bool
+    is_grass() const {
+        return grass_;
+    }
 
     /**
-     * @brief Get the material
+     * @brief Get the material id
      *
-     * @return const Material*
+     * @return MaterialId
      */
-    [[nodiscard]] inline uint8_t
+    [[nodiscard]] inline MaterialId
     get_material_id() const {
         return mat_id_;
     }
@@ -205,9 +224,10 @@ class Tile {
     /**
      * @brief Get the color id
      *
-     * @return uint8_t color id
+     * @return ColorId color id
      */
-    [[nodiscard]] inline uint8_t get_color_id() const {
+    [[nodiscard]] inline ColorId
+    get_color_id() const {
         return color_id_;
     }
 
@@ -216,7 +236,7 @@ class Tile {
      *
      * @return uint16_t 8 bit material id, and 8 bit color id
      */
-    [[nodiscard]] uint16_t get_mat_color_id() const;
+    [[nodiscard]] MatColorId get_mat_color_id() const;
 
     /**
      * @brief is this tile solid
@@ -224,7 +244,10 @@ class Tile {
      * @return true the tiles is solid
      * @return false the tile is not solid
      */
-    [[nodiscard]] inline bool is_solid() const { return solid_; }
+    [[nodiscard]] inline bool
+    is_solid() const {
+        return solid_;
+    }
 
     inline bool
     operator==(const Tile other) const {

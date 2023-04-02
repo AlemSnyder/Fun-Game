@@ -20,3 +20,6 @@
 #else
 #    define ROOT_DIR_PATH "."
 #endif
+
+#define DEBUG_MATERIAL 7
+#define NUM_DEBUG_COLORS 4
