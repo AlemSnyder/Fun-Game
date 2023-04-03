@@ -165,7 +165,7 @@ class Terrain : public TerrainBase {
      * @param tile
      * @return int
      */
-    inline uint32_t
+    inline TileIndex
     pos_for_map(const NodeGroup NG) const {
         return pos(*(NG.get_tiles().begin()));
     }
@@ -176,7 +176,7 @@ class Terrain : public TerrainBase {
      * @param tile
      * @return int
      */
-    inline uint32_t
+    inline TileIndex
     pos_for_map(const NodeGroup* const NG) const {
         return pos(*(NG->get_tiles().begin()));
     }
@@ -270,7 +270,7 @@ class Terrain : public TerrainBase {
      */
     std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
-        std::map<uint32_t, Node<const NodeGroup>>& nodes, uint8_t type
+        std::map<TileIndex, Node<const NodeGroup>>& nodes, uint8_t type
     ) const;
 
     /**
@@ -282,7 +282,7 @@ class Terrain : public TerrainBase {
      * @return std::set<Node<const T> *> adjacent nodes
      */
     std::set<Node<const Tile>*> get_adjacent_nodes(
-        const Node<const Tile>* const node, std::map<uint32_t, Node<const Tile>>& nodes,
+        const Node<const Tile>* const node, std::map<TileIndex, Node<const Tile>>& nodes,
         uint8_t type
     ) const;
 

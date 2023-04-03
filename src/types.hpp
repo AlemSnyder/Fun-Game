@@ -3,6 +3,8 @@
 #include <array>
 #include <cstdint>
 
+using TileIndex = size_t;
+
 using Dim = uint16_t;
 
 // four chanels of 8 bits

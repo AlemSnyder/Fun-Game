@@ -54,7 +54,7 @@ void from_qb(
 
 template<VoxelLike T>
 void
-to_qb(const std::filesystem::path path, T ter, bool compression = false) {
+to_qb(const std::filesystem::path& path, const T& ter, bool compression = false) {
     LOG_INFO(logging::file_io_logger, "Saving voxels to {}.", path.string());
 
     if (compression) {
@@ -137,7 +137,7 @@ to_qb(const std::filesystem::path path, T ter, bool compression = false) {
 }
 
 inline qb_data from_qb(
-    const std::filesystem::path path
+    const std::filesystem::path& path
 ){
     std::vector<ColorInt> data;
     glm::i32vec3 center;

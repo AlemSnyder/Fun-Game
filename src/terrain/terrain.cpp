@@ -272,7 +272,7 @@ Terrain::pos(const NodeGroup* const node_group) const {
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
-    std::map<uint32_t, Node<const NodeGroup>>& nodes, uint8_t path_type
+    std::map<TileIndex, Node<const NodeGroup>>& nodes, uint8_t path_type
 ) const {
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
@@ -286,7 +286,7 @@ Terrain::get_adjacent_nodes(
 
 std::set<Node<const Tile>*>
 Terrain::get_adjacent_nodes(
-    const Node<const Tile>* node, std::map<uint32_t, Node<const Tile>>& nodes,
+    const Node<const Tile>* node, std::map<TileIndex, Node<const Tile>>& nodes,
     uint8_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
@@ -561,7 +561,7 @@ Terrain::get_path(
         Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
         openNodes(T_compare);
 
-    std::map<uint32_t, Node<const T>> nodes; // The nodes that can be walked through
+    std::map<TileIndex, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
         nodes[pos_for_map(t)] =
             Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()));

@@ -39,13 +39,13 @@ TerrainBase::qb_read(
 }
 
 TerrainBase::TerrainBase(
-    int x, int y, int Area_size, int z,
-    const std::map<uint8_t, const Material>& materials, const Json::Value& biome_data,
+    Dim x, Dim y, Dim Area_size, Dim z,
+    const std::map<MaterialId, const Material>& materials, const Json::Value& biome_data,
     std::vector<int> grass_grad_data, unsigned int grass_mid,
     std::vector<int> Terrain_Maps
 ) :
     TerrainBase(materials, grass_grad_data, grass_mid, x, y, Area_size, z) {
-    for (unsigned int xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
+    for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         tiles_.push_back(Tile(sop(xyz), &materials_.at(0)));
     }
 
@@ -56,7 +56,7 @@ TerrainBase::TerrainBase(
     std::map<int, terrain_generation::LandGenerator> land_generators;
 
     // for tile macro in data biome
-    for (unsigned int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
+    for (int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
         // create a land generator for each tile macro
         terrain_generation::LandGenerator gen(
             materials, biome_data["Tile_Macros"][i]["Land_Data"]
@@ -69,8 +69,8 @@ TerrainBase::TerrainBase(
     );
 
     // TODO make this faster 4
-    for (int i = 0; i < x; i++)
-        for (int j = 0; j < y; j++) {
+    for (size_t i = 0; i < x; i++)
+        for (size_t j = 0; j < y; j++) {
             int tile_type = Terrain_Maps[j + i * y];
             Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
             for (Json::Value generator_macro : macro_types) {
@@ -81,7 +81,7 @@ TerrainBase::TerrainBase(
     LOG_INFO(logging::terrain_logger, "End of land generator: place tiles .");
 
     // TODO make this faster 3
-    for (unsigned int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
+    for (int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
          i++) {
         add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
     }

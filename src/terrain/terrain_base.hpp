@@ -59,12 +59,6 @@ class TerrainBase : public voxel_utility::VoxelBase {
  protected:
     // vector of voxels in terrain
     std::vector<Tile> tiles_;
-    // length in the x direction
-    const Dim X_MAX;
-    // length in the y direction
-    const Dim Y_MAX;
-    // length in the z direction
-    const Dim Z_MAX;
     // size of terrain generation tile (see terrain generation)
     const Dim area_size;
     // vector that determines grass color from edge distance
@@ -75,12 +69,18 @@ class TerrainBase : public voxel_utility::VoxelBase {
     uint8_t grass_mid_;
     // mat of material id to material that describes materials in this terrain
     const std::map<MaterialId, const terrain::Material>& materials_;
-
  public:
+    // length in the x direction
+    const Dim X_MAX;
+    // length in the y direction
+    const Dim Y_MAX;
+    // length in the z direction
+    const Dim Z_MAX;
+
     TerrainBase(
         const std::map<MaterialId, const terrain::Material>& materials,
         const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-        int x_tiles = 1, int y_tiles = 1, int area_size = 32, int z_tiles = 1
+        Dim x_tiles = 1, Dim y_tiles = 1, Dim area_size = 32, Dim z_tiles = 1
     ) :
         X_MAX(x_tiles * area_size),
         Y_MAX(y_tiles * area_size), Z_MAX(z_tiles * area_size), area_size(area_size),
@@ -136,7 +136,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     }
 
     TerrainBase(
-        int x, int y, int Area_size, int z,
+        Dim x, Dim y, Dim Area_size, Dim z,
         const std::map<MaterialId, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid
@@ -147,7 +147,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         ) {}
 
     TerrainBase(
-        int x, int y, int Area_size, int z,
+        Dim x, Dim y, Dim Area_size, Dim z,
         const std::map<uint8_t, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid, std::vector<int> Terrain_Maps
@@ -166,9 +166,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z z coordinate
      * @return int
      */
-    inline uint32_t
-    pos(uint16_t x, uint16_t y,
-        uint16_t z) const { // for loops should go z than y than x
+    inline TileIndex
+    pos(Dim x, Dim y,
+        Dim z) const { // for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
     }
 
@@ -178,13 +178,13 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param sop coordinate as an array
      * @return int
      */
-    inline uint32_t
-    pos(const std::array<uint16_t, 3> sop) const {
+    inline TileIndex
+    pos(const std::array<Dim, 3> sop) const {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
-    inline uint32_t
-    pos(const uint16_t sop[3]) const {
+    inline TileIndex
+    pos(const Dim sop[3]) const {
         return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
     }
 
@@ -194,7 +194,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param tile tile to find position of
      * @return int
      */
-    inline uint32_t
+    inline TileIndex
     pos(const Tile* const tile) const {
         return pos(tile->sop());
     }
@@ -238,11 +238,11 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param xyz vector index
      * @return const std::array<int, 3> position in space
      */
-    inline const std::array<uint16_t, 3>
-    sop(uint32_t xyz) const {
+    inline const std::array<Dim, 3>
+    sop(TileIndex xyz) const {
         return {
-            uint16_t(xyz / (Y_MAX * Z_MAX)), uint16_t((xyz / Z_MAX) % Y_MAX),
-            uint16_t(xyz % (Z_MAX))};
+            Dim(xyz / (Y_MAX * Z_MAX)), Dim((xyz / Z_MAX) % Y_MAX),
+            Dim(xyz % (Z_MAX))};
     }
 
     /**
@@ -254,13 +254,13 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param zm length in z direction
      * @return std::array<int, 3> position in 3D space
      */
-    inline static std::array<uint16_t, 3>
-    sop(uint32_t xyz, uint32_t xm, uint32_t ym, uint32_t zm) {
+    inline static std::array<Dim, 3>
+    sop(TileIndex xyz, TileIndex xm, TileIndex ym, TileIndex zm) {
         if (xyz >= xm * ym * zm) {
             throw std::invalid_argument("index out of range");
         }
         return {
-            uint16_t(xyz / (ym * zm)), uint16_t((xyz / zm) % ym), uint16_t(xyz % (zm))};
+            Dim(xyz / (ym * zm)), Dim((xyz / zm) % ym), Dim(xyz % (zm))};
     }
 
     /**
@@ -298,7 +298,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @details overloaded so must use base class definition.
      *
-     * @return std::array<uint32_t, 3> array of sizes
+     * @return glm::u32vec3 array of sizes
      */
     inline glm::u32vec3
     get_size() const {
@@ -354,7 +354,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     inline Tile*
     get_tile(int xyz) {
-        if (xyz < 0 || static_cast<uint32_t>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+        if (xyz < 0 || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         }
@@ -390,7 +390,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     inline const Tile*
     get_tile(int xyz) const {
-        if (xyz < 0 || static_cast<uint32_t>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+        if (xyz < 0 || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         }
