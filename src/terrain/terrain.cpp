@@ -159,7 +159,7 @@ Terrain::can_stand(const Tile tile, int dz, int dxy) const {
 }
 
 bool
-Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id) {
+Terrain::paint(Tile* tile, const Material* mat, ColorId color_id) {
     // sets color_id if the material is the same.
     if (tile->get_material_id() == mat->element_id) {
         tile->set_color_id(color_id, mat);
@@ -169,7 +169,7 @@ Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id) {
 }
 
 bool
-Terrain::player_set_tile_material(int xyz, const Material* mat, uint8_t color_id) {
+Terrain::player_set_tile_material(int xyz, const Material* mat, ColorId color_id) {
     Tile* tile = get_tile(xyz);
     if (tile->is_solid() && mat->solid) {
         // Can't change something from one material to another.
@@ -239,7 +239,7 @@ Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {
 }
 
 float
-Terrain::get_H_cost(std::array<uint16_t, 3> xyz1, std::array<uint16_t, 3> xyz2) {
+Terrain::get_H_cost(std::array<Dim, 3> xyz1, std::array<Dim, 3> xyz2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;

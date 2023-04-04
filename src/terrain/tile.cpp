@@ -10,7 +10,7 @@
 namespace terrain {
 
 Tile::Tile(
-    std::array<uint16_t, 3> sop, const terrain::Material* material, uint8_t color_id
+    std::array<Dim, 3> sop, const terrain::Material* material, uint8_t color_id
 ) :
     x(sop[0]),
     y(sop[1]), z(sop[2]), mat_id_(0), color_id_(0), grow_data_high_(0),
@@ -42,7 +42,7 @@ Tile::set_material(const terrain::Material* const material) {
 
 // If able, set `color_id` to `color_id_`.
 void
-Tile::set_color_id(uint8_t color_id, const terrain::Material* const material) {
+Tile::set_color_id(ColorId color_id, const terrain::Material* const material) {
     if (color_id >= material->color.size()) {
         return;
     }
@@ -74,7 +74,7 @@ Tile::set_grow_data_low(int num) {
 void
 Tile::set_grass_color(
     unsigned int grass_grad_length, unsigned int grass_mid,
-    std::vector<uint8_t> grass_colors
+    std::vector<ColorId> grass_colors
 ) {
     if (!grass_)
         return;
@@ -146,7 +146,7 @@ Tile::try_grow_grass() {
 }
 
 // returns the element id and the color id as one int
-uint16_t
+MatColorId
 Tile::get_mat_color_id() const {
     // element_id, and color_id are 8 bit this function
     // concatenates them together, and returns a 16 bit int
@@ -157,7 +157,7 @@ Tile::get_mat_color_id() const {
 }
 
 // return x, y, z positions as array
-std::array<uint16_t, 3>
+std::array<Dim, 3>
 Tile::sop() const {
     return {x, y, z};
 }
