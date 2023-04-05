@@ -156,12 +156,6 @@ Tile::get_mat_color_id() const {
     return mat_id_ << 8 | color_id_;
 }
 
-// return x, y, z positions as array
-std::array<Dim, 3>
-Tile::sop() const {
-    return {x, y, z};
-}
-
 bool
 Tile::operator>(const Tile other) const {
     if (get_x() < other.get_x()) {

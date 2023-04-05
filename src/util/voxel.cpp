@@ -4,7 +4,7 @@
 
 namespace voxel_utility {
 
-VoxelObject::VoxelObject(const std::filesystem::path path) {
+VoxelObject::VoxelObject(const std::filesystem::path& path) {
     std::vector<ColorInt> voxel_colors;
     try {
         from_qb(path, voxel_colors, center_, size_);

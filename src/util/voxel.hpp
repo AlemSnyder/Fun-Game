@@ -1,7 +1,7 @@
 #pragma once
 
-#include "glm/glm.hpp"
 #include "../types.hpp"
+#include "glm/glm.hpp"
 
 #include <array>
 #include <cstdint>
@@ -42,14 +42,14 @@ class VoxelObject : VoxelBase {
      *
      * @param path path to .qb file
      */
-    VoxelObject(const std::filesystem::path path);
+    VoxelObject(const std::filesystem::path& path);
 
     /**
      * @brief Construct a new Voxel Object object from saved qb
      *
      * @param path path to .qb file
      */
-    VoxelObject(const std::string path) : VoxelObject(std::filesystem::path(path)) {}
+    VoxelObject(const std::string& path) : VoxelObject(std::filesystem::path(path)) {}
 
     /**
      * @brief did this voxel object load correctly
@@ -128,7 +128,7 @@ class VoxelObject : VoxelBase {
     }
 };
 
-struct qb_data {
+struct qb_data_t {
     std::vector<ColorInt> data;
     VoxelOffset center;
     VoxelSize size;

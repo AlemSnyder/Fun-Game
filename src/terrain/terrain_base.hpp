@@ -62,7 +62,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     // size of terrain generation tile (see terrain generation)
     const Dim area_size;
     // vector that determines grass color from edge distance
-    std::vector<uint8_t> grass_colors_;
+    std::vector<ColorId> grass_colors_;
     // length of grass gradient
     uint8_t grass_grad_length_;
     // gradient index of grass not by an edge
@@ -107,7 +107,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     TerrainBase(
         const std::map<MaterialId, const Material>& materials,
         std::vector<int> grass_grad_data, unsigned int grass_mid,
-        voxel_utility::qb_data data
+        voxel_utility::qb_data_t data
     ) :
         TerrainBase(
             materials, grass_grad_data, grass_mid, data.size[0], data.size[1], 32,
@@ -243,8 +243,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     sop(TileIndex xyz) const {
         return {
             static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
-            static_cast<Dim>((xyz / Z_MAX) % Y_MAX),
-            static_cast<Dim>(xyz % (Z_MAX))};
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
     }
 
     /**
@@ -262,8 +261,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
             throw std::invalid_argument("index out of range");
         }
         return {
-            static_cast<Dim>(xyz / (ym * zm)),
-            static_cast<Dim>((xyz / zm) % ym),
+            static_cast<Dim>(xyz / (ym * zm)), static_cast<Dim>((xyz / zm) % ym),
             static_cast<Dim>(xyz % (zm))};
     }
 
@@ -305,7 +303,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return glm::u32vec3 array of sizes
      */
     [[nodiscard]] inline glm::u32vec3
-    get_size() const {
+    get_size() const noexcept {
         return {X_MAX, Y_MAX, Z_MAX};
     }
 
@@ -315,7 +313,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return glm::i32vec3 0 3 times
      */
     [[nodiscard]] inline glm::i32vec3
-    get_offset() const {
+    get_offset() const noexcept {
         return {0, 0, 0};
     }
 
@@ -331,9 +329,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     [[nodiscard]] inline bool
     in_range(int x, int y, int z) const {
         return (
-            static_cast<Dim>(x) < X_MAX && x >= 0
-            && static_cast<Dim>(y) < Y_MAX && y >= 0
-            && static_cast<Dim>(z) < Z_MAX && z >= 0
+            static_cast<Dim>(x) < X_MAX && x >= 0 && static_cast<Dim>(y) < Y_MAX
+            && y >= 0 && static_cast<Dim>(z) < Z_MAX && z >= 0
         );
     }
 
@@ -470,7 +467,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return grass_mid_;
     }
 
-    [[nodiscard]] inline std::vector<uint8_t>
+    [[nodiscard]] inline const std::vector<ColorId>&
     get_grass_colors() const {
         return grass_colors_;
     }
@@ -497,7 +494,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param y macro map y position
      */
     inline void
-    stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y) {
+    stamp_tile_region(const terrain_generation::TileStamp& tStamp, int x, int y) {
         stamp_tile_region(
             tStamp.x_start + x * area_size + area_size / 2,
             tStamp.y_start + y * area_size + area_size / 2, tStamp.z_start,

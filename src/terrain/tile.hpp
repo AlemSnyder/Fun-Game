@@ -61,9 +61,9 @@ class Tile {
     Dim z; // The z index
     // does this need to know where it is?
     // The material id of the tile
-    uint8_t mat_id_;
+    MaterialId mat_id_;
     // The tile color is determined by this and the material type.
-    uint8_t color_id_;
+    ColorId color_id_;
     // Determined by the horizontal manhattan distance from a wall
     uint8_t grow_data_high_;
     // Determined by the horizontal manhattan distance from a edge
@@ -108,13 +108,13 @@ class Tile {
      * @param mat_ material to set
      * @param color_id color to set
      */
-    void set_material(const terrain::Material* const materials, uint8_t color_id);
+    void set_material(const terrain::Material* const materials, ColorId color_id);
     /**
      * @brief Set the color id
      *
      * @param color_id color to set
      */
-    void set_color_id(uint8_t color_id, const terrain::Material* const material);
+    void set_color_id(ColorId color_id, const terrain::Material* const material);
     /**
      * @brief Set the distance from edge
      *
@@ -198,7 +198,10 @@ class Tile {
      *
      * @return std::array<int, 3> array of x, y, z
      */
-    [[nodiscard]] std::array<Dim, 3> sop() const;
+    [[nodiscard]] std::array<Dim, 3>
+    sop() const {
+        return {x, y, z};
+    }
 
     /**
      * @brief is the tile grass

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../types.hpp"
-#include "../logging.hpp"
 #include "../exceptions.hpp"
+#include "../logging.hpp"
+#include "../types.hpp"
 #include "bits.hpp"
 #include "voxel.hpp"
 
@@ -48,11 +48,11 @@ export_color(ColorInt color) {
 }
 
 void from_qb(
-    const std::filesystem::path path, std::vector<ColorInt>& data,
-    glm::i32vec3& center, glm::u32vec3& size
+    const std::filesystem::path path, std::vector<ColorInt>& data, glm::i32vec3& center,
+    glm::u32vec3& size
 );
 
-template<VoxelLike T>
+template <VoxelLike T>
 void
 to_qb(const std::filesystem::path& path, const T& ter, bool compression = false) {
     LOG_INFO(logging::file_io_logger, "Saving voxels to {}.", path.string());
@@ -75,7 +75,6 @@ to_qb(const std::filesystem::path& path, const T& ter, bool compression = false)
     glm::u32vec3 size = ter.get_size();
     glm::i32vec3 offset = ter.get_offset();
 
-
     // Write header
     uint32_t count = 1; // the number of layers
 
@@ -97,8 +96,8 @@ to_qb(const std::filesystem::path& path, const T& ter, bool compression = false)
 
     // Write voxel grid size
     LOG_DEBUG(
-        logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}",
-        size[0], size[1], size[2]
+        logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", size[0], size[1],
+        size[2]
     );
 
     write_int(file, size[0]); // x_max
@@ -107,8 +106,8 @@ to_qb(const std::filesystem::path& path, const T& ter, bool compression = false)
 
     // Write voxel grid center
     LOG_DEBUG(
-        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})",
-        offset[0], offset[1], offset[2]
+        logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", offset[0],
+        offset[1], offset[2]
     );
 
     write_int(file, offset[0]); // x_center
@@ -136,17 +135,15 @@ to_qb(const std::filesystem::path& path, const T& ter, bool compression = false)
     LOG_INFO(logging::file_io_logger, "Voxels written: {}", voxels_written);
 }
 
-inline qb_data from_qb(
-    const std::filesystem::path& path
-){
+inline qb_data_t
+from_qb(const std::filesystem::path& path) {
     std::vector<ColorInt> data;
     glm::i32vec3 center;
     glm::u32vec3 size;
 
     from_qb(path, data, center, size);
 
-    return qb_data(data, center, size);
-
+    return qb_data_t(data, center, size);
 }
 
 } // namespace voxel_utility

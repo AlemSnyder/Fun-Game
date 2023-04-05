@@ -109,7 +109,7 @@ class LandGenerator {
     };
 
  private:
-    unsigned int static get_num_stamps(Json::Value biome);
+    unsigned int static get_num_stamps(const Json::Value& biome);
 
     std::array<int, 6>
     get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const;
