@@ -302,7 +302,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return glm::u32vec3 array of sizes
      */
-    [[nodiscard]] inline glm::u32vec3
+    [[nodiscard]] inline VoxelSize
     get_size() const noexcept {
         return {X_MAX, Y_MAX, Z_MAX};
     }
@@ -312,7 +312,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return glm::i32vec3 0 3 times
      */
-    [[nodiscard]] inline glm::i32vec3
+    [[nodiscard]] inline VoxelOffset
     get_offset() const noexcept {
         return {0, 0, 0};
     }
@@ -433,7 +433,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return previous_out_color;
     }
 
-    [[nodiscard]] inline uint16_t
+    [[nodiscard]] inline VoxelColorId
     get_voxel_color_id(int x, int y, int z) const {
         // if not in range, then considered to be air
         if (!in_range(x, y, z))
