@@ -43,8 +43,7 @@ inline std::vector<ColorFloat>
 convert_color_data(const std::vector<ColorInt>& color_map) {
     std::vector<ColorFloat> float_colors;
     for (ColorInt int_color : color_map) {
-        glm::vec4 color = glm::vec4(uint32_to_color(int_color)) / 255.0f;
-        float_colors.push_back({color.a, color.b, color.g, color.r});
+        float_colors.push_back(convert_color_data(int_color));
     }
     return float_colors;
 }

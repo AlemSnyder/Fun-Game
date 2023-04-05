@@ -1,9 +1,10 @@
 #include "voxel.hpp"
+
 #include "voxel_io.hpp"
 
 namespace voxel_utility {
 
-VoxelObject::VoxelObject(const std::filesystem::path path){
+VoxelObject::VoxelObject(const std::filesystem::path path) {
     std::vector<ColorInt> voxel_colors;
     try {
         from_qb(path, voxel_colors, center_, size_);
@@ -16,10 +17,10 @@ VoxelObject::VoxelObject(const std::filesystem::path path){
     }
     // empty should always have index 0;
     colors_.push_back(0);
-    for (std::size_t i = 0; i < voxel_colors.size(); i++){
-        uint16_t j = 0;
+    for (std::size_t i = 0; i < voxel_colors.size(); i++) {
+        VoxelColorId j = 0;
         for (; j < colors_.size(); j++) {
-            if (colors_[j] == voxel_colors[i]){
+            if (colors_[j] == voxel_colors[i]) {
                 goto on_break;
             }
         }
@@ -30,12 +31,11 @@ VoxelObject::VoxelObject(const std::filesystem::path path){
         j = colors_.size();
         // add the color
         colors_.push_back(voxel_colors[i]);
-        
-        on_break:
-        data_.push_back(j);
 
+on_break:
+        data_.push_back(j);
     }
-    if (colors_.size() > 1U << 15){
+    if (colors_.size() > 1U << 15) {
         LOG_ERROR(
             logging::voxel_logger, "Too many colors in voxel file: {}", colors_.size()
         );

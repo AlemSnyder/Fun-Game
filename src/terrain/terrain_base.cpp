@@ -40,9 +40,9 @@ TerrainBase::qb_read(
 
 TerrainBase::TerrainBase(
     Dim x, Dim y, Dim Area_size, Dim z,
-    const std::map<MaterialId, const Material>& materials, const Json::Value& biome_data,
-    std::vector<int> grass_grad_data, unsigned int grass_mid,
-    std::vector<int> Terrain_Maps
+    const std::map<MaterialId, const Material>& materials,
+    const Json::Value& biome_data, std::vector<int> grass_grad_data,
+    unsigned int grass_mid, std::vector<int> Terrain_Maps
 ) :
     TerrainBase(materials, grass_grad_data, grass_mid, x, y, Area_size, z) {
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
@@ -53,15 +53,14 @@ TerrainBase::TerrainBase(
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
     // create a map of int -> LandGenerator
-    std::map<int, terrain_generation::LandGenerator> land_generators;
+    // std::map<int, terrain_generation::LandGenerator> land_generators;
+    std::vector<terrain_generation::LandGenerator> land_generators;
 
     // for tile macro in data biome
-    for (int i = 0; i < biome_data["Tile_Macros"].size(); i++) {
+    for (const Json::Value& tile_macro : biome_data["Tile_Macros"]) {
         // create a land generator for each tile macro
-        terrain_generation::LandGenerator gen(
-            materials, biome_data["Tile_Macros"][i]["Land_Data"]
-        );
-        land_generators.insert(std::make_pair(i, gen));
+        terrain_generation::LandGenerator gen(materials, tile_macro["Land_Data"]);
+        land_generators.push_back(gen);
     }
 
     LOG_INFO(
@@ -81,9 +80,8 @@ TerrainBase::TerrainBase(
     LOG_INFO(logging::terrain_logger, "End of land generator: place tiles .");
 
     // TODO make this faster 3
-    for (int i = 0; i < biome_data["After_Effects"]["Add_To_Top"].size();
-         i++) {
-        add_to_top(biome_data["After_Effects"]["Add_To_Top"][i], materials);
+    for (const Json::Value& after_affect : biome_data["After_Effects"]["Add_To_Top"]) {
+        add_to_top(after_affect, materials);
     }
 
     LOG_INFO(logging::terrain_logger, "End of land generator: top layer placement.");
@@ -95,7 +93,7 @@ TerrainBase::get_first_not(
 ) const {
     if (guess < 1) {
         guess = 1;
-    } else if ((Dim)guess >= Z_MAX) {
+    } else if (static_cast<Dim>(guess) >= Z_MAX) {
         guess = Z_MAX - 1;
     }
     if (has_tile_material(materials, x, y, guess - 1)) {

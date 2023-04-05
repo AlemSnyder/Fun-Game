@@ -69,6 +69,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     uint8_t grass_mid_;
     // mat of material id to material that describes materials in this terrain
     const std::map<MaterialId, const terrain::Material>& materials_;
+
  public:
     // length in the x direction
     const Dim X_MAX;
@@ -167,8 +168,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return int
      */
     [[nodiscard]] inline TileIndex
-    pos(Dim x, Dim y,
-        Dim z) const { // for loops should go z than y than x
+    pos(Dim x, Dim y, Dim z) const {
+        // for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
     }
 
@@ -241,8 +242,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
     [[nodiscard]] inline const std::array<Dim, 3>
     sop(TileIndex xyz) const {
         return {
-            Dim(xyz / (Y_MAX * Z_MAX)), Dim((xyz / Z_MAX) % Y_MAX),
-            Dim(xyz % (Z_MAX))};
+            static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX),
+            static_cast<Dim>(xyz % (Z_MAX))};
     }
 
     /**
@@ -260,7 +262,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
             throw std::invalid_argument("index out of range");
         }
         return {
-            Dim(xyz / (ym * zm)), Dim((xyz / zm) % ym), Dim(xyz % (zm))};
+            static_cast<Dim>(xyz / (ym * zm)),
+            static_cast<Dim>((xyz / zm) % ym),
+            static_cast<Dim>(xyz % (zm))};
     }
 
     /**
@@ -302,13 +306,13 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] inline glm::u32vec3
     get_size() const {
-        return { X_MAX, Y_MAX, Z_MAX };
+        return {X_MAX, Y_MAX, Z_MAX};
     }
 
     /**
      * @brief Used for getting mesh
      *
-     * @return std::array<int32_t, 3> 0 3 times
+     * @return glm::i32vec3 0 3 times
      */
     [[nodiscard]] inline glm::i32vec3
     get_offset() const {
@@ -327,8 +331,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
     [[nodiscard]] inline bool
     in_range(int x, int y, int z) const {
         return (
-            static_cast<Dim>(x) < X_MAX && x >= 0 && static_cast<Dim>(y) < Y_MAX && y >= 0 && static_cast<Dim>(z) < Z_MAX
-            && z >= 0
+            static_cast<Dim>(x) < X_MAX && x >= 0
+            && static_cast<Dim>(y) < Y_MAX && y >= 0
+            && static_cast<Dim>(z) < Z_MAX && z >= 0
         );
     }
 
@@ -456,7 +461,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     ) const;
 
     [[nodiscard]] inline uint8_t
-    get_grass_grad_length() const noexcept{
+    get_grass_grad_length() const noexcept {
         return grass_grad_length_;
     }
 

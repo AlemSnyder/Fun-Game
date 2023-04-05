@@ -16,8 +16,8 @@ class VoxelBase {
     ColorInt get_voxel(int x, int y, int z) const;
     uint16_t get_voxel_color_id(int x, int y, int z) const;
     std::vector<ColorInt> get_color_ids() const;
-    glm::u32vec3 get_size() const;
-    glm::i32vec3 get_offset() const;
+    VoxelSize get_size() const;
+    VoxelOffset get_offset() const;
 };
 
 template <class T>
@@ -25,10 +25,10 @@ concept VoxelLike = std::is_base_of<voxel_utility::VoxelBase, T>::value;
 
 class VoxelObject : VoxelBase {
  private:
-    std::vector<uint16_t> data_;
+    std::vector<VoxelColorId> data_;
     std::vector<ColorInt> colors_;
-    glm::i32vec3 center_;
-    glm::u32vec3 size_;
+    VoxelOffset center_;
+    VoxelSize size_;
     bool ok_;
 
     [[nodiscard]] inline int
@@ -81,7 +81,7 @@ class VoxelObject : VoxelBase {
      * @return uint16_t
      */
     [[nodiscard]] inline uint16_t
-    get_voxel_color_id(int32_t x, int32_t y, int32_t z) const {
+    get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
         if (x < 0 || y < 0 || z < 0) {
             return 0;
         }
@@ -102,7 +102,7 @@ class VoxelObject : VoxelBase {
      * @return ColorInt color
      */
     [[nodiscard]] inline ColorInt
-    get_voxel(int32_t x, int32_t y, int32_t z) const {
+    get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
         return colors_[get_voxel_color_id(x, y, z)];
     }
 
@@ -110,9 +110,9 @@ class VoxelObject : VoxelBase {
      * @brief Get the center of the object
      * use full to find where to rotate around
      *
-     * @return glm::i32vec3
+     * @return VoxelOffset
      */
-    [[nodiscard]] inline glm::i32vec3
+    [[nodiscard]] inline VoxelOffset
     get_offset() const noexcept {
         return center_;
     }
@@ -120,9 +120,9 @@ class VoxelObject : VoxelBase {
     /**
      * @brief Get the size as an array of length three
      *
-     * @return glm::u32vec3 length in x, y, z
+     * @return VoxelSize length in x, y, z
      */
-    [[nodiscard]] inline glm::u32vec3
+    [[nodiscard]] inline VoxelSize
     get_size() noexcept {
         return size_;
     }
@@ -130,8 +130,8 @@ class VoxelObject : VoxelBase {
 
 struct qb_data {
     std::vector<ColorInt> data;
-    glm::i32vec3 center;
-    glm::u32vec3 size;
+    VoxelOffset center;
+    VoxelSize size;
 };
 
 } // namespace voxel_utility
