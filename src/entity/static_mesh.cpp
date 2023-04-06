@@ -16,6 +16,8 @@ namespace terrain {
 StaticMesh::StaticMesh(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
+    // set the number of models
+    num_models_ = model_transforms.size();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
