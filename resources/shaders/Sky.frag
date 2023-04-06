@@ -40,7 +40,7 @@ main(){
 
         vec4 direction_projected = (MVP * direction);
 
-        if (direction_projected.z > 0){
+        if (direction_projected.z > 0 || direction_projected.z/direction_projected.w < -.25){
             continue;
         }
 
