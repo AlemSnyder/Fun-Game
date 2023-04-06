@@ -23,29 +23,17 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     bool do_render_;
 
  public:
-    inline TerrainMesh(const TerrainMesh& obj) :
-        vertex_buffer_(obj.get_vertex_buffer()), color_buffer_(obj.get_color_buffer()),
-        normal_buffer_(obj.get_normal_buffer()),
-        element_buffer_(obj.get_element_buffer()),
-        color_texture_(obj.get_color_texture()), num_vertices_(obj.get_num_vertices()),
-        do_render_(obj.do_render()){};
 
+    inline TerrainMesh(const TerrainMesh& other) = delete;
     // copy operator
     inline TerrainMesh&
-    operator=(const TerrainMesh& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        color_buffer_ = obj.color_buffer_;
-        normal_buffer_ = obj.normal_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        color_texture_ = obj.color_texture_;
-        num_vertices_ = obj.num_vertices_;
-        do_render_ = obj.do_render_;
-        return *this;
-    }
+    operator=(const TerrainMesh& other) =delete;
+
+    inline TerrainMesh&
+    operator=(TerrainMesh&& other);
 
     inline TerrainMesh(){};
     TerrainMesh(const entity::Mesh& mesh);
-    void init(const entity::Mesh& mesh);
 
     inline ~TerrainMesh() {
         glDeleteBuffers(1, &vertex_buffer_);
