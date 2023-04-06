@@ -1,5 +1,6 @@
 
 #include "../types.hpp"
+#include "bits.hpp"
 
 #include <vector>
 
@@ -18,13 +19,13 @@ inline auto
 color_to_uint32(color_t color) {
     color_converter c;
     c.as_vec = color;
-    return c.as_uint;
+    return bits::swap(c.as_uint);
 }
 
 inline auto
 uint32_to_color(ColorInt num) {
     color_converter c;
-    c.as_uint = num;
+    c.as_uint = bits::swap(num);
     return c.as_vec;
 }
 
@@ -35,8 +36,8 @@ constexpr ColorInt bits_place = (1 << bit_shift) - 1;
 
 inline ColorFloat
 convert_color_data(ColorInt int_color) {
-    glm::vec4 color = glm::vec4(uint32_to_color(int_color)) / 255.0f;
-    return {color.a, color.b, color.g, color.r};
+    glm::vec4 color = uint32_to_color(int_color);
+    return color / 255.0f;
 }
 
 inline std::vector<ColorFloat>
