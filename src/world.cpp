@@ -114,6 +114,7 @@ World::World(
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
+    // on initialization world reserves the space it would need for shared pointers
     chunks_mesh.resize(terrain_main.get_chunks().size());
     for (size_t i = 0; i < chunks_mesh.size(); i++) {
         chunks_mesh[i] = std::make_shared<terrain::TerrainMesh>();
@@ -148,7 +149,7 @@ World::update_all_chunk_mesh() {
             materials, terrain::TerrainColorMapping::get_colors_inverse_map()
         );
 
-        chunks_mesh[i]->init(chunk_mesh);
+        chunks_mesh[i]->update(chunk_mesh);
     }
 }
 
@@ -161,7 +162,7 @@ World::update_single_mesh(uint16_t chunk_pos) {
         materials, terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
-    chunks_mesh[chunk_pos]->init(chunk_mesh);
+    chunks_mesh[chunk_pos]->update(chunk_mesh);
 }
 
 void

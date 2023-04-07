@@ -9,23 +9,25 @@
 #include <glm/glm.hpp>
 
 terrain::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
-    init(mesh);
+    update(mesh);
 }
 
 void
-terrain::TerrainMesh::init(const entity::Mesh& mesh) {
+terrain::TerrainMesh::update(const entity::Mesh& mesh) {
 
     // clear all buffers
-    GLuint buffers [4] = {vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
+    GLuint buffers[4] = {
+        vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
     glDeleteBuffers(4, buffers);
 
-    // if indices are none so if there is no vertices that would be sent to the graphics card
+    // if indices are none so if there is no vertices that would be sent to the graphics
+    // card
     //     then there is no reason to create a buffer
     // create a bool do_render, set to false when
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
 
-    if (!do_render_){
+    if (!do_render_) {
         return;
     }
 
@@ -61,4 +63,20 @@ terrain::TerrainMesh::init(const entity::Mesh& mesh) {
         GL_ELEMENT_ARRAY_BUFFER, mesh.get_indices().size() * sizeof(unsigned short),
         mesh.get_indices().data(), GL_STATIC_DRAW
     );
+}
+
+inline terrain::TerrainMesh&
+terrain::TerrainMesh::operator=(TerrainMesh&& other) {
+    if (this == &other)
+        return *this;
+
+    vertex_buffer_ = std::exchange(other.vertex_buffer_, 0);
+    color_buffer_ = std::exchange(other.color_buffer_, 0);
+    normal_buffer_ = std::exchange(other.normal_buffer_, 0);
+    element_buffer_ = std::exchange(other.element_buffer_, 0);
+    color_texture_ = std::exchange(other.color_texture_, 0);
+    num_vertices_ = std::exchange(other.num_vertices_, 0);
+    do_render_ = std::exchange(other.do_render_, false);
+
+    return *this;
 }
