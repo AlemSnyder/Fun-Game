@@ -100,8 +100,8 @@ Terrain::init_chunks() {
     Dim C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
     Dim C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
-        auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
-        chunks_.push_back(Chunk(x, y, z, this));
+        TerrainDim3 chunk_position = sop(xyz, C_length_X, C_length_Y, C_length_Z);
+        chunks_.push_back(Chunk(chunk_position, this));
     }
 }
 
@@ -239,16 +239,14 @@ Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {
 }
 
 float
-Terrain::get_H_cost(std::array<Dim, 3> xyz1, std::array<Dim, 3> xyz2) {
+Terrain::get_H_cost(TerrainDim3 position1, TerrainDim3 position2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
-    auto [x1, y1, z1] = xyz1;
-    auto [x2, y2, z2] = xyz2;
 
-    float DX = abs(x1 - x2);
-    float DY = abs(y1 - y2);
-    float DZ = abs(z1 - z2);
+    float DX = abs(position1.x - position2.x);
+    float DY = abs(position1.y - position2.y);
+    float DZ = abs(position1.z - position2.z);
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }

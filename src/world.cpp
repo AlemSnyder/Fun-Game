@@ -60,7 +60,7 @@ World::init_materials(const Json::Value& material_data) {
         for (const Json::Value& json_color : material["colors"]) {
             const std::string color_name = json_color["name"].asString();
             ColorInt color_value = std::stoll(json_color["hex"].asString(), 0, 16);
-            color_vector.push_back(std::make_pair(color_name, color_value));
+            color_vector.push_back(std::make_pair(std::move(color_name), color_value));
         }
 
         terrain::Material mat{

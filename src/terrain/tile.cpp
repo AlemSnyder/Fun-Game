@@ -3,17 +3,13 @@
 #include "material.hpp"
 #include "terrain.hpp"
 
-#define NUM_GRASS 8 // TODO this should be removed
-#define AIR_ID    0
-#define DIRT_ID   1
-
 namespace terrain {
 
 Tile::Tile(
-    std::array<Dim, 3> sop, const terrain::Material* material, uint8_t color_id
+    TerrainDim3 sop, const terrain::Material* material, uint8_t color_id
 ) :
-    x(sop[0]),
-    y(sop[1]), z(sop[2]), mat_id_(0), color_id_(0), grow_data_high_(0),
+    x(sop.x),
+    y(sop.y), z(sop.z), mat_id_(0), color_id_(0), grow_data_high_(0),
     grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
     solid_(false) {
     // set material should not fail so if material is bad for some reason

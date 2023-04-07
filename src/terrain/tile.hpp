@@ -84,7 +84,7 @@ class Tile {
      * @param color_id color of tile
      */
     Tile(
-        std::array<Dim, 3> sop, const terrain::Material* material, uint8_t color_id = 0
+        TerrainDim3 sop, const terrain::Material* material, uint8_t color_id = 0
     );
 
     // I will format this later or remove it if I can
@@ -132,7 +132,7 @@ class Tile {
      * @brief Get the distance from edge
      */
     [[nodiscard]] inline int
-    get_grow_data_low() const {
+    get_grow_data_low() const noexcept {
         return grow_data_low_;
     }
 
@@ -140,7 +140,7 @@ class Tile {
      * @brief Get the distance from wall
      */
     [[nodiscard]] inline int
-    get_grow_data_high() const {
+    get_grow_data_high() const noexcept {
         return grow_data_high_;
     }
 
@@ -169,7 +169,7 @@ class Tile {
      * @return int x position
      */
     [[nodiscard]] inline Dim
-    get_x() const {
+    get_x() const noexcept {
         return x;
     }
 
@@ -179,7 +179,7 @@ class Tile {
      * @return int y position
      */
     [[nodiscard]] inline Dim
-    get_y() const {
+    get_y() const noexcept {
         return y;
     }
 
@@ -189,7 +189,7 @@ class Tile {
      * @return int z position
      */
     [[nodiscard]] inline Dim
-    get_z() const {
+    get_z() const noexcept {
         return z;
     }
 
@@ -198,8 +198,8 @@ class Tile {
      *
      * @return std::array<int, 3> array of x, y, z
      */
-    [[nodiscard]] std::array<Dim, 3>
-    sop() const {
+    [[nodiscard]] TerrainDim3
+    sop() const noexcept {
         return {x, y, z};
     }
 
@@ -210,7 +210,7 @@ class Tile {
      * @return false this tile is not grass
      */
     [[nodiscard]] inline bool
-    is_grass() const {
+    is_grass() const noexcept {
         return grass_;
     }
 
@@ -220,7 +220,7 @@ class Tile {
      * @return MaterialId
      */
     [[nodiscard]] inline MaterialId
-    get_material_id() const {
+    get_material_id() const noexcept {
         return mat_id_;
     }
 
@@ -230,7 +230,7 @@ class Tile {
      * @return ColorId color id
      */
     [[nodiscard]] inline ColorId
-    get_color_id() const {
+    get_color_id() const noexcept {
         return color_id_;
     }
 
@@ -248,7 +248,7 @@ class Tile {
      * @return false the tile is not solid
      */
     [[nodiscard]] inline bool
-    is_solid() const {
+    is_solid() const noexcept {
         return solid_;
     }
 

@@ -18,18 +18,18 @@ TerrainBase::qb_read(
     std::set<ColorInt> unknown_colors;
 
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        auto [x, y, z] = sop(xyz);
+        TerrainDim3 tile_position = sop(xyz);
         ColorInt color = data[xyz];
         if (color == 0) {                             // if the qb voxel is transparent.
             auto mat_color = materials_inverse.at(0); // set the materials to air
-            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
         } else if (materials_inverse.count(color)) { // if the color is known
             auto mat_color = materials_inverse.at(color);
-            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
         } else { // the color is unknown
             unknown_colors.insert(color);
             auto mat_color = materials_inverse.at(0); // else set to air.
-            tiles_.push_back(Tile({x, y, z}, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
         }
     }
 
@@ -224,16 +224,16 @@ TerrainBase::generate_macro_map(
         terrain_generation::NoiseGenerator(numOctaves, persistance, 3);
 
     for (size_t i = 0; i < out.size(); i++) {
-        auto [x, y, z] = sop(i, size_x, size_y, 1);
+        TerrainDim3 tile_position = sop(i, size_x, size_y, 1);
         auto p = ng.getValueNoise(
-            static_cast<double>(x) * spacing, static_cast<double>(y) * spacing
+            static_cast<double>(tile_position.x) * spacing,
+            static_cast<double>(tile_position.y) * spacing
         );
         out[i] = static_cast<int>((p + 1) * (p + 1) * range);
     }
 
     // There should be some formatting for map.
     // it is supposed to be size_x by size_y
-    LOG_INFO(logging::terrain_logger, "Map: {}", out);
 
     return out;
 }

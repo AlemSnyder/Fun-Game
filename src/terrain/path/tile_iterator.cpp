@@ -22,6 +22,7 @@
  *
  */
 
+#include "../../types.hpp"
 #include "../terrain.hpp"
 #include "unit_path.hpp"
 
@@ -44,14 +45,14 @@ static uint8_t offsets[26] = {
     0b00100101, 0b00100110, 0b00101000, 0b00101001, 0b00101010,
 };
 
-std::array<int8_t, 3>
+TerrainDim3
 get_indexed_offsets(uint8_t index) {
     std::array<int8_t, 3> out;
     uint8_t offset_type = offsets[index];
     out[0] = (offset_type & int8_t(3)) - 1;
     out[1] = (offset_type >> 2 & int8_t(3)) - 1;
     out[2] = (offset_type >> 4 & int8_t(3)) - 1;
-    return out;
+    return {out[0], out[1], out[2]};
 }
 
 AdjacentIterator::AdjacentIterator(
@@ -79,18 +80,18 @@ AdjacentIterator::operator++(int) {
 
 void
 AdjacentIterator::update_path() {
-    auto [xs, ys, zs] = parent_.sop(pos_);
-    auto [dx, dy, dz] = get_relative_position();
+    auto start_position = parent_.sop(pos_);
+    auto offset = get_relative_position();
 
-    path_type_ = parent_.get_path_type(xs, ys, zs, xs + dx, ys + dy, zs + dz);
+    path_type_ = parent_.get_path_type(start_position, start_position + offset);
 }
 
 bool
 AdjacentIterator::is_valid_end_position() {
-    auto [xs, ys, zs] = parent_.sop(pos_);
-    auto [dx, dy, dz] = get_relative_position();
+    auto start_position = parent_.sop(pos_);
+    auto offset = get_relative_position();
 
-    return parent_.in_range(xs + dx, ys + dy, zs + dz);
+    return parent_.in_range(start_position + offset);
 }
 
 void
@@ -107,9 +108,9 @@ AdjacentIterator::iterate_to_next_available() {
 
 size_t
 AdjacentIterator::get_pos() {
-    auto [xs, ys, zs] = parent_.sop(pos_);
-    auto [dx, dy, dz] = get_relative_position();
-    size_t pos = parent_.pos(xs + dx, ys + dy, zs + dz);
+    auto start_position = parent_.sop(pos_);
+    auto offset = get_relative_position();
+    size_t pos = parent_.pos(start_position + offset);
     return pos;
 }
 
