@@ -36,7 +36,7 @@
 #include "terrain_base.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
-#include "terrain_generation/tilestamp.hpp"
+#include "terrain_generation/tile_stamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
 
@@ -122,13 +122,14 @@ class Terrain : public TerrainBase {
      * @param zf Z end
      * @return const UnitPath path type between the two tile positions
      */
-    [[nodiscard]] const UnitPath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const;
+    [[nodiscard]] const UnitPath
+    get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const;
 
     [[nodiscard]] inline const UnitPath
     get_path_type(TerrainDim3 start_position, TerrainDim3 final_position) const {
         return get_path_type(
-            start_position.x, start_position.y, start_position.z,
-            final_position.x, final_position.y, final_position.z
+            start_position.x, start_position.y, start_position.z, final_position.x,
+            final_position.y, final_position.z
         );
     }
 
@@ -139,7 +140,8 @@ class Terrain : public TerrainBase {
      * @param xyz2 position 2
      * @return float time between positions
      */
-    [[nodiscard]] static float get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
+    [[nodiscard]] static float
+    get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
     /**
      * @brief Get the minimum path time between two positions
      *
@@ -509,7 +511,8 @@ class Terrain : public TerrainBase {
      * @param goal end tile
      * @return std::vector<const Tile *> path
      */
-    [[nodiscard]] std::vector<const Tile*> get_path_Astar(const Tile* start, const Tile* goal);
+    [[nodiscard]] std::vector<const Tile*>
+    get_path_Astar(const Tile* start, const Tile* goal);
     /**
      * @brief Get a path between start, and goal using the A* algorithm
      *

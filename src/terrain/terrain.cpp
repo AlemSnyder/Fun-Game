@@ -11,7 +11,7 @@
 #include "terrain_base.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
-#include "terrain_generation/tilestamp.hpp"
+#include "terrain_generation/tile_stamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
 
@@ -217,7 +217,8 @@ Terrain::init_grass() {
 // this should be the same as can_stand(x,y,z,1,1)
 bool
 Terrain::can_stand_1(int xyz) const {
-    if (static_cast<TileIndex>(xyz) % Z_MAX < 1 || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+    if (static_cast<TileIndex>(xyz) % Z_MAX < 1
+        || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
         return false;
     }
     return (!get_tile(xyz)->is_solid() && get_tile(xyz - 1)->is_solid());

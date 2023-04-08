@@ -39,12 +39,41 @@ TerrainBase::qb_read(
 }
 
 TerrainBase::TerrainBase(
-    Dim x, Dim y, Dim Area_size, Dim z,
+    const std::map<MaterialId, const terrain::Material>& materials,
+    const std::vector<int>& grass_grad_data, unsigned int grass_mid,
+    Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles
+) :
+    area_size_(area_size),
+    materials_(materials), X_MAX(x_map_tiles * area_size),
+    Y_MAX(y_map_tiles * area_size), Z_MAX(z_tiles * area_size_) {
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+
+    if (grass_mid >= grass_grad_data.size()) {
+        grass_mid_ = grass_grad_data.size() - 1;
+        std::cerr << "Grass Mid (from biome_data.json) not valid";
+    }
+
+    for (size_t i = 0; i < grass_grad_data.size(); i++) {
+        if (i == static_cast<size_t>(grass_mid)) {
+            grass_mid_ = grass_colors_.size();
+        }
+        for (int j = 0; j < grass_grad_data[i]; j++) {
+            grass_colors_.push_back(i);
+        }
+    }
+    grass_grad_length_ = grass_colors_.size();
+}
+
+TerrainBase::TerrainBase(
+    Dim x_map_tiles, Dim y_mat_tiles, Dim area_size, Dim z_tiles,
     const std::map<MaterialId, const Material>& materials,
     const Json::Value& biome_data, std::vector<int> grass_grad_data,
     unsigned int grass_mid, std::vector<int> Terrain_Maps
 ) :
-    TerrainBase(materials, grass_grad_data, grass_mid, x, y, Area_size, z) {
+    TerrainBase(
+        materials, grass_grad_data, grass_mid, x_map_tiles, y_mat_tiles, area_size,
+        z_tiles
+    ) {
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         tiles_.push_back(Tile(sop(xyz), &materials_.at(0)));
     }
@@ -53,7 +82,6 @@ TerrainBase::TerrainBase(
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
     // create a map of int -> LandGenerator
-    // std::map<int, terrain_generation::LandGenerator> land_generators;
     std::vector<terrain_generation::LandGenerator> land_generators;
 
     // for tile macro in data biome
@@ -68,9 +96,9 @@ TerrainBase::TerrainBase(
     );
 
     // TODO make this faster 4
-    for (size_t i = 0; i < x; i++)
-        for (size_t j = 0; j < y; j++) {
-            int tile_type = Terrain_Maps[j + i * y];
+    for (size_t i = 0; i < x_map_tiles; i++)
+        for (size_t j = 0; j < y_mat_tiles; j++) {
+            int tile_type = Terrain_Maps[j + i * y_mat_tiles];
             Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
             for (Json::Value generator_macro : macro_types) {
                 init_area(i, j, land_generators.at(generator_macro.asInt()));
@@ -85,6 +113,37 @@ TerrainBase::TerrainBase(
     }
 
     LOG_INFO(logging::terrain_logger, "End of land generator: top layer placement.");
+}
+
+TerrainBase::TerrainBase(
+    const std::map<MaterialId, const Material>& materials,
+    std::vector<int> grass_grad_data, unsigned int grass_mid,
+    voxel_utility::qb_data_t data
+) :
+    TerrainBase(
+        materials, grass_grad_data, grass_mid, data.size.x, data.size.y, 32, data.size.z
+    ) {
+    std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
+    for (auto it = materials_.begin(); it != materials_.end(); it++) {
+        for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
+            materials_inverse.insert(
+                std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
+                    it->second.color.at(color_id).second,
+                    std::make_pair(&it->second, (ColorId)color_id)
+                )
+            );
+        }
+    }
+
+    try {
+        qb_read(data.data, materials_inverse);
+    } catch (const std::exception& e) {
+        LOG_ERROR(
+            logging::terrain_logger, "Could not load terrain save file due to {}",
+            e.what()
+        );
+        throw;
+    }
 }
 
 int
@@ -208,10 +267,10 @@ TerrainBase::init_area(int area_x, int area_y, terrain_generation::LandGenerator
     gen.reset();
 }
 
-// generates a size_x by size_y vector of macro tile types.
+// generates a x_map_tiles by y_map_tiles vector of macro tile types.
 std::vector<int>
 TerrainBase::generate_macro_map(
-    unsigned int size_x, unsigned int size_y, const Json::Value& terrain_data
+    unsigned int x_map_tiles, unsigned int y_map_tiles, const Json::Value& terrain_data
 ) {
     std::vector<int> out;
     int background = terrain_data["BackGround"].asInt(); // default terrain type.
@@ -219,12 +278,12 @@ TerrainBase::generate_macro_map(
     double persistance = terrain_data["Persistance"].asDouble();
     int range = terrain_data["Range"].asInt();
     int spacing = terrain_data["Spacing"].asInt();
-    out.resize(size_x * size_y, background);
+    out.resize(x_map_tiles * y_map_tiles, background);
     terrain_generation::NoiseGenerator ng =
         terrain_generation::NoiseGenerator(numOctaves, persistance, 3);
 
     for (size_t i = 0; i < out.size(); i++) {
-        TerrainDim3 tile_position = sop(i, size_x, size_y, 1);
+        TerrainDim3 tile_position = sop(i, x_map_tiles, y_map_tiles, 1);
         auto p = ng.getValueNoise(
             static_cast<double>(tile_position.x) * spacing,
             static_cast<double>(tile_position.y) * spacing

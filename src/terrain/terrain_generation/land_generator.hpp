@@ -24,7 +24,7 @@
 
 #include "../../types.hpp"
 #include "../material.hpp"
-#include "tilestamp.hpp"
+#include "tile_stamp.hpp"
 
 #include <json/json.h>
 

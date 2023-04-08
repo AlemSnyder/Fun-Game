@@ -31,6 +31,7 @@
 #include "path/unit_path.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "tile.hpp"
+#include "terrain_generation/tile_stamp.hpp"
 
 #include <json/json.h>
 
@@ -77,77 +78,77 @@ class TerrainBase : public voxel_utility::VoxelBase {
     // length in the z direction
     const Dim Z_MAX;
 
+    /**
+     * @brief Construct a new Terrain Base object most default constructor
+     * 
+     * @param materials 
+     * @param grass_grad_data 
+     * @param grass_mid 
+     * @param x_map_tiles 
+     * @param y_map_tiles 
+     * @param area_size 
+     * @param z_tiles 
+     */
     TerrainBase(
         const std::map<MaterialId, const terrain::Material>& materials,
         const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-        Dim x_tiles = 1, Dim y_tiles = 1, Dim area_size = 32, Dim z_tiles = 1
-    ) :
-        area_size_(area_size),
-        materials_(materials), X_MAX(x_tiles * area_size), Y_MAX(y_tiles * area_size),
-        Z_MAX(z_tiles * area_size_) {
-        tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+        Dim x_map_tiles = 1, Dim y_map_tiles = 1, Dim area_size = 32, Dim z_tiles = 1
+    );
 
-        if (grass_mid >= grass_grad_data.size()) {
-            grass_mid_ = grass_grad_data.size() - 1;
-            std::cerr << "Grass Mid (from biome_data.json) not valid";
-        }
-
-        for (size_t i = 0; i < grass_grad_data.size(); i++) {
-            if (i == static_cast<size_t>(grass_mid)) {
-                grass_mid_ = grass_colors_.size();
-            }
-            for (int j = 0; j < grass_grad_data[i]; j++) {
-                grass_colors_.push_back(i);
-            }
-        }
-        grass_grad_length_ = grass_colors_.size();
-    }
-
+    /**
+     * @brief Construct a new Terrain Base object from qb data
+     * 
+     * @details This constructor loads a terrain object from a file
+     * 
+     * @param materials Materials that make up the terrain
+     * @param grass_grad_data grass gradient data
+     * @param grass_mid position in grass gradient data that denotes the middle
+     * @param data qb_data_t read from file
+     */
     TerrainBase(
         const std::map<MaterialId, const Material>& materials,
         std::vector<int> grass_grad_data, unsigned int grass_mid,
         voxel_utility::qb_data_t data
-    ) :
-        TerrainBase(
-            materials, grass_grad_data, grass_mid, data.size[0], data.size[1], 32,
-            data.size[2]
-        ) {
-        std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
-        for (auto it = materials_.begin(); it != materials_.end(); it++) {
-            for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
-                materials_inverse.insert(
-                    std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
-                        it->second.color.at(color_id).second,
-                        std::make_pair(&it->second, (ColorId)color_id)
-                    )
-                );
-            }
-        }
+    );
 
-        try {
-            qb_read(data.data, materials_inverse);
-        } catch (const std::exception& e) {
-            LOG_ERROR(
-                logging::terrain_logger, "Could not load terrain save file due to {}",
-                e.what()
-            );
-            throw;
-        }
-    }
-
-    TerrainBase(
-        Dim x, Dim y, Dim Area_size, Dim z,
+    /**
+     * @brief Construct a new Terrain Base object for demonstrating biomes
+     * 
+     * @param x_map_tiles 
+     * @param y_map_tiles 
+     * @param area_size 
+     * @param z_tiles 
+     * @param materials 
+     * @param biome_data 
+     * @param grass_grad_data 
+     * @param grass_mid 
+     */
+    inline TerrainBase(
+        Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles,
         const std::map<MaterialId, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid
     ) :
         TerrainBase(
-            x, y, Area_size, z, materials, biome_data, grass_grad_data, grass_mid,
-            generate_macro_map(x, y, biome_data["Terrain_Data"])
+            x_map_tiles, y_map_tiles, area_size, z_tiles, materials, biome_data, grass_grad_data, grass_mid,
+            generate_macro_map(x_map_tiles, y_map_tiles, biome_data["Terrain_Data"])
         ) {}
 
+    /**
+     * @brief Construct a new Terrain Base object using terrain generation
+     * 
+     * @param x_map_tiles 
+     * @param y_map_tiles 
+     * @param Area_size 
+     * @param z_tiles 
+     * @param materials 
+     * @param biome_data 
+     * @param grass_grad_data 
+     * @param grass_mid 
+     * @param Terrain_Maps 
+     */
     TerrainBase(
-        Dim x, Dim y, Dim Area_size, Dim z,
+        Dim x_map_tiles, Dim y_map_tiles, Dim Area_size, Dim z_tiles,
         const std::map<uint8_t, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid, std::vector<int> Terrain_Maps

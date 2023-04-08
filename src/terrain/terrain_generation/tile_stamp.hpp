@@ -12,7 +12,7 @@
  */
 
 /**
- * @file tilestamp.hpp
+ * @file tile_stamp.hpp
  *
  * @brief Defines Tile_stamp struct.
  *
