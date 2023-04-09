@@ -36,7 +36,7 @@
 #include "terrain_base.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
-#include "terrain_generation/tilestamp.hpp"
+#include "terrain_generation/tile_stamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
 
@@ -122,7 +122,17 @@ class Terrain : public TerrainBase {
      * @param zf Z end
      * @return const UnitPath path type between the two tile positions
      */
-    const UnitPath get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const;
+    [[nodiscard]] const UnitPath
+    get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const;
+
+    [[nodiscard]] inline const UnitPath
+    get_path_type(TerrainDim3 start_position, TerrainDim3 final_position) const {
+        return get_path_type(
+            start_position.x, start_position.y, start_position.z, final_position.x,
+            final_position.y, final_position.z
+        );
+    }
+
     /**
      * @brief Get the minimum path time between two positions
      *
@@ -130,7 +140,8 @@ class Terrain : public TerrainBase {
      * @param xyz2 position 2
      * @return float time between positions
      */
-    static float get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
+    [[nodiscard]] static float
+    get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2);
     /**
      * @brief Get the minimum path time between two positions
      *
@@ -138,7 +149,7 @@ class Terrain : public TerrainBase {
      * @param xyz2 position 2
      * @return float time between positions
      */
-    static float get_H_cost(std::array<uint16_t, 3> xyz1, std::array<uint16_t, 3> xyz2);
+    [[nodiscard]] static float get_H_cost(TerrainDim3 xyz1, TerrainDim3 xyz2);
     /**
      * @brief Get time required to get to node from start plus time required to
      * get from node to tile
@@ -149,7 +160,7 @@ class Terrain : public TerrainBase {
      * @return float time required
      */
     template <class T>
-    static float get_G_cost(const T tile, const Node<const T> node);
+    [[nodiscard]] static float get_G_cost(const T tile, const Node<const T> node);
 
     /**
      * @brief position of chunk the node group is a part of
@@ -157,7 +168,7 @@ class Terrain : public TerrainBase {
      * @param node_group node group to find position of chunk
      * @return int
      */
-    int pos(const NodeGroup* const node_group) const;
+    [[nodiscard]] int pos(const NodeGroup* const node_group) const;
 
     /**
      * @brief unique map index
@@ -165,7 +176,7 @@ class Terrain : public TerrainBase {
      * @param tile
      * @return int
      */
-    inline uint32_t
+    [[nodiscard]] inline TileIndex
     pos_for_map(const NodeGroup NG) const {
         return pos(*(NG.get_tiles().begin()));
     }
@@ -176,7 +187,7 @@ class Terrain : public TerrainBase {
      * @param tile
      * @return int
      */
-    inline uint32_t
+    [[nodiscard]] inline TileIndex
     pos_for_map(const NodeGroup* const NG) const {
         return pos(*(NG->get_tiles().begin()));
     }
@@ -255,7 +266,7 @@ class Terrain : public TerrainBase {
      * @param path_type UnitPath defining acceptable paths
      * @return iterator
      */
-    inline iterator
+    [[nodiscard]] inline iterator
     get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const {
         return iterator(*this, pos, path_type);
     }
@@ -268,9 +279,9 @@ class Terrain : public TerrainBase {
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    std::set<Node<const NodeGroup>*> get_adjacent_nodes(
+    [[nodiscard]] std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
-        std::map<uint32_t, Node<const NodeGroup>>& nodes, uint8_t type
+        std::map<TileIndex, Node<const NodeGroup>>& nodes, uint8_t type
     ) const;
 
     /**
@@ -281,9 +292,9 @@ class Terrain : public TerrainBase {
      * @param type path type allowed
      * @return std::set<Node<const T> *> adjacent nodes
      */
-    std::set<Node<const Tile>*> get_adjacent_nodes(
-        const Node<const Tile>* const node, std::map<uint32_t, Node<const Tile>>& nodes,
-        uint8_t type
+    [[nodiscard]] std::set<Node<const Tile>*> get_adjacent_nodes(
+        const Node<const Tile>* const node,
+        std::map<TileIndex, Node<const Tile>>& nodes, uint8_t type
     ) const;
 
     /**
@@ -292,21 +303,21 @@ class Terrain : public TerrainBase {
      * @param xyz tile index in vector tiles
      * @return NodeGroup* NodeGroup tile is in
      */
-    NodeGroup* get_node_group(int xyz);
+    [[nodiscard]] NodeGroup* get_node_group(int xyz);
     /**
      * @brief Get the node group from tile
      *
      * @param t tile
      * @return NodeGroup* NodeGroup tile is in
      */
-    NodeGroup* get_node_group(const Tile t);
+    [[nodiscard]] NodeGroup* get_node_group(const Tile t);
     /**
      * @brief Get the node group from tile
      *
      * @param t
      * @return NodeGroup* NodeGroup tile is in
      */
-    NodeGroup* get_node_group(const Tile* t);
+    [[nodiscard]] NodeGroup* get_node_group(const Tile* t);
 
     /**
      * @brief Get the node group from tile index
@@ -314,21 +325,21 @@ class Terrain : public TerrainBase {
      * @param xyz tile index in vector tiles
      * @return NodeGroup* NodeGroup tile is in
      */
-    const NodeGroup* get_node_group(int xyz) const;
+    [[nodiscard]] const NodeGroup* get_node_group(int xyz) const;
     /**
      * @brief Get the node group from tile
      *
      * @param t tile
      * @return NodeGroup* NodeGroup tile is in
      */
-    const NodeGroup* get_node_group(const Tile t) const;
+    [[nodiscard]] const NodeGroup* get_node_group(const Tile t) const;
     /**
      * @brief Get the node group from tile
      *
      * @param t
      * @return NodeGroup* NodeGroup tile is in
      */
-    const NodeGroup* get_node_group(const Tile* t) const;
+    [[nodiscard]] const NodeGroup* get_node_group(const Tile* t) const;
 
     /**
      * @brief Add a node group to possible node groups
@@ -351,7 +362,7 @@ class Terrain : public TerrainBase {
     uint16_t get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const;
 
 
-    inline const std::vector<Chunk>&
+    [[nodiscard]] inline const std::vector<Chunk>&
     get_chunks() const {
         return chunks_;
     }
@@ -431,7 +442,7 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    inline bool
+    [[nodiscard]] inline bool
     can_stand_1(int x, int y, int z) const {
         return can_stand(x, y, z, 1, 1);
     }
@@ -443,7 +454,7 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    bool can_stand_1(int xyz) const; // this is fast, and used for looping
+    [[nodiscard]] bool can_stand_1(int xyz) const; // this is fast, and used for looping
 
     // Ok so basically when running through a loop the cpu moves a large chunk
     // of memory that is close together into the cpu's memory, then this
@@ -456,7 +467,7 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    inline bool
+    [[nodiscard]] inline bool
     can_stand_1(const Tile tile) const {
         return can_stand(tile, 1, 1);
     }
@@ -468,7 +479,7 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    bool
+    [[nodiscard]] inline bool
     can_stand_1(const Tile* tile) const {
         return can_stand(tile, 1, 1);
     }
@@ -484,7 +495,7 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    bool can_stand(int x, int y, int z, int dz, int dxy) const;
+    [[nodiscard]] bool can_stand(int x, int y, int z, int dz, int dxy) const;
     /**
      * @brief test if dxy x dyx x dz object can stand at given tile
      *
@@ -494,7 +505,7 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    bool can_stand(const Tile tile, int dz, int dxy) const;
+    [[nodiscard]] bool can_stand(const Tile tile, int dz, int dxy) const;
     /**
      * @brief test if dxy x dyx x dz object can stand at given tile
      *
@@ -504,7 +515,7 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    bool can_stand(const Tile* tile, int dz, int dxy) const;
+    [[nodiscard]] bool can_stand(const Tile* tile, int dz, int dxy) const;
     /**
      * @brief save with debug visible
      *
@@ -523,7 +534,7 @@ class Terrain : public TerrainBase {
      *
      * @return std::set<const NodeGroup *> set of all NodeGroups
      */
-    std::set<const NodeGroup*> get_all_node_groups() const;
+    [[nodiscard]] std::set<const NodeGroup*> get_all_node_groups() const;
     /**
      * @brief Get a path between start, and goal using the A* algorithm
      *
@@ -531,7 +542,8 @@ class Terrain : public TerrainBase {
      * @param goal end tile
      * @return std::vector<const Tile *> path
      */
-    std::vector<const Tile*> get_path_Astar(const Tile* start, const Tile* goal) const;
+    [[nodiscard]] std::vector<const Tile*>
+    get_path_Astar(const Tile* start, const Tile* goal) const;
     /**
      * @brief Get a path between start, and goal using the A* algorithm
      *
@@ -539,7 +551,7 @@ class Terrain : public TerrainBase {
      * @param goal end NodeGroup
      * @return std::vector<const NodeGroup *> path
      */
-    std::vector<const NodeGroup*>
+    [[nodiscard]] std::vector<const NodeGroup*>
     get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const;
     /**
      * @brief Get a path between start, and any goal using the breadth first algorithm
@@ -548,7 +560,7 @@ class Terrain : public TerrainBase {
      * @param goal set of excitable goals
      * @return std::vector<const Tile *> path to closest goal
      */
-    std::vector<const Tile*>
+    [[nodiscard]] std::vector<const Tile*>
     get_path_breadth_first(const Tile* start, const std::set<const Tile*> goal);
     /**
      * @brief Get a path between start, and any goal using the breadth first algorithm
@@ -557,7 +569,7 @@ class Terrain : public TerrainBase {
      * @param goal set of excitable goals
      * @return std::vector<const NodeGroup *> path to closest goal
      */
-    std::vector<const NodeGroup*> get_path_breadth_first(
+    [[nodiscard]] std::vector<const NodeGroup*> get_path_breadth_first(
         const NodeGroup* start, const std::set<const NodeGroup*> goal
     ) const;
     /**
@@ -571,7 +583,7 @@ class Terrain : public TerrainBase {
      * @return std::vector<const T *> path optimized by compare
      */
     template <class T>
-    std::vector<const T*> get_path(
+    [[nodiscard]] std::vector<const T*> get_path(
         const T* start, const std::set<const T*> goal,
         const std::set<const T*> search_through,
         std::function<bool(Node<const T>*, Node<const T>*)> compare
@@ -588,7 +600,7 @@ class Terrain : public TerrainBase {
      * @param y y position
      * @return int height of heights solid z
      */
-    int get_Z_solid(int x, int y) const;
+    [[nodiscard]] int get_Z_solid(int x, int y) const;
     /**
      * @brief Get the hightest solid z below the given z
      *
@@ -597,7 +609,7 @@ class Terrain : public TerrainBase {
      * @param z z height
      * @return int height of heights solid z
      */
-    int get_Z_solid(int x, int y, int z) const;
+    [[nodiscard]] int get_Z_solid(int x, int y, int z) const;
 
  private:
     // trace nodes through parents to reach start

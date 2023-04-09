@@ -14,7 +14,7 @@
 #include "land_generator.hpp"
 
 #include "../material.hpp"
-#include "tilestamp.hpp"
+#include "tile_stamp.hpp"
 
 #include <json/json.h>
 
@@ -38,7 +38,7 @@ LandGenerator::LandGenerator(
 // LandGenerator::LandGenerator() : current_region(0), current_sub_region(0) {}
 
 unsigned int
-LandGenerator::get_num_stamps(const Json::Value biome) {
+LandGenerator::get_num_stamps(const Json::Value& biome) {
     if (biome["Type"].asString() == "Positions") {
         return biome["Positions"].size();
     } else if (biome["Type"].asString() == "Grid") {

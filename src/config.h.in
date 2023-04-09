@@ -21,5 +21,10 @@
 #    define ROOT_DIR_PATH "."
 #endif
 
+#define NUM_GRASS 8 // TODO this should be removed
+// just the mum grass this is wrong might have more or less grass
+#define AIR_ID    0
+#define DIRT_ID   1
+
 #define DEBUG_MATERIAL 7
 #define NUM_DEBUG_COLORS 4

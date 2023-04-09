@@ -57,10 +57,10 @@ World::init_materials(const Json::Value& material_data) {
 
         const Json::Value material = *element_it;
         std::string name = element_it.key().asString();
-        for (unsigned int i = 0; i < material["colors"].size(); i++) {
-            const std::string string = material["colors"][i]["name"].asString();
-            ColorInt color = std::stoll(material["colors"][i]["hex"].asString(), 0, 16);
-            color_vector.push_back(std::make_pair(string, color));
+        for (const Json::Value& json_color : material["colors"]) {
+            const std::string color_name = json_color["name"].asString();
+            ColorInt color_value = std::stoll(json_color["hex"].asString(), 0, 16);
+            color_vector.push_back(std::make_pair(std::move(color_name), color_value));
         }
 
         terrain::Material mat{

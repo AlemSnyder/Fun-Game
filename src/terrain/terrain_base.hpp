@@ -31,12 +31,12 @@
 #include "path/unit_path.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "tile.hpp"
+#include "terrain_generation/tile_stamp.hpp"
 
 #include <json/json.h>
 
 #include <stdio.h>
 
-#include <array>
 #include <cstdint>
 #include <map>
 #include <set>
@@ -59,16 +59,10 @@ class TerrainBase : public voxel_utility::VoxelBase {
  protected:
     // vector of voxels in terrain
     std::vector<Tile> tiles_;
-    // length in the x direction
-    const Dim X_MAX;
-    // length in the y direction
-    const Dim Y_MAX;
-    // length in the z direction
-    const Dim Z_MAX;
     // size of terrain generation tile (see terrain generation)
-    const Dim area_size;
+    const Dim area_size_;
     // vector that determines grass color from edge distance
-    std::vector<uint8_t> grass_colors_;
+    std::vector<ColorId> grass_colors_;
     // length of grass gradient
     uint8_t grass_grad_length_;
     // gradient index of grass not by an edge
@@ -77,77 +71,84 @@ class TerrainBase : public voxel_utility::VoxelBase {
     const std::map<MaterialId, const terrain::Material>& materials_;
 
  public:
+    // length in the x direction
+    const Dim X_MAX;
+    // length in the y direction
+    const Dim Y_MAX;
+    // length in the z direction
+    const Dim Z_MAX;
+
+    /**
+     * @brief Construct a new Terrain Base object most default constructor
+     * 
+     * @param materials 
+     * @param grass_grad_data 
+     * @param grass_mid 
+     * @param x_map_tiles 
+     * @param y_map_tiles 
+     * @param area_size 
+     * @param z_tiles 
+     */
     TerrainBase(
         const std::map<MaterialId, const terrain::Material>& materials,
         const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-        int x_tiles = 1, int y_tiles = 1, int area_size = 32, int z_tiles = 1
-    ) :
-        X_MAX(x_tiles * area_size),
-        Y_MAX(y_tiles * area_size), Z_MAX(z_tiles), area_size(area_size),
-        materials_(materials) {
-        tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+        Dim x_map_tiles = 1, Dim y_map_tiles = 1, Dim area_size = 32, Dim z_tiles = 1
+    );
 
-        if (grass_mid >= grass_grad_data.size()) {
-            grass_mid_ = grass_grad_data.size() - 1;
-            std::cerr << "Grass Mid (from biome_data.json) not valid";
-        }
-
-        for (size_t i = 0; i < grass_grad_data.size(); i++) {
-            if (i == static_cast<size_t>(grass_mid)) {
-                grass_mid_ = grass_colors_.size();
-            }
-            for (int j = 0; j < grass_grad_data[i]; j++) {
-                grass_colors_.push_back(i);
-            }
-        }
-        grass_grad_length_ = grass_colors_.size();
-    }
-
+    /**
+     * @brief Construct a new Terrain Base object from qb data
+     * 
+     * @details This constructor loads a terrain object from a file
+     * 
+     * @param materials Materials that make up the terrain
+     * @param grass_grad_data grass gradient data
+     * @param grass_mid position in grass gradient data that denotes the middle
+     * @param data qb_data_t read from file
+     */
     TerrainBase(
         const std::map<MaterialId, const Material>& materials,
         std::vector<int> grass_grad_data, unsigned int grass_mid,
-        voxel_utility::qb_data data
-    ) :
-        TerrainBase(
-            materials, grass_grad_data, grass_mid, data.size[0], data.size[1], 32,
-            data.size[2]
-        ) {
-        std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
-        for (auto it = materials_.begin(); it != materials_.end(); it++) {
-            for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
-                materials_inverse.insert(
-                    std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
-                        it->second.color.at(color_id).second,
-                        std::make_pair(&it->second, (ColorId)color_id)
-                    )
-                );
-            }
-        }
+        voxel_utility::qb_data_t data
+    );
 
-        try {
-            qb_read(data.data, materials_inverse);
-        } catch (const std::exception& e) {
-            LOG_ERROR(
-                logging::terrain_logger, "Could not load terrain save file due to {}",
-                e.what()
-            );
-            throw;
-        }
-    }
-
-    TerrainBase(
-        int x, int y, int Area_size, int z,
+    /**
+     * @brief Construct a new Terrain Base object for demonstrating biomes
+     * 
+     * @param x_map_tiles 
+     * @param y_map_tiles 
+     * @param area_size 
+     * @param z_tiles 
+     * @param materials 
+     * @param biome_data 
+     * @param grass_grad_data 
+     * @param grass_mid 
+     */
+    inline TerrainBase(
+        Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles,
         const std::map<MaterialId, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid
     ) :
         TerrainBase(
-            x, y, Area_size, z, materials, biome_data, grass_grad_data, grass_mid,
-            generate_macro_map(x, y, biome_data["Terrain_Data"])
+            x_map_tiles, y_map_tiles, area_size, z_tiles, materials, biome_data, grass_grad_data, grass_mid,
+            generate_macro_map(x_map_tiles, y_map_tiles, biome_data["Terrain_Data"])
         ) {}
 
+    /**
+     * @brief Construct a new Terrain Base object using terrain generation
+     * 
+     * @param x_map_tiles 
+     * @param y_map_tiles 
+     * @param Area_size 
+     * @param z_tiles 
+     * @param materials 
+     * @param biome_data 
+     * @param grass_grad_data 
+     * @param grass_mid 
+     * @param Terrain_Maps 
+     */
     TerrainBase(
-        int x, int y, int Area_size, int z,
+        Dim x_map_tiles, Dim y_map_tiles, Dim Area_size, Dim z_tiles,
         const std::map<uint8_t, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid, std::vector<int> Terrain_Maps
@@ -166,9 +167,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z z coordinate
      * @return int
      */
-    inline uint32_t
-    pos(uint16_t x, uint16_t y,
-        uint16_t z) const { // for loops should go z than y than x
+    [[nodiscard]] inline TileIndex
+    pos(Dim x, Dim y, Dim z) const noexcept {
+        // for loops should go z than y than x
         return x * Y_MAX * Z_MAX + y * Z_MAX + z;
     }
 
@@ -178,14 +179,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param sop coordinate as an array
      * @return int
      */
-    inline uint32_t
-    pos(const std::array<uint16_t, 3> sop) const {
-        return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
-    }
-
-    inline uint32_t
-    pos(const uint16_t sop[3]) const {
-        return sop[0] * Y_MAX * Z_MAX + sop[1] * Z_MAX + sop[2];
+    [[nodiscard]] inline TileIndex
+    pos(const TerrainDim3& sop) const {
+        return sop.x * Y_MAX * Z_MAX + sop.y * Z_MAX + sop.z;
     }
 
     /**
@@ -194,7 +190,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param tile tile to find position of
      * @return int
      */
-    inline uint32_t
+    [[nodiscard]] inline TileIndex
     pos(const Tile* const tile) const {
         return pos(tile->sop());
     }
@@ -205,7 +201,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param tile tile to find position of
      * @return int
      */
-    inline int
+    [[nodiscard]] inline TileIndex
     pos(const Tile tile) const {
         return pos(tile.get_x(), tile.get_y(), tile.get_z());
     }
@@ -216,7 +212,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    inline int
+    [[nodiscard]] inline int
     pos_for_map(const Tile tile) const {
         return pos(tile);
     }
@@ -227,7 +223,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    inline int
+    [[nodiscard]] inline int
     pos_for_map(const Tile* const tile) const {
         return pos(tile);
     }
@@ -236,13 +232,13 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief return position in space of given vector index
      *
      * @param xyz vector index
-     * @return const std::array<int, 3> position in space
+     * @return const TerrainDim3 position in space
      */
-    inline const std::array<uint16_t, 3>
-    sop(uint32_t xyz) const {
+    [[nodiscard]] inline const TerrainDim3
+    sop(TileIndex xyz) const {
         return {
-            uint16_t(xyz / (Y_MAX * Z_MAX)), uint16_t((xyz / Z_MAX) % Y_MAX),
-            uint16_t(xyz % (Z_MAX))};
+            static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
     }
 
     /**
@@ -252,15 +248,16 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param xm length in x direction
      * @param ym length in y direction
      * @param zm length in z direction
-     * @return std::array<int, 3> position in 3D space
+     * @return TerrainDim3 position in 3D space
      */
-    inline static std::array<uint16_t, 3>
-    sop(uint32_t xyz, uint32_t xm, uint32_t ym, uint32_t zm) {
+    [[nodiscard]] inline static TerrainDim3
+    sop(TileIndex xyz, TileIndex xm, TileIndex ym, TileIndex zm) {
         if (xyz >= xm * ym * zm) {
             throw std::invalid_argument("index out of range");
         }
         return {
-            uint16_t(xyz / (ym * zm)), uint16_t((xyz / zm) % ym), uint16_t(xyz % (zm))};
+            static_cast<Dim>(xyz / (ym * zm)), static_cast<Dim>((xyz / zm) % ym),
+            static_cast<Dim>(xyz % (zm))};
     }
 
     /**
@@ -268,7 +265,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return int length
      */
-    inline Dim
+    [[nodiscard]] inline Dim
     get_X_MAX() const {
         return X_MAX;
     };
@@ -278,7 +275,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return int length
      */
-    inline Dim
+    [[nodiscard]] inline Dim
     get_Y_MAX() const {
         return Y_MAX;
     };
@@ -288,7 +285,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return int length
      */
-    inline Dim
+    [[nodiscard]] inline Dim
     get_Z_MAX() const {
         return Z_MAX;
     };
@@ -298,20 +295,20 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @details overloaded so must use base class definition.
      *
-     * @return std::array<uint32_t, 3> array of sizes
+     * @return VoxelSize array of sizes
      */
-    inline glm::u32vec3
-    get_size() const {
-        return { X_MAX, Y_MAX, Z_MAX };
+    [[nodiscard]] inline VoxelSize
+    get_size() const noexcept {
+        return {X_MAX, Y_MAX, Z_MAX};
     }
 
     /**
      * @brief Used for getting mesh
      *
-     * @return std::array<int32_t, 3> 0 3 times
+     * @return glm::i32vec3 0 3 times
      */
-    inline glm::i32vec3
-    get_offset() const {
+    [[nodiscard]] inline VoxelOffset
+    get_offset() const noexcept {
         return {0, 0, 0};
     }
 
@@ -324,12 +321,17 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return true tile is in bounds
      * @return false tile is not in bounds
      */
-    inline bool
+    [[nodiscard]] inline bool
     in_range(int x, int y, int z) const {
         return (
-            (Dim)x < X_MAX && x >= 0 && (Dim)y < Y_MAX && y >= 0 && (Dim)z < Z_MAX
-            && z >= 0
+            static_cast<Dim>(x) < X_MAX && x >= 0 && static_cast<Dim>(y) < Y_MAX
+            && y >= 0 && static_cast<Dim>(z) < Z_MAX && z >= 0
         );
+    }
+
+    [[nodiscard]] inline bool
+    in_range(TerrainDim3 xyz) const {
+        return (xyz.x < X_MAX && xyz.y < Y_MAX && xyz.z < Z_MAX);
     }
 
     /**
@@ -340,7 +342,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z z position
      * @return Tile* tile at given position
      */
-    inline Tile*
+    [[nodiscard]] inline Tile*
     get_tile(int x, int y, int z) {
         if (!in_range(x, y, z)) {
             LOG_CRITICAL(
@@ -349,12 +351,14 @@ class TerrainBase : public voxel_utility::VoxelBase {
             );
             throw std::invalid_argument("index out of range");
         }
-        return &tiles_[pos(x, y, z)];
+        return &tiles_[pos(
+            static_cast<Dim>(x), static_cast<Dim>(y), static_cast<Dim>(z)
+        )];
     };
 
-    inline Tile*
+    [[nodiscard]] inline Tile*
     get_tile(int xyz) {
-        if (xyz < 0 || static_cast<uint32_t>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+        if (xyz < 0 || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         }
@@ -369,17 +373,18 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z z position
      * @return Tile* tile at given position
      */
-    inline const Tile*
+    [[nodiscard]] inline const Tile*
     get_tile(int x, int y, int z) const {
-        if ((static_cast<Dim>(x) >= X_MAX || x < 0 || static_cast<Dim>(y) >= Y_MAX
-             || y < 0 || static_cast<Dim>(z) >= Z_MAX || z < 0)) {
+        if (!in_range(x, y, z)) {
             LOG_CRITICAL(
                 logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
                 y, z
             );
             throw std::invalid_argument("index out of range");
         }
-        return &tiles_[pos(x, y, z)];
+        return &tiles_[pos(
+            static_cast<Dim>(x), static_cast<Dim>(y), static_cast<Dim>(z)
+        )];
     };
 
     /**
@@ -388,9 +393,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param xyz tile index
      * @return const Tile* tile at index
      */
-    inline const Tile*
+    [[nodiscard]] inline const Tile*
     get_tile(int xyz) const {
-        if (xyz < 0 || static_cast<uint32_t>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+        if (xyz < 0 || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         }
@@ -405,7 +410,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z z position
      * @return ColorInt color or tile
      */
-    inline ColorInt
+    [[nodiscard]] inline ColorInt
     get_voxel(int x, int y, int z) const {
         // using static ints to prevent dereferencing
         // The previous material id, and color id are cached so that materials do
@@ -431,7 +436,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return previous_out_color;
     }
 
-    inline uint16_t
+    [[nodiscard]] inline VoxelColorId
     get_voxel_color_id(int x, int y, int z) const {
         // if not in range, then considered to be air
         if (!in_range(x, y, z))
@@ -450,27 +455,27 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param guess expected height (for speed)
      * @return int height
      */
-    int get_first_not(
+    [[nodiscard]] int get_first_not(
         const std::set<std::pair<MaterialId, ColorId>>& materials, int x, int y,
         int guess
     ) const;
 
-    inline uint8_t
-    get_grass_grad_length() const {
+    [[nodiscard]] inline uint8_t
+    get_grass_grad_length() const noexcept {
         return grass_grad_length_;
     }
 
-    inline uint8_t
+    [[nodiscard]] inline uint8_t
     get_grass_mid() const {
         return grass_mid_;
     }
 
-    inline std::vector<uint8_t>
+    [[nodiscard]] inline const std::vector<ColorId>&
     get_grass_colors() const {
         return grass_colors_;
     }
 
-    inline const std::map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const {
         return materials_;
     }
@@ -492,12 +497,12 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param y macro map y position
      */
     inline void
-    stamp_tile_region(terrain_generation::TileStamp tStamp, int x, int y) {
+    stamp_tile_region(const terrain_generation::TileStamp& tStamp, int x, int y) {
         stamp_tile_region(
-            tStamp.x_start + x * area_size + area_size / 2,
-            tStamp.y_start + y * area_size + area_size / 2, tStamp.z_start,
-            tStamp.x_end + x * area_size + area_size / 2,
-            tStamp.y_end + y * area_size + area_size / 2, tStamp.z_end, tStamp.mat,
+            tStamp.x_start + x * area_size_ + area_size_ / 2,
+            tStamp.y_start + y * area_size_ + area_size_ / 2, tStamp.z_start,
+            tStamp.x_end + x * area_size_ + area_size_ / 2,
+            tStamp.y_end + y * area_size_ + area_size_ / 2, tStamp.z_end, tStamp.mat,
             tStamp.elements_can_stamp, tStamp.color_id
         );
     }
@@ -557,7 +562,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param map_data json data on how to generate map
      * @return std::vector<int> (size_x * size_y) vector of ints
      */
-    static std::vector<int> generate_macro_map(
+    [[nodiscard]] static std::vector<int> generate_macro_map(
         unsigned int size_x, unsigned int size_y, const Json::Value& map_data
     );
 
@@ -568,9 +573,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param how_to_add json data that defines biome generation
      * @return int max height
      */
-    static int get_stop_height(int height, const Json::Value& how_to_add);
+    [[nodiscard]] static int get_stop_height(int height, const Json::Value& how_to_add);
 
-    inline bool
+    [[nodiscard]] inline bool
     has_tile_material(
         const std::set<std::pair<MaterialId, ColorId>>& material_test, int x, int y,
         int z
@@ -578,7 +583,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return has_tile_material(material_test, get_tile(x, y, z));
     }
 
-    inline bool
+    [[nodiscard]] inline bool
     has_tile_material(
         const std::set<std::pair<MaterialId, ColorId>>& material_test, const Tile* tile
     ) const {

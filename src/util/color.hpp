@@ -1,5 +1,6 @@
 
 #include "../types.hpp"
+#include "bits.hpp"
 
 #include <vector>
 
@@ -15,18 +16,16 @@ union color_converter {
 };
 
 inline auto
-color_to_uint32(color_t color)
-{
+color_to_uint32(color_t color) {
     color_converter c;
     c.as_vec = color;
-    return c.as_uint;
+    return bits::swap(c.as_uint);
 }
 
 inline auto
-uint32_to_color(ColorInt num)
-{
+uint32_to_color(ColorInt num) {
     color_converter c;
-    c.as_uint = num;
+    c.as_uint = bits::swap(num);
     return c.as_vec;
 }
 
@@ -35,25 +34,17 @@ constexpr auto bit_shift = sizeof(ColorInt) * 2;
 // 1 for the size of the color channel
 constexpr ColorInt bits_place = (1 << bit_shift) - 1;
 
-/*inline ColorFloat
+inline ColorFloat
 convert_color_data(ColorInt int_color) {
-    uint32_t red = (int_color >> bit_shift * 3) & bits_place;
-    uint32_t green = (int_color >> bit_shift * 2) & bits_place;
-    uint32_t blue = (int_color >> bit_shift) & bits_place;
-    uint32_t alpha = int_color & bits_place;
-    // the last one >> 0 is A
-    ColorFloat vector_color(
-        {red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f}
-    );
-    return vector_color;
-}*/
+    glm::vec4 color = uint32_to_color(int_color);
+    return color / 255.0f;
+}
 
 inline std::vector<ColorFloat>
 convert_color_data(const std::vector<ColorInt>& color_map) {
     std::vector<ColorFloat> float_colors;
     for (ColorInt int_color : color_map) {
-        glm::vec4 color = ( (glm::vec4)uint32_to_color(int_color) ) / 255.0f;
-        float_colors.push_back( {color.a,color.b,color.g,color.r} );
+        float_colors.push_back(convert_color_data(int_color));
     }
     return float_colors;
 }

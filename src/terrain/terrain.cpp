@@ -11,7 +11,7 @@
 #include "terrain_base.hpp"
 #include "terrain_generation/land_generator.hpp"
 #include "terrain_generation/noise.hpp"
-#include "terrain_generation/tilestamp.hpp"
+#include "terrain_generation/tile_stamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
 
@@ -100,8 +100,8 @@ Terrain::init_chunks() {
     Dim C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
     Dim C_length_Z = ((Z_MAX - 1) / Chunk::SIZE + 1);
     for (size_t xyz = 0; xyz < C_length_X * C_length_Y * C_length_Z; xyz += 1) {
-        auto [x, y, z] = sop(xyz, C_length_X, C_length_Y, C_length_Z);
-        chunks_.push_back(Chunk(x, y, z, this));
+        TerrainDim3 chunk_position = sop(xyz, C_length_X, C_length_Y, C_length_Z);
+        chunks_.push_back(Chunk(chunk_position, this));
     }
 }
 
@@ -159,7 +159,7 @@ Terrain::can_stand(const Tile tile, int dz, int dxy) const {
 }
 
 bool
-Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id) {
+Terrain::paint(Tile* tile, const Material* mat, ColorId color_id) {
     // sets color_id if the material is the same.
     if (tile->get_material_id() == mat->element_id) {
         tile->set_color_id(color_id, mat);
@@ -169,7 +169,7 @@ Terrain::paint(Tile* tile, const Material* mat, uint8_t color_id) {
 }
 
 bool
-Terrain::player_set_tile_material(int xyz, const Material* mat, uint8_t color_id) {
+Terrain::player_set_tile_material(int xyz, const Material* mat, ColorId color_id) {
     Tile* tile = get_tile(xyz);
     if (tile->is_solid() && mat->solid) {
         // Can't change something from one material to another.
@@ -217,7 +217,8 @@ Terrain::init_grass() {
 // this should be the same as can_stand(x,y,z,1,1)
 bool
 Terrain::can_stand_1(int xyz) const {
-    if (static_cast<uint32_t>(xyz) % Z_MAX < 1 || static_cast<uint32_t>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+    if (static_cast<TileIndex>(xyz) % Z_MAX < 1
+        || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
         return false;
     }
     return (!get_tile(xyz)->is_solid() && get_tile(xyz - 1)->is_solid());
@@ -239,16 +240,14 @@ Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {
 }
 
 float
-Terrain::get_H_cost(std::array<uint16_t, 3> xyz1, std::array<uint16_t, 3> xyz2) {
+Terrain::get_H_cost(TerrainDim3 position1, TerrainDim3 position2) {
     double D1 = 1.0;
     double D2 = 1.414;
     double D3 = 1.0;
-    auto [x1, y1, z1] = xyz1;
-    auto [x2, y2, z2] = xyz2;
 
-    float DX = abs(x1 - x2);
-    float DY = abs(y1 - y2);
-    float DZ = abs(z1 - z2);
+    float DX = abs(position1.x - position2.x);
+    float DY = abs(position1.y - position2.y);
+    float DZ = abs(position1.z - position2.z);
 
     return (DZ * D3 + abs(DX - DY) * D1 + D2 * std::min(DX, DY));
 }
@@ -281,7 +280,7 @@ Terrain::get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const {
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
-    std::map<uint32_t, Node<const NodeGroup>>& nodes, uint8_t path_type
+    std::map<TileIndex, Node<const NodeGroup>>& nodes, uint8_t path_type
 ) const {
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
@@ -295,7 +294,7 @@ Terrain::get_adjacent_nodes(
 
 std::set<Node<const Tile>*>
 Terrain::get_adjacent_nodes(
-    const Node<const Tile>* node, std::map<uint32_t, Node<const Tile>>& nodes,
+    const Node<const Tile>* node, std::map<TileIndex, Node<const Tile>>& nodes,
     uint8_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
@@ -589,7 +588,7 @@ Terrain::get_path(
         Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
         openNodes(T_compare);
 
-    std::map<uint32_t, Node<const T>> nodes; // The nodes that can be walked through
+    std::map<TileIndex, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
         nodes[pos_for_map(t)] =
             Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()));

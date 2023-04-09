@@ -8,12 +8,12 @@
 
 namespace terrain {
 
-Chunk::Chunk(int bx, int by, int bz, Terrain* ter) :
+Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
     ter_(ter),
-    Cx_(bx), Cy_(by), Cz_(bz) {
-    for (int x = SIZE * bx; x < SIZE * (1 + bx); x++)
-        for (int y = SIZE * by; y < SIZE * (1 + by); y++)
-            for (int z = SIZE * bz; z < SIZE * (1 + bz); z++) {
+    Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z) {
+    for (int x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
+        for (int y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
+            for (int z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
                 if (ter->can_stand_1(x, y, z)) {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
