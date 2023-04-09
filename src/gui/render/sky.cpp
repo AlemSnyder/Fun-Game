@@ -1,6 +1,5 @@
 #include "sky.hpp"
 
-#include "../../entity/terrain_mesh.hpp"
 #include "../../util/files.hpp"
 #include "../controls.hpp"
 #include "../meshloader.hpp"

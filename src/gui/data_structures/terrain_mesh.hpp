@@ -2,8 +2,8 @@
 // reason it should be moved into gui/data_structures
 // Also no namespace terrain
 
-#include "../gui/meshloader.hpp"
-#include "mesh.hpp"
+#include "../meshloader.hpp"
+#include "../../entity/mesh.hpp"
 //#include "static_mesh.hpp"
 
 #include <GL/glew.h>
@@ -16,7 +16,7 @@
 
 namespace terrain {
 
-class TerrainMesh : public MeshLoader::SingleComplexMesh {
+class TerrainMesh : public MeshData::SingleComplexMesh {
  private:
     GLuint vertex_buffer_;
     GLuint color_buffer_;

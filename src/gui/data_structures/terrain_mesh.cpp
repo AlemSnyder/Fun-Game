@@ -1,8 +1,8 @@
 
 #include "terrain_mesh.hpp"
 
-#include "../logging.hpp"
-#include "../terrain/material.hpp"
+#include "../../logging.hpp"
+#include "../../terrain/material.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

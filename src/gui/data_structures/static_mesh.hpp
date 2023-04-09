@@ -1,5 +1,5 @@
-#include "../gui/meshloader.hpp"
-#include "mesh.hpp"
+#include "../meshloader.hpp"
+#include "../../entity/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +11,7 @@
 
 namespace terrain {
 
-class StaticMesh : public MeshLoader::MultiComplexMesh {
+class StaticMesh : public MeshData::MultiComplexMesh {
  private:
     GLuint vertex_buffer_;
     GLuint color_buffer_;

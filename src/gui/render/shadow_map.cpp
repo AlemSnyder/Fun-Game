@@ -73,12 +73,12 @@ ShadowMap::ShadowMap(int w, int h) {
 }
 
 void
-ShadowMap::add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh) {
+ShadowMap::add_mesh(std::shared_ptr<MeshData::SingleMesh> mesh) {
     singles_meshes_.push_back(std::move(mesh));
 }
 
 void
-ShadowMap::add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh) {
+ShadowMap::add_mesh(std::shared_ptr<MeshData::MultiMesh> mesh) {
     multi_meshes_.push_back(std::move(mesh));
 }
 
@@ -119,7 +119,7 @@ ShadowMap::render_shadow_depth_buffer() const {
     glUniformMatrix4fv(depth_matrix_ID_, 1, GL_FALSE, &depthMVP[0][0]);
 
     // draw the non-indexed meshes
-    for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_) {
+    for (std::shared_ptr<MeshData::SingleMesh> mesh : singles_meshes_) {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -153,7 +153,7 @@ ShadowMap::render_shadow_depth_buffer() const {
     glUniformMatrix4fv(depth_matrix_ID_multi_, 1, GL_FALSE, &depthMVP[0][0]);
 
     // draw the indexed meshes
-    for (std::shared_ptr<MeshLoader::MultiMesh> mesh : multi_meshes_) {
+    for (std::shared_ptr<MeshData::MultiMesh> mesh : multi_meshes_) {
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());

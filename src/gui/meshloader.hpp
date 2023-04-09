@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 
 // glew wrapper to send data to gpu
-namespace MeshLoader {
+namespace MeshData {
 
 /**
  * @brief virtual class for non-indexed mesh
