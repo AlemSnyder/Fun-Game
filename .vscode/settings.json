@@ -112,6 +112,7 @@
         "regex": "cpp",
         "future": "cpp",
         "*.def": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "hash_map": "cpp"
     }
 }

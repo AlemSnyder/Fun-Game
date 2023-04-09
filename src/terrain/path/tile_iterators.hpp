@@ -22,13 +22,13 @@
  *
  */
 
-#include "../terrain.hpp"
+#pragma once
+
+#include "../../types.hpp"
 #include "unit_path.hpp"
 
 #include <cstdint>
 #include <utility>
-
-#pragma once
 
 namespace terrain {
 
@@ -38,7 +38,7 @@ namespace path {
 
 // static uint8_t offsets[26];
 
-std::array<int8_t, 3> get_indexed_offsets(uint8_t index);
+TerrainDim3 get_indexed_offsets(uint8_t index);
 
 class AdjacentIterator {
  private:
@@ -63,7 +63,7 @@ class AdjacentIterator {
     size_t get_pos();
     UnitPath get_path_type();
 
-    inline std::array<int8_t, 3> get_relative_position() {
+    inline TerrainDim3 get_relative_position() {
         return get_indexed_offsets(dpos_);
     }
 };

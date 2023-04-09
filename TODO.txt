@@ -9,4 +9,3 @@ Terrain generation
 
 GUI
     deal with rotation
-    used texture map

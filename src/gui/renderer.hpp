@@ -46,7 +46,7 @@ class MainRenderer {
     GLuint view_matrix_ID_;     // ID of view projection matrix
     GLuint depth_bias_ID_;      // ID of depth projection matrix
     GLuint shadow_map_ID_;      // ID of the shadow map
-    GLuint color_map_ID_; // ID of the color map
+    GLuint color_map_ID_;       // ID of the color map
     GLuint light_direction_ID_; // ID of the light direction uniform
     // -------------- indexed meshes -------------------
     GLuint programID_multi_; // ID of indexed mesh Program

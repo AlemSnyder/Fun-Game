@@ -14,8 +14,8 @@ namespace gui {
 // file) We are using a gl call back on all messages.
 void GLAPIENTRY
 message_callback(
-    GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length,
-    const char* message, const void* userParam
+    GLenum source, GLenum type, unsigned int id, GLenum severity, [[maybe_unused]] GLsizei length,
+    const char* message, [[maybe_unused]] const void* userParam
 ) {
     std::string source_sting;
     std::string type_string;
