@@ -69,7 +69,7 @@ TerrainColorMapping::assign_color_texture() {
 
     // Generate a texture
     std::vector<ColorFloat> float_colors =
-        entity::convert_color_data(color_ids_map);
+        color::convert_color_data(color_ids_map);
 
     // Generate a texture
     glGenTextures(1, &color_texture_);

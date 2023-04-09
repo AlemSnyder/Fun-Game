@@ -238,7 +238,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     sop(TileIndex xyz) const {
         return {
             static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
-            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX),
+            static_cast<Dim>(xyz % (Z_MAX))};
     }
 
     /**
@@ -352,7 +353,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
             throw std::invalid_argument("index out of range");
         }
         return &tiles_[pos(
-            static_cast<Dim>(x), static_cast<Dim>(x), static_cast<Dim>(x)
+            static_cast<Dim>(x), static_cast<Dim>(y), static_cast<Dim>(z)
         )];
     };
 

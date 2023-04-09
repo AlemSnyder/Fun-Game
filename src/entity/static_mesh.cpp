@@ -52,7 +52,7 @@ StaticMesh::StaticMesh(
 
     // Generate a texture
     std::vector<ColorFloat> float_colors =
-        entity::convert_color_data(mesh.get_color_map());
+        color::convert_color_data(mesh.get_color_map());
 
     // LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
     glGenTextures(1, &color_texture_);

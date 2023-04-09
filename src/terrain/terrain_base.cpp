@@ -45,7 +45,7 @@ TerrainBase::TerrainBase(
 ) :
     area_size_(area_size),
     materials_(materials), X_MAX(x_map_tiles * area_size),
-    Y_MAX(y_map_tiles * area_size), Z_MAX(z_tiles * area_size_) {
+    Y_MAX(y_map_tiles * area_size), Z_MAX(z_tiles) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     if (grass_mid >= grass_grad_data.size()) {
@@ -75,7 +75,7 @@ TerrainBase::TerrainBase(
         z_tiles
     ) {
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        tiles_.push_back(Tile(sop(xyz), &materials_.at(0)));
+        tiles_.push_back(Tile(sop(xyz), &materials_.at(0), 0));
     }
 
     // srand(seed);
