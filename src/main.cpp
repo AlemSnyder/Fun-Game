@@ -33,8 +33,6 @@
 int
 GenerateTerrain(const std::string path)
 {
-    // const char * home_path = "C:/Users/haile/Documents/School/Comp Sci but
-    // C/gcc/terrain_generation";
 
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
@@ -54,13 +52,19 @@ GenerateTerrain(const std::string path)
 int
 MacroMap()
 {
+
+    quill::Logger* logger = quill::get_logger();
+
     Json::Value biome_data;
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    terrain::Terrain::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+    // test terrain generation in a region of 64 by 64
+    auto map = terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
 
-    return 1;
+    LOG_INFO(logger, "Map: {}", map);
+
+    return 0;
 }
 
 int
@@ -85,15 +89,11 @@ save_terrain(
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
-    World world(materials_json, biome_data, 0);
-
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-        world.terrain_main.init(
-            3, 3, World::macro_tile_size, World::height, 5, static_cast<int>(i),
-            world.get_materials(), biome_data
-        );
+
+        World world(materials_json, biome_data, i);
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
         save_path /= "biome_";
@@ -101,6 +101,7 @@ save_terrain(
         save_path += ".qb";
         world.terrain_main.qb_save(save_path.string());
     }
+
 }
 
 void
@@ -297,5 +298,8 @@ main(int argc, char** argv)
         return GUITest(path_in);
     } else if (run_function == "Logging") {
         return LogTest();
+    } else {
+        std::cout << "No known command" << std::endl;
+        return 0;
     }
 }

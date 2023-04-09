@@ -104,13 +104,15 @@ controls::computeMatricesFromInputs(GLFWwindow* window) {
         position -= screen_up * deltaTime * speed * speed_boost;
     }
 
-    float FoV = initialFoV; // - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires setting
-                            // up a callback for this. It's a bit too complicated for
-                            // this beginner's tutorial, so it's disabled instead.
+    float FoV = initialFoV;
+    // set up call back to allow for scrolling to see things
 
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <->
-    // 1000 units
-    projection_matrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 1000.0f);
+    // Projection matrix : 45° Field of View, 4:3 ratio, 
+    projection_matrix = glm::perspective(glm::radians(FoV),
+        // ratio defined by screen width and height
+        static_cast<float>(width) / static_cast<float>(height),
+        0.1f, // display range min
+        1000.0f); // display range max
     // Camera matrix
     view_matrix = glm::lookAt(
         position,             // Camera is here

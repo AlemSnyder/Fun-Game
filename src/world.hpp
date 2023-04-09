@@ -22,7 +22,8 @@
 
 #pragma once
 
-#include "entity/mesh.hpp"
+#include "types.hpp"
+#include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 
 #include <json/json.h>
@@ -31,6 +32,11 @@
 
 #include <map>
 #include <vector>
+
+// forward declaration of entity::Mesh
+namespace entity {
+class Mesh;
+}
 
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
@@ -42,7 +48,7 @@
  */
 class World {
     // materials that exist
-    std::map<int, const terrain::Material> materials;
+    std::map<MaterialId, const terrain::Material> materials;
 
  public:
     // terrain in the world
@@ -58,7 +64,7 @@ class World {
      *
      * @param path where world was saved
      */
-    World(Json::Value materials_json, const std::string path);
+    World(const Json::Value& materials_json, const std::string path);
     /**
      * @brief Construct a new World object to test biome generation.
      *
@@ -67,9 +73,9 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/terrain_generation/land_generator.hpp
      */
-    World(Json::Value materials_json, Json::Value biome_data, int type);
+    World(const Json::Value& materials_json, const Json::Value& biome_data, int type);
     World(
-        Json::Value materials_json, Json::Value biome_data, uint32_t x_tiles,
+        const Json::Value& materials_json, const Json::Value& biome_data, uint32_t x_tiles,
         uint32_t y_tiles
     );
 
@@ -85,7 +91,8 @@ class World {
      * @return const std::map<int, const Material>* map of materials_id to
      * materials pointer
      */
-    const std::map<int, const terrain::Material>* get_materials() const {
+    inline const std::map<MaterialId, const terrain::Material>*
+    get_materials() const noexcept {
         return &materials;
     }
 
@@ -103,7 +110,7 @@ class World {
      * @param material_data data to load from
      * (see) data/materials.json
      */
-    std::map<int, const terrain::Material> init_materials(Json::Value material_data);
+    std::map<MaterialId, const terrain::Material> init_materials(const Json::Value& material_data);
 
     /**
      * @brief Get the grass gradient data
@@ -111,21 +118,12 @@ class World {
      * @param material_json data to load from
      * @return std::vector<int> width of each grass color
      */
-    std::vector<int> get_grass_grad_data(Json::Value material_json);
+    std::vector<int> get_grass_grad_data(const Json::Value& material_json);
 
     /**
      * @brief Get the mesh using greedy meshing
      *
      * @return entity::Mesh the mesh generated
      */
-    inline std::vector<entity::Mesh> get_mesh_greedy() const {
-        std::vector<entity::Mesh> out;
-        for (const terrain::Chunk& c : terrain_main.get_chunks()) {
-            auto chunk_mesh = entity::generate_mesh(c);
-            if (chunk_mesh.indices_.size() > 0) {
-                out.push_back(chunk_mesh);
-            }
-        }
-        return out;
-    }
+    std::vector<entity::Mesh> get_mesh_greedy() const;
 };

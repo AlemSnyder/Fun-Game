@@ -124,11 +124,11 @@ ShadowMap::render_shadow_depth_buffer() const {
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
         glVertexAttribIPointer(
-            0,        // The attribute we want to configure
-            3,        // size
-            GL_INT, // type
-            0,        // stride
-            (void*)0  // array buffer offset
+            0,       // The attribute we want to configure
+            3,       // size
+            GL_INT,  // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
 
         // Index buffer
@@ -158,11 +158,11 @@ ShadowMap::render_shadow_depth_buffer() const {
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
         glVertexAttribIPointer(
-            0,        // The attribute we want to configure
-            3,        // size
-            GL_INT, // type
-            0,        // stride
-            (void*)0  // array buffer offset
+            0,       // The attribute we want to configure
+            3,       // size
+            GL_INT,  // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
 
         // 2nd attribute buffer : transform
@@ -173,11 +173,11 @@ ShadowMap::render_shadow_depth_buffer() const {
         // no problem here
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
         glVertexAttribIPointer(
-            3,        // attribute
-            3,        // size
-            GL_INT, // type
-            0,        // stride
-            (void*)0  // array buffer offset
+            3,       // attribute
+            3,       // size
+            GL_INT,  // type
+            0,       // stride
+            (void*)0 // array buffer offset
         );
         glVertexAttribDivisor(3, 1);
 

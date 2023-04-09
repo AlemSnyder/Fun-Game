@@ -20,11 +20,16 @@
  */
 #pragma once
 
+#include "../terrain/material.hpp"
+#include "../types.hpp"
+#include "../util/color.hpp"
 #include "../util/voxel.hpp"
 
 #include <glm/glm.hpp>
 
 #include <filesystem>
+#include <map>
+#include <unordered_map>
 #include <vector>
 
 namespace entity {
@@ -33,35 +38,103 @@ namespace entity {
  * @brief Holds data that describes now an object is loaded by the shader
  *
  */
-struct Mesh {
+class Mesh {
+ public:
     Mesh(
         const std::vector<uint16_t>& indices,
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_color_ids,
         const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_map
+        const std::vector<ColorInt>& color_map
     ) :
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
 
-    // defines a bounding box of the mesh
-    const std::vector<int> size_;
+    // friend World;
+
+ protected:
+    // x, y, z length of the mesh
+    glm::ivec3 size_;
     // defines center of mesh for rotating
-    const std::vector<int> center_;
-
-    // indices of vertices drawn (vertices used twice can be ignored)
-    const std::vector<std::uint16_t> indices_;
+    glm::ivec3 center_;
+    // indices of each vertex that is drawn
+    std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
-    const std::vector<glm::ivec3> indexed_vertices_;
+    std::vector<glm::ivec3> indexed_vertices_;
     // color of vertex
-    const std::vector<uint16_t> indexed_color_ids_;
+    std::vector<uint16_t> indexed_color_ids_;
     // normal direction
-    const std::vector<glm::i8vec3> indexed_normals_;
+    std::vector<glm::i8vec3> indexed_normals_;
     // color map
-    const std::vector<uint32_t> color_map_;
+    std::vector<ColorInt> color_map_;
 
-}; // struct Mesh
+ public:
+
+    // x, y, z length of the mesh
+    [[nodiscard]] inline const glm::ivec3&
+    get_size() const noexcept {
+        return size_;
+    }
+
+    // center of mesh
+    [[nodiscard]] inline const glm::ivec3&
+    get_center() const noexcept {
+        return center_;
+    }
+
+    // indices of each vertex that is drawn
+    [[nodiscard]] inline const std::vector<std::uint16_t>&
+    get_indices() const noexcept {
+        return indices_;
+    }
+
+    // position of vertices in mesh space
+    [[nodiscard]] inline const std::vector<glm::ivec3>&
+    get_indexed_vertices() const noexcept {
+        return indexed_vertices_;
+    }
+
+    // color of vertex
+    [[nodiscard]] inline const std::vector<std::uint16_t>&
+    get_indexed_color_ids() const noexcept {
+        return indexed_color_ids_;
+    }
+
+    // normal direction
+    [[nodiscard]] inline const std::vector<glm::i8vec3>&
+    get_indexed_normals() const noexcept {
+        return indexed_normals_;
+    }
+
+    // color mapping from color id (vector index) to 8 bit color
+    [[nodiscard]] inline const std::vector<uint32_t>&
+    get_color_map() const noexcept {
+        return color_map_;
+    }
+
+    // private:
+    // set this back to private when world::get_mesh_greedy is removed in the next pr.
+    /**
+     * @brief Set the color indexing to what the GPU uses
+     *
+     * @details When meshing a chunk the data of tiles is compared. The tile
+     * does not store the color id that corresponds to the color texture on the
+     * gpu. Instead of converting each tile's material and color to color id in
+     * generate_mesh_greedy, it is done later when there are less values to
+     * iterate over.
+     *
+     * That is what this function does. Converts the material and color to the
+     * color id used on the GPU.
+     *
+     * @param map
+     */
+    void change_color_indexing(
+        const std::map<MaterialId, const terrain::Material>& materials,
+        const std::unordered_map<ColorInt, uint16_t>& mapping
+    );
+
+}; // class Mesh
 
 /**
  * @brief Generates a mesh from the given 3D voxel structure
@@ -78,9 +151,8 @@ generate_mesh(T voxel_object) {
 
     std::vector<glm::i8vec3> indexed_normals;
     // mesh off set
-    std::array<int32_t, 3> center = voxel_object.get_offset();
-    std::array<uint32_t, 3> dims = voxel_object.get_size();
-    glm::ivec3 offset(center[0], center[1], center[2]);
+    VoxelOffset center = voxel_object.get_offset();
+    VoxelDim dims = voxel_object.get_size();
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;
@@ -286,6 +358,11 @@ generate_mesh(T voxel_object) {
         indices, indexed_vertices, indexed_colors, indexed_normals,
         voxel_object.get_color_ids()
     );
+}
+
+inline std::vector<ColorFloat>
+convert_color_data(const std::vector<ColorInt>& color_map) {
+    return color::convert_color_data(color_map);
 }
 
 } // namespace entity

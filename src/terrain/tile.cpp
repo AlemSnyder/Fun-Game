@@ -3,17 +3,13 @@
 #include "material.hpp"
 #include "terrain.hpp"
 
-#define NUM_GRASS 8 // TODO this should be removed
-#define AIR_ID    0
-#define DIRT_ID   1
-
 namespace terrain {
 
 Tile::Tile(
-    std::array<int, 3> sop, const terrain::Material* material, uint8_t color_id
+    TerrainDim3 sop, const terrain::Material* material, uint8_t color_id
 ) :
-    x(sop[0]),
-    y(sop[1]), z(sop[2]), mat_id_(0), color_id_(0), grow_data_high_(0),
+    x(sop.x),
+    y(sop.y), z(sop.z), mat_id_(0), color_id_(0), grow_data_high_(0),
     grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
     solid_(false) {
     // set material should not fail so if material is bad for some reason
@@ -42,7 +38,7 @@ Tile::set_material(const terrain::Material* const material) {
 
 // If able, set `color_id` to `color_id_`.
 void
-Tile::set_color_id(uint8_t color_id, const terrain::Material* const material) {
+Tile::set_color_id(ColorId color_id, const terrain::Material* const material) {
     if (color_id >= material->color.size()) {
         return;
     }
@@ -74,7 +70,7 @@ Tile::set_grow_data_low(int num) {
 void
 Tile::set_grass_color(
     unsigned int grass_grad_length, unsigned int grass_mid,
-    std::vector<uint8_t> grass_colors
+    std::vector<ColorId> grass_colors
 ) {
     if (!grass_)
         return;
@@ -145,14 +141,8 @@ Tile::try_grow_grass() {
     }
 }
 
-// return `color_id`.
-uint8_t
-Tile::get_color_id() const {
-    return color_id_;
-}
-
 // returns the element id and the color id as one int
-uint16_t
+MatColorId
 Tile::get_mat_color_id() const {
     // element_id, and color_id are 8 bit this function
     // concatenates them together, and returns a 16 bit int
@@ -160,12 +150,6 @@ Tile::get_mat_color_id() const {
         return 0;
     }
     return mat_id_ << 8 | color_id_;
-}
-
-// return x, y, z positions as array
-std::array<int, 3>
-Tile::sop() const {
-    return {x, y, z};
 }
 
 bool

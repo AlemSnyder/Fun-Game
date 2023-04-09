@@ -1,20 +1,19 @@
 #include "chunk.hpp"
 
+#include "material.hpp"
 #include "path/tile_iterators.hpp"
 #include "terrain.hpp"
 #include "tile.hpp"
-#include "material.hpp"
+#include "terrain_base.hpp"
 
 namespace terrain {
 
-Chunk::Chunk(int bx, int by, int bz, Terrain* ter) {
-    ter_ = ter;
-    Cx_ = bx;
-    Cy_ = by;
-    Cz_ = bz;
-    for (int x = SIZE * bx; x < SIZE * (1 + bx); x++)
-        for (int y = SIZE * by; y < SIZE * (1 + by); y++)
-            for (int z = SIZE * bz; z < SIZE * (1 + bz); z++) {
+Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
+    ter_(ter),
+    Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z) {
+    for (int x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
+        for (int y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
+            for (int z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
                 if (ter->can_stand_1(x, y, z)) {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
@@ -108,15 +107,13 @@ Chunk::contains_nodeGroup(NodeGroup* NG) {
     );
 }
 
-uint32_t
-Chunk::get_voxel(int x, int y, int z) const {
+uint32_t terrain::Chunk::get_voxel(int x, int y, int z) const {
     return ter_->get_voxel(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );
 }
 
-uint16_t
-Chunk::get_voxel_color_id(int x, int y, int z) const {
+uint16_t terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
     return ter_->get_voxel_color_id(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );

@@ -38,7 +38,7 @@ glm::mat4 get_projection_matrix();
  * @return false the shadow map should not be shown
  */
 inline bool
-show_shadow_map(GLFWwindow* window){
+show_shadow_map(GLFWwindow* window) {
     return glfwGetKey(window, GLFW_KEY_TAB);
 }
 
