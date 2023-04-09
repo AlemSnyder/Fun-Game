@@ -355,8 +355,8 @@ class Terrain : public TerrainBase {
     void remove_node_group(NodeGroup* NG);
 
     inline uint16_t get_chunk_from_tile(uint16_t pos) const{
-        auto [x, y, z] = sop(pos);
-        return  get_chunk_from_tile(x, y, z);
+        TerrainDim3 tile_sop = sop(pos);
+        return  get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
     uint16_t get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const;

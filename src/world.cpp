@@ -169,46 +169,46 @@ void
 World::set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id) {
     terrain_main.get_tile(pos)->set_material(mat, color_id);
 
-    auto [x, y, z] = terrain_main.sop(pos);
+    TerrainDim3 tile_sop = terrain_main.sop(pos);
 
-    uint16_t chunk_pos = terrain_main.get_chunk_from_tile(x, y, z);
+    uint16_t chunk_pos = terrain_main.get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     update_single_mesh(chunk_pos);
 
     // do some math:
     // if the tile is on the edge of a chunk then both chunks must be updated.
-    uint8_t edge_case = x % terrain::Chunk::SIZE;
+    uint8_t edge_case = tile_sop.x % terrain::Chunk::SIZE;
     if (edge_case == 0) {
-        if (terrain_main.in_range(x - 1, y, z)) {
-            chunk_pos = terrain_main.get_chunk_from_tile(x - 1, y, z);
+        if (terrain_main.in_range(tile_sop.x - 1, tile_sop.y, tile_sop.z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(tile_sop.x - 1, tile_sop.y, tile_sop.z);
             update_single_mesh(chunk_pos);
         }
     } else if (edge_case == terrain::Chunk::SIZE - 1) {
-        if (terrain_main.in_range(x + 1, y, z)) {
-            chunk_pos = terrain_main.get_chunk_from_tile(x + 1, y, z);
+        if (terrain_main.in_range(tile_sop.x + 1, tile_sop.y, tile_sop.z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(tile_sop.x + 1, tile_sop.y, tile_sop.z);
             update_single_mesh(chunk_pos);
         }
     }
-    edge_case = y % terrain::Chunk::SIZE;
+    edge_case = tile_sop.y % terrain::Chunk::SIZE;
     if (edge_case == 0) {
-        if (terrain_main.in_range(x, y - 1, z)) {
-            chunk_pos = terrain_main.get_chunk_from_tile(x, y - 1, z);
+        if (terrain_main.in_range(tile_sop.x, tile_sop.y - 1, tile_sop.z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(tile_sop.x, tile_sop.y - 1, tile_sop.z);
             update_single_mesh(chunk_pos);
         }
     } else if (edge_case == terrain::Chunk::SIZE - 1) {
-        if (terrain_main.in_range(x, y + 1, z)) {
-            chunk_pos = terrain_main.get_chunk_from_tile(x, y + 1, z);
+        if (terrain_main.in_range(tile_sop.x, tile_sop.y + 1, tile_sop.z)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(tile_sop.x, tile_sop.y + 1, tile_sop.z);
             update_single_mesh(chunk_pos);
         }
     }
-    edge_case = z % terrain::Chunk::SIZE;
+    edge_case = tile_sop.z % terrain::Chunk::SIZE;
     if (edge_case == 0) {
-        if (terrain_main.in_range(x, y, z - 1)) {
-            chunk_pos = terrain_main.get_chunk_from_tile(x, y, z - 1);
+        if (terrain_main.in_range(tile_sop.x, tile_sop.y, tile_sop.z - 1)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z - 1);
             update_single_mesh(chunk_pos);
         }
     } else if (edge_case == terrain::Chunk::SIZE - 1) {
-        if (terrain_main.in_range(x, y, z + 1)) {
-            chunk_pos = terrain_main.get_chunk_from_tile(x, y, z + 1);
+        if (terrain_main.in_range(tile_sop.x, tile_sop.y, tile_sop.z + 1)) {
+            chunk_pos = terrain_main.get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z + 1);
             update_single_mesh(chunk_pos);
         }
     }
