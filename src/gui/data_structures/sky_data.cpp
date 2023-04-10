@@ -1,15 +1,17 @@
 #include "sky_data.hpp"
 
-#include "../../util/files.hpp"
+#include "../meshloader.hpp"
+#include "../../logging.hpp"
+#include "../../types.hpp"
+#include "../../entity/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <filesystem>
 #include <vector>
 
-namespace gui {
+namespace gui{
 
 namespace sky {
 
@@ -17,37 +19,56 @@ SkyData::SkyData(std::filesystem::path path) {
     Json::Value stars_json;
     std::ifstream stars_file = files::open_data_file(path);
     stars_file >> stars_json;
-    std::vector<glm::vec4> stars;
+    std::vector<glm::vec4> stars_positions;
+    std::vector<GLfloat> star_age;
 
-    for (Json::Value::ArrayIndex i = 0; i < stars_json["stars"]["data"].size(); i++) {
-        Json::Value star = stars_json["stars"]["data"][i];
-        glm::vec4 star_vector(
-            star["theta"].asFloat(),
-            star["phi"].asFloat(),
-            star["brightness"].asFloat(),
-            star["age"].asFloat()
+    for (const Json::Value& star : stars_json["stars"]["data"]) {
+
+        float phi = glm::radians(star["phi"].asFloat());
+        float theta = glm::radians(star["theta"].asFloat());
+
+        glm::vec4 star_position(
+            glm::cos(theta)*glm::sin(phi),
+            glm::sin(theta)*glm::sin(phi),
+            glm::cos(theta),
+            star["brightness"].asFloat()
         );
-        stars.push_back(star_vector);
+        stars_positions.push_back(star_position);
+
+        star_age.push_back(star["age"].asFloat());
+
     }
 
-    num_stars_ = stars.size();
+    num_stars_ = stars_positions.size();
 
-    glGenTextures(1, &stars_texture_);
-    glBindTexture(GL_TEXTURE_1D, stars_texture_);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    // set the texture wrapping/filtering options (on the currently bound texture
-    // object)
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load and generate the texture
-    glTexImage1D(
-        GL_TEXTURE_1D, 0, GL_RGBA32F, num_stars_, 0, GL_RGBA, GL_FLOAT, stars.data()
+    // A buffer for the vertex positions
+    glGenBuffers(1, &star_positions_);
+    glBindBuffer(GL_ARRAY_BUFFER, star_positions_);
+    glBufferData(
+        GL_ARRAY_BUFFER, stars_positions.size() * sizeof(glm::ivec4),
+        stars_positions.data(), GL_STATIC_DRAW
     );
-    glGenerateMipmap(GL_TEXTURE_1D);
+
+    // A buffer for the colors
+    glGenBuffers(1, &age_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, age_buffer_);
+    glBufferData(
+        GL_ARRAY_BUFFER, star_age.size() * sizeof(GLfloat),
+        star_age.data(), GL_STATIC_DRAW
+    );
+
+    std::vector<glm::vec2> star_shape({{0,1},{1,0},{-1,0},{0,-1}});
+
+    // Generate a buffer for the for corners of a "star"
+    glGenBuffers(1, &shape_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, shape_buffer_);
+    glBufferData(
+        GL_ARRAY_BUFFER, star_shape.size() * sizeof(glm::vec2),
+        star_shape.data(), GL_STATIC_DRAW
+    );
+
 }
 
-} // namespace sky
+} // namespace terrain
 
-} // namespace gui
+}

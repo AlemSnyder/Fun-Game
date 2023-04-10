@@ -18,6 +18,7 @@ StaticMesh::StaticMesh(
 ) {
     // set the number of models
     num_models_ = model_transforms.size();
+    num_vertices_ = mesh.get_indices().size();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);

@@ -1,11 +1,11 @@
-#include <json/json.h>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <filesystem>
 #include <vector>
+#include <json/json.h>
+
+#include <filesystem>
 
 #pragma once
 
@@ -15,57 +15,58 @@ namespace sky {
 
 class SkyData {
  private:
-    GLuint star_positions_;
-    GLuint age_buffer_;
-    GLuint shape_buffer_;
+    GLuint stars_texture_;
     unsigned int num_stars_;
 
  public:
     /**
      * @brief Construct a new Sky Data object
-     *
+     * 
      * @warning You shouldn't do this. This will delete the buffer from the gpu
-     *
-     * @param obj
+     * 
+     * @param obj 
      */
     SkyData(const SkyData& obj) = delete;
 
     /**
      * @brief The copy operator
-     *
+     * 
      * @warning You shouldn't do this. This will delete the buffer from the gpu
-     *
-     * @param obj
-     * @return SkyData&
+     * 
+     * @param obj 
+     * @return SkyData& 
      */
-    SkyData& operator=(const SkyData& obj) = delete;
+    SkyData&
+    operator=(const SkyData& obj) = delete;
 
     /**
      * @brief Construct a new Sky Data object, default constructor
-     *
+     * 
      */
     inline SkyData(){};
 
     SkyData(std::filesystem::path path);
 
-    GLuint
-    get_star_positions() const {
-        return star_positions_;
-    }
-
-    GLuint
-    get_star_age_() const {
-        return age_buffer_;
-    }
-
-    GLuint
-    get_star_shape() const {
-        return shape_buffer_;
+    /**
+     * @brief Destroy the Sky Data object
+     * 
+     */
+    inline ~SkyData() { 
+        glDeleteTextures(1, &stars_texture_);
     }
 
     /**
+     * @brief Get the stars texture id
+     * 
+     * @return GLuint id of star texture on gpu
+     */
+    inline GLuint
+    get_stars_texture() const {
+        return stars_texture_;
+    }
+    /**
      * @brief Get the number of stars
-     *
+     * 
      * @return unsigned int number of stars
      */
     inline unsigned int
