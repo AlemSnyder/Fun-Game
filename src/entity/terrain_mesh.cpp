@@ -14,7 +14,6 @@ terrain::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
 
 void
 terrain::TerrainMesh::update(const entity::Mesh& mesh) {
-
     // clear all buffers
     GLuint buffers[4] = {
         vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};

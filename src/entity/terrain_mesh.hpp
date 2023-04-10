@@ -1,6 +1,5 @@
 #include "../gui/meshloader.hpp"
 #include "mesh.hpp"
-// #include "static_mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -23,14 +22,10 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     bool do_render_;
 
  public:
-
     inline TerrainMesh(const TerrainMesh& other) = delete;
     // copy operator
-    inline TerrainMesh&
-    operator=(const TerrainMesh& other) =delete;
-
-    inline TerrainMesh&
-    operator=(TerrainMesh&& other);
+    inline TerrainMesh& operator=(const TerrainMesh& other) = delete;
+    inline TerrainMesh& operator=(TerrainMesh&& other);
 
     inline TerrainMesh(){};
     TerrainMesh(const entity::Mesh& mesh);
@@ -41,7 +36,6 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);
         glDeleteBuffers(1, &element_buffer_);
-        // glDeleteTextures(1, &color_texture_);
     }
 
     [[nodiscard]] inline bool
