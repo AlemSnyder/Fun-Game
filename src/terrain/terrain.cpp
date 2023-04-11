@@ -275,10 +275,10 @@ Terrain::get_adjacent_nodes(
 ) const {
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
-        try {
-            Node<const NodeGroup>* tile = &nodes.at(pos_for_map(t));
-            out.emplace(tile);
-        } catch (const std::out_of_range& e) {}
+        auto adj_node = nodes.find(pos_for_map(t));
+        if (adj_node != nodes.end()) {
+            out.emplace(&adj_node->second);
+        }
     }
     return out;
 }
@@ -291,10 +291,10 @@ Terrain::get_adjacent_nodes(
     std::set<Node<const Tile>*> out;
     auto tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
     while (!tile_it.end()) {
-        try {
-            Node<const Tile>* tile = &nodes.at(tile_it.get_pos());
-            out.emplace(tile);
-        } catch (const std::out_of_range& e) {}
+        auto adj_node = nodes.find(tile_it.get_pos());
+        if (adj_node != nodes.end()) {
+            out.emplace(&adj_node->second);
+        }
         tile_it++;
     }
     return out;
@@ -302,11 +302,11 @@ Terrain::get_adjacent_nodes(
 
 NodeGroup*
 Terrain::get_node_group(int xyz) {
-    try {
-        return tile_to_group_.at(xyz);
-    } catch (const std::out_of_range& e) {
+    auto node_group = tile_to_group_.find(xyz);
+    if (node_group == tile_to_group_.end()) {
         return nullptr;
     }
+    return node_group->second;
 }
 
 NodeGroup*

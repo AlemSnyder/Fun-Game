@@ -44,13 +44,20 @@ GUITest(World world) {
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
     if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
         LOG_INFO(logging::opengl_logger, "GLFW Logging with debug");
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        // set gl message call back function
-        glDebugMessageCallback(message_callback, 0);
-        glDebugMessageControl(
-            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
-        );
+        try {
+            glEnable(GL_DEBUG_OUTPUT);
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            // set gl message call back function
+            glDebugMessageCallback(message_callback, 0);
+            glDebugMessageControl(
+                GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
+            );
+        } catch (...) {
+            LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
+            getchar();
+            glfwTerminate();
+            return -1;
+        }
     }
 
     LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
