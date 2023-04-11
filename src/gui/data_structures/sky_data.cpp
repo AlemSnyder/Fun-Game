@@ -45,7 +45,7 @@ SkyData::SkyData(std::filesystem::path path) {
     glGenBuffers(1, &star_positions_);
     glBindBuffer(GL_ARRAY_BUFFER, star_positions_);
     glBufferData(
-        GL_ARRAY_BUFFER, stars_positions.size() * sizeof(glm::ivec4),
+        GL_ARRAY_BUFFER, stars_positions.size() * sizeof(glm::vec4),
         stars_positions.data(), GL_STATIC_DRAW
     );
 

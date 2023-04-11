@@ -14,11 +14,11 @@ void
 main() {
     vec4 star_center_camera_space = MVP * vec4(pos.xyz, 0);
 
-    //star_center_camera_space = star_center_camera_space / star_center_camera_space.w
+    vec4 position = star_center_camera_space / star_center_camera_space.w
+                    + pixel_projection * vec4(star_corner * pos.w, 0, 0);
+    // I have no idea why I have to do this.
+    position.z = star_center_camera_space.z/2;
 
-    gl_Position = vec4(star_center_camera_space.xy / star_center_camera_space.w + (pixel_projection * vec4(star_corner * pos.w, 0, 0)).xy, 9, 1);
-
-    //gl_Position = star_center_camera_space;//MVP * vec4(star_corner*100,-1,1);
-
+    gl_Position = position;
     age = age_in;
 }

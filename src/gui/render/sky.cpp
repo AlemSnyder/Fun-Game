@@ -72,16 +72,10 @@ SkyRenderer::render(GLFWwindow* window) const {
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
     glUniformMatrix4fv(matrix_view_projection_ID_, 1, GL_FALSE, &MVP[0][0]);
+    // in the "pixel_projection" uniform
     glUniformMatrix4fv(pixel_matrix_ID_, 1, GL_FALSE, &pixel_window[0][0]);
 
-    // glUniform1i(star_num_ID_, sky_data_.get_num_stars());
-
-    // Bind Shadow Texture to Texture Unit 1
-    // glActiveTexture(GL_TEXTURE1);
-    // glBindTexture(GL_TEXTURE_1D, sky_data_.get_stars_texture());
-    // glUniform1i(star_texture_, 1);
-
-    // 1st attribute buffer : vertices
+    // 1st attribute buffer : positions
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, sky_data_.get_star_positions());
     glVertexAttribPointer(
