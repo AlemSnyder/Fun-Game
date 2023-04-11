@@ -54,7 +54,7 @@ SkyRenderer::render(GLFWwindow* window) const {
         0,
         0,
         0,
-        1 / static_cast<float>(height),
+        1.0 / static_cast<float>(height),
         0,
         0,
         0,
