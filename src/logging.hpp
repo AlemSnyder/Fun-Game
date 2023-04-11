@@ -33,20 +33,7 @@ get_logger()
 }
 
 inline quill::Logger*
-get_logger(std::string name)
-{
-    quill::Logger* logger;
-
-    try {
-        logger = quill::get_logger(name.c_str());
-    } catch (quill::QuillError&) {
-        logger = quill::create_logger(name);
-        logger->set_log_level(_LOG_LEVEL);
-        logger->init_backtrace(5, quill::LogLevel::Error);
-    }
-
-    return logger;
-}
+get_logger(std::string name);
 
 inline void
 set_thread_name(std::string name)

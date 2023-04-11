@@ -17,7 +17,7 @@ main() {
     vec4 position = star_center_camera_space / star_center_camera_space.w
                     + pixel_projection * vec4(star_corner * pos.w, 0, 0);
     // I have no idea why I have to do this.
-    position.z = star_center_camera_space.z/2;
+    position.z = star_center_camera_space.z/3;
 
     gl_Position = position;
     age = age_in;

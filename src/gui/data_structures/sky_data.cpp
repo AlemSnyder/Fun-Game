@@ -30,7 +30,7 @@ SkyData::SkyData(std::filesystem::path path) {
         glm::vec4 star_position(
             glm::cos(theta)*glm::sin(phi),
             glm::sin(theta)*glm::sin(phi),
-            glm::cos(theta),
+            glm::cos(phi),
             star["brightness"].asFloat()
         );
         stars_positions.push_back(star_position);

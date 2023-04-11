@@ -126,7 +126,7 @@ GUITest(World world) {
     glfwSwapInterval(1);
 
     // Light blue background
-    glClearColor(0.42f, 0.79f, 0.94f, 0.0f);
+    glClearColor(0.02f, 0.06f, 0.1f, 0.0f);
 
     // Cull triangles which normal is not towards the camera
     glEnable(GL_CULL_FACE);
