@@ -46,18 +46,11 @@ namespace sky {
  */
 class SkyRenderer {
  private:
-    GLuint programID_;                 // ID of Program
-    GLuint matrix_view_projection_ID_; // ID of world space to camera space transform
-                                       // matrix
-    GLuint star_positions_ID_;
-    //GLuint star_age_ID_;
-    //GLuint star_shape_ID_;
-    GLuint pixel_matrix_ID_;           // ID of view space to pixel space matrix
-    //    GLuint star_texture_;              // ID of star texture
-    //    GLuint star_num_ID_;               // ID of number of stars
-
-    sky::SkyData sky_data_; // reference to star data
-                            //    ScreenData screen_data_; // reference to screen data
+    GLuint programID_; // ID of Program
+    // ID of world space to camera space transform matrix
+    GLuint matrix_view_projection_ID_;
+    GLuint pixel_matrix_ID_; // ID of view space to pixel space matrix
+    sky::SkyData sky_data_;  // star data
 
  public:
     /**

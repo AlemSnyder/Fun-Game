@@ -24,9 +24,6 @@ SkyRenderer::SkyRenderer() : sky_data_(files::get_data_path() / "stars.json") {
     // ---- set uniforms ----
     matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
     pixel_matrix_ID_ = glGetUniformLocation(programID_, "pixel_projection");
-    // star_positions_ID_ = glGetUniformLocation(programID_, "star_positions");
-    // star_brightness_ID_ = glGetUniformLocation(programID_, "star_brightness");
-    // star_shape_ID_ = glGetUniformLocation(programID_, "star_shape");
 }
 
 SkyRenderer::~SkyRenderer() {
@@ -48,23 +45,14 @@ SkyRenderer::render(GLFWwindow* window) const {
     glUseProgram(programID_);
 
     // Compute the MVP matrix from keyboard and mouse input
+    // clang-format off
     glm::mat4 pixel_window = {
-        1.0 / static_cast<float>(width),
-        0,
-        0,
-        0,
-        0,
-        1.0 / static_cast<float>(height),
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1};
+        1.0 / static_cast<float>(width), 0, 0, 0,
+        0, 1.0 / static_cast<float>(height), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1};
+    // clang-format on
+
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
     glm::mat4 MVP = projection_matrix * view_matrix; // Model View Projection
@@ -114,16 +102,12 @@ SkyRenderer::render(GLFWwindow* window) const {
     glVertexAttribDivisor(0, 1);
     glVertexAttribDivisor(1, 1);
 
-    // Index buffer
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sky_data_.get_element_buffer());
-
     // Draw the triangles !
     glDrawArraysInstanced(
-        GL_TRIANGLE_STRIP, // mode
-        0,                 // 4,//sky_data_.get_star_shape(),       // count
-        4,                 // GL_UNSIGNED_SHORT,               // type
-        //(void*)0,                        // element array buffer offset
-        sky_data_.get_num_stars()
+        GL_TRIANGLE_STRIP,        // mode
+        0,                        // start
+        4,                        // number of vertices
+        sky_data_.get_num_stars() // number of models
 
     );
 

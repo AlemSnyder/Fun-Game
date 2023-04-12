@@ -69,6 +69,6 @@ SkyData::SkyData(std::filesystem::path path) {
 
 }
 
-} // namespace terrain
+} // namespace sky
 
-}
+} // namespace gui
