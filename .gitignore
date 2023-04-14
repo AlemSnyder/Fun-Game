@@ -43,10 +43,18 @@
 !.vscode/c_cpp_properties.json
 
 #vendor
-vendor/imgui/*
+#vendor/imgui/*
 !vendor/imgui/**.cpp
 !vendor/imgui/**.h
 !vendor/imgui/**.hpp
+
+vendor/imgui/backends/*
+
+!vendor/imgui/backends/imgui_impl_glfw.h
+!vendor/imgui/backends/imgui_impl_opengl3.h
+!vendor/imgui/backends/imgui_impl_opengl3_loader.h
+!vendor/imgui/backends/imgui_impl_glfw.cpp
+!vendor/imgui/backends/imgui_impl_opengl3.cpp
 
 # Local History for Visual Studio Code
 .history/
