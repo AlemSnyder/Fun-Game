@@ -187,6 +187,8 @@ GUITest(World world) {
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     GLuint window_depth_buffer;
     glGenRenderbuffers(1, &window_depth_buffer);
@@ -213,7 +215,7 @@ GUITest(World world) {
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
-    GLuint texID = glGetUniformLocation(quad_programID, "depth_texture");
+    GLuint texID = glGetUniformLocation(quad_programID, "texture");
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
