@@ -45,6 +45,16 @@ imguiTest() {
 // online: https://github.com/ocornut/imgui/tree/master/docs
 
 // Some slight modifications
+#include "../../entity/mesh.hpp"
+#include "../../entity/static_mesh.hpp"
+#include "../../entity/terrain_mesh.hpp"
+#include "../../world.hpp"
+#include "../controls.hpp"
+#include "../gui_logging.hpp"
+#include "../quad_renderer.hpp"
+#include "../renderer.hpp"
+#include "../shader.hpp"
+#include "../shadow_map.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -78,7 +88,7 @@ glfw_error_callback(int error, const char* description) {
 
 // Main code
 int
-imguiTest() {
+imguiTest(World world) {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -221,6 +231,122 @@ imguiTest() {
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
+
+    int my_image_width = 512;
+    int my_image_height = 512;
+
+    auto mesh = world.get_mesh_greedy();
+
+    LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
+
+    voxel_utility::VoxelObject default_trees_voxel(
+        files::get_data_path() / "models" / "DefaultTree.qb"
+    );
+
+    auto mesh_trees = entity::generate_mesh(default_trees_voxel);
+
+    //  The mesh of the terrain
+    std::vector<terrain::TerrainMesh> chunk_meshes;
+    chunk_meshes.resize(mesh.size());
+    for (size_t i = 0; i < chunk_meshes.size(); i++) {
+        chunk_meshes[i].init(mesh[i]);
+    }
+
+    LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
+
+    // The above is for the wold the below is for trees
+
+    std::vector<glm::ivec3> model_matrices;
+    // generate positions of trees
+    for (unsigned int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
+        for (unsigned int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
+            unsigned int z = world.terrain_main.get_Z_solid(x, y) + 1;
+            if (z != 1) { // if the position of the ground is not zero
+                glm::ivec3 model(x, y, z);
+                model_matrices.push_back(model);
+            }
+        }
+
+    LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
+    // static because the mesh does not have moving parts
+    // this generates the buffer that holds the mesh data
+    terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
+
+
+    // generates a frame buffer, screen texture, and and a depth buffer
+    GLuint window_frame_buffer = 0;
+    glGenFramebuffers(1, &window_frame_buffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+
+    GLuint window_render_texture;
+    glGenTextures(1, &window_render_texture);
+
+    glBindTexture(GL_TEXTURE_2D, window_render_texture);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
+        GL_UNSIGNED_BYTE, 0
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    GLuint window_depth_buffer;
+    glGenRenderbuffers(1, &window_depth_buffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
+    glRenderbufferStorage(
+        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, my_image_width, my_image_height
+    );
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
+    );
+
+    glFramebufferTexture(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
+    );
+    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, DrawBuffers);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        return -1;
+    }
+    // end
+    // all of the above needs to be in imgui
+
+    QuadRenderer QR;
+
+
+    glm::vec3 light_direction =
+        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
+        * 128.0f;                                       // length
+
+    glm::mat4 depth_projection_matrix =
+        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+
+    // Renders the Shadow depth map
+    ShadowMap SM(4096, 4096);
+    SM.set_light_direction(light_direction);
+    SM.set_depth_projection_matrix(depth_projection_matrix);
+
+    for (auto& m : chunk_meshes) {
+        SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
+    }
+    SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
+
+    // renders the world scene
+    MainRenderer MR;
+    MR.set_light_direction(light_direction);
+    MR.set_depth_projection_matrix(depth_projection_matrix);
+
+    for (auto& m : chunk_meshes) {
+        MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
+    }
+    MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
+    MR.set_depth_texture(SM.get_depth_texture());
+
+
+
 
     // Main loop
 #ifdef __EMSCRIPTEN__

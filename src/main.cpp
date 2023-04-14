@@ -158,6 +158,22 @@ get_mesh(const std::string path) {
     return world.get_mesh_greedy();
 }
 
+int imguiTest_main(){
+    Json::Value materials_json;
+    std::ifstream materials_file = files::open_data_file("materials.json");
+    materials_file >> materials_json;
+
+    Json::Value biome_data;
+    std::ifstream biome_file = files::open_data_file("biome_data.json");
+    biome_file >> biome_data;
+
+    // Create world object from material data, biome data, and the number of
+    // chunks in the x,y direction. Here the size is 2,2.
+    World world(materials_json, biome_data, 2, 2);
+
+    return imguiTest(world);
+}
+
 int
 StressTest() {
     Json::Value materials_json;
@@ -283,7 +299,7 @@ main(int argc, char** argv) {
     } else if (run_function == "Logging") {
         return LogTest();
     } else if (run_function == "imguiTest"){
-        return imguiTest();
+        return imguiTest_main();
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

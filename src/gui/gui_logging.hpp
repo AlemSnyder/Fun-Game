@@ -12,7 +12,7 @@ namespace gui {
 // defines are hard, and I am lazy.
 // (if were are going to do this line by line, then we should get the line in the log
 // file) We are using a gl call back on all messages.
-void GLAPIENTRY
+inline void GLAPIENTRY
 message_callback(
     GLenum source, GLenum type, unsigned int id, GLenum severity, [[maybe_unused]] GLsizei length,
     const char* message, [[maybe_unused]] const void* userParam

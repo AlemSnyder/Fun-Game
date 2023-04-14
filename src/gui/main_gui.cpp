@@ -159,6 +159,8 @@ GUITest(World world) {
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
 
+
+    // generates a frame buffer, screen texture, and and a depth buffer
     GLuint window_frame_buffer = 0;
     glGenFramebuffers(1, &window_frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
@@ -196,6 +198,8 @@ GUITest(World world) {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         return -1;
     }
+    // end
+    // all of the above needs to be in imgui
 
     QuadRenderer QR;
 
