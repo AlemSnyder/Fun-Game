@@ -8,6 +8,7 @@
 #include "../world.hpp"
 #include "controls.hpp"
 #include "gui_logging.hpp"
+#include "quad_renderer.hpp"
 #include "renderer.hpp"
 #include "shader.hpp"
 #include "shadow_map.hpp"
@@ -210,12 +211,8 @@ GUITest(World world) {
         return -1;
     }
 
-    // Create and compile our GLSL program from the shaders
-    GLuint quad_programID = load_shaders(
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
-        files::get_resources_path() / "shaders" / "SimpleTexture.frag"
-    );
-    GLuint texID = glGetUniformLocation(quad_programID, "texture");
+    QuadRenderer QR;
+
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
@@ -249,6 +246,7 @@ GUITest(World world) {
         // glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
         // glViewport(0, 0, windowFrameWidth, windowFrameHeight);
 
+
         SM.render_shadow_depth_buffer();
         MR.render(window, window_frame_buffer);
 
@@ -257,67 +255,14 @@ GUITest(World world) {
         glViewport(0, 0, windowFrameWidth, windowFrameHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Use our shader
-        glUseProgram(quad_programID);
+        QR.render(windowFrameWidth, windowFrameHeight, window_render_texture, 0);
 
-        // Bind our texture in Texture Unit 0
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, window_render_texture);
-        // Set our "renderedTexture" sampler to use Texture Unit 0
-        glUniform1i(texID, 0);
 
-        // first attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-        glVertexAttribPointer(
-            0,        // attribute 0. No particular reason for 0,
-                      // but must match the layout in the shader.
-            3,        // size
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0,        // stride
-            (void*)0  // array buffer offset
-        );
-
-        // Draw the triangle !
-        // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see
-        glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
-        // at 0 -> 2 triangles
-        glDisableVertexAttribArray(0);
 
         if (controls::show_shadow_map(window)) {
+            QR.render(512, 512, SM.get_depth_texture(), 0);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glViewport(0, 0, 512, 512);
-            glClear(GL_DEPTH_BUFFER_BIT); // sus
 
-            // Use our shader
-            glUseProgram(quad_programID);
-
-            // Bind our texture in Texture Unit 0
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, SM.get_depth_texture());
-            // Set our "renderedTexture" sampler to use Texture Unit 0
-            glUniform1i(texID, 0);
-
-            // first attribute buffer : vertices
-            glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-            glVertexAttribPointer(
-                0,        // attribute 0. No particular reason for 0,
-                          // but must match the layout in the shader.
-                3,        // size
-                GL_FLOAT, // type
-                GL_FALSE, // normalized?
-                0,        // stride
-                (void*)0  // array buffer offset
-            );
-
-            // Draw the triangle !
-            // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see
-            glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
-            // at 0 -> 2 triangles
-            glDisableVertexAttribArray(0);
         }
 
         // Swap buffers
@@ -329,7 +274,6 @@ GUITest(World world) {
            && glfwWindowShouldClose(window) == 0);
 
     // Cleanup VBO and shader
-    glDeleteProgram(quad_programID);
 
     glDeleteBuffers(1, &quad_vertexbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
