@@ -29,7 +29,6 @@ GUITest(World world) {
 
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
 
-
     voxel_utility::VoxelObject default_trees_voxel(
         files::get_data_path() / "models" / "DefaultTree.qb"
     );
@@ -173,12 +172,48 @@ GUITest(World world) {
         GL_STATIC_DRAW
     );
 
+    GLuint window_frame_buffer = 0;
+    glGenFramebuffers(1, &window_frame_buffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+
+    GLuint window_render_texture;
+    glGenTextures(1, &window_render_texture);
+
+    glBindTexture(GL_TEXTURE_2D, window_render_texture);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGB, windowFrameWidth, windowFrameHeight, 0, GL_RGB,
+        GL_UNSIGNED_BYTE, 0
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    GLuint window_depth_buffer;
+    glGenRenderbuffers(1, &window_depth_buffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
+    glRenderbufferStorage(
+        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowFrameWidth, windowFrameHeight
+    );
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
+    );
+
+    glFramebufferTexture(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
+    );
+    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, DrawBuffers);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        return -1;
+    }
+
     // Create and compile our GLSL program from the shaders
     GLuint quad_programID = load_shaders(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
-    GLuint texID = glGetUniformLocation(quad_programID, "texture");
+    GLuint texID = glGetUniformLocation(quad_programID, "depth_texture");
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
@@ -209,8 +244,48 @@ GUITest(World world) {
     MR.set_depth_texture(SM.get_depth_texture());
 
     do {
+        //glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+        //glViewport(0, 0, windowFrameWidth, windowFrameHeight);
+
+
         SM.render_shadow_depth_buffer();
-        MR.render(window);
+        MR.render(window, window_frame_buffer);
+
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        glViewport(0, 0, windowFrameWidth, windowFrameHeight);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+        // Use our shader
+        glUseProgram(quad_programID);
+
+
+        // Bind our texture in Texture Unit 0
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, window_render_texture);
+        // Set our "renderedTexture" sampler to use Texture Unit 0
+        glUniform1i(texID, 0);
+
+        // first attribute buffer : vertices
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+        glVertexAttribPointer(
+            0,        // attribute 0. No particular reason for 0,
+                      // but must match the layout in the shader.
+            3,        // size
+            GL_FLOAT, // type
+            GL_FALSE, // normalized?
+            0,        // stride
+            (void*)0  // array buffer offset
+        );
+
+        // Draw the triangle !
+        // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see
+        glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
+        // at 0 -> 2 triangles
+        glDisableVertexAttribArray(0);
 
         if (controls::show_shadow_map(window)) {
             glViewport(0, 0, 512, 512);

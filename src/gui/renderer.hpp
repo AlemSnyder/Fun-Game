@@ -116,5 +116,5 @@ class MainRenderer {
      *
      * @param window the OpenGL window
      */
-    void render(GLFWwindow* window) const;
+    void render(GLFWwindow* window, GLuint frame_buffer = 0) const;
 };
