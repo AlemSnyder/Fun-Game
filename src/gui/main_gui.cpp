@@ -159,20 +159,6 @@ GUITest(World world) {
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
 
-    // The quad's FBO. Used only for visualizing the shadow map.
-    static const GLfloat g_quad_vertex_buffer_data[] = {
-        -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-    };
-
-    GLuint quad_vertexbuffer;
-    glGenBuffers(1, &quad_vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-    glBufferData(
-        GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data,
-        GL_STATIC_DRAW
-    );
-
     GLuint window_frame_buffer = 0;
     glGenFramebuffers(1, &window_frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
@@ -243,9 +229,6 @@ GUITest(World world) {
     MR.set_depth_texture(SM.get_depth_texture());
 
     do {
-        // glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-        // glViewport(0, 0, windowFrameWidth, windowFrameHeight);
-
 
         SM.render_shadow_depth_buffer();
         MR.render(window, window_frame_buffer);
@@ -274,8 +257,6 @@ GUITest(World world) {
            && glfwWindowShouldClose(window) == 0);
 
     // Cleanup VBO and shader
-
-    glDeleteBuffers(1, &quad_vertexbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
 
     // Close OpenGL window and terminate GLFW

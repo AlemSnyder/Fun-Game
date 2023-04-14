@@ -35,6 +35,8 @@ main() {
     // Output position of the vertex, in clip space : MVP * position
     gl_Position = MVP * vertex_postion_model_space_instanced;
 
+    // positbly use the below to get less dotted ness on some surfaes
+    //ShadowCoord = DepthBiasMVP * (vertex_postion_model_space_instanced+vertexNormal_modelspace_rotated/10);
     ShadowCoord = DepthBiasMVP * vertex_postion_model_space_instanced;
 
     // Position of the vertex, in worldspace : M * position
