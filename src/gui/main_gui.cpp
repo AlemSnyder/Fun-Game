@@ -187,8 +187,8 @@ GUITest(World world) {
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     GLuint window_depth_buffer;
     glGenRenderbuffers(1, &window_depth_buffer);
@@ -246,23 +246,19 @@ GUITest(World world) {
     MR.set_depth_texture(SM.get_depth_texture());
 
     do {
-        //glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-        //glViewport(0, 0, windowFrameWidth, windowFrameHeight);
-
+        // glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+        // glViewport(0, 0, windowFrameWidth, windowFrameHeight);
 
         SM.render_shadow_depth_buffer();
         MR.render(window, window_frame_buffer);
-
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glViewport(0, 0, windowFrameWidth, windowFrameHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
         // Use our shader
         glUseProgram(quad_programID);
-
 
         // Bind our texture in Texture Unit 0
         glActiveTexture(GL_TEXTURE0);
@@ -290,7 +286,10 @@ GUITest(World world) {
         glDisableVertexAttribArray(0);
 
         if (controls::show_shadow_map(window)) {
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glViewport(0, 0, 512, 512);
+            glClear(GL_DEPTH_BUFFER_BIT); // sus
 
             // Use our shader
             glUseProgram(quad_programID);
