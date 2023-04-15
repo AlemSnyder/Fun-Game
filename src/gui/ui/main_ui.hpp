@@ -118,7 +118,7 @@ imguiTest(World world) {
 
     // Create window with graphics context
     GLFWwindow* window =
-        glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+        glfwCreateWindow(1280, 800, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -232,8 +232,8 @@ imguiTest(World world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
-    int my_image_width = 512;
-    int my_image_height = 512;
+    int my_image_width = 1024;
+    int my_image_height = 768;
 
     auto mesh = world.get_mesh_greedy();
 
@@ -308,6 +308,8 @@ imguiTest(World world) {
     GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, DrawBuffers);
 
+    LOG_INFO(logging::opengl_logger, "Frame Buffer created");
+
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         return -1;
     }
@@ -345,7 +347,7 @@ imguiTest(World world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
-
+    LOG_INFO(logging::opengl_logger, "Scene initialized");
 
 
     // Main loop
