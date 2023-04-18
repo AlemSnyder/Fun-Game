@@ -9,3 +9,8 @@ Terrain generation
 
 GUI
     deal with rotation
+        add fourth int to position
+        add for loop into vertex shader that rotates the 
+    fix texture map
+        there seems to be a bug somewhere between getting the color id
+        an putting the texture on the gpu.

@@ -46,15 +46,15 @@ imguiTest() {
 
 // Some slight modifications
 #include "../../entity/mesh.hpp"
-#include "../../entity/static_mesh.hpp"
-#include "../../entity/terrain_mesh.hpp"
+#include "../data_structures/static_mesh.hpp"
+#include "../data_structures/terrain_mesh.hpp"
 #include "../../world.hpp"
 #include "../controls.hpp"
 #include "../gui_logging.hpp"
 #include "../quad_renderer.hpp"
-#include "../renderer.hpp"
+#include "../render/renderer.hpp"
 #include "../shader.hpp"
-#include "../shadow_map.hpp"
+#include "../render/shadow_map.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>

@@ -2,6 +2,7 @@
 
 #include "../exceptions.hpp"
 #include "../logging.hpp"
+#include "../types.hpp"
 #include "bits.hpp"
 
 #include <array>
@@ -17,12 +18,10 @@
 
 namespace voxel_utility {
 
-
-
 void
 from_qb(
-    const std::filesystem::path path, std::vector<uint32_t>& data,
-    std::array<int32_t, 3>& center, std::array<uint32_t, 3>& size
+    const std::filesystem::path path, std::vector<ColorInt>& data, VoxelOffset& center,
+    VoxelSize& size
 ) {
     LOG_INFO(logging::file_io_logger, "Reading voxels from {}.", path.string());
 
@@ -100,15 +99,19 @@ from_qb(
     LOG_DEBUG(logging::file_io_logger, "Reading voxels");
 
     size_t voxels_read = 0;
-    for (size_t x = 0; x < size[0]; x++)
-        for (size_t z = 0; z < size[2]; z++)
-            for (size_t y = size[1] - 1; y < size[1]; y--) {
+    for (size_t x = 0; x < size.x; x++)
+        for (size_t z = 0; z < size.z; z++)
+            for (size_t y = size.y - 1;; y--) {
                 uint32_t raw_color;
 
                 read_int(file, raw_color);
                 data[(x * y_max + y) * z_max + z] = parse_color(raw_color);
 
                 voxels_read++;
+                // so that nino doesn't kill me for using integer overflow.
+                if (y == 0) {
+                    break;
+                }
             }
 
     LOG_INFO(logging::file_io_logger, "Voxels read: {}", voxels_read);

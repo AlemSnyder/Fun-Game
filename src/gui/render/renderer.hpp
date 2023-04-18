@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#include "./meshloader.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -64,8 +64,8 @@ class MainRenderer {
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
                                   // direction
-    std::vector<std::shared_ptr<MeshLoader::SingleComplexMesh>> singles_meshes_;
-    std::vector<std::shared_ptr<MeshLoader::MultiComplexMesh>> multis_meshes_;
+    std::vector<std::shared_ptr<MeshData::SingleComplexMesh>> singles_meshes_;
+    std::vector<std::shared_ptr<MeshData::MultiComplexMesh>> multis_meshes_;
 
  public:
     /**
@@ -81,14 +81,14 @@ class MainRenderer {
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh);
+    void add_mesh(std::shared_ptr<MeshData::SingleComplexMesh> mesh);
 
     /**
      * @brief adds an indexed mesh so it will cast a shadow
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh);
+    void add_mesh(std::shared_ptr<MeshData::MultiComplexMesh> mesh);
 
     /**
      * @brief Set the depth texture ID

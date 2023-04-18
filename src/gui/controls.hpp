@@ -30,8 +30,16 @@ glm::mat4 get_view_matrix();
  */
 glm::mat4 get_projection_matrix();
 
+/**
+ * @brief True if the shadow map should be shown
+ * 
+ * @param window current window
+ * @return true the shadow map should be shown
+ * @return false the shadow map should not be shown
+ */
 inline bool
 show_shadow_map(GLFWwindow* window) {
     return glfwGetKey(window, GLFW_KEY_TAB);
 }
+
 } // namespace controls

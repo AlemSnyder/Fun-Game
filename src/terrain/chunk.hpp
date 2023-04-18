@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "path/node_group.hpp"
 #include "../util/voxel.hpp"
+#include "path/node_group.hpp"
 
 #include <list>
 #include <set>
@@ -43,10 +43,10 @@ class Terrain;
 class Chunk : public voxel_utility::VoxelBase {
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
-    uint16_t Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
-                            // Chunk::SIZE to get tile position.
+    // Chunk position. Incremented by 1 so multiply by Chunk::SIZE to get tile position.
+    Dim Cx_, Cy_, Cz_;
  public:
-    static const uint8_t SIZE = 16; // number of tiles in each direction
+    static const Dim SIZE = 16; // number of tiles in each direction
 
     /**
      * @brief Construct a new Chunk object
@@ -56,7 +56,11 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param bz chunk z position
      * @param ter the terrain this chunk is in
      */
-    Chunk(int bx, int by, int bz, Terrain* ter);
+    Chunk(Dim bx, Dim by, Dim bz, Terrain* ter): Chunk({bx,by,bz}, ter){
+
+    };
+
+    Chunk(TerrainDim3 chunk_position, Terrain* ter);
 
     /**
      * @brief adds node groups in this chunk to out
@@ -70,7 +74,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @return std::vector<int> offset of chunk in world space
      */
-    [[nodiscard]] inline std::array<int32_t, 3>
+    [[nodiscard]] inline VoxelOffset
     get_offset() const {
         return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
     }
@@ -80,7 +84,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @return std::vector<unsigned int> vector of Chunk::SIZE
      */
-    [[nodiscard]] inline std::array<uint32_t, 3>
+    [[nodiscard]] inline VoxelSize
     get_size() {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
@@ -91,9 +95,9 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param x x position in chunk
      * @param y y position in chunk
      * @param z z position in chunk
-     * @return uint32_t tile color id
+     * @return ColorInt tile color id
      */
-    [[nodiscard]] inline uint32_t get_voxel(int x, int y, int z) const;
+    [[nodiscard]] ColorInt get_voxel(int x, int y, int z) const;
 
     /**
      * @brief Get the voxel color id
@@ -101,16 +105,16 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param x x position in chunk
      * @param y y position in chunk
      * @param z z position in chunk
-     * @return uint16_t color id
+     * @return MatColorId material and color id
      */
-    [[nodiscard]] inline uint16_t get_voxel_color_id(int x, int y, int z) const;
+    [[nodiscard]] MatColorId get_voxel_color_id(int x, int y, int z) const;
 
     /**
      * @brief Get the colors used in terrain.
      *
-     * @return const std::vector<uint32_t>&
+     * @return const std::vector<ColorInt>&
      */
-    [[nodiscard]] const inline std::vector<uint32_t>&
+    [[nodiscard]] const inline std::vector<ColorInt>&
     get_color_ids() const {
         return TerrainColorMapping::get_color_ids_map();
     }
@@ -123,6 +127,3 @@ class Chunk : public voxel_utility::VoxelBase {
 };
 
 } // namespace terrain
-
-//#include "terrain.hpp"
-

@@ -20,9 +20,10 @@
  */
 #pragma once
 
-#include "../terrain/terrain.hpp"
+#include "../terrain/material.hpp"
+#include "../types.hpp"
+#include "../util/color.hpp"
 #include "../util/voxel.hpp"
-#include "../world.hpp"
 
 #include <glm/glm.hpp>
 
@@ -44,19 +45,19 @@ class Mesh {
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<uint16_t>& indexed_color_ids,
         const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<uint32_t>& color_map
+        const std::vector<ColorInt>& color_map
     ) :
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
 
-    friend World;
+    // friend World;
 
  protected:
     // x, y, z length of the mesh
-    std::vector<uint16_t> size_;
+    glm::ivec3 size_;
     // defines center of mesh for rotating
-    std::vector<int16_t> center_;
+    glm::ivec3 center_;
     // indices of each vertex that is drawn
     std::vector<std::uint16_t> indices_;
     // position of vertices in mesh space
@@ -66,49 +67,54 @@ class Mesh {
     // normal direction
     std::vector<glm::i8vec3> indexed_normals_;
     // color map
-    std::vector<uint32_t> color_map_;
+    std::vector<ColorInt> color_map_;
 
  public:
 
-    //void set_color_mapping(std::unordered_map<uint32_t, uint16_t> map);
-    
     // x, y, z length of the mesh
-    [[nodiscard]] inline const std::vector<uint16_t>&
-    get_size() const {
+    [[nodiscard]] inline const glm::ivec3&
+    get_size() const noexcept {
         return size_;
     }
+
     // center of mesh
-    [[nodiscard]] inline const std::vector<int16_t>&
-    get_center() const {
+    [[nodiscard]] inline const glm::ivec3&
+    get_center() const noexcept {
         return center_;
     }
+
     // indices of each vertex that is drawn
     [[nodiscard]] inline const std::vector<std::uint16_t>&
-    get_indices() const {
+    get_indices() const noexcept {
         return indices_;
     }
+
     // position of vertices in mesh space
     [[nodiscard]] inline const std::vector<glm::ivec3>&
-    get_indexed_vertices() const {
+    get_indexed_vertices() const noexcept {
         return indexed_vertices_;
     }
+
     // color of vertex
     [[nodiscard]] inline const std::vector<std::uint16_t>&
-    get_indexed_color_ids() const {
+    get_indexed_color_ids() const noexcept {
         return indexed_color_ids_;
     }
+
     // normal direction
     [[nodiscard]] inline const std::vector<glm::i8vec3>&
-    get_indexed_normals() const {
+    get_indexed_normals() const noexcept {
         return indexed_normals_;
     }
+
     // color mapping from color id (vector index) to 8 bit color
     [[nodiscard]] inline const std::vector<uint32_t>&
-    get_color_map() const {
+    get_color_map() const noexcept {
         return color_map_;
     }
 
- private:
+    // private:
+    // set this back to private when world::get_mesh_greedy is removed in the next pr.
     /**
      * @brief Set the color indexing to what the GPU uses
      *
@@ -124,8 +130,8 @@ class Mesh {
      * @param map
      */
     void change_color_indexing(
-        std::map<uint8_t, const terrain::Material>,
-        std::unordered_map<uint32_t, uint16_t> mapping
+        const std::map<MaterialId, const terrain::Material>& materials,
+        const std::unordered_map<ColorInt, uint16_t>& mapping
     );
 
 }; // class Mesh
@@ -145,9 +151,8 @@ generate_mesh(T voxel_object) {
 
     std::vector<glm::i8vec3> indexed_normals;
     // mesh off set
-    std::array<int32_t, 3> center = voxel_object.get_offset();
-    std::array<uint32_t, 3> dims = voxel_object.get_size();
-    glm::ivec3 offset(center[0], center[1], center[2]);
+    VoxelOffset center = voxel_object.get_offset();
+    VoxelSize object_geometry = voxel_object.get_size();
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;
@@ -158,20 +163,20 @@ generate_mesh(T voxel_object) {
 
         // the color of all tiles at the same "level".
         std::vector<std::pair<bool, uint16_t>> color_info(
-            dims[dims_index_1] * dims[dims_index_2]
+            object_geometry[dims_index_1] * object_geometry[dims_index_2]
         );
 
         // Compute color_info
         mesh_normal[axis] = 1;
         // for each layer going in the direction of axis
-        for (voxel_position[axis] = -1; voxel_position[axis] < int(dims[axis]);) {
+        for (voxel_position[axis] = -1; voxel_position[axis] < static_cast<int>(object_geometry[axis]);) {
             std::size_t counter = 0;
             // for each voxel in this level
             for (voxel_position[dims_index_2] = 0;
-                 voxel_position[dims_index_2] < int(dims[dims_index_2]);
+                 voxel_position[dims_index_2] < static_cast<int>(object_geometry[dims_index_2]);
                  ++voxel_position[dims_index_2])
                 for (voxel_position[dims_index_1] = 0;
-                     voxel_position[dims_index_1] < int(dims[dims_index_1]);
+                     voxel_position[dims_index_1] < static_cast<int>(object_geometry[dims_index_1]);
                      ++voxel_position[dims_index_1], ++counter) {
                     // tile in the level above
                     const uint16_t voxel_above = voxel_object.get_voxel_color_id(
@@ -207,8 +212,8 @@ generate_mesh(T voxel_object) {
             unsigned int width = 0, height = 0;
 
             counter = 0;
-            for (unsigned int j = 0; j < dims[dims_index_2]; ++j)
-                for (unsigned int i = 0; i < dims[dims_index_1];) {
+            for (unsigned int j = 0; j < object_geometry[dims_index_2]; ++j)
+                for (unsigned int i = 0; i < object_geometry[dims_index_1];) {
                     // color and direction of the face between two voxels
                     std::pair<bool, uint16_t> color = color_info[counter];
                     // if there is a face between two voxels
@@ -228,12 +233,12 @@ generate_mesh(T voxel_object) {
                         // Compute width
                         width = 1;
                         while (color == color_info[counter + width]
-                               && i + width < dims[dims_index_1]) {
+                               && i + width < object_geometry[dims_index_1]) {
                             ++width;
                         }
                         // Compute height
                         bool done = false;
-                        for (height = 1; j + height < dims[dims_index_2]; ++height) {
+                        for (height = 1; j + height < object_geometry[dims_index_2]; ++height) {
                             // expand until one of the tiles in the next row is
                             // not the same color/facing direction
                             for (unsigned int k = 0; k < width; ++k) {
@@ -241,7 +246,7 @@ generate_mesh(T voxel_object) {
                                 // face is different from the direction and
                                 // color of the face currently being tested
                                 std::pair<bool, uint16_t> test_against = color_info
-                                    [counter + k + height * dims[dims_index_1]];
+                                    [counter + k + height * object_geometry[dims_index_1]];
                                 if (color != test_against) {
                                     done = true;
                                     break;
@@ -274,7 +279,7 @@ generate_mesh(T voxel_object) {
                             glm::ivec3(
                                 voxel_position[0], voxel_position[1], voxel_position[2]
                             )
-                            + offset
+                            + center
                         );
                         indexed_vertices.push_back(
                             glm::ivec3(
@@ -282,7 +287,7 @@ generate_mesh(T voxel_object) {
                                 voxel_position[1] + offset_1[1],
                                 voxel_position[2] + offset_1[2]
                             )
-                            + offset
+                            + center
                         );
                         indexed_vertices.push_back(
                             glm::ivec3(
@@ -290,7 +295,7 @@ generate_mesh(T voxel_object) {
                                 voxel_position[1] + offset_1[1] + offset_2[1],
                                 voxel_position[2] + offset_1[2] + offset_2[2]
                             )
-                            + offset
+                            + center
                         );
                         indexed_vertices.push_back(
                             glm::ivec3(
@@ -298,7 +303,7 @@ generate_mesh(T voxel_object) {
                                 voxel_position[1] + offset_2[1],
                                 voxel_position[2] + offset_2[2]
                             )
-                            + offset
+                            + center
                         );
 
                         // how many corners on a square are there?
@@ -336,7 +341,7 @@ generate_mesh(T voxel_object) {
 
                         for (unsigned int w = 0; w < width; ++w)
                             for (unsigned int h = 0; h < height; ++h)
-                                color_info[counter + w + h * dims[dims_index_1]] =
+                                color_info[counter + w + h * object_geometry[dims_index_1]] =
                                     std::make_pair(false, 0);
 
                         // Increment counters
@@ -354,8 +359,10 @@ generate_mesh(T voxel_object) {
         voxel_object.get_color_ids()
     );
 }
-
-std::vector<std::array<float, 4>>
-convert_color_data(const std::vector<uint32_t> color_map);
+// No need to just put 
+//inline std::vector<ColorFloat>
+//convert_color_data(const std::vector<ColorInt>& color_map) {
+//    return color::convert_color_data(color_map);
+//}
 
 } // namespace entity

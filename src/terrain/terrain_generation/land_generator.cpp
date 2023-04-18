@@ -14,7 +14,7 @@
 #include "land_generator.hpp"
 
 #include "../material.hpp"
-#include "tilestamp.hpp"
+#include "tile_stamp.hpp"
 
 #include <json/json.h>
 
@@ -30,24 +30,15 @@ namespace terrain {
 namespace terrain_generation {
 
 LandGenerator::LandGenerator(
-    const std::map<uint8_t, const Material>* materials_, Json::Value data
-)
-{
-    materials = materials_;
-    data_ = data;
-    current_region = 0;
-    current_sub_region = 0;
-}
+    const std::map<MaterialId, const Material>& materials_, const Json::Value data
+) :
+    current_region(0),
+    current_sub_region(0), materials(materials_), data_(data) {}
 
-LandGenerator::LandGenerator()
-{
-    current_region = 0;
-    current_sub_region = 0;
-}
+// LandGenerator::LandGenerator() : current_region(0), current_sub_region(0) {}
 
 unsigned int
-LandGenerator::get_num_stamps(Json::Value biome)
-{
+LandGenerator::get_num_stamps(const Json::Value& biome) {
     if (biome["Type"].asString() == "Positions") {
         return biome["Positions"].size();
     } else if (biome["Type"].asString() == "Grid") {
@@ -59,10 +50,9 @@ LandGenerator::get_num_stamps(Json::Value biome)
 }
 
 TileStamp
-LandGenerator::get_this_stamp() const
-{
+LandGenerator::get_this_stamp() const {
     TileStamp out;
-    out.mat = &(*materials).at(data_[current_region]["Material_id"].as<int>());
+    out.mat = &materials.at(data_[current_region]["Material_id"].as<int>());
     out.color_id = data_[current_region]["Color_id"].asInt();
     for (Json::Value::ArrayIndex i = 0; i < data_[current_region]["Can_Stamp"].size();
          i++) {
@@ -71,7 +61,7 @@ LandGenerator::get_this_stamp() const
             int C = data_[current_region]["Can_Stamp"][i]["C"].asInt();
             out.elements_can_stamp.insert(std::make_pair(E, C));
         } else if (data_[current_region]["Can_Stamp"][i]["C"].asBool()) {
-            for (unsigned int C = 0; C < (*materials).at(E).color.size(); C++) {
+            for (unsigned int C = 0; C < materials.at(E).color.size(); C++) {
                 out.elements_can_stamp.insert(std::make_pair(E, C));
             }
         }
@@ -89,8 +79,7 @@ LandGenerator::get_this_stamp() const
 }
 
 void
-LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const
-{
+LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
     int radius = data_[cr]["Radius"]["radius"].asInt();
     int number = data_[cr]["Radius"]["number"].asInt();
 
@@ -134,8 +123,7 @@ LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const
 }
 
 void
-LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const
-{
+LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const {
     int number = data_[cr]["Grid"]["number"].asInt();
     int radius = data_[cr]["Grid"]["radius"].asInt();
 
@@ -162,8 +150,7 @@ LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const
 }
 
 void
-LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const
-{
+LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const {
     Json::Value xy_positions = data_[cr]["Positions"][csr];
     int center[2][2] = {
         {xy_positions[0].asInt(), xy_positions[1].asInt()},
@@ -184,8 +171,7 @@ LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const
 }
 
 std::array<int, 6>
-LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const
-{
+LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const {
     int center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
     int center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
     int size_x = rand() % (2 * Dxy + 1) + Sxy - Dxy;
@@ -210,6 +196,15 @@ LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) co
 
     int z_max = rand() % (Dz + 1) + Sz - Dz / 2;
     return {x_min, y_min, 0, x_max, y_max, z_max};
+}
+
+void
+LandGenerator::next() {
+    current_sub_region++;
+    if (current_sub_region == get_num_stamps(data_[current_region])) {
+        current_region++;
+        current_sub_region = 0;
+    }
 }
 
 } // namespace terrain_generation

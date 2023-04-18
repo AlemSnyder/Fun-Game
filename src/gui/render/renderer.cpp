@@ -1,11 +1,10 @@
 #include "renderer.hpp"
 
-#include "../entity/terrain_mesh.hpp"
-#include "../util/files.hpp"
-#include "controls.hpp"
-#include "meshloader.hpp"
-#include "shader.hpp"
-
+#include "../data_structures/terrain_mesh.hpp"
+#include "../../util/files.hpp"
+#include "../controls.hpp"
+#include "../meshloader.hpp"
+#include "../shader.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -47,12 +46,12 @@ MainRenderer::~MainRenderer() {
 }
 
 void
-MainRenderer::add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh) {
+MainRenderer::add_mesh(std::shared_ptr<MeshData::SingleComplexMesh> mesh) {
     singles_meshes_.push_back(std::move(mesh));
 }
 
 void
-MainRenderer::add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh) {
+MainRenderer::add_mesh(std::shared_ptr<MeshData::MultiComplexMesh> mesh) {
     multis_meshes_.push_back(std::move(mesh));
 }
 
@@ -89,6 +88,9 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     // Cull back-facing triangles -> draw only front-facing triangles
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -128,7 +130,7 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_ID_, 1);
 
-    for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_) {
+    for (std::shared_ptr<MeshData::SingleComplexMesh> mesh : singles_meshes_) {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_, 2);
@@ -196,7 +198,7 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_ID_multi_, 1);
 
-    for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
+    for (std::shared_ptr<MeshData::MultiComplexMesh> mesh : multis_meshes_) {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_multi_, 2);

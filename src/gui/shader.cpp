@@ -46,7 +46,7 @@ load_shaders(
     // Read the Fragment Shader code from the file
     LOG_INFO(
         logging::opengl_logger, "Loading fragment shader from {}",
-        vertex_file_path.string()
+        fragment_file_path.string()
     );
 
     std::string fragment_shader_code;

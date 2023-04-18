@@ -21,8 +21,8 @@
  */
 #pragma once
 
-#include "meshloader.hpp"
-#include "shader.hpp"
+#include "../meshloader.hpp"
+#include "../shader.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -54,9 +54,9 @@ class ShadowMap {
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
                                   // direction
     // vector of stored data that describes non-indexed meshes
-    std::vector<std::shared_ptr<MeshLoader::SingleMesh>> singles_meshes_;
+    std::vector<std::shared_ptr<MeshData::SingleMesh>> singles_meshes_;
     // vector of stored data that describes indexed meshes
-    std::vector<std::shared_ptr<MeshLoader::MultiMesh>> multi_meshes_;
+    std::vector<std::shared_ptr<MeshData::MultiMesh>> multi_meshes_;
 
  public:
     /**
@@ -72,14 +72,14 @@ class ShadowMap {
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh);
+    void add_mesh(std::shared_ptr<MeshData::SingleMesh> mesh);
 
     /**
      * @brief adds an indexed mesh so it will cast a shadow
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh);
+    void add_mesh(std::shared_ptr<MeshData::MultiMesh> mesh);
 
     /**
      * @brief Get the depth texture ID

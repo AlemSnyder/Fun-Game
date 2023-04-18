@@ -1,17 +1,20 @@
 #include "main_gui.hpp"
 
 #include "../entity/mesh.hpp"
-#include "../entity/static_mesh.hpp"
-#include "../entity/terrain_mesh.hpp"
 #include "../logging.hpp"
 #include "../util/files.hpp"
 #include "../world.hpp"
 #include "controls.hpp"
+#include "data_structures/screen_data.hpp"
+#include "data_structures/sky_data.hpp"
+#include "data_structures/static_mesh.hpp"
+#include "data_structures/terrain_mesh.hpp"
 #include "gui_logging.hpp"
 #include "quad_renderer.hpp"
-#include "renderer.hpp"
+#include "render/renderer.hpp"
+#include "render/shadow_map.hpp"
+#include "render/sky.hpp"
 #include "shader.hpp"
-#include "shadow_map.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -42,13 +45,20 @@ GUITest(World world) {
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
     if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
         LOG_INFO(logging::opengl_logger, "GLFW Logging with debug");
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        // set gl message call back function
-        glDebugMessageCallback(message_callback, 0);
-        glDebugMessageControl(
-            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
-        );
+        try {
+            glEnable(GL_DEBUG_OUTPUT);
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            // set gl message call back function
+            glDebugMessageCallback(message_callback, 0);
+            glDebugMessageControl(
+                GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
+            );
+        } catch (...) {
+            LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
+            getchar();
+            glfwTerminate();
+            return -1;
+        }
     }
 
     LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
@@ -117,16 +127,19 @@ GUITest(World world) {
     glfwSwapInterval(1);
 
     // Light blue background
-    glClearColor(0.42f, 0.79f, 0.94f, 0.0f);
+    glClearColor(0.02f, 0.06f, 0.1f, 0.0f);
 
     // Enable depth test
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
 
     // Accept fragment if it closer to the camera than the former one
-    glDepthFunc(GL_LESS);
+    //glDepthFunc(GL_LESS);
 
     // Cull triangles which normal is not towards the camera
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
+
+    // send color texture to gpu
+    terrain::TerrainColorMapping::assign_color_texture();
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
@@ -145,9 +158,9 @@ GUITest(World world) {
 
     std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
-    for (unsigned int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
-        for (unsigned int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
-            unsigned int z = world.terrain_main.get_Z_solid(x, y) + 1;
+    for (size_t x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
+        for (size_t y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
+            size_t z = world.terrain_main.get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec3 model(x, y, z);
                 model_matrices.push_back(model);
@@ -239,17 +252,13 @@ GUITest(World world) {
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        glViewport(0, 0, windowFrameWidth, windowFrameHeight);
+        //glViewport(0, 0, windowFrameWidth, windowFrameHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         QR.render(windowFrameWidth, windowFrameHeight, window_render_texture, 0);
 
-
-
         if (controls::show_shadow_map(window)) {
             QR.render(512, 512, SM.get_depth_texture(), 0);
-
-
         }
 
         // Swap buffers
@@ -262,6 +271,9 @@ GUITest(World world) {
 
     // Cleanup VBO and shader
     glDeleteVertexArrays(1, &VertexArrayID);
+    glDeleteRenderbuffers(1, &window_depth_buffer);
+    glDeleteTextures(1, &window_render_texture);
+    glDeleteFramebuffers(1, &window_frame_buffer);
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

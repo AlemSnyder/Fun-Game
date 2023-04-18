@@ -19,8 +19,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <quill/Quill.h>
+#include <json/json.h>
 #include <imgui/imgui.h>
-
 #include <stdint.h>
 #include <cstdlib>
 #include <filesystem>
@@ -49,14 +49,19 @@ GenerateTerrain(const std::string path) {
 }
 
 int
-MacroMap() {
+MacroMap()
+{
+
+    quill::Logger* logger = quill::get_logger();
+
     Json::Value biome_data;
     std::ifstream biome_file = files::open_data_file("biome_data.json");
     biome_file >> biome_data;
 
-    terrain::TerrainBase::generate_macro_map(
-        64, 64, biome_data["Biome_1"]["Terrain_Data"]
-    );
+    // test terrain generation in a region of 64 by 64
+    auto map = terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+
+    LOG_INFO(logger, "Map: {}", map);
 
     return 0;
 }

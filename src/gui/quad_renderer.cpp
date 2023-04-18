@@ -48,6 +48,9 @@ QuadRenderer::render(
     // from the lower left corner to the upper right
     glViewport(0, 0, width, height);
 
+    //glDisable(GL_CULL_FACE);
+    //glDisable(GL_DEPTH_TEST);
+
     glClear(GL_DEPTH_BUFFER_BIT);
     // Use our shader
     glUseProgram(programID_);
