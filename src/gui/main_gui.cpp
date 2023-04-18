@@ -245,16 +245,25 @@ GUITest(World world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
+    sky::SkyRenderer SR;
+
+
     do {
 
         SM.render_shadow_depth_buffer();
+        // clear the frame buffer each frame
+        glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // render the sky to the frame buffer
+        SR.render(window, window_frame_buffer);
+        // render the sene to the frame buffer
         MR.render(window, window_frame_buffer);
 
+        // bind the the screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        //glViewport(0, 0, windowFrameWidth, windowFrameHeight);
+        // clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        // render to the screen
         QR.render(windowFrameWidth, windowFrameHeight, window_render_texture, 0);
 
         if (controls::show_shadow_map(window)) {

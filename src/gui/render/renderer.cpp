@@ -88,12 +88,10 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     // Cull back-facing triangles -> draw only front-facing triangles
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    // Enable the depth test, and enable drawing to the depth texture
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
-
-    // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDepthMask(GL_TRUE);
 
     // Use our shader
     glUseProgram(programID_single_);
