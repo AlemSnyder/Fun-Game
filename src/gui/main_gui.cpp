@@ -108,7 +108,7 @@ GUITest(World world) {
     // Initialize GLEW
     glewExperimental = true; // Needed for core profile
     if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
+        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
         getchar();
         glfwTerminate();
         return -1;
@@ -129,21 +129,8 @@ GUITest(World world) {
     // Light blue background
     glClearColor(0.02f, 0.06f, 0.1f, 0.0f);
 
-    // Enable depth test
-    //glEnable(GL_DEPTH_TEST);
-
-    // Accept fragment if it closer to the camera than the former one
-    //glDepthFunc(GL_LESS);
-
-    // Cull triangles which normal is not towards the camera
-    //glEnable(GL_CULL_FACE);
-
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
-
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
 
     //  The mesh of the terrain
     std::vector<terrain::TerrainMesh> chunk_meshes;
@@ -279,7 +266,6 @@ GUITest(World world) {
            && glfwWindowShouldClose(window) == 0);
 
     // Cleanup VBO and shader
-    glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteRenderbuffers(1, &window_depth_buffer);
     glDeleteTextures(1, &window_render_texture);
     glDeleteFramebuffers(1, &window_frame_buffer);

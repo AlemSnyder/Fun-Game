@@ -46,15 +46,17 @@ imguiTest() {
 
 // Some slight modifications
 #include "../../entity/mesh.hpp"
-#include "../data_structures/static_mesh.hpp"
-#include "../data_structures/terrain_mesh.hpp"
+#include "../../logging.hpp"
 #include "../../world.hpp"
 #include "../controls.hpp"
+#include "../data_structures/static_mesh.hpp"
+#include "../data_structures/terrain_mesh.hpp"
 #include "../gui_logging.hpp"
 #include "../quad_renderer.hpp"
 #include "../render/renderer.hpp"
-#include "../shader.hpp"
 #include "../render/shadow_map.hpp"
+#include "../render/sky.hpp"
+#include "../shader.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -81,40 +83,58 @@ imguiTest() {
 #  include "../libs/emscripten/emscripten_mainloop_stub.h"
 #endif
 
-static void
-glfw_error_callback(int error, const char* description) {
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
 // Main code
 int
-imguiTest(World world) {
-    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
-        return 1;
+imguiTest(World& world) {
+    // initialize logging
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    GLint context_flag;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
+    if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        LOG_INFO(logging::opengl_logger, "GLFW Logging with debug");
+        try {
+            glEnable(GL_DEBUG_OUTPUT);
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            // set gl message call back function
+            glDebugMessageCallback(gui::message_callback, 0);
+            glDebugMessageControl(
+                GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
+            );
+        } catch (...) {
+            LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
+            getchar();
+            glfwTerminate();
+            return -1;
+        }
+    }
 
-        // Decide GL+GLSL versions
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100
-    const char* glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-#elif defined(__APPLE__)
-    // GL 3.2 + GLSL 150
-    const char* glsl_version = "#version 150";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
-#else
-    // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-#endif
+    LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
+
+    // Initialise GLFW
+    glewExperimental = true; // Needed for core profile
+    if (!glfwInit()) {
+        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
+        getchar();
+        glfwTerminate();
+        return -1;
+    }
+
+    const char* glsl_version = "#version 450";
+
+    glfwWindowHint(GLFW_SAMPLES, 4);               // anti-aliasing of 4
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // set Major
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); // and Minor version
+    glfwWindowHint(
+        GLFW_OPENGL_FORWARD_COMPAT,
+        GL_TRUE
+    ); // To make MacOS happy; should not be needed
+    glfwWindowHint(
+        GLFW_OPENGL_PROFILE,
+        GLFW_OPENGL_CORE_PROFILE
+    ); // somehow turning on core profiling
+
+    int my_image_width = 1024;
+    int my_image_height = 768;
 
     // Create window with graphics context
     GLFWwindow* window =
@@ -123,6 +143,49 @@ imguiTest(World world) {
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
+
+    glewExperimental = true; // Needed for core profile
+    if (glewInit() != GLEW_OK) {
+        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
+        getchar();
+        glfwTerminate();
+        return -1;
+    }
+
+    // generates a frame buffer, screen texture, and and a depth buffer
+    GLuint window_frame_buffer = 0;
+    glGenFramebuffers(1, &window_frame_buffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+
+    GLuint window_render_texture;
+    glGenTextures(1, &window_render_texture);
+
+    glBindTexture(GL_TEXTURE_2D, window_render_texture);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
+        GL_UNSIGNED_BYTE, 0
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    GLuint window_depth_buffer;
+    glGenRenderbuffers(1, &window_depth_buffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
+    glRenderbufferStorage(
+        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, my_image_width, my_image_height
+    );
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
+    );
+
+    glFramebufferTexture(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
+    );
+    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, DrawBuffers);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -232,9 +295,6 @@ imguiTest(World world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
-    int my_image_width = 1024;
-    int my_image_height = 768;
-
     auto mesh = world.get_mesh_greedy();
 
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
@@ -246,6 +306,8 @@ imguiTest(World world) {
     auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
     //  The mesh of the terrain
+    //! breaks here
+    //? Why: because opengl is not initialized
     std::vector<terrain::TerrainMesh> chunk_meshes;
     chunk_meshes.resize(mesh.size());
     for (size_t i = 0; i < chunk_meshes.size(); i++) {
@@ -272,42 +334,6 @@ imguiTest(World world) {
     // this generates the buffer that holds the mesh data
     terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
 
-
-    // generates a frame buffer, screen texture, and and a depth buffer
-    GLuint window_frame_buffer = 0;
-    glGenFramebuffers(1, &window_frame_buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-
-    GLuint window_render_texture;
-    glGenTextures(1, &window_render_texture);
-
-    glBindTexture(GL_TEXTURE_2D, window_render_texture);
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
-        GL_UNSIGNED_BYTE, 0
-    );
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    GLuint window_depth_buffer;
-    glGenRenderbuffers(1, &window_depth_buffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
-    glRenderbufferStorage(
-        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, my_image_width, my_image_height
-    );
-    glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
-    );
-
-    glFramebufferTexture(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
-    );
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
-
     LOG_INFO(logging::opengl_logger, "Frame Buffer created");
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -317,7 +343,6 @@ imguiTest(World world) {
     // all of the above needs to be in imgui
 
     QuadRenderer QR;
-
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
@@ -347,8 +372,9 @@ imguiTest(World world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
-    LOG_INFO(logging::opengl_logger, "Scene initialized");
+    gui::sky::SkyRenderer SR;
 
+    LOG_INFO(logging::opengl_logger, "Scene initialized");
 
     // Main loop
 #ifdef __EMSCRIPTEN__
@@ -371,6 +397,15 @@ imguiTest(World world) {
         // Generally you may always pass all inputs to dear imgui, and hide them from
         // your application based on those two flags.
         glfwPollEvents();
+
+        SM.render_shadow_depth_buffer();
+        // clear the frame buffer each frame
+        glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // render the sky to the frame buffer
+        SR.render(window, window_frame_buffer);
+        // render the sene to the frame buffer
+        MR.render(window, window_frame_buffer);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -431,16 +466,16 @@ imguiTest(World world) {
             ImGui::End();
         }
 
-        /*{
+        {
             ImGui::Begin("OpenGL Texture Text");
-            //ImGui::Text("pointer = %p", my_image_texture);
-            //ImGui::Text("size = %d x %d", my_image_width, my_image_height);
+            ImGui::Text("pointer = %p", window_render_texture);
+            ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::Image(
-                (void*)(intptr_t)my_image_texture,
+                (void*)(intptr_t)window_render_texture,
                 ImVec2(my_image_width, my_image_height)
             );
             ImGui::End();
-        }*/
+        }
 
         // Rendering
         ImGui::Render();
