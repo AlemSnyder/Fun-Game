@@ -152,40 +152,42 @@ imguiTest(World& world) {
         return -1;
     }
 
+//! breaks here
+//? probably because cannot generate buffer
     // generates a frame buffer, screen texture, and and a depth buffer
-    GLuint window_frame_buffer = 0;
-    glGenFramebuffers(1, &window_frame_buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-
-    GLuint window_render_texture;
-    glGenTextures(1, &window_render_texture);
-
-    glBindTexture(GL_TEXTURE_2D, window_render_texture);
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
-        GL_UNSIGNED_BYTE, 0
-    );
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    GLuint window_depth_buffer;
-    glGenRenderbuffers(1, &window_depth_buffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
-    glRenderbufferStorage(
-        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, my_image_width, my_image_height
-    );
-    glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
-    );
-
-    glFramebufferTexture(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
-    );
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
+//    GLuint window_frame_buffer = 0;
+//    glGenFramebuffers(1, &window_frame_buffer);
+//    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+//
+//    GLuint window_render_texture;
+//    glGenTextures(1, &window_render_texture);
+//
+//    glBindTexture(GL_TEXTURE_2D, window_render_texture);
+//    glTexImage2D(
+//        GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
+//        GL_UNSIGNED_BYTE, 0
+//    );
+//
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//
+//    GLuint window_depth_buffer;
+//    glGenRenderbuffers(1, &window_depth_buffer);
+//    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
+//    glRenderbufferStorage(
+//        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, my_image_width, my_image_height
+//    );
+//    glFramebufferRenderbuffer(
+//        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
+//    );
+//
+//    glFramebufferTexture(
+//        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
+//    );
+//    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+//    glDrawBuffers(1, DrawBuffers);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -295,6 +297,7 @@ imguiTest(World& world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
+    /*
     auto mesh = world.get_mesh_greedy();
 
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
@@ -336,13 +339,14 @@ imguiTest(World& world) {
 
     LOG_INFO(logging::opengl_logger, "Frame Buffer created");
 
+    */
+
+   /*
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         return -1;
     }
     // end
     // all of the above needs to be in imgui
-
-    QuadRenderer QR;
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
@@ -372,11 +376,11 @@ imguiTest(World& world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
-    gui::sky::SkyRenderer SR;
+    //gui::sky::SkyRenderer SR;
 
-    LOG_INFO(logging::opengl_logger, "Scene initialized");
+    LOG_INFO(logging::opengl_logger, "Scene initialized");*/
 
-    // Main loop
+    //! Main loop
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt
     // to do a fopen() of the imgui.ini file. You may manually call
@@ -398,14 +402,14 @@ imguiTest(World& world) {
         // your application based on those two flags.
         glfwPollEvents();
 
-        SM.render_shadow_depth_buffer();
+        //SM.render_shadow_depth_buffer();
         // clear the frame buffer each frame
-        glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render the sky to the frame buffer
-        SR.render(window, window_frame_buffer);
+        //SR.render(window, window_frame_buffer);
         // render the sene to the frame buffer
-        MR.render(window, window_frame_buffer);
+        //MR.render(window, window_frame_buffer);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -463,17 +467,6 @@ imguiTest(World& world) {
             ImGui::Text("Hello from another window!");
             if (ImGui::Button("Close Me"))
                 show_another_window = false;
-            ImGui::End();
-        }
-
-        {
-            ImGui::Begin("OpenGL Texture Text");
-            ImGui::Text("pointer = %p", window_render_texture);
-            ImGui::Text("size = %d x %d", my_image_width, my_image_height);
-            ImGui::Image(
-                (void*)(intptr_t)window_render_texture,
-                ImVec2(my_image_width, my_image_height)
-            );
             ImGui::End();
         }
 
