@@ -34,6 +34,7 @@ QuadRenderer::QuadRenderer() {
 }
 
 QuadRenderer::~QuadRenderer() {
+    glDeleteBuffers(1, &quad_vertexbuffer);
     glDeleteProgram(programID_);
 }
 
@@ -48,13 +49,12 @@ QuadRenderer::render(
     // from the lower left corner to the upper right
     glViewport(0, 0, width, height);
 
-    //glDisable(GL_CULL_FACE);
-    //glDisable(GL_DEPTH_TEST);
+    // glDisable(GL_CULL_FACE);
+    // glDisable(GL_DEPTH_TEST);
 
     glClear(GL_DEPTH_BUFFER_BIT);
     // Use our shader
     glUseProgram(programID_);
-
 
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);

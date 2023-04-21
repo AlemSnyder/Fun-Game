@@ -46,6 +46,12 @@ class SkyData {
      */
     inline SkyData(){};
 
+    ~SkyData() {
+        glDeleteBuffers(1, &star_positions_);
+        glDeleteBuffers(1, &age_buffer_);
+        glDeleteBuffers(1, &shape_buffer_);
+    }
+
     SkyData(std::filesystem::path path);
 
     GLuint

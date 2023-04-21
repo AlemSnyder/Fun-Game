@@ -67,6 +67,11 @@ class ShadowMap {
      */
     ShadowMap(int w, int h);
 
+    ~ShadowMap(){
+        glDeleteFramebuffers(1, &frame_buffer_name_);
+        glDeleteTextures(1, &depth_texture_);
+    }
+
     /**
      * @brief adds a non-indexed mesh so it will cast a shadow
      *
