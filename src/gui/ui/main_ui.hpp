@@ -153,6 +153,11 @@ imguiTest(World& world) {
         return -1;
     }
 
+    // No idea why this is necessary, but it is
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
+
 //! breaks here
 //? probably because cannot generate buffer
     // generates a frame buffer, screen texture, and and a depth buffer
@@ -500,6 +505,12 @@ imguiTest(World& world) {
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
 #endif
+
+    // Cleanup VBO and shader
+    glDeleteVertexArrays(1, &VertexArrayID);
+    glDeleteRenderbuffers(1, &window_depth_buffer);
+    glDeleteTextures(1, &window_render_texture);
+    glDeleteFramebuffers(1, &window_frame_buffer);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

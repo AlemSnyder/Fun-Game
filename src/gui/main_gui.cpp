@@ -132,6 +132,11 @@ GUITest(World world) {
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
 
+    // No idea why this is necessary, but it is
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
+
     //  The mesh of the terrain
     std::vector<terrain::TerrainMesh> chunk_meshes;
     chunk_meshes.resize(mesh.size());
@@ -263,6 +268,7 @@ GUITest(World world) {
            && glfwWindowShouldClose(window) == 0);
 
     // Cleanup VBO and shader
+    glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteRenderbuffers(1, &window_depth_buffer);
     glDeleteTextures(1, &window_render_texture);
     glDeleteFramebuffers(1, &window_frame_buffer);
