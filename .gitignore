@@ -62,6 +62,9 @@ vendor/imgui/backends/*
 # Built Visual Studio Code Extensions
 *.vsix
 
+# imgui file
+*.ini
+
 #
 # Cmake
 #
