@@ -57,6 +57,7 @@ imguiTest() {
 #include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
 #include "../shader.hpp"
+#include "../controls.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -376,6 +377,8 @@ imguiTest(World& world) {
     gui::sky::SkyRenderer SR;
 
     LOG_INFO(logging::opengl_logger, "Scene initialized");
+
+    controls::computeMatricesFromInputs(window);
 
     //! Main loop
 #ifdef __EMSCRIPTEN__
