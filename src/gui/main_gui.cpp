@@ -10,7 +10,7 @@
 #include "data_structures/static_mesh.hpp"
 #include "data_structures/terrain_mesh.hpp"
 #include "gui_logging.hpp"
-#include "quad_renderer.hpp"
+#include "render/quad_renderer.hpp"
 #include "render/renderer.hpp"
 #include "render/shadow_map.hpp"
 #include "render/sky.hpp"

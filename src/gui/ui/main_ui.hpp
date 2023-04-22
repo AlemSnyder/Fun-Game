@@ -52,12 +52,11 @@ imguiTest() {
 #include "../data_structures/static_mesh.hpp"
 #include "../data_structures/terrain_mesh.hpp"
 #include "../gui_logging.hpp"
-#include "../quad_renderer.hpp"
+#include "../render/quad_renderer.hpp"
 #include "../render/renderer.hpp"
 #include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
 #include "../shader.hpp"
-#include "../controls.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -158,8 +157,8 @@ imguiTest(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-//! breaks here
-//? probably because cannot generate buffer
+    //! breaks here
+    //? probably because cannot generate buffer
     // generates a frame buffer, screen texture, and and a depth buffer
     GLuint window_frame_buffer = 0;
     glGenFramebuffers(1, &window_frame_buffer);
@@ -344,7 +343,6 @@ imguiTest(World& world) {
 
     LOG_INFO(logging::opengl_logger, "Frame Buffer created");
 
-   
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         return -1;
     }
@@ -416,7 +414,7 @@ imguiTest(World& world) {
         // render the sene to the frame buffer
         MR.render(window, window_frame_buffer);
 
-        glBindFramebuffer(GL_FRAMEBUFFER,0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -434,6 +432,24 @@ imguiTest(World& world) {
         {
             static float f = 0.0f;
             static int counter = 0;
+
+            {
+                ImGui::Begin(
+                    "OpenGL Texture Text", 0,
+                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+                        | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
+                        | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
+                        | ImGuiWindowFlags_NoScrollWithMouse
+                        | ImGuiWindowFlags_NoBringToFrontOnFocus
+                );
+                // ImGui::Text("pointer = %i", window_render_texture);
+                // ImGui::Text("size = %d x %d", my_image_width, my_image_height);
+                ImGui::Image(
+                    (void*)(intptr_t)window_render_texture,
+                    ImVec2(my_image_width, my_image_height)
+                );
+                ImGui::End();
+            }
 
             ImGui::Begin("Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
@@ -481,10 +497,6 @@ imguiTest(World& world) {
             ImGui::Begin("OpenGL Texture Text");
             ImGui::Text("pointer = %i", window_render_texture);
             ImGui::Text("size = %d x %d", my_image_width, my_image_height);
-            ImGui::Image(
-                (void*)(intptr_t)window_render_texture,
-                ImVec2(my_image_width, my_image_height)
-            );
             ImGui::End();
         }
 
