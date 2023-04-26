@@ -427,15 +427,15 @@ imguiTest(World& world) {
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
-        // create a named window.
         {
-            static float f = 0.0f;
-            static int counter = 0;
-
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            // the scene frame has no rounding/padding on border
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
             {
                 ImGui::Begin(
-                    "OpenGL Texture Text", 0,
+                    "OpenGL Texture Image", 0,
                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
                         | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
                         | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
@@ -450,6 +450,15 @@ imguiTest(World& world) {
                 );
                 ImGui::End();
             }
+            // remove changes to style
+            ImGui::PopStyleVar(3);
+        }
+
+        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
+        // create a named window.
+        {
+            static float f = 0.0f;
+            static int counter = 0;
 
             ImGui::Begin("Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
