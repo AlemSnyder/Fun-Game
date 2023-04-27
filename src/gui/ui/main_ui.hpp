@@ -302,6 +302,9 @@ imguiTest(World& world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
+    // send color texture to gpu
+    terrain::TerrainColorMapping::assign_color_texture();
+
     auto mesh = world.get_mesh_greedy();
 
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
@@ -381,8 +384,6 @@ imguiTest(World& world) {
 
     LOG_INFO(logging::opengl_logger, "Scene initialized");
 
-    controls::computeMatricesFromInputs(window);
-
     //! Main loop
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt
@@ -427,32 +428,36 @@ imguiTest(World& world) {
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        // the scene frame has no rounding/padding on border
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         {
-            ImGui::SetNextWindowPos(ImVec2(0, 0));
-            // the scene frame has no rounding/padding on border
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-            {
-                ImGui::Begin(
-                    "OpenGL Texture Image", 0,
-                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
-                        | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
-                        | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
-                        | ImGuiWindowFlags_NoScrollWithMouse
-                        | ImGuiWindowFlags_NoBringToFrontOnFocus
-                );
-                // ImGui::Text("pointer = %i", window_render_texture);
-                // ImGui::Text("size = %d x %d", my_image_width, my_image_height);
-                ImGui::Image(
-                    (void*)(intptr_t)window_render_texture,
-                    ImVec2(my_image_width, my_image_height)
-                );
-                ImGui::End();
+            ImGui::Begin(
+                "OpenGL Texture Image", 0,
+                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+                    | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
+                    | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
+                    | ImGuiWindowFlags_NoScrollWithMouse
+                    | ImGuiWindowFlags_NoBringToFrontOnFocus
+            );
+            // ImGui::Text("pointer = %i", window_render_texture);
+            // ImGui::Text("size = %d x %d", my_image_width, my_image_height);
+            ImGui::Image(
+                (void*)(intptr_t)window_render_texture,
+                ImVec2(my_image_width, my_image_height)
+            );
+
+            if(ImGui::IsWindowFocused()){
+                controls::computeMatricesFromInputs(window);
             }
-            // remove changes to style
-            ImGui::PopStyleVar(3);
+
+            ImGui::End();
         }
+        // remove changes to style
+        ImGui::PopStyleVar(3);
+
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
