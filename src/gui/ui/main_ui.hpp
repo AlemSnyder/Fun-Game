@@ -509,6 +509,9 @@ imguiTest(World& world) {
 
         {
             ImGui::Begin("OpenGL Texture Text");
+            if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+                ImGui::SetWindowFocus();
+            }
             ImGui::Text("pointer = %i", window_render_texture);
             ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::End();
