@@ -2,7 +2,7 @@
 
 #include "../data_structures/terrain_mesh.hpp"
 #include "../../util/files.hpp"
-#include "../controls.hpp"
+#include "../scene/controls.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
 #include <GL/glew.h>

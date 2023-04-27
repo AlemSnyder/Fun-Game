@@ -48,7 +48,7 @@ imguiTest() {
 #include "../../entity/mesh.hpp"
 #include "../../logging.hpp"
 #include "../../world.hpp"
-#include "../controls.hpp"
+#include "../scene/controls.hpp"
 #include "../data_structures/static_mesh.hpp"
 #include "../data_structures/terrain_mesh.hpp"
 #include "../gui_logging.hpp"

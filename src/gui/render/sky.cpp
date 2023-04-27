@@ -1,7 +1,7 @@
 #include "sky.hpp"
 
 #include "../../util/files.hpp"
-#include "../controls.hpp"
+#include "../scene/controls.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
