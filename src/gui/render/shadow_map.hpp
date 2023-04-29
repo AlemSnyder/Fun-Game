@@ -119,4 +119,11 @@ class ShadowMap {
      *
      */
     void render_shadow_depth_buffer() const;
+
+    inline uint32_t get_shadow_width() const {
+        return shadow_width_;
+    }
+    inline uint32_t get_shadow_height() const {
+        return shadow_height_;
+    }
 };
