@@ -1,43 +1,3 @@
-/*#include "../../logging.hpp"
-
-#include <imgui/imgui.h>
-
-inline int
-imguiTest() {
-    quill::Logger* logger = logging::get_logger();
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-
-    // Build atlas
-    unsigned char* tex_pixels = NULL;
-    int tex_w, tex_h;
-    io.Fonts->GetTexDataAsRGBA32(&tex_pixels, &tex_w, &tex_h);
-
-    for (int n = 0; n < 20; n++) {
-        LOG_INFO(logger, "NewFrame() {}", n);
-        io.DisplaySize = ImVec2(1920, 1080);
-        io.DeltaTime = 1.0f / 60.0f;
-        ImGui::NewFrame();
-
-        static float f = 0.0f;
-        ImGui::Text("Hello, world!");
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-        ImGui::Text(
-            "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
-            io.Framerate
-        );
-        ImGui::ShowDemoWindow(NULL);
-
-        ImGui::Render();
-    }
-
-    LOG_INFO(logger, "DestroyContext()");
-    ImGui::DestroyContext();
-    return 0;
-}*/
-
 // Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable
 // pipeline (GLFW is a cross-platform general purpose library for handling windows,
 // inputs, OpenGL/Vulkan/Metal graphics context creation, etc.) If you are new to Dear
@@ -48,10 +8,12 @@ imguiTest() {
 #include "../../entity/mesh.hpp"
 #include "../../logging.hpp"
 #include "../../world.hpp"
+#include "../data_structures/frame_buffer_multisample.hpp"
 #include "../data_structures/static_mesh.hpp"
 #include "../data_structures/terrain_mesh.hpp"
 #include "../gui_logging.hpp"
 #include "../render/quad_renderer.hpp"
+#include "../render/quad_renderer_multisample.hpp"
 #include "../render/renderer.hpp"
 #include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
@@ -88,6 +50,8 @@ namespace UI {
 // Main code
 int
 imguiTest(World& world) {
+    glEnable(GL_MULTISAMPLE);
+
     // initialize logging
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
     GLint context_flag;
@@ -159,42 +123,78 @@ imguiTest(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    //! breaks here
-    //? probably because cannot generate buffer
-    // generates a frame buffer, screen texture, and and a depth buffer
-    GLuint window_frame_buffer = 0;
-    glGenFramebuffers(1, &window_frame_buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+    gui::FrameBufferMultisample main_frame_buffer(my_image_width, my_image_height, 4);
 
-    GLuint window_render_texture;
-    glGenTextures(1, &window_render_texture);
+    /*    // generates a frame buffer, screen texture, and and a depth buffer
+        GLuint window_frame_buffer = 0;
+        glGenFramebuffers(1, &window_frame_buffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
 
-    glBindTexture(GL_TEXTURE_2D, window_render_texture);
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
-        GL_UNSIGNED_BYTE, 0
-    );
+        GLuint window_render_texture;
+        glGenTextures(1, &window_render_texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, window_render_texture);
+        glTexImage2DMultisample(
+            GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB8, my_image_width, my_image_height,
+       GL_TRUE
+        );
+        std::cout << glGetError() << std::endl;
 
-    GLuint window_depth_buffer;
-    glGenRenderbuffers(1, &window_depth_buffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
-    glRenderbufferStorage(
-        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, my_image_width, my_image_height
-    );
-    glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
-    );
+        //glBindTexture(GL_TEXTURE_2D, window_render_texture);
+        //glTexImage2D(
+        //    GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
+        //    GL_UNSIGNED_BYTE, 0
+        //);
 
-    glFramebufferTexture(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
-    );
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
+        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S,
+       GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T,
+       GL_CLAMP_TO_EDGE);
+
+        //! something something cannot access multisample using texture, must use texel
+       fetch
+
+        std::cout << glGetError() << std::endl;
+
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        GLuint window_depth_buffer;
+        glGenRenderbuffers(1, &window_depth_buffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
+        glRenderbufferStorageMultisample(
+            GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, my_image_width, my_image_height
+        );
+        glFramebufferRenderbuffer(
+            GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
+        );
+
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+       window_render_texture, 0
+        );
+        std::cout << glGetError() << std::endl;
+
+        //glFramebufferTexture2D(
+        //    GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+       window_render_texture, 0
+        //);
+        GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+        glDrawBuffers(1, DrawBuffers);
+
+        std::cout << glGetError() << std::endl;
+
+        GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+        if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << framebuffer_status << std::endl;
+            std::cout << glGetError() << std::endl;
+            return -1;
+        }*/
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -348,11 +348,11 @@ imguiTest(World& world) {
 
     LOG_INFO(logging::opengl_logger, "Frame Buffer created");
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        return -1;
-    }
-    // end
-    // all of the above needs to be in imgui
+    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    //     return -1;
+    // }
+    //  end
+    //  all of the above needs to be in imgui
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
@@ -382,6 +382,8 @@ imguiTest(World& world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
+    QuadRendererMultisample QRMS;
+
     gui::sky::SkyRenderer SR;
 
     LOG_INFO(logging::opengl_logger, "Scene initialized");
@@ -408,14 +410,23 @@ imguiTest(World& world) {
         // your application based on those two flags.
         glfwPollEvents();
 
+        // TODO
+        // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
+
         SM.render_shadow_depth_buffer();
         // clear the frame buffer each frame
-        glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, main_frame_buffer.get_frame_buffer_name());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render the sky to the frame buffer
-        SR.render(window, window_frame_buffer);
+        SR.render(window, main_frame_buffer.get_frame_buffer_name());
         // render the sene to the frame buffer
-        MR.render(window, window_frame_buffer);
+        MR.render(window, main_frame_buffer.get_frame_buffer_name());
+
+        QRMS.render(
+            main_frame_buffer.get_width(), main_frame_buffer.get_height(),
+            main_frame_buffer.get_num_samples(), main_frame_buffer.get_texture_name(),
+            main_frame_buffer.get_single_sample_texture()
+        );
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -447,7 +458,7 @@ imguiTest(World& world) {
             // ImGui::Text("pointer = %i", window_render_texture);
             // ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::Image(
-                reinterpret_cast<ImTextureID>(window_render_texture),
+                reinterpret_cast<ImTextureID>(main_frame_buffer.get_single_sample_texture()),
                 ImVec2(my_image_width, my_image_height)
             );
 
@@ -513,7 +524,7 @@ imguiTest(World& world) {
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 ImGui::SetWindowFocus();
             }
-            ImGui::Text("pointer = %i", window_render_texture);
+            ImGui::Text("pointer = %i", main_frame_buffer.get_texture_name());
             ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::End();
         }
@@ -548,9 +559,6 @@ imguiTest(World& world) {
 
     // Cleanup VBO and shader
     glDeleteVertexArrays(1, &VertexArrayID);
-    glDeleteRenderbuffers(1, &window_depth_buffer);
-    glDeleteTextures(1, &window_render_texture);
-    glDeleteFramebuffers(1, &window_frame_buffer);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

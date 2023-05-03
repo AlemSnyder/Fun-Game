@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 
+#include <iostream>
 #include <string>
 
 namespace gui {
@@ -14,8 +15,9 @@ namespace gui {
 // file) We are using a gl call back on all messages.
 inline void GLAPIENTRY
 message_callback(
-    GLenum source, GLenum type, unsigned int id, GLenum severity, [[maybe_unused]] GLsizei length,
-    const char* message, [[maybe_unused]] const void* userParam
+    GLenum source, GLenum type, unsigned int id, GLenum severity,
+    [[maybe_unused]] GLsizei length, const char* message,
+    [[maybe_unused]] const void* userParam
 ) {
     std::string source_sting;
     std::string type_string;
@@ -41,6 +43,8 @@ message_callback(
         case GL_DEBUG_TYPE_OTHER:               type_string = "Other";                  break;
     }
     //clang-format on
+    std::cout << "[OpenGL Error](" << type << severity << source_sting << id << message << ")" <<  std::endl;
+/*
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             LOG_ERROR(
@@ -69,7 +73,7 @@ message_callback(
                 message
             );
             break;
-    }
+    }*/
 }
 
 } // namespace gui
