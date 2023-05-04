@@ -99,12 +99,13 @@ imguiTest(World& world) {
         GLFW_OPENGL_CORE_PROFILE
     ); // somehow turning on core profiling
 
-    int my_image_width = 1024;
-    int my_image_height = 768;
+    int window_width = 1280;
+    int window_height = 800;
 
     // Create window with graphics context
-    GLFWwindow* window =
-        glfwCreateWindow(1280, 800, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(
+        window_width, window_height, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL
+    );
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -123,7 +124,7 @@ imguiTest(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    gui::FrameBufferMultisample main_frame_buffer(my_image_width, my_image_height, 4);
+    gui::FrameBufferMultisample main_frame_buffer(window_width, window_height, 4);
 
     /*    // generates a frame buffer, screen texture, and and a depth buffer
         GLuint window_frame_buffer = 0;
@@ -458,8 +459,10 @@ imguiTest(World& world) {
             // ImGui::Text("pointer = %i", window_render_texture);
             // ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::Image(
-                reinterpret_cast<ImTextureID>(main_frame_buffer.get_single_sample_texture()),
-                ImVec2(my_image_width, my_image_height)
+                reinterpret_cast<ImTextureID>(
+                    main_frame_buffer.get_single_sample_texture()
+                ),
+                ImVec2(window_width, window_height)
             );
 
             if (ImGui::IsWindowFocused()) {
@@ -524,8 +527,11 @@ imguiTest(World& world) {
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 ImGui::SetWindowFocus();
             }
-            ImGui::Text("pointer = %i", main_frame_buffer.get_texture_name());
-            ImGui::Text("size = %d x %d", my_image_width, my_image_height);
+            ImGui::Text("pointer MS = %i", main_frame_buffer.get_texture_name());
+            ImGui::Text(
+                "pointer single = %i", main_frame_buffer.get_single_sample_texture()
+            );
+            ImGui::Text("size = %d x %d", window_width, window_height);
             ImGui::End();
         }
 

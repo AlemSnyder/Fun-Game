@@ -253,7 +253,7 @@ GUITest(World world) {
         // clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render to the screen
-        QR.render(windowFrameWidth, windowFrameHeight, window_render_texture, 0);
+        QR.render(windowFrameWidth, windowFrameHeight, window_frame_buffer, 0);
 
         if (controls::show_shadow_map(window)) {
             QR.render(512, 512, SM.get_depth_texture(), 0);

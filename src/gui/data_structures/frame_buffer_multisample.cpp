@@ -1,16 +1,18 @@
 
 #include "frame_buffer_multisample.hpp"
+
 #include "../../logging.hpp"
 
-gui::FrameBufferMultisample::FrameBufferMultisample(uint32_t width, uint32_t height, uint32_t samples){
-    
+gui::FrameBufferMultisample::FrameBufferMultisample(
+    uint32_t width, uint32_t height, uint32_t samples
+) {
     width_ = width;
     height_ = height;
     samples_ = samples;
 
     // generates a frame buffer, screen texture, and and a depth buffer
 
-    //frame buffer (the container for the other two)
+    // frame buffer (the container for the other two)
     glGenFramebuffers(1, &frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
 
@@ -33,26 +35,28 @@ gui::FrameBufferMultisample::FrameBufferMultisample(uint32_t width, uint32_t hei
     );
     // connect the texture to the frame buffer
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, render_texture, 0
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, render_texture,
+        0
     );
 
     GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, DrawBuffers);
 
-
     GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
         // log some error
-        LOG_CRITICAL(logging::opengl_logger, "Framebuffer Incomplete with code {}", framebuffer_status);
-        //return -1;
+        LOG_CRITICAL(
+            logging::opengl_logger, "Framebuffer Incomplete with code {}",
+            framebuffer_status
+        );
     }
 
     glGenTextures(1, &single_sample_texture);
 
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, single_sample_texture);
-    glTexImage2DMultisample(
-        GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB8, width_, height_, GL_TRUE
+    glBindTexture(GL_TEXTURE_2D, single_sample_texture);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, 0
     );
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -60,4 +64,13 @@ gui::FrameBufferMultisample::FrameBufferMultisample(uint32_t width, uint32_t hei
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+    framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
+        // log some error
+        LOG_CRITICAL(
+            logging::opengl_logger, "Framebuffer Incomplete with code {}",
+            framebuffer_status
+        );
+    }
 }
