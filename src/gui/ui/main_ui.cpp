@@ -426,7 +426,7 @@ imguiTest(World& world) {
         QRMS.render(
             main_frame_buffer.get_width(), main_frame_buffer.get_height(),
             main_frame_buffer.get_num_samples(), main_frame_buffer.get_texture_name(),
-            main_frame_buffer.get_single_sample_texture()
+            main_frame_buffer.get_frame_buffer_single()
         );
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

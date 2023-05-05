@@ -23,6 +23,6 @@ main() {
 
     //texelFetch(texture, UV, UV height)
 
-    //color = texture_MS(texture, ivec2(int(UV.x* width), int(UV.y*height)));
-    color = vec3(0,1,0);
+    color = texture_MS(texture, ivec2(int(UV.x* width), int(UV.y*height)));
+    //color = vec3(0,1,0);
 }

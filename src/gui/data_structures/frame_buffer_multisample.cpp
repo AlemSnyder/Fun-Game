@@ -52,6 +52,11 @@ gui::FrameBufferMultisample::FrameBufferMultisample(
         );
     }
 
+    // frame buffer (the container for the other two)
+    glGenFramebuffers(1, &frame_buffer_single);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_single);
+
+    // texture (what it looks like)
     glGenTextures(1, &single_sample_texture);
 
     glBindTexture(GL_TEXTURE_2D, single_sample_texture);
@@ -64,6 +69,15 @@ gui::FrameBufferMultisample::FrameBufferMultisample(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+    // connect the texture to the frame buffer
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, single_sample_texture,
+        0
+    );
+
+    DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, DrawBuffers);
+    
     framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {

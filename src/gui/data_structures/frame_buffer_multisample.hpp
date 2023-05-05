@@ -12,6 +12,7 @@ class FrameBufferMultisample {
     GLuint render_texture;
     GLuint depth_buffer;
     GLuint single_sample_texture;
+    GLuint frame_buffer_single;
     uint32_t width_;
     uint32_t height_;
     uint32_t samples_;
@@ -26,6 +27,7 @@ class FrameBufferMultisample {
         glDeleteTextures(1, &render_texture);
         glDeleteFramebuffers(1, &frame_buffer);
         glDeleteTextures(1, &single_sample_texture);
+        glDeleteFramebuffers(1, &frame_buffer_single);
     }
 
     [[nodiscard]] inline uint32_t
@@ -37,6 +39,7 @@ class FrameBufferMultisample {
     get_height() const {
         return height_;
     }
+
     [[nodiscard]] inline GLuint
     get_num_samples() {
         return samples_;
@@ -60,6 +63,11 @@ class FrameBufferMultisample {
     [[nodiscard]] inline GLuint
     get_single_sample_texture() {
         return single_sample_texture;
+    }
+
+    [[nodiscard]] inline GLuint
+    get_frame_buffer_single() {
+        return frame_buffer_single;
     }
 };
 
