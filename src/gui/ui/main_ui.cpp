@@ -19,6 +19,7 @@
 #include "../render/sky.hpp"
 #include "../scene/controls.hpp"
 #include "../shader.hpp"
+#include "../scene/scene.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -124,7 +125,7 @@ imguiTest(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    gui::FrameBufferMultisample main_frame_buffer(window_width, window_height, 4);
+    //gui::FrameBufferMultisample main_frame_buffer(window_width, window_height, 4);
 
     /*    // generates a frame buffer, screen texture, and and a depth buffer
         GLuint window_frame_buffer = 0;
@@ -305,89 +306,7 @@ imguiTest(World& world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
-    // send color texture to gpu
-    terrain::TerrainColorMapping::assign_color_texture();
-
-    auto mesh = world.get_mesh_greedy();
-
-    LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
-
-    voxel_utility::VoxelObject default_trees_voxel(
-        files::get_data_path() / "models" / "DefaultTree.qb"
-    );
-
-    auto mesh_trees = entity::generate_mesh(default_trees_voxel);
-
-    //  The mesh of the terrain
-    //! breaks here
-    //? Why: because opengl is not initialized
-    std::vector<terrain::TerrainMesh> chunk_meshes;
-    chunk_meshes.resize(mesh.size());
-    for (size_t i = 0; i < chunk_meshes.size(); i++) {
-        chunk_meshes[i].init(mesh[i]);
-    }
-
-    LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
-
-    // The above is for the wold the below is for trees
-
-    std::vector<glm::ivec3> model_matrices;
-    // generate positions of trees
-    for (unsigned int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
-        for (unsigned int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
-            unsigned int z = world.terrain_main.get_Z_solid(x, y) + 1;
-            if (z != 1) { // if the position of the ground is not zero
-                glm::ivec3 model(x, y, z);
-                model_matrices.push_back(model);
-            }
-        }
-
-    LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
-    // static because the mesh does not have moving parts
-    // this generates the buffer that holds the mesh data
-    terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
-
-    LOG_INFO(logging::opengl_logger, "Frame Buffer created");
-
-    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    //     return -1;
-    // }
-    //  end
-    //  all of the above needs to be in imgui
-
-    glm::vec3 light_direction =
-        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
-        * 128.0f;                                       // length
-
-    glm::mat4 depth_projection_matrix =
-        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
-
-    // Renders the Shadow depth map
-    ShadowMap SM(4096, 4096);
-    SM.set_light_direction(light_direction);
-    SM.set_depth_projection_matrix(depth_projection_matrix);
-
-    for (auto& m : chunk_meshes) {
-        SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
-    }
-    SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
-
-    // renders the world scene
-    MainRenderer MR;
-    MR.set_light_direction(light_direction);
-    MR.set_depth_projection_matrix(depth_projection_matrix);
-
-    for (auto& m : chunk_meshes) {
-        MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
-    }
-    MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
-    MR.set_depth_texture(SM.get_depth_texture());
-
-    QuadRendererMultisample QRMS;
-
-    gui::sky::SkyRenderer SR;
-
-    LOG_INFO(logging::opengl_logger, "Scene initialized");
+    gui::Scene main_scene(world, window_width, window_height, 4096);
 
     //! Main loop
 #ifdef __EMSCRIPTEN__
@@ -414,20 +333,7 @@ imguiTest(World& world) {
         // TODO
         // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
 
-        SM.render_shadow_depth_buffer();
-        // clear the frame buffer each frame
-        glBindFramebuffer(GL_FRAMEBUFFER, main_frame_buffer.get_frame_buffer_name());
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // render the sky to the frame buffer
-        SR.render(window, main_frame_buffer.get_frame_buffer_name());
-        // render the sene to the frame buffer
-        MR.render(window, main_frame_buffer.get_frame_buffer_name());
-
-        QRMS.render(
-            main_frame_buffer.get_width(), main_frame_buffer.get_height(),
-            main_frame_buffer.get_num_samples(), main_frame_buffer.get_texture_name(),
-            main_frame_buffer.get_frame_buffer_single()
-        );
+        main_scene.updata(window);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -460,7 +366,7 @@ imguiTest(World& world) {
             // ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(
-                    main_frame_buffer.get_single_sample_texture()
+                    main_scene.get_scene()
                 ),
                 ImVec2(window_width, window_height)
             );
@@ -527,10 +433,7 @@ imguiTest(World& world) {
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 ImGui::SetWindowFocus();
             }
-            ImGui::Text("pointer MS = %i", main_frame_buffer.get_texture_name());
-            ImGui::Text(
-                "pointer single = %i", main_frame_buffer.get_single_sample_texture()
-            );
+            ImGui::Text("pointer MS = %i", main_scene.get_scene());
             ImGui::Text("size = %d x %d", window_width, window_height);
             ImGui::End();
         }
@@ -538,8 +441,8 @@ imguiTest(World& world) {
         if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
             ImGui::Begin("Shadow Depth Texture");
             ImGui::Image(
-                reinterpret_cast<ImTextureID>(SM.get_depth_texture()),
-                ImVec2(SM.get_shadow_width() / 8, SM.get_shadow_height() / 8)
+                reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
+                ImVec2(main_scene.get_shadow_width() / 8, main_scene.get_shadow_height() / 8)
             );
 
             ImGui::End();

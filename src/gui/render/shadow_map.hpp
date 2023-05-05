@@ -98,7 +98,7 @@ class ShadowMap {
      *
      * @return GLuint& reference to frame buffer ID
      */
-    inline GLuint& et_frame_buffer() { return frame_buffer_name_; }
+    inline GLuint& get_frame_buffer() { return frame_buffer_name_; }
 
     /**
      * @brief Set the light direction vector
