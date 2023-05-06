@@ -15,6 +15,7 @@
 #include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
 #include "../shader.hpp"
+#include "../scene/scene.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -137,126 +138,23 @@ GUITest(World world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    //  The mesh of the terrain
-    std::vector<terrain::TerrainMesh> chunk_meshes;
-    chunk_meshes.resize(mesh.size());
-    for (size_t i = 0; i < chunk_meshes.size(); i++) {
-        chunk_meshes[i].init(mesh[i]);
-    }
-
-    LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
-
-    // The above is for the wold the below is for trees
-
-    std::vector<glm::ivec3> model_matrices;
-    // generate positions of trees
-    for (size_t x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
-        for (size_t y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
-            size_t z = world.terrain_main.get_Z_solid(x, y) + 1;
-            if (z != 1) { // if the position of the ground is not zero
-                glm::ivec3 model(x, y, z);
-                model_matrices.push_back(model);
-            }
-        }
-
-    LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
-    // static because the mesh does not have moving parts
-    // this generates the buffer that holds the mesh data
-    terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
-
-    // generates a frame buffer, screen texture, and and a depth buffer
-    GLuint window_frame_buffer = 0;
-    glGenFramebuffers(1, &window_frame_buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-
-    GLuint window_render_texture;
-    glGenTextures(1, &window_render_texture);
-
-    glBindTexture(GL_TEXTURE_2D, window_render_texture);
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGB, windowFrameWidth, windowFrameHeight, 0, GL_RGB,
-        GL_UNSIGNED_BYTE, 0
-    );
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    GLuint window_depth_buffer;
-    glGenRenderbuffers(1, &window_depth_buffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
-    glRenderbufferStorage(
-        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowFrameWidth, windowFrameHeight
-    );
-    glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
-    );
-
-    glFramebufferTexture(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, window_render_texture, 0
-    );
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        return -1;
-    }
-    // end
-    // all of the above needs to be in imgui
-
     QuadRenderer QR;
 
-    glm::vec3 light_direction =
-        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
-        * 128.0f;                                       // length
-
-    glm::mat4 depth_projection_matrix =
-        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
-
-    // Renders the Shadow depth map
-    ShadowMap SM(4096, 4096);
-    SM.set_light_direction(light_direction);
-    SM.set_depth_projection_matrix(depth_projection_matrix);
-
-    for (auto& m : chunk_meshes) {
-        SM.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
-    }
-    SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
-
-    // renders the world scene
-    MainRenderer MR;
-    MR.set_light_direction(light_direction);
-    MR.set_depth_projection_matrix(depth_projection_matrix);
-
-    for (auto& m : chunk_meshes) {
-        MR.add_mesh(std::make_shared<terrain::TerrainMesh>(m));
-    }
-    MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
-    MR.set_depth_texture(SM.get_depth_texture());
-
-    sky::SkyRenderer SR;
+    gui::Scene main_scene(world, windowFrameWidth, windowFrameHeight, 4096);
 
     do {
         controls::computeMatricesFromInputs(window);
-        SM.render_shadow_depth_buffer();
-        // clear the frame buffer each frame
-        glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // render the sky to the frame buffer
-        SR.render(window, window_frame_buffer);
-        // render the sene to the frame buffer
-        MR.render(window, window_frame_buffer);
+        main_scene.updata(window);
 
         // bind the the screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         // clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render to the screen
-        QR.render(windowFrameWidth, windowFrameHeight, window_frame_buffer, 0);
+        QR.render(windowFrameWidth, windowFrameHeight, main_scene.get_scene(), 0);
 
         if (controls::show_shadow_map(window)) {
-            QR.render(512, 512, SM.get_depth_texture(), 0);
+            QR.render(512, 512, main_scene.get_depth_texture(), 0);
         }
 
         // Swap buffers
@@ -269,9 +167,6 @@ GUITest(World world) {
 
     // Cleanup VBO and shader
     glDeleteVertexArrays(1, &VertexArrayID);
-    glDeleteRenderbuffers(1, &window_depth_buffer);
-    glDeleteTextures(1, &window_render_texture);
-    glDeleteFramebuffers(1, &window_frame_buffer);
 
     glfwDestroyWindow(window);
 

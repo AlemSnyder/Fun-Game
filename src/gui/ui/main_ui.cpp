@@ -125,79 +125,6 @@ imguiTest(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    //gui::FrameBufferMultisample main_frame_buffer(window_width, window_height, 4);
-
-    /*    // generates a frame buffer, screen texture, and and a depth buffer
-        GLuint window_frame_buffer = 0;
-        glGenFramebuffers(1, &window_frame_buffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, window_frame_buffer);
-
-        GLuint window_render_texture;
-        glGenTextures(1, &window_render_texture);
-
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, window_render_texture);
-        glTexImage2DMultisample(
-            GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB8, my_image_width, my_image_height,
-       GL_TRUE
-        );
-        std::cout << glGetError() << std::endl;
-
-        //glBindTexture(GL_TEXTURE_2D, window_render_texture);
-        //glTexImage2D(
-        //    GL_TEXTURE_2D, 0, GL_RGB, my_image_width, my_image_height, 0, GL_RGB,
-        //    GL_UNSIGNED_BYTE, 0
-        //);
-
-        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S,
-       GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T,
-       GL_CLAMP_TO_EDGE);
-
-        //! something something cannot access multisample using texture, must use texel
-       fetch
-
-        std::cout << glGetError() << std::endl;
-
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        GLuint window_depth_buffer;
-        glGenRenderbuffers(1, &window_depth_buffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, window_depth_buffer);
-        glRenderbufferStorageMultisample(
-            GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, my_image_width, my_image_height
-        );
-        glFramebufferRenderbuffer(
-            GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, window_depth_buffer
-        );
-
-        glFramebufferTexture2D(
-            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
-       window_render_texture, 0
-        );
-        std::cout << glGetError() << std::endl;
-
-        //glFramebufferTexture2D(
-        //    GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-       window_render_texture, 0
-        //);
-        GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        glDrawBuffers(1, DrawBuffers);
-
-        std::cout << glGetError() << std::endl;
-
-        GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-        if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
-            std::cout << framebuffer_status << std::endl;
-            std::cout << glGetError() << std::endl;
-            return -1;
-        }*/
-
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -362,8 +289,6 @@ imguiTest(World& world) {
                     | ImGuiWindowFlags_NoScrollWithMouse
                     | ImGuiWindowFlags_NoBringToFrontOnFocus
             );
-            // ImGui::Text("pointer = %i", window_render_texture);
-            // ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(
                     main_scene.get_scene()

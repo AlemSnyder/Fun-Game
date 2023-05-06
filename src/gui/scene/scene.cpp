@@ -1,55 +1,39 @@
 #include "scene.hpp"
+
 #include "../../entity/mesh.hpp"
-#include "../data_structures/terrain_mesh.hpp"
 #include "../data_structures/static_mesh.hpp"
+#include "../data_structures/terrain_mesh.hpp"
 
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-
-gui::Scene::Scene(World world, uint32_t window_width, uint32_t window_height, uint32_t shadow_map_width_height) :
-    world_(world), fbo(window_width, window_height, 4), SM(shadow_map_width_height, shadow_map_width_height) {
-        
+gui::Scene::Scene(
+    World& world, uint32_t window_width, uint32_t window_height,
+    uint32_t shadow_map_width_height
+) :
+    world_(world),
+    fbo(window_width, window_height, 4),
+    SM(shadow_map_width_height, shadow_map_width_height),
+    treesMesh(
+        entity::generate_mesh(voxel_utility::VoxelObject(
+            files::get_data_path() / "models" / "DefaultTree.qb"
+        )),
+        get_model_matrices_temp(world_)
+    ) {
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
 
     auto mesh = world_.get_mesh_greedy();
 
-    LOG_INFO(logging::opengl_logger, "End of _::get_mesh_greedy");
+    LOG_INFO(logging::opengl_logger, "End of world::get_mesh_greedy");
 
-    voxel_utility::VoxelObject default_trees_voxel(
-        files::get_data_path() / "models" / "DefaultTree.qb"
-    );
-
-    auto mesh_trees = entity::generate_mesh(default_trees_voxel);
-
+    // TODO remove this in mesh edit pr
     //  The mesh of the terrain
-    std::vector<terrain::TerrainMesh> chunk_meshes;
     chunk_meshes.resize(mesh.size());
     for (size_t i = 0; i < chunk_meshes.size(); i++) {
         chunk_meshes[i].init(mesh[i]);
     }
 
     LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
-
-    // The above is for the wold the below is for trees
-
-    std::vector<glm::ivec3> model_matrices;
-    // generate positions of trees
-    for (unsigned int x = 0; x < world_.terrain_main.get_X_MAX(); x += 40)
-        for (unsigned int y = 0; y < world_.terrain_main.get_Y_MAX(); y += 40) {
-            unsigned int z = world_.terrain_main.get_Z_solid(x, y) + 1;
-            if (z != 1) { // if the position of the ground is not zero
-                glm::ivec3 model(x, y, z);
-                model_matrices.push_back(model);
-            }
-        }
-
-    LOG_INFO(logging::opengl_logger, "Number of models: {}", model_matrices.size());
-    // static because the mesh does not have moving parts
-    // this generates the buffer that holds the mesh data
-    terrain::StaticMesh treesMesh(mesh_trees, model_matrices);
-
-    LOG_INFO(logging::opengl_logger, "Frame Buffer created");
 
     glm::vec3 light_direction =
         glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
@@ -84,7 +68,10 @@ gui::Scene::Scene(World world, uint32_t window_width, uint32_t window_height, ui
     LOG_INFO(logging::opengl_logger, "Scene initialized");
 }
 
-void gui::Scene::updata(GLFWwindow* window) {
+void
+gui::Scene::updata(GLFWwindow* window) {
+    glBindFramebuffer(GL_FRAMEBUFFER, SM.get_frame_buffer());
+    glClear(GL_DEPTH_BUFFER_BIT);
     SM.render_shadow_depth_buffer();
     // clear the frame buffer each frame
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.get_frame_buffer_name());
@@ -100,19 +87,37 @@ void gui::Scene::updata(GLFWwindow* window) {
     );
 }
 
-GLuint gui::Scene::get_scene() {
+GLuint
+gui::Scene::get_scene() {
     return fbo.get_single_sample_texture();
 }
 
-GLuint gui::Scene::get_depth_texture(){
+GLuint
+gui::Scene::get_depth_texture() {
     return SM.get_depth_texture();
 }
 
-uint32_t gui::Scene::get_shadow_width(){
+uint32_t
+gui::Scene::get_shadow_width() {
     return SM.get_shadow_width();
 }
 
-uint32_t gui::Scene::get_shadow_height(){
+uint32_t
+gui::Scene::get_shadow_height() {
     return SM.get_shadow_height();
 }
 
+std::vector<glm::ivec3>
+gui::Scene::get_model_matrices_temp(World& world) {
+    std::vector<glm::ivec3> model_matrices;
+    // generate positions of trees
+    for (unsigned int x = 0; x < world.terrain_main.get_X_MAX(); x += 40)
+        for (unsigned int y = 0; y < world.terrain_main.get_Y_MAX(); y += 40) {
+            unsigned int z = world.terrain_main.get_Z_solid(x, y) + 1;
+            if (z != 1) { // if the position of the ground is not zero
+                glm::ivec3 model(x, y, z);
+                model_matrices.push_back(model);
+            }
+        }
+    return model_matrices;
+}
