@@ -13,7 +13,9 @@
 
 #pragma once
 
-namespace terrain {
+namespace gui {
+
+namespace data_structures {
 
 class TerrainMesh : public MeshData::SingleComplexMesh {
  private:
@@ -85,5 +87,7 @@ class TerrainMesh : public MeshData::SingleComplexMesh {
         return num_vertices_;
     }
 };
+
+}
 
 } // namespace terrain

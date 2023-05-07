@@ -85,7 +85,7 @@ World::World(const Json::Value& materials_json, const std::string path) :
     chunks_mesh.resize(terrain_main.get_chunks().size());
 
     for (size_t i = 0; i < chunks_mesh.size(); i++) {
-        chunks_mesh[i] = std::make_shared<terrain::TerrainMesh>();
+        chunks_mesh[i] = std::make_shared<gui::data_structures::TerrainMesh>();
     }
 }
 
@@ -101,7 +101,7 @@ World::World(
     ) {
     chunks_mesh.resize(terrain_main.get_chunks().size());
     for (size_t i = 0; i < chunks_mesh.size(); i++) {
-        chunks_mesh[i] = std::make_shared<terrain::TerrainMesh>();
+        chunks_mesh[i] = std::make_shared<gui::data_structures::TerrainMesh>();
     }
 }
 
@@ -117,27 +117,9 @@ World::World(
     // on initialization world reserves the space it would need for shared pointers
     chunks_mesh.resize(terrain_main.get_chunks().size());
     for (size_t i = 0; i < chunks_mesh.size(); i++) {
-        chunks_mesh[i] = std::make_shared<terrain::TerrainMesh>();
+        chunks_mesh[i] = std::make_shared<gui::data_structures::TerrainMesh>();
     }
 }
-/*
-// ! deprecated
-std::vector<entity::Mesh>
-World::get_mesh_greedy() const {
-    std::vector<entity::Mesh> out;
-    for (const terrain::Chunk& c : terrain_main.get_chunks()) {
-        auto chunk_mesh = entity::generate_mesh(c);
-
-        chunk_mesh.change_color_indexing(
-            materials, terrain::TerrainColorMapping::get_colors_inverse_map()
-        );
-
-        if (chunk_mesh.get_indices().size() > 0) {
-            out.push_back(chunk_mesh);
-        }
-    }
-    return out;
-}*/
 
 void
 World::update_all_chunk_mesh() {

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-gui::ScreenData::ScreenData() {
+gui::data_structures::ScreenData::ScreenData() {
 
     std::vector<glm::vec3> vertices;
 

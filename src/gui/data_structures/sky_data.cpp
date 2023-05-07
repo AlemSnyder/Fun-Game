@@ -13,7 +13,7 @@
 
 namespace gui{
 
-namespace sky {
+namespace data_structures {
 
 SkyData::SkyData(std::filesystem::path path) {
     Json::Value stars_json;

@@ -124,4 +124,5 @@ class MainRenderer {
 };
 
 } // namespace render
+
 } // namespace gui

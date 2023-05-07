@@ -1,9 +1,9 @@
 #include "static_mesh.hpp"
 
-#include "../meshloader.hpp"
+#include "../../entity/mesh.hpp"
 #include "../../logging.hpp"
 #include "../../types.hpp"
-#include "../../entity/mesh.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,24 +11,28 @@
 
 #include <vector>
 
-namespace terrain {
+namespace gui {
+
+namespace data_structures {
 
 StaticMesh::StaticMesh(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
-
     // clear all buffers
-    GLuint buffers [5] = {vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_, transforms_buffer_};
+    GLuint buffers[5] = {
+        vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_,
+        transforms_buffer_};
     glDeleteBuffers(5, buffers);
 
-    // if indices are none so if there is no vertices that would be sent to the graphics card
+    // if indices are none so if there is no vertices that would be sent to the graphics
+    // card
     //     then there is no reason to create a buffer
     // create a bool do_render, set to false when
     num_vertices_ = mesh.get_indices().size();
     num_models_ = model_transforms.size();
     do_render_ = (num_vertices_ != 0 && num_models_ != 0);
 
-    if (!do_render_){
+    if (!do_render_) {
         return;
     }
 
@@ -91,5 +95,7 @@ StaticMesh::StaticMesh(
         model_transforms.data(), GL_STATIC_DRAW
     );
 }
+
+} // namespace data_structures
 
 } // namespace terrain

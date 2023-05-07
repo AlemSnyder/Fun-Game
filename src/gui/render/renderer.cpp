@@ -281,4 +281,5 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
 }
 
 } // namespace render
+
 } // namespace gui

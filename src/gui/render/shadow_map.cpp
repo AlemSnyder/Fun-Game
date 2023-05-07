@@ -209,9 +209,8 @@ ShadowMap::render_shadow_depth_buffer() const {
         glDisableVertexAttribArray(1);
     }
 
-    // Clear the screen  -  for some reason this broke things
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 } // namespace render
+
 } // namespace gui

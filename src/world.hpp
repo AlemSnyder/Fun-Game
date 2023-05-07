@@ -55,7 +55,7 @@ class World {
     terrain::Terrain terrain_main;
 
     // TerrainMesh for each chunk in terrain
-    std::vector<std::shared_ptr<terrain::TerrainMesh>> chunks_mesh;
+    std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> chunks_mesh;
 
     // chunks_mesh like attorneys general
 
@@ -69,7 +69,7 @@ class World {
         return terrain_main;
     }
 
-    const std::vector<std::shared_ptr<terrain::TerrainMesh>>& get_chunks_mesh() const{
+    const std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>>& get_chunks_mesh() const{
         return chunks_mesh;
     }
 

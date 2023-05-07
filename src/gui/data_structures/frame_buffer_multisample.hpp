@@ -6,13 +6,15 @@
 
 namespace gui {
 
+namespace data_structures {
+
 class FrameBufferMultisample {
  private:
     GLuint frame_buffer;
     GLuint render_texture;
     GLuint depth_buffer;
-    GLuint single_sample_texture;
     GLuint frame_buffer_single;
+    GLuint render_texture_single;
     uint32_t width_;
     uint32_t height_;
     uint32_t samples_;
@@ -26,7 +28,7 @@ class FrameBufferMultisample {
         glDeleteRenderbuffers(1, &depth_buffer);
         glDeleteTextures(1, &render_texture);
         glDeleteFramebuffers(1, &frame_buffer);
-        glDeleteTextures(1, &single_sample_texture);
+        glDeleteTextures(1, &render_texture_single);
         glDeleteFramebuffers(1, &frame_buffer_single);
     }
 
@@ -62,7 +64,7 @@ class FrameBufferMultisample {
 
     [[nodiscard]] inline GLuint
     get_single_sample_texture() {
-        return single_sample_texture;
+        return render_texture_single;
     }
 
     [[nodiscard]] inline GLuint
@@ -70,5 +72,7 @@ class FrameBufferMultisample {
         return frame_buffer_single;
     }
 };
+
+} // namespace data_structures
 
 } // namespace gui

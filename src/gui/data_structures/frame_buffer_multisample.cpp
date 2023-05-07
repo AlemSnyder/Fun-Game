@@ -3,7 +3,7 @@
 
 #include "../../logging.hpp"
 
-gui::FrameBufferMultisample::FrameBufferMultisample(
+gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
     uint32_t width, uint32_t height, uint32_t samples
 ) {
     width_ = width;
@@ -57,9 +57,9 @@ gui::FrameBufferMultisample::FrameBufferMultisample(
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_single);
 
     // texture (what it looks like)
-    glGenTextures(1, &single_sample_texture);
+    glGenTextures(1, &render_texture_single);
 
-    glBindTexture(GL_TEXTURE_2D, single_sample_texture);
+    glBindTexture(GL_TEXTURE_2D, render_texture_single);
     glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, 0
     );
@@ -71,7 +71,7 @@ gui::FrameBufferMultisample::FrameBufferMultisample(
 
     // connect the texture to the frame buffer
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, single_sample_texture,
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single,
         0
     );
 

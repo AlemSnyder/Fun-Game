@@ -38,17 +38,17 @@ gui::Scene::Scene(
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (std::shared_ptr<terrain::TerrainMesh> m : chunk_meshes) {
+    for (std::shared_ptr<data_structures::TerrainMesh> m : chunk_meshes) {
         SM.add_mesh(m);
         MR.add_mesh(m);
     }
-    SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
+    SM.add_mesh(std::make_shared<data_structures::StaticMesh>(treesMesh));
 
     // renders the world scene
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
 
-    MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
+    MR.add_mesh(std::make_shared<data_structures::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
     gui::render::QuadRendererMultisample QRMS;

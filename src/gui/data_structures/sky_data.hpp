@@ -11,7 +11,7 @@
 
 namespace gui {
 
-namespace sky {
+namespace data_structures {
 
 class SkyData {
  private:

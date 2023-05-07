@@ -16,7 +16,7 @@ namespace gui {
 class Scene {
  private:
     World& world_;
-    FrameBufferMultisample fbo;
+    data_structures::FrameBufferMultisample fbo;
 
     // TODO put renders in gui::render:: namespace
     render::MainRenderer MR;
@@ -26,7 +26,7 @@ class Scene {
     render::SkyRenderer SR;
 
     // TODO these should be saved in world
-    terrain::StaticMesh treesMesh;
+    data_structures::StaticMesh treesMesh;
 
  public:
     Scene(

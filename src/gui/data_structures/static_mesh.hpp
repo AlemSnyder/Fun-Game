@@ -9,7 +9,9 @@
 
 #pragma once
 
-namespace terrain {
+namespace gui {
+
+namespace data_structures {
 
 class StaticMesh : public MeshData::MultiComplexMesh {
  private:
@@ -109,5 +111,7 @@ class StaticMesh : public MeshData::MultiComplexMesh {
         return do_render_;
     };
 };
+
+}
 
 } // namespace terrain

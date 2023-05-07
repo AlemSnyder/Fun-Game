@@ -142,4 +142,5 @@ class ShadowMap {
 };
 
 } // namespace render
+
 } // namespace gui

@@ -73,4 +73,5 @@ class QuadRendererMultisample {
 };
 
 } // namespace render
+
 } // namespace gui
