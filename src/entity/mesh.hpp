@@ -359,10 +359,5 @@ generate_mesh(T voxel_object) {
         voxel_object.get_color_ids()
     );
 }
-// No need to just put 
-//inline std::vector<ColorFloat>
-//convert_color_data(const std::vector<ColorInt>& color_map) {
-//    return color::convert_color_data(color_map);
-//}
 
 } // namespace entity

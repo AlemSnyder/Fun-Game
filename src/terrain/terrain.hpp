@@ -109,7 +109,7 @@ class Terrain : public TerrainBase {
     using TerrainBase::pos_for_map;
 
     // test for path finding
-    std::pair<Tile*, Tile*> get_start_end_test();
+    std::pair<const Tile*, const Tile*> get_start_end_test() const;
 
     /**
      * @brief Get the UnitPath defined by the path type between two tiles
@@ -318,6 +318,29 @@ class Terrain : public TerrainBase {
      * @return NodeGroup* NodeGroup tile is in
      */
     [[nodiscard]] NodeGroup* get_node_group(const Tile* t);
+
+    /**
+     * @brief Get the node group from tile index
+     *
+     * @param xyz tile index in vector tiles
+     * @return NodeGroup* NodeGroup tile is in
+     */
+    [[nodiscard]] const NodeGroup* get_node_group(int xyz) const;
+    /**
+     * @brief Get the node group from tile
+     *
+     * @param t tile
+     * @return NodeGroup* NodeGroup tile is in
+     */
+    [[nodiscard]] const NodeGroup* get_node_group(const Tile t) const;
+    /**
+     * @brief Get the node group from tile
+     *
+     * @param t
+     * @return NodeGroup* NodeGroup tile is in
+     */
+    [[nodiscard]] const NodeGroup* get_node_group(const Tile* t) const;
+
     /**
      * @brief Add a node group to possible node groups
      *
@@ -330,6 +353,14 @@ class Terrain : public TerrainBase {
      * @param NG NodeGroup to remove
      */
     void remove_node_group(NodeGroup* NG);
+
+    inline uint16_t get_chunk_from_tile(uint16_t pos) const{
+        TerrainDim3 tile_sop = sop(pos);
+        return  get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
+    }
+
+    uint16_t get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const;
+
 
     [[nodiscard]] inline const std::vector<Chunk>&
     get_chunks() const {
@@ -512,7 +543,7 @@ class Terrain : public TerrainBase {
      * @return std::vector<const Tile *> path
      */
     [[nodiscard]] std::vector<const Tile*>
-    get_path_Astar(const Tile* start, const Tile* goal);
+    get_path_Astar(const Tile* start, const Tile* goal) const;
     /**
      * @brief Get a path between start, and goal using the A* algorithm
      *
@@ -521,7 +552,7 @@ class Terrain : public TerrainBase {
      * @return std::vector<const NodeGroup *> path
      */
     [[nodiscard]] std::vector<const NodeGroup*>
-    get_path_Astar(const NodeGroup* start, const NodeGroup* goal);
+    get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const;
     /**
      * @brief Get a path between start, and any goal using the breadth first algorithm
      *
@@ -540,7 +571,7 @@ class Terrain : public TerrainBase {
      */
     [[nodiscard]] std::vector<const NodeGroup*> get_path_breadth_first(
         const NodeGroup* start, const std::set<const NodeGroup*> goal
-    );
+    ) const;
     /**
      * @brief Get the path from start to a goal optimized by compare
      *
@@ -569,7 +600,7 @@ class Terrain : public TerrainBase {
      * @param y y position
      * @return int height of heights solid z
      */
-    [[nodiscard]] int get_Z_solid(int x, int y);
+    [[nodiscard]] int get_Z_solid(int x, int y) const;
     /**
      * @brief Get the hightest solid z below the given z
      *
@@ -578,7 +609,7 @@ class Terrain : public TerrainBase {
      * @param z z height
      * @return int height of heights solid z
      */
-    [[nodiscard]] int get_Z_solid(int x, int y, int z);
+    [[nodiscard]] int get_Z_solid(int x, int y, int z) const;
 
  private:
     // trace nodes through parents to reach start

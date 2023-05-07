@@ -9,11 +9,27 @@
 #include <glm/glm.hpp>
 
 terrain::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
-    init(mesh);
+    update(mesh);
 }
 
 void
-terrain::TerrainMesh::init(const entity::Mesh& mesh) {
+terrain::TerrainMesh::update(const entity::Mesh& mesh) {
+    // clear all buffers
+    GLuint buffers[4] = {
+        vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
+    glDeleteBuffers(4, buffers);
+
+    // if indices are none so if there is no vertices that would be sent to the graphics
+    // card
+    //     then there is no reason to create a buffer
+    // create a bool do_render, set to false when
+    num_vertices_ = mesh.get_indices().size();
+    do_render_ = (num_vertices_ != 0);
+
+    if (!do_render_) {
+        return;
+    }
+
     color_texture_ = terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
@@ -47,5 +63,4 @@ terrain::TerrainMesh::init(const entity::Mesh& mesh) {
         mesh.get_indices().data(), GL_STATIC_DRAW
     );
 
-    num_vertices_ = mesh.get_indices().size();
 }

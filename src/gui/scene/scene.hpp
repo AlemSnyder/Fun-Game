@@ -26,7 +26,6 @@ class Scene {
     gui::sky::SkyRenderer SR;
 
     // TODO these should be saved in world
-    std::vector<terrain::TerrainMesh> chunk_meshes;
     terrain::StaticMesh treesMesh;
 
  public:

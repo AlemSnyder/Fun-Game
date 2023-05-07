@@ -21,6 +21,7 @@ class StaticMesh : public MeshData::MultiComplexMesh {
     GLuint transforms_buffer_;
     uint32_t num_vertices_;
     uint32_t num_models_;
+    bool do_render_;
 
  public:
     inline StaticMesh(const StaticMesh& obj) {
@@ -32,6 +33,7 @@ class StaticMesh : public MeshData::MultiComplexMesh {
         color_texture_ = obj.color_texture_;
         num_vertices_ = obj.num_vertices_;
         num_models_ = obj.num_models_;
+        do_render_ = obj.do_render_;
     };
 
     // copy operator
@@ -45,6 +47,7 @@ class StaticMesh : public MeshData::MultiComplexMesh {
         color_texture_ = obj.color_texture_;
         num_vertices_ = obj.num_vertices_;
         num_models_ = obj.num_models_;
+        do_render_ = obj.do_render_;
         return *this;
     }
 
@@ -100,6 +103,11 @@ class StaticMesh : public MeshData::MultiComplexMesh {
     get_num_models() const noexcept override {
         return num_models_;
     }
+
+    [[nodiscard]] inline bool
+    do_render() const override {
+        return do_render_;
+    };
 };
 
 } // namespace terrain

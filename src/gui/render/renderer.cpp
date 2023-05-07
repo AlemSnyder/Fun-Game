@@ -1,10 +1,11 @@
 #include "renderer.hpp"
 
-#include "../data_structures/terrain_mesh.hpp"
 #include "../../util/files.hpp"
-#include "../scene/controls.hpp"
+#include "../data_structures/terrain_mesh.hpp"
 #include "../meshloader.hpp"
+#include "../scene/controls.hpp"
 #include "../shader.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -99,7 +100,7 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
     // Compute the MVP matrix from keyboard and mouse input
-    //controls::computeMatricesFromInputs(window);
+    // controls::computeMatricesFromInputs(window);
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
     // glm::mat4 ModelMatrix = glm::mat4(1.0);
@@ -129,6 +130,10 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glUniform1i(shadow_map_ID_, 1);
 
     for (std::shared_ptr<MeshData::SingleComplexMesh> mesh : singles_meshes_) {
+        if (!mesh->do_render()) {
+            continue;
+        }
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_, 2);
@@ -197,6 +202,10 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glUniform1i(shadow_map_ID_multi_, 1);
 
     for (std::shared_ptr<MeshData::MultiComplexMesh> mesh : multis_meshes_) {
+        if (!mesh->do_render()) {
+            continue;
+        }
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_multi_, 2);

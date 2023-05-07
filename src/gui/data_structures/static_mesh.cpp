@@ -16,9 +16,22 @@ namespace terrain {
 StaticMesh::StaticMesh(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
-    // set the number of models
-    num_models_ = model_transforms.size();
+
+    // clear all buffers
+    GLuint buffers [5] = {vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_, transforms_buffer_};
+    glDeleteBuffers(5, buffers);
+
+    // if indices are none so if there is no vertices that would be sent to the graphics card
+    //     then there is no reason to create a buffer
+    // create a bool do_render, set to false when
     num_vertices_ = mesh.get_indices().size();
+    num_models_ = model_transforms.size();
+    do_render_ = (num_vertices_ != 0 && num_models_ != 0);
+
+    if (!do_render_){
+        return;
+    }
+
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);

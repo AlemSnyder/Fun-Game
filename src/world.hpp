@@ -25,6 +25,7 @@
 #include "types.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
+#include "gui/data_structures/terrain_mesh.hpp"
 
 #include <json/json.h>
 
@@ -50,9 +51,27 @@ class World {
     // materials that exist
     std::map<MaterialId, const terrain::Material> materials;
 
- public:
     // terrain in the world
     terrain::Terrain terrain_main;
+
+    // TerrainMesh for each chunk in terrain
+    std::vector<std::shared_ptr<terrain::TerrainMesh>> chunks_mesh;
+
+    // chunks_mesh like attorneys general
+
+ public:
+
+    const terrain::Terrain& get_terrain_main() const {
+        return terrain_main;
+    }
+
+    terrain::Terrain& get_terrain_main() {
+        return terrain_main;
+    }
+
+    const std::vector<std::shared_ptr<terrain::TerrainMesh>>& get_chunks_mesh() const{
+        return chunks_mesh;
+    }
 
     // all of these things are for saving
     // const char *path;
@@ -121,9 +140,35 @@ class World {
     std::vector<int> get_grass_grad_data(const Json::Value& material_json);
 
     /**
-     * @brief Get the mesh using greedy meshing
-     *
-     * @return entity::Mesh the mesh generated
+     * @brief update all chunk mesh
+     * 
      */
-    std::vector<entity::Mesh> get_mesh_greedy() const;
+    void update_all_chunk_mesh();
+
+    // Could mark this inline
+    void
+    update_single_mesh(uint16_t chunk_pos);
+
+    // set a region to given material, and color
+    void set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id);
+
+    // set a region to given material, and color
+    void set_tiles();
+
+    void
+    stamp_tile_region(
+        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        const terrain::Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
+        uint8_t color_id
+    );
+
+    void
+    stamp_tile_region(
+        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        const terrain::Material* mat, uint8_t color_id
+    );
+
+    inline void qb_save_debug(std::string path){
+        terrain_main.qb_save_debug(path);
+    }
 };

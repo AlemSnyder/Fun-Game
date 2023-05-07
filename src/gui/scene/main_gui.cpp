@@ -4,7 +4,6 @@
 #include "../../logging.hpp"
 #include "../../util/files.hpp"
 #include "../../world.hpp"
-#include "controls.hpp"
 #include "../data_structures/screen_data.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "../data_structures/static_mesh.hpp"
@@ -14,8 +13,9 @@
 #include "../render/renderer.hpp"
 #include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
-#include "../shader.hpp"
 #include "../scene/scene.hpp"
+#include "../shader.hpp"
+#include "controls.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -29,9 +29,7 @@
 namespace gui {
 
 int
-GUITest(World world) {
-    auto mesh = world.get_mesh_greedy();
-
+GUITest(World& world) {
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
 
     voxel_utility::VoxelObject default_trees_voxel(
@@ -41,7 +39,7 @@ GUITest(World world) {
     auto mesh_trees = entity::generate_mesh(default_trees_voxel);
 
     // initialize logging
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     GLint context_flag;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
     if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -139,6 +137,9 @@ GUITest(World world) {
     glBindVertexArray(VertexArrayID);
 
     QuadRenderer QR;
+
+    world.update_all_chunk_mesh();
+    // auto mesh = world.get_chunks_mesh();
 
     gui::Scene main_scene(world, windowFrameWidth, windowFrameHeight, 4096);
 

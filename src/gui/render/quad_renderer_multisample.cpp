@@ -64,8 +64,8 @@ QuadRendererMultisample::render(
     glUseProgram(programID_);
 
     // Bind our texture in Texture Unit 0
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, window_render_texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, window_render_texture);
     // Set our "renderedTexture" sampler to use Texture Unit 0
     glUniform1i(texID, 0);
     glUniform1ui(widthID, width);

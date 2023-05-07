@@ -41,6 +41,7 @@ ShadowMap::ShadowMap(int w, int h) {
 
     // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth
     // buffer.
+    frame_buffer_name_ = 0;
     glGenFramebuffers(1, &frame_buffer_name_);
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name_);
 
@@ -119,6 +120,10 @@ ShadowMap::render_shadow_depth_buffer() const {
 
     // draw the non-indexed meshes
     for (std::shared_ptr<MeshData::SingleMesh> mesh : singles_meshes_) {
+        if (!mesh->do_render()) {
+            continue;
+        }
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -153,6 +158,10 @@ ShadowMap::render_shadow_depth_buffer() const {
 
     // draw the indexed meshes
     for (std::shared_ptr<MeshData::MultiMesh> mesh : multi_meshes_) {
+        if (!mesh->do_render()) {
+            continue;
+        }
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
