@@ -32,14 +32,10 @@ int
 GUITest(World& world) {
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
 
-    voxel_utility::VoxelObject default_trees_voxel(
-        files::get_data_path() / "models" / "DefaultTree.qb"
-    );
-
-    auto mesh_trees = entity::generate_mesh(default_trees_voxel);
+    glEnable(GL_MULTISAMPLE);
 
     // initialize logging
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
     GLint context_flag;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
     if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -129,7 +125,7 @@ GUITest(World& world) {
     glClearColor(0.02f, 0.06f, 0.1f, 0.0f);
 
     // send color texture to gpu
-    //terrain::TerrainColorMapping::assign_color_texture();
+    terrain::TerrainColorMapping::assign_color_texture();
 
     // No idea why this is necessary, but it is
     GLuint VertexArrayID;
@@ -138,7 +134,7 @@ GUITest(World& world) {
 
     QuadRenderer QR;
 
-    world.update_all_chunk_mesh();
+    //world.update_all_chunk_mesh();
     // auto mesh = world.get_chunks_mesh();
 
     gui::Scene main_scene(world, windowFrameWidth, windowFrameHeight, 4096);
