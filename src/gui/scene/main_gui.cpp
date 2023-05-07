@@ -132,7 +132,7 @@ GUITest(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    QuadRenderer QR;
+    render::QuadRenderer QR;
 
     //world.update_all_chunk_mesh();
     // auto mesh = world.get_chunks_mesh();

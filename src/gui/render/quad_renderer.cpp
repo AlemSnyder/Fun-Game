@@ -10,6 +10,9 @@
 
 #include <memory>
 
+namespace gui {
+namespace render {
+
 QuadRenderer::QuadRenderer() {
     // program
     programID_ = load_shaders(
@@ -80,3 +83,7 @@ QuadRenderer::render(
     // at 0 -> 2 triangles
     glDisableVertexAttribArray(0);
 }
+
+} // namespace render
+
+} // namespace gui

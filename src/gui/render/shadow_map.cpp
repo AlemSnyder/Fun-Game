@@ -12,6 +12,10 @@
 #include <memory>
 #include <stdexcept>
 
+namespace gui {
+
+namespace render {
+
 ShadowMap::ShadowMap(int w, int h) {
     depth_texture_ = 0;
     frame_buffer_name_ = 0;
@@ -208,3 +212,6 @@ ShadowMap::render_shadow_depth_buffer() const {
     // Clear the screen  -  for some reason this broke things
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+} // namespace render
+} // namespace gui

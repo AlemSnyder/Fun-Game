@@ -34,7 +34,7 @@
 
 namespace gui {
 
-namespace sky {
+namespace render {
 
 /**
  * @brief Renders the meshes to the screen

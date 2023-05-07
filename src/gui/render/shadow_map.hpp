@@ -31,6 +31,10 @@
 #include <memory>
 #include <vector>
 
+namespace gui {
+
+namespace render {
+
 /**
  * @brief Renders the shadow from the given meshes.
  *
@@ -67,7 +71,7 @@ class ShadowMap {
      */
     ShadowMap(int w, int h);
 
-    ~ShadowMap(){
+    ~ShadowMap() {
         glDeleteFramebuffers(1, &frame_buffer_name_);
         glDeleteTextures(1, &depth_texture_);
     }
@@ -91,14 +95,20 @@ class ShadowMap {
      *
      * @return GLuint& reference to depth texture ID
      */
-    inline GLuint& get_depth_texture() { return depth_texture_; }
+    inline GLuint&
+    get_depth_texture() {
+        return depth_texture_;
+    }
 
     /**
      * @brief Get the frame buffer ID
      *
      * @return GLuint& reference to frame buffer ID
      */
-    inline GLuint& get_frame_buffer() { return frame_buffer_name_; }
+    inline GLuint&
+    get_frame_buffer() {
+        return frame_buffer_name_;
+    }
 
     /**
      * @brief Set the light direction vector
@@ -120,10 +130,16 @@ class ShadowMap {
      */
     void render_shadow_depth_buffer() const;
 
-    inline uint32_t get_shadow_width() const {
+    inline uint32_t
+    get_shadow_width() const {
         return shadow_width_;
     }
-    inline uint32_t get_shadow_height() const {
+
+    inline uint32_t
+    get_shadow_height() const {
         return shadow_height_;
     }
 };
+
+} // namespace render
+} // namespace gui

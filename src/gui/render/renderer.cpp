@@ -12,6 +12,10 @@
 
 #include <memory>
 
+namespace gui {
+
+namespace render {
+
 MainRenderer::MainRenderer() {
     // non-indexed program
     programID_single_ = load_shaders(
@@ -275,3 +279,6 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glVertexAttribDivisor(3, 0);
     glDisable(GL_TEXTURE2);
 }
+
+} // namespace render
+} // namespace gui

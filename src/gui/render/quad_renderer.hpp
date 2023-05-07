@@ -31,6 +31,10 @@
 #include <memory>
 #include <vector>
 
+namespace gui {
+
+namespace render {
+
 /**
  * @brief Renders the meshes to the screen
  *
@@ -41,10 +45,9 @@
  */
 class QuadRenderer {
  private:
-    GLuint programID_;   // ID of non-indexed mesh Program
+    GLuint programID_; // ID of non-indexed mesh Program
     GLuint quad_vertexbuffer;
     GLuint texID;
-
 
  public:
     /**
@@ -60,5 +63,11 @@ class QuadRenderer {
      *
      * @param window the OpenGL window
      */
-    void render(int height, int width, GLuint window_render_texture, GLuint frame_buffer = 0) const;
+    void render(
+        int height, int width, GLuint window_render_texture, GLuint frame_buffer = 0
+    ) const;
 };
+
+} // namespace render
+
+} // namespace gui

@@ -10,6 +10,10 @@
 
 #include <memory>
 
+namespace gui {
+
+namespace render {
+
 QuadRendererMultisample::QuadRendererMultisample() {
     // program
     programID_ = load_shaders(
@@ -42,12 +46,13 @@ QuadRendererMultisample::~QuadRendererMultisample() {
 
 void
 QuadRendererMultisample::render(
-    uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture, GLuint frame_buffer
+    uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture,
+    GLuint frame_buffer
 ) const {
     // Render to the frame)buffer
     // if frame_buffer is 0 this is the screen
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame_buffer);
-    
+
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, width, height);
@@ -84,3 +89,7 @@ QuadRendererMultisample::render(
     // at 0 -> 2 triangles
     glDisableVertexAttribArray(0);
 }
+
+} // namespace render
+
+} // namespace gui

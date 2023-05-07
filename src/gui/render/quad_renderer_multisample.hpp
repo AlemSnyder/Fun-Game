@@ -31,6 +31,10 @@
 #include <memory>
 #include <vector>
 
+namespace gui {
+
+namespace render {
+
 /**
  * @brief Renders the meshes to the screen
  *
@@ -67,3 +71,6 @@ class QuadRendererMultisample {
         GLuint frame_buffer = 0
     ) const;
 };
+
+} // namespace render
+} // namespace gui

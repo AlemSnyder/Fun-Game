@@ -1,9 +1,9 @@
 #include "sky.hpp"
 
 #include "../../util/files.hpp"
-#include "../scene/controls.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "../meshloader.hpp"
+#include "../scene/controls.hpp"
 #include "../shader.hpp"
 
 #include <GL/glew.h>
@@ -14,7 +14,7 @@
 
 namespace gui {
 
-namespace sky {
+namespace render {
 
 SkyRenderer::SkyRenderer() : sky_data_(files::get_data_path() / "stars.json") {
     programID_ = load_shaders(
@@ -121,6 +121,6 @@ SkyRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glUseProgram(programID_);
 }
 
-} // namespace sky
+} // namespace render
 
 } // namespace gui

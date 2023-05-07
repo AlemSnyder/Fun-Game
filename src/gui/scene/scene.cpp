@@ -51,9 +51,9 @@ gui::Scene::Scene(
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
-    QuadRendererMultisample QRMS;
+    gui::render::QuadRendererMultisample QRMS;
 
-    gui::sky::SkyRenderer SR;
+    gui::render::SkyRenderer SR;
 
     LOG_INFO(logging::opengl_logger, "Scene initialized");
 }

@@ -19,11 +19,11 @@ class Scene {
     FrameBufferMultisample fbo;
 
     // TODO put renders in gui::render:: namespace
-    MainRenderer MR;
-    ShadowMap SM;
-    QuadRendererMultisample QRMS;
+    render::MainRenderer MR;
+    render::ShadowMap SM;
+    render::QuadRendererMultisample QRMS;
 
-    gui::sky::SkyRenderer SR;
+    render::SkyRenderer SR;
 
     // TODO these should be saved in world
     terrain::StaticMesh treesMesh;
