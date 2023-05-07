@@ -129,7 +129,7 @@ GUITest(World& world) {
     glClearColor(0.02f, 0.06f, 0.1f, 0.0f);
 
     // send color texture to gpu
-    terrain::TerrainColorMapping::assign_color_texture();
+    //terrain::TerrainColorMapping::assign_color_texture();
 
     // No idea why this is necessary, but it is
     GLuint VertexArrayID;
@@ -145,7 +145,7 @@ GUITest(World& world) {
 
     do {
         controls::computeMatricesFromInputs(window);
-        main_scene.updata(window);
+        main_scene.update(window);
 
         // bind the the screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

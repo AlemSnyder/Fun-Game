@@ -36,7 +36,7 @@ class Scene {
     GLuint get_depth_texture();
     uint32_t get_shadow_width();
     uint32_t get_shadow_height();
-    void updata(GLFWwindow* window);
+    void update(GLFWwindow* window);
     //~Scene();
 
     std::vector<glm::ivec3> get_model_matrices_temp(World& world);

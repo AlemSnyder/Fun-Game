@@ -260,7 +260,7 @@ imguiTest(World& world) {
         // TODO
         // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
 
-        main_scene.updata(window);
+        main_scene.update(window);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

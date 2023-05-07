@@ -47,17 +47,10 @@ QuadRendererMultisample::render(
     // Render to the frame)buffer
     // if frame_buffer is 0 this is the screen
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame_buffer);
-
-    //glBindFramebuffer(GL_READ_FRAMEBUFFER, window_render_fbo);
-    //glDrawBuffer(GL_BACK);
-    //glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-
+    
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, width, height);
-
-    // glDisable(GL_CULL_FACE);
-    // glDisable(GL_DEPTH_TEST);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Use our shader
