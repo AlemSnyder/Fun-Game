@@ -3,13 +3,7 @@
 // Ouput data
 layout(location = 0) out vec3 color;
 
-//uniform sampler1D stars;
-//uniform mat4 MVP;
-//uniform mat4 pixel_projection;
-//uniform int number_of_stars;
-
 in float age;
-
 
 void
 main(){

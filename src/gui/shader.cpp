@@ -14,6 +14,7 @@ GLuint
 load_shaders(
     const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
 ) {
+    logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
     // get the paths
     std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);
     std::filesystem::path fragment_file_path = std::filesystem::absolute(fragment_file);
@@ -23,7 +24,7 @@ load_shaders(
     GLuint fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 
     // Read the Vertex Shader code from the file
-    LOG_INFO(
+    LOG_BACKTRACE(
         logging::opengl_logger, "Loading vertex shader from {}",
         vertex_file_path.string()
     );
@@ -44,7 +45,7 @@ load_shaders(
     }
 
     // Read the Fragment Shader code from the file
-    LOG_INFO(
+    LOG_BACKTRACE(
         logging::opengl_logger, "Loading fragment shader from {}",
         fragment_file_path.string()
     );
@@ -68,7 +69,7 @@ load_shaders(
     int info_log_length;
 
     // Compile Vertex Shader
-    LOG_DEBUG(
+    LOG_BACKTRACE(
         logging::opengl_logger, "Compiling vertex shader {}", vertex_file_path.string()
     );
 
@@ -85,14 +86,14 @@ load_shaders(
             vertex_shader_id, info_log_length, NULL, vertex_shader_error_message.data()
         );
 
-        LOG_WARNING(
+        LOG_ERROR(
             logging::opengl_logger, "Vertex shader error: {}",
             vertex_shader_error_message
         );
     }
 
     // Compile Fragment Shader
-    LOG_DEBUG(
+    LOG_BACKTRACE(
         logging::opengl_logger, "Compiling fragment shader {}",
         fragment_file_path.string()
     );
@@ -111,14 +112,14 @@ load_shaders(
             fragment_shader_error_message.data()
         );
 
-        LOG_WARNING(
-            logging::opengl_logger, "Vertex shader error: {}",
+        LOG_ERROR(
+            logging::opengl_logger, "Fragment shader error: {}",
             fragment_shader_error_message
         );
     }
 
     // Link the program
-    LOG_DEBUG(logging::opengl_logger, "Linking shader program");
+    //LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
 
     GLuint program_id = glCreateProgram();
     glAttachShader(program_id, vertex_shader_id);
@@ -134,7 +135,7 @@ load_shaders(
             program_id, info_log_length, NULL, program_error_message.data()
         );
 
-        LOG_WARNING(
+        LOG_ERROR(
             logging::opengl_logger, "Shader program linking error: {}",
             program_error_message
         );
@@ -150,6 +151,8 @@ load_shaders(
         logging::opengl_logger, "Shader compiled successfully with program ID {}",
         program_id
     );
+
+    LOG_BACKTRACE(logging::opengl_logger, "New Backtrace, because quill won't let me clear it.");
 
     return program_id;
 }
