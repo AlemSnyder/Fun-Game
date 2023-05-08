@@ -277,7 +277,7 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(3);
     glVertexAttribDivisor(3, 0);
-    glDisable(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 } // namespace render

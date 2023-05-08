@@ -43,8 +43,6 @@ message_callback(
         case GL_DEBUG_TYPE_OTHER:               type_string = "Other";                  break;
     }
     //clang-format on
-    std::cout << "[OpenGL Error](" << type << severity << source_sting << id << message << ")" <<  std::endl;
-/*
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             LOG_ERROR(
@@ -73,7 +71,7 @@ message_callback(
                 message
             );
             break;
-    }*/
+    }
 }
 
 } // namespace gui

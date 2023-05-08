@@ -60,8 +60,6 @@ gui::Scene::Scene(
 
 void
 gui::Scene::update(GLFWwindow* window) {
-    glBindFramebuffer(GL_FRAMEBUFFER, SM.get_frame_buffer());
-    glClear(GL_DEPTH_BUFFER_BIT);
     SM.render_shadow_depth_buffer();
     // clear the frame buffer each frame
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.get_frame_buffer_name());

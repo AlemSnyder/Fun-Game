@@ -34,30 +34,6 @@ GUITest(World& world) {
 
     glEnable(GL_MULTISAMPLE);
 
-    // initialize logging
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-    GLint context_flag;
-    glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
-    if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
-        LOG_INFO(logging::opengl_logger, "GLFW Logging with debug");
-        try {
-            glEnable(GL_DEBUG_OUTPUT);
-            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-            // set gl message call back function
-            glDebugMessageCallback(message_callback, 0);
-            glDebugMessageControl(
-                GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
-            );
-        } catch (...) {
-            LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
-            getchar();
-            glfwTerminate();
-            return -1;
-        }
-    }
-
-    LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
-
     // Initialise GLFW
     glewExperimental = true; // Needed for core profile
     if (!glfwInit()) {
@@ -78,6 +54,9 @@ GUITest(World& world) {
         GLFW_OPENGL_PROFILE,
         GLFW_OPENGL_CORE_PROFILE
     ); // somehow turning on core profiling
+
+    // initialize logging
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
     // Open a window and create its OpenGL context
     // We would expect width and height to be 1024 and 768
@@ -123,6 +102,28 @@ GUITest(World& world) {
 
     // Light blue background
     glClearColor(0.02f, 0.06f, 0.1f, 0.0f);
+
+    // initialize logging
+    GLint context_flag;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
+    if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        LOG_INFO(logging::opengl_logger, "GLFW Logging with debug");
+        try {
+            glEnable(GL_DEBUG_OUTPUT);
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            // set gl message call back function
+            glDebugMessageCallback(message_callback, 0);
+            glDebugMessageControl(
+                GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
+            );
+            LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
+        } catch (...) {
+            LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
+            getchar();
+            glfwTerminate();
+            return -1;
+        }
+    }
 
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
