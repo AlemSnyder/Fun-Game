@@ -9,7 +9,7 @@
 #include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
 
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <GLFW/glfw3.h>
 
 namespace gui {
 
@@ -18,7 +18,6 @@ class Scene {
     World& world_;
     data_structures::FrameBufferMultisample fbo;
 
-    // TODO put renders in gui::render:: namespace
     render::MainRenderer MR;
     render::ShadowMap SM;
     render::QuadRendererMultisample QRMS;
@@ -29,19 +28,14 @@ class Scene {
     data_structures::StaticMesh treesMesh;
 
  public:
-    Scene(
-        World& world_, uint32_t width, uint32_t height, uint32_t shadow_map_width_height
-    );
+    Scene(World& world_, uint32_t width, uint32_t height, uint32_t shadow_map_width_height);
     GLuint get_scene();
     GLuint get_depth_texture();
     uint32_t get_shadow_width();
     uint32_t get_shadow_height();
     void update(GLFWwindow* window);
-    //~Scene();
 
     std::vector<glm::ivec3> get_model_matrices_temp(World& world);
 };
-
-// Scene::~Scene() {}
 
 } // namespace gui

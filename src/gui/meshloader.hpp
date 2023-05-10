@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 
+// data structures interface
 // glew wrapper to send data to gpu
 namespace MeshData {
 

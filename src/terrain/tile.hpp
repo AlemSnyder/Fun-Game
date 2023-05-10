@@ -87,9 +87,7 @@ class Tile {
         TerrainDim3 sop, const terrain::Material* material, uint8_t color_id = 0
     );
 
-    // I will format this later or remove it if I can
-    // TODO find vector of materials that uses default initializer
-    // I think it might be node
+    // This probably should not be used.
     Tile() :
         x(0), y(0), z(0), mat_id_(0), color_id_(0), grow_data_high_(0),
         grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
@@ -103,16 +101,10 @@ class Tile {
      */
     void set_material(const terrain::Material* const materials);
     /**
-     * @brief Set the material, and color, and update solid state
-     *
-     * @param mat_ material to set
-     * @param color_id color to set
-     */
-    void set_material(const terrain::Material* const materials, ColorId color_id);
-    /**
-     * @brief Set the color id
+     * @brief Set the color id, and material
      *
      * @param color_id color to set
+     * @param material material to set
      */
     void set_color_id(ColorId color_id, const terrain::Material* const material);
     /**

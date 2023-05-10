@@ -48,6 +48,7 @@ class Mesh;
  *
  */
 class World {
+    // TODO change to a terrain color object that will handel gui things
     // materials that exist
     std::map<MaterialId, const terrain::Material> materials;
 
