@@ -5,6 +5,7 @@
 #include "../meshloader.hpp"
 #include "../scene/controls.hpp"
 #include "../shader.hpp"
+#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -32,7 +33,7 @@ SkyRenderer::~SkyRenderer() {
 
 void
 SkyRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
+    gui::FrameBufferHandler::bind_fbo(frame_buffer);
 
     glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE);

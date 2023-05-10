@@ -3,6 +3,7 @@
 #include "../../util/files.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
+#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -47,7 +48,7 @@ ShadowMap::ShadowMap(int w, int h) {
     // buffer.
     frame_buffer_name_ = 0;
     glGenFramebuffers(1, &frame_buffer_name_);
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name_);
+    gui::FrameBufferHandler::bind_fbo(frame_buffer_name_);
 
     // Depth texture. Slower than a depth buffer, but you can sample it later in
     // your shader
@@ -100,7 +101,7 @@ ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 
 void
 ShadowMap::render_shadow_depth_buffer() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name_);
+    gui::FrameBufferHandler::bind_fbo(frame_buffer_name_);
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, shadow_width_, shadow_height_);

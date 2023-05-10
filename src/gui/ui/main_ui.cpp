@@ -20,6 +20,7 @@
 #include "../scene/controls.hpp"
 #include "../shader.hpp"
 #include "../scene/scene.hpp"
+#include "../handler.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -264,7 +265,7 @@ imguiTest(World& world) {
 
         main_scene.update(window);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        gui::FrameBufferHandler::bind_fbo(0);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();

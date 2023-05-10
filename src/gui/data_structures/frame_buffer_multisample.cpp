@@ -2,6 +2,7 @@
 #include "frame_buffer_multisample.hpp"
 
 #include "../../logging.hpp"
+#include "../handler.hpp"
 
 gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
     uint32_t width, uint32_t height, uint32_t samples
@@ -14,7 +15,7 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
 
     // frame buffer (the container for the other two)
     glGenFramebuffers(1, &frame_buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
+    gui::FrameBufferHandler::bind_fbo(frame_buffer);
 
     // texture (what it looks like)
     glGenTextures(1, &render_texture);
@@ -54,7 +55,7 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
 
     // frame buffer (the container for the other two)
     glGenFramebuffers(1, &frame_buffer_single);
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_single);
+    gui::FrameBufferHandler::bind_fbo(frame_buffer_single);
 
     // texture (what it looks like)
     glGenTextures(1, &render_texture_single);

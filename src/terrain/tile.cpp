@@ -6,7 +6,7 @@
 namespace terrain {
 
 Tile::Tile(
-    TerrainDim3 sop, const terrain::Material* material, uint8_t color_id
+    TerrainDim3 sop, const terrain::Material* material, ColorId color_id
 ) :
     x(sop.x),
     y(sop.y), z(sop.z), mat_id_(0), color_id_(0), grow_data_high_(0),
@@ -19,7 +19,7 @@ Tile::Tile(
 
 // Set material, and color_id
 void
-Tile::set_material(const terrain::Material* const material, uint8_t color_id_) {
+Tile::set_material(const terrain::Material* const material, ColorId color_id_) {
     set_material(material);
     set_color_id(color_id_, material);
 }

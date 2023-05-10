@@ -3,6 +3,7 @@
 #include "../../entity/mesh.hpp"
 #include "../data_structures/static_mesh.hpp"
 #include "../data_structures/terrain_mesh.hpp"
+#include "../handler.hpp"
 
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
@@ -62,7 +63,7 @@ void
 gui::Scene::update(GLFWwindow* window) {
     SM.render_shadow_depth_buffer();
     // clear the frame buffer each frame
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo.get_frame_buffer_name());
+    gui::FrameBufferHandler::bind_fbo(fbo.get_frame_buffer_name());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // render the sky to the frame buffer
     SR.render(window, fbo.get_frame_buffer_name());

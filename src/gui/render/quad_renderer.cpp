@@ -3,6 +3,7 @@
 #include "../../util/files.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
+#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -45,7 +46,7 @@ QuadRenderer::render(
     int width, int height, GLuint window_render_texture, GLuint frame_buffer
 ) const {
     // Render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
+    gui::FrameBufferHandler::bind_fbo(frame_buffer);
 
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right

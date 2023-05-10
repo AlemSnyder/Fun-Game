@@ -100,6 +100,9 @@ class Tile {
      * @param mat_ material to set
      */
     void set_material(const terrain::Material* const materials);
+
+    void set_material(const terrain::Material* const materials, ColorId color_id_);
+
     /**
      * @brief Set the color id, and material
      *

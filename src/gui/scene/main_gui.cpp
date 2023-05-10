@@ -16,6 +16,7 @@
 #include "../scene/scene.hpp"
 #include "../shader.hpp"
 #include "controls.hpp"
+#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -145,7 +146,7 @@ GUITest(World& world) {
         main_scene.update(window);
 
         // bind the the screen
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        gui::FrameBufferHandler::bind_fbo(0);
         // clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render to the screen

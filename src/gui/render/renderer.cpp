@@ -5,6 +5,7 @@
 #include "../meshloader.hpp"
 #include "../scene/controls.hpp"
 #include "../shader.hpp"
+#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -80,7 +81,7 @@ MainRenderer::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 void
 MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     // Render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
+    gui::FrameBufferHandler::bind_fbo(frame_buffer);
 
     // get he window size
     int width, height;
