@@ -11,6 +11,20 @@
 glm::mat4 view_matrix;
 glm::mat4 projection_matrix;
 
+int width = 1;
+int height = 1;
+// Initial position : on +Z
+glm::vec3 position = glm::vec3(80, 80, 80);
+// Initial horizontal angle : toward -Z
+float horizontalAngle = 3.14f;
+// Initial vertical angle : none
+float verticalAngle = 1.57f;
+// Initial Field of View
+float initialFoV = 45.0f;
+
+float speed = 10.0f; // 3 units / second
+float mouseSpeed = 0.005f;
+
 glm::mat4
 controls::get_view_matrix() {
     return view_matrix;
@@ -21,19 +35,10 @@ controls::get_projection_matrix() {
     return projection_matrix;
 }
 
-int width = 1;
-int height = 1;
-// Initial position : on +Z
-glm::vec3 position = glm::vec3(0, 0, 5);
-// Initial horizontal angle : toward -Z
-float horizontalAngle = 3.14f;
-// Initial vertical angle : none
-float verticalAngle = 1.57f;
-// Initial Field of View
-float initialFoV = 45.0f;
-
-float speed = 10.0f; // 3 units / second
-float mouseSpeed = 0.005f;
+glm::vec3
+controls::get_position_vector() {
+    return position;
+}
 
 void
 controls::computeMatricesFromInputs(GLFWwindow* window) {

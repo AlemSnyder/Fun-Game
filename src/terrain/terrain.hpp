@@ -252,11 +252,6 @@ class Terrain : public TerrainBase {
 
     // TODO place block
 
-    //[[nodiscard]] inline TerrainBase*
-    // get_base() {
-    //    return &terrain_base_;
-    //}
-
     using iterator = path::AdjacentIterator;
 
     /**

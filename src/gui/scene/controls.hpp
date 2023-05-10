@@ -30,6 +30,8 @@ glm::mat4 get_view_matrix();
  */
 glm::mat4 get_projection_matrix();
 
+glm::vec3 get_position_vector();
+
 /**
  * @brief True if the shadow map should be shown
  * 

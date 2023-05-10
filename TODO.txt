@@ -11,6 +11,3 @@ GUI
     deal with rotation
         add fourth int to position
         add for loop into vertex shader that rotates the 
-    frame buffer object binding
-        set class that holds current fbo so that frame buffers are not "rebound"
-        ie only set the frame buffer if it is a change.
