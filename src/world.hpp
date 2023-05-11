@@ -69,7 +69,7 @@ class World {
         return terrain_main;
     }
 
-    const std::vector<std::shared_ptr<terrain::TerrainMesh>> get_chunks_mesh() const{
+    const std::vector<std::shared_ptr<terrain::TerrainMesh>>& get_chunks_mesh() const{
         return chunks_mesh;
     }
 
@@ -156,6 +156,9 @@ class World {
     void
     update_single_mesh(uint16_t chunk_pos);
 
+    void
+    World::update_single_mesh(TerrainDim3 tile_sop);
+
     // set a region to given material, and color
     void set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id);
 
@@ -175,7 +178,11 @@ class World {
         const terrain::Material* mat, uint8_t color_id
     );
 
-    inline void qb_save_debug(std::string path){
+    inline void qb_save_debug(const std::string& path){
         terrain_main.qb_save_debug(path);
+    }
+
+    inline void qb_save(const std::string& path) const{
+        terrain_main.qb_save(path);
     }
 };

@@ -95,7 +95,7 @@ save_terrain(
         save_path /= "biome_";
         save_path += std::to_string(i);
         save_path += ".qb";
-        world.get_terrain_main().qb_save(save_path.string());
+        world.qb_save(save_path.string());
     }
 }
 

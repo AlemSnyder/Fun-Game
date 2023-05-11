@@ -132,7 +132,7 @@ GUITest(World& world) {
 
     //  The mesh of the terrain
     world.update_all_chunk_mesh();
-    const std::vector<std::shared_ptr<terrain::TerrainMesh>> chunks_mesh = world.get_chunks_mesh();
+    const std::vector<std::shared_ptr<terrain::TerrainMesh>>& chunks_mesh = world.get_chunks_mesh();
 
     LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
 
@@ -187,9 +187,8 @@ GUITest(World& world) {
     SM.set_light_direction(light_direction);
     SM.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto m : chunks_mesh) {
+    for (auto& m : chunks_mesh)
         SM.add_mesh(m);
-    }
     SM.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
 
     // renders the world scene
@@ -197,14 +196,14 @@ GUITest(World& world) {
     MR.set_light_direction(light_direction);
     MR.set_depth_projection_matrix(depth_projection_matrix);
 
-    for (auto m : chunks_mesh) {
+    for (auto& m : chunks_mesh)
         MR.add_mesh(m);
-    }
+
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
     unsigned int frame_id = 0;
-    bool do_set = false;
+    bool do_set_tile_material = false;
 
     do {
         SM.render_shadow_depth_buffer();
@@ -247,9 +246,9 @@ GUITest(World& world) {
         glfwPollEvents();
 
         // run with debug, to set to true
-        if (do_set){
+        if (do_set_tile_material){
             world.set_tile(frame_id, world.get_material(7), 0);
-            do_set = false;
+            do_set_tile_material = false;
             frame_id ++;
         }
 

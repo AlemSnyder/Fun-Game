@@ -15,9 +15,10 @@ terrain::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
 void
 terrain::TerrainMesh::update(const entity::Mesh& mesh) {
     // clear all buffers
-    GLuint buffers[4] = {
+    constexpr unsigned int num_buffers = 4;
+    GLuint buffers[num_buffers] = {
         vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
-    glDeleteBuffers(4, buffers);
+    glDeleteBuffers(num_buffers, buffers);
 
     // if indices are none so if there is no vertices that would be sent to the graphics
     // card
@@ -26,9 +27,8 @@ terrain::TerrainMesh::update(const entity::Mesh& mesh) {
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
 
-    if (!do_render_) {
+    if (!do_render_)
         return;
-    }
 
     color_texture_ = terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
@@ -64,7 +64,7 @@ terrain::TerrainMesh::update(const entity::Mesh& mesh) {
     );
 }
 
-inline terrain::TerrainMesh&
+terrain::TerrainMesh&
 terrain::TerrainMesh::operator=(TerrainMesh&& other) {
     if (this == &other)
         return *this;
