@@ -157,13 +157,10 @@ class World {
     update_single_mesh(uint16_t chunk_pos);
 
     void
-    World::update_single_mesh(TerrainDim3 tile_sop);
+    update_single_mesh(TerrainDim3 tile_sop);
 
     // set a region to given material, and color
     void set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id);
-
-    // set a region to given material, and color
-    void set_tiles();
 
     void
     stamp_tile_region(
