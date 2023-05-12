@@ -82,9 +82,7 @@ World::World(const Json::Value& materials_json, const std::string path) :
         path, materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
-    chunks_mesh.resize(terrain_main.get_chunks().size());
-    for (auto& m : chunks_mesh)
-        m = std::make_shared<terrain::TerrainMesh>();
+    initialize_chunks_mesh();
 }
 
 World::World(
@@ -97,9 +95,7 @@ World::World(
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
-    chunks_mesh.resize(terrain_main.get_chunks().size());
-    for (auto& m : chunks_mesh)
-        m = std::make_shared<terrain::TerrainMesh>();
+    initialize_chunks_mesh();
 }
 
 World::World(
@@ -112,9 +108,7 @@ World::World(
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
     // on initialization world reserves the space it would need for shared pointers
-    chunks_mesh.resize(terrain_main.get_chunks().size());
-    for (auto& m : chunks_mesh)
-        m = std::make_shared<terrain::TerrainMesh>();
+    initialize_chunks_mesh();
 }
 
 // ! deprecated
