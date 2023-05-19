@@ -54,8 +54,7 @@ class Mesh : public MeshData::MultiComplexMesh {
     }
 
     Mesh(
-        const entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
-    );
+        const entity::Mesh& mesh);
 
     inline ~Mesh() {
         glDeleteBuffers(1, &vertex_buffer_);
@@ -110,6 +109,8 @@ class Mesh : public MeshData::MultiComplexMesh {
     do_render() const override {
         return do_render_;
     };
+
+    void update_transforms();
 };
 
 }

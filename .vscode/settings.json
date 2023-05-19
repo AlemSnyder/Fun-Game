@@ -1,6 +1,7 @@
 {
     "editor.formatOnSave": true,
     "cSpell.words": [
+        "animatrons",
         "Astar",
         "Framebuffer",
         "goxel",

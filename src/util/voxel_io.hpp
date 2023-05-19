@@ -47,10 +47,12 @@ export_color(ColorInt color) {
         return color;
 }
 
-void from_qb(
+/*void from_qb(
     const std::filesystem::path path, std::vector<ColorInt>& data, glm::i32vec3& center,
     glm::u32vec3& size
-);
+);*/
+
+void from_qb(const std::filesystem::path path, std::vector<qb_layer_data_t> layer_data);
 
 template <VoxelLike T>
 void
@@ -142,13 +144,14 @@ to_qb(const std::filesystem::path& path, const T& ter, bool compression = false)
 
 inline qb_data_t
 from_qb(const std::filesystem::path& path) {
-    std::vector<ColorInt> data;
-    VoxelOffset center;
-    VoxelSize size;
+    std::vector<qb_layer_data_t> layer_data;
+    //std::vector<ColorInt> data;
+    //VoxelOffset center;
+    //VoxelSize size;
 
-    from_qb(path, data, center, size);
+    from_qb(path, layer_data);
 
-    return qb_data_t(data, center, size);
+    return qb_data_t(layer_data);
 }
 
 } // namespace voxel_utility

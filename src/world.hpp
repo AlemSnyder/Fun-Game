@@ -60,6 +60,10 @@ class World {
 
     // chunks_mesh like attorneys general
 
+    // std::set<animatrons>         // updated every frame
+    // std::set<stationaries>       // updated < every frame has static position
+    // ste::set<static_entities>    // updated << every frame does not move
+
  public:
 
     const terrain::Terrain& get_terrain_main() const {

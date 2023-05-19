@@ -25,11 +25,11 @@ concept VoxelLike = std::is_base_of<voxel_utility::VoxelBase, T>::value;
 
 class VoxelObject : VoxelBase {
  private:
-    std::vector<VoxelColorId> data_;
     std::vector<ColorInt> colors_;
     VoxelOffset center_;
     VoxelSize size_;
     bool ok_;
+    std::vector<VoxelColorId> data_;
 
     [[nodiscard]] inline int
     get_position(int x, int y, int z) const {
@@ -51,6 +51,7 @@ class VoxelObject : VoxelBase {
      */
     VoxelObject(const std::string& path) : VoxelObject(std::filesystem::path(path)) {}
 
+    VoxelObject(qb_layer_data_t layer_data);
     /**
      * @brief did this voxel object load correctly
      *
@@ -128,10 +129,30 @@ class VoxelObject : VoxelBase {
     }
 };
 
-struct qb_data_t {
+class LayeredVoxelObject{
+    std::vector<std::pair<std::string, VoxelObject>> layers_;
+
+    const VoxelObject& operator [](size_t layer_index);
+    const VoxelObject& operator [](std::string layer_name);
+
+ public:
+    size_t size(){
+        return layers_.size();
+    }
+    LayeredVoxelObject(qb_data_t layers);
+
+};
+
+struct qb_layer_data_t {
     std::vector<ColorInt> data;
     VoxelOffset center;
     VoxelSize size;
+    std::string layer_name;
 };
+
+struct qb_data_t{
+    std::vector<qb_layer_data_t> layer_data;
+};
+
 
 } // namespace voxel_utility
