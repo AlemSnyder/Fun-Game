@@ -70,7 +70,7 @@ class World {
         return terrain_main;
     }
 
-    const std::vector<std::shared_ptr<terrain::TerrainMesh>>&
+    const auto&
     get_chunks_mesh() const {
         return chunks_mesh;
     }
@@ -153,7 +153,7 @@ class World {
      * @brief update all chunk mesh
      *
      */
-    void update_all_chunk_mesh();
+    void update_all_chunks_mesh();
 
     // Could mark this inline
     void update_single_mesh(uint16_t chunk_pos);
@@ -186,7 +186,7 @@ class World {
 
  private:
     inline void
-    initialize_chunks_mesh() {
+    initialize_chunks_mesh_() {
         chunks_mesh.resize(terrain_main.get_chunks().size());
         for (auto& m : chunks_mesh)
             m = std::make_shared<terrain::TerrainMesh>();

@@ -41,7 +41,7 @@ GenerateTerrain(const std::string path) {
 
     World world(materials_json, biome_data, 6, 6);
 
-    world.get_terrain_main().qb_save(path);
+    world.qb_save(path);
 
     return 0;
 }
@@ -100,7 +100,7 @@ save_terrain(
 }
 
 void
-save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
+save_all_terrain(const Json::Value& materials_json, const Json::Value& biome_data) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
         save_terrain(materials_json, *biome_type, biome_type.key().asString());
@@ -108,7 +108,7 @@ save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
 }
 
 int
-path_finder_test(const std::string path, std::string save_path) {
+path_finder_test(const std::string& path, const std::string& save_path) {
     quill::Logger* logger = quill::get_logger();
 
     Json::Value materials_json;
@@ -117,8 +117,7 @@ path_finder_test(const std::string path, std::string save_path) {
 
     World world(materials_json, path);
 
-    std::pair<const terrain::Tile*, const terrain::Tile*> start_end =
-        world.get_terrain_main().get_start_end_test();
+    auto start_end = world.get_terrain_main().get_start_end_test();
 
     LOG_INFO(
         logger, "Start: {}, {}, {}", start_end.first->get_x(), start_end.first->get_y(),
@@ -147,7 +146,7 @@ path_finder_test(const std::string path, std::string save_path) {
             ->set_material(&world.get_materials()->at(7), 5);
     }
 
-    world.get_terrain_main().qb_save(save_path);
+    world.qb_save(save_path);
 
     return 0;
 }
@@ -170,7 +169,7 @@ StressTest() {
 }
 
 int
-GUITest(const std::string path) {
+GUITest(const std::string& path) {
     quill::Logger* logger = logging::get_logger();
 
     Json::Value materials_json;
@@ -189,7 +188,7 @@ GUITest(const std::string path) {
 }
 
 inline int
-GUITest(const std::filesystem::path path) {
+GUITest(const std::filesystem::path& path) {
     return GUITest(path.string());
 }
 

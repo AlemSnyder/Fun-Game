@@ -82,7 +82,7 @@ World::World(const Json::Value& materials_json, const std::string path) :
         path, materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
-    initialize_chunks_mesh();
+    initialize_chunks_mesh_();
 }
 
 World::World(
@@ -95,7 +95,7 @@ World::World(
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
-    initialize_chunks_mesh();
+    initialize_chunks_mesh_();
 }
 
 World::World(
@@ -108,7 +108,7 @@ World::World(
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
     // on initialization world reserves the space it would need for shared pointers
-    initialize_chunks_mesh();
+    initialize_chunks_mesh_();
 }
 
 // ! deprecated
@@ -130,14 +130,14 @@ World::get_mesh_greedy() const {
 }
 
 void
-World::update_all_chunk_mesh() {
+World::update_all_chunks_mesh() {
     for (size_t i = 0; i < chunks_mesh.size(); i++)
         update_single_mesh(i);
 }
 
 void
 World::update_single_mesh(uint16_t chunk_pos) {
-    const std::vector<terrain::Chunk>& chunks = terrain_main.get_chunks();
+    const auto& chunks = terrain_main.get_chunks();
     entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
 
     chunk_mesh.change_color_indexing(

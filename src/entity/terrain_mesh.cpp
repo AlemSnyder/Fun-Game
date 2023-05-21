@@ -1,3 +1,4 @@
+#define NUM_BUFFERS_TERRAIN_MESH 4
 
 #include "terrain_mesh.hpp"
 
@@ -8,17 +9,22 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-terrain::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
+namespace terrain {
+
+TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
     update(mesh);
 }
 
 void
-terrain::TerrainMesh::update(const entity::Mesh& mesh) {
+TerrainMesh::update(const entity::Mesh& mesh) {
     // clear all buffers
-    constexpr unsigned int num_buffers = 4;
-    GLuint buffers[num_buffers] = {
-        vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
-    glDeleteBuffers(num_buffers, buffers);
+    GLuint buffers[NUM_BUFFERS_TERRAIN_MESH] = {
+        vertex_buffer_,
+        color_buffer_,
+        normal_buffer_,
+        element_buffer_,
+    };
+    glDeleteBuffers(NUM_BUFFERS_TERRAIN_MESH, buffers);
 
     // if indices are none so if there is no vertices that would be sent to the graphics
     // card
@@ -64,8 +70,8 @@ terrain::TerrainMesh::update(const entity::Mesh& mesh) {
     );
 }
 
-terrain::TerrainMesh&
-terrain::TerrainMesh::operator=(TerrainMesh&& other) {
+TerrainMesh&
+TerrainMesh::operator=(TerrainMesh&& other) {
     if (this == &other)
         return *this;
 
@@ -79,3 +85,5 @@ terrain::TerrainMesh::operator=(TerrainMesh&& other) {
 
     return *this;
 }
+
+} // namespace terrain

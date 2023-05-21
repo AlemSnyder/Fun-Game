@@ -131,8 +131,8 @@ GUITest(World& world) {
     glBindVertexArray(VertexArrayID);
 
     //  The mesh of the terrain
-    world.update_all_chunk_mesh();
-    const std::vector<std::shared_ptr<terrain::TerrainMesh>>& chunks_mesh = world.get_chunks_mesh();
+    world.update_all_chunks_mesh();
+    const auto& chunks_mesh = world.get_chunks_mesh();
 
     LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");
 
@@ -202,7 +202,7 @@ GUITest(World& world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
-    unsigned int frame_id = 0;
+    size_t frame_id = 0;
     bool do_set_tile_material = false;
 
     do {
@@ -246,10 +246,10 @@ GUITest(World& world) {
         glfwPollEvents();
 
         // run with debug, to set to true
-        if (do_set_tile_material){
+        if (do_set_tile_material) {
             world.set_tile(frame_id, world.get_material(7), 0);
             do_set_tile_material = false;
-            frame_id ++;
+            frame_id++;
         }
 
     } // Check if the ESC key was pressed or the window was closed
