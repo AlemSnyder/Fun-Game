@@ -47,8 +47,9 @@ VoxelObject::VoxelObject(const std::filesystem::path& path) {
 }
 
 VoxelObject::VoxelObject(qb_layer_data_t layer_data) :
-    colors_(layer_data.data), center_(layer_data.center), size_(layer_data.size),
+    center_(layer_data.center), size_(layer_data.size),
     ok_(true) {
+    auto voxel_colors = layer_data.data;
     for (std::size_t i = 0; i < voxel_colors.size(); i++) {
         const auto& color = voxel_colors[i];
 
