@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 def random_star():
     star_data = {}
@@ -18,5 +19,9 @@ def random_star():
     
     return star_data
 
+all_stars = []
+
 for x in range(100):
-    print(random_star(),",")
+    all_stars.append(random_star())
+    
+json.dumps(all_stars)

@@ -70,7 +70,6 @@ class Mesh {
     std::vector<ColorInt> color_map_;
 
  public:
-
     // x, y, z length of the mesh
     [[nodiscard]] inline const glm::ivec3&
     get_size() const noexcept {
@@ -152,7 +151,7 @@ generate_mesh(T voxel_object) {
     std::vector<glm::i8vec3> indexed_normals;
     // mesh off set
     VoxelOffset center = voxel_object.get_offset();
-    VoxelSize object_geometry = voxel_object.get_size();
+    VoxelSize size = voxel_object.get_size();
     for (std::size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
         const std::size_t dims_index_1 = (axis + 1) % 3;
@@ -163,20 +162,23 @@ generate_mesh(T voxel_object) {
 
         // the color of all tiles at the same "level".
         std::vector<std::pair<bool, uint16_t>> color_info(
-            object_geometry[dims_index_1] * object_geometry[dims_index_2]
+            size[dims_index_1] * size[dims_index_2]
         );
 
         // Compute color_info
         mesh_normal[axis] = 1;
         // for each layer going in the direction of axis
-        for (voxel_position[axis] = -1; voxel_position[axis] < static_cast<int>(object_geometry[axis]);) {
+        for (voxel_position[axis] = -1;
+             voxel_position[axis] < static_cast<VoxelDim>(size[axis]);) {
             std::size_t counter = 0;
             // for each voxel in this level
             for (voxel_position[dims_index_2] = 0;
-                 voxel_position[dims_index_2] < static_cast<int>(object_geometry[dims_index_2]);
+                 voxel_position[dims_index_2]
+                 < static_cast<VoxelDim>(size[dims_index_2]);
                  ++voxel_position[dims_index_2])
                 for (voxel_position[dims_index_1] = 0;
-                     voxel_position[dims_index_1] < static_cast<int>(object_geometry[dims_index_1]);
+                     voxel_position[dims_index_1]
+                     < static_cast<VoxelDim>(size[dims_index_1]);
                      ++voxel_position[dims_index_1], ++counter) {
                     // tile in the level above
                     const uint16_t voxel_above = voxel_object.get_voxel_color_id(
@@ -212,8 +214,8 @@ generate_mesh(T voxel_object) {
             unsigned int width = 0, height = 0;
 
             counter = 0;
-            for (unsigned int j = 0; j < object_geometry[dims_index_2]; ++j)
-                for (unsigned int i = 0; i < object_geometry[dims_index_1];) {
+            for (size_t j = 0; j < size[dims_index_2]; ++j)
+                for (size_t i = 0; i < size[dims_index_1];) {
                     // color and direction of the face between two voxels
                     std::pair<bool, uint16_t> color = color_info[counter];
                     // if there is a face between two voxels
@@ -233,12 +235,12 @@ generate_mesh(T voxel_object) {
                         // Compute width
                         width = 1;
                         while (color == color_info[counter + width]
-                               && i + width < object_geometry[dims_index_1]) {
+                               && i + width < size[dims_index_1]) {
                             ++width;
                         }
                         // Compute height
                         bool done = false;
-                        for (height = 1; j + height < object_geometry[dims_index_2]; ++height) {
+                        for (height = 1; j + height < size[dims_index_2]; ++height) {
                             // expand until one of the tiles in the next row is
                             // not the same color/facing direction
                             for (unsigned int k = 0; k < width; ++k) {
@@ -246,7 +248,7 @@ generate_mesh(T voxel_object) {
                                 // face is different from the direction and
                                 // color of the face currently being tested
                                 std::pair<bool, uint16_t> test_against = color_info
-                                    [counter + k + height * object_geometry[dims_index_1]];
+                                    [counter + k + height * size[dims_index_1]];
                                 if (color != test_against) {
                                     done = true;
                                     break;
@@ -341,7 +343,7 @@ generate_mesh(T voxel_object) {
 
                         for (unsigned int w = 0; w < width; ++w)
                             for (unsigned int h = 0; h < height; ++h)
-                                color_info[counter + w + h * object_geometry[dims_index_1]] =
+                                color_info[counter + w + h * size[dims_index_1]] =
                                     std::make_pair(false, 0);
 
                         // Increment counters
@@ -359,9 +361,10 @@ generate_mesh(T voxel_object) {
         voxel_object.get_color_ids()
     );
 }
-// No need to just put 
-//inline std::vector<ColorFloat>
-//convert_color_data(const std::vector<ColorInt>& color_map) {
+
+// No need to just put
+// inline std::vector<ColorFloat>
+// convert_color_data(const std::vector<ColorInt>& color_map) {
 //    return color::convert_color_data(color_map);
 //}
 
