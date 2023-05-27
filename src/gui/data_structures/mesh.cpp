@@ -15,9 +15,7 @@ namespace gui {
 
 namespace data_structures {
 
-Mesh::Mesh(
-    const entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
-) {
+Mesh::Mesh(const entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms) {
     // clear all buffers
     GLuint buffers[5] = {
         vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_,
@@ -91,11 +89,23 @@ Mesh::Mesh(
     glGenBuffers(1, &transforms_buffer_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, transforms_buffer_);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, model_transforms.size() * sizeof(glm::ivec3),
-        model_transforms.data(), GL_STATIC_DRAW
+        GL_ELEMENT_ARRAY_BUFFER, model_transforms.size() * sizeof(glm::mat4),
+        model_transforms.data(), GL_DYNAMIC_DRAW
+    );
+}
+
+void
+Mesh::update_transforms(const std::vector<glm::mat4>& model_transforms) {
+    num_models_ = model_transforms.size();
+    do_render_ = (num_models_ != 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, transforms_buffer_);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER, model_transforms.size() * sizeof(glm::mat4),
+        model_transforms.data(), GL_DYNAMIC_DRAW
     );
 }
 
 } // namespace data_structures
 
-} // namespace terrain
+} // namespace gui

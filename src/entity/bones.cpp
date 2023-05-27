@@ -5,15 +5,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-entity::Bones::Bones(const Json::Value& bone_structure) {
+namespace entity {
+
+Bones::Bones(const Json::Value& bone_structure) {
     // This will be -1 until nino tels me to change
     // this to a size_t
     add_bone(-1, bone_structure);
 }
 
 void
-entity::Bones::add_bone(int parent, const Json::Value& json_bone) {
-
+Bones::add_bone(int parent, const Json::Value& json_bone) {
     auto& json_offset = json_bone["offset"];
     auto vector_offset = glm::vec3(
         json_offset[0].asFloat(), json_offset[1].asFloat(), json_offset[2].asFloat()
@@ -31,7 +32,7 @@ entity::Bones::add_bone(int parent, const Json::Value& json_bone) {
 }
 
 void
-entity::Bones::update(std::vector<glm::vec3> angles) {
+Bones::update(std::vector<glm::vec3> angles) {
     glm::vec3 i(1, 0, 0);
     glm::vec3 j(0, 1, 0);
     glm::vec3 k(0, 0, 1);
@@ -61,3 +62,10 @@ entity::Bones::update(std::vector<glm::vec3> angles) {
             bones_[bones_[n].parent].postion * bones_[n].relative_position;
     }
 }
+
+glm::mat4
+Bones::get_position(size_t bone_index) {
+    return bones_[bone_index].postion;
+}
+
+} // namespace entity

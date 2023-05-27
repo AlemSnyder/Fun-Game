@@ -1,5 +1,5 @@
-#include "../meshloader.hpp"
 #include "../../entity/mesh.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -24,6 +24,8 @@ class Mesh : public MeshData::MultiComplexMesh {
     uint32_t num_vertices_;
     uint32_t num_models_;
     bool do_render_;
+    // end of override
+    size_t bone_index_;
 
  public:
     inline Mesh(const Mesh& obj) {
@@ -54,7 +56,9 @@ class Mesh : public MeshData::MultiComplexMesh {
     }
 
     Mesh(
-        const entity::Mesh& mesh);
+        const entity::Mesh& mesh,
+        const std::vector<glm::mat4>& model_transforms = std::vector<glm::mat4>()
+    );
 
     inline ~Mesh() {
         glDeleteBuffers(1, &vertex_buffer_);
@@ -65,6 +69,7 @@ class Mesh : public MeshData::MultiComplexMesh {
         glDeleteBuffers(1, &transforms_buffer_);
     }
 
+    // functions used by renderer are marked override
     [[nodiscard]] inline GLuint
     get_color_buffer() const noexcept override {
         return color_buffer_;
@@ -110,9 +115,15 @@ class Mesh : public MeshData::MultiComplexMesh {
         return do_render_;
     };
 
-    void update_transforms();
+    // not used by renderer
+    [[nodiscard]] inline size_t
+    get_bone_index() const {
+        return bone_index_;
+    };
+
+    void update_transforms(const std::vector<glm::mat4>& model_transforms);
 };
 
-}
+} // namespace data_structures
 
-} // namespace terrain
+} // namespace gui
