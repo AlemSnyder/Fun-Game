@@ -58,12 +58,16 @@ class AdjacentIterator {
     int operator++();
     int operator++(int);
 
-    inline bool end() { return dpos_ > 26U; }
+    inline bool
+    end() {
+        return dpos_ > 26U;
+    }
 
     size_t get_pos();
     UnitPath get_path_type();
 
-    inline TerrainDim3 get_relative_position() {
+    inline TerrainDim3
+    get_relative_position() {
         return get_indexed_offsets(dpos_);
     }
 };

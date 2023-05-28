@@ -1,8 +1,8 @@
 #include "renderer.hpp"
 
-#include "../data_structures/terrain_mesh.hpp"
 #include "../../util/files.hpp"
 #include "../controls.hpp"
+#include "../data_structures/terrain_mesh.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
 
@@ -90,7 +90,7 @@ MainRenderer::render(GLFWwindow* window) const {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     // Enable writing to depth texture
-    glDepthMask(GL_TRUE);  
+    glDepthMask(GL_TRUE);
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
 

@@ -6,10 +6,11 @@
 #include "logging.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
-#include "world.hpp"
 #include "util/voxel_io.hpp"
+#include "world.hpp"
 
 #include <argh.h>
+#include <json/json.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,22 +19,19 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <quill/Quill.h>
-#include <json/json.h>
-
 #include <stdint.h>
+
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <filesystem>
 
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
 
 int
-GenerateTerrain(const std::string path)
-{
-
+GenerateTerrain(const std::string path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -50,9 +48,7 @@ GenerateTerrain(const std::string path)
 }
 
 int
-MacroMap()
-{
-
+MacroMap() {
     quill::Logger* logger = quill::get_logger();
 
     Json::Value biome_data;
@@ -60,7 +56,9 @@ MacroMap()
     biome_file >> biome_data;
 
     // test terrain generation in a region of 64 by 64
-    auto map = terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+    auto map = terrain::TerrainBase::generate_macro_map(
+        64, 64, biome_data["Biome_1"]["Terrain_Data"]
+    );
 
     LOG_INFO(logger, "Map: {}", map);
 
@@ -92,7 +90,6 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-
         World world(materials_json, biome_data, i);
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
@@ -101,12 +98,10 @@ save_terrain(
         save_path += ".qb";
         world.terrain_main.qb_save(save_path.string());
     }
-
 }
 
 void
-save_all_terrain(Json::Value materials_json, Json::Value biome_data)
-{
+save_all_terrain(Json::Value materials_json, Json::Value biome_data) {
     for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
          biome_type++) {
         save_terrain(materials_json, *biome_type, biome_type.key().asString());
@@ -114,8 +109,7 @@ save_all_terrain(Json::Value materials_json, Json::Value biome_data)
 }
 
 int
-path_finder_test(const std::string path, std::string save_path)
-{
+path_finder_test(const std::string path, std::string save_path) {
     quill::Logger* logger = quill::get_logger();
 
     Json::Value materials_json;
@@ -159,8 +153,7 @@ path_finder_test(const std::string path, std::string save_path)
 }
 
 std::vector<entity::Mesh>
-get_mesh(const std::string path)
-{
+get_mesh(const std::string path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -170,8 +163,7 @@ get_mesh(const std::string path)
 }
 
 int
-StressTest()
-{
+StressTest() {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -188,8 +180,7 @@ StressTest()
 }
 
 int
-GUITest(const std::string path)
-{
+GUITest(const std::string path) {
     quill::Logger* logger = logging::get_logger();
 
     Json::Value materials_json;
@@ -208,14 +199,12 @@ GUITest(const std::string path)
 }
 
 inline int
-GUITest(const std::filesystem::path path)
-{
+GUITest(const std::filesystem::path path) {
     return GUITest(path.string());
 }
 
 inline int
-LogTest()
-{
+LogTest() {
     quill::Logger* logger = quill::get_logger();
     logger->set_log_level(quill::LogLevel::TraceL3);
 
@@ -237,13 +226,12 @@ LogTest()
 }
 
 int
-main(int argc, char** argv)
-{
+main(int argc, char** argv) {
     argh::parser cmdl;
 
     cmdl.add_params({
-        "-v", "--verbose",   // Verbosity
-        "-c", "--console"    // Enable console logging
+        "-v", "--verbose", // Verbosity
+        "-c", "--console"  // Enable console logging
     });
     cmdl.add_param("biome-name");
     cmdl.parse(argc, argv, argh::parser::SINGLE_DASH_IS_MULTIFLAG);

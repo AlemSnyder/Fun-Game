@@ -107,12 +107,14 @@ controls::computeMatricesFromInputs(GLFWwindow* window) {
     float FoV = initialFoV;
     // set up call back to allow for scrolling to see things
 
-    // Projection matrix : 45° Field of View, 4:3 ratio, 
-    projection_matrix = glm::perspective(glm::radians(FoV),
+    // Projection matrix : 45° Field of View, 4:3 ratio,
+    projection_matrix = glm::perspective(
+        glm::radians(FoV),
         // ratio defined by screen width and height
         static_cast<float>(width) / static_cast<float>(height),
         0.1f, // display range min
-        1000.0f); // display range max
+        1000.0f
+    ); // display range max
     // Camera matrix
     view_matrix = glm::lookAt(
         position,             // Camera is here

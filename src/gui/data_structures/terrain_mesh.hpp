@@ -2,9 +2,9 @@
 // reason it should be moved into gui/data_structures
 // Also no namespace terrain
 
-#include "../meshloader.hpp"
 #include "../../entity/mesh.hpp"
-//#include "static_mesh.hpp"
+#include "../meshloader.hpp"
+// #include "static_mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

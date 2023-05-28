@@ -1,5 +1,5 @@
-#include "../meshloader.hpp"
 #include "../../entity/mesh.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

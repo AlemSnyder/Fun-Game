@@ -34,8 +34,8 @@ ScreenData::ScreenData() {
     glGenBuffers(1, &element_buffer_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint16_t),
-        indices.data(), GL_STATIC_DRAW
+        GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint16_t), indices.data(),
+        GL_STATIC_DRAW
     );
 }
 

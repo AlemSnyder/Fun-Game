@@ -2,14 +2,25 @@
 // -*- lsst-c++ -*-
 /*
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License, or
+ * it under
+
+ * * the terms of the GNU General Public License as published by
+ * the Free Software
+ *
+ * Foundation, version 2 of the License, or
  * (at your option) any later version.
  *
+
+ * *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * but WITHOUT
+ * ANY
+ * WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS
+ * FOR A
+ * PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+
  */
 /**
  * @file material.hpp
@@ -17,7 +28,9 @@
  * @brief Defines Material struct
  *
  * @ingroup Terrain
- *
+
+
+ * * *
  */
 
 #pragma once
@@ -38,12 +51,22 @@ namespace terrain {
 /**
  * @brief Holds Material data
  *
- * @details World class should have a map of materials organized by Material
- * Id. Each tile has a pointer to one of those materials (though this should
- * be an uint8_t as there are less than 256 materials).
+ * @details World class should have a map of
  *
- * The material determines if the tile is solid, and the potential color. Other
+ * materials organized by Material
+ * Id. Each tile has a pointer to one of those
+ *
+ * materials (though this should
+ * be an uint8_t as there are less than 256
+ *
+ * materials).
+ *
+ * The material determines if the tile is solid, and the potential
+ *
+ * color. Other
  * data will be added like how cretin materials respond to weather...
+
+
  */
 struct Material {
     Material(

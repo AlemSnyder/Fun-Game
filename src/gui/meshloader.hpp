@@ -57,4 +57,4 @@ class MultiComplexMesh : public MultiMesh {
     virtual GLuint get_color_buffer() const = 0;
 };
 
-} // namespace MeshLoader
+} // namespace MeshData
