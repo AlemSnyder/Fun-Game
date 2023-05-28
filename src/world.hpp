@@ -134,7 +134,7 @@ class World {
      * @param material_json
      * data to load from
      * @return std::vector<int> width of each grass color
- */
+     */
     std::vector<int> get_grass_grad_data(const Json::Value& material_json);
 
     /**

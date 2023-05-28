@@ -213,7 +213,7 @@ class Terrain : public TerrainBase {
      *
      * @param tile
      * @return int
- */
+     */
     [[nodiscard]] inline TileIndex
     pos_for_map(const NodeGroup NG) const {
         return pos(*(NG.get_tiles().begin()));
@@ -224,7 +224,7 @@ class Terrain : public TerrainBase {
      *
      * @param tile
      * @return int
- */
+     */
     [[nodiscard]] inline TileIndex
     pos_for_map(const NodeGroup* const NG) const {
         return pos(*(NG->get_tiles().begin()));

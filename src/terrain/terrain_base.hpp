@@ -266,7 +266,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @param tile
      * @return int
- */
+     */
     [[nodiscard]] inline int
     pos_for_map(const Tile tile) const {
         return pos(tile);
@@ -277,7 +277,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @param tile
      * @return int
- */
+     */
     [[nodiscard]] inline int
     pos_for_map(const Tile* const tile) const {
         return pos(tile);

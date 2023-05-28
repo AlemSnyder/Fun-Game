@@ -134,7 +134,7 @@ class Tile {
      * @brief Set the color id
      *
      * @param color_id color to set
- */
+     */
     void set_color_id(ColorId color_id, const terrain::Material* const material);
     /**
      * @brief Set the distance from edge
