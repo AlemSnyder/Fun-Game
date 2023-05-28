@@ -70,7 +70,6 @@ class Mesh {
     std::vector<ColorInt> color_map_;
 
  public:
-
     // x, y, z length of the mesh
     [[nodiscard]] inline const glm::ivec3&
     get_size() const noexcept {

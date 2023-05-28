@@ -44,7 +44,7 @@ class Chunk : public voxel_utility::VoxelBase {
     std::list<NodeGroup> node_groups_;
     Terrain* ter_;
     Dim Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
-                            // Chunk::SIZE to get tile position.
+                       // Chunk::SIZE to get tile position.
  public:
     static const Dim SIZE = 16; // number of tiles in each direction
 
@@ -56,9 +56,10 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param bz chunk z position
      * @param ter the terrain this chunk is in
      */
-    Chunk(Dim bx, Dim by, Dim bz, Terrain* ter): Chunk({bx,by,bz}, ter){
+    Chunk(Dim bx, Dim by, Dim bz, Terrain* ter) :
+        Chunk({bx, by, bz}, ter){
 
-    };
+        };
 
     Chunk(TerrainDim3 chunk_position, Terrain* ter);
 

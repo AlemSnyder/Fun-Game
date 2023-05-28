@@ -37,8 +37,7 @@ quill::Logger* file_io_logger;  // for file io
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
 void
-init(bool console, quill::LogLevel log_level, bool structured)
-{
+init(bool console, quill::LogLevel log_level, bool structured) {
     _LOG_LEVEL = log_level;
 
     // Create the logs directory

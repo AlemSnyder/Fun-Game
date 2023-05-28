@@ -30,8 +30,8 @@
 #include "material.hpp"
 #include "path/unit_path.hpp"
 #include "terrain_generation/land_generator.hpp"
-#include "tile.hpp"
 #include "terrain_generation/tile_stamp.hpp"
+#include "tile.hpp"
 
 #include <json/json.h>
 
@@ -80,14 +80,14 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     /**
      * @brief Construct a new Terrain Base object most default constructor
-     * 
-     * @param materials 
-     * @param grass_grad_data 
-     * @param grass_mid 
-     * @param x_map_tiles 
-     * @param y_map_tiles 
-     * @param area_size 
-     * @param z_tiles 
+     *
+     * @param materials
+     * @param grass_grad_data
+     * @param grass_mid
+     * @param x_map_tiles
+     * @param y_map_tiles
+     * @param area_size
+     * @param z_tiles
      */
     TerrainBase(
         const std::map<MaterialId, const terrain::Material>& materials,
@@ -97,9 +97,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     /**
      * @brief Construct a new Terrain Base object from qb data
-     * 
+     *
      * @details This constructor loads a terrain object from a file
-     * 
+     *
      * @param materials Materials that make up the terrain
      * @param grass_grad_data grass gradient data
      * @param grass_mid position in grass gradient data that denotes the middle
@@ -113,15 +113,15 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     /**
      * @brief Construct a new Terrain Base object for demonstrating biomes
-     * 
-     * @param x_map_tiles 
-     * @param y_map_tiles 
-     * @param area_size 
-     * @param z_tiles 
-     * @param materials 
-     * @param biome_data 
-     * @param grass_grad_data 
-     * @param grass_mid 
+     *
+     * @param x_map_tiles
+     * @param y_map_tiles
+     * @param area_size
+     * @param z_tiles
+     * @param materials
+     * @param biome_data
+     * @param grass_grad_data
+     * @param grass_mid
      */
     inline TerrainBase(
         Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles,
@@ -130,22 +130,23 @@ class TerrainBase : public voxel_utility::VoxelBase {
         unsigned int grass_mid
     ) :
         TerrainBase(
-            x_map_tiles, y_map_tiles, area_size, z_tiles, materials, biome_data, grass_grad_data, grass_mid,
+            x_map_tiles, y_map_tiles, area_size, z_tiles, materials, biome_data,
+            grass_grad_data, grass_mid,
             generate_macro_map(x_map_tiles, y_map_tiles, biome_data["Terrain_Data"])
         ) {}
 
     /**
      * @brief Construct a new Terrain Base object using terrain generation
-     * 
-     * @param x_map_tiles 
-     * @param y_map_tiles 
-     * @param Area_size 
-     * @param z_tiles 
-     * @param materials 
-     * @param biome_data 
-     * @param grass_grad_data 
-     * @param grass_mid 
-     * @param Terrain_Maps 
+     *
+     * @param x_map_tiles
+     * @param y_map_tiles
+     * @param Area_size
+     * @param z_tiles
+     * @param materials
+     * @param biome_data
+     * @param grass_grad_data
+     * @param grass_mid
+     * @param Terrain_Maps
      */
     TerrainBase(
         Dim x_map_tiles, Dim y_map_tiles, Dim Area_size, Dim z_tiles,

@@ -27,14 +27,12 @@ extern quill::Logger* lua_logger;      // for lua logging
 #endif
 
 inline quill::Logger*
-get_logger()
-{
+get_logger() {
     return quill::get_logger();
 }
 
 inline quill::Logger*
-get_logger(std::string name)
-{
+get_logger(std::string name) {
     quill::Logger* logger;
 
     try {
@@ -49,14 +47,12 @@ get_logger(std::string name)
 }
 
 inline void
-set_thread_name(std::string name)
-{
+set_thread_name(std::string name) {
     quill::detail::set_thread_name(name.c_str());
 }
 
 inline std::filesystem::path
-log_dir() noexcept
-{
+log_dir() noexcept {
     return files::get_root_path() / "logs";
 }
 

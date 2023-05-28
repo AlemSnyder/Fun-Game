@@ -40,8 +40,8 @@ TerrainBase::qb_read(
 
 TerrainBase::TerrainBase(
     const std::map<MaterialId, const terrain::Material>& materials,
-    const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-    Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles
+    const std::vector<int>& grass_grad_data, unsigned int grass_mid, Dim x_map_tiles,
+    Dim y_map_tiles, Dim area_size, Dim z_tiles
 ) :
     area_size_(area_size),
     materials_(materials), X_MAX(x_map_tiles * area_size),

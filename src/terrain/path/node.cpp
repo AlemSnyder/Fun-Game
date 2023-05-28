@@ -1,7 +1,7 @@
 #include "node.hpp"
 
-#include "node_group.hpp"
 #include "../tile.hpp"
+#include "node_group.hpp"
 
 namespace terrain {
 
