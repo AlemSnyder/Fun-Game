@@ -64,12 +64,10 @@ TerrainColorMapping::assign_color_mapping(
 
 GLuint_p
 TerrainColorMapping::assign_color_texture() {
-    
     glDeleteTextures(1, &color_texture_);
 
     // Generate a texture
-    std::vector<ColorFloat> float_colors =
-        color::convert_color_data(color_ids_map);
+    std::vector<ColorFloat> float_colors = color::convert_color_data(color_ids_map);
 
     // Generate a texture
     glGenTextures(1, &color_texture_);
@@ -86,7 +84,7 @@ TerrainColorMapping::assign_color_texture() {
         float_colors.data()
     );
     glGenerateMipmap(GL_TEXTURE_1D);
-    
+
     return color_texture_;
 }
 

@@ -1,9 +1,9 @@
 #include "sky_data.hpp"
 
-#include "../meshloader.hpp"
+#include "../../entity/mesh.hpp"
 #include "../../logging.hpp"
 #include "../../types.hpp"
-#include "../../entity/mesh.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +11,7 @@
 
 #include <vector>
 
-namespace gui{
+namespace gui {
 
 namespace data_structures {
 
@@ -23,20 +23,16 @@ SkyData::SkyData(std::filesystem::path path) {
     std::vector<GLfloat> star_age;
 
     for (const Json::Value& star : stars_json["stars"]["data"]) {
-
         float phi = glm::radians(star["phi"].asFloat());
         float theta = glm::radians(star["theta"].asFloat());
 
         glm::vec4 star_position(
-            glm::cos(theta)*glm::sin(phi),
-            glm::sin(theta)*glm::sin(phi),
-            glm::cos(phi),
-            star["brightness"].asFloat()
+            glm::cos(theta) * glm::sin(phi), glm::sin(theta) * glm::sin(phi),
+            glm::cos(phi), star["brightness"].asFloat()
         );
         stars_positions.push_back(star_position);
 
         star_age.push_back(star["age"].asFloat());
-
     }
 
     num_stars_ = stars_positions.size();
@@ -53,22 +49,26 @@ SkyData::SkyData(std::filesystem::path path) {
     glGenBuffers(1, &age_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, age_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, star_age.size() * sizeof(GLfloat),
-        star_age.data(), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, star_age.size() * sizeof(GLfloat), star_age.data(),
+        GL_STATIC_DRAW
     );
 
-    std::vector<glm::vec2> star_shape({{0,1},{1,0},{-1,0},{0,-1}});
+    std::vector<glm::vec2> star_shape({
+        {0,  1 },
+        {1,  0 },
+        {-1, 0 },
+        {0,  -1}
+    });
 
     // Generate a buffer for the for corners of a "star"
     glGenBuffers(1, &shape_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, shape_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, star_shape.size() * sizeof(glm::vec2),
-        star_shape.data(), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, star_shape.size() * sizeof(glm::vec2), star_shape.data(),
+        GL_STATIC_DRAW
     );
-
 }
 
-} // namespace sky
+} // namespace data_structures
 
 } // namespace gui

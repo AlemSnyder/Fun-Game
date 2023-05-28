@@ -1,9 +1,9 @@
 #include "quad_renderer.hpp"
 
 #include "../../util/files.hpp"
+#include "../handler.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
-#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

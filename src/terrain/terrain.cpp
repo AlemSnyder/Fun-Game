@@ -273,8 +273,8 @@ Terrain::get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const {
     int px = floor(x) / Chunk::SIZE;
     int py = floor(y) / Chunk::SIZE;
     int pz = floor(z) / Chunk::SIZE;
-    return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE)
-           + (py * Z_MAX / Chunk::SIZE) + pz;
+    return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
+           + pz;
 }
 
 std::set<Node<const NodeGroup>*>
@@ -512,7 +512,7 @@ Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const {
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_breadth_first (
+Terrain::get_path_breadth_first(
     const NodeGroup* start, const std::set<const NodeGroup*> goal
 ) const {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =

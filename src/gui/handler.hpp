@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-namespace gui{
+namespace gui {
 
 class FrameBufferHandler {
  private:
@@ -14,8 +14,7 @@ class FrameBufferHandler {
         return fbo_name;
     }
 
-    static void
-    bind_fbo(GLuint new_fbo);
+    static void bind_fbo(GLuint new_fbo);
 };
 
-}
+} // namespace gui

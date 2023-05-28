@@ -83,9 +83,7 @@ class Tile {
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(
-        TerrainDim3 sop, const terrain::Material* material, uint8_t color_id = 0
-    );
+    Tile(TerrainDim3 sop, const terrain::Material* material, uint8_t color_id = 0);
 
     // This probably should not be used.
     Tile() :

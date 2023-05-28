@@ -12,15 +12,15 @@
 #include "../data_structures/static_mesh.hpp"
 #include "../data_structures/terrain_mesh.hpp"
 #include "../gui_logging.hpp"
+#include "../handler.hpp"
 #include "../render/quad_renderer.hpp"
 #include "../render/quad_renderer_multisample.hpp"
 #include "../render/renderer.hpp"
 #include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
 #include "../scene/controls.hpp"
-#include "../shader.hpp"
 #include "../scene/scene.hpp"
-#include "../handler.hpp"
+#include "../shader.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -100,7 +100,6 @@ imguiTest(World& world) {
         return -1;
     }
 
-    
     // initialize logging
     GLint context_flag;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
@@ -288,9 +287,7 @@ imguiTest(World& world) {
                     | ImGuiWindowFlags_NoBringToFrontOnFocus
             );
             ImGui::Image(
-                reinterpret_cast<ImTextureID>(
-                    main_scene.get_scene()
-                ),
+                reinterpret_cast<ImTextureID>(main_scene.get_scene()),
                 ImVec2(window_width, window_height)
             );
 
@@ -364,7 +361,10 @@ imguiTest(World& world) {
             ImGui::Begin("Shadow Depth Texture");
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
-                ImVec2(main_scene.get_shadow_width() / 8, main_scene.get_shadow_height() / 8)
+                ImVec2(
+                    main_scene.get_shadow_width() / 8,
+                    main_scene.get_shadow_height() / 8
+                )
             );
 
             ImGui::End();

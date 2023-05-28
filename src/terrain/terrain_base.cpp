@@ -40,8 +40,8 @@ TerrainBase::qb_read(
 
 TerrainBase::TerrainBase(
     const std::map<MaterialId, const terrain::Material>& materials,
-    const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-    Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles
+    const std::vector<int>& grass_grad_data, unsigned int grass_mid, Dim x_map_tiles,
+    Dim y_map_tiles, Dim area_size, Dim z_tiles
 ) :
     area_size_(area_size),
     materials_(materials), X_MAX(x_map_tiles * area_size),
@@ -168,7 +168,7 @@ TerrainBase::get_first_not(
             return Z_MAX; // -1? should not be minus one, but one should consider that
                           // this is a possible return value
         }
-    } else if (guess == 1){
+    } else if (guess == 1) {
         return 0;
     } else {
         // go down
@@ -176,7 +176,7 @@ TerrainBase::get_first_not(
             if (has_tile_material(materials, x, y, z)) {
                 return z + 1;
             }
-            if (z == 0){
+            if (z == 0) {
                 return 0;
             }
         }

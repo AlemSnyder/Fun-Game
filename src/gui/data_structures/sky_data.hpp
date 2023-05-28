@@ -80,6 +80,6 @@ class SkyData {
     }
 };
 
-} // namespace sky
+} // namespace data_structures
 
 } // namespace gui

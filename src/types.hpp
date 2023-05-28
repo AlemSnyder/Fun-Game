@@ -34,6 +34,6 @@ static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));
 using VoxelSize = glm::u32vec3;   // from get_size
 using VoxelOffset = glm::i32vec3; // from get_offset
 
-using VoxelDim = int32_t;         // should be signed??
-using VoxelColorId = uint16_t;    // color id is used to make textures
+using VoxelDim = int32_t;      // should be signed??
+using VoxelColorId = uint16_t; // color id is used to make textures
 static_assert(sizeof(VoxelColorId) == sizeof(MatColorId));

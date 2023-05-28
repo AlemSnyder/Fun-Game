@@ -72,13 +72,12 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
 
     // connect the texture to the frame buffer
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single,
-        0
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single, 0
     );
 
     DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, DrawBuffers);
-    
+
     framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {

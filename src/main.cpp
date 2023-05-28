@@ -2,8 +2,8 @@
 #include "entity/mesh.hpp"
 #include "gui/scene/controls.hpp"
 #include "gui/scene/main_gui.hpp"
-#include "gui/ui/main_ui.hpp"
 #include "gui/shader.hpp"
+#include "gui/ui/main_ui.hpp"
 #include "logging.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -11,6 +11,7 @@
 #include "world.hpp"
 
 #include <argh.h>
+#include <json/json.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,10 +19,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <quill/Quill.h>
-#include <json/json.h>
 #include <imgui/imgui.h>
+#include <quill/Quill.h>
 #include <stdint.h>
+
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -57,7 +58,9 @@ MacroMap() {
     biome_file >> biome_data;
 
     // test terrain generation in a region of 64 by 64
-    auto map = terrain::TerrainBase::generate_macro_map(64, 64, biome_data["Biome_1"]["Terrain_Data"]);
+    auto map = terrain::TerrainBase::generate_macro_map(
+        64, 64, biome_data["Biome_1"]["Terrain_Data"]
+    );
 
     LOG_INFO(logger, "Map: {}", map);
 
@@ -152,7 +155,8 @@ path_finder_test(const std::string path, std::string save_path) {
     return 0;
 }
 
-int imguiTest_main(){
+int
+imguiTest_main() {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -292,7 +296,7 @@ main(int argc, char** argv) {
         return GUITest(path_in);
     } else if (run_function == "Logging") {
         return LogTest();
-    } else if (run_function == "imguiTest"){
+    } else if (run_function == "imguiTest") {
         return imguiTest_main();
     } else {
         std::cout << "No known command" << std::endl;

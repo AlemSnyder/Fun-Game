@@ -28,7 +28,9 @@ class Scene {
     data_structures::StaticMesh treesMesh;
 
  public:
-    Scene(World& world_, uint32_t width, uint32_t height, uint32_t shadow_map_width_height);
+    Scene(
+        World& world_, uint32_t width, uint32_t height, uint32_t shadow_map_width_height
+    );
     GLuint get_scene();
     GLuint get_depth_texture();
     uint32_t get_shadow_width();

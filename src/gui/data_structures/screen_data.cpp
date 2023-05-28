@@ -3,20 +3,19 @@
 #include <vector>
 
 gui::data_structures::ScreenData::ScreenData() {
-
     std::vector<glm::vec3> vertices;
 
-    vertices.push_back(glm::vec3(-1,-1,0));
-    vertices.push_back(glm::vec3(-1,1,0));
-    vertices.push_back(glm::vec3(1,1,0));
-    vertices.push_back(glm::vec3(1,-1,0));
+    vertices.push_back(glm::vec3(-1, -1, 0));
+    vertices.push_back(glm::vec3(-1, 1, 0));
+    vertices.push_back(glm::vec3(1, 1, 0));
+    vertices.push_back(glm::vec3(1, -1, 0));
 
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3),
-        vertices.data(), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(),
+        GL_STATIC_DRAW
     );
 
     num_vertices_ = 4;
@@ -35,5 +34,4 @@ gui::data_structures::ScreenData::ScreenData() {
         GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
         indices.data(), GL_STATIC_DRAW
     );
-
 }

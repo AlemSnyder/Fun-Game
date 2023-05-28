@@ -2,8 +2,8 @@
 // reason it should be moved into gui/data_structures
 // Also no namespace terrain
 
-#include "../meshloader.hpp"
 #include "../../entity/mesh.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -31,7 +31,9 @@ class TerrainMesh : public MeshData::SingleComplexMesh {
     inline TerrainMesh(const TerrainMesh& other) = delete;
     // copy operator
     inline TerrainMesh& operator=(const TerrainMesh& other) = delete;
-    inline TerrainMesh& operator=(TerrainMesh&& other){
+
+    inline TerrainMesh&
+    operator=(TerrainMesh&& other) {
         vertex_buffer_ = other.vertex_buffer_;
         color_buffer_ = other.color_buffer_;
         normal_buffer_ = other.normal_buffer_;
@@ -88,6 +90,6 @@ class TerrainMesh : public MeshData::SingleComplexMesh {
     }
 };
 
-}
+} // namespace data_structures
 
-} // namespace terrain
+} // namespace gui

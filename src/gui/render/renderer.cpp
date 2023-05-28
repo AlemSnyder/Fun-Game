@@ -2,10 +2,10 @@
 
 #include "../../util/files.hpp"
 #include "../data_structures/terrain_mesh.hpp"
+#include "../handler.hpp"
 #include "../meshloader.hpp"
 #include "../scene/controls.hpp"
 #include "../shader.hpp"
-#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

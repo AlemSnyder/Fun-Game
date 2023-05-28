@@ -22,10 +22,10 @@
 
 #pragma once
 
-#include "types.hpp"
+#include "gui/data_structures/terrain_mesh.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
-#include "gui/data_structures/terrain_mesh.hpp"
+#include "types.hpp"
 
 #include <json/json.h>
 
@@ -61,16 +61,18 @@ class World {
     // chunks_mesh like attorneys general
 
  public:
-
-    const terrain::Terrain& get_terrain_main() const {
+    const terrain::Terrain&
+    get_terrain_main() const {
         return terrain_main;
     }
 
-    terrain::Terrain& get_terrain_main() {
+    terrain::Terrain&
+    get_terrain_main() {
         return terrain_main;
     }
 
-    const std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>>& get_chunks_mesh() const{
+    const std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>>&
+    get_chunks_mesh() const {
         return chunks_mesh;
     }
 
@@ -95,8 +97,8 @@ class World {
      */
     World(const Json::Value& materials_json, const Json::Value& biome_data, int type);
     World(
-        const Json::Value& materials_json, const Json::Value& biome_data, uint32_t x_tiles,
-        uint32_t y_tiles
+        const Json::Value& materials_json, const Json::Value& biome_data,
+        uint32_t x_tiles, uint32_t y_tiles
     );
 
     constexpr static int macro_tile_size = 32;
@@ -130,7 +132,8 @@ class World {
      * @param material_data data to load from
      * (see) data/materials.json
      */
-    std::map<MaterialId, const terrain::Material> init_materials(const Json::Value& material_data);
+    std::map<MaterialId, const terrain::Material>
+    init_materials(const Json::Value& material_data);
 
     /**
      * @brief Get the grass gradient data
@@ -142,13 +145,12 @@ class World {
 
     /**
      * @brief update all chunk mesh
-     * 
+     *
      */
     void update_all_chunk_mesh();
 
     // Could mark this inline
-    void
-    update_single_mesh(uint16_t chunk_pos);
+    void update_single_mesh(uint16_t chunk_pos);
 
     // set a region to given material, and color
     void set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id);
@@ -156,20 +158,19 @@ class World {
     // set a region to given material, and color
     void set_tiles();
 
-    void
-    stamp_tile_region(
+    void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
         const terrain::Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
         uint8_t color_id
     );
 
-    void
-    stamp_tile_region(
+    void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
         const terrain::Material* mat, uint8_t color_id
     );
 
-    inline void qb_save_debug(std::string path){
+    inline void
+    qb_save_debug(std::string path) {
         terrain_main.qb_save_debug(path);
     }
 };

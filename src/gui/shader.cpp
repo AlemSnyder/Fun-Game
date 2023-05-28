@@ -119,7 +119,7 @@ load_shaders(
     }
 
     // Link the program
-    //LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
+    // LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
 
     GLuint program_id = glCreateProgram();
     glAttachShader(program_id, vertex_shader_id);
@@ -152,7 +152,9 @@ load_shaders(
         program_id
     );
 
-    LOG_BACKTRACE(logging::opengl_logger, "New Backtrace, because quill won't let me clear it.");
+    LOG_BACKTRACE(
+        logging::opengl_logger, "New Backtrace, because quill won't let me clear it."
+    );
 
     return program_id;
 }

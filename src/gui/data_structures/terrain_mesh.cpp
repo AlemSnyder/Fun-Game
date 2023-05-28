@@ -62,5 +62,4 @@ gui::data_structures::TerrainMesh::update(const entity::Mesh& mesh) {
         GL_ELEMENT_ARRAY_BUFFER, mesh.get_indices().size() * sizeof(unsigned short),
         mesh.get_indices().data(), GL_STATIC_DRAW
     );
-
 }

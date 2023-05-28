@@ -98,4 +98,4 @@ StaticMesh::StaticMesh(
 
 } // namespace data_structures
 
-} // namespace terrain
+} // namespace gui

@@ -1,9 +1,9 @@
 #include "shadow_map.hpp"
 
 #include "../../util/files.hpp"
+#include "../handler.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
-#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -209,7 +209,6 @@ ShadowMap::render_shadow_depth_buffer() const {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
     }
-
 }
 
 } // namespace render

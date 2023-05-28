@@ -34,7 +34,7 @@ glm::vec3 get_position_vector();
 
 /**
  * @brief True if the shadow map should be shown
- * 
+ *
  * @param window current window
  * @return true the shadow map should be shown
  * @return false the shadow map should not be shown

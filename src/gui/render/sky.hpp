@@ -49,8 +49,8 @@ class SkyRenderer {
     GLuint programID_; // ID of Program
     // ID of world space to camera space transform matrix
     GLuint matrix_view_projection_ID_;
-    GLuint pixel_matrix_ID_; // ID of view space to pixel space matrix
-    data_structures::SkyData sky_data_;  // star data
+    GLuint pixel_matrix_ID_;            // ID of view space to pixel space matrix
+    data_structures::SkyData sky_data_; // star data
 
  public:
     /**
@@ -69,6 +69,6 @@ class SkyRenderer {
     void render(GLFWwindow* window, GLuint frame_buffer) const;
 };
 
-} // namespace sky
+} // namespace render
 
 } // namespace gui

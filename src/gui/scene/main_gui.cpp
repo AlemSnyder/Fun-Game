@@ -9,6 +9,7 @@
 #include "../data_structures/static_mesh.hpp"
 #include "../data_structures/terrain_mesh.hpp"
 #include "../gui_logging.hpp"
+#include "../handler.hpp"
 #include "../render/quad_renderer.hpp"
 #include "../render/renderer.hpp"
 #include "../render/shadow_map.hpp"
@@ -16,7 +17,6 @@
 #include "../scene/scene.hpp"
 #include "../shader.hpp"
 #include "controls.hpp"
-#include "../handler.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -136,8 +136,8 @@ GUITest(World& world) {
 
     render::QuadRenderer QR;
 
-    //world.update_all_chunk_mesh();
-    // auto mesh = world.get_chunks_mesh();
+    // world.update_all_chunk_mesh();
+    //  auto mesh = world.get_chunks_mesh();
 
     gui::Scene main_scene(world, windowFrameWidth, windowFrameHeight, 4096);
 
