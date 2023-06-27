@@ -52,27 +52,27 @@ class World {
     std::map<MaterialId, const terrain::Material> materials;
 
     // terrain in the world
-    terrain::Terrain terrain_main;
+    terrain::Terrain terrain_main_;
 
     // TerrainMesh for each chunk in terrain
-    std::vector<std::shared_ptr<terrain::TerrainMesh>> chunks_mesh;
+    std::vector<std::shared_ptr<terrain::TerrainMesh>> chunks_mesh_;
 
     // chunks_mesh like attorneys general
 
  public:
     const terrain::Terrain&
     get_terrain_main() const {
-        return terrain_main;
+        return terrain_main_;
     }
 
     terrain::Terrain&
     get_terrain_main() {
-        return terrain_main;
+        return terrain_main_;
     }
 
     const auto&
     get_chunks_mesh() const {
-        return chunks_mesh;
+        return chunks_mesh_;
     }
 
     // all of these things are for saving
@@ -156,39 +156,39 @@ class World {
     void update_all_chunks_mesh();
 
     // Could mark this inline
-    void update_single_mesh(uint16_t chunk_pos);
+    void update_single_mesh(Dim chunk_pos);
 
     void update_single_mesh(TerrainDim3 tile_sop);
 
     // set a region to given material, and color
-    void set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id);
+    void set_tile(Dim pos, const terrain::Material* mat, ColorId color_id);
 
     void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const terrain::Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
-        uint8_t color_id
+        const terrain::Material* mat,std::set<std::pair<int, int>> elements_can_stamp,
+        ColorId color_id
     );
 
     void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const terrain::Material* mat, uint8_t color_id
+        const terrain::Material* mat, ColorId color_id
     );
 
     inline void
     qb_save_debug(const std::string& path) {
-        terrain_main.qb_save_debug(path);
+        terrain_main_.qb_save_debug(path);
     }
 
     inline void
     qb_save(const std::string& path) const {
-        terrain_main.qb_save(path);
+        terrain_main_.qb_save(path);
     }
 
  private:
     inline void
     initialize_chunks_mesh_() {
-        chunks_mesh.resize(terrain_main.get_chunks().size());
-        for (auto& m : chunks_mesh)
+        chunks_mesh_.resize(terrain_main_.get_chunks().size());
+        for (auto& m : chunks_mesh_)
             m = std::make_shared<terrain::TerrainMesh>();
     }
 };
