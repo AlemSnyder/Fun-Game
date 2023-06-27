@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set the project name
 project(FunGame VERSION 0.1.0)
@@ -62,6 +62,8 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 else()
   set(DEBUG 0)
   message(" Debug build, data will be loaded from subdirs ")
+
+  target_compile_definitions(FunGame, PUBLIC, TILE_SET_TEST)
 
   add_custom_target(resources
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources

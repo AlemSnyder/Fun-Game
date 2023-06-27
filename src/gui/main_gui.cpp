@@ -140,9 +140,10 @@ GUITest(World& world) {
 
     std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
-    for (size_t x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
-        for (size_t y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
-            size_t z = world.get_terrain_main().get_Z_solid(x, y) + 1;
+    auto& terrain = world.get_terrain_main();
+    for (size_t x = 0; x < terrain.get_X_MAX(); x += 40)
+        for (size_t y = 0; y < terrain.get_Y_MAX(); y += 40) {
+            size_t z = terrain.get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec3 model(x, y, z);
                 model_matrices.push_back(model);
@@ -202,8 +203,10 @@ GUITest(World& world) {
     MR.add_mesh(std::make_shared<terrain::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
+#ifdef TILE_SET_TEST
     size_t frame_id = 0;
     bool do_set_tile_material = false;
+#endif
 
     do {
         SM.render_shadow_depth_buffer();
@@ -245,12 +248,14 @@ GUITest(World& world) {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
+#ifdef TILE_SET_TEST
         // run with debug, to set to true
         if (do_set_tile_material) {
             world.set_tile(frame_id, world.get_material(7), 0);
             do_set_tile_material = false;
             frame_id++;
         }
+#endif
 
     } // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS

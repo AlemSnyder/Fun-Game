@@ -130,12 +130,6 @@ World::get_mesh_greedy() const {
 }
 
 void
-World::update_all_chunks_mesh() {
-    for (size_t i = 0; i < chunks_mesh.size(); i++)
-        update_single_mesh(i);
-}
-
-void
 World::update_single_mesh(uint16_t chunk_pos) {
     const auto& chunks = terrain_main.get_chunks();
     entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
@@ -148,16 +142,13 @@ World::update_single_mesh(uint16_t chunk_pos) {
 }
 
 void
-World::update_single_mesh(TerrainDim3 tile_sop) {
-    if (terrain_main.in_range(tile_sop.x + 1, tile_sop.y, tile_sop.z)) {
-        uint16_t chunk_pos =
-            terrain_main.get_chunk_from_tile(tile_sop.x + 1, tile_sop.y, tile_sop.z);
-        update_single_mesh(chunk_pos);
-    }
+World::update_all_chunks_mesh() {
+    for (size_t i = 0; i < chunks_mesh.size(); i++)
+        update_single_mesh(i);
 }
 
 void
-World::set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id) {
+World::set_tile(Dim pos, const terrain::Material* mat, ColorId color_id) {
     terrain_main.get_tile(pos)->set_material(mat, color_id);
 
     TerrainDim3 tile_sop = terrain_main.sop(pos);
@@ -165,22 +156,21 @@ World::set_tile(uint16_t pos, const terrain::Material* mat, uint8_t color_id) {
 
     // do some math:
     // if the tile is on the edge of a chunk then both chunks must be updated.
-    uint8_t edge_case = tile_sop.x % terrain::Chunk::SIZE;
-    if (edge_case == 0) {
+    Dim edge_case = tile_sop.x % terrain::Chunk::SIZE;
+    if (edge_case == 0)
         update_single_mesh({tile_sop.x - 1, tile_sop.y, tile_sop.z});
-    } else if (edge_case == terrain::Chunk::SIZE - 1) {
+    else if (edge_case == terrain::Chunk::SIZE - 1)
         update_single_mesh({tile_sop.x + 1, tile_sop.y, tile_sop.z});
-    }
+
     edge_case = tile_sop.y % terrain::Chunk::SIZE;
-    if (edge_case == 0) {
+    if (edge_case == 0)
         update_single_mesh({tile_sop.x, tile_sop.y - 1, tile_sop.z});
-    } else if (edge_case == terrain::Chunk::SIZE - 1) {
+    else if (edge_case == terrain::Chunk::SIZE - 1)
         update_single_mesh({tile_sop.x, tile_sop.y + 1, tile_sop.z});
-    }
+
     edge_case = tile_sop.z % terrain::Chunk::SIZE;
-    if (edge_case == 0) {
+    if (edge_case == 0)
         update_single_mesh({tile_sop.x, tile_sop.y, tile_sop.z - 1});
-    } else if (edge_case == terrain::Chunk::SIZE - 1) {
+    else if (edge_case == terrain::Chunk::SIZE - 1)
         update_single_mesh({tile_sop.x, tile_sop.y, tile_sop.z + 1});
-    }
 }

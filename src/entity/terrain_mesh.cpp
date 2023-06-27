@@ -18,13 +18,13 @@ TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
 void
 TerrainMesh::update(const entity::Mesh& mesh) {
     // clear all buffers
-    GLuint buffers[NUM_BUFFERS_TERRAIN_MESH] = {
+    GLuint buffers[] = {
         vertex_buffer_,
         color_buffer_,
         normal_buffer_,
         element_buffer_,
     };
-    glDeleteBuffers(NUM_BUFFERS_TERRAIN_MESH, buffers);
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
     // if indices are none so if there is no vertices that would be sent to the graphics
     // card

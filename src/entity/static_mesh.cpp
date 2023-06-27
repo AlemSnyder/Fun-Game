@@ -1,5 +1,3 @@
-#define NUM_BUFFERS_STATIC_MESH 4
-
 #include "static_mesh.hpp"
 
 #include "../gui/meshloader.hpp"
@@ -19,13 +17,13 @@ StaticMesh::StaticMesh(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
     // clear all buffers
-    GLuint buffers[NUM_BUFFERS_STATIC_MESH] = {
+    GLuint buffers[] = {
         vertex_buffer_,
         color_buffer_,
         normal_buffer_,
         element_buffer_,
     };
-    glDeleteBuffers(NUM_BUFFERS_STATIC_MESH, buffers);
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
     // if indices are none so if there is no vertices that would be sent to the graphics
     // card

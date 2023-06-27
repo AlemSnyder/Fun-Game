@@ -33,18 +33,7 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
 
     // copy operator
     inline StaticMesh&
-    operator=(const StaticMesh& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        color_buffer_ = obj.color_buffer_;
-        normal_buffer_ = obj.normal_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        transforms_buffer_ = obj.transforms_buffer_;
-        color_texture_ = obj.color_texture_;
-        num_vertices_ = obj.num_vertices_;
-        num_models_ = obj.num_models_;
-        do_render_ = obj.do_render_;
-        return *this;
-    }
+    operator=(const StaticMesh& obj)=default;
 
     StaticMesh(
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms

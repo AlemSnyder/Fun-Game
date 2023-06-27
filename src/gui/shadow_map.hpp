@@ -97,7 +97,7 @@ class ShadowMap {
      * @return GLuint& reference to frame buffer ID
      */
     inline GLuint&
-    et_frame_buffer() {
+    get_frame_buffer() {
         return frame_buffer_name_;
     }
 
