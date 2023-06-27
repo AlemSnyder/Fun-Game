@@ -360,6 +360,11 @@ class Terrain : public TerrainBase {
         return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
+    inline uint16_t
+    get_chunk_from_tile(TerrainDim3 tile_sop) const {
+        return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
+    }
+
     uint16_t get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const;
 
     [[nodiscard]] inline const std::vector<Chunk>&

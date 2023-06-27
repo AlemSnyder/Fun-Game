@@ -78,7 +78,7 @@ World::init_materials(const Json::Value& material_data) {
 
 World::World(const Json::Value& materials_json, const std::string path) :
     materials(init_materials(materials_json)),
-    terrain_main(
+    terrain_main_(
         path, materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
     ) {
@@ -90,7 +90,7 @@ World::World(
     uint32_t y_tiles
 ) :
     materials(init_materials(materials_json)),
-    terrain_main(
+    terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, 5, materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
@@ -102,7 +102,7 @@ World::World(
     const Json::Value& materials_json, const Json::Value& biome_data, int tile_type
 ) :
     materials(init_materials(materials_json)),
-    terrain_main(
+    terrain_main_(
         macro_tile_size, height, 5, tile_type, materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
@@ -115,7 +115,7 @@ World::World(
 std::vector<entity::Mesh>
 World::get_mesh_greedy() const {
     std::vector<entity::Mesh> out;
-    for (const terrain::Chunk& c : terrain_main.get_chunks()) {
+    for (const terrain::Chunk& c : terrain_main_.get_chunks()) {
         auto chunk_mesh = entity::generate_mesh(c);
 
         chunk_mesh.change_color_indexing(
@@ -130,28 +130,34 @@ World::get_mesh_greedy() const {
 }
 
 void
-World::update_single_mesh(uint16_t chunk_pos) {
-    const auto& chunks = terrain_main.get_chunks();
+World::update_single_mesh(Dim chunk_pos) {
+    const auto& chunks = terrain_main_.get_chunks();
     entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
 
     chunk_mesh.change_color_indexing(
         materials, terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
-    chunks_mesh[chunk_pos]->update(chunk_mesh);
+    chunks_mesh_[chunk_pos]->update(chunk_mesh);
 }
+
+void World::update_single_mesh(TerrainDim3 tile_sop){
+    Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
+    update_single_mesh(chunk_pos);
+}
+
 
 void
 World::update_all_chunks_mesh() {
-    for (size_t i = 0; i < chunks_mesh.size(); i++)
+    for (size_t i = 0; i < chunks_mesh_.size(); i++)
         update_single_mesh(i);
 }
 
 void
 World::set_tile(Dim pos, const terrain::Material* mat, ColorId color_id) {
-    terrain_main.get_tile(pos)->set_material(mat, color_id);
+    terrain_main_.get_tile(pos)->set_material(mat, color_id);
 
-    TerrainDim3 tile_sop = terrain_main.sop(pos);
+    TerrainDim3 tile_sop = terrain_main_.sop(pos);
     update_single_mesh(tile_sop);
 
     // do some math:

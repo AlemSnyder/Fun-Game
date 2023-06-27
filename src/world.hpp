@@ -155,7 +155,6 @@ class World {
      */
     void update_all_chunks_mesh();
 
-    // Could mark this inline
     void update_single_mesh(Dim chunk_pos);
 
     void update_single_mesh(TerrainDim3 tile_sop);
