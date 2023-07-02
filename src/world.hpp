@@ -60,12 +60,12 @@ class World {
     // chunks_mesh like attorneys general
 
  public:
-    const terrain::Terrain&
+    const auto&
     get_terrain_main() const {
         return terrain_main_;
     }
 
-    terrain::Terrain&
+    auto&
     get_terrain_main() {
         return terrain_main_;
     }
@@ -141,13 +141,6 @@ class World {
      * @return std::vector<int> width of each grass color
      */
     std::vector<int> get_grass_grad_data(const Json::Value& material_json);
-
-    /**
-     * @brief Get the mesh using greedy meshing
-     *
-     * @return entity::Mesh the mesh generated
-     */
-    std::vector<entity::Mesh> get_mesh_greedy() const;
 
     /**
      * @brief update all chunk mesh

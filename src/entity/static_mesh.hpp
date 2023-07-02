@@ -32,8 +32,8 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
         do_render_(obj.do_render_){};
 
     // copy operator
-    inline StaticMesh&
-    operator=(const StaticMesh& obj)=default;
+    inline StaticMesh& operator=(const StaticMesh& obj) = delete;
+    inline StaticMesh& operator=(StaticMesh&& other) = default;
 
     StaticMesh(
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms

@@ -112,8 +112,7 @@ class Mesh {
         return color_map_;
     }
 
-    // private:
-    // set this back to private when world::get_mesh_greedy is removed in the next pr.
+    //private:
     /**
      * @brief Set the color indexing to what the GPU uses
      *

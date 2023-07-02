@@ -70,20 +70,4 @@ TerrainMesh::update(const entity::Mesh& mesh) {
     );
 }
 
-TerrainMesh&
-TerrainMesh::operator=(TerrainMesh&& other) {
-    if (this == &other)
-        return *this;
-
-    vertex_buffer_ = std::exchange(other.vertex_buffer_, 0);
-    color_buffer_ = std::exchange(other.color_buffer_, 0);
-    normal_buffer_ = std::exchange(other.normal_buffer_, 0);
-    element_buffer_ = std::exchange(other.element_buffer_, 0);
-    color_texture_ = std::exchange(other.color_texture_, 0);
-    num_vertices_ = std::exchange(other.num_vertices_, 0);
-    do_render_ = std::exchange(other.do_render_, false);
-
-    return *this;
-}
-
 } // namespace terrain

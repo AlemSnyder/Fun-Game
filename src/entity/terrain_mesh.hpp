@@ -25,7 +25,7 @@ class TerrainMesh : public MeshLoader::SingleComplexMesh {
     inline TerrainMesh(const TerrainMesh& other) = delete;
     // copy operator
     inline TerrainMesh& operator=(const TerrainMesh& other) = delete;
-    inline TerrainMesh& operator=(TerrainMesh&& other);
+    inline TerrainMesh& operator=(TerrainMesh&& other) = default;
 
     inline TerrainMesh(){};
     TerrainMesh(const entity::Mesh& mesh);

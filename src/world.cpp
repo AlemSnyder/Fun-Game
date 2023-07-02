@@ -111,24 +111,6 @@ World::World(
     initialize_chunks_mesh_();
 }
 
-// ! deprecated
-std::vector<entity::Mesh>
-World::get_mesh_greedy() const {
-    std::vector<entity::Mesh> out;
-    for (const terrain::Chunk& c : terrain_main_.get_chunks()) {
-        auto chunk_mesh = entity::generate_mesh(c);
-
-        chunk_mesh.change_color_indexing(
-            materials, terrain::TerrainColorMapping::get_colors_inverse_map()
-        );
-
-        if (chunk_mesh.get_indices().size() > 0) {
-            out.push_back(chunk_mesh);
-        }
-    }
-    return out;
-}
-
 void
 World::update_single_mesh(Dim chunk_pos) {
     const auto& chunks = terrain_main_.get_chunks();
