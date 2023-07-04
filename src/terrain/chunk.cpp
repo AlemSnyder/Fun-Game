@@ -106,14 +106,14 @@ Chunk::contains_nodeGroup(NodeGroup* NG) {
     );
 }
 
-uint32_t
+ColorInt
 terrain::Chunk::get_voxel(int x, int y, int z) const {
     return ter_->get_voxel(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );
 }
 
-uint16_t
+MatColorId
 terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
     return ter_->get_voxel_color_id(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE

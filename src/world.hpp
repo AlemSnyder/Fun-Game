@@ -97,7 +97,7 @@ class World {
     World(const Json::Value& materials_json, const Json::Value& biome_data, int type);
     World(
         const Json::Value& materials_json, const Json::Value& biome_data,
-        uint32_t x_tiles, uint32_t y_tiles
+        MacroDim x_tiles, MacroDim y_tiles
     );
 
     constexpr static int macro_tile_size = 32;

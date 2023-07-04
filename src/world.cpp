@@ -50,7 +50,7 @@ World::get_grass_grad_data(const Json::Value& materials_json) {
 
 std::map<MaterialId, const terrain::Material>
 World::init_materials(const Json::Value& material_data) {
-    std::map<uint8_t, const terrain::Material> out;
+    std::map<MaterialId, const terrain::Material> out;
     for (auto element_it = material_data.begin(); element_it != material_data.end();
          element_it++) {
         std::vector<std::pair<const std::string, ColorInt>> color_vector;
@@ -86,8 +86,8 @@ World::World(const Json::Value& materials_json, const std::string path) :
 }
 
 World::World(
-    const Json::Value& materials_json, const Json::Value& biome_data, uint32_t x_tiles,
-    uint32_t y_tiles
+    const Json::Value& materials_json, const Json::Value& biome_data, MacroDim x_tiles,
+    MacroDim y_tiles
 ) :
     materials(init_materials(materials_json)),
     terrain_main_(

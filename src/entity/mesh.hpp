@@ -107,7 +107,7 @@ class Mesh {
     }
 
     // color mapping from color id (vector index) to 8 bit color
-    [[nodiscard]] inline const std::vector<uint32_t>&
+    [[nodiscard]] inline const std::vector<ColorInt>&
     get_color_map() const noexcept {
         return color_map_;
     }

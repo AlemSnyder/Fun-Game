@@ -184,7 +184,6 @@ TerrainBase::add_to_top(
     const Json::Value& top_data, const std::map<MaterialId, const Material>& materials
 ) {
     std::set<std::pair<MaterialId, ColorId>> material_type;
-    // std::vector<uint16> mat colors
 
     for (auto color_data : top_data["above_colors"]) {
         // element id
@@ -223,7 +222,7 @@ void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
     const Material* mat,
-    const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp, uint8_t color_id
+    const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp, ColorId color_id
 ) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.
@@ -244,7 +243,7 @@ TerrainBase::stamp_tile_region(
 void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-    const Material* mat, uint8_t color_id
+    const Material* mat, ColorId color_id
 ) {
     // set tiles in region to mat and color_id
     for (ssize_t x = x_start; x < x_end; x++) {

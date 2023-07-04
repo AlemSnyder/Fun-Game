@@ -14,7 +14,7 @@ namespace voxel_utility {
 class VoxelBase {
  public:
     ColorInt get_voxel(int x, int y, int z) const;
-    uint16_t get_voxel_color_id(int x, int y, int z) const;
+    VoxelColorId get_voxel_color_id(int x, int y, int z) const;
     std::vector<ColorInt> get_color_ids() const;
     VoxelSize get_size() const;
     VoxelOffset get_offset() const;
@@ -78,9 +78,9 @@ class VoxelObject : VoxelBase {
      * @param x x position
      * @param y y position
      * @param z z position
-     * @return uint16_t
+     * @return VoxelColorId
      */
-    [[nodiscard]] inline uint16_t
+    [[nodiscard]] inline VoxelColorId
     get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
         if (x < 0 || y < 0 || z < 0) {
             return 0;

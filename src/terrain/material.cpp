@@ -11,13 +11,13 @@ namespace terrain {
 // color id to color for all materials
 std::vector<ColorInt> TerrainColorMapping::color_ids_map;
 // 8 bit color to color id
-std::unordered_map<ColorInt, uint16_t> TerrainColorMapping::colors_inverse_map;
+std::unordered_map<ColorInt, MatColorId> TerrainColorMapping::colors_inverse_map;
 // id of the color texture sent to opengl
 GLuint_p TerrainColorMapping::color_texture_;
 
 void
 TerrainColorMapping::assign_color_mapping(
-    const std::map<uint8_t, const Material>& materials
+    const std::map<MaterialId, const Material>& materials
 ) {
     color_ids_map.clear();
     colors_inverse_map.clear();
@@ -44,13 +44,13 @@ TerrainColorMapping::assign_color_mapping(
     colors_inverse_map[0] = 0;
     for (auto const& [id, material] : materials) {
         for (auto color_data : material.color) {
-            uint32_t color = color_data.second;
+            ColorInt color = color_data.second;
             if (std::find(color_ids_map.begin(), color_ids_map.end(), color)
                 == color_ids_map.end()) {
                 // voxel_colors[i] is not in colors
                 // we should add it to colors
                 // the index is the length of colors because it will be appended
-                uint16_t j = color_ids_map.size();
+                MatColorId j = color_ids_map.size();
                 // add the color
                 color_ids_map.push_back(color);
                 // add to inverse colors
