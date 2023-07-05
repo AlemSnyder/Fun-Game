@@ -3,14 +3,21 @@
 #include <array>
 #include <cstdint>
 
+// Tile index in terrain's vector. Also know as pos
 using TileIndex = size_t;
-
+using ChunkIndex = size_t;
+// Tile position in terrain.
 using Dim = uint16_t;
-
+// Tile position in terrain with all dimensions.
 using TerrainDim3 = glm::u16vec3;
 // the vector indicies must have the same size as dim.
 static_assert(sizeof(TerrainDim3) == 3 * sizeof(Dim));
 using TerrainOffset = glm::i32vec3;
+// Macro tile position in macro map.
+using MacroDim = uint16_t;
+
+// Pathfinding
+using path_t = uint8_t;
 
 // For materials
 // four chanels of 8 bits

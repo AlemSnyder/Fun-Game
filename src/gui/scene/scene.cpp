@@ -23,7 +23,7 @@ gui::Scene::Scene(
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
 
-    world_.update_all_chunk_mesh();
+    world_.update_all_chunks_mesh();
     LOG_INFO(logging::opengl_logger, "End of world::get_mesh_greedy");
     auto chunk_meshes = world_.get_chunks_mesh();
     LOG_INFO(logging::opengl_logger, "Chunk meshes sent to graphics buffer.");

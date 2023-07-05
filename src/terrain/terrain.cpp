@@ -72,7 +72,7 @@ Terrain::Terrain(
 
 Terrain::Terrain(
     int x, int y, int Area_size_, int z, int seed_,
-    const std::map<uint8_t, const Material>& materials, const Json::Value biome_data,
+    const std::map<MaterialId, const Material>& materials, const Json::Value biome_data,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(x, y, Area_size_, z, materials, biome_data, grass_grad_data, grass_mid),
@@ -268,8 +268,8 @@ Terrain::pos(const NodeGroup* const node_group) const {
            + pz;
 }
 
-uint16_t
-Terrain::get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const {
+ChunkIndex
+Terrain::get_chunk_from_tile(Dim x, Dim y, Dim z) const {
     int px = floor(x) / Chunk::SIZE;
     int py = floor(y) / Chunk::SIZE;
     int pz = floor(z) / Chunk::SIZE;
@@ -280,7 +280,7 @@ Terrain::get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const {
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
-    std::map<TileIndex, Node<const NodeGroup>>& nodes, uint8_t path_type
+    std::map<TileIndex, Node<const NodeGroup>>& nodes, path_t path_type
 ) const {
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
@@ -295,7 +295,7 @@ Terrain::get_adjacent_nodes(
 std::set<Node<const Tile>*>
 Terrain::get_adjacent_nodes(
     const Node<const Tile>* node, std::map<TileIndex, Node<const Tile>>& nodes,
-    uint8_t path_type
+    path_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
     auto tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
@@ -371,17 +371,17 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     // so what is going on? Only god knows.
     // abs(_s - _f) returns zero or one depending on wether the final and
     // initial positions are the same. same as bool (_s != _f)
-    uint8_t x_diff = abs(xs - xf); // difference in x direction
-    uint8_t y_diff = abs(ys - yf); // difference in y direction
-    uint8_t z_diff = abs(zs - zf); // difference in z direction
+    path_t x_diff = abs(xs - xf); // difference in x direction
+    path_t y_diff = abs(ys - yf); // difference in y direction
+    path_t z_diff = abs(zs - zf); // difference in z direction
 
     // If there is a change in the horizontal position, then everything should
     // be bit shifted by 4, and if not, by 1.
     // This is because Directional flags are defined as follows:
     // 32   16  8  4  2 1
     // VH2 VH1  V H2 H1 O
-    uint8_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
-    uint8_t vertical_direction = z_diff << 3;
+    path_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
+    path_t vertical_direction = z_diff << 3;
     UnitPath type;
     if (horizontal_direction == 0)
         type = vertical_direction;

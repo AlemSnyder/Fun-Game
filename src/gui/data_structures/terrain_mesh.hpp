@@ -31,17 +31,7 @@ class TerrainMesh : public MeshData::SingleComplexMesh {
     inline TerrainMesh(const TerrainMesh& other) = delete;
     // copy operator
     inline TerrainMesh& operator=(const TerrainMesh& other) = delete;
-
-    inline TerrainMesh&
-    operator=(TerrainMesh&& other) {
-        vertex_buffer_ = other.vertex_buffer_;
-        color_buffer_ = other.color_buffer_;
-        normal_buffer_ = other.normal_buffer_;
-        element_buffer_ = other.element_buffer_;
-        num_vertices_ = other.num_vertices_;
-        do_render_ = other.do_render_;
-        return *this;
-    };
+    inline TerrainMesh& operator=(TerrainMesh&& other) = default;
 
     inline TerrainMesh(){};
     TerrainMesh(const entity::Mesh& mesh);

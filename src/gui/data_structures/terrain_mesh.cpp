@@ -1,4 +1,3 @@
-
 #include "terrain_mesh.hpp"
 
 #include "../../logging.hpp"
@@ -8,16 +7,24 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-gui::data_structures::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
+namespace gui {
+
+namespace data_structures {
+
+TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
     update(mesh);
 }
 
 void
-gui::data_structures::TerrainMesh::update(const entity::Mesh& mesh) {
+TerrainMesh::update(const entity::Mesh& mesh) {
     // clear all buffers
-    GLuint buffers[4] = {
-        vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_};
-    glDeleteBuffers(4, buffers);
+    GLuint buffers[] = {
+        vertex_buffer_,
+        color_buffer_,
+        normal_buffer_,
+        element_buffer_,
+    };
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
     // if indices are none so if there is no vertices that would be sent to the graphics
     // card
@@ -26,9 +33,8 @@ gui::data_structures::TerrainMesh::update(const entity::Mesh& mesh) {
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
 
-    if (!do_render_) {
+    if (!do_render_)
         return;
-    }
 
     color_texture_ = terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
@@ -63,3 +69,7 @@ gui::data_structures::TerrainMesh::update(const entity::Mesh& mesh) {
         mesh.get_indices().data(), GL_STATIC_DRAW
     );
 }
+
+} // namespace data_structures
+
+} // namespace gui

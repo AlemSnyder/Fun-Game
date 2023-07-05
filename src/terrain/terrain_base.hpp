@@ -150,14 +150,14 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     TerrainBase(
         Dim x_map_tiles, Dim y_map_tiles, Dim Area_size, Dim z_tiles,
-        const std::map<uint8_t, const Material>& materials,
+        const std::map<MaterialId, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid, std::vector<int> Terrain_Maps
     );
 
     void qb_read(
         std::vector<ColorInt> data,
-        const std::map<ColorInt, std::pair<const Material*, uint8_t>>& materials_inverse
+        const std::map<ColorInt, std::pair<const Material*, ColorId>>& materials_inverse
     );
 
     /**
@@ -522,7 +522,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const Material* mat, uint8_t color_id
+        const Material* mat, ColorId color_id
     );
     /**
      * @brief Set a group of tiles

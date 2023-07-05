@@ -19,10 +19,13 @@ StaticMesh::StaticMesh(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
     // clear all buffers
-    GLuint buffers[5] = {
-        vertex_buffer_, color_buffer_, normal_buffer_, element_buffer_,
-        transforms_buffer_};
-    glDeleteBuffers(5, buffers);
+    GLuint buffers[] = {
+        vertex_buffer_,
+        color_buffer_,
+        normal_buffer_,
+        element_buffer_,
+    };
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
     // if indices are none so if there is no vertices that would be sent to the graphics
     // card
@@ -32,9 +35,8 @@ StaticMesh::StaticMesh(
     num_models_ = model_transforms.size();
     do_render_ = (num_vertices_ != 0 && num_models_ != 0);
 
-    if (!do_render_) {
+    if (!do_render_)
         return;
-    }
 
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);

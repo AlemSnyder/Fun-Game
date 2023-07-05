@@ -83,7 +83,7 @@ class Tile {
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(TerrainDim3 sop, const terrain::Material* material, uint8_t color_id = 0);
+    Tile(TerrainDim3 sop, const terrain::Material* material, ColorId color_id = 0);
 
     // This probably should not be used.
     Tile() :
@@ -152,7 +152,7 @@ class Tile {
      */
     void set_grass_color(
         unsigned int grass_grad_length, unsigned int grass_mid,
-        std::vector<uint8_t> grass_colors
+        std::vector<ColorId> grass_colors
     );
 
     // Getters

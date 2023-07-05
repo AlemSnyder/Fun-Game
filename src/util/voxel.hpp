@@ -78,7 +78,7 @@ class VoxelObject : VoxelBase {
      * @param x x position
      * @param y y position
      * @param z z position
-     * @return uint16_t
+     * @return VoxelColorId
      */
     [[nodiscard]] inline VoxelColorId
     get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {

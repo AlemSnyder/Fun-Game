@@ -107,13 +107,12 @@ class Mesh {
     }
 
     // color mapping from color id (vector index) to 8 bit color
-    [[nodiscard]] inline const std::vector<uint32_t>&
+    [[nodiscard]] inline const std::vector<ColorInt>&
     get_color_map() const noexcept {
         return color_map_;
     }
 
-    // private:
-    // set this back to private when world::get_mesh_greedy is removed in the next pr.
+    //private:
     /**
      * @brief Set the color indexing to what the GPU uses
      *

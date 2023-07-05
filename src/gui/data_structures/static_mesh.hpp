@@ -19,39 +19,23 @@ class StaticMesh : public MeshData::MultiComplexMesh {
     GLuint color_buffer_;
     GLuint normal_buffer_;
     GLuint element_buffer_;
-    GLuint color_texture_;
     GLuint transforms_buffer_;
+    GLuint color_texture_;
     uint32_t num_vertices_;
-    uint32_t num_models_;
-    bool do_render_;
+    uint32_t num_models_ : 31;
+    bool do_render_ : 1;
 
  public:
-    inline StaticMesh(const StaticMesh& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        color_buffer_ = obj.color_buffer_;
-        normal_buffer_ = obj.normal_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        transforms_buffer_ = obj.transforms_buffer_;
-        color_texture_ = obj.color_texture_;
-        num_vertices_ = obj.num_vertices_;
-        num_models_ = obj.num_models_;
-        do_render_ = obj.do_render_;
-    };
+    inline StaticMesh(const StaticMesh& obj) :
+        vertex_buffer_(obj.vertex_buffer_), color_buffer_(obj.color_buffer_),
+        normal_buffer_(obj.normal_buffer_), element_buffer_(obj.element_buffer_),
+        transforms_buffer_(obj.transforms_buffer_), color_texture_(obj.color_texture_),
+        num_vertices_(obj.num_vertices_), num_models_(obj.num_models_),
+        do_render_(obj.do_render_){};
 
     // copy operator
-    inline StaticMesh&
-    operator=(const StaticMesh& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        color_buffer_ = obj.color_buffer_;
-        normal_buffer_ = obj.normal_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        transforms_buffer_ = obj.transforms_buffer_;
-        color_texture_ = obj.color_texture_;
-        num_vertices_ = obj.num_vertices_;
-        num_models_ = obj.num_models_;
-        do_render_ = obj.do_render_;
-        return *this;
-    }
+    inline StaticMesh& operator=(const StaticMesh& obj) = delete;
+    inline StaticMesh& operator=(StaticMesh&& other) = default;
 
     StaticMesh(
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
@@ -107,7 +91,7 @@ class StaticMesh : public MeshData::MultiComplexMesh {
     }
 
     [[nodiscard]] inline bool
-    do_render() const override {
+    do_render() const noexcept override {
         return do_render_;
     };
 };

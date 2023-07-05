@@ -276,7 +276,7 @@ class Terrain : public TerrainBase {
      */
     [[nodiscard]] std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
-        std::map<TileIndex, Node<const NodeGroup>>& nodes, uint8_t type
+        std::map<TileIndex, Node<const NodeGroup>>& nodes, path_t type
     ) const;
 
     /**
@@ -289,7 +289,7 @@ class Terrain : public TerrainBase {
      */
     [[nodiscard]] std::set<Node<const Tile>*> get_adjacent_nodes(
         const Node<const Tile>* const node,
-        std::map<TileIndex, Node<const Tile>>& nodes, uint8_t type
+        std::map<TileIndex, Node<const Tile>>& nodes, path_t type
     ) const;
 
     /**
@@ -349,13 +349,18 @@ class Terrain : public TerrainBase {
      */
     void remove_node_group(NodeGroup* NG);
 
-    inline uint16_t
-    get_chunk_from_tile(uint16_t pos) const {
+    inline ChunkIndex
+    get_chunk_from_tile(TileIndex pos) const {
         TerrainDim3 tile_sop = sop(pos);
         return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
-    uint16_t get_chunk_from_tile(uint8_t x, uint8_t y, uint8_t z) const;
+    inline ChunkIndex
+    get_chunk_from_tile(TerrainDim3 tile_sop) const {
+        return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
+    }
+
+    ChunkIndex get_chunk_from_tile(Dim x, Dim y, Dim z) const;
 
     [[nodiscard]] inline const std::vector<Chunk>&
     get_chunks() const {
@@ -371,7 +376,7 @@ class Terrain : public TerrainBase {
      * @return true successful change materials is the same
      * @return false unsuccessful change materials is different
      */
-    bool paint(Tile* tile, const Material* mat, uint8_t color_id);
+    bool paint(Tile* tile, const Material* mat, ColorId color_id);
     /**
      * @brief add or remove tile, only works when either previous of materials
      * or set material is air
@@ -382,7 +387,7 @@ class Terrain : public TerrainBase {
      * @return true success
      * @return false failure
      */
-    bool player_set_tile_material(int xyz, const Material* mat, uint8_t color_id);
+    bool player_set_tile_material(int xyz, const Material* mat, ColorId color_id);
 
     /**
      * @brief Set the tile material with no tests
@@ -392,7 +397,7 @@ class Terrain : public TerrainBase {
      * @param color_id color id set to
      */
     inline void
-    set_tile_material(Tile* tile, const Material* mat, uint8_t color_id) {
+    set_tile_material(Tile* tile, const Material* mat, ColorId color_id) {
         tile->set_material(mat, color_id);
     }
 

@@ -65,6 +65,8 @@ else()
   set(DEBUG 0)
   message(" Debug build, data will be loaded from subdirs ")
 
+  target_compile_definitions(FunGame, PUBLIC, TILE_SET_TEST)
+
   add_custom_target(resources
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources

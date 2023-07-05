@@ -15,8 +15,27 @@
             ],
             "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
             "cStandard": "gnu17",
-            "cppStandard": "gnu++17",
+            "cppStandard": "gnu++20",
             "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/build",
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/vendor/quill/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__VSC_PARSER__"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++20",
+            "intelliSenseMode": "linux-gcc-x64",
             "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
