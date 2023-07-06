@@ -112,7 +112,7 @@ class Mesh {
         return color_map_;
     }
 
-    //private:
+    // private:
     /**
      * @brief Set the color indexing to what the GPU uses
      *

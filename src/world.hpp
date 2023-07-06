@@ -42,8 +42,10 @@ class Mesh;
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
  *
+ *
  * @details The world holds a Terrain objects, and contains entities like
- * flora, and fauna. Paced objects, and other things will also be stored in
+ * flora, and
+ * fauna. Paced objects, and other things will also be stored in
  * this class.
  *
  */
@@ -84,16 +86,20 @@ class World {
     /**
      * @brief Construct a new World object from a save
      *
-     * @param path where world was saved
+     * @param path
+     * where world was saved
      */
     World(const Json::Value& materials_json, const std::string path);
     /**
      * @brief Construct a new World object to test biome generation.
      *
-     * @param biome_data biome parameters
-     * @param type determines the type of terrain to be generated
+
+     * * @param biome_data biome parameters
+     * @param type determines the type of
+     * terrain to be generated
      * (see) data/biome_data.json > `biome` > Tile_Data
-     * (see) src/terrain/terrain_generation/land_generator.hpp
+
+     * * (see) src/terrain/terrain_generation/land_generator.hpp
      */
     World(const Json::Value& materials_json, const Json::Value& biome_data, int type);
     World(
@@ -110,8 +116,10 @@ class World {
     /**
      * @brief Get the materials that exist in the world
      *
-     * @return const std::map<int, const Material>* map of materials_id to
-     * materials pointer
+     * @return
+     * const std::map<int, const Material>* map of materials_id to
+     * materials
+     * pointer
      */
     inline const std::map<MaterialId, const terrain::Material>*
     get_materials() const noexcept {
@@ -122,14 +130,16 @@ class World {
      * @brief Get material from material_id
      *
      * @param material_id
-     * @return const Material* corresponding material
+
+     * * @return const Material* corresponding material
      */
     const terrain::Material* get_material(int material_id) const;
 
     /**
      * @brief Load materials from json data
      *
-     * @param material_data data to load from
+     * @param material_data
+     * data to load from
      * (see) data/materials.json
      */
     std::map<MaterialId, const terrain::Material>
@@ -138,7 +148,8 @@ class World {
     /**
      * @brief Get the grass gradient data
      *
-     * @param material_json data to load from
+     * @param material_json
+     * data to load from
      * @return std::vector<int> width of each grass color
      */
     std::vector<int> get_grass_grad_data(const Json::Value& material_json);
@@ -157,11 +168,11 @@ class World {
     void set_tile(Dim pos, const terrain::Material* mat, ColorId color_id);
 
     // set a region to given material, and color
-    //void set_tiles();
+    // void set_tiles();
 
     void stamp_tile_region(
         int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const terrain::Material* mat,std::set<std::pair<int, int>> elements_can_stamp,
+        const terrain::Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
         ColorId color_id
     );
 

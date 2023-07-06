@@ -18,9 +18,15 @@ namespace helper {
 
 /*
 used the grow the (grass gradient length - height)th iteration of grass
-given a set of grass tiles gets the adjacent grass tiles that have height
-equal to given hight.
-Then next to those tiles set the grass height to hight-1 if this is higher
+given a set
+
+ * * of grass tiles gets the adjacent grass tiles that have height
+equal to given
+ *
+ * hight.
+Then next to those tiles set the grass height to hight-1 if this is
+ *
+ * higher
 than the saved height.
 */
 template <int getter(Tile*), void setter(Tile*, int)>
@@ -61,9 +67,13 @@ grow_grass_inner(Terrain& ter, std::set<Tile*> in_grass, int height) {
 // run grow_grass recursive(new_set, grass_grad_length)
 /*
 used to grow the first iteration of of grass
-given a set of all grass tiles gets the grass tiles that adjacent to an
+given a set of all grass tiles gets the
+
+ * * grass tiles that adjacent to an
 edge.
-Then next to those tiles set the grass height to max_hight-1.
+Then next to those tiles set the grass
+ * height
+ * to max_hight-1.
 */
 template <bool edge_detector(Tile*), int getter(Tile*), void setter(Tile*, int)>
 void
