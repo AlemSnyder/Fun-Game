@@ -118,10 +118,10 @@ TerrainBase::TerrainBase(
 TerrainBase::TerrainBase(
     const std::map<MaterialId, const Material>& materials,
     std::vector<int> grass_grad_data, unsigned int grass_mid,
-    voxel_utility::qb_data_t data
+    voxel_utility::qb_layer_data_t data
 ) :
     TerrainBase(
-        materials, grass_grad_data, grass_mid, data.size.x, data.size.y, 32, data.size.z
+        materials, grass_grad_data, grass_mid, data.size.x/32, data.size.y/32, 32, data.size.z
     ) {
     std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
     for (auto it = materials_.begin(); it != materials_.end(); it++) {

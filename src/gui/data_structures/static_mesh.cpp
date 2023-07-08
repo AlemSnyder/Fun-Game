@@ -15,7 +15,7 @@ namespace gui {
 
 namespace data_structures {
 
-StaticMesh::StaticMesh(
+Mesh::Mesh(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
     // clear all buffers

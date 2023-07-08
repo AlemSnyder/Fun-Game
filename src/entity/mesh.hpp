@@ -144,19 +144,7 @@ class Mesh {
  */
 template <voxel_utility::VoxelLike T>
 Mesh
-generate_mesh(T voxel_object) {
-    return generate_mesh(voxel_object, glm::vec3(0));
-}
-
-/**
- * @brief Generates a mesh from the given 3D voxel structure
- *
- * @tparam T is_base_of voxel_utility::VoxelLike, T
- * @param voxel_object
- */
-template <voxel_utility::VoxelLike T>
-Mesh
-generate_mesh(T voxel_object, glm::vec3 limb_offset) {
+generate_mesh(T voxel_object, glm::ivec3 limb_offset = glm::ivec3(0)) {
     std::vector<uint16_t> indices;
     std::vector<glm::ivec3> indexed_vertices;
     std::vector<uint16_t> indexed_colors;

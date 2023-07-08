@@ -22,7 +22,7 @@ class Entity {
     }
 
     glm::mat4 bone_transform(size_t bone_index);
-    ~Entity();
+    ~Entity() = default;
 };
 
 } // namespace entity

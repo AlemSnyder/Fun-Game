@@ -64,7 +64,7 @@ Terrain::Terrain(
     const std::string path, const std::map<MaterialId, const Material>& materials,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
-    TerrainBase(materials, grass_grad_data, grass_mid, voxel_utility::from_qb(path)) {
+    TerrainBase(materials, grass_grad_data, grass_mid, voxel_utility::from_qb(path).layer_data[0]) {
     /*replace path with some struct that is returned from qb read*/
 
     init_chunks();

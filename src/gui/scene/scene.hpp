@@ -25,7 +25,7 @@ class Scene {
     render::SkyRenderer SR;
 
     // TODO these should be saved in world
-    data_structures::StaticMesh treesMesh;
+    data_structures::Mesh treesMesh;
 
  public:
     Scene(World& world_, uint32_t width, uint32_t height, uint32_t shadow_map_width_height);

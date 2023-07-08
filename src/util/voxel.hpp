@@ -11,6 +11,17 @@
 
 namespace voxel_utility {
 
+struct qb_layer_data_t {
+    std::vector<ColorInt> data;
+    VoxelOffset center;
+    VoxelSize size;
+    std::string layer_name;
+};
+
+struct qb_data_t{
+    std::vector<qb_layer_data_t> layer_data;
+};
+
 class VoxelBase {
  public:
     ColorInt get_voxel(int x, int y, int z) const;
@@ -136,23 +147,11 @@ class LayeredVoxelObject{
     const VoxelObject& operator [](std::string layer_name);
 
  public:
-    size_t size(){
+    inline size_t size(){
         return layers_.size();
     }
     LayeredVoxelObject(qb_data_t layers);
 
 };
-
-struct qb_layer_data_t {
-    std::vector<ColorInt> data;
-    VoxelOffset center;
-    VoxelSize size;
-    std::string layer_name;
-};
-
-struct qb_data_t{
-    std::vector<qb_layer_data_t> layer_data;
-};
-
 
 } // namespace voxel_utility

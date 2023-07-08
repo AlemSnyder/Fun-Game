@@ -108,7 +108,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     TerrainBase(
         const std::map<MaterialId, const Material>& materials,
         std::vector<int> grass_grad_data, unsigned int grass_mid,
-        voxel_utility::qb_data_t data
+        voxel_utility::qb_layer_data_t data
     );
 
     /**
