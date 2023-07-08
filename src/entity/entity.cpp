@@ -19,6 +19,14 @@ Entity::bone_transform(size_t bone_index) {
     return bones_.get_position(bone_index);
 }
 
+void Entity::update_bones(){
+    // TODO need to find
+    std::vector<glm::vec3> angles;
+    // set everything to 0
+    angles.resize(bones_.size());
+    bones_.update(std::move(angles));
+}
+
 // TODO write all the other getters, and setters
 
 } // namespace entity

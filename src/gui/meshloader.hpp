@@ -2,6 +2,13 @@
 
 #include <GL/glew.h>
 
+// TODO
+// so each virtuial calass coresponds to a fragment & vertex shader
+// entities will use floats to store vertex positions, so they will need their
+// own vertex shader, and therefore their own virtuial class.
+
+// Fragment shaders can be reused though.
+
 // data structures interface
 // glew wrapper to send data to gpu
 namespace MeshData {
@@ -60,4 +67,4 @@ class MultiComplexMesh : public MultiMesh {
     virtual GLuint get_color_buffer() const = 0;
 };
 
-} // namespace MeshLoader
+} // namespace MeshData
