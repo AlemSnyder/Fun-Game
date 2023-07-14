@@ -57,7 +57,7 @@ class QuadRendererMultisample {
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRendererMultisample();
+    QuadRendererMultisample(ShaderHandeler shader_handeler = ShaderHandeler());
 
     ~QuadRendererMultisample();
 

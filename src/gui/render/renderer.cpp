@@ -17,14 +17,14 @@ namespace gui {
 
 namespace render {
 
-MainRenderer::MainRenderer() {
+MainRenderer::MainRenderer(ShaderHandeler shader_handler) {
     // non-indexed program
-    programID_single_ = load_shaders(
+    programID_single_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "ShadowMapping.vert",
         files::get_resources_path() / "shaders" / "ShadowMapping.frag"
     );
     // indexed program
-    programID_multi_ = load_shaders(
+    programID_multi_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
         files::get_resources_path() / "shaders" / "ShadowMapping.frag"
     );
@@ -99,9 +99,6 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
 
-    // Use our shader
-    glUseProgram(programID_single_);
-
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
     // Compute the MVP matrix from keyboard and mouse input
@@ -117,6 +114,9 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     );
 
     glm::mat4 depth_bias_MVP = bias_matrix * depthMVP;
+
+    // Use our shader
+    glUseProgram(programID_single_);
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform

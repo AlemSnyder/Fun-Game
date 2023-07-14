@@ -54,7 +54,7 @@ class QuadRenderer {
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRenderer();
+    QuadRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
 
     ~QuadRenderer();
 

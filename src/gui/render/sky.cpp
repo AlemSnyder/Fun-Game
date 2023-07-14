@@ -17,8 +17,8 @@ namespace gui {
 
 namespace render {
 
-SkyRenderer::SkyRenderer() : sky_data_(files::get_data_path() / "stars.json") {
-    programID_ = load_shaders(
+SkyRenderer::SkyRenderer(ShaderHandeler shader_handler) : sky_data_(files::get_data_path() / "stars.json") {
+    programID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Sky.vert",
         files::get_resources_path() / "shaders" / "Sky.frag"
     );

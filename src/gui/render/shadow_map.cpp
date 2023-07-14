@@ -17,14 +17,14 @@ namespace gui {
 
 namespace render {
 
-ShadowMap::ShadowMap(int w, int h) {
+ShadowMap::ShadowMap(int w, int h, ShaderHandeler shader_handler) {
     depth_texture_ = 0;
     frame_buffer_name_ = 0;
-    programID_ = load_shaders(
+    programID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "DepthRTT.vert",
         files::get_resources_path() / "shaders" / "DepthRTT.frag"
     );
-    programID_multi_ = load_shaders(
+    programID_multi_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
         files::get_resources_path() / "shaders" / "DepthRTT.frag"
     );

@@ -57,7 +57,7 @@ class SkyRenderer {
      * @brief Construct a new Main Renderer object
      *
      */
-    SkyRenderer();
+    SkyRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
 
     ~SkyRenderer();
 

@@ -14,9 +14,9 @@
 namespace gui {
 namespace render {
 
-QuadRenderer::QuadRenderer() {
+QuadRenderer::QuadRenderer(ShaderHandeler shader_handler) {
     // program
-    programID_ = load_shaders(
+    programID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );

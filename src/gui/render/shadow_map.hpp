@@ -69,7 +69,7 @@ class ShadowMap {
      * @param w the width of the area hit by light
      * @param h the height of the area hit by light
      */
-    ShadowMap(int w, int h);
+    ShadowMap(int w, int h, ShaderHandeler shader_handeler = ShaderHandeler());
 
     ~ShadowMap() {
         glDeleteFramebuffers(1, &frame_buffer_name_);

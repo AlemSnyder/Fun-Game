@@ -76,7 +76,7 @@ class MainRenderer {
      * @brief Construct a new Main Renderer object
      *
      */
-    MainRenderer();
+    MainRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
 
     ~MainRenderer();
 

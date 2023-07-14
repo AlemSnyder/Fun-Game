@@ -272,6 +272,7 @@ imguiTest(World& world) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // the scene frame
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         // the scene frame has no rounding/padding on border
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
