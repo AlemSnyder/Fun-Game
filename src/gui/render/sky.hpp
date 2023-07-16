@@ -24,6 +24,7 @@
 #include "../data_structures/screen_data.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "../meshloader.hpp"
+#include "../shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

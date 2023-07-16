@@ -11,9 +11,22 @@
 
 namespace gui{
 
-shader_t vertex_type{"vertex", GL_VERTEX_SHADER};
-shader_t fragment_type{"fragment", GL_FRAGMENT_SHADER};
+std::string get_shader_string(GLuint gl_shader_type){
 
+    switch (gl_shader_type)
+    {
+    case GL_VERTEX_SHADER:
+        return "vertex";
+    case GL_FRAGMENT_SHADER:
+        return "fragment";
+    case GL_GEOMETRY_SHADER:
+        return "geometry";
+    
+    default:
+        return "ya, this isn't going to work";
+    }
+
+}
 
 void ShaderHandeler::clear(){
     for (auto it = shaders.begin(); it != shaders.end(); it++){
@@ -25,7 +38,7 @@ void ShaderHandeler::clear(){
 
 // public
 GLuint
-ShaderHandeler::get_shader(const std::filesystem::path& file_relative_path, shader_t shader_type){
+ShaderHandeler::get_shader(const std::filesystem::path& file_relative_path, GLuint gl_shader_type){
 
     GLuint shader_id;
 
@@ -33,7 +46,7 @@ ShaderHandeler::get_shader(const std::filesystem::path& file_relative_path, shad
         shader_id = shaders.at(file_relative_path);
     }
     catch(const std::out_of_range& e) {
-        shader_id = load_shader(file_relative_path, shader_type);
+        shader_id = load_shader(file_relative_path, gl_shader_type);
         if (shader_id != 0){
             shaders.insert_or_assign(file_relative_path, shader_id);
         }
@@ -45,7 +58,7 @@ ShaderHandeler::get_shader(const std::filesystem::path& file_relative_path, shad
 
 // public
 GLuint
-ShaderHandeler::reload_shader(const std::filesystem::path& file_relative_path, shader_t shader_type){
+ShaderHandeler::reload_shader(const std::filesystem::path& file_relative_path, GLuint gl_shader_type){
 
     GLuint shader_id;
 
@@ -53,14 +66,14 @@ ShaderHandeler::reload_shader(const std::filesystem::path& file_relative_path, s
         shader_id = shaders.at(file_relative_path);
     }
     catch(const std::out_of_range& e) {
-        shader_id = load_shader(file_relative_path, shader_type);
+        shader_id = load_shader(file_relative_path, gl_shader_type);
         if (shader_id != 0){
             shaders.insert_or_assign(file_relative_path, shader_id);
         }
         return shader_id;
     }
 
-    GLuint shader_id_new = load_shader(file_relative_path, shader_type);
+    GLuint shader_id_new = load_shader(file_relative_path, gl_shader_type);
     // I could log an error, but load_shader should also do this.
     if (shader_id_new != 0){
         shaders.insert_or_assign(file_relative_path, shader_id_new);
@@ -73,17 +86,20 @@ ShaderHandeler::reload_shader(const std::filesystem::path& file_relative_path, s
 
 // private
 GLuint
-ShaderHandeler::load_shader(const std::filesystem::path& file_relative_path, shader_t shader_type){
+ShaderHandeler::load_shader(const std::filesystem::path& file_relative_path, GLuint gl_shader_type){
     std::filesystem::path file_apsolute_path
         = std::filesystem::absolute(file_relative_path);
 
+    std::string shader_type_string = get_shader_string(gl_shader_type);
+
     // Create the shaders
-    GLuint shader_id = glCreateShader(shader_type.gl_shader_int);
+    GLuint shader_id = glCreateShader(gl_shader_type);
+
 
     // Read the Vertex Shader code from the file
     LOG_BACKTRACE(
         logging::opengl_logger, "Loading {} shader from {}",
-        shader_type.shader_type_string, file_apsolute_path.string()
+        shader_type_string, file_apsolute_path.string()
     );
 
     std::string shader_code;
@@ -107,7 +123,7 @@ ShaderHandeler::load_shader(const std::filesystem::path& file_relative_path, sha
     // Compile Vertex Shader
     LOG_BACKTRACE(
         logging::opengl_logger, "Compiling {} shader {}",
-        shader_type.shader_type_string, file_apsolute_path.string()
+        shader_type_string, file_apsolute_path.string()
     );
 
     char const* source_pointer = shader_code.c_str();
@@ -125,7 +141,7 @@ ShaderHandeler::load_shader(const std::filesystem::path& file_relative_path, sha
 
         LOG_ERROR(
             logging::opengl_logger, "{} shader error: {}",
-            shader_type.shader_type_string, shader_error_message
+            shader_type_string, shader_error_message
         );
     }
     return shader_id;
@@ -138,8 +154,8 @@ ShaderHandeler::load_program(
 ) {
     logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
 
-    GLint vertex_shader_id = get_shader(vertex_file, vertex_type);
-    GLint fragment_shader_id = get_shader(fragment_file, fragment_type);
+    GLint vertex_shader_id = get_shader(vertex_file, GL_VERTEX_SHADER);
+    GLint fragment_shader_id = get_shader(fragment_file, GL_FRAGMENT_SHADER);
 
     GLint Result = GL_FALSE;
     int info_log_length;

@@ -8,23 +8,17 @@
 
 namespace gui{
 
-struct shader_t{
-    std::string shader_type_string;
-    GLuint gl_shader_int;
-};
-
-shader_t vertex_type;
-shader_t fragment_type;
+std::string get_shader_string(GLuint gl_shader_type);
 
 class ShaderHandeler{
  private:
     // maybe these should be coppies?
-    std::map<const std::filesystem::path&, GLuint> shaders;
+    std::map<const std::filesystem::path, GLuint> shaders;
 
 
  public:
     // file extensions are for loosers. One must pass the type inaddition
-    GLuint get_shader(const std::filesystem::path& file_path, shader_t shader_type);
+    GLuint get_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
 
     GLuint load_program(
         const std::filesystem::path& vertex_file_path,
@@ -37,12 +31,10 @@ class ShaderHandeler{
     ~ShaderHandeler();
 
  private:
-    GLuint load_shader(const std::filesystem::path& file_path, shader_t shader_type);
+    GLuint load_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
 
-    GLuint reload_shader(const std::filesystem::path& file_path, shader_t shader_type);
-
+    GLuint reload_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
 
 };
-
 
 }
