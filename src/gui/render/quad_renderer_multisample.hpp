@@ -39,9 +39,8 @@ namespace render {
 /**
  * @brief Renders the meshes to the screen
  *
- * @details QuadRenderer renders the meshes given to it to the screen.
- * this class handles the light direction, applied the meshes, and loading
- * shaders.
+ * @details QuadRendererMultisample renders a multisampled meshes to the 
+ * screen. 
  *
  */
 class QuadRendererMultisample {
