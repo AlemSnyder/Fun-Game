@@ -3,18 +3,17 @@
 #include <GL/glew.h>
 
 #include <filesystem>
-#include <string>
 #include <map>
+#include <string>
 
-namespace gui{
+namespace gui {
 
 std::string get_shader_string(GLuint gl_shader_type);
 
-class ShaderHandeler{
+class ShaderHandeler {
  private:
     // maybe these should be coppies?
     std::map<const std::filesystem::path, GLuint> shaders;
-
 
  public:
     // file extensions are for loosers. One must pass the type inaddition
@@ -34,7 +33,6 @@ class ShaderHandeler{
     GLuint load_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
 
     GLuint reload_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
-
 };
 
-}
+} // namespace gui

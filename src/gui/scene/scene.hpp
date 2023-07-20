@@ -1,13 +1,23 @@
 #pragma once
 
-#include "../../world.hpp"
-#include "../data_structures/frame_buffer_multisample.hpp"
-#include "../data_structures/static_mesh.hpp"
-#include "../data_structures/terrain_mesh.hpp"
-#include "../render/quad_renderer_multisample.hpp"
-#include "../render/renderer.hpp"
-#include "../render/shadow_map.hpp"
-#include "../render/sky.hpp"
+// #include "../../world.hpp"
+
+#include "../render/data_structures/frame_buffer_multisample.hpp"
+#include "../render/gui_models/gui_render_types.hpp"
+#include "../render/gui_models/individual_int_renderer.hpp"
+#include "../render/gui_models/instanced_int_renderer.hpp"
+#include "../render/gui_models/quad_renderer_multisample.hpp"
+#include "../render/gui_models/sky.hpp"
+
+// # include "../render/gui_models/**"
+
+// #include "../data_structures/frame_buffer_multisample.hpp"
+// #include "data_structures/static_mesh.hpp"
+// #include "data_structures/terrain_mesh.hpp"
+// #include "render/quad_renderer_multisample.hpp"
+// #include "../render/renderer.hpp"
+// #include "../render/shadow_map.hpp"
+// #include "../render/sky.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -15,29 +25,39 @@ namespace gui {
 
 class Scene {
  private:
-    World& world_;
     data_structures::FrameBufferMultisample fbo;
+    // need to add a data_structure::ShadowMap
 
-    render::MainRenderer MR;
-    render::ShadowMap SM;
-    render::QuadRendererMultisample QRMS;
+    // models::IndividualIntRenderer IdIR;
+    // models::InstancedIntRenderer InIR;
 
+    // backgroudn
     render::SkyRenderer SR;
 
+    // "mid" ground
+    std::vector<std::shared_ptr<render_to::frame_buffer>> FBR;
+    std::vector<std::shared_ptr<render_to::frame_buffer_multisample>> FBMR;
+    std::vector<std::shared_ptr<render_to::shadow_map>> SMR;
+
+    // foreground, maybe
+
+    // render::MainRenderer MR;
+    // render::ShadowMap SM;
+    render::QuadRendererMultisample QRMS;
+
     // TODO these should be saved in world
-    data_structures::StaticMesh treesMesh;
+    // data_structures::StaticMesh treesMesh;
 
  public:
-    Scene(
-        World& world_, uint32_t width, uint32_t height, uint32_t shadow_map_width_height
-    );
+    Scene(uint32_t width, uint32_t height, uint32_t shadow_map_width_height);
     GLuint get_scene();
     GLuint get_depth_texture();
     uint32_t get_shadow_width();
     uint32_t get_shadow_height();
     void update(GLFWwindow* window);
 
-    std::vector<glm::ivec3> get_model_matrices_temp(World& world);
+    // model attatch
+
 };
 
 } // namespace gui

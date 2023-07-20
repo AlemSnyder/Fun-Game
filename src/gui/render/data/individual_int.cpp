@@ -1,7 +1,7 @@
-#include "terrain_mesh.hpp"
+#include "individual_int.hpp"
 
-#include "../../logging.hpp"
-#include "../../terrain/material.hpp"
+#include "../../../logging.hpp"
+#include "../../../terrain/material.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,12 +11,12 @@ namespace gui {
 
 namespace data_structures {
 
-TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
+IndividualInt::IndividualInt(const entity::Mesh& mesh) {
     update(mesh);
 }
 
 void
-TerrainMesh::update(const entity::Mesh& mesh) {
+IndividualInt::update(const entity::Mesh& mesh) {
     // clear all buffers
     GLuint buffers[] = {
         vertex_buffer_,
@@ -36,7 +36,6 @@ TerrainMesh::update(const entity::Mesh& mesh) {
     if (!do_render_)
         return;
 
-    color_texture_ = terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);

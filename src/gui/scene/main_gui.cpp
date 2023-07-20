@@ -4,19 +4,14 @@
 #include "../../logging.hpp"
 #include "../../util/files.hpp"
 #include "../../world.hpp"
-#include "../data_structures/screen_data.hpp"
-#include "../data_structures/sky_data.hpp"
-#include "../data_structures/static_mesh.hpp"
-#include "../data_structures/terrain_mesh.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../render/quad_renderer.hpp"
-#include "../render/renderer.hpp"
-#include "../render/shadow_map.hpp"
 #include "../render/sky.hpp"
 #include "../scene/scene.hpp"
 #include "../shader.hpp"
 #include "controls.hpp"
+#include "scene.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

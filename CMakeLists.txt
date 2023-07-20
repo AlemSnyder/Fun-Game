@@ -8,9 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(FunGame VERSION 0.1.0)
 
 # add the executable
-file(GLOB SOURCES1 "src/*.cpp")
-file(GLOB SOURCES2 "src/**/*.cpp")
-file(GLOB SOURCES3 "src/**/**/*.cpp")
+file(GLOB_RECURSE SOURCES1 "src/*.cpp")
+#file(GLOB SOURCES2 "src/**/*.cpp")
+#file(GLOB SOURCES3 "src/**/**/*.cpp")
 
 file(GLOB SOURCES4 "vendor/*.c*")
 file(GLOB SOURCES5 "vendor/json/*.c*")

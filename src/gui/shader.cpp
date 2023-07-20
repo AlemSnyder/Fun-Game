@@ -9,27 +9,26 @@
 #include <string>
 #include <vector>
 
-namespace gui{
+namespace gui {
 
-std::string get_shader_string(GLuint gl_shader_type){
+std::string
+get_shader_string(GLuint gl_shader_type) {
+    switch (gl_shader_type) {
+        case GL_VERTEX_SHADER:
+            return "vertex";
+        case GL_FRAGMENT_SHADER:
+            return "fragment";
+        case GL_GEOMETRY_SHADER:
+            return "geometry";
 
-    switch (gl_shader_type)
-    {
-    case GL_VERTEX_SHADER:
-        return "vertex";
-    case GL_FRAGMENT_SHADER:
-        return "fragment";
-    case GL_GEOMETRY_SHADER:
-        return "geometry";
-    
-    default:
-        return "ya, this isn't going to work";
+        default:
+            return "ya, this isn't going to work";
     }
-
 }
 
-void ShaderHandeler::clear(){
-    for (auto it = shaders.begin(); it != shaders.end(); it++){
+void
+ShaderHandeler::clear() {
+    for (auto it = shaders.begin(); it != shaders.end(); it++) {
         GLuint shader_id = it->second;
         glDeleteShader(shader_id);
     }
@@ -38,36 +37,35 @@ void ShaderHandeler::clear(){
 
 // public
 GLuint
-ShaderHandeler::get_shader(const std::filesystem::path& file_relative_path, GLuint gl_shader_type){
-
+ShaderHandeler::get_shader(
+    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
+) {
     GLuint shader_id;
 
     try {
         shader_id = shaders.at(file_relative_path);
-    }
-    catch(const std::out_of_range& e) {
+    } catch (const std::out_of_range& e) {
         shader_id = load_shader(file_relative_path, gl_shader_type);
-        if (shader_id != 0){
+        if (shader_id != 0) {
             shaders.insert_or_assign(file_relative_path, shader_id);
         }
     }
-    
-    return shader_id;
 
+    return shader_id;
 }
 
 // public
 GLuint
-ShaderHandeler::reload_shader(const std::filesystem::path& file_relative_path, GLuint gl_shader_type){
-
+ShaderHandeler::reload_shader(
+    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
+) {
     GLuint shader_id;
 
     try {
         shader_id = shaders.at(file_relative_path);
-    }
-    catch(const std::out_of_range& e) {
+    } catch (const std::out_of_range& e) {
         shader_id = load_shader(file_relative_path, gl_shader_type);
-        if (shader_id != 0){
+        if (shader_id != 0) {
             shaders.insert_or_assign(file_relative_path, shader_id);
         }
         return shader_id;
@@ -75,31 +73,31 @@ ShaderHandeler::reload_shader(const std::filesystem::path& file_relative_path, G
 
     GLuint shader_id_new = load_shader(file_relative_path, gl_shader_type);
     // I could log an error, but load_shader should also do this.
-    if (shader_id_new != 0){
+    if (shader_id_new != 0) {
         shaders.insert_or_assign(file_relative_path, shader_id_new);
         glDeleteShader(shader_id);
     }
-    
-    return shader_id;
 
+    return shader_id;
 }
 
 // private
 GLuint
-ShaderHandeler::load_shader(const std::filesystem::path& file_relative_path, GLuint gl_shader_type){
-    std::filesystem::path file_apsolute_path
-        = std::filesystem::absolute(file_relative_path);
+ShaderHandeler::load_shader(
+    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
+) {
+    std::filesystem::path file_apsolute_path =
+        std::filesystem::absolute(file_relative_path);
 
     std::string shader_type_string = get_shader_string(gl_shader_type);
 
     // Create the shaders
     GLuint shader_id = glCreateShader(gl_shader_type);
 
-
     // Read the Vertex Shader code from the file
     LOG_BACKTRACE(
-        logging::opengl_logger, "Loading {} shader from {}",
-        shader_type_string, file_apsolute_path.string()
+        logging::opengl_logger, "Loading {} shader from {}", shader_type_string,
+        file_apsolute_path.string()
     );
 
     std::string shader_code;
@@ -122,8 +120,8 @@ ShaderHandeler::load_shader(const std::filesystem::path& file_relative_path, GLu
 
     // Compile Vertex Shader
     LOG_BACKTRACE(
-        logging::opengl_logger, "Compiling {} shader {}",
-        shader_type_string, file_apsolute_path.string()
+        logging::opengl_logger, "Compiling {} shader {}", shader_type_string,
+        file_apsolute_path.string()
     );
 
     char const* source_pointer = shader_code.c_str();
@@ -140,8 +138,8 @@ ShaderHandeler::load_shader(const std::filesystem::path& file_relative_path, GLu
         );
 
         LOG_ERROR(
-            logging::opengl_logger, "{} shader error: {}",
-            shader_type_string, shader_error_message
+            logging::opengl_logger, "{} shader error: {}", shader_type_string,
+            shader_error_message
         );
     }
     return shader_id;
@@ -159,7 +157,6 @@ ShaderHandeler::load_program(
 
     GLint Result = GL_FALSE;
     int info_log_length;
-
 
     // Link the program
     // LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
@@ -199,10 +196,10 @@ ShaderHandeler::load_program(
     return program_id;
 }
 
-ShaderHandeler::ShaderHandeler(){}
+ShaderHandeler::ShaderHandeler() {}
 
-ShaderHandeler::~ShaderHandeler(){
+ShaderHandeler::~ShaderHandeler() {
     clear();
 }
 
-}
+} // namespace gui

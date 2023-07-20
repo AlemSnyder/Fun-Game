@@ -43,6 +43,8 @@ each game object has one data structure
 why not have one render for each data structure
 then pass in the name of the program whe in renders?
 
+that's too much data all of one type should be render by one render at the same time
+
 then four types:
     instanced/individual compressed
     instanced/individual float

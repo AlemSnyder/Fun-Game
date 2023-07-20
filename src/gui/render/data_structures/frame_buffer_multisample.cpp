@@ -1,8 +1,8 @@
 
 #include "frame_buffer_multisample.hpp"
 
-#include "../../logging.hpp"
-#include "../handler.hpp"
+#include "../../../logging.hpp"
+#include "../../handler.hpp"
 
 gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
     uint32_t width, uint32_t height, uint32_t samples

@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "gui/data_structures/terrain_mesh.hpp"
+#include "gui/render/data/terrain_mesh.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "types.hpp"

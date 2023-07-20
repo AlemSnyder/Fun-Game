@@ -21,8 +21,10 @@
  */
 #pragma once
 
-#include "../meshloader.hpp"
-#include "../shader.hpp"
+#include "../../shader.hpp"
+#include "../data/instanced_int.hpp"
+#include "gui_render_types.hpp"
+#include "individual_int_renderer.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -34,44 +36,47 @@
 
 namespace gui {
 
-namespace render {
+namespace models {
 
 /**
  * @brief Renders the meshes to the screen
  *
- * @details QuadRendererMultisample renders a multisampled meshes to the 
- * screen. 
+ * @details MainRenderer renders the meshes given to it to the screen.
+ * this class handles the light direction, applied the meshes, and loading
+ * shaders.
  *
  */
-class QuadRendererMultisample {
- private:
-    GLuint programID_;        // ID of non-indexed mesh Program
-    GLuint quad_vertexbuffer; // ID of vertexes
-    GLuint texID;             // ID of texture reading from
-    GLuint widthID;           // ID for width of reading texture
-    GLuint heightID;          // ID for height or reading texture
-    GLuint tex_samplesID;     // ID for number of samples in reading temperature
 
+//template <gui::data_structures::InstancedIntLike T>
+template <class T>
+class InstancedIntRenderer : public IndividualIntRenderer<T> {
+ private:
+    // forgot what to put here
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRendererMultisample(ShaderHandeler shader_handeler = ShaderHandeler());
+    InstancedIntRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
 
-    ~QuadRendererMultisample();
+    ~InstancedIntRenderer();
+
+    void load_transforms_buffer(std::shared_ptr<T> mesh) const;
 
     /**
      * @brief renders the given meshes
      *
      * @param window the OpenGL window
      */
-    void render(
-        uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture,
-        GLuint frame_buffer = 0
-    ) const;
+    void render_frame_buffer(GLFWwindow* window, GLuint frame_buffer = 0) const;
+
+    void
+    render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer = 0) const;
+
+    void
+    render_shadow_map(int shadow_width_, int shadow_height_, GLuint frame_buffer) const;
 };
 
-} // namespace render
+} // namespace models
 
 } // namespace gui

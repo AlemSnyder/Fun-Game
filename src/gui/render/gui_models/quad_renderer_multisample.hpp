@@ -21,16 +21,15 @@
  */
 #pragma once
 
-#include "../data_structures/screen_data.hpp"
-#include "../data_structures/sky_data.hpp"
-#include "../meshloader.hpp"
-#include "../shader.hpp"
+#include "../../meshloader.hpp"
+#include "../../shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <memory>
 #include <vector>
 
 namespace gui {
@@ -40,34 +39,37 @@ namespace render {
 /**
  * @brief Renders the meshes to the screen
  *
- * @details SkyRenderer renders the meshes given to it to the screen.
- * this class handles the light direction, applied the meshes, and loading
- * shaders.
+ * @details QuadRendererMultisample renders a multisampled meshes to the 
+ * screen. 
  *
  */
-class SkyRenderer {
+class QuadRendererMultisample {
  private:
-    GLuint programID_; // ID of Program
-    // ID of world space to camera space transform matrix
-    GLuint matrix_view_projection_ID_;
-    GLuint pixel_matrix_ID_;            // ID of view space to pixel space matrix
-    data_structures::SkyData sky_data_; // star data
+    GLuint programID_;        // ID of non-indexed mesh Program
+    GLuint quad_vertexbuffer; // ID of vertexes
+    GLuint texID;             // ID of texture reading from
+    GLuint widthID;           // ID for width of reading texture
+    GLuint heightID;          // ID for height or reading texture
+    GLuint tex_samplesID;     // ID for number of samples in reading temperature
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    SkyRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
+    QuadRendererMultisample(ShaderHandeler shader_handeler = ShaderHandeler());
 
-    ~SkyRenderer();
+    ~QuadRendererMultisample();
 
     /**
      * @brief renders the given meshes
      *
      * @param window the OpenGL window
      */
-    void render(GLFWwindow* window, GLuint frame_buffer) const;
+    void render(
+        uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture,
+        GLuint frame_buffer = 0
+    ) const;
 };
 
 } // namespace render

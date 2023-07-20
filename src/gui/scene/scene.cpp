@@ -1,25 +1,27 @@
 #include "scene.hpp"
 
 #include "../../entity/mesh.hpp"
-#include "../data_structures/static_mesh.hpp"
-#include "../data_structures/terrain_mesh.hpp"
 #include "../handler.hpp"
 
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-gui::Scene::Scene(
-    World& world, uint32_t window_width, uint32_t window_height,
+gui::Scene::Scene(uint32_t window_width, uint32_t window_height,
     uint32_t shadow_map_width_height
 ) :
-    world_(world),
-    fbo(window_width, window_height, 4),
-    SM(shadow_map_width_height, shadow_map_width_height),
+    fbo(window_width, window_height, 4)
+    //SM(shadow_map_width_height, shadow_map_width_height),
+    {
+        
+
+    // all this needs to be removed
+
+        
     treesMesh(
         entity::generate_mesh(voxel_utility::VoxelObject(
             files::get_data_path() / "models" / "DefaultTree.qb"
         )),
         get_model_matrices_temp(world_)
-    ) {
+    )
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
 
@@ -59,6 +61,8 @@ gui::Scene::Scene(
     LOG_INFO(logging::opengl_logger, "Scene initialized");
 }
 
+// add model attatch functions.
+
 void
 gui::Scene::update(GLFWwindow* window) {
     SM.render_shadow_depth_buffer();
@@ -94,19 +98,4 @@ gui::Scene::get_shadow_width() {
 uint32_t
 gui::Scene::get_shadow_height() {
     return SM.get_shadow_height();
-}
-
-std::vector<glm::ivec3>
-gui::Scene::get_model_matrices_temp(World& world) {
-    std::vector<glm::ivec3> model_matrices;
-    // generate positions of trees
-    for (unsigned int x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
-        for (unsigned int y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
-            unsigned int z = world.get_terrain_main().get_Z_solid(x, y) + 1;
-            if (z != 1) { // if the position of the ground is not zero
-                glm::ivec3 model(x, y, z);
-                model_matrices.push_back(model);
-            }
-        }
-    return model_matrices;
 }
