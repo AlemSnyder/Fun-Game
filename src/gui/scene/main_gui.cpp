@@ -6,8 +6,7 @@
 #include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/quad_renderer.hpp"
-#include "../render/sky.hpp"
+#include "../render/gui_models/quad_renderer.hpp"
 #include "../scene/scene.hpp"
 #include "../shader.hpp"
 #include "controls.hpp"
@@ -125,6 +124,7 @@ GUITest(World& world) {
     terrain::TerrainColorMapping::assign_color_texture();
 
     // No idea why this is necessary, but it is
+    // I do know why, just don't want to explain
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -134,7 +134,10 @@ GUITest(World& world) {
     // world.update_all_chunk_mesh();
     //  auto mesh = world.get_chunks_mesh();
 
-    gui::Scene main_scene(world, windowFrameWidth, windowFrameHeight, 4096);
+    gui::Scene main_scene(windowFrameWidth, windowFrameHeight, 4096);
+
+    //main_scene.add render ()
+    // n more lines o this
 
     do {
         controls::computeMatricesFromInputs(window);

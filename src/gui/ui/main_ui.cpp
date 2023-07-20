@@ -13,11 +13,11 @@
 #include "../render/gui_models/instanced_int_renderer.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/quad_renderer.hpp"
-#include "../render/quad_renderer_multisample.hpp"
+//#include "../render/quad_renderer.hpp"
+//#include "../render/quad_renderer_multisample.hpp"
 //#include "../render/renderer.hpp"
 //#include "../render/shadow_map.hpp"
-#include "../render/sky.hpp"
+#include "../render/gui_models/sky.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "../shader.hpp"
@@ -147,7 +147,7 @@ imguiTest(World& world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
-    gui::Scene main_scene(world, window_width, window_height, 4096);
+    gui::Scene main_scene(window_width, window_height, 4096);
 
     //! Main loop
 #ifdef __EMSCRIPTEN__

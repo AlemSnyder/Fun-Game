@@ -8,6 +8,7 @@
 #include "../render/gui_models/instanced_int_renderer.hpp"
 #include "../render/gui_models/quad_renderer_multisample.hpp"
 #include "../render/gui_models/sky.hpp"
+#include "../render/data_structures/shadow_map.hpp"
 
 // # include "../render/gui_models/**"
 
@@ -24,9 +25,11 @@
 namespace gui {
 
 class Scene {
+    // TODO nameing convenction
  private:
     data_structures::FrameBufferMultisample fbo;
     // need to add a data_structure::ShadowMap
+    data_structures::ShadowMap shadow_map_;
 
     // models::IndividualIntRenderer IdIR;
     // models::InstancedIntRenderer InIR;

@@ -9,15 +9,21 @@ namespace render_to {
  */
 
 class frame_buffer {
-    virtual int render_frame_buffer() const = 0;
+ public:
+    virtual int render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const = 0;
 };
 
 class frame_buffer_multisample {
-    virtual int render_frame_buffer_multisample() const = 0;
+ public:
+    virtual int
+    render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer) const = 0;
 };
 
 class shadow_map {
-    virtual int render_shadow_map() const = 0;
+ public:
+    virtual int render_shadow_map(
+        int shadow_width_, int shadow_height_, GLuint frame_buffer
+    ) const = 0;
 };
 
 // blume

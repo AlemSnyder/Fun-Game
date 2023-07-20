@@ -21,9 +21,6 @@
  */
 #pragma once
 
-#include "../meshloader.hpp"
-#include "../shader.hpp"
-
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -33,7 +30,7 @@
 
 namespace gui {
 
-namespace render {
+namespace data_structures {
 
 /**
  * @brief Renders the shadow from the given meshes.
@@ -44,10 +41,6 @@ namespace render {
  */
 class ShadowMap {
  private:
-    GLuint programID_;             // ID of non-indexed mesh Program
-    GLuint depth_matrix_ID_;       // ID of depth matrix for non-indexed Program
-    GLuint programID_multi_;       // ID of indexed mesh Program
-    GLuint depth_matrix_ID_multi_; // ID of depth matrix for indexed Program
     GLuint depth_texture_;         // ID of depth texture
     GLuint frame_buffer_name_;     // ID of frame buffer
     // ------ the below are added to the class ------
@@ -57,10 +50,6 @@ class ShadowMap {
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
                                   // direction
-    // vector of stored data that describes non-indexed meshes
-    std::vector<std::shared_ptr<MeshData::SingleMesh>> singles_meshes_;
-    // vector of stored data that describes indexed meshes
-    std::vector<std::shared_ptr<MeshData::MultiMesh>> multi_meshes_;
 
  public:
     /**
@@ -69,26 +58,12 @@ class ShadowMap {
      * @param w the width of the area hit by light
      * @param h the height of the area hit by light
      */
-    ShadowMap(int w, int h, ShaderHandeler shader_handeler = ShaderHandeler());
+    ShadowMap(int w, int h);
 
     ~ShadowMap() {
         glDeleteFramebuffers(1, &frame_buffer_name_);
         glDeleteTextures(1, &depth_texture_);
     }
-
-    /**
-     * @brief adds a non-indexed mesh so it will cast a shadow
-     *
-     * @param mesh the mesh to add
-     */
-    void add_mesh(std::shared_ptr<MeshData::SingleMesh> mesh);
-
-    /**
-     * @brief adds an indexed mesh so it will cast a shadow
-     *
-     * @param mesh the mesh to add
-     */
-    void add_mesh(std::shared_ptr<MeshData::MultiMesh> mesh);
 
     /**
      * @brief Get the depth texture ID
@@ -123,12 +98,6 @@ class ShadowMap {
      * @param depth_projection_matrix the projection matrix
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
-
-    /**
-     * @brief renders the length of the light ray to the depth buffer
-     *
-     */
-    void render_shadow_depth_buffer() const;
 
     inline uint32_t
     get_shadow_width() const {
