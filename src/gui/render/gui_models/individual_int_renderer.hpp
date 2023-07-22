@@ -27,7 +27,6 @@
 #include "../../shader.hpp"
 #include "../data/individual_int.hpp"
 #include "gui_render_types.hpp"
-#include "individual_int_renderer."
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

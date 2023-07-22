@@ -133,13 +133,13 @@ GUITest(World& world) {
 
     render::QuadRenderer QR;
 
-    // world.update_all_chunk_mesh();
+    world.update_all_chunks_mesh();
     //  auto mesh = world.get_chunks_mesh();
 
     gui::Scene main_scene(windowFrameWidth, windowFrameHeight, 4096);
 
-    std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> terrain_mesh =
-        world.get_chunks_mesh();
+    //std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> 
+    auto terrain_mesh = world.get_chunks_mesh();
 
     models::IndividualIntRenderer<data_structures::TerrainMesh> chunk_renderer(
         shader_handeler

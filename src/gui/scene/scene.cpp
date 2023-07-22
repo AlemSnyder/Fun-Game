@@ -39,6 +39,10 @@ Scene::update(GLFWwindow* window) {
         render->render_frame_buffer(window, fbo.get_depth_buffer_name());
     }
 
+    for (const auto& render : FBMR) {
+        render->render_frame_buffer_multisample(window, fbo.get_depth_buffer_name());
+    }
+
     QRMS.render(
         fbo.get_width(), fbo.get_height(), fbo.get_num_samples(),
         fbo.get_texture_name(), fbo.get_frame_buffer_single()

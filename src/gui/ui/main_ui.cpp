@@ -151,6 +151,8 @@ imguiTest(World& world) {
 
     gui::ShaderHandeler shader_handeler = gui::ShaderHandeler();
 
+    world.update_all_chunks_mesh();
+
     std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> terrain_mesh =
         world.get_chunks_mesh();
 
