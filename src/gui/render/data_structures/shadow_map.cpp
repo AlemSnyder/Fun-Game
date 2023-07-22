@@ -18,19 +18,9 @@ namespace gui {
 namespace data_structures {
 
 ShadowMap::ShadowMap(int w, int h) {
-    depth_texture_ = 0;
-    frame_buffer_name_ = 0;
-
     shadow_width_ = w;
     shadow_height_ = h;
 
-    // ---------------------------------------------
-    // Render Shadow to Texture - specific code begins here
-    // ---------------------------------------------
-
-    // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth
-    // buffer.
-    frame_buffer_name_ = 0;
     glGenFramebuffers(1, &frame_buffer_name_);
     gui::FrameBufferHandler::bind_fbo(frame_buffer_name_);
 

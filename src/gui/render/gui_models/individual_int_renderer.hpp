@@ -388,7 +388,7 @@ IndividualIntRenderer<T>::render_shadow_map(
             continue;
         }
 
-        IndividualIntRenderer<T>::load_vertex_buffer(mesh);
+        load_vertex_buffer(mesh);
 
         // Draw the triangles !
         glDrawElements(
