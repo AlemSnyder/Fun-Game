@@ -31,9 +31,6 @@ class Scene {
     // need to add a data_structure::ShadowMap
     data_structures::ShadowMap shadow_map_;
 
-    // models::IndividualIntRenderer IdIR;
-    // models::InstancedIntRenderer InIR;
-
     // backgroudn
     render::SkyRenderer SR;
 
@@ -44,12 +41,8 @@ class Scene {
 
     // foreground, maybe
 
-    // render::MainRenderer MR;
-    // render::ShadowMap SM;
+    // other
     render::QuadRendererMultisample QRMS;
-
-    // TODO these should be saved in world
-    // data_structures::StaticMesh treesMesh;
 
  public:
     Scene(uint32_t width, uint32_t height, uint32_t shadow_map_width_height);
@@ -61,7 +54,7 @@ class Scene {
 
     // model attatch
 
-    void shaodw_attatch(const std::shared_ptr<render_to::shadow_map>& shadow);
+    void shadow_attatch(const std::shared_ptr<render_to::shadow_map>& shadow);
 
     void frame_buffer_attatch(const std::shared_ptr<render_to::frame_buffer>& render);
 
@@ -69,6 +62,21 @@ class Scene {
     frame_buffer_multisample_attatch(
         const std::shared_ptr<render_to::frame_buffer_multisample>& render
     );
+
+    /**
+     * @brief Set the light direction vector
+     *
+     * @param light_direction the direction of the light
+     */
+    void set_shadow_light_direction(glm::vec3 light_direction);
+
+    /**
+     * @brief Set the depth projection matrix
+     *
+     * @param depth_projection_matrix the projection matrix
+     */
+    void set_shadow_depth_projection_matrix(glm::mat4 depth_projection_matrix);
+
 };
 
 } // namespace gui

@@ -69,18 +69,31 @@ Scene::get_shadow_height() {
     return shadow_map_.get_shadow_height();
 }
 
-void Scene::shaodw_attatch(const std::shared_ptr<render_to::shadow_map>& shadow){
+void
+Scene::shadow_attatch(const std::shared_ptr<render_to::shadow_map>& shadow) {
     SMR.push_back(shadow);
 }
 
-void Scene::frame_buffer_attatch(const std::shared_ptr<render_to::frame_buffer>& render){
+void
+Scene::frame_buffer_attatch(const std::shared_ptr<render_to::frame_buffer>& render) {
     FBR.push_back(render);
 }
 
-void Scene::frame_buffer_multisample_attatch(
+void
+Scene::frame_buffer_multisample_attatch(
     const std::shared_ptr<render_to::frame_buffer_multisample>& render
-){
+) {
     FBMR.push_back(render);
+}
+
+void
+Scene::set_shadow_light_direction(glm::vec3 light_direction) {
+    shadow_map_.set_light_direction(light_direction);
+}
+
+void
+Scene::set_shadow_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
+    shadow_map_.set_depth_projection_matrix(depth_projection_matrix);
 }
 
 } // namespace gui
