@@ -340,7 +340,7 @@ IndividualIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_b
     // Render to the screen
     gui::FrameBufferHandler::bind_fbo(frame_buffer);
 
-    // get he window size
+    // get the window size
     int width, height;
     glfwGetWindowSize(window, &width, &height);
 

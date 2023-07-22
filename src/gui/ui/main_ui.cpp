@@ -123,6 +123,9 @@ imguiTest(World& world) {
         }
     }
 
+    // send color texture to gpu
+    terrain::TerrainColorMapping::assign_color_texture();
+
     // No idea why this is necessary, but it is
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
@@ -163,6 +166,7 @@ imguiTest(World& world) {
     // chunk_renderer.add_mesh()
 
     for (const auto& chunk_mesh : terrain_mesh) {
+        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture());
         chunk_renderer.add_mesh(chunk_mesh);
     }
 

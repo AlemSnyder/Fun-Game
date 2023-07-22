@@ -105,7 +105,7 @@ TerrainBase::TerrainBase(
             }
         }
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles .");
+    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles.");
 
     // TODO make this faster 3
     for (const Json::Value& after_affect : biome_data["After_Effects"]["Add_To_Top"]) {
