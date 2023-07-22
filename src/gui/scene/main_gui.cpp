@@ -129,6 +129,8 @@ GUITest(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
+    ShaderHandeler shader_handeler = ShaderHandeler();
+
     render::QuadRenderer QR;
 
     // world.update_all_chunk_mesh();
@@ -136,8 +138,31 @@ GUITest(World& world) {
 
     gui::Scene main_scene(windowFrameWidth, windowFrameHeight, 4096);
 
-    //main_scene.add render ()
-    // n more lines o this
+    std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> terrain_mesh =
+        world.get_chunks_mesh();
+
+    models::IndividualIntRenderer<data_structures::TerrainMesh> chunk_renderer(
+        shader_handeler
+    );
+
+    // chunk_renderer.add_mesh()
+
+    for (const auto& chunk_mesh : terrain_mesh) {
+        chunk_renderer.add_mesh(chunk_mesh);
+    }
+
+    main_scene.frame_buffer_multisample_attatch(
+        std::make_shared<
+            models::IndividualIntRenderer<data_structures::TerrainMesh>>(
+            chunk_renderer
+        )
+    );
+
+    main_scene.shaodw_attatch(std::make_shared<models::IndividualIntRenderer<
+                                  data_structures::TerrainMesh>>(chunk_renderer));
+
+    // main_scene.add render ()
+    //  n more lines after this
 
     do {
         controls::computeMatricesFromInputs(window);

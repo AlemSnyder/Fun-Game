@@ -1,5 +1,7 @@
 // handles fbo, and other things if necessary
 
+#pragma once
+
 #include <GL/glew.h>
 
 namespace gui {

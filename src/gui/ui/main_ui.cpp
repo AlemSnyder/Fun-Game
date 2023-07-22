@@ -13,10 +13,8 @@
 #include "../render/gui_models/instanced_int_renderer.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-//#include "../render/quad_renderer.hpp"
-//#include "../render/quad_renderer_multisample.hpp"
-//#include "../render/renderer.hpp"
-//#include "../render/shadow_map.hpp"
+#include "../render/gui_models/individual_int_renderer.hpp"
+#include "../render/data_structures/shadow_map.hpp"
 #include "../render/gui_models/sky.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
@@ -32,6 +30,8 @@
 #  include <GLES2/gl2.h>
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
+
+#include <memory>
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize
 // ease of testing and compatibility with old VS compilers. To link with VS2010-era
@@ -148,6 +148,34 @@ imguiTest(World& world) {
     // ImVec2 button_size = ImVec2(100, 100);
 
     gui::Scene main_scene(window_width, window_height, 4096);
+
+    gui::ShaderHandeler shader_handeler = gui::ShaderHandeler();
+
+    std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> terrain_mesh =
+        world.get_chunks_mesh();
+
+    gui::models::IndividualIntRenderer<gui::data_structures::TerrainMesh> chunk_renderer(
+        shader_handeler
+    );
+
+    // chunk_renderer.add_mesh()
+
+    for (const auto& chunk_mesh : terrain_mesh) {
+        chunk_renderer.add_mesh(chunk_mesh);
+    }
+
+    main_scene.frame_buffer_multisample_attatch(
+        std::make_shared<
+            gui::models::IndividualIntRenderer<gui::data_structures::TerrainMesh>>(
+            chunk_renderer
+        )
+    );
+
+    main_scene.shaodw_attatch(std::make_shared<gui::models::IndividualIntRenderer<
+                                  gui::data_structures::TerrainMesh>>(chunk_renderer));
+
+    // main_scene.add render ()
+    //  n more lines after this
 
     //! Main loop
 #ifdef __EMSCRIPTEN__

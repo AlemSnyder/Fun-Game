@@ -3,12 +3,12 @@
 // #include "../../world.hpp"
 
 #include "../render/data_structures/frame_buffer_multisample.hpp"
+#include "../render/data_structures/shadow_map.hpp"
 #include "../render/gui_models/gui_render_types.hpp"
 #include "../render/gui_models/individual_int_renderer.hpp"
 #include "../render/gui_models/instanced_int_renderer.hpp"
 #include "../render/gui_models/quad_renderer_multisample.hpp"
 #include "../render/gui_models/sky.hpp"
-#include "../render/data_structures/shadow_map.hpp"
 
 // # include "../render/gui_models/**"
 
@@ -61,6 +61,14 @@ class Scene {
 
     // model attatch
 
+    void shaodw_attatch(const std::shared_ptr<render_to::shadow_map>& shadow);
+
+    void frame_buffer_attatch(const std::shared_ptr<render_to::frame_buffer>& render);
+
+    void
+    frame_buffer_multisample_attatch(
+        const std::shared_ptr<render_to::frame_buffer_multisample>& render
+    );
 };
 
 } // namespace gui
