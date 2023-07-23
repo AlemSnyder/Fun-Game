@@ -167,8 +167,8 @@ generate_mesh(T voxel_object) {
         // Compute color_info
         mesh_normal[axis] = 1;
         // for each layer going in the direction of axis
-        for (voxel_position[axis] = -1;
-             voxel_position[axis] < static_cast<int>(object_geometry[axis]);) {
+        voxel_position[axis] = -1;
+        while (voxel_position[axis] < static_cast<int>(object_geometry[axis])) {
             std::size_t counter = 0;
             // for each voxel in this level
             for (voxel_position[dims_index_2] = 0;
@@ -213,8 +213,9 @@ generate_mesh(T voxel_object) {
             unsigned int width = 0, height = 0;
 
             counter = 0;
-            for (unsigned int j = 0; j < object_geometry[dims_index_2]; ++j)
-                for (unsigned int i = 0; i < object_geometry[dims_index_1];) {
+            for (unsigned int j = 0; j < object_geometry[dims_index_2]; ++j){
+                unsigned int i = 0;
+                while (i < object_geometry[dims_index_1]) {
                     // color and direction of the face between two voxels
                     std::pair<bool, uint16_t> color = color_info[counter];
                     // if there is a face between two voxels
@@ -356,6 +357,7 @@ generate_mesh(T voxel_object) {
                         ++counter;
                     }
                 }
+            }
         }
     }
     return Mesh(

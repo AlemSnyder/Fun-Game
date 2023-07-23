@@ -4,6 +4,7 @@
 #include "../handler.hpp"
 #include "../meshloader.hpp"
 #include "../shader.hpp"
+#include "../../types.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -17,7 +18,7 @@ namespace gui {
 
 namespace render {
 
-ShadowMap::ShadowMap(int w, int h) {
+ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
     depth_texture_ = 0;
     frame_buffer_name_ = 0;
     programID_ = load_shaders(

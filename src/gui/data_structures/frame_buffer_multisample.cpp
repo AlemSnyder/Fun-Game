@@ -10,7 +10,7 @@ namespace gui {
 namespace data_structures {
 
 FrameBufferMultisample::FrameBufferMultisample(
-    screen_size_t width, screen_size_t height, screen_size_t samples
+    screen_size_t width, screen_size_t height, uint32_t samples
 ) {
     width_ = width;
     height_ = height;
@@ -79,8 +79,8 @@ FrameBufferMultisample::FrameBufferMultisample(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single, 0
     );
 
-    DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
+    draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, draw_buffers);
 
     framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 

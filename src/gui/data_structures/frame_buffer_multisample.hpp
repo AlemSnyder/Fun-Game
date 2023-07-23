@@ -1,7 +1,7 @@
+#include "../../types.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
-#include "../../types.hpp"
 
 #pragma once
 
@@ -23,7 +23,7 @@ class FrameBufferMultisample {
  public:
     FrameBufferMultisample(const FrameBufferMultisample& obj) = delete;
 
-    FrameBufferMultisample(uint32_t width, uint32_t height, uint32_t samples);
+    FrameBufferMultisample(screen_size_t width, screen_size_t height, uint32_t samples);
 
     ~FrameBufferMultisample() {
         glDeleteRenderbuffers(1, &depth_buffer);
@@ -33,12 +33,12 @@ class FrameBufferMultisample {
         glDeleteFramebuffers(1, &frame_buffer_single);
     }
 
-    [[nodiscard]] inline uint32_t
+    [[nodiscard]] inline screen_size_t
     get_width() const {
         return width_;
     }
 
-    [[nodiscard]] inline uint32_t
+    [[nodiscard]] inline screen_size_t
     get_height() const {
         return height_;
     }
