@@ -67,10 +67,8 @@ class IndividualIntRenderer :
 
     GLuint matrix_ID_shadow_; // ID of world space to camera space transform matrix for
                               // indexed meshes
-    GLuint view_matrix_ID_shadow_; // ID of view projection matrix for indexed meshes
+
     GLuint depth_bias_ID_shadow_;  // ID of depth projection matrix for indexed meshes
-    GLuint shadow_map_ID_shadow_;  // ID of the shadow map for indexed meshes
-    GLuint color_map_ID_shadow_;   // ID of the color map for indexed meshes
     GLuint light_direction_ID_shadow_; // ID of the light direction uniform for indexed
                                        // meshes
     // ------ the below are added to the class ------
@@ -163,11 +161,7 @@ IndividualIntRenderer<T>::IndividualIntRenderer(ShaderHandeler shader_handler) {
     light_direction_ID_render_ =
         glGetUniformLocation(programID_render_, "LightInvDirection_worldspace");
 
-    matrix_ID_shadow_ = glGetUniformLocation(programID_shadow_, "MVP");
-    view_matrix_ID_shadow_ = glGetUniformLocation(programID_shadow_, "V");
-    depth_bias_ID_shadow_ = glGetUniformLocation(programID_shadow_, "DepthBiasMVP");
-    shadow_map_ID_shadow_ = glGetUniformLocation(programID_shadow_, "shadowMap");
-    color_map_ID_shadow_ = glGetUniformLocation(programID_shadow_, "meshColors");
+    depth_bias_ID_shadow_ = glGetUniformLocation(programID_shadow_, "depthMVP");
     light_direction_ID_shadow_ =
         glGetUniformLocation(programID_shadow_, "LightInvDirection_worldspace");
 }
@@ -304,6 +298,9 @@ IndividualIntRenderer<T>::setup_render() const {
 template <class T>
 void
 IndividualIntRenderer<T>::setup_shadow() const {
+
+    glUseProgram(programID_shadow_);
+    
     // matrix to calculate the length of a light ray in model space
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
@@ -317,12 +314,6 @@ IndividualIntRenderer<T>::setup_shadow() const {
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Use our shader
-    glUseProgram(programID_shadow_);
-
-    // Send our transformation to the currently bound shader,
-    // in the "MVP" uniform
-    glUniformMatrix4fv(matrix_ID_shadow_, 1, GL_FALSE, &depthMVP[0][0]);
 }
 
 template <class T>
