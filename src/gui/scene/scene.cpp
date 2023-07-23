@@ -28,12 +28,17 @@ Scene::update(GLFWwindow* window) {
 
     SR.render(window, fbo.get_depth_buffer_name());
 
+    FrameBufferHandler::bind_fbo(shadow_map_.get_frame_buffer());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     for (const auto& shadow : SMR) {
         shadow->render_shadow_map(
             shadow_map_.get_shadow_width(), shadow_map_.get_shadow_height(),
             shadow_map_.get_frame_buffer()
         );
     }
+
+    FrameBufferHandler::bind_fbo(fbo.get_frame_buffer_name());
 
     for (const auto& render : FBR) {
         render->render_frame_buffer(window, fbo.get_depth_buffer_name());

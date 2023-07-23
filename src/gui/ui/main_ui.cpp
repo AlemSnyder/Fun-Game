@@ -181,6 +181,8 @@ imguiTest(World& world) {
     chunk_renderer.set_light_direction(light_direction);
     chunk_renderer.set_depth_projection_matrix(depth_projection_matrix);
 
+    chunk_renderer.set_depth_texture(main_scene.get_depth_texture());
+
     main_scene.set_shadow_light_direction(light_direction);
     main_scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 

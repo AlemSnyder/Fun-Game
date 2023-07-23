@@ -299,6 +299,13 @@ template <class T>
 void
 IndividualIntRenderer<T>::setup_shadow() const {
 
+    // Cull back-facing triangles -> draw only front-facing triangles
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    // Clear the screen
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glUseProgram(programID_shadow_);
     
     // matrix to calculate the length of a light ray in model space
@@ -307,12 +314,6 @@ IndividualIntRenderer<T>::setup_shadow() const {
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform (Model View Projection)
     glUniformMatrix4fv(depth_bias_ID_shadow_, 1, GL_FALSE, &depthMVP[0][0]);
-    // Cull back-facing triangles -> draw only front-facing triangles
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 }
 
@@ -390,7 +391,6 @@ IndividualIntRenderer<T>::render_shadow_map(
         );
 
         glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
     }
     return 0;
 }
