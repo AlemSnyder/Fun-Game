@@ -129,13 +129,13 @@ World::update_single_mesh(ChunkIndex chunk_pos) {
     chunks_mesh_[chunk_pos]->update(chunk_mesh);
 }
 
-void World::update_single_mesh(TerrainDim3 tile_sop){
-    if (! terrain_main_.in_range(tile_sop))
+void
+World::update_single_mesh(TerrainDim3 tile_sop) {
+    if (!terrain_main_.in_range(tile_sop))
         return;
     Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
     update_single_mesh(chunk_pos);
 }
-
 
 void
 World::update_all_chunks_mesh() {
