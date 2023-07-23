@@ -36,19 +36,6 @@ quill::Logger* file_io_logger;  // for file io
 
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
-inline quill::Logger*
-get_logger(std::string name) {
-    auto logger_found = quill::get_all_loggers().find(name);
-    if (logger_found != quill::get_all_loggers().end()) {
-        return logger_found->second;
-    } else {
-        quill::Logger* logger = quill::create_logger(name);
-        logger->set_log_level(_LOG_LEVEL);
-        logger->init_backtrace(5, quill::LogLevel::Error);
-        return logger;
-    }
-}
-
 void
 init(bool console, quill::LogLevel log_level, bool structured) {
     _LOG_LEVEL = log_level;
