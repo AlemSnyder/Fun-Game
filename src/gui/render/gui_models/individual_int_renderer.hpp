@@ -65,18 +65,15 @@ class IndividualIntRenderer :
     GLuint color_map_ID_render_;   // ID of the color map for indexed meshes
     GLuint light_direction_ID_render_; // ID of the light direction uniform for indexed
 
-    GLuint matrix_ID_shadow_; // ID of world space to camera space transform matrix for
-                              // indexed meshes
-
     GLuint depth_bias_ID_shadow_;  // ID of depth projection matrix for indexed meshes
-    GLuint light_direction_ID_shadow_; // ID of the light direction uniform for indexed
+    //GLuint light_direction_ID_shadow_; // ID of the light direction uniform for indexed
                                        // meshes
     // ------ the below are added to the class ------
     GLuint depth_texture_;              // ID of the shadow depth texture
     glm::vec3 light_direction_;         // direction of sun light
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
-    glm::mat4 light_depth_view_matrix_; // convert a point in world space to depth in
+    //glm::mat4 light_depth_view_matrix_; // convert a point in world space to depth in
                                         // light direction
     std::vector<std::shared_ptr<T>> meshes_;
 
@@ -162,8 +159,9 @@ IndividualIntRenderer<T>::IndividualIntRenderer(ShaderHandeler shader_handler) {
         glGetUniformLocation(programID_render_, "LightInvDirection_worldspace");
 
     depth_bias_ID_shadow_ = glGetUniformLocation(programID_shadow_, "depthMVP");
-    light_direction_ID_shadow_ =
-        glGetUniformLocation(programID_shadow_, "LightInvDirection_worldspace");
+    // This might be used
+    //light_direction_ID_shadow_ =
+    //    glGetUniformLocation(programID_shadow_, "LightInvDirection_worldspace");
 }
 
 template <class T>
@@ -300,8 +298,8 @@ void
 IndividualIntRenderer<T>::setup_shadow() const {
 
     // Cull back-facing triangles -> draw only front-facing triangles
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
 
     // Clear the screen
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

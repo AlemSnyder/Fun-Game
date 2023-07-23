@@ -14,7 +14,6 @@ Scene::Scene(
 ) :
     fbo(window_width, window_height, SAMPLES),
     shadow_map_(shadow_map_width_height, shadow_map_width_height), SR(), QRMS()
-// SM(shadow_map_width_height, shadow_map_width_height),
 {}
 
 // add model attatch functions.
