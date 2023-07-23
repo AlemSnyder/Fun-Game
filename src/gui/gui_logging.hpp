@@ -46,28 +46,28 @@ message_callback(
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             LOG_ERROR(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_MEDIUM:
             LOG_WARNING(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_LOW:
             LOG_DEBUG(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_NOTIFICATION:
             LOG_DEBUG(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;

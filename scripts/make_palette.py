@@ -17,7 +17,6 @@ with open("./data/materials.json", "r") as materials:
 colors = []
 for material in data:
     for color in data[material]["colors"]:
-        # print(color)
         colors.append(color["hex"][0:-2])
 
 print("GIMP Palette\nName: A_Palette\n#")

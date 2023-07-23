@@ -110,7 +110,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
 #else
     if (structured) {
         file_handler = quill::create_handler<quill::JsonFileHandler>(
-            (LOG_FILE / ".json").string(),
+            (LOG_FILE + ".json").string(),
             "w",                            // Create a new file for every run
             quill::FilenameAppend::DateTime // Append datatime to make file unique
         );

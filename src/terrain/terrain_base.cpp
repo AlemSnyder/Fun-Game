@@ -172,12 +172,9 @@ TerrainBase::get_first_not(
         return 0;
     } else {
         // go down
-        for (Dim z = guess - 2;; z--) {
+        for (Dim z = guess - 2; z != 0; z--) {
             if (has_tile_material(materials, x, y, z)) {
                 return z + 1;
-            }
-            if (z == 0) {
-                return 0;
             }
         }
         return 0;
