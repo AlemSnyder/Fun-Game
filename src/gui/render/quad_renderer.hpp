@@ -23,6 +23,8 @@
 
 #include "../meshloader.hpp"
 
+#include "../../types.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -64,7 +66,8 @@ class QuadRenderer {
      * @param window the OpenGL window
      */
     void render(
-        int height, int width, GLuint window_render_texture, GLuint frame_buffer = 0
+        screen_size_t height, screen_size_t width, GLuint window_render_texture,
+        GLuint frame_buffer = 0
     ) const;
 };
 

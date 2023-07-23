@@ -11,12 +11,6 @@ class FrameBufferHandler {
     // Private CTOR as this is a singleton
     FrameBufferHandler() : fbo_id(0) {}
 
-    //FrameBufferHandler(FrameBufferHandler&&);
-    //FrameBufferHandler(FrameBufferHandler const&);
-
-    //void operator=(FrameBufferHandler&&);
-    //void operator=(FrameBufferHandler const&);
-
  public:
     // Delete all CTORs and CTOR-like operators
     FrameBufferHandler(FrameBufferHandler&&) = delete;

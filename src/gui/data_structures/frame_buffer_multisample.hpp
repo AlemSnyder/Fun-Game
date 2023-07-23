@@ -1,6 +1,7 @@
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include "../../types.hpp"
 
 #pragma once
 
@@ -15,8 +16,8 @@ class FrameBufferMultisample {
     GLuint depth_buffer;
     GLuint frame_buffer_single;
     GLuint render_texture_single;
-    uint32_t width_;
-    uint32_t height_;
+    screen_size_t width_;
+    screen_size_t height_;
     uint32_t samples_;
 
  public:

@@ -4,7 +4,6 @@
 #include "../../logging.hpp"
 #include "../../util/files.hpp"
 #include "../../world.hpp"
-#include "../data_structures/screen_data.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "../data_structures/static_mesh.hpp"
 #include "../data_structures/terrain_mesh.hpp"

@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#include "../data_structures/screen_data.hpp"
+//#include "../data_structures/screen_data.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "../meshloader.hpp"
 

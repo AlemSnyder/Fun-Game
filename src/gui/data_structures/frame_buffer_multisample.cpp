@@ -3,9 +3,14 @@
 
 #include "../../logging.hpp"
 #include "../handler.hpp"
+#include "../../types.hpp"
 
-gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
-    uint32_t width, uint32_t height, uint32_t samples
+namespace gui {
+
+namespace data_structures {
+
+FrameBufferMultisample::FrameBufferMultisample(
+    screen_size_t width, screen_size_t height, screen_size_t samples
 ) {
     width_ = width;
     height_ = height;
@@ -40,8 +45,8 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
         0
     );
 
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
+    GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, draw_buffers);
 
     GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -81,9 +86,13 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
 
     if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
         // log some error
-        LOG_CRITICAL(
+        LOG_ERROR(
             logging::opengl_logger, "Framebuffer Incomplete with code {}",
             framebuffer_status
         );
     }
 }
+
+} // namespace data_structures
+
+} // namespace gui

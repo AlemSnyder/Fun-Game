@@ -23,6 +23,8 @@
 
 #include "../meshloader.hpp"
 
+#include "../../types.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -67,7 +69,7 @@ class QuadRendererMultisample {
      * @param window the OpenGL window
      */
     void render(
-        uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture,
+        screen_size_t width, screen_size_t height, uint32_t samples, GLuint window_render_texture,
         GLuint frame_buffer = 0
     ) const;
 };
