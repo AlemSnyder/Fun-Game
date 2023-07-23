@@ -63,7 +63,8 @@ void
 gui::Scene::update(GLFWwindow* window) {
     SM.render_shadow_depth_buffer();
     // clear the frame buffer each frame
-    gui::FrameBufferHandler::bind_fbo(fbo.get_frame_buffer_name());
+    gui::FrameBufferHandler* frame_buffer_handler;
+    frame_buffer_handler->getInstance().bind_fbo(fbo.get_frame_buffer_name());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // render the sky to the frame buffer
     SR.render(window, fbo.get_frame_buffer_name());

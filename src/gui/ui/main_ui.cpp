@@ -47,7 +47,7 @@
 #  include "../libs/emscripten/emscripten_mainloop_stub.h"
 #endif
 
-namespace UI {
+namespace ui {
 
 // Main code
 int
@@ -237,16 +237,8 @@ imguiTest(World& world) {
     gui::Scene main_scene(world, window_width, window_height, 4096);
 
     //! Main loop
-#ifdef __EMSCRIPTEN__
-    // For an Emscripten build we are disabling file-system access, so let's not attempt
-    // to do a fopen() of the imgui.ini file. You may manually call
-    // LoadIniSettingsFromMemory() to load settings from your own storage.
-    io.IniFilename = NULL;
-    EMSCRIPTEN_MAINLOOP_BEGIN
-#else
-    while (!glfwWindowShouldClose(window))
-#endif
-    {
+
+    while (!glfwWindowShouldClose(window)) {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if
         // dear imgui wants to use your inputs.
@@ -265,8 +257,9 @@ imguiTest(World& world) {
 
         glm::vec3 position = controls::get_position_vector();
 
-        gui::FrameBufferHandler::bind_fbo(0);
-
+        gui::FrameBufferHandler* frame_buffer_handler;
+        frame_buffer_handler->getInstance().bind_fbo(0);
+        
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -384,9 +377,6 @@ imguiTest(World& world) {
 
         glfwSwapBuffers(window);
     }
-#ifdef __EMSCRIPTEN__
-    EMSCRIPTEN_MAINLOOP_END;
-#endif
 
     // Cleanup VBO and shader
     glDeleteVertexArrays(1, &VertexArrayID);
@@ -402,4 +392,4 @@ imguiTest(World& world) {
     return 0;
 }
 
-} // namespace UI
+} // namespace ui

@@ -146,8 +146,8 @@ GUITest(World& world) {
         main_scene.update(window);
 
         // bind the the screen
-        gui::FrameBufferHandler::bind_fbo(0);
-        // clear the screen
+    gui::FrameBufferHandler* frame_buffer_handler;
+    frame_buffer_handler->getInstance().bind_fbo(0);        // clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render to the screen
         QR.render(windowFrameWidth, windowFrameHeight, main_scene.get_scene(), 0);

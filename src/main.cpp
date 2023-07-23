@@ -168,7 +168,7 @@ imguiTest_main() {
     // chunks in the x,y direction. Here the size is 2,2.
     World world(materials_json, biome_data, 2, 2);
 
-    return UI::imguiTest(world);
+    return ui::imguiTest(world);
 }
 
 int
