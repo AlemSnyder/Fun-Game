@@ -65,16 +65,17 @@ class IndividualIntRenderer :
     GLuint color_map_ID_render_;   // ID of the color map for indexed meshes
     GLuint light_direction_ID_render_; // ID of the light direction uniform for indexed
 
-    GLuint depth_bias_ID_shadow_;  // ID of depth projection matrix for indexed meshes
-    //GLuint light_direction_ID_shadow_; // ID of the light direction uniform for indexed
-                                       // meshes
+    GLuint depth_bias_ID_shadow_; // ID of depth projection matrix for indexed meshes
+    // GLuint light_direction_ID_shadow_; // ID of the light direction uniform for
+    // indexed
+    //  meshes
     // ------ the below are added to the class ------
     GLuint depth_texture_;              // ID of the shadow depth texture
     glm::vec3 light_direction_;         // direction of sun light
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
-    //glm::mat4 light_depth_view_matrix_; // convert a point in world space to depth in
-                                        // light direction
+    // glm::mat4 light_depth_view_matrix_; // convert a point in world space to depth in
+    //  light direction
     std::vector<std::shared_ptr<T>> meshes_;
 
  public:
@@ -160,7 +161,7 @@ IndividualIntRenderer<T>::IndividualIntRenderer(ShaderHandeler shader_handler) {
 
     depth_bias_ID_shadow_ = glGetUniformLocation(programID_shadow_, "depthMVP");
     // This might be used
-    //light_direction_ID_shadow_ =
+    // light_direction_ID_shadow_ =
     //    glGetUniformLocation(programID_shadow_, "LightInvDirection_worldspace");
 }
 
@@ -296,23 +297,21 @@ IndividualIntRenderer<T>::setup_render() const {
 template <class T>
 void
 IndividualIntRenderer<T>::setup_shadow() const {
-
     // Cull back-facing triangles -> draw only front-facing triangles
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK);
 
     // Clear the screen
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(programID_shadow_);
-    
+
     // matrix to calculate the length of a light ray in model space
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform (Model View Projection)
     glUniformMatrix4fv(depth_bias_ID_shadow_, 1, GL_FALSE, &depthMVP[0][0]);
-
 }
 
 template <class T>
@@ -356,6 +355,9 @@ IndividualIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_b
             GL_UNSIGNED_SHORT,        // type
             (void*)0                  // element array buffer offset
         );
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
     }
     return 0;
 }
