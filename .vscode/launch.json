@@ -9,6 +9,7 @@
             "program": "${command:cmake.launchTargetPath}",
             //"args": ["StressTest"],
             "args": ["imguiTest"],
+            //"args": ["GUITest", "./SavedTerrain/BigTerrain.qb"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [

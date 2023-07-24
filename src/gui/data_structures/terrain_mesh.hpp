@@ -28,13 +28,15 @@ class TerrainMesh : public MeshData::SingleComplexMesh {
     bool do_render_;
 
  public:
-    inline TerrainMesh(const TerrainMesh& other) = delete;
+    TerrainMesh(const TerrainMesh& other) = delete;
     // copy operator
-    inline TerrainMesh& operator=(const TerrainMesh& other) = delete;
-    inline TerrainMesh& operator=(TerrainMesh&& other) = default;
+    TerrainMesh& operator=(const TerrainMesh& other) = delete;
+    TerrainMesh& operator=(TerrainMesh&& other) = default;
 
     inline TerrainMesh(){};
-    TerrainMesh(const entity::Mesh& mesh);
+    inline TerrainMesh(const entity::Mesh& mesh) {
+        update(mesh);
+    }
     void update(const entity::Mesh& mesh);
 
     inline ~TerrainMesh() {

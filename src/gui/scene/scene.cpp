@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
 gui::Scene::Scene(
-    World& world, uint32_t window_width, uint32_t window_height,
+    World& world, screen_size_t window_width, screen_size_t window_height,
     uint32_t shadow_map_width_height
 ) :
     world_(world),

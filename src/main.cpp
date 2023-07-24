@@ -190,21 +190,15 @@ StressTest() {
 
 int
 GUITest(const std::string& path) {
-    quill::Logger* logger = logging::get_logger();
+    //quill::Logger* logger = logging::get_logger();
 
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
-    World* world;
-    try {
-        world = new World(materials_json, path);
-    } catch (const std::exception& e) {
-        LOG_CRITICAL(logger, "Could not create world!");
-        return 1;
-    }
+    World world(materials_json, path);
 
-    return gui::GUITest(*world);
+    return gui::GUITest(world);
 }
 
 inline int

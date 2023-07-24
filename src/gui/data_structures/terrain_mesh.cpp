@@ -11,10 +11,6 @@ namespace gui {
 
 namespace data_structures {
 
-TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
-    update(mesh);
-}
-
 void
 TerrainMesh::update(const entity::Mesh& mesh) {
     // clear all buffers

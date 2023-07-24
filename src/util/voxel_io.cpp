@@ -20,9 +20,10 @@ namespace voxel_utility {
 
 void
 from_qb(
-    const std::filesystem::path path, std::vector<ColorInt>& data, VoxelOffset& center,
+    std::filesystem::path path, std::vector<ColorInt>& data, VoxelOffset& center,
     VoxelSize& size
 ) {
+    path = std::filesystem::absolute(path);
     LOG_INFO(logging::file_io_logger, "Reading voxels from {}.", path.string());
 
     // Read the tiles from the path specified, and save

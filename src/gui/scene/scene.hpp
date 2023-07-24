@@ -29,7 +29,7 @@ class Scene {
 
  public:
     Scene(
-        World& world_, uint32_t width, uint32_t height, uint32_t shadow_map_width_height
+        World& world_, screen_size_t width, screen_size_t height, uint32_t shadow_map_width_height
     );
     GLuint get_scene();
     GLuint get_depth_texture();
