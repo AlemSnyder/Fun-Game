@@ -49,8 +49,7 @@ ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
     // buffer.
     frame_buffer_name_ = 0;
     glGenFramebuffers(1, &frame_buffer_name_);
-    gui::FrameBufferHandler* frame_buffer_handler;
-    frame_buffer_handler->getInstance().bind_fbo(frame_buffer_name_);
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
     // Depth texture. Slower than a depth buffer, but you can sample it later in
     // your shader
 
@@ -102,8 +101,7 @@ ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 
 void
 ShadowMap::render_shadow_depth_buffer() const {
-    gui::FrameBufferHandler* frame_buffer_handler;
-    frame_buffer_handler->getInstance().bind_fbo(frame_buffer_name_);    // Render on the whole framebuffer, complete
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);    // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, shadow_width_, shadow_height_);
 

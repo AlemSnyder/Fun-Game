@@ -160,7 +160,7 @@ generate_mesh(T voxel_object) {
         int mesh_normal[3] = {0};    // direction that the mesh is not changing in
 
         // the color of all tiles at the same "level".
-        std::vector<std::pair<bool, uint16_t>> color_info(
+        std::vector<std::pair<bool, VoxelColorId>> color_info(
             object_geometry[dims_index_1] * object_geometry[dims_index_2]
         );
 
@@ -210,14 +210,14 @@ generate_mesh(T voxel_object) {
             ++voxel_position[axis]; // go to the next level
 
             // Generate mesh for color_info using lexicographic ordering
-            unsigned int width = 0, height = 0;
+            glm::uint width = 0, height = 0;
 
             counter = 0;
-            for (unsigned int j = 0; j < object_geometry[dims_index_2]; ++j){
-                unsigned int i = 0;
+            for (glm::uint j = 0; j < object_geometry[dims_index_2]; ++j) {
+                glm::uint i = 0;
                 while (i < object_geometry[dims_index_1]) {
                     // color and direction of the face between two voxels
-                    std::pair<bool, uint16_t> color = color_info[counter];
+                    std::pair<bool, VoxelColorId> color = color_info[counter];
                     // if there is a face between two voxels
                     if (color.second) {
                         // find the size of all faces that have the same color
@@ -244,11 +244,11 @@ generate_mesh(T voxel_object) {
                              ++height) {
                             // expand until one of the tiles in the next row is
                             // not the same color/facing direction
-                            for (unsigned int k = 0; k < width; ++k) {
+                            for (glm::uint k = 0; k < width; ++k) {
                                 // if the direction and color of the original
                                 // face is different from the direction and
                                 // color of the face currently being tested
-                                std::pair<bool, uint16_t> test_against = color_info
+                                std::pair<bool, VoxelColorId> test_against = color_info
                                     [counter + k
                                      + height * object_geometry[dims_index_1]];
                                 if (color != test_against) {
@@ -343,8 +343,8 @@ generate_mesh(T voxel_object) {
                         indices.push_back(vertex_size + 3);
                         indices.push_back(vertex_size);
 
-                        for (unsigned int w = 0; w < width; ++w)
-                            for (unsigned int h = 0; h < height; ++h)
+                        for (glm::uint w = 0; w < width; ++w)
+                            for (glm::uint h = 0; h < height; ++h)
                                 color_info
                                     [counter + w + h * object_geometry[dims_index_1]] =
                                         std::make_pair(false, 0);

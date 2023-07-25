@@ -81,8 +81,7 @@ MainRenderer::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 void
 MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     // Render to the screen
-    gui::FrameBufferHandler* frame_buffer_handler;
-    frame_buffer_handler->getInstance().bind_fbo(frame_buffer);
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
 
     // get he window size
     int width, height;

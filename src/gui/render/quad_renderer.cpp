@@ -47,8 +47,7 @@ QuadRenderer::render(
     GLuint frame_buffer
 ) const {
     // Render to the screen
-    gui::FrameBufferHandler* frame_buffer_handler;
-    frame_buffer_handler->getInstance().bind_fbo(frame_buffer);
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, width, height);

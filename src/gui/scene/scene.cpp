@@ -7,7 +7,9 @@
 
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-gui::Scene::Scene(
+namespace gui {
+
+Scene::Scene(
     World& world, screen_size_t window_width, screen_size_t window_height,
     uint32_t shadow_map_width_height
 ) :
@@ -52,19 +54,18 @@ gui::Scene::Scene(
     MR.add_mesh(std::make_shared<data_structures::StaticMesh>(treesMesh));
     MR.set_depth_texture(SM.get_depth_texture());
 
-    gui::render::QuadRendererMultisample QRMS;
+    render::QuadRendererMultisample QRMS;
 
-    gui::render::SkyRenderer SR;
+    render::SkyRenderer SR;
 
     LOG_INFO(logging::opengl_logger, "Scene initialized");
 }
 
 void
-gui::Scene::update(GLFWwindow* window) {
+Scene::update(GLFWwindow* window) {
     SM.render_shadow_depth_buffer();
     // clear the frame buffer each frame
-    gui::FrameBufferHandler* frame_buffer_handler;
-    frame_buffer_handler->getInstance().bind_fbo(fbo.get_frame_buffer_name());
+    FrameBufferHandler::getInstance().bind_fbo(fbo.get_frame_buffer_name());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // render the sky to the frame buffer
     SR.render(window, fbo.get_frame_buffer_name());
@@ -78,27 +79,27 @@ gui::Scene::update(GLFWwindow* window) {
 }
 
 GLuint
-gui::Scene::get_scene() {
+Scene::get_scene() {
     return fbo.get_single_sample_texture();
 }
 
 GLuint
-gui::Scene::get_depth_texture() {
+Scene::get_depth_texture() {
     return SM.get_depth_texture();
 }
 
 uint32_t
-gui::Scene::get_shadow_width() {
+Scene::get_shadow_width() {
     return SM.get_shadow_width();
 }
 
 uint32_t
-gui::Scene::get_shadow_height() {
+Scene::get_shadow_height() {
     return SM.get_shadow_height();
 }
 
 std::vector<glm::ivec3>
-gui::Scene::get_model_matrices_temp(World& world) {
+Scene::get_model_matrices_temp(World& world) {
     std::vector<glm::ivec3> model_matrices;
     // generate positions of trees
     for (unsigned int x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
@@ -111,3 +112,5 @@ gui::Scene::get_model_matrices_temp(World& world) {
         }
     return model_matrices;
 }
+
+} // namespace gui

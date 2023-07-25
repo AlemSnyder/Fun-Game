@@ -190,8 +190,6 @@ StressTest() {
 
 int
 GUITest(const std::string& path) {
-    //quill::Logger* logger = logging::get_logger();
-
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
