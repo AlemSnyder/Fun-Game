@@ -119,7 +119,6 @@ GUITest(World& world) {
             LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
         } catch (...) {
             LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
-            getchar();
             glfwTerminate();
             return -1;
         }
