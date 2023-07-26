@@ -13,20 +13,12 @@ Scene::Scene(
     uint32_t window_width, uint32_t window_height, uint32_t shadow_map_width_height
 ) :
     fbo(window_width, window_height, SAMPLES),
-    shadow_map_(shadow_map_width_height, shadow_map_width_height), SR(), QRMS()
-{}
+    shadow_map_(shadow_map_width_height, shadow_map_width_height), SR(), QRMS() {}
 
-// add model attatch functions.
+// add model attach functions.
 
 void
 Scene::update(GLFWwindow* window) {
-    // clear the frame buffer each frame
-    // fbo.clear()
-    FrameBufferHandler::bind_fbo(fbo.get_frame_buffer_name());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    SR.render(window, fbo.get_depth_buffer_name());
-
     FrameBufferHandler::bind_fbo(shadow_map_.get_frame_buffer());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -38,6 +30,9 @@ Scene::update(GLFWwindow* window) {
     }
 
     FrameBufferHandler::bind_fbo(fbo.get_frame_buffer_name());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    SR.render(window, fbo.get_depth_buffer_name());
 
     for (const auto& render : FBR) {
         render->render_frame_buffer(window, fbo.get_depth_buffer_name());
@@ -74,17 +69,17 @@ Scene::get_shadow_height() {
 }
 
 void
-Scene::shadow_attatch(const std::shared_ptr<render_to::shadow_map>& shadow) {
+Scene::shadow_attach(const std::shared_ptr<render_to::shadow_map>& shadow) {
     SMR.push_back(shadow);
 }
 
 void
-Scene::frame_buffer_attatch(const std::shared_ptr<render_to::frame_buffer>& render) {
+Scene::frame_buffer_attach(const std::shared_ptr<render_to::frame_buffer>& render) {
     FBR.push_back(render);
 }
 
 void
-Scene::frame_buffer_multisample_attatch(
+Scene::frame_buffer_multisample_attach(
     const std::shared_ptr<render_to::frame_buffer_multisample>& render
 ) {
     FBMR.push_back(render);

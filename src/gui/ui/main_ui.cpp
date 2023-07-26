@@ -186,14 +186,14 @@ imguiTest(World& world) {
     main_scene.set_shadow_light_direction(light_direction);
     main_scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
-    main_scene.frame_buffer_multisample_attatch(
+    main_scene.frame_buffer_multisample_attach(
         std::make_shared<
             gui::models::IndividualIntRenderer<gui::data_structures::TerrainMesh>>(
             chunk_renderer
         )
     );
 
-    main_scene.shadow_attatch(std::make_shared<gui::models::IndividualIntRenderer<
+    main_scene.shadow_attach(std::make_shared<gui::models::IndividualIntRenderer<
                                   gui::data_structures::TerrainMesh>>(chunk_renderer));
 
     // main_scene.add render ()

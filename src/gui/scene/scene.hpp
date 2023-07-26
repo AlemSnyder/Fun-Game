@@ -52,14 +52,14 @@ class Scene {
     uint32_t get_shadow_height();
     void update(GLFWwindow* window);
 
-    // model attatch
+    // model attach
 
-    void shadow_attatch(const std::shared_ptr<render_to::shadow_map>& shadow);
+    void shadow_attach(const std::shared_ptr<render_to::shadow_map>& shadow);
 
-    void frame_buffer_attatch(const std::shared_ptr<render_to::frame_buffer>& render);
+    void frame_buffer_attach(const std::shared_ptr<render_to::frame_buffer>& render);
 
     void
-    frame_buffer_multisample_attatch(
+    frame_buffer_multisample_attach(
         const std::shared_ptr<render_to::frame_buffer_multisample>& render
     );
 

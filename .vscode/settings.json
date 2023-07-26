@@ -3,8 +3,11 @@
     "cSpell.words": [
         "Astar",
         "Framebuffer",
+        "GLEW",
+        "glfw",
         "goxel",
         "lsst",
+        "multisample",
         "Parameteri",
         "Perlin",
         "vmask",
