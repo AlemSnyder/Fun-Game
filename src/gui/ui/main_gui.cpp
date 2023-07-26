@@ -6,11 +6,10 @@
 #include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/gui_models/quad_renderer.hpp"
+#include "../render/graphics_shaders/quad_renderer.hpp"
+#include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "../shader.hpp"
-#include "controls.hpp"
-#include "scene.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -138,7 +137,7 @@ GUITest(World& world) {
 
     gui::Scene main_scene(windowFrameWidth, windowFrameHeight, 4096);
 
-    //std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> 
+    // std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>>
     auto terrain_mesh = world.get_chunks_mesh();
 
     models::IndividualIntRenderer<data_structures::TerrainMesh> chunk_renderer(
@@ -148,7 +147,8 @@ GUITest(World& world) {
     // chunk_renderer.add_mesh()
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture());
+        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture()
+        );
         chunk_renderer.add_mesh(chunk_mesh);
     }
 
@@ -162,21 +162,23 @@ GUITest(World& world) {
     // Renders the Shadow depth map
     chunk_renderer.set_light_direction(light_direction);
     chunk_renderer.set_depth_projection_matrix(depth_projection_matrix);
-    
+
     chunk_renderer.set_depth_texture(main_scene.get_depth_texture());
 
     main_scene.set_shadow_light_direction(light_direction);
     main_scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
     main_scene.frame_buffer_multisample_attach(
-        std::make_shared<
-            models::IndividualIntRenderer<data_structures::TerrainMesh>>(
+        std::make_shared<models::IndividualIntRenderer<data_structures::TerrainMesh>>(
             chunk_renderer
         )
     );
 
-    main_scene.shadow_attach(std::make_shared<models::IndividualIntRenderer<
-                                  data_structures::TerrainMesh>>(chunk_renderer));
+    main_scene.shadow_attach(
+        std::make_shared<models::IndividualIntRenderer<data_structures::TerrainMesh>>(
+            chunk_renderer
+        )
+    );
 
     // main_scene.add render ()
     //  n more lines after this

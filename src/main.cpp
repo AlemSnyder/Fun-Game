@@ -1,7 +1,7 @@
 #include "config.h"
 #include "entity/mesh.hpp"
 #include "gui/scene/controls.hpp"
-#include "gui/scene/main_gui.hpp"
+#include "gui/ui/main_gui.hpp"
 #include "gui/shader.hpp"
 #include "gui/ui/main_ui.hpp"
 #include "logging.hpp"

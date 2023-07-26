@@ -3,7 +3,6 @@
 // Also no namespace terrain
 
 #include "../../../entity/mesh.hpp"
-//#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -78,11 +77,11 @@ class IndividualInt {
     get_num_vertices() const noexcept {
         return num_vertices_;
     }
-
 };
 
 template <class T>
-concept IndividualIntLike = std::is_base_of<gui::data_structures::IndividualInt, T>::value;
+concept IndividualIntLike =
+    std::is_base_of<gui::data_structures::IndividualInt, T>::value;
 
 } // namespace data_structures
 

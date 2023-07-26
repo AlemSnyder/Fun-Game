@@ -1,6 +1,4 @@
 #include "../../../entity/mesh.hpp"
-//#include "../meshloader.hpp"
-
 #include "individual_int.hpp"
 
 #include <GL/glew.h>
@@ -30,9 +28,7 @@ class InstancedInt : public IndividualInt {
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
     );
 
-    inline ~InstancedInt() {
-        glDeleteBuffers(1, &transforms_buffer_);
-    }
+    inline ~InstancedInt() { glDeleteBuffers(1, &transforms_buffer_); }
 
     [[nodiscard]] inline GLuint
     get_model_transforms() const noexcept {
@@ -43,12 +39,11 @@ class InstancedInt : public IndividualInt {
     get_num_models() const noexcept {
         return num_models_;
     }
-
 };
 
 template <class T>
-concept InstancedIntLike = std::is_base_of<gui::data_structures::InstancedInt, T>::value;
-
+concept InstancedIntLike =
+    std::is_base_of<gui::data_structures::InstancedInt, T>::value;
 
 } // namespace data_structures
 

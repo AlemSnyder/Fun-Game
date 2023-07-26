@@ -1,6 +1,5 @@
 #include "individual_int.hpp"
 
-#include "../../../logging.hpp"
 #include "../../../terrain/material.hpp"
 
 #include <GL/glew.h>

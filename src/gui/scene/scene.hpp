@@ -1,26 +1,14 @@
-#pragma once
-
-// #include "../../world.hpp"
-
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
-#include "../render/gui_models/gui_render_types.hpp"
-#include "../render/gui_models/individual_int_renderer.hpp"
-#include "../render/gui_models/instanced_int_renderer.hpp"
-#include "../render/gui_models/quad_renderer_multisample.hpp"
-#include "../render/gui_models/sky.hpp"
-
-// # include "../render/gui_models/**"
-
-// #include "../data_structures/frame_buffer_multisample.hpp"
-// #include "data_structures/static_mesh.hpp"
-// #include "data_structures/terrain_mesh.hpp"
-// #include "render/quad_renderer_multisample.hpp"
-// #include "../render/renderer.hpp"
-// #include "../render/shadow_map.hpp"
-// #include "../render/sky.hpp"
+#include "../render/graphics_shaders/gui_render_types.hpp"
+#include "../render/graphics_shaders/individual_int_renderer.hpp"
+#include "../render/graphics_shaders/instanced_int_renderer.hpp"
+#include "../render/graphics_shaders/quad_renderer_multisample.hpp"
+#include "../render/graphics_shaders/sky.hpp"
 
 #include <GLFW/glfw3.h>
+
+#pragma once
 
 namespace gui {
 

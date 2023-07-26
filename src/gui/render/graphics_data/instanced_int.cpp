@@ -1,7 +1,6 @@
 #include "instanced_int.hpp"
 
 #include "../../../entity/mesh.hpp"
-#include "../../../logging.hpp"
 #include "../../../types.hpp"
 #include "../../meshloader.hpp"
 

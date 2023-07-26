@@ -23,6 +23,7 @@
 
 #include "../../meshloader.hpp"
 #include "../../shader.hpp"
+#include "gui_render_types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -39,27 +40,25 @@ namespace render {
 /**
  * @brief Renders the meshes to the screen
  *
- * @details QuadRendererMultisample renders a multisampled meshes to the 
- * screen. 
+ * @details QuadRenderer renders the meshes given to it to the screen.
+ * this class handles the light direction, applied the meshes, and loading
+ * shaders.
  *
  */
-class QuadRendererMultisample {
+class QuadRenderer {
  private:
-    GLuint programID_;        // ID of non-indexed mesh Program
-    GLuint quad_vertexbuffer; // ID of vertexes
-    GLuint texID;             // ID of texture reading from
-    GLuint widthID;           // ID for width of reading texture
-    GLuint heightID;          // ID for height or reading texture
-    GLuint tex_samplesID;     // ID for number of samples in reading temperature
+    GLuint programID_; // ID of non-indexed mesh Program
+    GLuint quad_vertexbuffer;
+    GLuint texID;
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRendererMultisample(ShaderHandeler shader_handeler = ShaderHandeler());
+    QuadRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
 
-    ~QuadRendererMultisample();
+    ~QuadRenderer();
 
     /**
      * @brief renders the given meshes
@@ -67,8 +66,7 @@ class QuadRendererMultisample {
      * @param window the OpenGL window
      */
     void render(
-        uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture,
-        GLuint frame_buffer = 0
+        int height, int width, GLuint window_render_texture, GLuint frame_buffer = 0
     ) const;
 };
 

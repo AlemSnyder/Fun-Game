@@ -25,7 +25,7 @@
 #include "../../handler.hpp"
 #include "../../scene/controls.hpp"
 #include "../../shader.hpp"
-#include "../data/individual_int.hpp"
+#include "../graphics_data/individual_int.hpp"
 #include "gui_render_types.hpp"
 
 #include <GL/glew.h>

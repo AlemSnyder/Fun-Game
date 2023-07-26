@@ -44,7 +44,7 @@ QuadRendererMultisample::~QuadRendererMultisample() {
     glDeleteProgram(programID_);
 }
 
-void
+int
 QuadRendererMultisample::render(
     uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture,
     GLuint frame_buffer
@@ -88,6 +88,7 @@ QuadRendererMultisample::render(
     glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
     // at 0 -> 2 triangles
     glDisableVertexAttribArray(0);
+    return 0;
 }
 
 } // namespace render

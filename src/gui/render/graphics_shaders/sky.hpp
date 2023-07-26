@@ -23,13 +23,15 @@
 
 #include "../../meshloader.hpp"
 #include "../../shader.hpp"
+#include "../data_structures/screen_data.hpp"
+#include "../data_structures/sky_data.hpp"
+#include "gui_render_types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <memory>
 #include <vector>
 
 namespace gui {
@@ -39,34 +41,47 @@ namespace render {
 /**
  * @brief Renders the meshes to the screen
  *
- * @details QuadRenderer renders the meshes given to it to the screen.
+ * @details SkyRenderer renders the meshes given to it to the screen.
  * this class handles the light direction, applied the meshes, and loading
  * shaders.
  *
  */
-class QuadRenderer {
+class SkyRenderer :
+    public render_to::frame_buffer_multisample,
+    public render_to::frame_buffer {
  private:
-    GLuint programID_; // ID of non-indexed mesh Program
-    GLuint quad_vertexbuffer;
-    GLuint texID;
+    GLuint programID_; // ID of Program
+    // ID of world space to camera space transform matrix
+    GLuint matrix_view_projection_ID_;
+    GLuint pixel_matrix_ID_;            // ID of view space to pixel space matrix
+    data_structures::SkyData sky_data_; // star data
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
+    SkyRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
 
-    ~QuadRenderer();
+    ~SkyRenderer();
 
     /**
      * @brief renders the given meshes
      *
      * @param window the OpenGL window
      */
-    void render(
-        int height, int width, GLuint window_render_texture, GLuint frame_buffer = 0
-    ) const;
+    int render(GLFWwindow* window, GLuint frame_buffer) const;
+
+    int
+    render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer)
+        const override {
+        return render(window, frame_buffer);
+    }
+
+    int
+    render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const override {
+        return render(window, frame_buffer);
+    }
 };
 
 } // namespace render

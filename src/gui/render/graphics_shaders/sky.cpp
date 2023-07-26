@@ -1,11 +1,11 @@
 #include "sky.hpp"
 
 #include "../../../util/files.hpp"
-#include "../data_structures/sky_data.hpp"
 #include "../../handler.hpp"
 #include "../../meshloader.hpp"
 #include "../../scene/controls.hpp"
 #include "../../shader.hpp"
+#include "../data_structures/sky_data.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,7 +17,8 @@ namespace gui {
 
 namespace render {
 
-SkyRenderer::SkyRenderer(ShaderHandeler shader_handler) : sky_data_(files::get_data_path() / "stars.json") {
+SkyRenderer::SkyRenderer(ShaderHandeler shader_handler) :
+    sky_data_(files::get_data_path() / "stars.json") {
     programID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Sky.vert",
         files::get_resources_path() / "shaders" / "Sky.frag"
@@ -31,7 +32,7 @@ SkyRenderer::~SkyRenderer() {
     glDeleteProgram(programID_);
 }
 
-void
+int
 SkyRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     gui::FrameBufferHandler::bind_fbo(frame_buffer);
 
@@ -120,6 +121,8 @@ SkyRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
 
     // Use our shader
     glUseProgram(programID_);
+
+    return 0;
 }
 
 } // namespace render
