@@ -51,7 +51,7 @@ namespace ui {
 
 // Main code
 int
-imguiTest(World& world) {
+imgui_entry(World& world) {
     glEnable(GL_MULTISAMPLE);
 
     // initialize logging

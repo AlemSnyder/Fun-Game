@@ -8,8 +8,10 @@
             // Resolved by CMake Tools:
             "program": "${command:cmake.launchTargetPath}",
             //"args": ["StressTest"],
-            "args": ["imguiTest"],
-            //"args": ["GUITest", "./SavedTerrain/BigTerrain.qb"],
+            "args": [
+                "UI-imgui"
+            ],
+            //"args": ["UI-opengl", "./SavedTerrain/BigTerrain.qb"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [

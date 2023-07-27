@@ -29,7 +29,7 @@
 namespace gui {
 
 int
-GUITest(World& world) {
+opengl_entry(World& world) {
     LOG_INFO(logging::opengl_logger, "End of World::get_mesh_greedy");
 
     glEnable(GL_MULTISAMPLE);
@@ -144,7 +144,7 @@ GUITest(World& world) {
         main_scene.update(window);
 
         // bind the the screen
-    FrameBufferHandler::getInstance().bind_fbo(0);        // clear the screen
+        FrameBufferHandler::getInstance().bind_fbo(0); // clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render to the screen
         QR.render(windowFrameWidth, windowFrameHeight, main_scene.get_scene(), 0);

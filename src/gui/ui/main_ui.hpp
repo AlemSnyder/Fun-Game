@@ -3,6 +3,6 @@
 namespace ui {
 
 // Main code
-int imguiTest(World& world);
+int imgui_entry(World& world);
 
 } // namespace ui
