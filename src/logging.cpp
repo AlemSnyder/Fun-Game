@@ -71,6 +71,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
         colors.set_colour(LogLevel::TraceL1, cc::black);
         colors.set_colour(LogLevel::Debug, cc::white);
         colors.set_colour(LogLevel::Info, cc::green);
+
 #ifdef _WIN32
         colors.set_colour(LogLevel::Warning, cc::yellow | cc::bold);
         colors.set_colour(LogLevel::Error, cc::red | cc::bold);
