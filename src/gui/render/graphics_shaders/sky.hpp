@@ -21,10 +21,8 @@
  */
 #pragma once
 
-#include "../../meshloader.hpp"
-#include "../../shader.hpp"
-#include "../data_structures/screen_data.hpp"
 #include "../data_structures/sky_data.hpp"
+#include "../../shader.hpp"
 #include "gui_render_types.hpp"
 
 #include <GL/glew.h>
@@ -50,10 +48,9 @@ class SkyRenderer :
     public render_to::frame_buffer_multisample,
     public render_to::frame_buffer {
  private:
-    GLuint programID_; // ID of Program
-    // ID of world space to camera space transform matrix
-    GLuint matrix_view_projection_ID_;
-    GLuint pixel_matrix_ID_;            // ID of view space to pixel space matrix
+    GLuint programID_;                  // ID of Program
+    GLuint matrix_view_projection_ID_;  // ID of world to camera space transform matrix
+    GLuint pixel_matrix_ID_;            // ID of view to pixel space matrix
     data_structures::SkyData sky_data_; // star data
 
  public:

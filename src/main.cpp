@@ -155,7 +155,7 @@ path_finder_test(const std::string& path, const std::string& save_path) {
 }
 
 int
-imguiTest_main() {
+imgui_entry_main() {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
@@ -168,7 +168,7 @@ imguiTest_main() {
     // chunks in the x,y direction. Here the size is 2,2.
     World world(materials_json, biome_data, 2, 2);
 
-    return UI::imguiTest(world);
+    return ui::imgui_entry(world);
 }
 
 int
@@ -185,31 +185,23 @@ StressTest() {
     // chunks in the x,y direction. Here the size is 2,2.
     World world(materials_json, biome_data, 2, 2);
 
-    return gui::GUITest(world);
+    return gui::opengl_entry(world);
 }
 
 int
-GUITest(const std::string& path) {
-    quill::Logger* logger = logging::get_logger();
-
+opengl_entry(const std::string& path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("materials.json");
     materials_file >> materials_json;
 
-    World* world;
-    try {
-        world = new World(materials_json, path);
-    } catch (const std::exception& e) {
-        LOG_CRITICAL(logger, "Could not create world!");
-        return 1;
-    }
+    World world(materials_json, path);
 
-    return gui::GUITest(*world);
+    return gui::opengl_entry(world);
 }
 
 inline int
-GUITest(const std::filesystem::path& path) {
-    return GUITest(path.string());
+opengl_entry(const std::filesystem::path& path) {
+    return opengl_entry(path.string());
 }
 
 inline int
@@ -265,7 +257,7 @@ main(int argc, char** argv) {
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
     if (argc == 1) {
-        return GUITest(files::get_data_path() / "models" / "DefaultTree.qb");
+        return opengl_entry(files::get_data_path() / "models" / "DefaultTree.qb");
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
         std::ifstream biome_file = files::open_data_file("biome_data.json");
@@ -291,12 +283,12 @@ main(int argc, char** argv) {
         return save_test(path_in, path_out);
     } else if (run_function == "PathFinder") {
         return path_finder_test(path_in, path_out);
-    } else if (run_function == "GUITest") {
-        return GUITest(path_in);
+    } else if (run_function == "UI-opengl") {
+        return opengl_entry(path_in);
     } else if (run_function == "Logging") {
         return LogTest();
-    } else if (run_function == "imguiTest") {
-        return imguiTest_main();
+    } else if (run_function == "UI-imgui") {
+        return imgui_entry_main();
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

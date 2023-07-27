@@ -1,9 +1,6 @@
 #include "shadow_map.hpp"
 
-//#include "../../util/files.hpp"
 #include "../../handler.hpp"
-//#include "../meshloader.hpp"
-//#include "../shader.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -17,12 +14,12 @@ namespace gui {
 
 namespace data_structures {
 
-ShadowMap::ShadowMap(int w, int h) {
+ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
     shadow_width_ = w;
     shadow_height_ = h;
 
     glGenFramebuffers(1, &frame_buffer_name_);
-    gui::FrameBufferHandler::bind_fbo(frame_buffer_name_);
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
 
     // Depth texture. Slower than a depth buffer, but you can sample it later in
     // your shader

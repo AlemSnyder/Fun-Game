@@ -116,7 +116,7 @@ void
 InstancedIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_buffer)
     const {
     // Render to the screen
-    gui::FrameBufferHandler::bind_fbo(frame_buffer);
+    gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
 
     // get he window size
     int width, height;
@@ -166,7 +166,7 @@ void
 InstancedIntRenderer<T>::render_shadow_map(
     int shadow_width_, int shadow_height_, GLuint frame_buffer_name_
 ) const {
-    gui::FrameBufferHandler::bind_fbo(frame_buffer_name_);
+    gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, shadow_width_, shadow_height_);

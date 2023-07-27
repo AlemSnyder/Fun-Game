@@ -46,7 +46,7 @@ QuadRendererMultisample::~QuadRendererMultisample() {
 
 int
 QuadRendererMultisample::render(
-    uint32_t width, uint32_t height, uint32_t samples, GLuint window_render_texture,
+    screen_size_t width, screen_size_t height, uint32_t samples, GLuint window_render_texture,
     GLuint frame_buffer
 ) const {
     // Render to the frame)buffer

@@ -1,8 +1,8 @@
 #include "../../world.hpp"
 
-namespace UI {
+namespace ui {
 
 // Main code
-int imguiTest(World& world);
+int imgui_entry(World& world);
 
-} // namespace UI
+} // namespace ui

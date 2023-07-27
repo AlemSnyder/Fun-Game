@@ -10,7 +10,7 @@
 namespace gui {
 
 Scene::Scene(
-    uint32_t window_width, uint32_t window_height, uint32_t shadow_map_width_height
+    screen_size_t window_width, screen_size_t window_height, uint32_t shadow_map_width_height
 ) :
     fbo(window_width, window_height, SAMPLES),
     shadow_map_(shadow_map_width_height, shadow_map_width_height), SR(), QRMS() {}
@@ -19,7 +19,7 @@ Scene::Scene(
 
 void
 Scene::update(GLFWwindow* window) {
-    FrameBufferHandler::bind_fbo(shadow_map_.get_frame_buffer());
+    FrameBufferHandler::getInstance().bind_fbo(shadow_map_.get_frame_buffer());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto& shadow : SMR) {
@@ -29,7 +29,7 @@ Scene::update(GLFWwindow* window) {
         );
     }
 
-    FrameBufferHandler::bind_fbo(fbo.get_frame_buffer_name());
+    FrameBufferHandler::getInstance().bind_fbo(fbo.get_frame_buffer_name());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     SR.render(window, fbo.get_depth_buffer_name());

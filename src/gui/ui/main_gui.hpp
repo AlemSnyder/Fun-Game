@@ -4,6 +4,6 @@
 
 namespace gui {
 
-int GUITest(World& world);
+int opengl_entry(World& world);
 
 } // namespace gui

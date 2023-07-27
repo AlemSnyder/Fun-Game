@@ -10,10 +10,6 @@ namespace gui {
 
 namespace data_structures {
 
-IndividualInt::IndividualInt(const entity::Mesh& mesh) {
-    update(mesh);
-}
-
 void
 IndividualInt::update(const entity::Mesh& mesh) {
     // clear all buffers

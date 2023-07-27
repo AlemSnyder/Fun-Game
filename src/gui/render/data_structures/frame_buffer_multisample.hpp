@@ -1,3 +1,4 @@
+#include "../../../types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -15,14 +16,14 @@ class FrameBufferMultisample {
     GLuint depth_buffer;
     GLuint frame_buffer_single;
     GLuint render_texture_single;
-    uint32_t width_;
-    uint32_t height_;
+    screen_size_t width_;
+    screen_size_t height_;
     uint32_t samples_;
 
  public:
     FrameBufferMultisample(const FrameBufferMultisample& obj) = delete;
 
-    FrameBufferMultisample(uint32_t width, uint32_t height, uint32_t samples);
+    FrameBufferMultisample(screen_size_t width, screen_size_t height, uint32_t samples);
 
     ~FrameBufferMultisample() {
         glDeleteRenderbuffers(1, &depth_buffer);
@@ -32,12 +33,12 @@ class FrameBufferMultisample {
         glDeleteFramebuffers(1, &frame_buffer_single);
     }
 
-    [[nodiscard]] inline uint32_t
+    [[nodiscard]] inline screen_size_t
     get_width() const {
         return width_;
     }
 
-    [[nodiscard]] inline uint32_t
+    [[nodiscard]] inline screen_size_t
     get_height() const {
         return height_;
     }

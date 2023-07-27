@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#include "../../../types.hpp"
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -45,8 +47,8 @@ class ShadowMap {
     GLuint frame_buffer_name_;     // ID of frame buffer
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sunlight
-    uint32_t shadow_width_;             // width of depth texture
-    uint32_t shadow_height_;            // height of depth texture
+    screen_size_t shadow_width_;             // width of depth texture
+    screen_size_t shadow_height_;            // height of depth texture
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
                                   // direction
@@ -58,7 +60,7 @@ class ShadowMap {
      * @param w the width of the area hit by light
      * @param h the height of the area hit by light
      */
-    ShadowMap(int w, int h);
+    ShadowMap(screen_size_t w, screen_size_t h);
 
     ~ShadowMap() {
         glDeleteFramebuffers(1, &frame_buffer_name_);
@@ -99,12 +101,12 @@ class ShadowMap {
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
-    inline uint32_t
+    inline screen_size_t
     get_shadow_width() const {
         return shadow_width_;
     }
 
-    inline uint32_t
+    inline screen_size_t
     get_shadow_height() const {
         return shadow_height_;
     }

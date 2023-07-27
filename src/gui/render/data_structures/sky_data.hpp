@@ -18,7 +18,7 @@ class SkyData {
     GLuint star_positions_;
     GLuint age_buffer_;
     GLuint shape_buffer_;
-    unsigned int num_stars_;
+    size_t num_stars_;
 
  public:
     /**
@@ -54,17 +54,17 @@ class SkyData {
 
     SkyData(std::filesystem::path path);
 
-    GLuint
+    [[nodiscard]] inline GLuint
     get_star_positions() const {
         return star_positions_;
     }
 
-    GLuint
+    [[nodiscard]] inline GLuint
     get_star_age_() const {
         return age_buffer_;
     }
 
-    GLuint
+    [[nodiscard]] inline GLuint
     get_star_shape() const {
         return shape_buffer_;
     }
@@ -74,7 +74,7 @@ class SkyData {
      *
      * @return unsigned int number of stars
      */
-    inline unsigned int
+    [[nodiscard]] inline size_t
     get_num_stars() const {
         return num_stars_;
     }

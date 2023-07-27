@@ -33,7 +33,9 @@ class IndividualInt {
     inline IndividualInt& operator=(IndividualInt&& other) = default;
 
     inline IndividualInt(){};
-    IndividualInt(const entity::Mesh& mesh);
+    inline IndividualInt(const entity::Mesh& mesh){
+        update(mesh);
+    }
     void update(const entity::Mesh& mesh);
 
     inline ~IndividualInt() {

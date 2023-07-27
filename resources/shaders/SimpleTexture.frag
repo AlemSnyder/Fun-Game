@@ -10,5 +10,4 @@ in vec2 UV;
 void
 main() {
     color = texture(depth_texture, UV).rgb;
-    //color = vec3(0,1,0);
 }

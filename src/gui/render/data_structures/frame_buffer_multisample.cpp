@@ -3,9 +3,14 @@
 
 #include "../../../logging.hpp"
 #include "../../handler.hpp"
+#include "../../../types.hpp"
 
-gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
-    uint32_t width, uint32_t height, uint32_t samples
+namespace gui {
+
+namespace data_structures {
+
+FrameBufferMultisample::FrameBufferMultisample(
+    screen_size_t width, screen_size_t height, uint32_t samples
 ) {
     width_ = width;
     height_ = height;
@@ -15,8 +20,7 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
 
     // frame buffer (the container for the other two)
     glGenFramebuffers(1, &frame_buffer);
-    gui::FrameBufferHandler::bind_fbo(frame_buffer);
-
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
     // texture (what it looks like)
     glGenTextures(1, &render_texture);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, render_texture);
@@ -40,8 +44,8 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
         0
     );
 
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
+    GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, draw_buffers);
 
     GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -55,8 +59,7 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
 
     // frame buffer (the container for the other two)
     glGenFramebuffers(1, &frame_buffer_single);
-    gui::FrameBufferHandler::bind_fbo(frame_buffer_single);
-
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_single);
     // texture (what it looks like)
     glGenTextures(1, &render_texture_single);
 
@@ -75,16 +78,20 @@ gui::data_structures::FrameBufferMultisample::FrameBufferMultisample(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single, 0
     );
 
-    DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
+    draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, draw_buffers);
 
     framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
         // log some error
-        LOG_CRITICAL(
+        LOG_ERROR(
             logging::opengl_logger, "Framebuffer Incomplete with code {}",
             framebuffer_status
         );
     }
 }
+
+} // namespace data_structures
+
+} // namespace gui

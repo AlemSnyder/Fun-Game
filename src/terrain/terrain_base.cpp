@@ -37,7 +37,7 @@ TerrainBase::qb_read(
         LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
 }
-
+// when data is given use different Y max
 TerrainBase::TerrainBase(
     const std::map<MaterialId, const terrain::Material>& materials,
     const std::vector<int>& grass_grad_data, unsigned int grass_mid, Dim x_map_tiles,
@@ -120,9 +120,25 @@ TerrainBase::TerrainBase(
     std::vector<int> grass_grad_data, unsigned int grass_mid,
     voxel_utility::qb_data_t data
 ) :
-    TerrainBase(
-        materials, grass_grad_data, grass_mid, data.size.x, data.size.y, 32, data.size.z
-    ) {
+    area_size_(32),
+    materials_(materials), X_MAX(data.size.x),
+    Y_MAX(data.size.y), Z_MAX(data.size.z) {
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+
+    if (grass_mid >= grass_grad_data.size()) {
+        grass_mid_ = grass_grad_data.size() - 1;
+        std::cerr << "Grass Mid (from biome_data.json) not valid";
+    }
+
+    for (size_t i = 0; i < grass_grad_data.size(); i++) {
+        if (i == static_cast<size_t>(grass_mid)) {
+            grass_mid_ = grass_colors_.size();
+        }
+        for (int j = 0; j < grass_grad_data[i]; j++) {
+            grass_colors_.push_back(i);
+        }
+    }
+    grass_grad_length_ = grass_colors_.size();
     std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
     for (auto it = materials_.begin(); it != materials_.end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -172,12 +188,9 @@ TerrainBase::get_first_not(
         return 0;
     } else {
         // go down
-        for (Dim z = guess - 2;; z--) {
+        for (Dim z = guess - 2; z != 0; z--) {
             if (has_tile_material(materials, x, y, z)) {
                 return z + 1;
-            }
-            if (z == 0) {
-                return 0;
             }
         }
         return 0;

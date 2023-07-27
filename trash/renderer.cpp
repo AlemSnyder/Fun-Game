@@ -81,7 +81,7 @@ MainRenderer::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 void
 MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     // Render to the screen
-    gui::FrameBufferHandler::bind_fbo(frame_buffer);
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
 
     // get he window size
     int width, height;
@@ -101,11 +101,8 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
 
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
-    // Compute the MVP matrix from keyboard and mouse input
-    // controls::computeMatricesFromInputs(window);
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
-    // glm::mat4 ModelMatrix = glm::mat4(1.0);
     glm::mat4 MVP = projection_matrix * view_matrix; // Model View Projection
 
     // Shadow bias matrix of-sets the shadows
@@ -135,9 +132,8 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glUniform1i(shadow_map_ID_, 1);
 
     for (std::shared_ptr<MeshData::SingleComplexMesh> mesh : singles_meshes_) {
-        if (!mesh->do_render()) {
+        if (!mesh->do_render())
             continue;
-        }
 
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
@@ -207,9 +203,8 @@ MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     glUniform1i(shadow_map_ID_multi_, 1);
 
     for (std::shared_ptr<MeshData::MultiComplexMesh> mesh : multis_meshes_) {
-        if (!mesh->do_render()) {
+        if (!mesh->do_render())
             continue;
-        }
 
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
