@@ -72,7 +72,7 @@ Terrain::Terrain(
 
 Terrain::Terrain(
     int x, int y, int Area_size_, int z, int seed_,
-    const std::map<uint8_t, const Material>& materials, const Json::Value biome_data,
+    const std::map<MaterialId, const Material>& materials, const Json::Value biome_data,
     std::vector<int> grass_grad_data, unsigned int grass_mid
 ) :
     TerrainBase(x, y, Area_size_, z, materials, biome_data, grass_grad_data, grass_mid),
@@ -106,7 +106,7 @@ Terrain::init_chunks() {
 }
 
 int
-Terrain::get_Z_solid(int x, int y, int z_start) {
+Terrain::get_Z_solid(int x, int y, int z_start) const {
     for (int z = z_start; z >= 0; z--) {
         if (this->get_tile(x, y, z)->is_solid()) {
             return z;
@@ -116,7 +116,7 @@ Terrain::get_Z_solid(int x, int y, int z_start) {
 }
 
 int
-Terrain::get_Z_solid(int x, int y) {
+Terrain::get_Z_solid(int x, int y) const {
     return get_Z_solid(x, y, Z_MAX - 1);
 }
 
@@ -268,17 +268,26 @@ Terrain::pos(const NodeGroup* const node_group) const {
            + pz;
 }
 
+ChunkIndex
+Terrain::get_chunk_from_tile(Dim x, Dim y, Dim z) const {
+    int px = floor(x) / Chunk::SIZE;
+    int py = floor(y) / Chunk::SIZE;
+    int pz = floor(z) / Chunk::SIZE;
+    return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
+           + pz;
+}
+
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
-    std::map<TileIndex, Node<const NodeGroup>>& nodes, uint8_t path_type
+    std::map<TileIndex, Node<const NodeGroup>>& nodes, path_t path_type
 ) const {
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
-        try {
-            Node<const NodeGroup>* tile = &nodes.at(pos_for_map(t));
-            out.emplace(tile);
-        } catch (const std::out_of_range& e) {}
+        auto adj_node = nodes.find(pos_for_map(t));
+        if (adj_node != nodes.end()) {
+            out.emplace(&adj_node->second);
+        }
     }
     return out;
 }
@@ -286,15 +295,15 @@ Terrain::get_adjacent_nodes(
 std::set<Node<const Tile>*>
 Terrain::get_adjacent_nodes(
     const Node<const Tile>* node, std::map<TileIndex, Node<const Tile>>& nodes,
-    uint8_t path_type
+    path_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
     auto tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
     while (!tile_it.end()) {
-        try {
-            Node<const Tile>* tile = &nodes.at(tile_it.get_pos());
-            out.emplace(tile);
-        } catch (const std::out_of_range& e) {}
+        auto adj_node = nodes.find(tile_it.get_pos());
+        if (adj_node != nodes.end()) {
+            out.emplace(&adj_node->second);
+        }
         tile_it++;
     }
     return out;
@@ -302,11 +311,11 @@ Terrain::get_adjacent_nodes(
 
 NodeGroup*
 Terrain::get_node_group(int xyz) {
-    try {
-        return tile_to_group_.at(xyz);
-    } catch (const std::out_of_range& e) {
+    auto node_group = tile_to_group_.find(xyz);
+    if (node_group == tile_to_group_.end()) {
         return nullptr;
     }
+    return node_group->second;
 }
 
 NodeGroup*
@@ -316,6 +325,25 @@ Terrain::get_node_group(const Tile t) {
 
 NodeGroup*
 Terrain::get_node_group(const Tile* t) {
+    return get_node_group(pos(t));
+}
+
+const NodeGroup*
+Terrain::get_node_group(int xyz) const {
+    auto out = tile_to_group_.find(xyz);
+    if (out == tile_to_group_.end()){
+        return nullptr;
+    }
+    return out->second;
+}
+
+const NodeGroup*
+Terrain::get_node_group(const Tile t) const {
+    return get_node_group(pos(t));
+}
+
+const NodeGroup*
+Terrain::get_node_group(const Tile* t) const {
     return get_node_group(pos(t));
 }
 
@@ -343,17 +371,17 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     // so what is going on? Only god knows.
     // abs(_s - _f) returns zero or one depending on wether the final and
     // initial positions are the same. same as bool (_s != _f)
-    uint8_t x_diff = abs(xs - xf); // difference in x direction
-    uint8_t y_diff = abs(ys - yf); // difference in y direction
-    uint8_t z_diff = abs(zs - zf); // difference in z direction
+    path_t x_diff = abs(xs - xf); // difference in x direction
+    path_t y_diff = abs(ys - yf); // difference in y direction
+    path_t z_diff = abs(zs - zf); // difference in z direction
 
     // If there is a change in the horizontal position, then everything should
     // be bit shifted by 4, and if not, by 1.
     // This is because Directional flags are defined as follows:
     // 32   16  8  4  2 1
     // VH2 VH1  V H2 H1 O
-    uint8_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
-    uint8_t vertical_direction = z_diff << 3;
+    path_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
+    path_t vertical_direction = z_diff << 3;
     UnitPath type;
     if (horizontal_direction == 0)
         type = vertical_direction;
@@ -415,9 +443,9 @@ Terrain::get_all_node_groups() const {
 }
 
 std::vector<const Tile*>
-Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
-    NodeGroup* goal_node;
-    NodeGroup* start_node;
+Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) const {
+    const NodeGroup* goal_node;
+    const NodeGroup* start_node;
     int goal_z = goal_->get_z();
     const Tile* goal;
 
@@ -472,7 +500,7 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) {
 }
 
 std::vector<const NodeGroup*>
-Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) {
+Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
@@ -486,7 +514,7 @@ Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) {
 std::vector<const NodeGroup*>
 Terrain::get_path_breadth_first(
     const NodeGroup* start, const std::set<const NodeGroup*> goal
-) {
+) const {
     std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
         [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
         return lhs->get_time_cots() > rhs->get_time_cots();
@@ -634,9 +662,9 @@ Terrain::qb_save(const std::string path) const {
     voxel_utility::to_qb(std::filesystem::path(path), *this);
 }
 
-std::pair<Tile*, Tile*>
-Terrain::get_start_end_test() {
-    std::pair<Tile*, Tile*> out;
+std::pair<const Tile*, const Tile*>
+Terrain::get_start_end_test() const {
+    std::pair<const Tile*, const Tile*> out;
     bool first = true;
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         if (get_tile(xyz)->get_material_id() == DEBUG_MATERIAL

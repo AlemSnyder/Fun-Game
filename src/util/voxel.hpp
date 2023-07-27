@@ -14,7 +14,7 @@ namespace voxel_utility {
 class VoxelBase {
  public:
     ColorInt get_voxel(int x, int y, int z) const;
-    uint16_t get_voxel_color_id(int x, int y, int z) const;
+    VoxelColorId get_voxel_color_id(int x, int y, int z) const;
     std::vector<ColorInt> get_color_ids() const;
     VoxelSize get_size() const;
     VoxelOffset get_offset() const;
@@ -40,12 +40,14 @@ class VoxelObject : VoxelBase {
     /**
      * @brief Construct a new Voxel Object object from saved qb
      *
+     *
      * @param path path to .qb file
      */
     VoxelObject(const std::filesystem::path& path);
 
     /**
      * @brief Construct a new Voxel Object object from saved qb
+     *
      *
      * @param path path to .qb file
      */
@@ -54,7 +56,8 @@ class VoxelObject : VoxelBase {
     /**
      * @brief did this voxel object load correctly
      *
-     * @return true loaded correctly
+     * @return true
+     * loaded correctly
      * @return false failed to load correctly
      */
     [[nodiscard]] inline bool
@@ -65,7 +68,8 @@ class VoxelObject : VoxelBase {
     /**
      * @brief Get the color ids vector
      *
-     * @return std::vector<ColorInt>
+     * @return
+     * std::vector<ColorInt>
      */
     [[nodiscard]] inline const std::vector<ColorInt>&
     get_color_ids() const {
@@ -76,11 +80,12 @@ class VoxelObject : VoxelBase {
      * @brief Get the voxel color id
      *
      * @param x x position
+     *
      * @param y y position
      * @param z z position
-     * @return uint16_t
+     * @return VoxelColorId
      */
-    [[nodiscard]] inline uint16_t
+    [[nodiscard]] inline VoxelColorId
     get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
         if (x < 0 || y < 0 || z < 0) {
             return 0;
@@ -96,10 +101,12 @@ class VoxelObject : VoxelBase {
     /**
      * @brief Get the voxel color at given coordinate
      *
-     * @param x coordinate
+     * @param x
+     * coordinate
      * @param y coordinate
      * @param z coordinate
-     * @return ColorInt color
+     * @return
+     * ColorInt color
      */
     [[nodiscard]] inline ColorInt
     get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
@@ -108,7 +115,8 @@ class VoxelObject : VoxelBase {
 
     /**
      * @brief Get the center of the object
-     * use full to find where to rotate around
+     * use full to find where to
+     * rotate around
      *
      * @return VoxelOffset
      */
@@ -120,7 +128,8 @@ class VoxelObject : VoxelBase {
     /**
      * @brief Get the size as an array of length three
      *
-     * @return VoxelSize length in x, y, z
+     * @return
+     * VoxelSize length in x, y, z
      */
     [[nodiscard]] inline VoxelSize
     get_size() noexcept {

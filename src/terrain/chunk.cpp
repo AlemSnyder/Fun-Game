@@ -3,14 +3,13 @@
 #include "material.hpp"
 #include "path/tile_iterators.hpp"
 #include "terrain.hpp"
-#include "tile.hpp"
 #include "terrain_base.hpp"
+#include "tile.hpp"
 
 namespace terrain {
 
 Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
-    ter_(ter),
-    Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z) {
+    ter_(ter), Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z) {
     for (int x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
         for (int y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
             for (int z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
@@ -107,13 +106,15 @@ Chunk::contains_nodeGroup(NodeGroup* NG) {
     );
 }
 
-uint32_t terrain::Chunk::get_voxel(int x, int y, int z) const {
+ColorInt
+terrain::Chunk::get_voxel(int x, int y, int z) const {
     return ter_->get_voxel(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );
 }
 
-uint16_t terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
+MatColorId
+terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
     return ter_->get_voxel_color_id(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );

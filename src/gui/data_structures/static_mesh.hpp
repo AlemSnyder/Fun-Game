@@ -1,5 +1,5 @@
-#include "../gui/meshloader.hpp"
-#include "mesh.hpp"
+#include "../../entity/mesh.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -9,44 +9,33 @@
 
 #pragma once
 
-namespace terrain {
+namespace gui {
 
-class StaticMesh : public MeshLoader::MultiComplexMesh {
+namespace data_structures {
+
+class StaticMesh : public MeshData::MultiComplexMesh {
  private:
     GLuint vertex_buffer_;
     GLuint color_buffer_;
     GLuint normal_buffer_;
     GLuint element_buffer_;
-    GLuint color_texture_;
     GLuint transforms_buffer_;
+    GLuint color_texture_;
     uint32_t num_vertices_;
-    uint32_t num_models_;
+    uint32_t num_models_ : 31;
+    bool do_render_ : 1;
 
  public:
-    inline StaticMesh(const StaticMesh& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        color_buffer_ = obj.color_buffer_;
-        normal_buffer_ = obj.normal_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        transforms_buffer_ = obj.transforms_buffer_;
-        color_texture_ = obj.color_texture_;
-        num_vertices_ = obj.num_vertices_;
-        num_models_ = obj.num_models_;
-    };
+    inline StaticMesh(const StaticMesh& obj) :
+        vertex_buffer_(obj.vertex_buffer_), color_buffer_(obj.color_buffer_),
+        normal_buffer_(obj.normal_buffer_), element_buffer_(obj.element_buffer_),
+        transforms_buffer_(obj.transforms_buffer_), color_texture_(obj.color_texture_),
+        num_vertices_(obj.num_vertices_), num_models_(obj.num_models_),
+        do_render_(obj.do_render_){};
 
     // copy operator
-    inline StaticMesh&
-    operator=(const StaticMesh& obj) {
-        vertex_buffer_ = obj.vertex_buffer_;
-        color_buffer_ = obj.color_buffer_;
-        normal_buffer_ = obj.normal_buffer_;
-        element_buffer_ = obj.element_buffer_;
-        transforms_buffer_ = obj.transforms_buffer_;
-        color_texture_ = obj.color_texture_;
-        num_vertices_ = obj.num_vertices_;
-        num_models_ = obj.num_models_;
-        return *this;
-    }
+    inline StaticMesh& operator=(const StaticMesh& obj) = delete;
+    inline StaticMesh& operator=(StaticMesh&& other) = default;
 
     StaticMesh(
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
@@ -100,6 +89,13 @@ class StaticMesh : public MeshLoader::MultiComplexMesh {
     get_num_models() const noexcept override {
         return num_models_;
     }
+
+    [[nodiscard]] inline bool
+    do_render() const noexcept override {
+        return do_render_;
+    };
 };
 
-} // namespace terrain
+} // namespace data_structures
+
+} // namespace gui

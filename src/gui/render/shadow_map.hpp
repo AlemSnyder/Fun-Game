@@ -21,8 +21,9 @@
  */
 #pragma once
 
-#include "meshloader.hpp"
-#include "shader.hpp"
+#include "../meshloader.hpp"
+#include "../shader.hpp"
+#include "../../types.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -30,6 +31,10 @@
 
 #include <memory>
 #include <vector>
+
+namespace gui {
+
+namespace render {
 
 /**
  * @brief Renders the shadow from the given meshes.
@@ -48,15 +53,15 @@ class ShadowMap {
     GLuint frame_buffer_name_;     // ID of frame buffer
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sunlight
-    uint32_t shadow_width_;             // width of depth texture
-    uint32_t shadow_height_;            // height of depth texture
+    screen_size_t shadow_width_;             // width of depth texture
+    screen_size_t shadow_height_;            // height of depth texture
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
                                   // direction
     // vector of stored data that describes non-indexed meshes
-    std::vector<std::shared_ptr<MeshLoader::SingleMesh>> singles_meshes_;
+    std::vector<std::shared_ptr<MeshData::SingleMesh>> singles_meshes_;
     // vector of stored data that describes indexed meshes
-    std::vector<std::shared_ptr<MeshLoader::MultiMesh>> multi_meshes_;
+    std::vector<std::shared_ptr<MeshData::MultiMesh>> multi_meshes_;
 
  public:
     /**
@@ -65,35 +70,46 @@ class ShadowMap {
      * @param w the width of the area hit by light
      * @param h the height of the area hit by light
      */
-    ShadowMap(int w, int h);
+    ShadowMap(screen_size_t w, screen_size_t h);
+
+    ~ShadowMap() {
+        glDeleteFramebuffers(1, &frame_buffer_name_);
+        glDeleteTextures(1, &depth_texture_);
+    }
 
     /**
      * @brief adds a non-indexed mesh so it will cast a shadow
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh);
+    void add_mesh(std::shared_ptr<MeshData::SingleMesh> mesh);
 
     /**
      * @brief adds an indexed mesh so it will cast a shadow
      *
      * @param mesh the mesh to add
      */
-    void add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh);
+    void add_mesh(std::shared_ptr<MeshData::MultiMesh> mesh);
 
     /**
      * @brief Get the depth texture ID
      *
      * @return GLuint& reference to depth texture ID
      */
-    inline GLuint& get_depth_texture() { return depth_texture_; }
+    inline GLuint&
+    get_depth_texture() {
+        return depth_texture_;
+    }
 
     /**
      * @brief Get the frame buffer ID
      *
      * @return GLuint& reference to frame buffer ID
      */
-    inline GLuint& et_frame_buffer() { return frame_buffer_name_; }
+    inline GLuint&
+    get_frame_buffer() {
+        return frame_buffer_name_;
+    }
 
     /**
      * @brief Set the light direction vector
@@ -114,4 +130,18 @@ class ShadowMap {
      *
      */
     void render_shadow_depth_buffer() const;
+
+    inline screen_size_t
+    get_shadow_width() const {
+        return shadow_width_;
+    }
+
+    inline screen_size_t
+    get_shadow_height() const {
+        return shadow_height_;
+    }
 };
+
+} // namespace render
+
+} // namespace gui

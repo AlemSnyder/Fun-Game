@@ -1,13 +1,18 @@
 // -*- lsst-c++ -*-
 /*
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License, or
+ * it under
+ * the terms of the GNU General Public License as published by
+ * the Free Software
+ * Foundation, version 2 of the License, or
  * (at your option) any later version.
  *
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  */
 
@@ -19,6 +24,7 @@
  * @brief Defines World class
  *
  *
+
  */
 
 #include "world.hpp"
@@ -50,7 +56,7 @@ World::get_grass_grad_data(const Json::Value& materials_json) {
 
 std::map<MaterialId, const terrain::Material>
 World::init_materials(const Json::Value& material_data) {
-    std::map<uint8_t, const terrain::Material> out;
+    std::map<MaterialId, const terrain::Material> out;
     for (auto element_it = material_data.begin(); element_it != material_data.end();
          element_it++) {
         std::vector<std::pair<const std::string, ColorInt>> color_vector;
@@ -65,7 +71,7 @@ World::init_materials(const Json::Value& material_data) {
 
         terrain::Material mat{
             color_vector,                                    // color
-            static_cast<uint8_t>(material["speed"].asInt()), // speed_multiplier
+            static_cast<float>(material["speed"].asFloat()), // speed_multiplier
             material["solid"].asBool(),                      // solid
             static_cast<MaterialId>(material["id"].asInt()), // element_id
             name};                                           // name
@@ -78,45 +84,89 @@ World::init_materials(const Json::Value& material_data) {
 
 World::World(const Json::Value& materials_json, const std::string path) :
     materials(init_materials(materials_json)),
-    terrain_main(
+    terrain_main_(
         path, materials, get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {}
+    ) {
+    initialize_chunks_mesh_();
+}
 
 World::World(
-    const Json::Value& materials_json, const Json::Value& biome_data, uint32_t x_tiles,
-    uint32_t y_tiles
+    const Json::Value& materials_json, const Json::Value& biome_data, MacroDim x_tiles,
+    MacroDim y_tiles
 ) :
     materials(init_materials(materials_json)),
-    terrain_main(
+    terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, 5, materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {}
+    ) {
+    initialize_chunks_mesh_();
+}
 
 World::World(
     const Json::Value& materials_json, const Json::Value& biome_data, int tile_type
 ) :
     materials(init_materials(materials_json)),
-    terrain_main(
+    terrain_main_(
         macro_tile_size, height, 5, tile_type, materials, biome_data["Biome_1"],
         get_grass_grad_data(materials_json),
         materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
-    ) {}
+    ) {
+    // on initialization world reserves the space it would need for shared pointers
+    initialize_chunks_mesh_();
+}
 
-std::vector<entity::Mesh>
-World::get_mesh_greedy() const {
-    std::vector<entity::Mesh> out;
-    for (const terrain::Chunk& c : terrain_main.get_chunks()) {
-        auto chunk_mesh = entity::generate_mesh(c);
+void
+World::update_single_mesh(ChunkIndex chunk_pos) {
+    const auto& chunks = terrain_main_.get_chunks();
+    entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
 
-        chunk_mesh.change_color_indexing(
-            materials, terrain::TerrainColorMapping::get_colors_inverse_map()
-        );
+    chunk_mesh.change_color_indexing(
+        materials, terrain::TerrainColorMapping::get_colors_inverse_map()
+    );
 
-        if (chunk_mesh.get_indices().size() > 0) {
-            out.push_back(chunk_mesh);
-        }
-    }
-    return out;
+    chunks_mesh_[chunk_pos]->update(chunk_mesh);
+}
+
+void
+World::update_single_mesh(TerrainDim3 tile_sop) {
+    if (!terrain_main_.in_range(tile_sop))
+        return;
+    Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
+    update_single_mesh(chunk_pos);
+}
+
+void
+World::update_all_chunks_mesh() {
+    for (size_t i = 0; i < chunks_mesh_.size(); i++)
+        update_single_mesh(i);
+}
+
+void
+World::set_tile(Dim pos, const terrain::Material* mat, ColorId color_id) {
+    terrain_main_.get_tile(pos)->set_material(mat, color_id);
+
+    TerrainDim3 tile_sop = terrain_main_.sop(pos);
+    update_single_mesh(tile_sop);
+
+    // do some math:
+    // if the tile is on the edge of a chunk then both chunks must be updated.
+    Dim edge_case = tile_sop.x % terrain::Chunk::SIZE;
+    if (edge_case == 0)
+        update_single_mesh({tile_sop.x - 1, tile_sop.y, tile_sop.z});
+    else if (edge_case == terrain::Chunk::SIZE - 1)
+        update_single_mesh({tile_sop.x + 1, tile_sop.y, tile_sop.z});
+
+    edge_case = tile_sop.y % terrain::Chunk::SIZE;
+    if (edge_case == 0)
+        update_single_mesh({tile_sop.x, tile_sop.y - 1, tile_sop.z});
+    else if (edge_case == terrain::Chunk::SIZE - 1)
+        update_single_mesh({tile_sop.x, tile_sop.y + 1, tile_sop.z});
+
+    edge_case = tile_sop.z % terrain::Chunk::SIZE;
+    if (edge_case == 0)
+        update_single_mesh({tile_sop.x, tile_sop.y, tile_sop.z - 1});
+    else if (edge_case == terrain::Chunk::SIZE - 1)
+        update_single_mesh({tile_sop.x, tile_sop.y, tile_sop.z + 1});
 }

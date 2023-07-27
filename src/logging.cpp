@@ -37,8 +37,7 @@ quill::Logger* file_io_logger;  // for file io
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
 void
-init(bool console, quill::LogLevel log_level, bool structured)
-{
+init(bool console, quill::LogLevel log_level, bool structured) {
     _LOG_LEVEL = log_level;
 
     // Create the logs directory
@@ -70,7 +69,7 @@ init(bool console, quill::LogLevel log_level, bool structured)
         colors.set_colour(LogLevel::Critical, cc::bold + cc::white + cc::on_red);
 #endif
 
-	colors.set_colour(LogLevel::Backtrace, cc::magenta);
+        colors.set_colour(LogLevel::Backtrace, cc::magenta);
 
         auto stdout_handler = dynamic_cast<quill::ConsoleHandler*>(
             quill::stdout_handler("console", colors)

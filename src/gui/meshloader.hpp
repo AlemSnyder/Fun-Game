@@ -2,8 +2,9 @@
 
 #include <GL/glew.h>
 
+// data structures interface
 // glew wrapper to send data to gpu
-namespace MeshLoader {
+namespace MeshData {
 
 /**
  * @brief virtual class for non-indexed mesh
@@ -17,6 +18,7 @@ class SingleMesh {
     virtual GLuint get_element_buffer() const = 0;
     virtual GLuint get_color_texture() const = 0;
     virtual unsigned int get_num_vertices() const = 0;
+    virtual bool do_render() const = 0;
 };
 
 /**
@@ -33,6 +35,7 @@ class MultiMesh {
     virtual GLuint get_color_texture() const = 0;
     virtual unsigned int get_num_vertices() const = 0;
     virtual unsigned int get_num_models() const = 0;
+    virtual bool do_render() const = 0;
 };
 
 /**
@@ -57,4 +60,4 @@ class MultiComplexMesh : public MultiMesh {
     virtual GLuint get_color_buffer() const = 0;
 };
 
-} // namespace MeshLoader
+} // namespace MeshData

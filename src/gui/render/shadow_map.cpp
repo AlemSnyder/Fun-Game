@@ -1,8 +1,10 @@
 #include "shadow_map.hpp"
 
-#include "../util/files.hpp"
-#include "meshloader.hpp"
-#include "shader.hpp"
+#include "../../util/files.hpp"
+#include "../handler.hpp"
+#include "../meshloader.hpp"
+#include "../shader.hpp"
+#include "../../types.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -12,7 +14,11 @@
 #include <memory>
 #include <stdexcept>
 
-ShadowMap::ShadowMap(int w, int h) {
+namespace gui {
+
+namespace render {
+
+ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
     depth_texture_ = 0;
     frame_buffer_name_ = 0;
     programID_ = load_shaders(
@@ -43,8 +49,7 @@ ShadowMap::ShadowMap(int w, int h) {
     // buffer.
     frame_buffer_name_ = 0;
     glGenFramebuffers(1, &frame_buffer_name_);
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name_);
-
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
     // Depth texture. Slower than a depth buffer, but you can sample it later in
     // your shader
 
@@ -73,12 +78,12 @@ ShadowMap::ShadowMap(int w, int h) {
 }
 
 void
-ShadowMap::add_mesh(std::shared_ptr<MeshLoader::SingleMesh> mesh) {
+ShadowMap::add_mesh(std::shared_ptr<MeshData::SingleMesh> mesh) {
     singles_meshes_.push_back(std::move(mesh));
 }
 
 void
-ShadowMap::add_mesh(std::shared_ptr<MeshLoader::MultiMesh> mesh) {
+ShadowMap::add_mesh(std::shared_ptr<MeshData::MultiMesh> mesh) {
     multi_meshes_.push_back(std::move(mesh));
 }
 
@@ -96,8 +101,7 @@ ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 
 void
 ShadowMap::render_shadow_depth_buffer() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name_);
-    // Render on the whole framebuffer, complete
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);    // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, shadow_width_, shadow_height_);
 
@@ -119,7 +123,10 @@ ShadowMap::render_shadow_depth_buffer() const {
     glUniformMatrix4fv(depth_matrix_ID_, 1, GL_FALSE, &depthMVP[0][0]);
 
     // draw the non-indexed meshes
-    for (std::shared_ptr<MeshLoader::SingleMesh> mesh : singles_meshes_) {
+    for (std::shared_ptr<MeshData::SingleMesh> mesh : singles_meshes_) {
+        if (!mesh->do_render())
+            continue;
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -153,7 +160,10 @@ ShadowMap::render_shadow_depth_buffer() const {
     glUniformMatrix4fv(depth_matrix_ID_multi_, 1, GL_FALSE, &depthMVP[0][0]);
 
     // draw the indexed meshes
-    for (std::shared_ptr<MeshLoader::MultiMesh> mesh : multi_meshes_) {
+    for (std::shared_ptr<MeshData::MultiMesh> mesh : multi_meshes_) {
+        if (!mesh->do_render())
+            continue;
+
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -196,7 +206,8 @@ ShadowMap::render_shadow_depth_buffer() const {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
     }
-
-    // Clear the screen  -  for some reason this broke things
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+} // namespace render
+
+} // namespace gui

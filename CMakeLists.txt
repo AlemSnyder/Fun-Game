@@ -14,10 +14,12 @@ file(GLOB SOURCES3 "src/**/**/*.cpp")
 
 file(GLOB SOURCES4 "vendor/*.c*")
 file(GLOB SOURCES5 "vendor/json/*.c*")
+file(GLOB SOURCES6 "vendor/imgui/*.c*")
+file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
 # don't want to complie quill this way
 # file(GLOB SOURCES6 "vendor/**/**/*.c*")
-
-add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6})
+add_executable(FunGame ${SOURCES1} ${SOURCES2} ${SOURCES3} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 add_subdirectory("vendor/quill")
 
@@ -62,6 +64,8 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 else()
   set(DEBUG 0)
   message(" Debug build, data will be loaded from subdirs ")
+
+  target_compile_definitions(FunGame PUBLIC TILE_SET_TEST)
 
   add_custom_target(resources
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources

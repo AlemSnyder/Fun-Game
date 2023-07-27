@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 
+#include <iostream>
 #include <string>
 
 namespace gui {
@@ -12,10 +13,11 @@ namespace gui {
 // defines are hard, and I am lazy.
 // (if were are going to do this line by line, then we should get the line in the log
 // file) We are using a gl call back on all messages.
-void GLAPIENTRY
+inline void GLAPIENTRY
 message_callback(
-    GLenum source, GLenum type, unsigned int id, GLenum severity, [[maybe_unused]] GLsizei length,
-    const char* message, [[maybe_unused]] const void* userParam
+    GLenum source, GLenum type, unsigned int id, GLenum severity,
+    [[maybe_unused]] GLsizei length, const char* message,
+    [[maybe_unused]] const void* userParam
 ) {
     std::string source_sting;
     std::string type_string;
@@ -44,28 +46,28 @@ message_callback(
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             LOG_ERROR(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_MEDIUM:
             LOG_WARNING(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_LOW:
             LOG_DEBUG(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_NOTIFICATION:
             LOG_DEBUG(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;

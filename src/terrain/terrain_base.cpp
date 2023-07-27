@@ -37,15 +37,15 @@ TerrainBase::qb_read(
         LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
 }
-
+// when data is given use different Y max
 TerrainBase::TerrainBase(
     const std::map<MaterialId, const terrain::Material>& materials,
-    const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-    Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles
+    const std::vector<int>& grass_grad_data, unsigned int grass_mid, Dim x_map_tiles,
+    Dim y_map_tiles, Dim area_size, Dim z_tiles
 ) :
     area_size_(area_size),
     materials_(materials), X_MAX(x_map_tiles * area_size),
-    Y_MAX(y_map_tiles * area_size), Z_MAX(z_tiles * area_size_) {
+    Y_MAX(y_map_tiles * area_size), Z_MAX(z_tiles) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     if (grass_mid >= grass_grad_data.size()) {
@@ -75,7 +75,7 @@ TerrainBase::TerrainBase(
         z_tiles
     ) {
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        tiles_.push_back(Tile(sop(xyz), &materials_.at(0)));
+        tiles_.push_back(Tile(sop(xyz), &materials_.at(0), 0));
     }
 
     // srand(seed);
@@ -120,9 +120,25 @@ TerrainBase::TerrainBase(
     std::vector<int> grass_grad_data, unsigned int grass_mid,
     voxel_utility::qb_data_t data
 ) :
-    TerrainBase(
-        materials, grass_grad_data, grass_mid, data.size.x, data.size.y, 32, data.size.z
-    ) {
+    area_size_(32),
+    materials_(materials), X_MAX(data.size.x),
+    Y_MAX(data.size.y), Z_MAX(data.size.z) {
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+
+    if (grass_mid >= grass_grad_data.size()) {
+        grass_mid_ = grass_grad_data.size() - 1;
+        std::cerr << "Grass Mid (from biome_data.json) not valid";
+    }
+
+    for (size_t i = 0; i < grass_grad_data.size(); i++) {
+        if (i == static_cast<size_t>(grass_mid)) {
+            grass_mid_ = grass_colors_.size();
+        }
+        for (int j = 0; j < grass_grad_data[i]; j++) {
+            grass_colors_.push_back(i);
+        }
+    }
+    grass_grad_length_ = grass_colors_.size();
     std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
     for (auto it = materials_.begin(); it != materials_.end(); it++) {
         for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
@@ -168,9 +184,11 @@ TerrainBase::get_first_not(
             return Z_MAX; // -1? should not be minus one, but one should consider that
                           // this is a possible return value
         }
+    } else if (guess == 1) {
+        return 0;
     } else {
         // go down
-        for (Dim z = guess - 2; z > 0; z--) {
+        for (Dim z = guess - 2; z != 0; z--) {
             if (has_tile_material(materials, x, y, z)) {
                 return z + 1;
             }
@@ -184,7 +202,6 @@ TerrainBase::add_to_top(
     const Json::Value& top_data, const std::map<MaterialId, const Material>& materials
 ) {
     std::set<std::pair<MaterialId, ColorId>> material_type;
-    // std::vector<uint16> mat colors
 
     for (auto color_data : top_data["above_colors"]) {
         // element id
@@ -223,7 +240,7 @@ void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
     const Material* mat,
-    const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp, uint8_t color_id
+    const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp, ColorId color_id
 ) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.
@@ -244,7 +261,7 @@ TerrainBase::stamp_tile_region(
 void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-    const Material* mat, uint8_t color_id
+    const Material* mat, ColorId color_id
 ) {
     // set tiles in region to mat and color_id
     for (ssize_t x = x_start; x < x_end; x++) {

@@ -1,16 +1,21 @@
 #include "renderer.hpp"
 
-#include "../entity/terrain_mesh.hpp"
-#include "../util/files.hpp"
-#include "controls.hpp"
-#include "meshloader.hpp"
-#include "shader.hpp"
+#include "../../util/files.hpp"
+#include "../data_structures/terrain_mesh.hpp"
+#include "../handler.hpp"
+#include "../meshloader.hpp"
+#include "../scene/controls.hpp"
+#include "../shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 #include <memory>
+
+namespace gui {
+
+namespace render {
 
 MainRenderer::MainRenderer() {
     // non-indexed program
@@ -47,12 +52,12 @@ MainRenderer::~MainRenderer() {
 }
 
 void
-MainRenderer::add_mesh(std::shared_ptr<MeshLoader::SingleComplexMesh> mesh) {
+MainRenderer::add_mesh(std::shared_ptr<MeshData::SingleComplexMesh> mesh) {
     singles_meshes_.push_back(std::move(mesh));
 }
 
 void
-MainRenderer::add_mesh(std::shared_ptr<MeshLoader::MultiComplexMesh> mesh) {
+MainRenderer::add_mesh(std::shared_ptr<MeshData::MultiComplexMesh> mesh) {
     multis_meshes_.push_back(std::move(mesh));
 }
 
@@ -74,9 +79,9 @@ MainRenderer::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 }
 
 void
-MainRenderer::render(GLFWwindow* window) const {
+MainRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     // Render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
 
     // get he window size
     int width, height;
@@ -89,20 +94,18 @@ MainRenderer::render(GLFWwindow* window) const {
     // Cull back-facing triangles -> draw only front-facing triangles
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-
-    // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Enable the depth test, and enable drawing to the depth texture
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
 
     // Use our shader
     glUseProgram(programID_single_);
 
     glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
 
-    // Compute the MVP matrix from keyboard and mouse input
-    controls::computeMatricesFromInputs(window);
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 view_matrix = controls::get_view_matrix();
-    // glm::mat4 ModelMatrix = glm::mat4(1.0);
     glm::mat4 MVP = projection_matrix * view_matrix; // Model View Projection
 
     // Shadow bias matrix of-sets the shadows
@@ -128,7 +131,10 @@ MainRenderer::render(GLFWwindow* window) const {
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_ID_, 1);
 
-    for (std::shared_ptr<MeshLoader::SingleComplexMesh> mesh : singles_meshes_) {
+    for (std::shared_ptr<MeshData::SingleComplexMesh> mesh : singles_meshes_) {
+        if (!mesh->do_render())
+            continue;
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_, 2);
@@ -196,7 +202,10 @@ MainRenderer::render(GLFWwindow* window) const {
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_ID_multi_, 1);
 
-    for (std::shared_ptr<MeshLoader::MultiComplexMesh> mesh : multis_meshes_) {
+    for (std::shared_ptr<MeshData::MultiComplexMesh> mesh : multis_meshes_) {
+        if (!mesh->do_render())
+            continue;
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
         glUniform1i(color_map_ID_multi_, 2);
@@ -264,5 +273,9 @@ MainRenderer::render(GLFWwindow* window) const {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(3);
     glVertexAttribDivisor(3, 0);
-    glDisable(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+} // namespace render
+
+} // namespace gui

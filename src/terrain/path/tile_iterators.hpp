@@ -30,6 +30,12 @@
 #include <cstdint>
 #include <utility>
 
+#define NUMBER_OF_BORDER_CUBES 26U
+// 3^3 - 1 = 26
+// Because Nino keeps forgetting, If you have a cube in 3D space, and want to
+// find the number of cubes at are near it. Not just touching (6), but all of
+// of them
+
 namespace terrain {
 
 class Terrain;
@@ -58,12 +64,16 @@ class AdjacentIterator {
     int operator++();
     int operator++(int);
 
-    inline bool end() { return dpos_ > 26U; }
+    inline bool
+    end() {
+        return dpos_ > NUMBER_OF_BORDER_CUBES;
+    }
 
     size_t get_pos();
     UnitPath get_path_type();
 
-    inline TerrainDim3 get_relative_position() {
+    inline TerrainDim3
+    get_relative_position() {
         return get_indexed_offsets(dpos_);
     }
 };

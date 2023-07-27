@@ -1,9 +1,9 @@
 #include "static_mesh.hpp"
 
-#include "../gui/meshloader.hpp"
-#include "../logging.hpp"
-#include "../types.hpp"
-#include "mesh.hpp"
+#include "../../entity/mesh.hpp"
+#include "../../logging.hpp"
+#include "../../types.hpp"
+#include "../meshloader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,13 +11,33 @@
 
 #include <vector>
 
-namespace terrain {
+namespace gui {
+
+namespace data_structures {
 
 StaticMesh::StaticMesh(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
-    // set the number of models
+    // clear all buffers
+    GLuint buffers[] = {
+        vertex_buffer_,
+        color_buffer_,
+        normal_buffer_,
+        element_buffer_,
+    };
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
+
+    // if indices are none so if there is no vertices that would be sent to the graphics
+    // card
+    //     then there is no reason to create a buffer
+    // create a bool do_render, set to false when
+    num_vertices_ = mesh.get_indices().size();
     num_models_ = model_transforms.size();
+    do_render_ = (num_vertices_ != 0 && num_models_ != 0);
+
+    if (!do_render_)
+        return;
+
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
@@ -52,7 +72,7 @@ StaticMesh::StaticMesh(
 
     // Generate a texture
     std::vector<ColorFloat> float_colors =
-        entity::convert_color_data(mesh.get_color_map());
+        color::convert_color_data(mesh.get_color_map());
 
     // LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
     glGenTextures(1, &color_texture_);
@@ -78,4 +98,6 @@ StaticMesh::StaticMesh(
     );
 }
 
-} // namespace terrain
+} // namespace data_structures
+
+} // namespace gui

@@ -19,7 +19,7 @@ VoxelObject::VoxelObject(const std::filesystem::path& path) {
     // empty should always have index 0;
     colors_.push_back(0);
 
-    for (std::size_t i = 0; i < voxel_colors.size(); i++){
+    for (std::size_t i = 0; i < voxel_colors.size(); i++) {
         const auto& color = voxel_colors[i];
 
         auto loc = std::find(colors_.begin(), colors_.end(), color);

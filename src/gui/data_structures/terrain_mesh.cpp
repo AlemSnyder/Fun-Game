@@ -1,20 +1,38 @@
-
 #include "terrain_mesh.hpp"
 
-#include "../logging.hpp"
-#include "../terrain/material.hpp"
+#include "../../logging.hpp"
+#include "../../terrain/material.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-terrain::TerrainMesh::TerrainMesh(const entity::Mesh& mesh) {
-    init(mesh);
-}
+namespace gui {
+
+namespace data_structures {
 
 void
-terrain::TerrainMesh::init(const entity::Mesh& mesh) {
-    color_texture_mesh_ = terrain::TerrainColorMapping::get_color_texture();
+TerrainMesh::update(const entity::Mesh& mesh) {
+    // clear all buffers
+    GLuint buffers[] = {
+        vertex_buffer_,
+        color_buffer_,
+        normal_buffer_,
+        element_buffer_,
+    };
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
+
+    // if indices are none so if there is no vertices that would be sent to the graphics
+    // card
+    //     then there is no reason to create a buffer
+    // create a bool do_render, set to false when
+    num_vertices_ = mesh.get_indices().size();
+    do_render_ = (num_vertices_ != 0);
+
+    if (!do_render_)
+        return;
+
+    color_texture_ = terrain::TerrainColorMapping::get_color_texture();
     // A buffer for the vertex positions
     glGenBuffers(1, &vertex_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
@@ -46,6 +64,8 @@ terrain::TerrainMesh::init(const entity::Mesh& mesh) {
         GL_ELEMENT_ARRAY_BUFFER, mesh.get_indices().size() * sizeof(unsigned short),
         mesh.get_indices().data(), GL_STATIC_DRAW
     );
-
-    num_vertices_ = mesh.get_indices().size();
 }
+
+} // namespace data_structures
+
+} // namespace gui
