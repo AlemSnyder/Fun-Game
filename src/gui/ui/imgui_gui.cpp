@@ -57,6 +57,7 @@ int
 imgui_entry(World& world) {
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
+    screen_size_t shadow_map_size = 4096;
 
     GLFWwindow* window = setup_opengl(window_width, window_height);
     if (window == nullptr)
@@ -93,15 +94,14 @@ imgui_entry(World& world) {
 
     terrain::TerrainColorMapping::assign_color_texture();
 
-    // start
+    // start of duplicated block
 
     ShaderHandeler shader_handeler = ShaderHandeler();
 
     world.update_all_chunks_mesh();
-    Scene main_scene(window_width, window_height, 4096);
+    Scene main_scene(window_width, window_height, shadow_map_size);
 
-    std::vector<std::shared_ptr<data_structures::TerrainMesh>> terrain_mesh =
-        world.get_chunks_mesh();
+    auto terrain_mesh = world.get_chunks_mesh();
 
     models::IndividualIntRenderer<data_structures::TerrainMesh> chunk_renderer(
         shader_handeler
@@ -144,9 +144,6 @@ imgui_entry(World& world) {
     );
 
     // end
-
-    // main_scene.add render ()
-    //  n more lines after this
 
     //! Main loop
 

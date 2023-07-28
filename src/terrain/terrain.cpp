@@ -562,7 +562,8 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
     }
     std::set<const Tile*> search_through;
     for (const NodeGroup* NG : Node_path) {
-        search_through.insert(NG->get_tiles().begin(), NG->get_tiles().end());
+        auto tiles = NG->get_tiles();
+        search_through.insert(tiles.begin(), tiles.end());
     }
 
     std::function<bool(Node<const Tile>*, Node<const Tile>*)> compare =

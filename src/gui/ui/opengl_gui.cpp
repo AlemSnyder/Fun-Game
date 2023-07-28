@@ -48,17 +48,14 @@ opengl_entry(World& world) {
 
     render::QuadRenderer QR;
 
-// start
+    // start of duplicated block
 
     ShaderHandeler shader_handeler = ShaderHandeler();
+    
     world.update_all_chunks_mesh();
-    //  auto mesh = world.get_chunks_mesh();
-
     Scene main_scene(window_width, window_height, shadow_map_size);
 
-    // std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>>
     auto terrain_mesh = world.get_chunks_mesh();
-
 
     models::IndividualIntRenderer<data_structures::TerrainMesh> chunk_renderer(
         shader_handeler

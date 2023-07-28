@@ -398,16 +398,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] inline Tile*
     get_tile(int x, int y, int z) {
-        if (!in_range(x, y, z)) {
-            LOG_CRITICAL(
-                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
-                y, z
-            );
-            throw std::invalid_argument("index out of range");
-        }
-        return &tiles_[pos(
-            static_cast<Dim>(x), static_cast<Dim>(y), static_cast<Dim>(z)
-        )];
+        return const_cast<Tile*>(std::as_const(*this).get_tile(x,y,z));
     };
 
     [[nodiscard]] inline Tile*
