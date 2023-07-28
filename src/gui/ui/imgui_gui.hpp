@@ -1,6 +1,6 @@
 #include "../../world.hpp"
 
-namespace ui {
+namespace gui {
 
 // Main code
 int imgui_entry(World& world);

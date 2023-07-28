@@ -1,9 +1,9 @@
 #include "config.h"
 #include "entity/mesh.hpp"
 #include "gui/scene/controls.hpp"
-#include "gui/ui/main_gui.hpp"
+#include "gui/ui/imgui_gui.hpp"
 #include "gui/shader.hpp"
-#include "gui/ui/main_ui.hpp"
+#include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -168,7 +168,7 @@ imgui_entry_main() {
     // chunks in the x,y direction. Here the size is 2,2.
     World world(materials_json, biome_data, 2, 2);
 
-    return ui::imgui_entry(world);
+    return gui::imgui_entry(world);
 }
 
 int

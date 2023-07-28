@@ -5,21 +5,23 @@
 // online: https://github.com/ocornut/imgui/tree/master/docs
 
 // Some slight modifications
+#include "imgui_gui.hpp"
+
 #include "../../entity/mesh.hpp"
 #include "../../logging.hpp"
 #include "../../world.hpp"
-#include "../render/data_structures/frame_buffer_multisample.hpp"
-#include "../render/graphics_shaders/individual_int_renderer.hpp"
-#include "../render/graphics_shaders/instanced_int_renderer.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/graphics_shaders/individual_int_renderer.hpp"
+#include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
+#include "../render/graphics_shaders/individual_int_renderer.hpp"
+#include "../render/graphics_shaders/instanced_int_renderer.hpp"
 #include "../render/graphics_shaders/sky.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "../shader.hpp"
 #include "imgui_style.hpp"
+#include "opengl_setup.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -48,83 +50,20 @@
 #  include "../libs/emscripten/emscripten_mainloop_stub.h"
 #endif
 
-namespace ui {
+namespace gui {
 
 // Main code
 int
 imgui_entry(World& world) {
-    glEnable(GL_MULTISAMPLE);
+    screen_size_t window_width = 1280;
+    screen_size_t window_height = 800;
 
-    // initialize logging
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-
-    // Initialise GLFW
-    glewExperimental = true; // Needed for core profile
-    if (!glfwInit()) {
-        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
-        getchar();
-        glfwTerminate();
-        return -1;
-    }
-
-    const char* glsl_version = "#version 450";
-
-    glfwWindowHint(GLFW_SAMPLES, 4);               // anti-aliasing of 4
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // set Major
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); // and Minor version
-    glfwWindowHint(
-        GLFW_OPENGL_FORWARD_COMPAT,
-        GL_TRUE
-    ); // To make MacOS happy; should not be needed
-    glfwWindowHint(
-        GLFW_OPENGL_PROFILE,
-        GLFW_OPENGL_CORE_PROFILE
-    ); // somehow turning on core profiling
-
-    int window_width = 1280;
-    int window_height = 800;
-
-    // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(
-        window_width, window_height, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL
-    );
-    if (window == NULL)
+    GLFWwindow* window = setup_opengl(window_width, window_height);
+    if (window == nullptr)
         return 1;
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
-
-    glewExperimental = true; // Needed for core profile
-    if (glewInit() != GLEW_OK) {
-        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
-        getchar();
-        glfwTerminate();
-        return -1;
-    }
-
-    // initialize logging
-    GLint context_flag;
-    glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);
-    if (context_flag & GL_CONTEXT_FLAG_DEBUG_BIT) {
-        LOG_INFO(logging::opengl_logger, "GLFW Logging with debug");
-        try {
-            glEnable(GL_DEBUG_OUTPUT);
-            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-            // set gl message call back function
-            glDebugMessageCallback(gui::message_callback, 0);
-            glDebugMessageControl(
-                GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE
-            );
-            LOG_INFO(logging::opengl_logger, "GLFW Logging initialized");
-        } catch (...) {
-            LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
-            getchar();
-            glfwTerminate();
-            return -1;
-        }
-    }
+    setup_logging();
 
     // send color texture to gpu
-    terrain::TerrainColorMapping::assign_color_texture();
 
     // No idea why this is necessary, but it is
     GLuint VertexArrayID;
@@ -139,7 +78,9 @@ imgui_entry(World& world) {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 
-    gui::set_imgui_style();
+    set_imgui_style();
+
+    const char* glsl_version = "#version 450";
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -150,23 +91,27 @@ imgui_entry(World& world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
-    gui::Scene main_scene(window_width, window_height, 4096);
+    terrain::TerrainColorMapping::assign_color_texture();
 
-    gui::ShaderHandeler shader_handeler = gui::ShaderHandeler();
+    // start
+
+    ShaderHandeler shader_handeler = ShaderHandeler();
 
     world.update_all_chunks_mesh();
+    Scene main_scene(window_width, window_height, 4096);
 
-    std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> terrain_mesh =
+    std::vector<std::shared_ptr<data_structures::TerrainMesh>> terrain_mesh =
         world.get_chunks_mesh();
 
-    gui::models::IndividualIntRenderer<gui::data_structures::TerrainMesh> chunk_renderer(
+    models::IndividualIntRenderer<data_structures::TerrainMesh> chunk_renderer(
         shader_handeler
     );
 
     // chunk_renderer.add_mesh()
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture());
+        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture()
+        );
         chunk_renderer.add_mesh(chunk_mesh);
     }
 
@@ -187,14 +132,18 @@ imgui_entry(World& world) {
     main_scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
     main_scene.frame_buffer_multisample_attach(
-        std::make_shared<
-            gui::models::IndividualIntRenderer<gui::data_structures::TerrainMesh>>(
+        std::make_shared<models::IndividualIntRenderer<data_structures::TerrainMesh>>(
             chunk_renderer
         )
     );
 
-    main_scene.shadow_attach(std::make_shared<gui::models::IndividualIntRenderer<
-                                  gui::data_structures::TerrainMesh>>(chunk_renderer));
+    main_scene.shadow_attach(
+        std::make_shared<models::IndividualIntRenderer<data_structures::TerrainMesh>>(
+            chunk_renderer
+        )
+    );
+
+    // end
 
     // main_scene.add render ()
     //  n more lines after this
@@ -220,8 +169,8 @@ imgui_entry(World& world) {
 
         glm::vec3 position = controls::get_position_vector();
 
-        gui::FrameBufferHandler::getInstance().bind_fbo(0);
-        
+        FrameBufferHandler::getInstance().bind_fbo(0);
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -296,7 +245,7 @@ imgui_entry(World& world) {
             ); // Pass a pointer to our bool variable (the window will have a closing
                // button that will clear the bool when clicked)
             ImGui::Text(
-                "positoin <%.3f, %.3f, %.3f>", position.x, position.y, position.z
+                "position <%.3f, %.3f, %.3f>", position.x, position.y, position.z
             );
             if (ImGui::Button("Close Me"))
                 show_another_window = false;
@@ -309,7 +258,10 @@ imgui_entry(World& world) {
                 ImGui::SetWindowFocus();
             }
             ImGui::Text("pointer MS = %i", main_scene.get_scene());
-            ImGui::Text("size = %d x %d", window_width, window_height);
+            ImGui::Text(
+                "size = %d x %d", static_cast<int>(window_width),
+                static_cast<int>(window_height)
+            );
             ImGui::End();
         }
 
@@ -355,4 +307,4 @@ imgui_entry(World& world) {
     return 0;
 }
 
-} // namespace ui
+} // namespace gui
