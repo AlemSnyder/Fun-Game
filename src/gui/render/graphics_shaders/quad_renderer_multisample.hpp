@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../../meshloader.hpp"
+#include "quad_renderer.hpp"
 #include "../../shader.hpp"
 #include "gui_render_types.hpp"
 
@@ -46,11 +47,8 @@ namespace render {
  * screen.
  *
  */
-class QuadRendererMultisample {
+class QuadRendererMultisample : public QuadRenderer {
  private:
-    GLuint programID_;        // ID of non-indexed mesh Program
-    GLuint quad_vertexbuffer; // ID of vertexes
-    GLuint texID;             // ID of texture reading from
     GLuint widthID;           // ID for width of reading texture
     GLuint heightID;          // ID for height or reading texture
     GLuint tex_samplesID;     // ID for number of samples in reading temperature

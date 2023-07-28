@@ -42,7 +42,7 @@ QuadRenderer::~QuadRenderer() {
 }
 
 void
-QuadRenderer::render(
+QuadRenderer::setup(
     screen_size_t width, screen_size_t height, GLuint window_render_texture,
     GLuint frame_buffer
 ) const {
@@ -64,7 +64,10 @@ QuadRenderer::render(
     glBindTexture(GL_TEXTURE_2D, window_render_texture);
     // Set our "renderedTexture" sampler to use Texture Unit 0
     glUniform1i(texID, 0);
+}
 
+void
+QuadRenderer::draw() const {
     // first attribute buffer : vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
@@ -83,6 +86,16 @@ QuadRenderer::render(
     glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
     // at 0 -> 2 triangles
     glDisableVertexAttribArray(0);
+}
+
+void
+QuadRenderer::render(
+    screen_size_t width, screen_size_t height, GLuint window_render_texture,
+    GLuint frame_buffer
+) const {
+    setup(width, height, window_render_texture, frame_buffer);
+
+    draw();
 }
 
 } // namespace render
