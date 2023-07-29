@@ -22,6 +22,7 @@
 #include "../shader.hpp"
 #include "imgui_style.hpp"
 #include "opengl_setup.hpp"
+#include "scene_setup.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -94,56 +95,8 @@ imgui_entry(World& world) {
 
     terrain::TerrainColorMapping::assign_color_texture();
 
-    // start of duplicated block
-
-    ShaderHandeler shader_handeler = ShaderHandeler();
-
-    world.update_all_chunks_mesh();
     Scene main_scene(window_width, window_height, shadow_map_size);
-
-    auto terrain_mesh = world.get_chunks_mesh();
-
-    models::IndividualIntRenderer<data_structures::TerrainMesh> chunk_renderer(
-        shader_handeler
-    );
-
-    // chunk_renderer.add_mesh()
-
-    for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture()
-        );
-        chunk_renderer.add_mesh(chunk_mesh);
-    }
-
-    glm::vec3 light_direction =
-        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
-        * 128.0f;                                       // length
-
-    glm::mat4 depth_projection_matrix =
-        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
-
-    // Renders the Shadow depth map
-    chunk_renderer.set_light_direction(light_direction);
-    chunk_renderer.set_depth_projection_matrix(depth_projection_matrix);
-
-    chunk_renderer.set_depth_texture(main_scene.get_depth_texture());
-
-    main_scene.set_shadow_light_direction(light_direction);
-    main_scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
-
-    main_scene.frame_buffer_multisample_attach(
-        std::make_shared<models::IndividualIntRenderer<data_structures::TerrainMesh>>(
-            chunk_renderer
-        )
-    );
-
-    main_scene.shadow_attach(
-        std::make_shared<models::IndividualIntRenderer<data_structures::TerrainMesh>>(
-            chunk_renderer
-        )
-    );
-
-    // end
+    setup(main_scene, world);
 
     //! Main loop
 
