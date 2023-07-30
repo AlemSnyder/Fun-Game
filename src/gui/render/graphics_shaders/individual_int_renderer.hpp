@@ -12,11 +12,11 @@
  */
 
 /**
- * @file render.hpp
+ * @file individual_int_renderer.hpp
  *
  * @brief Defines MainRender class.
  *
- * @ingroup GUI
+ * @ingroup GUI  MODELS
  *
  */
 #pragma once
@@ -83,7 +83,7 @@ class IndividualIntRenderer :
      * @brief Construct a new Main Renderer object
      *
      */
-    IndividualIntRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
+    IndividualIntRenderer(ShaderHandler shader_handler = ShaderHandler());
 
     ~IndividualIntRenderer();
 
@@ -139,7 +139,7 @@ class IndividualIntRenderer :
 };
 
 template <class T>
-IndividualIntRenderer<T>::IndividualIntRenderer(ShaderHandeler shader_handler) {
+IndividualIntRenderer<T>::IndividualIntRenderer(ShaderHandler shader_handler) {
     // non-indexed program
     programID_render_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "ShadowMapping.vert",

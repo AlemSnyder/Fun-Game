@@ -14,7 +14,7 @@
 namespace gui {
 namespace render {
 
-QuadRenderer::QuadRenderer(ShaderHandeler shader_handler) {
+QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
     // program
     programID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",

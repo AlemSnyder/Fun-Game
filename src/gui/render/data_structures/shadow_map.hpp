@@ -35,20 +35,19 @@ namespace gui {
 namespace data_structures {
 
 /**
- * @brief Renders the shadow from the given meshes.
+ * @brief Contains a shadow depth buffer that can be rendered to.
  *
- * @details ShadowMap renders the depth texture to depthTexture. First sets the
- * meshes to render from, then renders the depth using the given light
- * direction, and projection matrix.
+ * @details ShadowMap holds the depth texture. When added to a scene object
+ * shadows are cast to this depth texture, and used when rendering the scene.
  */
 class ShadowMap {
  private:
-    GLuint depth_texture_;         // ID of depth texture
-    GLuint frame_buffer_name_;     // ID of frame buffer
+    GLuint depth_texture_;     // ID of depth texture
+    GLuint frame_buffer_name_; // ID of frame buffer
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sunlight
-    screen_size_t shadow_width_;             // width of depth texture
-    screen_size_t shadow_height_;            // height of depth texture
+    screen_size_t shadow_width_;        // width of depth texture
+    screen_size_t shadow_height_;       // height of depth texture
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
                                   // direction
@@ -101,17 +100,27 @@ class ShadowMap {
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
+    /**
+     * @brief Get shadow width in pixels
+     *
+     * @return screen_size_t width of shadow map in pixels
+     */
     inline screen_size_t
     get_shadow_width() const {
         return shadow_width_;
     }
 
+    /**
+     * @brief Get shadow height in pixels
+     *
+     * @return screen_size_t height of shadow map in pixels
+     */
     inline screen_size_t
     get_shadow_height() const {
         return shadow_height_;
     }
 };
 
-} // namespace render
+} // namespace data_structures
 
 } // namespace gui

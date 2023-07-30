@@ -12,11 +12,11 @@
  */
 
 /**
- * @file render.hpp
+ * @file instanced_int_renderer.hpp
  *
  * @brief Defines MainRender class.
  *
- * @ingroup GUI
+ * @ingroup GUI  MODELS
  *
  */
 #pragma once
@@ -57,7 +57,7 @@ class InstancedIntRenderer : public IndividualIntRenderer<T> {
      * @brief Construct a new Main Renderer object
      *
      */
-    InstancedIntRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
+    InstancedIntRenderer(ShaderHandler shader_handler = ShaderHandler());
 
     ~InstancedIntRenderer();
 
@@ -78,7 +78,7 @@ class InstancedIntRenderer : public IndividualIntRenderer<T> {
 };
 
 template <class T>
-InstancedIntRenderer<T>::InstancedIntRenderer(ShaderHandeler shader_handler) {
+InstancedIntRenderer<T>::InstancedIntRenderer(ShaderHandler shader_handler) {
     // TODO should pass these paths
     // non-indexed program
     this->programID_render_ = shader_handler.load_program(

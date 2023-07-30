@@ -12,11 +12,11 @@
  */
 
 /**
- * @file render.hpp
+ * @file quad_renderer.hpp
  *
  * @brief Defines MainRender class.
  *
- * @ingroup GUI
+ * @ingroup GUI  RENDER
  *
  */
 #pragma once
@@ -57,7 +57,7 @@ class QuadRenderer {
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
+    QuadRenderer(ShaderHandler shader_handler = ShaderHandler());
 
     ~QuadRenderer();
 

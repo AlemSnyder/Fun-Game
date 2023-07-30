@@ -14,7 +14,7 @@ namespace gui {
 
 namespace render {
 
-QuadRendererMultisample::QuadRendererMultisample(ShaderHandeler shader_handler) :
+QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) :
     QuadRenderer(shader_handler) {
     // program
     programID_ = shader_handler.load_program(

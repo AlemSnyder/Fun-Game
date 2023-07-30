@@ -27,7 +27,7 @@ get_shader_string(GLuint gl_shader_type) {
 }
 
 void
-ShaderHandeler::clear() {
+ShaderHandler::clear() {
     for (auto it = shaders.begin(); it != shaders.end(); it++) {
         GLuint shader_id = it->second;
         glDeleteShader(shader_id);
@@ -37,7 +37,7 @@ ShaderHandeler::clear() {
 
 // public
 GLuint
-ShaderHandeler::get_shader(
+ShaderHandler::get_shader(
     const std::filesystem::path& file_relative_path, GLuint gl_shader_type
 ) {
     GLuint shader_id;
@@ -56,7 +56,7 @@ ShaderHandeler::get_shader(
 
 // public
 GLuint
-ShaderHandeler::reload_shader(
+ShaderHandler::reload_shader(
     const std::filesystem::path& file_relative_path, GLuint gl_shader_type
 ) {
     GLuint shader_id;
@@ -83,7 +83,7 @@ ShaderHandeler::reload_shader(
 
 // private
 GLuint
-ShaderHandeler::load_shader(
+ShaderHandler::load_shader(
     const std::filesystem::path& file_relative_path, GLuint gl_shader_type
 ) {
     std::filesystem::path file_apsolute_path =
@@ -147,7 +147,7 @@ ShaderHandeler::load_shader(
 
 // TODO(alem): what do we do on error
 GLuint
-ShaderHandeler::load_program(
+ShaderHandler::load_program(
     const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
 ) {
     logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
@@ -196,9 +196,9 @@ ShaderHandeler::load_program(
     return program_id;
 }
 
-ShaderHandeler::ShaderHandeler() {}
+ShaderHandler::ShaderHandler() {}
 
-ShaderHandeler::~ShaderHandeler() {
+ShaderHandler::~ShaderHandler() {
     clear();
 }
 

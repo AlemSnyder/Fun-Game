@@ -12,11 +12,11 @@
  */
 
 /**
- * @file render.hpp
+ * @file quad_renderer_multisample.hpp
  *
  * @brief Defines MainRender class.
  *
- * @ingroup GUI
+ * @ingroup GUI  RENDER
  *
  */
 #pragma once
@@ -58,7 +58,7 @@ class QuadRendererMultisample : public QuadRenderer {
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRendererMultisample(ShaderHandeler shader_handeler = ShaderHandeler());
+    QuadRendererMultisample(ShaderHandler shader_handeler = ShaderHandler());
 
     ~QuadRendererMultisample();
 

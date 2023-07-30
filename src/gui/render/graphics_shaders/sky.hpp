@@ -12,11 +12,11 @@
  */
 
 /**
- * @file render.hpp
+ * @file sky.hpp
  *
  * @brief Defines MainRender class.
  *
- * @ingroup GUI
+ * @ingroup GUI  RENDER
  *
  */
 #pragma once
@@ -58,7 +58,7 @@ class SkyRenderer :
      * @brief Construct a new Main Renderer object
      *
      */
-    SkyRenderer(ShaderHandeler shader_handeler = ShaderHandeler());
+    SkyRenderer(ShaderHandler shader_handler = ShaderHandler());
 
     ~SkyRenderer();
 

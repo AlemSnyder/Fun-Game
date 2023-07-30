@@ -1,3 +1,26 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file scene.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines Scene class
+ *
+ * @ingroup GUI
+ *
+ */
+
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
@@ -16,10 +39,9 @@ class Scene {
     // TODO nameing convenction
  private:
     data_structures::FrameBufferMultisample fbo;
-    // need to add a data_structure::ShadowMap
     data_structures::ShadowMap shadow_map_;
 
-    // backgroudn
+    // background
     render::SkyRenderer SR;
 
     // "mid" ground

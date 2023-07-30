@@ -15,7 +15,6 @@
 #include <vector>
 
 namespace voxel_utility {
-// TODO make this file 1k lines long
 
 template <std::integral T>
 inline void

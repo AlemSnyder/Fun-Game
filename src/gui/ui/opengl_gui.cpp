@@ -17,7 +17,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 #include <cstdlib>
 #include <vector>
@@ -48,7 +47,7 @@ opengl_entry(World& world) {
 
     render::QuadRenderer QR;
 
-    ShaderHandeler shader_handeler = ShaderHandeler();
+    ShaderHandler shader_handler = ShaderHandler();
     
     world.update_all_chunks_mesh();
     Scene main_scene(window_width, window_height, shadow_map_size);
