@@ -54,7 +54,7 @@ class FrameBufferMultisample {
     /**
      * @brief Delete constructor method
      *
-     * @param obj
+     * @param FrameBufferMultisample
      */
     FrameBufferMultisample(const FrameBufferMultisample& obj) = delete;
 

@@ -42,15 +42,15 @@ namespace data_structures {
  */
 class ShadowMap {
  private:
-    GLuint depth_texture_;     // ID of depth texture
-    GLuint frame_buffer_name_; // ID of frame buffer
+    GLuint depth_texture_id_; // ID of depth texture
+    GLuint frame_buffer_id_;  // ID of frame buffer
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sunlight
     screen_size_t shadow_width_;        // width of depth texture
     screen_size_t shadow_height_;       // height of depth texture
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
-    glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
-                                  // direction
+    glm::mat4 depth_view_matrix_;       // convert a point in world space
+                                        // to depth in light direction
 
  public:
     /**
@@ -62,8 +62,8 @@ class ShadowMap {
     ShadowMap(screen_size_t w, screen_size_t h);
 
     ~ShadowMap() {
-        glDeleteFramebuffers(1, &frame_buffer_name_);
-        glDeleteTextures(1, &depth_texture_);
+        glDeleteFramebuffers(1, &frame_buffer_id_);
+        glDeleteTextures(1, &depth_texture_id_);
     }
 
     /**
@@ -73,7 +73,7 @@ class ShadowMap {
      */
     inline GLuint&
     get_depth_texture() {
-        return depth_texture_;
+        return depth_texture_id_;
     }
 
     /**
@@ -83,7 +83,7 @@ class ShadowMap {
      */
     inline GLuint&
     get_frame_buffer() {
-        return frame_buffer_name_;
+        return frame_buffer_id_;
     }
 
     /**

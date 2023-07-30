@@ -29,6 +29,12 @@ namespace gui {
 
 namespace data_structures {
 
+/**
+ * @brief Instanced mesh with color texture generator for models
+ *
+ * @details Shallow derived class of InstancedInt. Color map is computed for
+ * each mesh.
+ */
 class StaticMesh : public InstancedInt {
  public:
     StaticMesh(const entity::Mesh& mesh,

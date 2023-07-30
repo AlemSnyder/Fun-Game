@@ -25,6 +25,7 @@
 #include "../graphics_data/instanced_int.hpp"
 #include "gui_render_types.hpp"
 #include "individual_int_renderer.hpp"
+#include "../../../types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -74,7 +75,7 @@ class InstancedIntRenderer : public IndividualIntRenderer<T> {
     render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer = 0) const;
 
     void
-    render_shadow_map(int shadow_width_, int shadow_height_, GLuint frame_buffer) const;
+    render_shadow_map(screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer) const;
 };
 
 template <class T>
@@ -164,7 +165,7 @@ InstancedIntRenderer<T>::render_frame_buffer_multisample(
 template <class T>
 void
 InstancedIntRenderer<T>::render_shadow_map(
-    int shadow_width_, int shadow_height_, GLuint frame_buffer_name_
+    screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer_name_
 ) const {
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
     // Render on the whole framebuffer, complete

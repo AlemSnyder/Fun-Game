@@ -39,6 +39,12 @@ namespace gui {
 
 namespace data_structures {
 
+/**
+ * @brief Class to render non-instanced meshes
+ *
+ * @details Handles non-instanced meshes. Sends mesh data to GPU, and handles
+ * binding, and deleting data on GPU.
+ */
 class IndividualInt {
  protected:
     GLuint vertex_buffer_;

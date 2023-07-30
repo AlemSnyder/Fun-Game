@@ -27,6 +27,12 @@ namespace gui {
 
 namespace data_structures {
 
+/**
+ * @brief Non-instanced mesh with color texture for terrain
+ *
+ * @details Shallow derived class of IndividualInt. Color texture is made
+ * for all materials in the terrain. 
+ */
 class TerrainMesh : public IndividualInt {
  public:
     TerrainMesh();

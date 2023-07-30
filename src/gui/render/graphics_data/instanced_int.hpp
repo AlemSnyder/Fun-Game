@@ -36,6 +36,12 @@ namespace gui {
 
 namespace data_structures {
 
+/**
+ * @brief Class to render instanced meshes
+ *
+ * @details Handles instanced meshes. Sends mesh data to GPU, and handles
+ * binding, and deleting data on GPU.
+ */
 class InstancedInt : public IndividualInt {
  private:
     GLuint transforms_buffer_;
