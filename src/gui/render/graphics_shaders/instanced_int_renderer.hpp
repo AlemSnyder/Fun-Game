@@ -42,10 +42,9 @@ namespace models {
 /**
  * @brief Renders the meshes to the screen
  *
- * @details MainRenderer renders the meshes given to it to the screen.
- * this class handles the light direction, applied the meshes, and loading
- * shaders.
- *
+ * @details InstancedIntRenderer renders the meshes given to the screen.
+ * This class handles InstancedInt data structures and classes that derive from
+ * InstancedInt.
  */
 
 // template <gui::data_structures::InstancedIntLike T>

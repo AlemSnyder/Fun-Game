@@ -47,7 +47,6 @@ namespace models {
  * This class handles IndividualInt data structures and classes that derive from
  * IndividualInt.
  */
-
 template <class T>
 class IndividualIntRenderer :
     public render_to::frame_buffer_multisample,
@@ -57,7 +56,7 @@ class IndividualIntRenderer :
     GLuint program_id_render_; // ID of render program
     GLuint program_id_shadow_; // ID of shadow program
 
-    GLuint matrix_id_render_; // uniform ID of transform matrix
+    GLuint matrix_id_render_;      // uniform ID of transform matrix
     GLuint view_matrix_id_render_; // ID of view projection matrix for indexed meshes
     GLuint depth_bias_id_render_;  // ID of depth projection matrix for indexed meshes
     GLuint shadow_map_id_render_;  // ID of the shadow map for indexed meshes
@@ -77,6 +76,7 @@ class IndividualIntRenderer :
     /**
      * @brief Construct a new Main Renderer object
      *
+     * @param ShaderHandler
      */
     IndividualIntRenderer(ShaderHandler shader_handler = ShaderHandler());
 
@@ -133,8 +133,9 @@ class IndividualIntRenderer :
      * @param screen_size_t shadow map width
      * @param screen_size_t shadow map height
      */
-    int render_shadow_map(screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer)
-        const override;
+    int render_shadow_map(
+        screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
+    ) const override;
 
  protected:
     void load_vertex_buffer(std::shared_ptr<T> mesh) const;

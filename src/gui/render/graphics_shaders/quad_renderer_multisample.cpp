@@ -17,19 +17,19 @@ namespace render {
 QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) :
     QuadRenderer(shader_handler) {
     // program
-    programID_ = shader_handler.load_program(
+    program_id_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTextureMS.frag"
     );
-    widthID = glGetUniformLocation(programID_, "width");
-    heightID = glGetUniformLocation(programID_, "height");
-    tex_samplesID = glGetUniformLocation(programID_, "tex_samples");
+    width_id_ = glGetUniformLocation(program_id_, "width");
+    height_id_ = glGetUniformLocation(program_id_, "height");
+    tex_samples_id_ = glGetUniformLocation(program_id_, "tex_samples");
 
 }
 
 QuadRendererMultisample::~QuadRendererMultisample() {
     glDeleteBuffers(1, &quad_vertexbuffer);
-    glDeleteProgram(programID_);
+    glDeleteProgram(program_id_);
 }
 
 int
@@ -39,9 +39,9 @@ QuadRendererMultisample::render(
 ) const {
 
     QuadRenderer::setup(width, height, window_render_texture, frame_buffer);
-    glUniform1ui(widthID, width);
-    glUniform1ui(heightID, height);
-    glUniform1ui(tex_samplesID, samples);
+    glUniform1ui(width_id_, width);
+    glUniform1ui(height_id_, height);
+    glUniform1ui(tex_samples_id_, samples);
     QuadRenderer::draw();
     return 0;
 }

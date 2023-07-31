@@ -48,7 +48,7 @@ namespace render {
  */
 class QuadRenderer {
  protected:
-    GLuint programID_; // ID of non-indexed mesh Program
+    GLuint program_id_; // ID of non-indexed mesh Program
     GLuint quad_vertexbuffer;
     GLuint texID;
 
@@ -56,6 +56,7 @@ class QuadRenderer {
     /**
      * @brief Construct a new Main Renderer object
      *
+     * @param ShaderHandler
      */
     QuadRenderer(ShaderHandler shader_handler = ShaderHandler());
 
@@ -64,19 +65,23 @@ class QuadRenderer {
     /**
      * @brief renders the given meshes
      *
-     * @param window the OpenGL window
+     * @param screen_size_t window height
+     * @param screen_size_t window width
+     * @param GLuint texture to render from
+     * @param GLuint framebuffer to render to
      */
     void render(
         screen_size_t height, screen_size_t width, GLuint window_render_texture,
         GLuint frame_buffer = 0
     ) const;
 
+ protected:
     void setup(
         screen_size_t width, screen_size_t height, GLuint window_render_texture,
         GLuint frame_buffer
     ) const;
 
-    void draw() const ;
+    void draw() const;
 };
 
 } // namespace render

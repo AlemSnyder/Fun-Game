@@ -49,16 +49,16 @@ namespace render {
  */
 class QuadRendererMultisample : public QuadRenderer {
  private:
-    GLuint widthID;           // ID for width of reading texture
-    GLuint heightID;          // ID for height or reading texture
-    GLuint tex_samplesID;     // ID for number of samples in reading temperature
+    GLuint width_id_;       // uniform ID for width of reading texture
+    GLuint height_id_;      // uniform ID for height or reading texture
+    GLuint tex_samples_id_; // uniform ID for number pixel samples
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    QuadRendererMultisample(ShaderHandler shader_handeler = ShaderHandler());
+    QuadRendererMultisample(ShaderHandler shader_handler = ShaderHandler());
 
     ~QuadRendererMultisample();
 

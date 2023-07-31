@@ -12,15 +12,16 @@
 #include <memory>
 
 namespace gui {
+
 namespace render {
 
 QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
     // program
-    programID_ = shader_handler.load_program(
+    program_id_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
-    texID = glGetUniformLocation(programID_, "texture");
+    texID = glGetUniformLocation(program_id_, "texture");
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
@@ -38,7 +39,7 @@ QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
 
 QuadRenderer::~QuadRenderer() {
     glDeleteBuffers(1, &quad_vertexbuffer);
-    glDeleteProgram(programID_);
+    glDeleteProgram(program_id_);
 }
 
 void
@@ -57,7 +58,7 @@ QuadRenderer::setup(
 
     glClear(GL_DEPTH_BUFFER_BIT);
     // Use our shader
-    glUseProgram(programID_);
+    glUseProgram(program_id_);
 
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
@@ -94,7 +95,6 @@ QuadRenderer::render(
     GLuint frame_buffer
 ) const {
     setup(width, height, window_render_texture, frame_buffer);
-
     draw();
 }
 
