@@ -1,6 +1,7 @@
 #include "shadow_map.hpp"
 
 #include "../../handler.hpp"
+#include "../../../logging.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -44,20 +45,21 @@ ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
 
     // Always check that our framebuffer is ok
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        throw std::invalid_argument("Framebuffer is not ok");
+        LOG_CRITICAL(logging::opengl_logger, "Framebuffer is not ok");
+        abort();
     }
 }
 
 void
 ShadowMap::set_light_direction(glm::vec3 light_direction) {
-    light_direction_ = light_direction;
+    light_direction_ = std::move(light_direction);
     depth_view_matrix_ =
         glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
 void
 ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
-    depth_projection_matrix_ = depth_projection_matrix;
+    depth_projection_matrix_ = std::move(depth_projection_matrix);
 }
 
 } // namespace render

@@ -57,6 +57,7 @@ class IndividualInt {
 
  public:
     inline IndividualInt(const IndividualInt& other) = delete;
+    inline IndividualInt(const IndividualInt&& other) = delete;
     // copy operator
     inline IndividualInt& operator=(const IndividualInt& other) = delete;
     inline IndividualInt& operator=(IndividualInt&& other) = default;
