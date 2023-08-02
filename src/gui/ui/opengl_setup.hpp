@@ -27,14 +27,16 @@
 #include "../gui_logging.hpp"
 #include "../../types.hpp"
 
+#include <optional>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 namespace gui {
 
-[[nodiscard]] GLFWwindow* setup_opengl(screen_size_t width, screen_size_t height);
+[[nodiscard]] std::optional<GLFWwindow*> setup_opengl(screen_size_t width, screen_size_t height);
 
-int setup_logging();
+int setup_opengl_logging();
 
 } // namespace gui

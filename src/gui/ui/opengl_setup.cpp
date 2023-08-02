@@ -2,9 +2,11 @@
 
 #include "../../logging.hpp"
 
+#include <optional>
+
 namespace gui {
 
-GLFWwindow*
+std::optional<GLFWwindow*>
 setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     glEnable(GL_MULTISAMPLE);
 
@@ -15,7 +17,6 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     glewExperimental = true; // Needed for core profile
     if (!glfwInit()) {
         LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
-        getchar();
         glfwTerminate();
         return nullptr;
     }
@@ -34,9 +35,10 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
 
     // Create window with graphics context
     GLFWwindow* window = glfwCreateWindow(
-        window_width, window_height, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL
+        window_width, window_height, "Dear ImGui GLFW+OpenGL3 example",
+        nullptr, nullptr
     );
-    if (window == NULL)
+    if (window == nullptr)
         return nullptr;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
@@ -44,7 +46,6 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     glewExperimental = true; // Needed for core profile
     if (glewInit() != GLEW_OK) {
         LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
-        getchar();
         glfwTerminate();
         return nullptr;
     }
@@ -52,7 +53,7 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
 }
 
 int
-setup_logging() {
+setup_opengl_logging() {
     // initialize logging
     GLint context_flag;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);

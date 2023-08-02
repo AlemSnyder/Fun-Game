@@ -14,13 +14,15 @@ namespace gui {
 
 namespace data_structures {
 
-InstancedInt::InstancedInt(
+InstancedIMeshGPU::InstancedIMeshGPU(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
 
     update(mesh);
 
-    //generate_color_texture(mesh);
+    // InstancedInt does not create a color texture. One must inherit from this
+    // class and define a method that creates a color texture, and sets its id
+    // as color_texture_.
 
     /// Generate a buffer for the transforms
     glGenBuffers(1, &transforms_buffer_);

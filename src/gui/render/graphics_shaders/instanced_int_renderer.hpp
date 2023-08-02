@@ -48,18 +48,16 @@ namespace models {
  */
 
 // template <gui::data_structures::InstancedIntLike T>
-template <class T>
-class InstancedIntRenderer : public IndividualIntRenderer<T> {
- private:
-    // forgot what to put here
+template <data_structures::InstancedIMeshGPUDataType T>
+class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    InstancedIntRenderer(ShaderHandler shader_handler = ShaderHandler());
+    InstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
 
-    ~InstancedIntRenderer();
+    ~InstancedIMeshRenderer();
 
     void load_transforms_buffer(std::shared_ptr<T> mesh) const;
 
@@ -77,8 +75,8 @@ class InstancedIntRenderer : public IndividualIntRenderer<T> {
     render_shadow_map(screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer) const;
 };
 
-template <class T>
-InstancedIntRenderer<T>::InstancedIntRenderer(ShaderHandler shader_handler) {
+template <data_structures::InstancedIMeshGPUDataType T>
+InstancedIMeshRenderer<T>::InstancedIMeshRenderer(ShaderHandler shader_handler) {
     // TODO should pass these paths
     // non-indexed program
     this->programID_render_ = shader_handler.load_program(
@@ -92,9 +90,9 @@ InstancedIntRenderer<T>::InstancedIntRenderer(ShaderHandler shader_handler) {
     );
 }
 
-template <class T>
+template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIntRenderer<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
+InstancedIMeshRenderer<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
     // 4nd attribute buffer : transform
     glEnableVertexAttribArray(3);
 
@@ -111,9 +109,9 @@ InstancedIntRenderer<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
     // glVertexAttribDivisor(3, 0);
 }
 
-template <class T>
+template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_buffer)
+InstancedIMeshRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_buffer)
     const {
     // Render to the screen
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
@@ -126,7 +124,7 @@ InstancedIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_bu
     // from the lower left corner to the upper right
     glViewport(0, 0, width, height);
 
-    IndividualIntRenderer<T>::setup_render();
+    NonInstancedIMeshRenderer<T>::setup_render();
 
     for (std::shared_ptr<T> mesh : this->meshes_) {
         if (!mesh->do_render()) {
@@ -153,17 +151,17 @@ InstancedIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_bu
     }
 }
 
-template <class T>
+template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIntRenderer<T>::render_frame_buffer_multisample(
+InstancedIMeshRenderer<T>::render_frame_buffer_multisample(
     GLFWwindow* window, GLuint frame_buffer
 ) const {
     render_frame_buffer(window, frame_buffer);
 }
 
-template <class T>
+template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIntRenderer<T>::render_shadow_map(
+InstancedIMeshRenderer<T>::render_shadow_map(
     screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer_name_
 ) const {
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
@@ -171,7 +169,7 @@ InstancedIntRenderer<T>::render_shadow_map(
     // from the lower left corner to the upper right
     glViewport(0, 0, shadow_width_, shadow_height_);
 
-    IndividualIntRenderer<T>::setup_shadow();
+    NonInstancedIMeshRenderer<T>::setup_shadow();
 
     // draw the indexed meshes
     for (std::shared_ptr<T> mesh : this->meshes_) {
@@ -179,7 +177,7 @@ InstancedIntRenderer<T>::render_shadow_map(
             continue;
         }
 
-        IndividualIntRenderer<T>::load_vertex_buffer(mesh);
+        NonInstancedIMeshRenderer<T>::load_vertex_buffer(mesh);
 
         load_transforms_buffer(mesh);
 

@@ -38,21 +38,21 @@ namespace gui {
 class Scene {
     // TODO nameing convenction
  private:
-    data_structures::FrameBufferMultisample fbo;
+    data_structures::FrameBufferMultisample frame_buffer_multisample_;
     data_structures::ShadowMap shadow_map_;
 
     // background
-    render::SkyRenderer SR;
+    render::SkyRenderer sky_renderer_;
 
     // "mid" ground
-    std::vector<std::shared_ptr<render_to::frame_buffer>> FBR;
-    std::vector<std::shared_ptr<render_to::frame_buffer_multisample>> FBMR;
-    std::vector<std::shared_ptr<render_to::shadow_map>> SMR;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_frame_buffer_;
+    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>> mid_ground_frame_buffer_multisample_;
+    std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
 
     // foreground, maybe
 
     // other
-    render::QuadRendererMultisample QRMS;
+    render::QuadRendererMultisample quad_renderer_multisample_;
 
  public:
     Scene(screen_size_t width, screen_size_t height, uint32_t shadow_map_width_height);
@@ -64,13 +64,13 @@ class Scene {
 
     // model attach
 
-    void shadow_attach(const std::shared_ptr<render_to::shadow_map>& shadow);
+    void shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow);
 
-    void frame_buffer_attach(const std::shared_ptr<render_to::frame_buffer>& render);
+    void frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render);
 
     void
     frame_buffer_multisample_attach(
-        const std::shared_ptr<render_to::frame_buffer_multisample>& render
+        const std::shared_ptr<render_to::FrameBufferMultisample>& render
     );
 
     /**

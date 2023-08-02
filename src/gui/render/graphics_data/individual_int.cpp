@@ -11,7 +11,7 @@ namespace gui {
 namespace data_structures {
 
 void
-IndividualInt::update(const entity::Mesh& mesh) {
+NonInstancedIMeshGPU::update(const entity::Mesh& mesh) {
     // clear all buffers
     GLuint buffers[] = {
         vertex_buffer_,

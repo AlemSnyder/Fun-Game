@@ -35,7 +35,7 @@ namespace data_structures {
  * @details Shallow derived class of InstancedInt. Color map is computed for
  * each mesh.
  */
-class StaticMesh : public InstancedInt {
+class StaticMesh : public InstancedIMeshGPU {
  public:
     StaticMesh(const entity::Mesh& mesh,
     const std::vector<glm::ivec3>& model_transforms);

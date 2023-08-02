@@ -3,17 +3,19 @@
 #include "../../entity/mesh.hpp"
 #include "../handler.hpp"
 
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <GLFW/glfw3.h>
 
 #define SAMPLES 4
 
 namespace gui {
 
 Scene::Scene(
-    screen_size_t window_width, screen_size_t window_height, uint32_t shadow_map_width_height
+    screen_size_t window_width, screen_size_t window_height,
+    uint32_t shadow_map_width_height
 ) :
-    fbo(window_width, window_height, SAMPLES),
-    shadow_map_(shadow_map_width_height, shadow_map_width_height), SR(), QRMS() {}
+    frame_buffer_multisample_(window_width, window_height, SAMPLES),
+    shadow_map_(shadow_map_width_height, shadow_map_width_height),
+    sky_renderer_(), quad_renderer_multisample_() {}
 
 // add model attach functions.
 
@@ -22,35 +24,47 @@ Scene::update(GLFWwindow* window) {
     FrameBufferHandler::getInstance().bind_fbo(shadow_map_.get_frame_buffer());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (const auto& shadow : SMR) {
+    for (const auto& shadow : mid_ground_shadow_) {
         shadow->render_shadow_map(
-            shadow_map_.get_shadow_width(), shadow_map_.get_shadow_height(),
+            shadow_map_.get_shadow_width(),
+            shadow_map_.get_shadow_height(),
             shadow_map_.get_frame_buffer()
         );
     }
 
-    FrameBufferHandler::getInstance().bind_fbo(fbo.get_frame_buffer_name());
+    FrameBufferHandler::getInstance().bind_fbo(
+        frame_buffer_multisample_.get_frame_buffer_name()
+    );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    SR.render(window, fbo.get_depth_buffer_name());
+    sky_renderer_.render(window,
+        frame_buffer_multisample_.get_depth_buffer_name()
+    );
 
-    for (const auto& render : FBR) {
-        render->render_frame_buffer(window, fbo.get_depth_buffer_name());
+    for (const auto& render : mid_ground_frame_buffer_) {
+        render->render_frame_buffer(
+            window, frame_buffer_multisample_.get_depth_buffer_name()
+        );
     }
 
-    for (const auto& render : FBMR) {
-        render->render_frame_buffer_multisample(window, fbo.get_depth_buffer_name());
+    for (const auto& render : mid_ground_frame_buffer_multisample_) {
+        render->render_frame_buffer_multisample(
+            window, frame_buffer_multisample_.get_depth_buffer_name()
+        );
     }
 
-    QRMS.render(
-        fbo.get_width(), fbo.get_height(), fbo.get_num_samples(),
-        fbo.get_texture_name(), fbo.get_frame_buffer_single()
+    quad_renderer_multisample_.render(
+        frame_buffer_multisample_.get_width(),
+        frame_buffer_multisample_.get_height(),
+        frame_buffer_multisample_.get_num_samples(),
+        frame_buffer_multisample_.get_texture_name(),
+        frame_buffer_multisample_.get_frame_buffer_single()
     );
 }
 
 GLuint
 Scene::get_scene() {
-    return fbo.get_single_sample_texture();
+    return frame_buffer_multisample_.get_single_sample_texture();
 }
 
 GLuint
@@ -69,20 +83,20 @@ Scene::get_shadow_height() {
 }
 
 void
-Scene::shadow_attach(const std::shared_ptr<render_to::shadow_map>& shadow) {
-    SMR.push_back(shadow);
+Scene::shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
+    mid_ground_shadow_.push_back(shadow);
 }
 
 void
-Scene::frame_buffer_attach(const std::shared_ptr<render_to::frame_buffer>& render) {
-    FBR.push_back(render);
+Scene::frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render) {
+    mid_ground_frame_buffer_.push_back(render);
 }
 
 void
 Scene::frame_buffer_multisample_attach(
-    const std::shared_ptr<render_to::frame_buffer_multisample>& render
+    const std::shared_ptr<render_to::FrameBufferMultisample>& render
 ) {
-    FBMR.push_back(render);
+    mid_ground_frame_buffer_multisample_.push_back(render);
 }
 
 void

@@ -45,7 +45,7 @@ namespace data_structures {
  * @details Handles non-instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class IndividualInt {
+class NonInstancedIMeshGPU {
  protected:
     GLuint vertex_buffer_;
     GLuint color_buffer_;
@@ -56,19 +56,19 @@ class IndividualInt {
     bool do_render_;
 
  public:
-    inline IndividualInt(const IndividualInt& other) = delete;
-    inline IndividualInt(const IndividualInt&& other) = delete;
+    NonInstancedIMeshGPU(const NonInstancedIMeshGPU& other) = delete;
+    NonInstancedIMeshGPU(NonInstancedIMeshGPU&& other) = default;
     // copy operator
-    inline IndividualInt& operator=(const IndividualInt& other) = delete;
-    inline IndividualInt& operator=(IndividualInt&& other) = default;
+    NonInstancedIMeshGPU& operator=(const NonInstancedIMeshGPU& other) = delete;
+    NonInstancedIMeshGPU& operator=(NonInstancedIMeshGPU&& other) = default;
 
-    inline IndividualInt(){};
-    inline IndividualInt(const entity::Mesh& mesh){
+    inline NonInstancedIMeshGPU(){};
+    explicit inline NonInstancedIMeshGPU(const entity::Mesh& mesh){
         update(mesh);
     }
     void update(const entity::Mesh& mesh);
 
-    inline ~IndividualInt() {
+    inline ~NonInstancedIMeshGPU() {
         glDeleteBuffers(1, &vertex_buffer_);
         glDeleteBuffers(1, &color_buffer_);
         glDeleteBuffers(1, &normal_buffer_);
@@ -112,8 +112,8 @@ class IndividualInt {
 };
 
 template <class T>
-concept IndividualIntLike =
-    std::is_base_of<gui::data_structures::IndividualInt, T>::value;
+concept NonInstancedIMeshGPUDataType =
+    std::is_base_of<gui::data_structures::NonInstancedIMeshGPU, T>::value;
 
 } // namespace data_structures
 

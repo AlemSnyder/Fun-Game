@@ -32,7 +32,7 @@ SkyRenderer::~SkyRenderer() {
     glDeleteProgram(programID_);
 }
 
-int
+void
 SkyRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
     FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
     glDisable(GL_CULL_FACE);
@@ -120,8 +120,6 @@ SkyRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
 
     // Use our shader
     glUseProgram(programID_);
-
-    return 0;
 }
 
 } // namespace render

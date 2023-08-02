@@ -9,7 +9,7 @@ TerrainMesh::TerrainMesh(){
 }
 
 TerrainMesh::TerrainMesh(const entity::Mesh& mesh, GLuint color_texture_id) :
-    IndividualInt(mesh) {
+    NonInstancedIMeshGPU(mesh) {
     set_color_texture(color_texture_id);
 }
 

@@ -5,7 +5,7 @@ namespace gui{
 namespace data_structures{
 
 StaticMesh::StaticMesh(const entity::Mesh& mesh,
-    const std::vector<glm::ivec3>& model_transforms) : InstancedInt(mesh, model_transforms){
+    const std::vector<glm::ivec3>& model_transforms) : InstancedIMeshGPU(mesh, model_transforms){
         generate_color_texture(mesh);
     }
 
@@ -15,13 +15,18 @@ StaticMesh::generate_color_texture(const entity::Mesh& mesh){
     std::vector<ColorFloat> float_colors =
         color::convert_color_data(mesh.get_color_map());
 
-    // LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
+    // create one texture and save the id to color_texture_
     glGenTextures(1, &color_texture_);
+    // bind to color_texture_
     glBindTexture(GL_TEXTURE_1D, color_texture_);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    // set texture warp. values outside of texture bounds are clamped to
+    // edge of texture
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // no minimapping so this one don't matter
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // set magnification filter to linear. Interpolate between pixels in mat
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
     glTexImage1D(

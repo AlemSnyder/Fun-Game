@@ -32,7 +32,7 @@ QuadRendererMultisample::~QuadRendererMultisample() {
     glDeleteProgram(program_id_);
 }
 
-int
+void
 QuadRendererMultisample::render(
     screen_size_t width, screen_size_t height, uint32_t samples,
     GLuint window_render_texture, GLuint frame_buffer
@@ -43,7 +43,6 @@ QuadRendererMultisample::render(
     glUniform1ui(height_id_, height);
     glUniform1ui(tex_samples_id_, samples);
     QuadRenderer::draw();
-    return 0;
 }
 
 } // namespace render

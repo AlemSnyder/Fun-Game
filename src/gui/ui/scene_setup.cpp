@@ -8,7 +8,7 @@ namespace gui {
 
 void
 setup(Scene& scene, World& world) {
-    ShaderHandler shader_handler = ShaderHandler();
+    ShaderHandler shader_handler;
 
     world.update_all_chunks_mesh();
 
@@ -16,7 +16,7 @@ setup(Scene& scene, World& world) {
 
     // should check that this does what I want it to.
     auto chunk_renderer =
-        std::make_shared<models::IndividualIntRenderer<data_structures::TerrainMesh>>(
+        std::make_shared<models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(
             shader_handler
         );
 

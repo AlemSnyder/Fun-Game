@@ -24,10 +24,7 @@
 #include <imgui/imgui.h>
 #include <stdio.h>
 #define GL_SILENCE_DEPRECATION
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#  include <GLES2/gl2.h>
-#endif
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <GLFW/glfw3.h>
 
 #include <memory>
 
@@ -40,12 +37,6 @@
 #  pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-// This example can also compile and run with Emscripten! See 'Makefile.emscripten' for
-// details.
-#ifdef __EMSCRIPTEN__
-#  include "../libs/emscripten/emscripten_mainloop_stub.h"
-#endif
-
 namespace gui {
 
 // Main code
@@ -55,10 +46,10 @@ imgui_entry(World& world) {
     screen_size_t window_height = 800;
     screen_size_t shadow_map_size = 4096;
 
-    GLFWwindow* window = setup_opengl(window_width, window_height);
-    if (window == nullptr)
+    std::optional<GLFWwindow*> window = setup_opengl(window_width, window_height);
+    if (window)
         return 1;
-    setup_logging();
+    setup_opengl_logging();
 
     // send color texture to gpu
 
@@ -71,7 +62,6 @@ imgui_entry(World& world) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 
@@ -80,7 +70,7 @@ imgui_entry(World& world) {
     const char* glsl_version = "#version 450";
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window.value(), true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Our state
@@ -95,7 +85,7 @@ imgui_entry(World& world) {
 
     //! Main loop
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window.value())) {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if
         // dear imgui wants to use your inputs.
@@ -110,7 +100,7 @@ imgui_entry(World& world) {
         // TODO
         // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
 
-        main_scene.update(window);
+        main_scene.update(window.value());
 
         glm::vec3 position = controls::get_position_vector();
 
@@ -142,7 +132,7 @@ imgui_entry(World& world) {
             );
 
             if (ImGui::IsWindowFocused()) {
-                controls::computeMatricesFromInputs(window);
+                controls::computeMatricesFromInputs(window.value());
             }
 
             ImGui::End();
@@ -199,7 +189,7 @@ imgui_entry(World& world) {
 
         {
             ImGui::Begin("OpenGL Texture Text");
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            if (glfwGetKey(window.value(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 ImGui::SetWindowFocus();
             }
             ImGui::Text("pointer MS = %i", main_scene.get_scene());
@@ -210,7 +200,7 @@ imgui_entry(World& world) {
             ImGui::End();
         }
 
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+        if (glfwGetKey(window.value(), GLFW_KEY_TAB) == GLFW_PRESS) {
             ImGui::Begin("Shadow Depth Texture");
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
@@ -226,7 +216,7 @@ imgui_entry(World& world) {
         // Rendering
         ImGui::Render();
         int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glfwGetFramebufferSize(window.value(), &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(
             clear_color.x * clear_color.w, clear_color.y * clear_color.w,
@@ -235,7 +225,7 @@ imgui_entry(World& world) {
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.value());
     }
 
     // Cleanup VBO and shader
@@ -246,7 +236,7 @@ imgui_entry(World& world) {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(window.value());
     glfwTerminate();
 
     return 0;

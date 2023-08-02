@@ -45,8 +45,8 @@ namespace render {
  *
  */
 class SkyRenderer :
-    public render_to::frame_buffer_multisample,
-    public render_to::frame_buffer {
+    public render_to::FrameBufferMultisample,
+    public render_to::FrameBuffer {
  private:
     GLuint programID_;                  // ID of Program
     GLuint matrix_view_projection_ID_;  // ID of world to camera space transform matrix
@@ -67,15 +67,15 @@ class SkyRenderer :
      *
      * @param window the OpenGL window
      */
-    int render(GLFWwindow* window, GLuint frame_buffer) const;
+    void render(GLFWwindow* window, GLuint frame_buffer) const;
 
-    int
+    void
     render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer)
         const override {
         return render(window, frame_buffer);
     }
 
-    int
+    void
     render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const override {
         return render(window, frame_buffer);
     }

@@ -43,15 +43,15 @@ namespace models {
 /**
  * @brief Renders the meshes to the screen
  *
- * @details IndividualIntRenderer renders the meshes given to the screen.
+ * @details NonInstancedIMeshRenderer renders the meshes given to the screen.
  * This class handles IndividualInt data structures and classes that derive from
  * IndividualInt.
  */
-template <class T>
-class IndividualIntRenderer :
-    public render_to::frame_buffer_multisample,
-    public render_to::frame_buffer,
-    public render_to::shadow_map {
+template <data_structures::NonInstancedIMeshGPUDataType T>
+class NonInstancedIMeshRenderer :
+    public render_to::FrameBufferMultisample,
+    public render_to::FrameBuffer,
+    public render_to::ShadowMap {
  protected:
     GLuint program_id_render_; // ID of render program
     GLuint program_id_shadow_; // ID of shadow program
@@ -78,9 +78,9 @@ class IndividualIntRenderer :
      *
      * @param ShaderHandler
      */
-    IndividualIntRenderer(ShaderHandler shader_handler = ShaderHandler());
+    NonInstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
 
-    ~IndividualIntRenderer();
+    ~NonInstancedIMeshRenderer();
 
     /**
      * @brief adds a non-indexed mesh so it will cast a shadow
@@ -116,7 +116,7 @@ class IndividualIntRenderer :
      * @param window the OpenGL window
      * @param GLuint frame buffer to render to
      */
-    int render_frame_buffer(GLFWwindow* window, GLuint frame_buffer = 0) const override;
+    void render_frame_buffer(GLFWwindow* window, GLuint frame_buffer = 0) const override;
 
     /**
      * @brief renders the given meshes to multisample frame buffer
@@ -124,7 +124,7 @@ class IndividualIntRenderer :
      * @param window the OpenGL window
      * @param GLuint frame buffer to render to
      */
-    int render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer = 0)
+    void render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer = 0)
         const override;
 
     /**
@@ -133,7 +133,7 @@ class IndividualIntRenderer :
      * @param screen_size_t shadow map width
      * @param screen_size_t shadow map height
      */
-    int render_shadow_map(
+    void render_shadow_map(
         screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
     ) const override;
 
@@ -147,8 +147,8 @@ class IndividualIntRenderer :
     void setup_shadow() const;
 };
 
-template <class T>
-IndividualIntRenderer<T>::IndividualIntRenderer(ShaderHandler shader_handler) {
+template <data_structures::NonInstancedIMeshGPUDataType T>
+NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(ShaderHandler shader_handler) {
     // non-indexed program
     program_id_render_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "ShadowMapping.vert",
@@ -171,42 +171,42 @@ IndividualIntRenderer<T>::IndividualIntRenderer(ShaderHandler shader_handler) {
     depth_bias_id_shadow_ = glGetUniformLocation(program_id_shadow_, "depthMVP");
 }
 
-template <class T>
-IndividualIntRenderer<T>::~IndividualIntRenderer() {
+template <data_structures::NonInstancedIMeshGPUDataType T>
+NonInstancedIMeshRenderer<T>::~NonInstancedIMeshRenderer() {
     glDeleteProgram(program_id_render_);
     glDeleteProgram(program_id_shadow_);
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::add_mesh(std::shared_ptr<T> mesh) {
+NonInstancedIMeshRenderer<T>::add_mesh(std::shared_ptr<T> mesh) {
     meshes_.push_back(std::move(mesh));
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::set_depth_texture(GLuint texture_id) {
+NonInstancedIMeshRenderer<T>::set_depth_texture(GLuint texture_id) {
     depth_texture_ = texture_id;
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::set_light_direction(glm::vec3 light_direction) {
+NonInstancedIMeshRenderer<T>::set_light_direction(glm::vec3 light_direction) {
     light_direction_ = light_direction;
     depth_view_matrix_ =
         glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::set_depth_projection_matrix(glm::mat4 depth_projection_matrix
+NonInstancedIMeshRenderer<T>::set_depth_projection_matrix(glm::mat4 depth_projection_matrix
 ) {
     depth_projection_matrix_ = depth_projection_matrix;
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::load_vertex_buffer(std::shared_ptr<T> mesh) const {
+NonInstancedIMeshRenderer<T>::load_vertex_buffer(std::shared_ptr<T> mesh) const {
     // 1rst attribute buffer : vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
@@ -222,9 +222,9 @@ IndividualIntRenderer<T>::load_vertex_buffer(std::shared_ptr<T> mesh) const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::load_color_buffers(std::shared_ptr<T> mesh) const {
+NonInstancedIMeshRenderer<T>::load_color_buffers(std::shared_ptr<T> mesh) const {
     // 2nd attribute buffer : colors
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, mesh->get_color_buffer());
@@ -252,9 +252,9 @@ IndividualIntRenderer<T>::load_color_buffers(std::shared_ptr<T> mesh) const {
     glUniform1i(color_map_id_render_, 2);
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::setup_render() const {
+NonInstancedIMeshRenderer<T>::setup_render() const {
     // Cull back-facing triangles -> draw only front-facing triangles
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -300,9 +300,9 @@ IndividualIntRenderer<T>::setup_render() const {
     glUniform1i(shadow_map_id_render_, 1);
 }
 
-template <class T>
+template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-IndividualIntRenderer<T>::setup_shadow() const {
+NonInstancedIMeshRenderer<T>::setup_shadow() const {
     // Cull back-facing triangles -> draw only front-facing triangles
     // glEnable(GL_CULL_FACE);
     // glCullFace(GL_BACK);
@@ -320,17 +320,17 @@ IndividualIntRenderer<T>::setup_shadow() const {
     glUniformMatrix4fv(depth_bias_id_shadow_, 1, GL_FALSE, &depthMVP[0][0]);
 }
 
-template <class T>
-int
-IndividualIntRenderer<T>::render_frame_buffer_multisample(
+template <data_structures::NonInstancedIMeshGPUDataType T>
+void
+NonInstancedIMeshRenderer<T>::render_frame_buffer_multisample(
     GLFWwindow* window, GLuint frame_buffer
 ) const {
-    return render_frame_buffer(window, frame_buffer);
+    render_frame_buffer(window, frame_buffer);
 }
 
-template <class T>
-int
-IndividualIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_buffer)
+template <data_structures::NonInstancedIMeshGPUDataType T>
+void
+NonInstancedIMeshRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_buffer)
     const {
     // Render to the screen
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
@@ -365,12 +365,11 @@ IndividualIntRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_b
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
     }
-    return 0;
 }
 
-template <class T>
-int
-IndividualIntRenderer<T>::render_shadow_map(
+template <data_structures::NonInstancedIMeshGPUDataType T>
+void
+NonInstancedIMeshRenderer<T>::render_shadow_map(
     screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer_name_
 ) const {
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
@@ -398,7 +397,6 @@ IndividualIntRenderer<T>::render_shadow_map(
 
         glDisableVertexAttribArray(0);
     }
-    return 0;
 }
 
 } // namespace models

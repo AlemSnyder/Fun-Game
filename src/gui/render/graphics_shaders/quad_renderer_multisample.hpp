@@ -67,7 +67,7 @@ class QuadRendererMultisample : public QuadRenderer {
      *
      * @param window the OpenGL window
      */
-    int render(
+    void render(
         screen_size_t width, screen_size_t height, uint32_t samples, GLuint window_render_texture,
         GLuint frame_buffer = 0
     ) const;

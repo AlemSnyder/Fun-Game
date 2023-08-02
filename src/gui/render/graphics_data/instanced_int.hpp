@@ -42,22 +42,23 @@ namespace data_structures {
  * @details Handles instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class InstancedInt : public IndividualInt {
+class InstancedIMeshGPU : public NonInstancedIMeshGPU {
  private:
     GLuint transforms_buffer_;
     uint32_t num_models_;
 
  public:
-    inline InstancedInt(const InstancedInt& obj) = delete;
+    inline InstancedIMeshGPU(const InstancedIMeshGPU& obj) = delete;
+    inline InstancedIMeshGPU(InstancedIMeshGPU&& other) = default;
     // copy operator
-    inline InstancedInt& operator=(const InstancedInt& obj) = delete;
-    inline InstancedInt& operator=(InstancedInt&& other) = default;
+    inline InstancedIMeshGPU& operator=(const InstancedIMeshGPU& obj) = delete;
+    inline InstancedIMeshGPU& operator=(InstancedIMeshGPU&& other) = default;
 
-    InstancedInt(
+    InstancedIMeshGPU(
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
     );
 
-    inline ~InstancedInt() { glDeleteBuffers(1, &transforms_buffer_); }
+    inline ~InstancedIMeshGPU() { glDeleteBuffers(1, &transforms_buffer_); }
 
     [[nodiscard]] inline GLuint
     get_model_transforms() const noexcept {
@@ -71,8 +72,8 @@ class InstancedInt : public IndividualInt {
 };
 
 template <class T>
-concept InstancedIntLike =
-    std::is_base_of<gui::data_structures::InstancedInt, T>::value;
+concept InstancedIMeshGPUDataType =
+    std::is_base_of<gui::data_structures::InstancedIMeshGPU, T>::value;
 
 } // namespace data_structures
 

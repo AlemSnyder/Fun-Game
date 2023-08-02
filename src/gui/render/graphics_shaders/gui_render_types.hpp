@@ -37,9 +37,9 @@ namespace render_to {
  * @details Class with render_frame_buffer method that renders to a frame
  * buffer.
  */
-class frame_buffer {
+class FrameBuffer {
  public:
-    virtual int render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const = 0;
+    virtual void render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const = 0;
 };
 
 /**
@@ -48,9 +48,9 @@ class frame_buffer {
  * @details Class with render_frame_buffer method that renders to a multisample
  * frame buffer.
  */
-class frame_buffer_multisample {
+class FrameBufferMultisample {
  public:
-    virtual int
+    virtual void
     render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer) const = 0;
 };
 
@@ -60,9 +60,9 @@ class frame_buffer_multisample {
  * @details Class with render_shadow_map method that renders to a shadow
  * map.
  */
-class shadow_map {
+class ShadowMap {
  public:
-    virtual int render_shadow_map(
+    virtual void render_shadow_map(
         screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
     ) const = 0;
 };

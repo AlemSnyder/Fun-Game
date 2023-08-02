@@ -31,13 +31,15 @@ opengl_entry(World& world) {
     screen_size_t shadow_map_size = 4096;
 
 
-    GLFWwindow* window = setup_opengl(window_width, window_height);
-    if (window == nullptr)
+    std::optional<GLFWwindow*> window = setup_opengl(window_width, window_height);
+    if (window)
         return 1;
-    setup_logging();
+    setup_opengl_logging();
 
-    // No idea why this is necessary, but it is
-    // I do know why, just don't want to explain
+    // Vertex Arrays act like frame buffers.
+    // A vertex array exists to hold all vertex data. One is needed to send
+    // vertex data to the gpu. I don't know why one needs to create one like
+    // this. Can I make multiple vertex arrays? If so why should I?
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -54,8 +56,8 @@ opengl_entry(World& world) {
     setup(main_scene, world);
 
     do {
-        controls::computeMatricesFromInputs(window);
-        main_scene.update(window);
+        controls::computeMatricesFromInputs(window.value());
+        main_scene.update(window.value());
 
         // bind the the screen
         FrameBufferHandler::getInstance().bind_fbo(0); // clear the screen
@@ -63,22 +65,22 @@ opengl_entry(World& world) {
         // render to the screen
         QR.render(window_width, window_height, main_scene.get_scene(), 0);
 
-        if (controls::show_shadow_map(window)) {
+        if (controls::show_shadow_map(window.value())) {
             QR.render(512, 512, main_scene.get_depth_texture(), 0);
         }
 
         // Swap buffers
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.value());
         glfwPollEvents();
 
     } // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-           && glfwWindowShouldClose(window) == 0);
+    while (glfwGetKey(window.value(), GLFW_KEY_ESCAPE) != GLFW_PRESS
+           && glfwWindowShouldClose(window.value()) == 0);
 
     // Cleanup VBO and shader
     glDeleteVertexArrays(1, &VertexArrayID);
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(window.value());
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
