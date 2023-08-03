@@ -78,7 +78,7 @@ class NonInstancedIMeshRenderer :
      *
      * @param ShaderHandler
      */
-    NonInstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
+    explicit NonInstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
 
     ~NonInstancedIMeshRenderer();
 
@@ -173,8 +173,6 @@ NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(ShaderHandler shader_han
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 NonInstancedIMeshRenderer<T>::~NonInstancedIMeshRenderer() {
-    glDeleteProgram(program_id_render_);
-    glDeleteProgram(program_id_shadow_);
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>

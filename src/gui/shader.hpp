@@ -30,9 +30,20 @@
 #include <string>
 
 namespace gui {
-
+/**
+ * @brief Converts GLuint shader type to human readable string for logging.
+ * 
+ * @details Returns a human readable string for each opengl shader type.
+ * 
+ * @returns std::string string name of shader type
+*/
 std::string get_shader_string(GLuint gl_shader_type);
 
+/**
+ * @brief Loads and saves shader programs
+ * 
+ * @details  
+*/
 class ShaderHandler {
  private:
     // maybe these should be coppies?

@@ -32,7 +32,7 @@ opengl_entry(World& world) {
 
 
     std::optional<GLFWwindow*> window = setup_opengl(window_width, window_height);
-    if (window)
+    if (!window)
         return 1;
     setup_opengl_logging();
 

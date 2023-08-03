@@ -49,7 +49,7 @@ namespace render {
 class QuadRenderer {
  protected:
     GLuint program_id_; // ID of non-indexed mesh Program
-    GLuint quad_vertexbuffer;
+    GLuint quad_vertexbuffer_;
     GLuint texID;
 
  public:

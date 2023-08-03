@@ -40,6 +40,7 @@
 namespace gui {
 
 // Main code
+// returns exit status
 int
 imgui_entry(World& world) {
     screen_size_t window_width = 1280;
@@ -47,7 +48,7 @@ imgui_entry(World& world) {
     screen_size_t shadow_map_size = 4096;
 
     std::optional<GLFWwindow*> window = setup_opengl(window_width, window_height);
-    if (window)
+    if (!window)
         return 1;
     setup_opengl_logging();
 

@@ -55,7 +55,7 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
      * @brief Construct a new Main Renderer object
      *
      */
-    InstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
+    explicit InstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
 
     ~InstancedIMeshRenderer();
 

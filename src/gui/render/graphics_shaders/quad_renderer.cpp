@@ -29,8 +29,8 @@ QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
         -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
     };
 
-    glGenBuffers(1, &quad_vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+    glGenBuffers(1, &quad_vertexbuffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer_);
     glBufferData(
         GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data,
         GL_STATIC_DRAW
@@ -38,7 +38,7 @@ QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
 }
 
 QuadRenderer::~QuadRenderer() {
-    glDeleteBuffers(1, &quad_vertexbuffer);
+    glDeleteBuffers(1, &quad_vertexbuffer_);
     glDeleteProgram(program_id_);
 }
 
@@ -71,7 +71,7 @@ void
 QuadRenderer::draw() const {
     // first attribute buffer : vertices
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer_);
     glVertexAttribPointer(
         0,        // attribute 0. No particular reason for 0,
                   // but must match the layout in the shader.

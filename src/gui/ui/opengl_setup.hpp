@@ -35,6 +35,15 @@
 
 namespace gui {
 
+/**
+ * @brief Sets up opengl context.
+ * 
+ * @details Initializes opengl. Sets things like version, and other
+ * configurations.
+ * 
+ * @returns std::optional<GLFWwindow*> optional pointer to window that is used
+ * to contain the program.
+*/
 [[nodiscard]] std::optional<GLFWwindow*> setup_opengl(screen_size_t width, screen_size_t height);
 
 int setup_opengl_logging();

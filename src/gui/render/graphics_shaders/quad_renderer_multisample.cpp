@@ -27,11 +27,6 @@ QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) :
 
 }
 
-QuadRendererMultisample::~QuadRendererMultisample() {
-    glDeleteBuffers(1, &quad_vertexbuffer);
-    glDeleteProgram(program_id_);
-}
-
 void
 QuadRendererMultisample::render(
     screen_size_t width, screen_size_t height, uint32_t samples,
