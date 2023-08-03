@@ -51,6 +51,12 @@ class ShaderHandler {
 
  public:
     // file extensions are for losers One must pass the type in addition
+    /**
+     * @brief Get shader program id corresponding to given file path.
+     * 
+     * @details Returns a shader program either from cache or by loading one
+     * on success, or 0 on failure.
+    */
     GLuint get_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
 
     GLuint load_program(

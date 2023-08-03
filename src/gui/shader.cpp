@@ -22,7 +22,7 @@ get_shader_string(GLuint gl_shader_type) {
             return "geometry";
 
         default:
-            return "ya, this isn't going to work";
+            return "NOT A VALID SHADER TYPE";
     }
 }
 
@@ -42,14 +42,14 @@ ShaderHandler::get_shader(
 ) {
     GLuint shader_id;
 
-    try {
-        shader_id = shaders.at(file_relative_path);
-    } catch (const std::out_of_range& e) {
+    auto it = shaders.find(file_relative_path);
+    if ( it == shaders.end() ){
         shader_id = load_shader(file_relative_path, gl_shader_type);
         if (shader_id != 0) {
             shaders.insert_or_assign(file_relative_path, shader_id);
         }
-    }
+    } else
+        shader_id = it->second;
 
     return shader_id;
 }
@@ -61,9 +61,10 @@ ShaderHandler::reload_shader(
 ) {
     GLuint shader_id;
 
-    try {
-        shader_id = shaders.at(file_relative_path);
-    } catch (const std::out_of_range& e) {
+    auto it = shaders.find(file_relative_path);
+    if ( it != shaders.end() ){
+        shader_id = it->second;
+    } else {
         shader_id = load_shader(file_relative_path, gl_shader_type);
         if (shader_id != 0) {
             shaders.insert_or_assign(file_relative_path, shader_id);
@@ -86,7 +87,7 @@ GLuint
 ShaderHandler::load_shader(
     const std::filesystem::path& file_relative_path, GLuint gl_shader_type
 ) {
-    std::filesystem::path file_apsolute_path =
+    std::filesystem::path file_absolute_path =
         std::filesystem::absolute(file_relative_path);
 
     std::string shader_type_string = get_shader_string(gl_shader_type);
@@ -97,11 +98,11 @@ ShaderHandler::load_shader(
     // Read the Vertex Shader code from the file
     LOG_BACKTRACE(
         logging::opengl_logger, "Loading {} shader from {}", shader_type_string,
-        file_apsolute_path.string()
+        file_absolute_path.string()
     );
 
     std::string shader_code;
-    std::ifstream shader_stream(file_apsolute_path, std::ios::in);
+    std::ifstream shader_stream(file_absolute_path, std::ios::in);
     if (shader_stream.is_open()) {
         std::stringstream sstr;
         sstr << shader_stream.rdbuf();
@@ -110,7 +111,7 @@ ShaderHandler::load_shader(
     } else {
         LOG_ERROR(
             logging::opengl_logger, "Cannot open {}. Is this the right directory?",
-            file_apsolute_path.string()
+            file_absolute_path.string()
         );
         return 0;
     }
@@ -121,7 +122,7 @@ ShaderHandler::load_shader(
     // Compile Vertex Shader
     LOG_BACKTRACE(
         logging::opengl_logger, "Compiling {} shader {}", shader_type_string,
-        file_apsolute_path.string()
+        file_absolute_path.string()
     );
 
     char const* source_pointer = shader_code.c_str();
