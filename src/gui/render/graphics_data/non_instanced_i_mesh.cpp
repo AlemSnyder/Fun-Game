@@ -1,4 +1,4 @@
-#include "individual_int.hpp"
+#include "non_instanced_i_mesh.hpp"
 
 #include "../../../terrain/material.hpp"
 

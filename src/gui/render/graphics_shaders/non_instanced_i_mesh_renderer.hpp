@@ -12,7 +12,7 @@
  */
 
 /**
- * @file individual_int_renderer.hpp
+ * @file non_instanced_i_mesh_renderer.hpp
  *
  * @brief Defines MainRender class.
  *
@@ -25,7 +25,7 @@
 #include "../../handler.hpp"
 #include "../../scene/controls.hpp"
 #include "../../shader.hpp"
-#include "../graphics_data/individual_int.hpp"
+#include "../graphics_data/non_instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
 
 #include <GL/glew.h>

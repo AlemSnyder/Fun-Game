@@ -1,4 +1,4 @@
-#include "instanced_int.hpp"
+#include "instanced_i_mesh.hpp"
 
 #include "../../../entity/mesh.hpp"
 #include "../../../types.hpp"

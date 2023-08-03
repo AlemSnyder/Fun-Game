@@ -12,7 +12,7 @@
  */
 
 /**
- * @file instanced_int_renderer.hpp
+ * @file instanced_i_mesh_renderer.hpp
  *
  * @brief Defines MainRender class.
  *
@@ -21,11 +21,11 @@
  */
 #pragma once
 
-#include "../../shader.hpp"
-#include "../graphics_data/instanced_int.hpp"
-#include "gui_render_types.hpp"
-#include "individual_int_renderer.hpp"
 #include "../../../types.hpp"
+#include "../../shader.hpp"
+#include "../graphics_data/instanced_i_mesh.hpp"
+#include "gui_render_types.hpp"
+#include "non_instanced_i_mesh_renderer.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -71,8 +71,9 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
     void
     render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer = 0) const;
 
-    void
-    render_shadow_map(screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer) const;
+    void render_shadow_map(
+        screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
+    ) const;
 };
 
 template <data_structures::InstancedIMeshGPUDataType T>

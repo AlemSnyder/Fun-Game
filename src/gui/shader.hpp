@@ -50,7 +50,7 @@ class ShaderHandler {
     std::map<const std::filesystem::path, GLuint> shaders;
 
  public:
-    // file extensions are for loosers. One must pass the type inaddition
+    // file extensions are for losers One must pass the type in addition
     GLuint get_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
 
     GLuint load_program(

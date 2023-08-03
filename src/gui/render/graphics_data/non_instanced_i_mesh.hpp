@@ -11,7 +11,7 @@
  */
 
 /**
- * @file individual_int.hpp
+ * @file non_instanced_i_mesh.hpp
  *
  * @author @AlemSnyder
  *

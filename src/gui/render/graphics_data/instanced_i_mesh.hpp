@@ -11,7 +11,7 @@
  */
 
 /**
- * @file instanced_int.hpp
+ * @file instanced_i_mesh.hpp
  *
  * @author @AlemSnyder
  *
@@ -22,7 +22,7 @@
  */
 
 #include "../../../entity/mesh.hpp"
-#include "individual_int.hpp"
+#include "non_instanced_i_mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

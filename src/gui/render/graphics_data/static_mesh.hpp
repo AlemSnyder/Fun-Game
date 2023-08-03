@@ -21,7 +21,7 @@
  *
  */
 
-#include "instanced_int.hpp"
+#include "instanced_i_mesh.hpp"
 
 #pragma once
 
