@@ -1,16 +1,11 @@
 #include "static_mesh.hpp"
 
-namespace gui{
+namespace gui {
 
-namespace data_structures{
-
-StaticMesh::StaticMesh(const entity::Mesh& mesh,
-    const std::vector<glm::ivec3>& model_transforms) : InstancedIMeshGPU(mesh, model_transforms){
-        generate_color_texture(mesh);
-    }
+namespace data_structures {
 
 void
-StaticMesh::generate_color_texture(const entity::Mesh& mesh){
+StaticMesh::generate_color_texture(const entity::Mesh& mesh) {
     // Generate a texture
     std::vector<ColorFloat> float_colors =
         color::convert_color_data(mesh.get_color_map());
@@ -34,9 +29,8 @@ StaticMesh::generate_color_texture(const entity::Mesh& mesh){
         float_colors.data()
     );
     glGenerateMipmap(GL_TEXTURE_1D);
-
 }
 
-}
+} // namespace data_structures
 
-}
+} // namespace gui

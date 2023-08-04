@@ -24,8 +24,8 @@
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
-#include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
 #include "../render/graphics_shaders/instanced_i_mesh_renderer.hpp"
+#include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
 #include "../render/graphics_shaders/quad_renderer_multisample.hpp"
 #include "../render/graphics_shaders/sky.hpp"
 
@@ -33,10 +33,11 @@
 
 #pragma once
 
+#define SAMPLES 4
+
 namespace gui {
 
 class Scene {
-    // TODO nameing convenction
  private:
     data_structures::FrameBufferMultisample frame_buffer_multisample_;
     data_structures::ShadowMap shadow_map_;
@@ -46,7 +47,8 @@ class Scene {
 
     // "mid" ground
     std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_frame_buffer_;
-    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>> mid_ground_frame_buffer_multisample_;
+    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>>
+        mid_ground_frame_buffer_multisample_;
     std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
 
     // foreground, maybe
@@ -55,38 +57,74 @@ class Scene {
     render::QuadRendererMultisample quad_renderer_multisample_;
 
  public:
-    Scene(screen_size_t width, screen_size_t height, uint32_t shadow_map_width_height);
-    GLuint get_scene();
-    GLuint get_depth_texture();
-    uint32_t get_shadow_width();
-    uint32_t get_shadow_height();
+    inline Scene(
+        screen_size_t window_width, screen_size_t window_height,
+        uint32_t shadow_map_width_height
+    ) :
+        frame_buffer_multisample_(window_width, window_height, SAMPLES),
+        shadow_map_(shadow_map_width_height, shadow_map_width_height), sky_renderer_(),
+        quad_renderer_multisample_() {}
+
+    inline GLuint
+    get_scene() {
+        return frame_buffer_multisample_.get_single_sample_texture();
+    }
+
+    inline GLuint
+    get_depth_texture() {
+        return shadow_map_.get_depth_texture();
+    }
+
+    inline uint32_t
+    get_shadow_width() {
+        return shadow_map_.get_shadow_width();
+    }
+
+    inline uint32_t
+    get_shadow_height() {
+        return shadow_map_.get_shadow_height();
+    }
+
     void update(GLFWwindow* window);
 
     // model attach
 
-    void shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow);
+    inline void
+    shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
+        mid_ground_shadow_.push_back(shadow);
+    }
 
-    void frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render);
+    inline void
+    frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render) {
+        mid_ground_frame_buffer_.push_back(render);
+    }
 
-    void
+    inline void
     frame_buffer_multisample_attach(
         const std::shared_ptr<render_to::FrameBufferMultisample>& render
-    );
+    ) {
+        mid_ground_frame_buffer_multisample_.push_back(render);
+    }
 
     /**
      * @brief Set the light direction vector
      *
      * @param light_direction the direction of the light
      */
-    void set_shadow_light_direction(glm::vec3 light_direction);
+    inline void
+    set_shadow_light_direction(glm::vec3 light_direction) {
+        shadow_map_.set_light_direction(light_direction);
+    }
 
     /**
      * @brief Set the depth projection matrix
      *
      * @param depth_projection_matrix the projection matrix
      */
-    void set_shadow_depth_projection_matrix(glm::mat4 depth_projection_matrix);
-
+    inline void
+    set_shadow_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
+        shadow_map_.set_depth_projection_matrix(depth_projection_matrix);
+    }
 };
 
 } // namespace gui

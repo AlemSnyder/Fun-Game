@@ -21,12 +21,11 @@
  */
 #pragma once
 
+#include "../../../types.hpp"
 #include "../../meshloader.hpp"
-#include "quad_renderer.hpp"
 #include "../../shader.hpp"
 #include "gui_render_types.hpp"
-
-#include "../../../types.hpp"
+#include "quad_renderer.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -70,11 +69,17 @@ class QuadRendererMultisample : public QuadRenderer {
      *
      * @param window the OpenGL window
      */
-    void render(
-        screen_size_t width, screen_size_t height, uint32_t samples, GLuint window_render_texture,
-        GLuint frame_buffer = 0
-    ) const;
-
+    void
+    inline render(
+        screen_size_t width, screen_size_t height, uint32_t samples,
+        GLuint window_render_texture, GLuint frame_buffer = 0
+    ) const {
+        QuadRenderer::setup(width, height, window_render_texture, frame_buffer);
+        glUniform1ui(width_id_, width);
+        glUniform1ui(height_id_, height);
+        glUniform1ui(tex_samples_id_, samples);
+        QuadRenderer::draw();
+    }
 };
 
 } // namespace render

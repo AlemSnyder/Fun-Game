@@ -197,10 +197,4 @@ ShaderHandler::load_program(
     return program_id;
 }
 
-ShaderHandler::ShaderHandler() {}
-
-ShaderHandler::~ShaderHandler() {
-    clear();
-}
-
 } // namespace gui

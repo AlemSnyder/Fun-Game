@@ -24,20 +24,6 @@ QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) :
     width_id_ = glGetUniformLocation(program_id_, "width");
     height_id_ = glGetUniformLocation(program_id_, "height");
     tex_samples_id_ = glGetUniformLocation(program_id_, "tex_samples");
-
-}
-
-void
-QuadRendererMultisample::render(
-    screen_size_t width, screen_size_t height, uint32_t samples,
-    GLuint window_render_texture, GLuint frame_buffer
-) const {
-
-    QuadRenderer::setup(width, height, window_render_texture, frame_buffer);
-    glUniform1ui(width_id_, width);
-    glUniform1ui(height_id_, height);
-    glUniform1ui(tex_samples_id_, samples);
-    QuadRenderer::draw();
 }
 
 } // namespace render

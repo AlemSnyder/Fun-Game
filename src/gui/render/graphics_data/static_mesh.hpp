@@ -37,14 +37,17 @@ namespace data_structures {
  */
 class StaticMesh : public InstancedIMeshGPU {
  public:
-    StaticMesh(const entity::Mesh& mesh,
-    const std::vector<glm::ivec3>& model_transforms);
+    inline StaticMesh(
+        const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
+    ) :
+        InstancedIMeshGPU(mesh, model_transforms) {
+        generate_color_texture(mesh);
+    }
 
  protected:
     void generate_color_texture(const entity::Mesh& mesh);
-
 };
 
-}
+} // namespace data_structures
 
-}
+} // namespace gui

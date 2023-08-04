@@ -31,17 +31,23 @@ namespace data_structures {
  * @brief Non-instanced mesh with color texture for terrain
  *
  * @details Shallow derived class of IndividualInt. Color texture is made
- * for all materials in the terrain. 
+ * for all materials in the terrain.
  */
 class TerrainMesh : public NonInstancedIMeshGPU {
  public:
-    TerrainMesh();
-    TerrainMesh(const entity::Mesh& mesh, GLuint color_texture);
+    inline TerrainMesh(){};
 
-    void set_color_texture(GLuint color_texture) noexcept;
+    inline TerrainMesh(const entity::Mesh& mesh, GLuint color_texture_id) :
+        NonInstancedIMeshGPU(mesh) {
+        set_color_texture(color_texture_id);
+    }
 
+    inline void
+    set_color_texture(GLuint color_texture_id) noexcept {
+        color_texture_ = color_texture_id;
+    }
 };
 
-}
+} // namespace data_structures
 
-}
+} // namespace gui

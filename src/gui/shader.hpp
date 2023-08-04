@@ -66,8 +66,10 @@ class ShaderHandler {
 
     void clear();
 
-    ShaderHandler();
-    ~ShaderHandler();
+    inline ShaderHandler() {};
+    inline ~ShaderHandler() {
+        shaders.clear();
+    }
 
  private:
     GLuint load_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
