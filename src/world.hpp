@@ -93,13 +93,10 @@ class World {
     /**
      * @brief Construct a new World object to test biome generation.
      *
-
-     * * @param biome_data biome parameters
-     * @param type determines the type of
-     * terrain to be generated
+     * @param biome_data biome parameters
+     * @param type determines the type of terrain to be generated
      * (see) data/biome_data.json > `biome` > Tile_Data
-
-     * * (see) src/terrain/terrain_generation/land_generator.hpp
+     * (see) src/terrain/terrain_generation/land_generator.hpp
      */
     World(const Json::Value& materials_json, const Json::Value& biome_data, int type);
     World(
@@ -116,10 +113,8 @@ class World {
     /**
      * @brief Get the materials that exist in the world
      *
-     * @return
-     * const std::map<int, const Material>* map of materials_id to
-     * materials
-     * pointer
+     * @return const std::map<int, const Material>* map of materials_id to
+     * materials pointer
      */
     inline const std::map<MaterialId, const terrain::Material>*
     get_materials() const noexcept {
@@ -130,17 +125,14 @@ class World {
      * @brief Get material from material_id
      *
      * @param material_id
-
-     * * @return const Material* corresponding material
+     * @return const Material* corresponding material
      */
     const terrain::Material* get_material(int material_id) const;
 
     /**
      * @brief Load materials from json data
      *
-     * @param material_data
-     * data to load from
-     * (see) data/materials.json
+     * @param material_data data to load from (see) data/materials.json
      */
     std::map<MaterialId, const terrain::Material>
     init_materials(const Json::Value& material_data);
@@ -148,8 +140,8 @@ class World {
     /**
      * @brief Get the grass gradient data
      *
-     * @param material_json
-     * data to load from
+     * @param material_json data to load from
+     * 
      * @return std::vector<int> width of each grass color
      */
     std::vector<int> get_grass_grad_data(const Json::Value& material_json);

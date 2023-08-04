@@ -41,22 +41,11 @@ namespace terrain {
  * @brief Holds Material data
  *
  * @details World class should have a map of materials organized by Material
- * Id. Each tile has the id of a material (curently uint8_t).
+ * Id. Each tile has the id of a material (currently uint8_t).
  *
- * materials organized by Material
- * Id. Each tile has a pointer to one of those
- *
- * materials (though this should
- * be an uint8_t as there are less than 256
- *
- * materials).
- *
- * The material determines if the tile is solid, and the potential
- *
- * color. Other
+ * materials organized by Material Id. Each tile has a material id.
+ * The material determines if the tile is solid, and the potential color. Other
  * data will be added like how cretin materials respond to weather...
-
-
  */
 struct Material {
     Material(

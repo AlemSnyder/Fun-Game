@@ -1,25 +1,13 @@
 // -*- lsst-c++ -*-
 /*
- * This program is free software: you can redistribute it and/or modify
- * it under
-
- * * the terms of the GNU General Public License as published by
- * the Free Software
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
  *
- * Foundation, version 2 of the License, or
- * (at your option) any later version.
- *
-
- * *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT
- * ANY
- * WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS
- * FOR A
- * PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
-
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  */
 
 /**
@@ -28,8 +16,6 @@
  * @author @AlemSnyder
  *
  * @brief Defines Tile class
- *
- *
  *
  * @ingroup Terrain
  *
@@ -65,9 +51,7 @@ struct TilePCompare {
 /**
  * @brief represents a tile in the world
  *
- * @details A tile in the terrain. This
-
- * * holds data like material, and color id.
+ * @details A tile in the terrain. This holds data like material, and color id.
  */
 class Tile {
  private:
@@ -94,13 +78,9 @@ class Tile {
     /**
      * @brief Construct a new Tile object
      *
-     * @param sop tile
-     *
-     * position
+     * @param sop tile position
      * @param material material of tile
-     * @param color_id color of
-
-     * * tile
+     * @param color_id color of tile
      */
     Tile(TerrainDim3 sop, const terrain::Material* material, ColorId color_id = 0);
 
@@ -113,9 +93,7 @@ class Tile {
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.
-
-
-     * * *
+     * 
      * @param mat_ material to set
      */
     void set_material(const terrain::Material* const materials);
@@ -132,17 +110,13 @@ class Tile {
     /**
      * @brief Set the distance from edge
      *
-     * @param num distance from
-
-     * * edge
+     * @param num distance from edge
      */
     void set_grow_data_low(int num);
     /**
      * @brief Set the distance from wall
      *
-     * @param num distance from
-
-     * * wall
+     * @param num distance from wall
      */
     void set_grow_data_high(int num);
 
@@ -169,19 +143,12 @@ class Tile {
     void try_grow_grass();
     /**
      * @brief Set the color id if this tile is grass. Updates the grass color
-     * to
-     * account
-     * for edge gradient. The gradient mimics shadows caused by
+     * to account for edge gradient. The gradient mimics shadows caused by
      * cliffs.
-
-     * *
+     * 
      * @param grass_grad_length total length of grass gradient
-
-     * * @param
-     * grass_mid index of color not effected by edge affects
-     *
-     * @param grass_colors
-     * grass color vector
+     * @param grass_mid index of color not effected by edge affects
+     * @param grass_colors grass color vector
      */
     void set_grass_color(
         unsigned int grass_grad_length, unsigned int grass_mid,
@@ -222,9 +189,7 @@ class Tile {
     /**
      * @brief coordinate of tile
      *
-     * @return std::array<int, 3> array
-
-     * * of x, y, z
+     * @return std::array<int, 3> array of x, y, z
      */
     [[nodiscard]] TerrainDim3
     sop() const noexcept {
@@ -235,9 +200,7 @@ class Tile {
      * @brief is the tile grass
      *
      * @return true this tile is grass
-
-
-     * * * @return false this tile is not grass
+     * @return false this tile is not grass
      */
     [[nodiscard]] inline bool
     is_grass() const noexcept {
@@ -267,9 +230,7 @@ class Tile {
     /**
      * @brief Get the material, and color id in one
      *
-     * @return
-     *
-     * uint16_t 8 bit material id, and 8 bit color id
+     * @return uint16_t 8 bit material id, and 8 bit color id
      */
     [[nodiscard]] MatColorId get_mat_color_id() const;
 
@@ -277,9 +238,7 @@ class Tile {
      * @brief is this tile solid
      *
      * @return true the tiles is solid
-
-
-     * * * @return false the tile is not solid
+     * @return false the tile is not solid
      */
     [[nodiscard]] inline bool
     is_solid() const noexcept {

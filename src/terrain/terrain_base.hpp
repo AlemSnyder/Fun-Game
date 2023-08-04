@@ -1,36 +1,21 @@
 // -*- lsst-c++ -*-
 /*
- * This program is free software: you can redistribute it and/or modify
- * it under
-
- * * the terms of the GNU General Public License as published by
- * the Free Software
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
  *
- * Foundation, version 2 of the License, or
- * (at your option) any later version.
- *
-
- * *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT
- * ANY
- * WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS
- * FOR A
- * PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
-
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  */
-
 /**
  * @file terrain.hpp
  *
  * @author @AlemSnyder
  *
  * @brief Defines Terrain class
-
-
- * * *
+ * 
  * @ingroup Terrain
  *
  */
@@ -62,15 +47,8 @@ namespace terrain {
 /**
  * @brief The land in the world.
  *
- * @details Terrain Base holds all the tiles
- *
- * that exist. Base class for Terrain.
+ * @details Terrain Base holds all the tiles that exist. Base class for Terrain.
  * Contains the data, and lookup informaiton.
-
- * *
-
- * * Everything should be inline and in this one header file.
- *
  */
 class TerrainBase : public voxel_utility::VoxelBase {
  protected:
