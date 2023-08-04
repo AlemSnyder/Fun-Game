@@ -48,8 +48,9 @@ ShaderHandler::get_shader(
         if (shader_id != 0) {
             shaders.insert_or_assign(file_relative_path, shader_id);
         }
-    } else
+    } else {
         shader_id = it->second;
+    }
 
     return shader_id;
 }
