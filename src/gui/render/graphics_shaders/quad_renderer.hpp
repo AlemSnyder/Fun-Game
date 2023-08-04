@@ -22,7 +22,6 @@
 #pragma once
 
 #include "../../../types.hpp"
-#include "../../meshloader.hpp"
 #include "../../shader.hpp"
 #include "gui_render_types.hpp"
 

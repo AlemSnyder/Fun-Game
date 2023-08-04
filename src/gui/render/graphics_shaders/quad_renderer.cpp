@@ -2,7 +2,6 @@
 
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
-#include "../../meshloader.hpp"
 #include "../../shader.hpp"
 
 #include <GL/glew.h>

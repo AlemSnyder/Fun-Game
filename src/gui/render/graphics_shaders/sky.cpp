@@ -2,7 +2,6 @@
 
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
-#include "../../meshloader.hpp"
 #include "../../scene/controls.hpp"
 #include "../../shader.hpp"
 #include "../data_structures/sky_data.hpp"
