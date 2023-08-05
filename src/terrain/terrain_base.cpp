@@ -37,6 +37,7 @@ TerrainBase::qb_read(
         LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
     }
 }
+
 // when data is given use different Y max
 TerrainBase::TerrainBase(
     const std::map<MaterialId, const terrain::Material>& materials,
@@ -105,7 +106,7 @@ TerrainBase::TerrainBase(
             }
         }
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles .");
+    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles.");
 
     // TODO make this faster 3
     for (const Json::Value& after_affect : biome_data["After_Effects"]["Add_To_Top"]) {
@@ -121,8 +122,7 @@ TerrainBase::TerrainBase(
     voxel_utility::qb_data_t data
 ) :
     area_size_(32),
-    materials_(materials), X_MAX(data.size.x),
-    Y_MAX(data.size.y), Z_MAX(data.size.z) {
+    materials_(materials), X_MAX(data.size.x), Y_MAX(data.size.y), Z_MAX(data.size.z) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
     if (grass_mid >= grass_grad_data.size()) {

@@ -1,11 +1,10 @@
 #include "sky.hpp"
 
-#include "../../util/files.hpp"
+#include "../../../util/files.hpp"
+#include "../../handler.hpp"
+#include "../../scene/controls.hpp"
+#include "../../shader.hpp"
 #include "../data_structures/sky_data.hpp"
-#include "../handler.hpp"
-#include "../meshloader.hpp"
-#include "../scene/controls.hpp"
-#include "../shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,8 +16,9 @@ namespace gui {
 
 namespace render {
 
-SkyRenderer::SkyRenderer() : sky_data_(files::get_data_path() / "stars.json") {
-    programID_ = load_shaders(
+SkyRenderer::SkyRenderer(ShaderHandler shader_handler) :
+    sky_data_(files::get_data_path() / "stars.json") {
+    programID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Sky.vert",
         files::get_resources_path() / "shaders" / "Sky.frag"
     );

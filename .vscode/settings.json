@@ -7,7 +7,7 @@
         "glfw",
         "goxel",
         "lsst",
-        "MULTISAMPLE",
+        "multisample",
         "Parameteri",
         "Perlin",
         "vmask",
@@ -116,6 +116,8 @@
         "future": "cpp",
         "*.def": "cpp",
         "*.inc": "cpp",
-        "hash_map": "cpp"
-    }
+        "hash_map": "cpp",
+        "any": "cpp"
+    },
+    "editor.detectIndentation": false
 }

@@ -31,6 +31,7 @@
 #include <utility>
 
 #define NUMBER_OF_BORDER_CUBES 26U
+
 // 3^3 - 1 = 26
 // Because Nino keeps forgetting, If you have a cube in 3D space, and want to
 // find the number of cubes at are near it. Not just touching (6), but all of

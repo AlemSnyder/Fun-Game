@@ -12,18 +12,18 @@
  */
 
 /**
- * @file render.hpp
+ * @file quad_renderer.hpp
  *
  * @brief Defines MainRender class.
  *
- * @ingroup GUI
+ * @ingroup GUI  RENDER
  *
  */
 #pragma once
 
-#include "../meshloader.hpp"
-
-#include "../../types.hpp"
+#include "../../../types.hpp"
+#include "../../shader.hpp"
+#include "gui_render_types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -45,33 +45,53 @@ namespace render {
  * shaders.
  *
  */
-class QuadRendererMultisample {
- private:
-    GLuint programID_;        // ID of non-indexed mesh Program
-    GLuint quad_vertexbuffer; // ID of vertexes
-    GLuint texID;             // ID of texture reading from
-    GLuint widthID;           // ID for width of reading texture
-    GLuint heightID;          // ID for height or reading texture
-    GLuint tex_samplesID;     // ID for number of samples in reading temperature
+class QuadRenderer {
+ protected:
+    GLuint program_id_; // ID of non-indexed mesh Program
+    GLuint quad_vertexbuffer_;
+    GLuint texID;
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
+     * @param ShaderHandler
      */
-    QuadRendererMultisample();
+    QuadRenderer(ShaderHandler shader_handler = ShaderHandler());
 
-    ~QuadRendererMultisample();
+    ~QuadRenderer();
 
     /**
      * @brief renders the given meshes
      *
-     * @param window the OpenGL window
+     * @param screen_size_t window height
+     * @param screen_size_t window width
+     * @param GLuint texture to render from
+     * @param GLuint framebuffer to render to
      */
     void render(
-        screen_size_t width, screen_size_t height, uint32_t samples, GLuint window_render_texture,
+        screen_size_t height, screen_size_t width, GLuint window_render_texture,
         GLuint frame_buffer = 0
     ) const;
+
+ protected:
+     /**
+     * @brief Helper function bind texture and set view pot size.
+     * 
+     * @param width framebuffer width
+     * @param height framebuffer height
+     * @param window_render_texture texture to be rendered
+     * @param frame_buffer frame buffer id
+    */
+    void setup(
+        screen_size_t width, screen_size_t height, GLuint window_render_texture,
+        GLuint frame_buffer
+    ) const;
+
+    /**
+     * @brief Helper function to call program.
+    */
+    void draw() const;
 };
 
 } // namespace render

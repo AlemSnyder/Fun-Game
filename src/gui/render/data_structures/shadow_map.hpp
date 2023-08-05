@@ -21,9 +21,7 @@
  */
 #pragma once
 
-#include "../meshloader.hpp"
-#include "../shader.hpp"
-#include "../../types.hpp"
+#include "../../../types.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -34,34 +32,25 @@
 
 namespace gui {
 
-namespace render {
+namespace data_structures {
 
 /**
- * @brief Renders the shadow from the given meshes.
+ * @brief Contains a shadow depth buffer that can be rendered to.
  *
- * @details ShadowMap renders the depth texture to depthTexture. First sets the
- * meshes to render from, then renders the depth using the given light
- * direction, and projection matrix.
+ * @details ShadowMap holds the depth texture. When added to a scene object
+ * shadows are cast to this depth texture, and used when rendering the scene.
  */
 class ShadowMap {
  private:
-    GLuint programID_;             // ID of non-indexed mesh Program
-    GLuint depth_matrix_ID_;       // ID of depth matrix for non-indexed Program
-    GLuint programID_multi_;       // ID of indexed mesh Program
-    GLuint depth_matrix_ID_multi_; // ID of depth matrix for indexed Program
-    GLuint depth_texture_;         // ID of depth texture
-    GLuint frame_buffer_name_;     // ID of frame buffer
+    GLuint depth_texture_id_; // ID of depth texture
+    GLuint frame_buffer_id_;  // ID of frame buffer
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sunlight
-    screen_size_t shadow_width_;             // width of depth texture
-    screen_size_t shadow_height_;            // height of depth texture
+    screen_size_t shadow_width_;        // width of depth texture
+    screen_size_t shadow_height_;       // height of depth texture
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
-    glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
-                                  // direction
-    // vector of stored data that describes non-indexed meshes
-    std::vector<std::shared_ptr<MeshData::SingleMesh>> singles_meshes_;
-    // vector of stored data that describes indexed meshes
-    std::vector<std::shared_ptr<MeshData::MultiMesh>> multi_meshes_;
+    glm::mat4 depth_view_matrix_;       // convert a point in world space
+                                        // to depth in light direction
 
  public:
     /**
@@ -73,23 +62,9 @@ class ShadowMap {
     ShadowMap(screen_size_t w, screen_size_t h);
 
     ~ShadowMap() {
-        glDeleteFramebuffers(1, &frame_buffer_name_);
-        glDeleteTextures(1, &depth_texture_);
+        glDeleteFramebuffers(1, &frame_buffer_id_);
+        glDeleteTextures(1, &depth_texture_id_);
     }
-
-    /**
-     * @brief adds a non-indexed mesh so it will cast a shadow
-     *
-     * @param mesh the mesh to add
-     */
-    void add_mesh(std::shared_ptr<MeshData::SingleMesh> mesh);
-
-    /**
-     * @brief adds an indexed mesh so it will cast a shadow
-     *
-     * @param mesh the mesh to add
-     */
-    void add_mesh(std::shared_ptr<MeshData::MultiMesh> mesh);
 
     /**
      * @brief Get the depth texture ID
@@ -98,7 +73,7 @@ class ShadowMap {
      */
     inline GLuint&
     get_depth_texture() {
-        return depth_texture_;
+        return depth_texture_id_;
     }
 
     /**
@@ -108,7 +83,7 @@ class ShadowMap {
      */
     inline GLuint&
     get_frame_buffer() {
-        return frame_buffer_name_;
+        return frame_buffer_id_;
     }
 
     /**
@@ -126,22 +101,26 @@ class ShadowMap {
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
     /**
-     * @brief renders the length of the light ray to the depth buffer
+     * @brief Get shadow width in pixels
      *
+     * @return screen_size_t width of shadow map in pixels
      */
-    void render_shadow_depth_buffer() const;
-
     inline screen_size_t
     get_shadow_width() const {
         return shadow_width_;
     }
 
+    /**
+     * @brief Get shadow height in pixels
+     *
+     * @return screen_size_t height of shadow map in pixels
+     */
     inline screen_size_t
     get_shadow_height() const {
         return shadow_height_;
     }
 };
 
-} // namespace render
+} // namespace data_structures
 
 } // namespace gui

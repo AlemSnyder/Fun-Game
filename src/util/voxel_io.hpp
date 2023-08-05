@@ -15,7 +15,6 @@
 #include <vector>
 
 namespace voxel_utility {
-// TODO make this file 1k lines long
 
 template <std::integral T>
 inline void
@@ -55,7 +54,6 @@ void from_qb(
 template <VoxelLike T>
 void
 to_qb(std::filesystem::path path, const T& ter, bool compression = false) {
-
     path = std::filesystem::absolute(path);
 
     LOG_INFO(logging::file_io_logger, "Saving voxels to {}.", path.string());

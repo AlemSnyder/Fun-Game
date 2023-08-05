@@ -1,23 +1,17 @@
-#include "static_mesh.hpp"
+#include "non_instanced_i_mesh.hpp"
 
-#include "../../entity/mesh.hpp"
-#include "../../logging.hpp"
-#include "../../types.hpp"
-#include "../meshloader.hpp"
+#include "../../../terrain/material.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <vector>
-
 namespace gui {
 
 namespace data_structures {
 
-StaticMesh::StaticMesh(
-    const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
-) {
+void
+NonInstancedIMeshGPU::update(const entity::Mesh& mesh) {
     // clear all buffers
     GLuint buffers[] = {
         vertex_buffer_,
@@ -32,8 +26,7 @@ StaticMesh::StaticMesh(
     //     then there is no reason to create a buffer
     // create a bool do_render, set to false when
     num_vertices_ = mesh.get_indices().size();
-    num_models_ = model_transforms.size();
-    do_render_ = (num_vertices_ != 0 && num_models_ != 0);
+    do_render_ = (num_vertices_ != 0);
 
     if (!do_render_)
         return;
@@ -68,33 +61,6 @@ StaticMesh::StaticMesh(
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER, mesh.get_indices().size() * sizeof(unsigned short),
         mesh.get_indices().data(), GL_STATIC_DRAW
-    );
-
-    // Generate a texture
-    std::vector<ColorFloat> float_colors =
-        color::convert_color_data(mesh.get_color_map());
-
-    // LOG_DEBUG(logging::opengl_logger, "float_colors {}", float_colors);
-    glGenTextures(1, &color_texture_);
-    glBindTexture(GL_TEXTURE_1D, color_texture_);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load and generate the texture
-    glTexImage1D(
-        GL_TEXTURE_1D, 0, GL_RGBA32F, float_colors.size(), 0, GL_RGBA, GL_FLOAT,
-        float_colors.data()
-    );
-    glGenerateMipmap(GL_TEXTURE_1D);
-
-    /// Generate a buffer for the transforms
-    glGenBuffers(1, &transforms_buffer_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, transforms_buffer_);
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, model_transforms.size() * sizeof(glm::ivec3),
-        model_transforms.data(), GL_STATIC_DRAW
     );
 }
 

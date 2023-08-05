@@ -20,7 +20,6 @@ using TerrainOffset = glm::i32vec3;
 // Macro tile position in macro map.
 using MacroDim = uint16_t;
 
-
 /***************
  * Pathfinding *
  ***************/
@@ -62,7 +61,7 @@ static_assert(sizeof(VoxelColorId) == sizeof(MatColorId));
 
 // The reason for this static_assert is that VoxelColorId and MatColorId are
 // used in templates. We need Terrain base to act like a Voxel base in this
-// case. 
+// case.
 
 /**********
  * Opengl *

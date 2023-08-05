@@ -12,17 +12,18 @@
  */
 
 /**
- * @file render.hpp
+ * @file sky.hpp
  *
  * @brief Defines MainRender class.
  *
- * @ingroup GUI
+ * @ingroup GUI  RENDER
  *
  */
 #pragma once
 
+#include "../../shader.hpp"
 #include "../data_structures/sky_data.hpp"
-#include "../meshloader.hpp"
+#include "gui_render_types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -43,7 +44,9 @@ namespace render {
  * shaders.
  *
  */
-class SkyRenderer {
+class SkyRenderer :
+    public render_to::FrameBufferMultisample,
+    public render_to::FrameBuffer {
  private:
     GLuint programID_;                  // ID of Program
     GLuint matrix_view_projection_ID_;  // ID of world to camera space transform matrix
@@ -55,7 +58,7 @@ class SkyRenderer {
      * @brief Construct a new Main Renderer object
      *
      */
-    SkyRenderer();
+    explicit SkyRenderer(ShaderHandler shader_handler = ShaderHandler());
 
     ~SkyRenderer();
 
@@ -65,6 +68,29 @@ class SkyRenderer {
      * @param window the OpenGL window
      */
     void render(GLFWwindow* window, GLuint frame_buffer) const;
+
+    /**
+     * @brief Renders sky to given framebuffer
+     * 
+     * @param window OpenGL window
+     * @param frame_buffer frame buffer id
+    */
+    void
+    render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer)
+        const override {
+        return render(window, frame_buffer);
+    }
+
+    /**
+     * @brief Renders sky to given framebuffer
+     * 
+     * @param window OpenGL window
+     * @param frame_buffer frame buffer id
+    */
+    void
+    render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const override {
+        return render(window, frame_buffer);
+    }
 };
 
 } // namespace render

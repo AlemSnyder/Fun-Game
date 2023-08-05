@@ -1,8 +1,8 @@
-#include "quad_renderer_multisample.hpp"
+#include "quad_renderer.hpp"
 
-#include "../../util/files.hpp"
-#include "../meshloader.hpp"
-#include "../shader.hpp"
+#include "../../../util/files.hpp"
+#include "../../handler.hpp"
+#include "../../shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,16 +14,13 @@ namespace gui {
 
 namespace render {
 
-QuadRendererMultisample::QuadRendererMultisample() {
+QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
     // program
-    programID_ = load_shaders(
+    program_id_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
-        files::get_resources_path() / "shaders" / "SimpleTextureMS.frag"
+        files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
-    texID = glGetUniformLocation(programID_, "texture");
-    widthID = glGetUniformLocation(programID_, "width");
-    heightID = glGetUniformLocation(programID_, "height");
-    tex_samplesID = glGetUniformLocation(programID_, "tex_samples");
+    texID = glGetUniformLocation(program_id_, "texture");
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {
@@ -31,48 +28,49 @@ QuadRendererMultisample::QuadRendererMultisample() {
         -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
     };
 
-    glGenBuffers(1, &quad_vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+    glGenBuffers(1, &quad_vertexbuffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer_);
     glBufferData(
         GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data,
         GL_STATIC_DRAW
     );
 }
 
-QuadRendererMultisample::~QuadRendererMultisample() {
-    glDeleteBuffers(1, &quad_vertexbuffer);
-    glDeleteProgram(programID_);
+QuadRenderer::~QuadRenderer() {
+    glDeleteBuffers(1, &quad_vertexbuffer_);
+    glDeleteProgram(program_id_);
 }
 
 void
-QuadRendererMultisample::render(
-    screen_size_t width, screen_size_t height, uint32_t samples, GLuint window_render_texture,
+QuadRenderer::setup(
+    screen_size_t width, screen_size_t height, GLuint window_render_texture,
     GLuint frame_buffer
 ) const {
-    // Render to the frame)buffer
-    // if frame_buffer is 0 this is the screen
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame_buffer);
-
+    // Render to the screen
+    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, width, height);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glDisable(GL_CULL_FACE);
+    // glDisable(GL_DEPTH_TEST);
+
+    glClear(GL_DEPTH_BUFFER_BIT);
     // Use our shader
-    glUseProgram(programID_);
+    glUseProgram(program_id_);
 
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, window_render_texture);
+    glBindTexture(GL_TEXTURE_2D, window_render_texture);
     // Set our "renderedTexture" sampler to use Texture Unit 0
     glUniform1i(texID, 0);
-    glUniform1ui(widthID, width);
-    glUniform1ui(heightID, height);
-    glUniform1ui(tex_samplesID, samples);
+}
 
+void
+QuadRenderer::draw() const {
     // first attribute buffer : vertices
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer_);
     glVertexAttribPointer(
         0,        // attribute 0. No particular reason for 0,
                   // but must match the layout in the shader.
@@ -88,6 +86,15 @@ QuadRendererMultisample::render(
     glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting
     // at 0 -> 2 triangles
     glDisableVertexAttribArray(0);
+}
+
+void
+QuadRenderer::render(
+    screen_size_t width, screen_size_t height, GLuint window_render_texture,
+    GLuint frame_buffer
+) const {
+    setup(width, height, window_render_texture, frame_buffer);
+    draw();
 }
 
 } // namespace render

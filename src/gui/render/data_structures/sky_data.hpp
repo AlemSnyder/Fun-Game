@@ -1,3 +1,28 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file sky_data.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines SkyData class
+ *
+ * @ingroup GUI  DATA_STRUCTURES
+ *
+ */
+
+#pragma once
+
 #include <json/json.h>
 
 #include <GL/glew.h>
@@ -7,18 +32,22 @@
 #include <filesystem>
 #include <vector>
 
-#pragma once
-
 namespace gui {
 
 namespace data_structures {
 
+/**
+ * @brief Contains a shadow depth buffer that can be rendered to.
+ *
+ * @details ShadowMap holds the depth texture. When added to a scene object
+ * shadows are cast to this depth texture, and used when rendering the scene.
+ */
 class SkyData {
  private:
-    GLuint star_positions_;
-    GLuint age_buffer_;
-    GLuint shape_buffer_;
-    size_t num_stars_;
+    GLuint star_positions_; // id of vertex buffer for star positions
+    GLuint age_buffer_;     // id of vertex buffer for star age
+    GLuint shape_buffer_;   // id of vertex buffer of star shape
+    size_t num_stars_;      // number of stars to draw
 
  public:
     /**

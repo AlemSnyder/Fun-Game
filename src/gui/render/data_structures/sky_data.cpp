@@ -1,9 +1,8 @@
 #include "sky_data.hpp"
 
-#include "../../entity/mesh.hpp"
-#include "../../logging.hpp"
-#include "../../types.hpp"
-#include "../meshloader.hpp"
+#include "../../../entity/mesh.hpp"
+#include "../../../logging.hpp"
+#include "../../../types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
