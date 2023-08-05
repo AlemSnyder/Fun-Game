@@ -66,7 +66,10 @@ class QuadRendererMultisample : public QuadRenderer {
     /**
      * @brief renders the given meshes
      *
-     * @param window the OpenGL window
+     * @param screen_size_t window height
+     * @param screen_size_t window width
+     * @param GLuint texture to render from
+     * @param GLuint framebuffer to render to
      */
     void inline render(
         screen_size_t width, screen_size_t height, uint32_t samples,

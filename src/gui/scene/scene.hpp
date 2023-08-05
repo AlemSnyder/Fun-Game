@@ -37,6 +37,9 @@
 
 namespace gui {
 
+/**
+ * @brief Scene object to handel 3D rendering.
+*/
 class Scene {
  private:
     data_structures::FrameBufferMultisample frame_buffer_multisample_;
@@ -57,6 +60,13 @@ class Scene {
     render::QuadRendererMultisample quad_renderer_multisample_;
 
  public:
+    /**
+     * @brief Scene constructor
+     * 
+     * @param window_width with of scene
+     * @param window_height height of scene
+     * @param shadow_map_width_height side length of shadow map
+    */
     inline Scene(
         screen_size_t window_width, screen_size_t window_height,
         uint32_t shadow_map_width_height
@@ -65,40 +75,78 @@ class Scene {
         shadow_map_(shadow_map_width_height, shadow_map_width_height), sky_renderer_(),
         quad_renderer_multisample_() {}
 
+    /**
+     * @brief Get scene frame buffer multisample id
+     * 
+     * @return GLuint frame buffer multisample id
+    */
     inline GLuint
     get_scene() {
         return frame_buffer_multisample_.get_single_sample_texture();
     }
 
+    /**
+     * @brief Get scene shadow mat depth texture id
+     * 
+     * @return GLuint shadow mat depth texture id
+    */
     inline GLuint
     get_depth_texture() {
         return shadow_map_.get_depth_texture();
     }
 
-    inline uint32_t
+    /**
+     * @brief Get shadow map width
+     * 
+     * @return screen_size_t width
+    */
+    inline screen_size_t
     get_shadow_width() {
         return shadow_map_.get_shadow_width();
     }
 
-    inline uint32_t
+    /**
+     * @brief Get shadow map height
+     * 
+     * @return screen_size_t height
+    */
+    inline screen_size_t
     get_shadow_height() {
         return shadow_map_.get_shadow_height();
     }
 
+    /**
+     * @brief Get scene frame buffer multisample id
+    */
     void update(GLFWwindow* window);
 
     // model attach
 
+    /**
+     * @brief Attach shadow renderer.
+     *
+     * @param render object that can render to a shadow framebuffer.
+     */
     inline void
     shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
         mid_ground_shadow_.push_back(shadow);
     }
 
+    /**
+     * @brief Attach renderer.
+     *
+     * @param render object that can render to a framebuffer.
+     */
     inline void
     frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render) {
         mid_ground_frame_buffer_.push_back(render);
     }
 
+    /**
+     * @brief Attach multisample renderer.
+     *
+     * @param render object that can render to a multisample framebuffer.
+     */
     inline void
     frame_buffer_multisample_attach(
         const std::shared_ptr<render_to::FrameBufferMultisample>& render

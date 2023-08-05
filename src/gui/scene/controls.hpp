@@ -34,7 +34,7 @@ namespace controls {
  * @brief Computes the view, and projection matrix using the size of the given
  * window
  *
- * @param window The current OpenGL window (duh)
+ * @param window The current OpenGL window
  */
 void computeMatricesFromInputs(GLFWwindow* window);
 
@@ -53,6 +53,11 @@ glm::mat4 get_view_matrix();
  */
 glm::mat4 get_projection_matrix();
 
+/**
+ * @brief Get the position vector
+ * 
+ * @return glm::vec3 camera position in world
+*/
 glm::vec3 get_position_vector();
 
 /**

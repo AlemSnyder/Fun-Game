@@ -69,12 +69,24 @@ class SkyRenderer :
      */
     void render(GLFWwindow* window, GLuint frame_buffer) const;
 
+    /**
+     * @brief Renders sky to given framebuffer
+     * 
+     * @param window OpenGL window
+     * @param frame_buffer frame buffer id
+    */
     void
     render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer)
         const override {
         return render(window, frame_buffer);
     }
 
+    /**
+     * @brief Renders sky to given framebuffer
+     * 
+     * @param window OpenGL window
+     * @param frame_buffer frame buffer id
+    */
     void
     render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const override {
         return render(window, frame_buffer);
