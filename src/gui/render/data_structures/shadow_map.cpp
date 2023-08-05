@@ -1,7 +1,7 @@
 #include "shadow_map.hpp"
 
-#include "../../handler.hpp"
 #include "../../../logging.hpp"
+#include "../../handler.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -62,6 +62,6 @@ ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
     depth_projection_matrix_ = std::move(depth_projection_matrix);
 }
 
-} // namespace render
+} // namespace data_structures
 
 } // namespace gui

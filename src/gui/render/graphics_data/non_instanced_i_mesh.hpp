@@ -63,9 +63,9 @@ class NonInstancedIMeshGPU {
     NonInstancedIMeshGPU& operator=(NonInstancedIMeshGPU&& other) = default;
 
     inline NonInstancedIMeshGPU(){};
-    explicit inline NonInstancedIMeshGPU(const entity::Mesh& mesh){
-        update(mesh);
-    }
+
+    explicit inline NonInstancedIMeshGPU(const entity::Mesh& mesh) { update(mesh); }
+
     void update(const entity::Mesh& mesh);
 
     inline ~NonInstancedIMeshGPU() {

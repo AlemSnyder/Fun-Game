@@ -21,8 +21,8 @@
  */
 #pragma once
 
-#include "../data_structures/sky_data.hpp"
 #include "../../shader.hpp"
+#include "../data_structures/sky_data.hpp"
 #include "gui_render_types.hpp"
 
 #include <GL/glew.h>

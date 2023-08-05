@@ -17,10 +17,10 @@
  *
  * @brief Defines set_imgui_style function
  *
- * @ingroup 
+ * @ingroup
  *
  */
 
 namespace gui {
-    void set_imgui_style();
+void set_imgui_style();
 }

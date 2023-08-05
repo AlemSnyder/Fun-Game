@@ -215,7 +215,7 @@ class Terrain : public TerrainBase {
     );
     /**
      * @brief Construct a new Terrain object
-     * 
+     *
      * @param x_tiles number of macro tiles in x direction
      * @param y_tiles number of macro tiles in y direction
      * @param Area_size_ size of a macro map tile
@@ -437,7 +437,7 @@ class Terrain : public TerrainBase {
      * @param x x position
      * @param y y position
      * @param z z position
-     * 
+     *
      * @return true can stand
      * @return false cannot stand
      */
@@ -485,13 +485,13 @@ class Terrain : public TerrainBase {
 
     /**
      * @brief test if dxy x dyx x dz object can stand at given position
-     * 
+     *
      * @param x x position
      * @param y y position
      * @param z z position
      * @param dz height of object to test
      * @param dxy width of object to test
-     * 
+     *
      * @return true can stand
      * @return false cannot stand
      */
@@ -502,7 +502,7 @@ class Terrain : public TerrainBase {
      * @param tile tile to test
      * @param dz height of object to test
      * @param dxy width of object to test
-     * 
+     *
      * @return true can stand
      * @return false cannot stand
      */
@@ -513,7 +513,7 @@ class Terrain : public TerrainBase {
      * @param tile tile to test
      * @param dz height of object to test
      * @param dxy width of object to test
-     * 
+     *
      * @return true can stand
      * @return false cannot stand
      */

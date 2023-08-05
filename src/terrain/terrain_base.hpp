@@ -15,7 +15,7 @@
  * @author @AlemSnyder
  *
  * @brief Defines Terrain class
- * 
+ *
  * @ingroup Terrain
  *
  */
@@ -341,7 +341,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] inline Tile*
     get_tile(int x, int y, int z) {
-        return const_cast<Tile*>(std::as_const(*this).get_tile(x,y,z));
+        return const_cast<Tile*>(std::as_const(*this).get_tile(x, y, z));
     };
 
     [[nodiscard]] inline Tile*
@@ -519,7 +519,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z_end greater z position
      * @param mat materials to set
      * @param elements_can_stamp type of material that can be changed
-     * 
+     *
      * @param color_id color id to set
      */
     void stamp_tile_region(
@@ -542,7 +542,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     /**
      * @brief generates a 2D 'height' map to use to generate the terrain
-     * 
+     *
      * @param size_x number of tile types in x direction
      * @param size_y number of tile types in y direction
      * @param map_data json data on how to generate map

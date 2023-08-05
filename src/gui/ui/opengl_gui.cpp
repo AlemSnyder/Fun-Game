@@ -25,11 +25,9 @@ namespace gui {
 
 int
 opengl_entry(World& world) {
-
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
     screen_size_t shadow_map_size = 4096;
-
 
     std::optional<GLFWwindow*> window = setup_opengl(window_width, window_height);
     if (!window)
@@ -50,7 +48,7 @@ opengl_entry(World& world) {
     render::QuadRenderer QR;
 
     ShaderHandler shader_handler = ShaderHandler();
-    
+
     world.update_all_chunks_mesh();
     Scene main_scene(window_width, window_height, shadow_map_size);
     setup(main_scene, world);

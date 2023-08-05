@@ -31,10 +31,10 @@ namespace gui {
 
 /**
  * @brief Handles frame buffer on gpu
- * 
+ *
  * @details Binds frame buffer, and guaranties that bound buffers are not bound
  * again
-*/
+ */
 class FrameBufferHandler {
  private:
     GLuint fbo_id;

@@ -35,8 +35,7 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
 
     // Create window with graphics context
     GLFWwindow* window = glfwCreateWindow(
-        window_width, window_height, "Dear ImGui GLFW+OpenGL3 example",
-        nullptr, nullptr
+        window_width, window_height, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr
     );
     if (window == nullptr)
         return nullptr;

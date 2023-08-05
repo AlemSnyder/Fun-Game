@@ -331,7 +331,7 @@ Terrain::get_node_group(const Tile* t) {
 const NodeGroup*
 Terrain::get_node_group(int xyz) const {
     auto out = tile_to_group_.find(xyz);
-    if (out == tile_to_group_.end()){
+    if (out == tile_to_group_.end()) {
         return nullptr;
     }
     return out->second;

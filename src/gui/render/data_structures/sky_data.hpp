@@ -15,7 +15,7 @@
  *
  * @author @AlemSnyder
  *
- * @brief Defines SkyData class 
+ * @brief Defines SkyData class
  *
  * @ingroup GUI  DATA_STRUCTURES
  *

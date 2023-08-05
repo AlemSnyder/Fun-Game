@@ -45,3 +45,8 @@ POSIX shells only
 shopt -s extglob                   # For making ** apply to any number of dirs
 clang-format src/**/*.{h,c}pp -i
 ```
+
+Personally I like this oen better:
+
+```git ls-files --exclude-standard | grep -E '\.(cpp|hpp|c|cc|cxx|hxx|ixx)$' | xargs clang-format -i
+```

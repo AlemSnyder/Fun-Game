@@ -93,7 +93,7 @@ class Tile {
     // Setters
     /**
      * @brief Set the material of this tile, and update color and solid state.
-     * 
+     *
      * @param mat_ material to set
      */
     void set_material(const terrain::Material* const materials);
@@ -145,7 +145,7 @@ class Tile {
      * @brief Set the color id if this tile is grass. Updates the grass color
      * to account for edge gradient. The gradient mimics shadows caused by
      * cliffs.
-     * 
+     *
      * @param grass_grad_length total length of grass gradient
      * @param grass_mid index of color not effected by edge affects
      * @param grass_colors grass color vector

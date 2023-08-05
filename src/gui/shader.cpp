@@ -43,7 +43,7 @@ ShaderHandler::get_shader(
     GLuint shader_id;
 
     auto it = shaders.find(file_relative_path);
-    if ( it == shaders.end() ){
+    if (it == shaders.end()) {
         shader_id = load_shader(file_relative_path, gl_shader_type);
         if (shader_id != 0) {
             shaders.insert_or_assign(file_relative_path, shader_id);
@@ -63,7 +63,7 @@ ShaderHandler::reload_shader(
     GLuint shader_id;
 
     auto it = shaders.find(file_relative_path);
-    if ( it != shaders.end() ){
+    if (it != shaders.end()) {
         shader_id = it->second;
     } else {
         shader_id = load_shader(file_relative_path, gl_shader_type);

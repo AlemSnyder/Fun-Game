@@ -29,12 +29,12 @@ namespace gui {
 
 /**
  * @brief Runs the gui using opengl.
- * 
+ *
  * @details The frame buffer is rendered to an the screen. This function only
  * uses opengl methods so it is less likely to fail than imgui_entry.
- * 
+ *
  * @returns int exit status to be sent to main.
-*/
+ */
 int opengl_entry(World& world);
 
 } // namespace gui

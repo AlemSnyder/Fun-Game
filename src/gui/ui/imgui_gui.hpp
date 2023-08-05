@@ -17,7 +17,7 @@
  *
  * @brief Defines imgui_entry function
  *
- * @ingroup 
+ * @ingroup
  *
  */
 
@@ -26,12 +26,12 @@
 namespace gui {
 /**
  * @brief Runs the gui using imgui.
- * 
+ *
  * @details The frame buffer is rendered to an imgui window. Other imgui frames
  * can be used to interface with data.
- * 
+ *
  * @returns int exit status to be sent to main.
-*/
+ */
 int imgui_entry(World& world);
 
-} // namespace ui
+} // namespace gui

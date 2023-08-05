@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "../scene/scene.hpp"
 #include "../../world.hpp"
+#include "../scene/scene.hpp"
 
 namespace gui {
 

@@ -16,7 +16,6 @@ namespace data_structures {
 InstancedIMeshGPU::InstancedIMeshGPU(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
 ) {
-
     update(mesh);
 
     // InstancedInt does not create a color texture. One must inherit from this

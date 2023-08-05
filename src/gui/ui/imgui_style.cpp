@@ -3,8 +3,8 @@
 #include <imgui/imgui.h>
 
 namespace gui {
-    void set_imgui_style(){
-
+void
+set_imgui_style() {
     // Setup Dear ImGui style
     // ImGui::StyleColorsDark();
     // ImGui::StyleColorsLight();
@@ -94,7 +94,5 @@ namespace gui {
     // ImFont* font =
     // io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL,
     // io.Fonts->GetGlyphRangesJapanese()); IM_ASSERT(font != NULL);
-
-
-    }
 }
+} // namespace gui

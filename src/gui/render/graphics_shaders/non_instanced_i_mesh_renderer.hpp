@@ -116,7 +116,8 @@ class NonInstancedIMeshRenderer :
      * @param window the OpenGL window
      * @param GLuint frame buffer to render to
      */
-    void render_frame_buffer(GLFWwindow* window, GLuint frame_buffer = 0) const override;
+    void
+    render_frame_buffer(GLFWwindow* window, GLuint frame_buffer = 0) const override;
 
     /**
      * @brief renders the given meshes to multisample frame buffer
@@ -172,8 +173,7 @@ NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(ShaderHandler shader_han
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::~NonInstancedIMeshRenderer() {
-}
+NonInstancedIMeshRenderer<T>::~NonInstancedIMeshRenderer() {}
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
@@ -197,7 +197,8 @@ NonInstancedIMeshRenderer<T>::set_light_direction(glm::vec3 light_direction) {
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-NonInstancedIMeshRenderer<T>::set_depth_projection_matrix(glm::mat4 depth_projection_matrix
+NonInstancedIMeshRenderer<T>::set_depth_projection_matrix(
+    glm::mat4 depth_projection_matrix
 ) {
     depth_projection_matrix_ = depth_projection_matrix;
 }
@@ -328,8 +329,9 @@ NonInstancedIMeshRenderer<T>::render_frame_buffer_multisample(
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-NonInstancedIMeshRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_buffer)
-    const {
+NonInstancedIMeshRenderer<T>::render_frame_buffer(
+    GLFWwindow* window, GLuint frame_buffer
+) const {
     // Render to the screen
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
 

@@ -21,9 +21,9 @@
  *
  */
 
-#include <GLFW/glfw3.h>
-
 #include "../../../types.hpp"
+
+#include <GLFW/glfw3.h>
 
 #pragma once
 

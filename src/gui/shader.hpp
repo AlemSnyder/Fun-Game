@@ -15,7 +15,7 @@
  *
  * @author @AlemSnyder
  *
- * @brief Define ShaderHandler 
+ * @brief Define ShaderHandler
  *
  * @ingroup GUI
  *
@@ -32,18 +32,18 @@
 namespace gui {
 /**
  * @brief Converts GLuint shader type to human readable string for logging.
- * 
+ *
  * @details Returns a human readable string for each opengl shader type.
- * 
+ *
  * @returns std::string string name of shader type
-*/
+ */
 std::string get_shader_string(GLuint gl_shader_type);
 
 /**
  * @brief Loads and saves shader programs
- * 
- * @details  
-*/
+ *
+ * @details
+ */
 class ShaderHandler {
  private:
     // maybe these should be coppies?
@@ -53,10 +53,10 @@ class ShaderHandler {
     // file extensions are for losers One must pass the type in addition
     /**
      * @brief Get shader program id corresponding to given file path.
-     * 
+     *
      * @details Returns a shader program either from cache or by loading one
      * on success, or 0 on failure.
-    */
+     */
     GLuint get_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);
 
     GLuint load_program(
@@ -66,10 +66,9 @@ class ShaderHandler {
 
     void clear();
 
-    inline ShaderHandler() {};
-    inline ~ShaderHandler() {
-        shaders.clear();
-    }
+    inline ShaderHandler(){};
+
+    inline ~ShaderHandler() { shaders.clear(); }
 
  private:
     GLuint load_shader(const std::filesystem::path& file_path, GLuint gl_shader_type);

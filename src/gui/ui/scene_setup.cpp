@@ -15,10 +15,9 @@ setup(Scene& scene, World& world) {
     auto terrain_mesh = world.get_chunks_mesh();
 
     // should check that this does what I want it to.
-    auto chunk_renderer =
-        std::make_shared<models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(
-            shader_handler
-        );
+    auto chunk_renderer = std::make_shared<
+        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(shader_handler
+    );
 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture()
