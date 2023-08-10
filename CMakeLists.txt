@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set the project name
@@ -34,18 +35,25 @@ target_link_libraries(FunGame glfw)
 target_link_libraries(FunGame OpenGL::GL)
 target_link_libraries(FunGame GLEW::GLEW)
 
+if(WIN32)
+target_link_libraries(FunGame glm)
+else()
+target_link_libraries(FunGame glm::glm)
+endif()
+
+# Lua 5.2 just uses the name "Lua" while 5.1, and 5.0 used "Lua51", and "Lua50"
+# respectivly.
+find_package(Lua REQUIRED)
+
+include_directories(${LUA_INCLUDE_DIR})
+
 # add quill
 target_link_libraries(FunGame quill::quill)
-
-if(WIN32)
-  target_link_libraries(FunGame glm)
-else()
-  target_link_libraries(FunGame glm::glm)
-endif()
 
 # Add include dirs for vendored and configured headers
 target_include_directories(FunGame PUBLIC "vendor")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
+target_link_libraries(FunGame ${LUA_LIBRARIES})
 
 # Set warning options
 if(MSVC)

@@ -35,11 +35,11 @@
 int
 GenerateTerrain(const std::string path) {
     Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
+    std::ifstream materials_file = files::open_data_file("base/materials.json");
     materials_file >> materials_json;
 
     Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("biome_data.json");
+    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
     biome_file >> biome_data;
 
     World world(materials_json, biome_data, 6, 6);
@@ -54,7 +54,7 @@ MacroMap() {
     quill::Logger* logger = quill::get_logger();
 
     Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("biome_data.json");
+    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
     biome_file >> biome_data;
 
     // test terrain generation in a region of 64 by 64
@@ -70,7 +70,7 @@ MacroMap() {
 int
 save_test(const std::string path, const std::string save_path) {
     Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
+    std::ifstream materials_file = files::open_data_file("base/materials.json");
     materials_file >> materials_json;
 
     World world(materials_json, path);
@@ -86,7 +86,7 @@ save_terrain(
 ) {
     quill::Logger* logger = quill::get_logger();
 
-    std::ifstream materials_file = files::open_data_file("materials.json");
+    std::ifstream materials_file = files::open_data_file("base/materials.json");
     materials_file >> materials_json;
 
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
@@ -115,7 +115,7 @@ path_finder_test(const std::string& path, const std::string& save_path) {
     quill::Logger* logger = quill::get_logger();
 
     Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
+    std::ifstream materials_file = files::open_data_file("base/materials.json");
     materials_file >> materials_json;
 
     World world(materials_json, path);
@@ -157,11 +157,11 @@ path_finder_test(const std::string& path, const std::string& save_path) {
 int
 imgui_entry_main() {
     Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
+    std::ifstream materials_file = files::open_data_file("base/materials.json");
     materials_file >> materials_json;
 
     Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("biome_data.json");
+    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
     biome_file >> biome_data;
 
     // Create world object from material data, biome data, and the number of
@@ -174,11 +174,11 @@ imgui_entry_main() {
 int
 StressTest() {
     Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
+    std::ifstream materials_file = files::open_data_file("base/materials.json");
     materials_file >> materials_json;
 
     Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("biome_data.json");
+    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
     biome_file >> biome_data;
 
     // Create world object from material data, biome data, and the number of
@@ -257,14 +257,14 @@ main(int argc, char** argv) {
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
     if (argc == 1) {
-        return opengl_entry(files::get_data_path() / "models" / "DefaultTree.qb");
+        return opengl_entry(files::get_data_path() / "base" / "models" / "DefaultTree.qb");
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
-        std::ifstream biome_file = files::open_data_file("biome_data.json");
+        std::ifstream biome_file = files::open_data_file("base/biome_data.json");
         biome_file >> biome_data;
         std::string biome_name;
         Json::Value materials_json;
-        std::ifstream materials_file = files::open_data_file("materials.json");
+        std::ifstream materials_file = files::open_data_file("base/materials.json");
         materials_file >> materials_json;
 
         cmdl("biome-name", "Biome_1") >> biome_name;

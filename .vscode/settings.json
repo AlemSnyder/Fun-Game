@@ -119,5 +119,6 @@
         "hash_map": "cpp",
         "any": "cpp"
     },
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "cmake.configureOnOpen": false
 }
