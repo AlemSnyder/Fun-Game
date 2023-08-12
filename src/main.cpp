@@ -9,6 +9,7 @@
 #include "util/files.hpp"
 #include "util/voxel_io.hpp"
 #include "world.hpp"
+#include "terrain/terrain_generation/biome.hpp"
 
 #include <argh.h>
 #include <json/json.h>
@@ -289,6 +290,8 @@ main(int argc, char** argv) {
         return LogTest();
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
+    } else if (run_function == "LuaTest"){
+        terrain::terrain_generation::Biome("base");
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

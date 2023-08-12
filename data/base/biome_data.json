@@ -1,4 +1,5 @@
 {
+    "map_generator":"biome_map.lua",
     "Example": {
         "Land_Data": [
             {
