@@ -6,10 +6,10 @@
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
 #include "terrain/terrain.hpp"
+#include "terrain/terrain_generation/biome.hpp"
 #include "util/files.hpp"
 #include "util/voxel_io.hpp"
 #include "world.hpp"
-#include "terrain/terrain_generation/biome.hpp"
 
 #include <argh.h>
 #include <json/json.h>
@@ -258,7 +258,9 @@ main(int argc, char** argv) {
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
     if (argc == 1) {
-        return opengl_entry(files::get_data_path() / "base" / "models" / "DefaultTree.qb");
+        return opengl_entry(
+            files::get_data_path() / "base" / "models" / "DefaultTree.qb"
+        );
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
         std::ifstream biome_file = files::open_data_file("base/biome_data.json");
@@ -290,7 +292,7 @@ main(int argc, char** argv) {
         return LogTest();
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
-    } else if (run_function == "LuaTest"){
+    } else if (run_function == "LuaTest") {
         terrain::terrain_generation::Biome("base");
     } else {
         std::cout << "No known command" << std::endl;

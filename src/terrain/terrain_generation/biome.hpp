@@ -32,8 +32,8 @@ namespace terrain_generation {
 class Biome {
  private:
     std::vector<int> tile_map_vector_;
-    //std::vector<LandGenerator> land_generators_;
-    // vector of const data for creating land generators for every tile
+    // std::vector<LandGenerator> land_generators_;
+    //  vector of const data for creating land generators for every tile
 
     // std::vector<MacroTile> map_tiles_
     // 32 by 32 chunks that load data
