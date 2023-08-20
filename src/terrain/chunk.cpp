@@ -22,10 +22,11 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
                     ter->add_node_group(&node_groups_.back());
                 }
             }
-    for (NodeGroup& NG : node_groups_) {
+
+    for (NodeGroup& NG : node_groups_)
         for (const Tile* tile_main : NG.get_tiles()) {
-            for (auto it = ter_->get_tile_adjacent_iterator(ter->pos(tile_main), 31);
-                 !it.end(); it++) {
+            auto it = ter_->get_tile_adjacent_iterator(ter->pos(tile_main), 31);
+            for (; !it.end(); it++) {
                 if (NodeGroup* to_add = ter->get_node_group(it.get_pos())) {
                     // possible to go in both directions
                     // like add adjacent from above, and below
@@ -33,7 +34,6 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
                 }
             }
         }
-    }
 
     auto it = node_groups_.begin();
     while (it != node_groups_.end()) {

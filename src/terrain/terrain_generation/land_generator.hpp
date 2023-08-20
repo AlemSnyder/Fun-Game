@@ -111,8 +111,8 @@ class LandGenerator {
  private:
     unsigned int static get_num_stamps(const Json::Value& biome);
 
-    std::array<int, 6>
-    get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const;
+    void
+    get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz, TileStamp& ts) const;
 
     void from_radius(int cr, int csr, TileStamp& ts) const;
     void from_grid(int cr, int csr, TileStamp& ts) const;

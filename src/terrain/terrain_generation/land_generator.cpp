@@ -109,17 +109,10 @@ LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
         {x_center + DC, y_center + DC}
     };
 
-    std::array<int, 6> volume = get_volume(
+    get_volume(
         center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
+        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt(), ts
     );
-
-    ts.x_start = volume[0];
-    ts.y_start = volume[1];
-    ts.z_start = volume[2];
-    ts.x_end = volume[3];
-    ts.y_end = volume[4];
-    ts.z_end = volume[5];
 }
 
 void
@@ -136,17 +129,10 @@ LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const {
         {x_center + DC, y_center + DC}
     };
 
-    std::array<int, 6> volume = get_volume(
+    get_volume(
         center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
+        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt(), ts
     );
-
-    ts.x_start = volume[0];
-    ts.y_start = volume[1];
-    ts.z_start = volume[2];
-    ts.x_end = volume[3];
-    ts.y_end = volume[4];
-    ts.z_end = volume[5];
 }
 
 void
@@ -157,21 +143,16 @@ LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const {
         {xy_positions[0].asInt(), xy_positions[1].asInt()}
     };
 
-    std::array<int, 6> volume = get_volume(
+    get_volume(
         center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
+        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt(), ts
     );
-
-    ts.x_start = volume[0];
-    ts.y_start = volume[1];
-    ts.z_start = volume[2];
-    ts.x_end = volume[3];
-    ts.y_end = volume[4];
-    ts.z_end = volume[5];
 }
 
-std::array<int, 6>
-LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const {
+void
+LandGenerator::get_volume(
+    int center[2][2], int Sxy, int Sz, int Dxy, int Dz, TileStamp& ts
+) const {
     int center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
     int center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
     int size_x = rand() % (2 * Dxy + 1) + Sxy - Dxy;
@@ -195,7 +176,12 @@ LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) co
     }
 
     int z_max = rand() % (Dz + 1) + Sz - Dz / 2;
-    return {x_min, y_min, 0, x_max, y_max, z_max};
+    ts.x_start = x_min;
+    ts.x_end = x_max;
+    ts.y_start = y_min;
+    ts.y_end = y_max;
+    ts.z_start = 0;
+    ts.z_end = z_max;
 }
 
 void
