@@ -363,6 +363,9 @@ Terrain::remove_node_group(NodeGroup* NG) {
 
 const UnitPath
 Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
+    // #lizard forgives the complexity
+    // Because there are 8 path types that can be open or closed. This also
+    // tests if 2-6 tiles are open which also increases the complexity.
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
     int dz = 3;
@@ -568,7 +571,7 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
 
     std::function<bool(Node<const Tile>*, Node<const Tile>*)> compare =
         [](Node<const Tile>* lhs, Node<const Tile>* rhs) -> bool {
-        return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
+        return lhs->get_time_cots() > rhs->get_time_cots();
     };
 
     return get_path(start, {goal}, search_through, compare);

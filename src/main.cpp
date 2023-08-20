@@ -228,6 +228,8 @@ LogTest() {
 
 int
 main(int argc, char** argv) {
+    // #lizard forgives the complexity
+    // Because iff else over command line args
     argh::parser cmdl;
 
     cmdl.add_params({

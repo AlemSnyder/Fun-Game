@@ -43,6 +43,8 @@ message_callback(
     [[maybe_unused]] GLsizei length, const char* message,
     [[maybe_unused]] const void* userParam
 ) {
+    // #lizard forgives the complexity
+    // Because it's all cases
     std::string source_sting;
     std::string type_string;
     // clang-format off
