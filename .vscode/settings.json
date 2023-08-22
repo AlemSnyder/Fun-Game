@@ -117,7 +117,8 @@
         "*.def": "cpp",
         "*.inc": "cpp",
         "hash_map": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "*.ipp": "cpp"
     },
     "editor.detectIndentation": false
 }

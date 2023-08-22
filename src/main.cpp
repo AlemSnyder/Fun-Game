@@ -132,18 +132,23 @@ path_finder_test(const std::string& path, const std::string& save_path) {
         start_end.second->get_z()
     );
 
-    std::vector<const terrain::Tile*> tile_path =
+    auto tile_path =
         world.get_terrain_main().get_path_Astar(start_end.first, start_end.second);
 
-    LOG_INFO(logger, "Path length: {}", tile_path.size());
+    if (!tile_path){
+        LOG_WARNING(logger, "NO PATH FOUND");
+        return 1;
+    }
 
-    if (tile_path.size() == 0) {
-        LOG_INFO(logger, "No path");
+    LOG_INFO(logger, "Path length: {}", tile_path.value().size());
+
+    if (tile_path.value().size() == 0) {
+        LOG_WARNING(logger, "NO PATH FOUND");
         world.qb_save_debug(save_path);
         return 1;
     }
 
-    for (const terrain::Tile* tile : tile_path) {
+    for (const terrain::Tile* tile : tile_path.value()) {
         world.get_terrain_main()
             .get_tile(world.get_terrain_main().pos(tile))
             ->set_material(&world.get_materials()->at(7), 5);
