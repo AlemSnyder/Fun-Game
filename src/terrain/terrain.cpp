@@ -442,47 +442,25 @@ Terrain::get_all_node_groups() const {
     for (size_t c = 0; c < chunks_.size(); c++) {
         chunks_[c].add_nodes_to(out);
     }
-    return out;
+    return std::move(out);
+}
+
+std::optional<std::vector<const NodeGroup*>>
+Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const {
+    std::set<const NodeGroup*> search_through = get_all_node_groups();
+
+    return std::move(get_path<NodeGroup, helper::astar_compare>(start, {goal}, search_through));
 }
 
 std::optional<std::vector<const Tile*>>
-Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) const {
+Terrain::get_path_Astar(const Tile* start, const Tile* goal) const {
     const NodeGroup* goal_node;
     const NodeGroup* start_node;
-    int goal_z = goal_->get_z();
-    const Tile* goal;
-
-    if (!can_stand_1(goal_)) {
-        goal_z = get_Z_solid(goal_->get_x(), goal_->get_y()) + 1;
-        if (goal_z != 0) {
-            goal = get_tile(goal_->get_x(), goal_->get_y(), goal_z);
-        } else {
-            return {};
-        }
-    } else {
-        goal = goal_;
-    }
-
-    int start_z = start_->get_z();
-    const Tile* start;
-
-    if (!can_stand_1(start_)) {
-        start_z = get_Z_solid(start_->get_x(), start_->get_y()) + 1;
-        if (start_z != 0) {
-            start = get_tile(start_->get_x(), start_->get_y(), start_z);
-        } else {
-            return {};
-        }
-    } else {
-        start = start_;
-    }
 
     if (!(goal_node = get_node_group(goal)))
         return {};
-
     if (!(start_node = get_node_group(start)))
         return {};
-
     auto Node_path = get_path_Astar(start_node, goal_node);
     // if Node_path is empty then return
     if (!Node_path.has_value())
@@ -494,39 +472,18 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) const {
         search_through.insert(tiles.begin(), tiles.end());
     }
 
-    // TODO inline compare
-    std::function<bool(Node<const Tile>*, Node<const Tile>*)> compare =
-        [](Node<const Tile>* lhs, Node<const Tile>* rhs) -> bool {
-        return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
-    };
-
-    return get_path(start, {goal}, search_through, compare);
-}
-
-std::optional<std::vector<const NodeGroup*>>
-Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const {
-    std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
-        [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
-        return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
-    };
-
-    std::set<const NodeGroup*> search_through = get_all_node_groups();
-
-    return get_path(start, {goal}, search_through, compare);
+    return std::move(get_path<Tile, helper::astar_compare>(start, {goal}, search_through));
 }
 
 std::optional<std::vector<const NodeGroup*>>
 Terrain::get_path_breadth_first(
     const NodeGroup* start, const std::set<const NodeGroup*> goal
 ) const {
-    std::function<bool(Node<const NodeGroup>*, Node<const NodeGroup>*)> compare =
-        [](Node<const NodeGroup>* lhs, Node<const NodeGroup>* rhs) -> bool {
-        return lhs->get_time_cots() > rhs->get_time_cots();
-    };
-
     std::set<const NodeGroup*> search_through = get_all_node_groups();
 
-    return get_path(start, goal, search_through, compare);
+    return std::move(get_path<NodeGroup, helper::breadth_first_compare>(
+        start, goal, search_through
+    ));
 }
 
 std::optional<std::vector<const Tile*>>
@@ -535,19 +492,9 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
     bool no_goal = true;
     for (const Tile* g : goal_) {
         int goal_z = g->get_z();
-        if (can_stand_1(g)) {
+        if (auto goal_node = get_node_group(g)) {
             no_goal = false;
-            if (auto goal_node = get_node_group(g))
-                goal_nodes.insert(goal_node);
-        } else {
-            goal_z = get_Z_solid(g->get_x(), g->get_y()) + 1;
-            if (goal_z != 0) {
-                no_goal = false;
-                auto goal_node =
-                    get_node_group(get_tile(g->get_x(), g->get_y(), goal_z));
-                if (goal_node)
-                    goal_nodes.insert(goal_node);
-            }
+            goal_nodes.insert(goal_node);
         }
     }
     if (no_goal) { // in this case there is no valid z position at one of the
@@ -574,7 +521,7 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
             }
         }
     }
-    if (goal == nullptr)
+    if (!goal)
         return {};
     std::set<const Tile*> search_through;
     for (const NodeGroup* NG : node_path.value()) {
@@ -582,28 +529,17 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
         search_through.insert(tiles.begin(), tiles.end());
     }
 
-    std::function<bool(Node<const Tile>*, Node<const Tile>*)> compare =
-        [](Node<const Tile>* lhs, Node<const Tile>* rhs) -> bool {
-        return lhs->get_time_cots() > rhs->get_time_cots();
-    };
-
-    return get_path(start, {goal}, search_through, compare);
+    return std::move(get_path<Tile, helper::breadth_first_compare>(start, {goal}, search_through));
 }
 
-template <class T>
-std::vector<const T*>
+template <class T, bool compare(Node<const T>*, Node<const T>*)>
+std::optional<std::vector<const T*>>
 Terrain::get_path(
     const T* start, const std::set<const T*> goal,
-    const std::set<const T*> search_through,
-    std::function<bool(Node<const T>*, Node<const T>*)> compare
+    const std::set<const T*> search_through
 ) const {
-    auto T_compare = [&compare](Node<const T>* lhs, Node<const T>* rhs) {
-        return compare(lhs, rhs);
-    };
-
-    std::priority_queue<
-        Node<const T>*, std::vector<Node<const T>*>, decltype(T_compare)>
-        openNodes(T_compare);
+    std::priority_queue<Node<const T>*, std::vector<Node<const T>*>, decltype(compare)>
+        openNodes(compare);
 
     std::map<TileIndex, Node<const T>> nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
@@ -628,7 +564,7 @@ Terrain::get_path(
                 if (goal.find(n->get_tile()) != goal.end()) {
                     std::vector<const T*> path;
                     get_path_through_nodes(n, path, start);
-                    return path;
+                    return std::move(path);
                 }
                 openNodes.push(n); // n can be chose to expand around
             } else {
@@ -640,7 +576,7 @@ Terrain::get_path(
                         const_cast<Node<const T>**>(&openNodes.top()),
                         const_cast<Node<const T>**>(&openNodes.top())
                             + openNodes.size(),
-                        T_compare
+                        compare
                     );
                 } else {
                     n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
@@ -648,8 +584,7 @@ Terrain::get_path(
             }
         }
     }
-    std::vector<const T*> path;
-    return path;
+    return {};
 }
 
 void

@@ -84,6 +84,18 @@ getter_low(Tile* t) {
     return t->get_grow_data_low();
 }
 
+template <class T>
+inline bool
+astar_compare(T* lhs, T* rhs) {
+    return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
+}
+
+template <class T>
+inline bool
+breadth_first_compare(T* lhs, T* rhs) {
+    return lhs->get_time_cots() > rhs->get_time_cots();
+}
+
 } // namespace helper
 
 /**
@@ -588,11 +600,10 @@ class Terrain : public TerrainBase {
      * @param compare way to sort best path
      * @return std::vector<const T *> path optimized by compare
      */
-    template <class T>
-    [[nodiscard]] std::vector<const T*> get_path(
+    template <class T, bool compare(Node<const T>*, Node<const T>*)>
+    [[nodiscard]] std::optional<std::vector<const T*>> get_path(
         const T* start, const std::set<const T*> goal,
-        const std::set<const T*> search_through,
-        std::function<bool(Node<const T>*, Node<const T>*)> compare
+        const std::set<const T*> search_through
     ) const;
     /**
      * @brief initialize chunks
