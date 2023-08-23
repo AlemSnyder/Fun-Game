@@ -293,7 +293,9 @@ main(int argc, char** argv) {
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
     } else if (run_function == "LuaTest") {
-        terrain::terrain_generation::Biome("base");
+        auto biome = terrain::terrain_generation::Biome("base");
+        LOG_DEBUG(logging::lua_logger, "{}", biome.get_tile_vector());
+        return 0;
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

@@ -33,6 +33,7 @@ quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 quill::Logger* game_map_logger; // for terrain generation
 quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 quill::Logger* file_io_logger;  // for file io
+quill::Logger* lua_logger;
 
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
@@ -132,6 +133,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     game_map_logger = get_logger("game_map");
     voxel_logger = get_logger("voxel");
     file_io_logger = get_logger("file_io");
+    lua_logger = get_logger("lua");
 
     // Start the logging backend thread
     quill::start();

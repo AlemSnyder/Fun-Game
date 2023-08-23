@@ -41,6 +41,9 @@ class Biome {
 
  public:
     Biome(std::string biome_json_path);
+    inline std::vector<int> get_tile_vector(){
+        return tile_map_vector_;
+    }
 };
 
 } // namespace terrain_generation
