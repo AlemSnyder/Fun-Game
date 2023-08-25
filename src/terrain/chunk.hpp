@@ -107,6 +107,11 @@ class Chunk : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] MatColorId get_voxel_color_id(int x, int y, int z) const;
 
+    [[nodiscard]] inline MatColorId
+    get_voxel_color_id(VoxelOffset voxel_position) const {
+        return get_voxel_color_id(voxel_position.x, voxel_position.y, voxel_position.z);
+    };
+
     /**
      * @brief Get the colors used in terrain.
      *
