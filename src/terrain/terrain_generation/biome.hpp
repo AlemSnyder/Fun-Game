@@ -40,8 +40,8 @@ class Biome {
     // each one will have a mutex lock so this can be threaded
 
  public:
-    Biome(std::string biome_json_path);
-    inline std::vector<int> get_tile_vector(){
+    Biome(const std::string& biome_json_path);
+    inline const std::vector<int>& get_tile_vector(){
         return tile_map_vector_;
     }
 };

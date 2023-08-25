@@ -30,7 +30,7 @@ Biome::Biome(std::string biome_name) {
     std::filesystem::path lua_map_generator_file =
         biome_json_path / biome_data["map_generator"].asString();
     if (!std::filesystem::exists(lua_map_generator_file)){
-        LOG_CRITICAL(logging::lua_logger, "File, {}, not found", lua_map_generator_file.string());
+        LOG_ERROR(logging::lua_logger, "File, {}, not found", lua_map_generator_file.string());
         return;
     }
     sol::state lua;
@@ -70,13 +70,13 @@ Biome::Biome(std::string biome_name) {
     if (!result.valid()) {
         sol::error err = result;
         sol::call_status status = result.status();
-        LOG_CRITICAL(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
+        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
         return;
     }
 
     sol::protected_function map_function = lua["map"];
     if (!map_function.valid()) {
-        LOG_CRITICAL(logging::lua_logger, "Function map not defined.");
+        LOG_ERROR(logging::lua_logger, "Function map not defined.");
         return;
     }
     sol::table map = map_function(16);
