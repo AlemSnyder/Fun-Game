@@ -97,19 +97,20 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     }());
 #else
     if (structured) {
-        file_handler = quill::create_handler<quill::JsonFileHandler>(
-            (LOG_FILE + ".json").string(),
-            "w",                            // Create a new file for every run
-            quill::FilenameAppend::DateTime // Append datatime to make file unique
-        );
+        file_handler = quill::json_file_handler(LOG_FILE + ".json", []() {
+            quill::JsonFileHandlerConfig cfg;
+            cfg.set_open_mode('w');
+            cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
+            return cfg;
+        }());
+
     } else {
-        // Create a new log file for each run
-        file_handler = quill::file_handler(
-            LOG_FILE,
-            "w",                            // Create a new file for every run
-            quill::FilenameAppend::DateTime // Append datatime to make file unique
-        );
-    }
+        file_handler = quill::json_file_handler(LOG_FILE + ".json", []() {
+            quill::JsonFileHandlerConfig cfg;
+            cfg.set_open_mode('w');
+            cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
+            return cfg;
+        }());
 #endif
 
     file_handler->set_pattern(

@@ -31,7 +31,7 @@ namespace terrain_generation {
 
 class Biome {
  private:
-    std::vector<int> tile_map_vector_;
+    std::vector<MapTile_t> tile_map_vector_;
     // std::vector<LandGenerator> land_generators_;
     //  vector of const data for creating land generators for every tile
 
@@ -41,7 +41,7 @@ class Biome {
 
  public:
     Biome(const std::string& biome_json_path);
-    inline const std::vector<int>& get_tile_vector(){
+    inline const std::vector<MapTile_t>& get_tile_vector(){
         return tile_map_vector_;
     }
 };
