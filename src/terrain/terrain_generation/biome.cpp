@@ -17,7 +17,7 @@ namespace terrain {
 
 namespace terrain_generation {
 
-Biome::Biome(std::string biome_name) {
+Biome::Biome(const std::string& biome_name) {
     // quill::Logger* lua_logger;
 
     std::filesystem::path biome_json_path = files::get_data_path() / biome_name;

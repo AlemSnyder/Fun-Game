@@ -72,9 +72,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
 
         colors.set_colour(LogLevel::Backtrace, cc::magenta);
 
-        auto stdout_handler = dynamic_cast<quill::ConsoleHandler*>(
-            quill::stdout_handler("console", colors)
-        );
+        auto stdout_handler = quill::stdout_handler("console", colors);
         stdout_handler->set_pattern(
             LOGLINE_FORMAT,
             "%F %T.%Qms %z" // ISO 8601 but with space instead of T
@@ -85,17 +83,18 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     }
 
     // Initialize file handler
-    quill::Handler* file_handler;
+    std::shared_ptr<quill::Handler> file_handler;
 #if DEBUG()
     (void)structured; // Keep the compiler from complaining
 
     // Rotate through file handlers to save space
-    file_handler = quill::rotating_file_handler(
-        LOG_FILE,
-        "a",             // append
-        1024 * 1024 / 2, // 512 KB
-        5                // 5 backups
-    );
+    file_handler = quill::rotating_file_handler(LOG_FILE, []() {
+        quill::RotatingFileHandlerConfig cfg;
+        cfg.set_rotation_max_file_size(1024 * 1024 / 2); // 512 KB
+        cfg.set_max_backup_files(5);                     // 5 backups
+        cfg.set_overwrite_rolled_files(true);            // append
+        return cfg;
+    }());
 #else
     if (structured) {
         file_handler = quill::create_handler<quill::JsonFileHandler>(
