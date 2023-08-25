@@ -1,3 +1,6 @@
 [submodule "vendor/sol2"]
 	path = vendor/sol2
 	url = https://github.com/ThePhD/sol2.git
+[submodule "vendor/quill"]
+	path = vendor/quill_
+	url = https://github.com/quilljs/quill.git
