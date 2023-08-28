@@ -75,14 +75,14 @@ class QuadRenderer {
     ) const;
 
  protected:
-     /**
+    /**
      * @brief Helper function bind texture and set view pot size.
-     * 
+     *
      * @param width framebuffer width
      * @param height framebuffer height
      * @param window_render_texture texture to be rendered
      * @param frame_buffer frame buffer id
-    */
+     */
     void setup(
         screen_size_t width, screen_size_t height, GLuint window_render_texture,
         GLuint frame_buffer
@@ -90,7 +90,7 @@ class QuadRenderer {
 
     /**
      * @brief Helper function to call program.
-    */
+     */
     void draw() const;
 };
 

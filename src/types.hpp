@@ -45,6 +45,12 @@ using ColorId = uint8_t;
 using MatColorId = uint16_t;
 static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));
 
+/*********
+ * Biome *
+**********/
+
+using MapTile_t = uint16_t;
+
 /*************
  * VoxelBase *
  *************/

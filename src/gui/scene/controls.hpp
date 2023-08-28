@@ -55,9 +55,9 @@ glm::mat4 get_projection_matrix();
 
 /**
  * @brief Get the position vector
- * 
+ *
  * @return glm::vec3 camera position in world
-*/
+ */
 glm::vec3 get_position_vector();
 
 /**

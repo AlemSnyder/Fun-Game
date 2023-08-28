@@ -1,0 +1,979 @@
+{
+    "map_generator":"biome_map.lua",
+    "Example": {
+        "Land_Data": [
+            {
+                "Type": "Positions",
+                "Material_id": 1,
+                "Can_Stamp": [
+                    0
+                ],
+                "Size": 4,
+                "DS": 2,
+                "Hight": 16,
+                "DH": 4,
+                "Positions": [
+                    [
+                        2,
+                        4
+                    ],
+                    [
+                        5,
+                        6
+                    ]
+                ]
+            },
+            {
+                "Type": "Radius",
+                "Material_id": 1,
+                "Can_Stamp": [
+                    0
+                ],
+                "Size": 4,
+                "DS": 2,
+                "Hight": 16,
+                "DH": 4,
+                "Radius": {
+                    "radius": 16,
+                    "DC": 2,
+                    "number": 8
+                }
+            },
+            {
+                "Type": "Grid",
+                "Material_id": 1,
+                "Can_Stamp": [
+                    0
+                ],
+                "Size": 16,
+                "DS": 1,
+                "Hight": 16,
+                "DH": 4,
+                "Grid": {
+                    "radius": 16,
+                    "DC": 0,
+                    "number": 2
+                }
+            }
+        ]
+    },
+    "Biome_1": {
+        "Image": "path/to/image",
+        "Description": "This is a test biome",
+        "Terrain_Data": {
+            "BackGround": 1,
+            "NumOctaves": 8,
+            "Range":2,
+            "Spacing":4,
+            "Persistance": 0.8,
+            "Lines": [
+                {
+                    "number": 2,
+                    "length": 4,
+                    "segments": 3,
+                    "DN": 1,
+                    "DL": 2,
+                    "DS": 2,
+                    "max_angle": 30,
+                    "width": [
+                        [
+                            1,
+                            1
+                        ],
+                        [
+                            2,
+                            2
+                        ],
+                        [
+                            3,
+                            3
+                        ],
+                        [
+                            6,
+                            5
+                        ]
+                    ],
+                    "points": [
+                        {
+                            "id": 0,
+                            "set_if_lower": false,
+                            "number": 2,
+                            "offset": 2,
+                            "DN": 1,
+                            "DO": 2
+                        }
+                    ],
+                    "lines": [
+                        {
+                            "id": 1,
+                            "set_if_lower": false,
+                            "number": 2,
+                            "DN": 3
+                        }
+                    ]
+                },
+                {
+                    "number": 0,
+                    "length": 3,
+                    "segments": 2,
+                    "DN": 1,
+                    "DL": 2,
+                    "DS": 2,
+                    "max_angle": 40,
+                    "width": [
+                        [
+                            2,
+                            3
+                        ],
+                        [
+                            4,
+                            5
+                        ]
+                    ],
+                    "points": [],
+                    "lines": []
+                }
+            ],
+            "Points": [
+                {
+                    "number": 8,
+                    "DN": 4,
+                    "width": [
+                        [
+                            1,
+                            2
+                        ],
+                        [
+                            2,
+                            3
+                        ],
+                        [
+                            3,
+                            5
+                        ]
+                    ]
+                }
+            ]
+        },
+        "Tile_Macros": [
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Grid",
+                        "Material_id": 2,
+                        "Color_id": 6,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            },
+                            {
+                                "E": 2,
+                                "C": 2
+                            },
+                            {
+                                "E": 2,
+                                "C": 3
+                            },
+                            {
+                                "E": 2,
+                                "C": 4
+                            },
+                            {
+                                "E": 2,
+                                "C": 5
+                            }
+                        ],
+                        "Size": 28,
+                        "DS": 10,
+                        "Hight": 8,
+                        "DH": 2,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 0,
+                            "number": 2
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 5,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            },
+                            {
+                                "E": 2,
+                                "C": 2
+                            },
+                            {
+                                "E": 2,
+                                "C": 3
+                            },
+                            {
+                                "E": 2,
+                                "C": 4
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 8,
+                        "DH": 6,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 2,
+                        "Color_id": 5,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            },
+                            {
+                                "E": 2,
+                                "C": 2
+                            },
+                            {
+                                "E": 2,
+                                "C": 3
+                            },
+                            {
+                                "E": 2,
+                                "C": 4
+                            }
+                        ],
+                        "Size": 19,
+                        "DS": 2,
+                        "Hight": 16,
+                        "DH": 3,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 0,
+                            "number": 2
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 4,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            },
+                            {
+                                "E": 2,
+                                "C": 2
+                            },
+                            {
+                                "E": 2,
+                                "C": 3
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 20,
+                        "DH": 6,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 2,
+                        "Color_id": 4,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            },
+                            {
+                                "E": 2,
+                                "C": 2
+                            },
+                            {
+                                "E": 2,
+                                "C": 3
+                            }
+                        ],
+                        "Size": 19,
+                        "DS": 2,
+                        "Hight": 28,
+                        "DH": 3,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 0,
+                            "number": 2
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 3,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            },
+                            {
+                                "E": 2,
+                                "C": 2
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 6,
+                        "Hight": 36,
+                        "DH": 8,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 2,
+                        "Color_id": 3,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            },
+                            {
+                                "E": 2,
+                                "C": 2
+                            }
+                        ],
+                        "Size": 22,
+                        "DS": 6,
+                        "Hight": 42,
+                        "DH": 3,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 0,
+                            "number": 2
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 2,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            }
+                        ],
+                        "Size": 18,
+                        "DS": 8,
+                        "Hight": 52,
+                        "DH": 4,
+                        "Radius": {
+                            "radius": 24,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 2,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 62,
+                        "DH": 4,
+                        "Radius": {
+                            "radius": 20,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 2,
+                        "Color_id": 2,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            }
+                        ],
+                        "Size": 19,
+                        "DS": 2,
+                        "Hight": 67,
+                        "DH": 3,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 1,
+                            "number": 4
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 2,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            },
+                            {
+                                "E": 2,
+                                "C": 1
+                            }
+                        ],
+                        "Size": 18,
+                        "DS": 4,
+                        "Hight": 65,
+                        "DH": 4,
+                        "Radius": {
+                            "radius": 18,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 1,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 17,
+                        "DS": 4,
+                        "Hight": 80,
+                        "DH": 14,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 4,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 2,
+                        "Color_id": 1,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 15,
+                        "DS": 3,
+                        "Hight": 92,
+                        "DH": 5,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 1,
+                            "number": 4
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 1,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            },
+                            {
+                                "E": 1,
+                                "C": true
+                            },
+                            {
+                                "E": 2,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 14,
+                        "DS": 6,
+                        "Hight": 60,
+                        "DH": 4,
+                        "Radius": {
+                            "radius": 24,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 68,
+                        "DH": 10,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Radius",
+                        "Material_id": 2,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 74,
+                        "DH": 8,
+                        "Radius": {
+                            "radius": 12,
+                            "DC": 4,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 2,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 2,
+                        "Hight": 90,
+                        "DH": 3,
+                        "Grid": {
+                            "radius": 8,
+                            "DC": 2,
+                            "number": 2
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 1,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 28,
+                        "DH": 6,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 1,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 19,
+                        "DS": 2,
+                        "Hight": 34,
+                        "DH": 0,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 0,
+                            "number": 2
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 1,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 40,
+                        "DH": 6,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 1,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 19,
+                        "DS": 2,
+                        "Hight": 46,
+                        "DH": 0,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 0,
+                            "number": 2
+                        }
+                    }
+                ]
+            },
+            {
+                "Land_Data": [
+                    {
+                        "Type": "Radius",
+                        "Material_id": 1,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 12,
+                        "DS": 4,
+                        "Hight": 52,
+                        "DH": 6,
+                        "Radius": {
+                            "radius": 16,
+                            "DC": 2,
+                            "number": 16
+                        }
+                    },
+                    {
+                        "Type": "Grid",
+                        "Material_id": 1,
+                        "Color_id": 0,
+                        "Can_Stamp": [
+                            {
+                                "E": 0,
+                                "C": 0
+                            }
+                        ],
+                        "Size": 19,
+                        "DS": 2,
+                        "Hight": 58,
+                        "DH": 0,
+                        "Grid": {
+                            "radius": 16,
+                            "DC": 0,
+                            "number": 2
+                        }
+                    }
+                ]
+            }
+        ],
+        "Tile_Data": [
+            {
+                "Land_From": [
+                    0
+                ],
+                "Plant_Data": "plant data should go here"
+            },
+            {
+                "Land_From": [
+                    0,
+                    1,
+                    7
+                ],
+                "Plant_Data": "plant data should go here"
+            },
+            {
+                "Land_From": [
+                    0,
+                    1,
+                    2,
+                    8
+                ],
+                "Plant_Data": "plant data should go here"
+            },
+            {
+                "Land_From": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    9
+                ],
+                "Plant_Data": "plant data should go here"
+            },
+            {
+                "Land_From": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "Plant_Data": "plant data should go here"
+            },
+            {
+                "Land_From": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "Plant_Data": "plant data should go here"
+            },
+            {
+                "Land_From": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "Plant_Data": "plant data should go here"
+            }
+        ],
+        "After_Effects": {
+            "Add_To_Top": [
+                {
+                    "Material_id": 1,
+                    "Color_id": 0,
+                    "above_colors": [
+                        { "E": 1, "C": true },
+                        { "E": 2, "C": true }
+                    ],
+                    "how_to_add":[
+                        {
+                            "add": 3,
+                            "from":[59,66]
+                        },
+                        {
+                            "to": 75,
+                            "from":[66,75]
+                        },
+                        {
+                            "add": 3,
+                            "from":[75,90]
+                        },
+                        {
+                            "to": 97,
+                            "from":[90,97]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

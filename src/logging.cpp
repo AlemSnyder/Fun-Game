@@ -33,6 +33,7 @@ quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 quill::Logger* game_map_logger; // for terrain generation
 quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 quill::Logger* file_io_logger;  // for file io
+quill::Logger* lua_logger;
 
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
@@ -71,9 +72,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
 
         colors.set_colour(LogLevel::Backtrace, cc::magenta);
 
-        auto stdout_handler = dynamic_cast<quill::ConsoleHandler*>(
-            quill::stdout_handler("console", colors)
-        );
+        auto stdout_handler = quill::stdout_handler("console", colors);
         stdout_handler->set_pattern(
             LOGLINE_FORMAT,
             "%F %T.%Qms %z" // ISO 8601 but with space instead of T
@@ -84,32 +83,34 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     }
 
     // Initialize file handler
-    quill::Handler* file_handler;
+    std::shared_ptr<quill::Handler> file_handler;
 #if DEBUG()
     (void)structured; // Keep the compiler from complaining
 
     // Rotate through file handlers to save space
-    file_handler = quill::rotating_file_handler(
-        LOG_FILE,
-        "a",             // append
-        1024 * 1024 / 2, // 512 KB
-        5                // 5 backups
-    );
+    file_handler = quill::rotating_file_handler(LOG_FILE, []() {
+        quill::RotatingFileHandlerConfig cfg;
+        cfg.set_rotation_max_file_size(1024 * 1024 / 2); // 512 KB
+        cfg.set_max_backup_files(5);                     // 5 backups
+        cfg.set_overwrite_rolled_files(true);            // append
+        return cfg;
+    }());
 #else
     if (structured) {
-        file_handler = quill::create_handler<quill::JsonFileHandler>(
-            (LOG_FILE + ".json").string(),
-            "w",                            // Create a new file for every run
-            quill::FilenameAppend::DateTime // Append datatime to make file unique
-        );
+        file_handler = quill::json_file_handler(LOG_FILE + ".json", []() {
+            quill::JsonFileHandlerConfig cfg;
+            cfg.set_open_mode('w');
+            cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
+            return cfg;
+        }());
+
     } else {
-        // Create a new log file for each run
-        file_handler = quill::file_handler(
-            LOG_FILE,
-            "w",                            // Create a new file for every run
-            quill::FilenameAppend::DateTime // Append datatime to make file unique
-        );
-    }
+        file_handler = quill::json_file_handler(LOG_FILE + ".json", []() {
+            quill::JsonFileHandlerConfig cfg;
+            cfg.set_open_mode('w');
+            cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
+            return cfg;
+        }());
 #endif
 
     file_handler->set_pattern(
@@ -132,6 +133,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     game_map_logger = get_logger("game_map");
     voxel_logger = get_logger("voxel");
     file_io_logger = get_logger("file_io");
+    lua_logger = get_logger("lua");
 
     // Start the logging backend thread
     quill::start();
