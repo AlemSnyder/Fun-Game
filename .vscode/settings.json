@@ -121,5 +121,6 @@
         "*.ipp": "cpp",
         "forward_list": "cpp"
     },
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "cmake.configureOnOpen": false
 }

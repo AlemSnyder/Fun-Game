@@ -22,9 +22,7 @@ extern quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 extern quill::Logger* game_map_logger; // for terrain generation
 extern quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 extern quill::Logger* file_io_logger;  // for file io
-#if 0
 extern quill::Logger* lua_logger;      // for lua logging
-#endif
 
 inline quill::Logger*
 get_logger() {

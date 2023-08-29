@@ -39,7 +39,7 @@ namespace gui {
 
 /**
  * @brief Scene object to handel 3D rendering.
-*/
+ */
 class Scene {
  private:
     data_structures::FrameBufferMultisample frame_buffer_multisample_;
@@ -62,11 +62,11 @@ class Scene {
  public:
     /**
      * @brief Scene constructor
-     * 
+     *
      * @param window_width with of scene
      * @param window_height height of scene
      * @param shadow_map_width_height side length of shadow map
-    */
+     */
     inline Scene(
         screen_size_t window_width, screen_size_t window_height,
         uint32_t shadow_map_width_height
@@ -77,9 +77,9 @@ class Scene {
 
     /**
      * @brief Get scene frame buffer multisample id
-     * 
+     *
      * @return GLuint frame buffer multisample id
-    */
+     */
     inline GLuint
     get_scene() {
         return frame_buffer_multisample_.get_single_sample_texture();
@@ -87,9 +87,9 @@ class Scene {
 
     /**
      * @brief Get scene shadow mat depth texture id
-     * 
+     *
      * @return GLuint shadow mat depth texture id
-    */
+     */
     inline GLuint
     get_depth_texture() {
         return shadow_map_.get_depth_texture();
@@ -97,9 +97,9 @@ class Scene {
 
     /**
      * @brief Get shadow map width
-     * 
+     *
      * @return screen_size_t width
-    */
+     */
     inline screen_size_t
     get_shadow_width() {
         return shadow_map_.get_shadow_width();
@@ -107,9 +107,9 @@ class Scene {
 
     /**
      * @brief Get shadow map height
-     * 
+     *
      * @return screen_size_t height
-    */
+     */
     inline screen_size_t
     get_shadow_height() {
         return shadow_map_.get_shadow_height();
@@ -117,7 +117,7 @@ class Scene {
 
     /**
      * @brief Get scene frame buffer multisample id
-    */
+     */
     void update(GLFWwindow* window);
 
     // model attach
