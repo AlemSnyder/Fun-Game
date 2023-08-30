@@ -52,10 +52,11 @@ namespace terrain_generation {
  *
  */
 class LandGenerator {
-    unsigned int current_region;
-    unsigned int current_sub_region;
+ private:
+    unsigned int current_region_;
+    unsigned int current_sub_region_;
 
-    const std::map<MaterialId, const Material>& materials;
+    const std::map<MaterialId, const Material>& materials_;
     Json::Value data_; // this should be a structure
 
  public:
@@ -84,7 +85,7 @@ class LandGenerator {
      */
     inline bool
     empty() const {
-        return (current_region >= data_.size());
+        return (current_region_ >= data_.size());
     }
 
     /**
@@ -104,19 +105,19 @@ class LandGenerator {
      */
     inline void
     reset() {
-        current_region = 0;
-        current_sub_region = 0;
+        current_region_ = 0;
+        current_sub_region_ = 0;
     };
 
  private:
-    unsigned int static get_num_stamps(const Json::Value& biome);
+    unsigned int static get_num_stamps_(const Json::Value& biome);
 
     void
-    get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz, TileStamp& ts) const;
+    generate_tile_stamp_(int center[2][2], int Sxy, int Sz, int Dxy, int Dz, TileStamp& ts) const;
 
-    void from_radius(int cr, int csr, TileStamp& ts) const;
-    void from_grid(int cr, int csr, TileStamp& ts) const;
-    void from_positions(int cr, int csr, TileStamp& ts) const;
+    void from_radius_(int cr, int csr, TileStamp& ts) const;
+    void from_grid_(int cr, int csr, TileStamp& ts) const;
+    void from_positions_(int cr, int csr, TileStamp& ts) const;
 };
 
 } // namespace terrain_generation

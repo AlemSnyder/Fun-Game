@@ -86,14 +86,14 @@ getter_low(Tile* t) {
 
 template <class T>
 inline bool
-astar_compare(T* lhs, T* rhs) {
+astar_compare(Node<T>* lhs, Node<T>* rhs) {
     return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
 }
 
 template <class T>
 inline bool
-breadth_first_compare(T* lhs, T* rhs) {
-    return lhs->get_time_cots() > rhs->get_time_cots();
+breadth_first_compare(Node<T>* lhs, Node<T>* rhs) {
+    return lhs->get_time_cost() > rhs->get_time_cost();
 }
 
 } // namespace helper

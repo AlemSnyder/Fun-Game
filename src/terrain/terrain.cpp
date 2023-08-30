@@ -255,7 +255,7 @@ Terrain::get_H_cost(TerrainDim3 position1, TerrainDim3 position2) {
 template <class T>
 float
 Terrain::get_G_cost(const T tile, const Node<const T> node) {
-    return node.get_time_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
+    return node.get_time_cost() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }
 
 int
@@ -567,7 +567,7 @@ Terrain::get_path(
                 }
                 openNodes.push(n); // n can be chose to expand around
             } else {
-                if (n->get_time_cots() > get_G_cost(*(n->get_tile()), *choice)) {
+                if (n->get_time_cost() > get_G_cost(*(n->get_tile()), *choice)) {
                     n->explore(choice, get_G_cost(*(n->get_tile()), *choice));
 
                     // will update open nodes if the fastest path has changed.

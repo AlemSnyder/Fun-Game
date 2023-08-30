@@ -32,13 +32,13 @@ namespace terrain_generation {
 LandGenerator::LandGenerator(
     const std::map<MaterialId, const Material>& materials_, const Json::Value data
 ) :
-    current_region(0),
-    current_sub_region(0), materials(materials_), data_(data) {}
+    current_region_(0),
+    current_sub_region_(0), materials_(materials_), data_(data) {}
 
 // LandGenerator::LandGenerator() : current_region(0), current_sub_region(0) {}
 
 unsigned int
-LandGenerator::get_num_stamps(const Json::Value& biome) {
+LandGenerator::get_num_stamps_(const Json::Value& biome) {
     if (biome["Type"].asString() == "Positions") {
         return biome["Positions"].size();
     } else if (biome["Type"].asString() == "Grid") {
@@ -52,34 +52,34 @@ LandGenerator::get_num_stamps(const Json::Value& biome) {
 TileStamp
 LandGenerator::get_this_stamp() const {
     TileStamp out;
-    out.mat = &materials.at(data_[current_region]["Material_id"].as<int>());
-    out.color_id = data_[current_region]["Color_id"].asInt();
-    for (Json::Value::ArrayIndex i = 0; i < data_[current_region]["Can_Stamp"].size();
+    out.mat = &materials_.at(data_[current_region_]["Material_id"].as<int>());
+    out.color_id = data_[current_region_]["Color_id"].asInt();
+    for (Json::Value::ArrayIndex i = 0; i < data_[current_region_]["Can_Stamp"].size();
          i++) {
-        int E = data_[current_region]["Can_Stamp"][i]["E"].asInt();
-        if (data_[current_region]["Can_Stamp"][i]["C"].isInt()) {
-            int C = data_[current_region]["Can_Stamp"][i]["C"].asInt();
+        int E = data_[current_region_]["Can_Stamp"][i]["E"].asInt();
+        if (data_[current_region_]["Can_Stamp"][i]["C"].isInt()) {
+            int C = data_[current_region_]["Can_Stamp"][i]["C"].asInt();
             out.elements_can_stamp.insert(std::make_pair(E, C));
-        } else if (data_[current_region]["Can_Stamp"][i]["C"].asBool()) {
-            for (unsigned int C = 0; C < materials.at(E).color.size(); C++) {
+        } else if (data_[current_region_]["Can_Stamp"][i]["C"].asBool()) {
+            for (unsigned int C = 0; C < materials_.at(E).color.size(); C++) {
                 out.elements_can_stamp.insert(std::make_pair(E, C));
             }
         }
     }
-    std::string type = data_[current_region]["Type"].asString();
+    std::string type = data_[current_region_]["Type"].asString();
 
     if (type == "Positions") {
-        from_positions(current_region, current_sub_region, out);
+        from_positions_(current_region_, current_sub_region_, out);
     } else if (type == "Radius") {
-        from_radius(current_region, current_sub_region, out);
+        from_radius_(current_region_, current_sub_region_, out);
     } else if (type == "Grid") {
-        from_grid(current_region, current_sub_region, out);
+        from_grid_(current_region_, current_sub_region_, out);
     }
     return out;
 }
 
 void
-LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
+LandGenerator::from_radius_(int cr, int csr, TileStamp& ts) const {
     int radius = data_[cr]["Radius"]["radius"].asInt();
     int number = data_[cr]["Radius"]["number"].asInt();
 
@@ -109,14 +109,14 @@ LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
         {x_center + DC, y_center + DC}
     };
 
-    get_volume(
+    generate_tile_stamp_(
         center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
         data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt(), ts
     );
 }
 
 void
-LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const {
+LandGenerator::from_grid_(int cr, int csr, TileStamp& ts) const {
     int number = data_[cr]["Grid"]["number"].asInt();
     int radius = data_[cr]["Grid"]["radius"].asInt();
 
@@ -129,28 +129,28 @@ LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const {
         {x_center + DC, y_center + DC}
     };
 
-    get_volume(
+    generate_tile_stamp_(
         center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
         data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt(), ts
     );
 }
 
 void
-LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const {
+LandGenerator::from_positions_(int cr, int csr, TileStamp& ts) const {
     Json::Value xy_positions = data_[cr]["Positions"][csr];
     int center[2][2] = {
         {xy_positions[0].asInt(), xy_positions[1].asInt()},
         {xy_positions[0].asInt(), xy_positions[1].asInt()}
     };
 
-    get_volume(
+    generate_tile_stamp_(
         center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
         data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt(), ts
     );
 }
 
 void
-LandGenerator::get_volume(
+LandGenerator::generate_tile_stamp_(
     int center[2][2], int Sxy, int Sz, int Dxy, int Dz, TileStamp& ts
 ) const {
     int center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
@@ -186,10 +186,10 @@ LandGenerator::get_volume(
 
 void
 LandGenerator::next() {
-    current_sub_region++;
-    if (current_sub_region == get_num_stamps(data_[current_region])) {
-        current_region++;
-        current_sub_region = 0;
+    current_sub_region_++;
+    if (current_sub_region_ == get_num_stamps_(data_[current_region_])) {
+        current_region_++;
+        current_sub_region_ = 0;
     }
 }
 
