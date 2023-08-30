@@ -7,6 +7,10 @@
 #include <cstdint>
 #include <set>
 
+namespace terrain {
+
+namespace terrain_generation {
+
 struct WorleyPoint {
     double x_position;
     double y_position;
@@ -25,23 +29,23 @@ class WorleyNoise : public Noise {
  public:
     WorleyNoise(double tile_size);
 
-    double get(double x, double y);
+    double get(double x, double y) const;
 
-    std::set<WorleyPoint> get_points(int x_t, int y_t);
+    std::set<WorleyPoint> get_points(int x_t, int y_t) const;
 
- private:
-
-    double
-    distance(double x, double y, WorleyPoint);
+    static double distance(double x, double y, WorleyPoint);
 };
 
 class AlturnativeWorleyNoise : public WorleyNoise {
  public:
+    inline AlturnativeWorleyNoise(double tile_size) : WorleyNoise(tile_size) {}
 
-    inline
-    AlturnativeWorleyNoise(double tile_size) : WorleyNoise(tile_size) {}
+    double get(double x, double y) const;
 
-    double
-    get(double x, double y);
-}
+ private:
+    double modified_cos(double distance, double effective_radius) const;
+};
 
+} // namespace terrain_generation
+
+} // namespace terrain
