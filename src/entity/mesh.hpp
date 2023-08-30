@@ -138,127 +138,132 @@ greedy_mesh(
     std::vector<uint16_t>& indices, std::vector<VoxelOffset>& indexed_vertices,
     std::vector<MatColorId>& indexed_colors, std::vector<glm::i8vec3>& indexed_normals,
 
-    VoxelSize object_geometry, const std::vector<std::pair<bool, VoxelColorId>>& color_info,
+    VoxelSize object_geometry,
+    const std::vector<std::pair<bool, VoxelColorId>>& color_info,
     VoxelOffset axis_offset, std::size_t dims_index_1, std::size_t dims_index_2
 ) {
     // takes object_geometry color_info and offset
     // modifies indicies, indexed_vertices, indexed_colors, indexed_normals
 
     // Generate mesh for color_info using lexicographic ordering
-    glm::uint width = 0, height = 0;
-    VoxelOffset voxel_position(0,0,0);
+    VoxelOffset voxel_position(0, 0, 0);
 
-    std::size_t counter = 0;
-    for (glm::uint j = 0; j < object_geometry[dims_index_2]; ++j) {
+    size_t counter = 0;
+    glm::uint face_width = object_geometry[dims_index_2];
+    for (glm::uint j = 0; j < face_width; ++j) {
         glm::uint i = 0;
-        while (i < object_geometry[dims_index_1]) {
+        glm::uint face_height = object_geometry[dims_index_1];
+        while (i < face_height) {
             // color and direction of the face between two voxels
             std::pair<bool, VoxelColorId> color = color_info[counter];
             // if there is a face between two voxels
-            if (color.second) {
-                // find the size of all faces that have the same color
-                // and direction like this: first expands over the
-                // width, then expanding over the height
+            if (!color.second) {
+                ++i;
+                ++counter;
+                continue;
+            }
+            // find the size of all faces that have the same color
+            // and direction like this: first expands over the
+            // width, then expanding over the height
 
-                // clang-format off
+            // clang-format off
 // c c c c c n n n     # c c c c n n n     # # # # #[n]n n     # # # # # n n n
 // c c c c c c n n     c c c c c c n n     c c c c c c n n     # # # # # c n n
 // c c c c c c c n - > c c c c c c c n - > c c c c c c c n - > # # # # # c c n
 // c c c c c n n n     c c c c c n n n     c c c c c n n n     # # # # # n n n
 // c c n c c n c c     c c n c c n c c     c c n c c n c c     c c[n]c c n c c
-                // clang-format on
+            // clang-format on
 
-                // Compute width and height of greedy mesh
-                width = 1;
-                while (color == color_info[counter + width]
-                       && i + width < object_geometry[dims_index_1]) {
-                    ++width;
-                }
-                // Compute height
-                bool done = false;
-                for (height = 1; j + height < object_geometry[dims_index_2]; ++height) {
-                    // expand until one of the tiles in the next row is
-                    // not the same color/facing direction
-                    for (glm::uint k = 0; k < width; ++k) {
-                        // if the direction and color of the original
-                        // face is different from the direction and
-                        // color of the face currently being tested
-                        std::pair<bool, VoxelColorId> test_against = color_info
-                            [counter + k + height * object_geometry[dims_index_1]];
-                        if (color != test_against) {
-                            done = true;
-                            break;
-                        }
-                    }
-                    if (done)
-                        break;
-                }
-
-                // Add quad
-                voxel_position[dims_index_1] = i;
-                voxel_position[dims_index_2] = j;
-
-                // a width or height depending on normal direction
-                VoxelOffset offset_1(0,0,0);
-                VoxelOffset offset_2(0,0,0);
-
-                // depending on the normal direction set the width, and
-                // height
-                if (color.first) {
-                    offset_2[dims_index_2] = height;
-                    offset_1[dims_index_1] = width;
-                } else {
-                    offset_1[dims_index_2] = height;
-                    offset_2[dims_index_1] = width;
-                }
-
-                const std::size_t vertex_size = indexed_vertices.size();
-
-                indexed_vertices.push_back(voxel_position + axis_offset);
-                indexed_vertices.push_back(voxel_position + offset_1 + axis_offset);
-                indexed_vertices.push_back(
-                    voxel_position + offset_1 + offset_2 + axis_offset
-                );
-                indexed_vertices.push_back(voxel_position + offset_2 + axis_offset);
-
-                glm::i8vec3 triangle_normal = glm::i8vec3(
-                    glm::normalize(glm::cross(
-                        glm::vec3(
-                            indexed_vertices[vertex_size]
-                            - indexed_vertices[vertex_size + 1]
-                        ),
-                        glm::vec3(
-                            indexed_vertices[vertex_size]
-                            - indexed_vertices[vertex_size + 2]
-                        )
-                    ))
-                    // adding .5 because average is plus .5 then floor
-                    + glm::vec3(.5, .5, .5)
-                );
-
-                // how many corners on a square are there?
-                for (size_t voxel_position = 0; voxel_position < 4; voxel_position++) {
-                    // same color for each corner
-                    indexed_colors.push_back(color.second);
-                    indexed_normals.push_back(triangle_normal);
-                }
-
-                // the first half of the rectangle
-                indices.push_back(vertex_size);
-                indices.push_back(vertex_size + 1);
-                indices.push_back(vertex_size + 2);
-                // the second half of the rectangle
-                indices.push_back(vertex_size + 2);
-                indices.push_back(vertex_size + 3);
-                indices.push_back(vertex_size);
-
-                // Increment counters
-                i += width;
-                counter += width;
-            } else {
-                ++i;
-                ++counter;
+            // Compute width and height of greedy mesh
+            glm::uint width = 1;
+            glm::uint height = 1;
+            while (color == color_info[counter + width]
+                   && i + width < object_geometry[dims_index_1]) {
+                ++width;
             }
+            // Compute height
+            bool done = false;
+            while (j + height < object_geometry[dims_index_2]) {
+                // expand until one of the tiles in the next row is
+                // not the same color/facing direction
+                for (glm::uint k = 0; k < width; ++k) {
+                    // if the direction and color of the original
+                    // face is different from the direction and
+                    // color of the face currently being tested
+                    size_t face_index =
+                        counter + k + height * object_geometry[dims_index_1];
+                    std::pair<bool, VoxelColorId> test_against = color_info[face_index];
+                    if (color != test_against) {
+                        done = true;
+                        break;
+                    }
+                }
+                if (done)
+                    break;
+                ++height;
+            }
+
+            // Add quad
+            voxel_position[dims_index_1] = i;
+            voxel_position[dims_index_2] = j;
+
+            // a width or height depending on normal direction
+            VoxelOffset offset_1(0, 0, 0);
+            VoxelOffset offset_2(0, 0, 0);
+
+            // depending on the normal direction set the width, and
+            // height
+            if (color.first) {
+                offset_2[dims_index_2] = height;
+                offset_1[dims_index_1] = width;
+            } else {
+                offset_1[dims_index_2] = height;
+                offset_2[dims_index_1] = width;
+            }
+
+            const std::size_t vertex_size = indexed_vertices.size();
+
+            indexed_vertices.push_back(voxel_position + axis_offset);
+            indexed_vertices.push_back(voxel_position + offset_1 + axis_offset);
+            indexed_vertices.push_back(
+                voxel_position + offset_1 + offset_2 + axis_offset
+            );
+            indexed_vertices.push_back(voxel_position + offset_2 + axis_offset);
+
+            glm::i8vec3 triangle_normal = glm::i8vec3(
+                glm::normalize(glm::cross(
+                    glm::vec3(
+                        indexed_vertices[vertex_size]
+                        - indexed_vertices[vertex_size + 1]
+                    ),
+                    glm::vec3(
+                        indexed_vertices[vertex_size]
+                        - indexed_vertices[vertex_size + 2]
+                    )
+                ))
+                // adding .5 because average is plus .5 then floor
+                + glm::vec3(.5, .5, .5)
+            );
+
+            // how many corners on a square are there?
+            for (size_t voxel_position = 0; voxel_position < 4; voxel_position++) {
+                // same color for each corner
+                indexed_colors.push_back(color.second);
+                indexed_normals.push_back(triangle_normal);
+            }
+
+            // the first half of the rectangle
+            indices.push_back(vertex_size);
+            indices.push_back(vertex_size + 1);
+            indices.push_back(vertex_size + 2);
+            // the second half of the rectangle
+            indices.push_back(vertex_size + 2);
+            indices.push_back(vertex_size + 3);
+            indices.push_back(vertex_size);
+
+            // Increment counters
+            i += width;
+            counter += width;
         }
     }
 }
@@ -288,9 +293,9 @@ generate_mesh(T voxel_object) {
         const std::size_t dims_index_2 = (axis + 2) % 3;
 
         // position of a voxel in world space
-        VoxelOffset voxel_position(0,0,0);
+        VoxelOffset voxel_position(0, 0, 0);
         // direction that the mesh is not changing in
-        VoxelOffset mesh_normal(0,0,0);
+        VoxelOffset mesh_normal(0, 0, 0);
 
         // the color of all tiles at the same "level".
         std::vector<std::pair<bool, VoxelColorId>> color_info(
@@ -344,13 +349,14 @@ generate_mesh(T voxel_object) {
 
             // After taking a slice use the greedy algorithm on that slice
 
-            VoxelOffset axis_offset(0,0,0);
+            VoxelOffset axis_offset(0, 0, 0);
             axis_offset[axis] = voxel_position[axis];
 
             counter = 0;
             greedy_mesh(
                 indices, indexed_vertices, indexed_colors, indexed_normals,
-                object_geometry, color_info, center + axis_offset, dims_index_1, dims_index_2
+                object_geometry, color_info, center + axis_offset, dims_index_1,
+                dims_index_2
             );
         }
     }

@@ -461,13 +461,13 @@ Terrain::get_path_Astar(const Tile* start, const Tile* goal) const {
         return {};
     if (!(start_node = get_node_group(start)))
         return {};
-    auto Node_path = get_path_Astar(start_node, goal_node);
-    // if Node_path is empty then return
-    if (!Node_path.has_value())
+    auto node_path = get_path_Astar(start_node, goal_node);
+    // if node_path is empty then return
+    if (!node_path.has_value())
         return {};
 
     std::set<const Tile*> search_through;
-    for (const NodeGroup* NG : Node_path.value()) {
+    for (const NodeGroup* NG : node_path.value()) {
         auto tiles = NG->get_tiles();
         search_through.insert(tiles.begin(), tiles.end());
     }

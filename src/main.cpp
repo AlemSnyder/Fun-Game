@@ -138,6 +138,7 @@ path_finder_test(const std::string& path, const std::string& save_path) {
 
     if (!tile_path){
         LOG_WARNING(logger, "NO PATH FOUND");
+        world.qb_save_debug(save_path);
         return 1;
     }
 
