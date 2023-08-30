@@ -22,7 +22,10 @@ namespace terrain {
 
 namespace terrain_generation {
 
-namespace noise {
+class Noise {
+
+ protected:
+
 static constexpr int32_t PRIMES[maxPrimeIndex][3] = {
     {995615039, 600173719, 701464987},
     {831731269, 162318869, 136250887},
@@ -36,6 +39,8 @@ static constexpr int32_t PRIMES[maxPrimeIndex][3] = {
     {997169939, 842027887, 423882827}
 };
 
+    double get_double(int i, int x, int y);
+
 } // namespace noise
 
 /**
@@ -46,7 +51,7 @@ static constexpr int32_t PRIMES[maxPrimeIndex][3] = {
  * layers. The first layer is between -1, and 1. Subsequent have twice the
  * frequency, and amplitude of persistance times the previous amplitude.
  */
-class NoiseGenerator {
+class NoiseGenerator : public Noise {
     int num_octaves_ = 7;
     double persistence_ = 0.5;
     int primeIndex_ = 0;
@@ -75,7 +80,6 @@ class NoiseGenerator {
     double getValueNoise(double x, double y);
 
  private:
-    double noise_(int i, int x, int y);
     double smoothed_noise_(int i, int x, int y);
     double interpolate_(double a, double b, double x); // cosine interpolation
     double interpolated_noise_(int i, double x, double y);
@@ -84,3 +88,4 @@ class NoiseGenerator {
 } // namespace terrain_generation
 
 } // namespace terrain
+

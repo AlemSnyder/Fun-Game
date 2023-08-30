@@ -6,6 +6,8 @@
 
 namespace terrain {
 
+namespace terrain_generation {
+
 double
 terrain_generation::NoiseGenerator::getValueNoise(double x, double y) {
     double total = 0, frequency = pow(2, num_octaves_), amplitude = 1;
@@ -20,24 +22,27 @@ terrain_generation::NoiseGenerator::getValueNoise(double x, double y) {
     return total / frequency;
 }
 
+// returns a value between [0, 1)
 double
-terrain_generation::NoiseGenerator::noise_(int i, int x, int y) {
-    int n = x + y * 57;
+Noise::get_double(int i, int x, int y) {
+    int32_t n = x * 53 + y * 59;
     n = (n << 13) ^ n;
-    int a = noise::PRIMES[i][0], b = noise::PRIMES[i][1], c = noise::PRIMES[i][2];
-    int t = (n * (n * n * a + b) + c) & 0x7fffffff;
-    return 1.0 - static_cast<double>(t) / 1073741824.0;
+    int32_t a = noise::PRIMES[i][0];
+    int32_t b = noise::PRIMES[i][1];
+    int32_t c = noise::PRIMES[i][2];
+    int32_t t = (n * (n * n * a + b) + c) & INT32_MAX;
+    return static_cast<double>(t) / INT32_MAX;
 }
 
 double
 terrain_generation::NoiseGenerator::smoothed_noise_(int i, int x, int y) {
-    double corners = (noise_(i, x - 1, y - 1) + noise_(i, x + 1, y - 1)
-                      + noise_(i, x - 1, y + 1) + noise_(i, x + 1, y + 1))
+    double corners = (get_double(i, x - 1, y - 1) + get_double(i, x + 1, y - 1)
+                      + get_double(i, x - 1, y + 1) + get_double(i, x + 1, y + 1))
                      / 16,
-           sides = (noise_(i, x - 1, y) + noise_(i, x + 1, y) + noise_(i, x, y - 1)
-                    + noise_(i, x, y + 1))
+           sides = (get_double(i, x - 1, y) + get_double(i, x + 1, y) + get_double(i, x, y - 1)
+                    + get_double(i, x, y + 1))
                    / 8,
-           center = noise_(i, x, y) / 4;
+           center = get_double(i, x, y) / 4;
     return corners + sides + center;
 }
 
