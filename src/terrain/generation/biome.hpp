@@ -16,7 +16,7 @@
  *
  * @brief Defines Biome class.
  *
- * @ingroup Terrain Terrain_generation
+ * @ingroup Terrain generation
  *
  */
 
@@ -27,7 +27,7 @@
 
 namespace terrain {
 
-namespace terrain_generation {
+namespace generation {
 
 class Biome {
  private:
@@ -46,6 +46,6 @@ class Biome {
     }
 };
 
-} // namespace terrain_generation
+} // namespace generation
 
 } // namespace terrain

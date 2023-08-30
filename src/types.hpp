@@ -27,6 +27,15 @@ using MacroDim = uint16_t;
 // Stores data about path direction and clear-ness
 using path_t = uint8_t;
 
+/**********************
+ * Terrain Generation *
+ *********************/
+
+// Range over all space where a value can be found
+using NoisePosition = _Float64;
+// Range over all space where random values can be generator for
+using NoiseTileIndex = int32_t;
+
 /*************
  * Materials *
  *************/

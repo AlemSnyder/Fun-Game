@@ -37,7 +37,7 @@
 
 namespace terrain {
 
-namespace terrain_generation {
+namespace generation {
 
 /**
  * @brief Reads JSON data and generates TileStamp objects
@@ -119,6 +119,6 @@ class LandGenerator {
     void from_positions(int cr, int csr, TileStamp& ts) const;
 };
 
-} // namespace terrain_generation
+} // namespace generation
 
 } // namespace terrain

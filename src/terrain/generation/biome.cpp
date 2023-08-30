@@ -15,7 +15,7 @@
 
 namespace terrain {
 
-namespace terrain_generation {
+namespace generation {
 
 Biome::Biome(const std::string& biome_name) {
     // quill::Logger* lua_logger;
@@ -98,6 +98,6 @@ Biome::Biome(const std::string& biome_name) {
     }
 }
 
-} // namespace terrain_generation
+} // namespace generation
 
 } // namespace terrain

@@ -28,7 +28,7 @@
 
 namespace terrain {
 
-namespace terrain_generation {
+namespace generation {
 
 /**
  * @brief Holds data used to set the material and color of a rectangular prism
@@ -53,6 +53,6 @@ struct TileStamp {
     std::set<std::pair<MaterialId, ColorId>> elements_can_stamp;
 };
 
-} // namespace terrain_generation
+} // namespace generation
 
 } // namespace terrain

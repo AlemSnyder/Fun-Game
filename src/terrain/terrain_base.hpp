@@ -27,8 +27,8 @@
 #include "../util/voxel.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
-#include "terrain_generation/land_generator.hpp"
-#include "terrain_generation/tile_stamp.hpp"
+#include "generation/land_generator.hpp"
+#include "generation/tile_stamp.hpp"
 #include "tile.hpp"
 
 #include <json/json.h>
@@ -472,7 +472,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param area_y area y coordinate
      * @param gen Generator object that generates tile types
      */
-    void init_area(int area_x, int area_y, terrain_generation::LandGenerator gen);
+    void init_area(int area_x, int area_y, generation::LandGenerator gen);
 
     /**
      * @brief Set a group of tiles
@@ -482,7 +482,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param y macro map y position
      */
     inline void
-    stamp_tile_region(const terrain_generation::TileStamp& tStamp, int x, int y) {
+    stamp_tile_region(const generation::TileStamp& tStamp, int x, int y) {
         stamp_tile_region(
             tStamp.x_start + x * area_size_ + area_size_ / 2,
             tStamp.y_start + y * area_size_ + area_size_ / 2, tStamp.z_start,

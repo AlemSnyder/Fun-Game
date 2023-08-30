@@ -5,8 +5,8 @@
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
+#include "terrain/generation/biome.hpp"
 #include "terrain/terrain.hpp"
-#include "terrain/terrain_generation/biome.hpp"
 #include "util/files.hpp"
 #include "util/voxel_io.hpp"
 #include "world.hpp"
@@ -293,7 +293,7 @@ main(int argc, char** argv) {
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
     } else if (run_function == "LuaTest") {
-        auto biome = terrain::terrain_generation::Biome("base");
+        auto biome = terrain::generation::Biome("base");
         LOG_DEBUG(logging::lua_logger, "{}", biome.get_tile_vector());
         return 0;
     } else {

@@ -20,7 +20,7 @@
 
 namespace terrain {
 
-namespace terrain_generation {
+namespace generation {
 
 class Noise {
  protected:
@@ -83,6 +83,6 @@ class NoiseGenerator : public Noise {
     double interpolated_noise_(int i, double x, double y) const;
 };
 
-} // namespace terrain_generation
+} // namespace generation
 
 } // namespace terrain

@@ -27,7 +27,7 @@
 
 namespace terrain {
 
-namespace terrain_generation {
+namespace generation {
 
 LandGenerator::LandGenerator(
     const std::map<MaterialId, const Material>& materials_, const Json::Value data
@@ -207,6 +207,6 @@ LandGenerator::next() {
     }
 }
 
-} // namespace terrain_generation
+} // namespace generation
 
 } // namespace terrain

@@ -2,7 +2,7 @@
 
 #include "../logging.hpp"
 #include "../types.hpp"
-#include "terrain_generation/noise.hpp"
+#include "generation/noise.hpp"
 
 // move add_to_top
 
@@ -83,12 +83,12 @@ TerrainBase::TerrainBase(
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
     // create a map of int -> LandGenerator
-    std::vector<terrain_generation::LandGenerator> land_generators;
+    std::vector<generation::LandGenerator> land_generators;
 
     // for tile macro in data biome
     for (const Json::Value& tile_macro : biome_data["Tile_Macros"]) {
         // create a land generator for each tile macro
-        terrain_generation::LandGenerator gen(materials, tile_macro["Land_Data"]);
+        generation::LandGenerator gen(materials, tile_macro["Land_Data"]);
         land_generators.push_back(gen);
     }
 
@@ -276,7 +276,7 @@ TerrainBase::stamp_tile_region(
 }
 
 void
-TerrainBase::init_area(int area_x, int area_y, terrain_generation::LandGenerator gen) {
+TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {
     while (!gen.empty()) {
         stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
         gen.next();
@@ -296,8 +296,8 @@ TerrainBase::generate_macro_map(
     int range = terrain_data["Range"].asInt();
     int spacing = terrain_data["Spacing"].asInt();
     out.resize(x_map_tiles * y_map_tiles, background);
-    terrain_generation::NoiseGenerator ng =
-        terrain_generation::NoiseGenerator(numOctaves, persistance, 3);
+    generation::NoiseGenerator ng =
+        generation::NoiseGenerator(numOctaves, persistance, 3);
 
     for (size_t i = 0; i < out.size(); i++) {
         TerrainDim3 tile_position = sop(i, x_map_tiles, y_map_tiles, 1);
