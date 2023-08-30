@@ -1,0 +1,19 @@
+name: Build-Test
+
+on:
+  push:
+    branches: [ main ]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Build
+
+        run: |
+          cd build
+          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
+          ninja
