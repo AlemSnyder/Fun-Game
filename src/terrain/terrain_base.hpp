@@ -379,7 +379,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] inline const Tile*
     get_tile(TileIndex xyz) const {
-        if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
+        if (xyz >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         }

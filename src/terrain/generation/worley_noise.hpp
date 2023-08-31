@@ -19,6 +19,10 @@ struct WorleyPoint {
     NoisePosition radius;
 
     bool positive;
+
+    std::partial_ordering operator<=>(const WorleyPoint& other) const {
+        return x_position <=> other.x_position;
+    }
 };
 
 class WorleyNoise : public Noise {

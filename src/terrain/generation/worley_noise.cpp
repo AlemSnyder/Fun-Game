@@ -37,8 +37,8 @@ WorleyNoise::get_points(NoiseTileIndex x_t, NoiseTileIndex y_t) const {
         for (int dy = 0; dy < 2; dy++) {
             NoisePosition x_position = get_double(0, x_t + dx, y_t + dy);
             NoisePosition y_position = get_double(1, x_t + dx, y_t + dy);
-            bool positive = get_double(2, x_t + dx, y_t + dy) < positive_chance_;
-            WorleyPoint point({x_position, y_position, 1});
+            bool positive = (get_double(2, x_t + dx, y_t + dy) < positive_chance_);
+            WorleyPoint point({x_position, y_position, 1, positive});
             out.insert(WorleyPoint(point));
         }
     }
