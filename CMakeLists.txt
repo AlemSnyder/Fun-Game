@@ -11,15 +11,16 @@ project(FunGame VERSION 0.1.0)
 # add the executable
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
 
-file(GLOB SOURCES4 "vendor/*.c*")
-file(GLOB SOURCES5 "vendor/json/*.c*")
-file(GLOB SOURCES6 "vendor/imgui/*.c*")
-file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
-file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
+file(GLOB SOURCES4 "3rd-party/*.c*")
+file(GLOB SOURCES5 "3rd-party/json/*.c*")
+file(GLOB SOURCES6 "3rd-party/imgui/*.c*")
+file(GLOB SOURCES7 "3rd-party/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB SOURCES8 "3rd-party/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # complie quill with dedicated CMakeList.txt file
-add_subdirectory("vendor/quill")
+add_subdirectory("3rd-party/quill")
+add_subdirectory("3rd-party/sol2")
 
 # prefer newer OpenGL
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
