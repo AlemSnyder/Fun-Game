@@ -127,7 +127,7 @@ class World {
      * @param material_id
      * @return const Material* corresponding material
      */
-    const terrain::Material* get_material(int material_id) const;
+    const terrain::Material* get_material(MaterialId material_id) const;
 
     /**
      * @brief Load materials from json data
@@ -163,13 +163,15 @@ class World {
     // void set_tiles();
 
     void stamp_tile_region(
-        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        TerrainOffset x_start, TerrainOffset y_start, TerrainOffset z_start,
+        TerrainOffset x_end, TerrainOffset y_end, TerrainOffset z_end,
         const terrain::Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
         ColorId color_id
     );
 
     void stamp_tile_region(
-        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
+        TerrainOffset x_start, TerrainOffset y_start, TerrainOffset z_start,
+        TerrainOffset x_end, TerrainOffset y_end, TerrainOffset z_end,
         const terrain::Material* mat, ColorId color_id
     );
 

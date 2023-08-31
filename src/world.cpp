@@ -39,7 +39,7 @@
 #include <string>
 
 const terrain::Material*
-World::get_material(int material_id) const {
+World::get_material(MaterialId material_id) const {
     return &materials.at(material_id);
 }
 

@@ -105,7 +105,7 @@ class NonInstancedIMeshGPU {
         return color_texture_;
     }
 
-    [[nodiscard]] inline unsigned int
+    [[nodiscard]] inline uint32_t
     get_num_vertices() const noexcept {
         return num_vertices_;
     }

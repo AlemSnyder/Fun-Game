@@ -160,9 +160,9 @@ class Terrain : public TerrainBase {
      * @brief position of chunk the node group is a part of
      *
      * @param node_group node group to find position of chunk
-     * @return int chunk pos
+     * @return ChunkIndex chunk pos
      */
-    [[nodiscard]] int pos(const NodeGroup* const node_group) const;
+    [[nodiscard]] ChunkIndex pos(const NodeGroup* const node_group) const;
 
     /**
      * @brief unique map index
@@ -200,7 +200,7 @@ class Terrain : public TerrainBase {
      * @param biome_data json data  that contains biome data
      */
     Terrain(
-        int Area_size_, int z_tiles, int seed_, int tile_type,
+        Dim area_size_, Dim z_tiles, MapTile_t tile_type, int seed_,
         const std::map<MaterialId, const Material>& material,
         const Json::Value biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid
@@ -209,7 +209,7 @@ class Terrain : public TerrainBase {
      * @brief Construct a new Terrain object (most default constructor)
      */
     Terrain(
-        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
+        Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
         const std::map<MaterialId, const Material>& material,
         std::vector<int> grass_grad_data, unsigned int grass_mid
     );
@@ -228,7 +228,7 @@ class Terrain : public TerrainBase {
      * @param grass_mid gradient index of grass not effected by an edge
      */
     Terrain(
-        int x_tiles, int y_tiles, int Area_size_, int z_tiles, int seed,
+        Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
         const std::map<MaterialId, const Material>& material,
         const Json::Value biome_data, std::vector<int> grass_grad_data,
         unsigned int grass_mid
@@ -293,7 +293,7 @@ class Terrain : public TerrainBase {
      * @param xyz tile index in vector tiles
      * @return NodeGroup* NodeGroup tile is in
      */
-    [[nodiscard]] NodeGroup* get_node_group(int xyz);
+    [[nodiscard]] NodeGroup* get_node_group(TileIndex xyz);
     /**
      * @brief Get the node group from tile
      *
@@ -317,7 +317,7 @@ class Terrain : public TerrainBase {
      * @param xyz tile index in vector tiles
      * @return NodeGroup* NodeGroup tile is in
      */
-    [[nodiscard]] const NodeGroup* get_node_group(int xyz) const;
+    [[nodiscard]] const NodeGroup* get_node_group(TileIndex xyz) const;
     /**
      * @brief Get the node group from tile
      *
@@ -384,7 +384,7 @@ class Terrain : public TerrainBase {
      * @return true success
      * @return false failure
      */
-    bool player_set_tile_material(int xyz, const Material* mat, ColorId color_id);
+    bool player_set_tile_material(TileIndex xyz, const Material* mat, ColorId color_id);
 
     /**
      * @brief Set the tile material with no tests
@@ -442,7 +442,7 @@ class Terrain : public TerrainBase {
      * @return false cannot stand
      */
     [[nodiscard]] inline bool
-    can_stand_1(int x, int y, int z) const {
+    can_stand_1(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
         return can_stand(x, y, z, 1, 1);
     }
 
@@ -453,7 +453,8 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] bool can_stand_1(int xyz) const; // this is fast, and used for looping
+    [[nodiscard]] bool can_stand_1(TileIndex xyz
+    ) const; // this is fast, and used for looping
 
     // Ok so basically when running through a loop the cpu moves a large chunk
     // of memory that is close together into the cpu's memory, then this
@@ -495,7 +496,10 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] bool can_stand(int x, int y, int z, int dz, int dxy) const;
+    [[nodiscard]] bool can_stand(
+        TerrainOffset x, TerrainOffset y, TerrainOffset z, TerrainOffset dz,
+        TerrainOffset dxy
+    ) const;
     /**
      * @brief test if dxy x dyx x dz object can stand at given tile
      *
@@ -506,7 +510,8 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] bool can_stand(const Tile tile, int dz, int dxy) const;
+    [[nodiscard]] bool
+    can_stand(const Tile tile, TerrainOffset dz, TerrainOffset dxy) const;
     /**
      * @brief test if dxy x dyx x dz object can stand at given tile
      *
@@ -517,7 +522,8 @@ class Terrain : public TerrainBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] bool can_stand(const Tile* tile, int dz, int dxy) const;
+    [[nodiscard]] bool
+    can_stand(const Tile* tile, TerrainOffset dz, TerrainOffset dxy) const;
     /**
      * @brief save with debug visible
      *
@@ -603,18 +609,19 @@ class Terrain : public TerrainBase {
      * @param x x position
      * @param y y position
      *
-     * @return int height of heights solid z
+     * @return TerrainOffset height of heights solid z
      */
-    [[nodiscard]] int get_Z_solid(int x, int y) const;
+    [[nodiscard]] TerrainOffset get_Z_solid(TerrainOffset x, TerrainOffset y) const;
     /**
      * @brief Get the hightest solid z below the given z
      *
      * @param x x position
      * @param y y position
      * @param z z height
-     * @return int height of heights solid z
+     * @return TerrainOffset height of heights solid z
      */
-    [[nodiscard]] int get_Z_solid(int x, int y, int z) const;
+    [[nodiscard]] TerrainOffset
+    get_Z_solid(TerrainOffset x, TerrainOffset y, TerrainOffset z) const;
 
  private:
     // trace nodes through parents to reach start

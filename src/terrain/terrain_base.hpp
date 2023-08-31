@@ -161,7 +161,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param x x coordinate
      * @param y y coordinate
      * @param z z coordinate
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(Dim x, Dim y, Dim z) const noexcept {
@@ -173,7 +173,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief position in tiles vector of given tile position
      *
      * @param sop coordinate as an array
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(const TerrainDim3& sop) const {
@@ -184,7 +184,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief position in tiles vector of given tile
      *
      * @param tile tile to find position of
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(const Tile* const tile) const {
@@ -195,7 +195,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief position in tiles vector of given tile
      *
      * @param tile tile to find position of
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(const Tile tile) const {
@@ -259,7 +259,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     /**
      * @brief Get length of terrain in x direction
      *
-     * @return int length
+     * @return Dim length
      */
     [[nodiscard]] inline Dim
     get_X_MAX() const {
@@ -269,7 +269,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     /**
      * @brief Get length of terrain in x direction
      *
-     * @return int length
+     * @return Dim length
      */
     [[nodiscard]] inline Dim
     get_Y_MAX() const {
@@ -279,7 +279,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     /**
      * @brief Get length of terrain in x direction
      *
-     * @return int length
+     * @return Dim length
      */
     [[nodiscard]] inline Dim
     get_Z_MAX() const {
@@ -318,7 +318,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return false tile is not in bounds
      */
     [[nodiscard]] inline bool
-    in_range(int x, int y, int z) const {
+    in_range(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
         return (
             static_cast<Dim>(x) < X_MAX && x >= 0 && static_cast<Dim>(y) < Y_MAX
             && y >= 0 && static_cast<Dim>(z) < Z_MAX && z >= 0
@@ -326,7 +326,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     }
 
     [[nodiscard]] inline bool
-    in_range(TerrainDim3 xyz) const {
+    in_range(TerrainOffset3 xyz) const {
         return (xyz.x < X_MAX && xyz.y < Y_MAX && xyz.z < Z_MAX);
     }
 
@@ -340,12 +340,12 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return Tile* tile at given position
      */
     [[nodiscard]] inline Tile*
-    get_tile(int x, int y, int z) {
+    get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) {
         return const_cast<Tile*>(std::as_const(*this).get_tile(x, y, z));
     };
 
     [[nodiscard]] inline Tile*
-    get_tile(int xyz) {
+    get_tile(TileIndex xyz) {
         return const_cast<Tile*>(std::as_const(*this).get_tile(xyz));
     }
 
@@ -358,7 +358,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return Tile* tile at given position
      */
     [[nodiscard]] inline const Tile*
-    get_tile(int x, int y, int z) const {
+    get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
         if (!in_range(x, y, z)) {
             LOG_CRITICAL(
                 logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
@@ -378,8 +378,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return const Tile* tile at index
      */
     [[nodiscard]] inline const Tile*
-    get_tile(int xyz) const {
-        if (xyz < 0 || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+    get_tile(TileIndex xyz) const {
+        if (xyz < 0 || xyz >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         }
@@ -395,7 +395,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return ColorInt color or tile
      */
     [[nodiscard]] inline ColorInt
-    get_voxel(int x, int y, int z) const {
+    get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
         // using static ints to prevent dereferencing
         // The previous material id, and color id are cached so that materials do
         // not need to be dereferenced, and searched through.
@@ -421,7 +421,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     }
 
     [[nodiscard]] inline VoxelColorId
-    get_voxel_color_id(int x, int y, int z) const {
+    get_voxel_color_id(Dim x, Dim y, Dim z) const {
         // if not in range, then considered to be air
         if (!in_range(x, y, z))
             return 0;

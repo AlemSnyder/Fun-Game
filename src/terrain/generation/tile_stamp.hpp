@@ -40,12 +40,12 @@ namespace generation {
  * changed are also saved
  */
 struct TileStamp {
-    int x_start; // Lower bound in the x direction.
-    int y_start; // Lower bound in the y direction.
-    int z_start; // Lower bound in the z direction.
-    int x_end;   // Upper bound in the x direction.
-    int y_end;   // Upper bound in the y direction.
-    int z_end;   // Upper bound in the z direction.
+    TerrainOffset x_start; // Lower bound in the x direction.
+    TerrainOffset y_start; // Lower bound in the y direction.
+    TerrainOffset z_start; // Lower bound in the z direction.
+    TerrainOffset x_end;   // Upper bound in the x direction.
+    TerrainOffset y_end;   // Upper bound in the y direction.
+    TerrainOffset z_end;   // Upper bound in the z direction.
 
     const Material* mat; // Material that tiles will be set to.
     ColorId color_id;    // color that tiles will be set to.

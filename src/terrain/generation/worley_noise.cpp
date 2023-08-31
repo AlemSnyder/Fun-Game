@@ -13,10 +13,10 @@ WorleyNoise::distance(NoisePosition x, NoisePosition y, WorleyPoint point) {
     );
 }
 
-NoisePosition
+double
 WorleyNoise::get(NoisePosition x, NoisePosition y) const {
-    int x_tile = x / tile_size_;
-    int y_tile = y / tile_size_;
+    NoiseTileIndex x_tile = x / tile_size_;
+    NoiseTileIndex y_tile = y / tile_size_;
 
     auto worley_points = get_points(x_tile, y_tile);
 
@@ -31,7 +31,7 @@ WorleyNoise::get(NoisePosition x, NoisePosition y) const {
 }
 
 std::set<WorleyPoint>
-WorleyNoise::get_points(int x_t, int y_t) const {
+WorleyNoise::get_points(NoiseTileIndex x_t, NoiseTileIndex y_t) const {
     std::set<WorleyPoint> out;
     for (int dx = 0; dx < 2; dx++) {
         for (int dy = 0; dy < 2; dy++) {
@@ -45,10 +45,10 @@ WorleyNoise::get_points(int x_t, int y_t) const {
     return out;
 }
 
-NoisePosition
+double
 AlternativeWorleyNoise::get(NoisePosition x, NoisePosition y) const {
-    int x_t = x / tile_size_;
-    int y_t = y / tile_size_;
+    NoiseTileIndex x_t = x / tile_size_;
+    NoiseTileIndex y_t = y / tile_size_;
 
     auto worley_points = get_points(x_t, y_t);
 
@@ -64,8 +64,10 @@ AlternativeWorleyNoise::get(NoisePosition x, NoisePosition y) const {
     return value;
 }
 
-NoisePosition
-AlternativeWorleyNoise::modified_cos_(NoisePosition distance, NoisePosition effective_radius) const {
+double
+AlternativeWorleyNoise::modified_cos_(
+    NoisePosition distance, NoisePosition effective_radius
+) const {
     if (distance > 2 * effective_radius) {
         return 0;
     }

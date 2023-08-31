@@ -138,7 +138,7 @@ Tile::try_grow_grass() {
     }
 }
 
-// returns the element id and the color id as one int
+// returns the element id and the color id as one number
 MatColorId
 Tile::get_mat_color_id() const {
     // element_id, and color_id are 8 bit this function

@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "../../types.hpp"
+
 #include <cmath>
 #include <cstdint>
 
@@ -37,7 +39,7 @@ class Noise {
         {997169939, 842027887, 423882827}
     };
 
-    double get_double(int i, int x, int y) const;
+    double get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) const;
 
 }; // namespace noise
 
@@ -75,12 +77,13 @@ class NoiseGenerator : public Noise {
      * @param y postion in y direction
      * @return double the value of the noise
      */
-    double getValueNoise(double x, double y) const;
+    double getValueNoise(NoisePosition x, NoisePosition y) const;
 
  private:
-    double smoothed_noise_(int i, int x, int y) const;
-    double interpolate_(double a, double b, double x) const; // cosine interpolation
-    double interpolated_noise_(int i, double x, double y) const;
+    double smoothed_noise_(size_t i, NoiseTileIndex x, NoiseTileIndex y) const;
+    double interpolate_(NoisePosition a, NoisePosition b, NoisePosition x)
+        const; // cosine interpolation
+    double interpolated_noise_(size_t i, NoisePosition x, NoisePosition y) const;
 };
 
 } // namespace generation

@@ -9,7 +9,7 @@ namespace terrain {
 namespace generation {
 
 double
-generation::NoiseGenerator::getValueNoise(double x, double y) const {
+generation::NoiseGenerator::getValueNoise(NoisePosition x, NoisePosition y) const {
     double total = 0, frequency = pow(2, num_octaves_), amplitude = 1;
     for (int i = 0; i < num_octaves_; ++i) {
         frequency /= 2;
@@ -24,7 +24,7 @@ generation::NoiseGenerator::getValueNoise(double x, double y) const {
 
 // returns a value between [0, 1)
 double
-Noise::get_double(int i, int x, int y) const {
+Noise::get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) const {
     int32_t n = x * 53 + y * 59;
     n = (n << 13) ^ n;
     int32_t a = PRIMES[i][0];
@@ -35,7 +35,9 @@ Noise::get_double(int i, int x, int y) const {
 }
 
 double
-generation::NoiseGenerator::smoothed_noise_(int i, int x, int y) const {
+generation::NoiseGenerator::smoothed_noise_(
+    size_t i, NoiseTileIndex x, NoiseTileIndex y
+) const {
     double corners = (get_double(i, x - 1, y - 1) + get_double(i, x + 1, y - 1)
                       + get_double(i, x - 1, y + 1) + get_double(i, x + 1, y + 1))
                      / 16,
@@ -47,15 +49,17 @@ generation::NoiseGenerator::smoothed_noise_(int i, int x, int y) const {
 }
 
 double
-generation::NoiseGenerator::interpolate_(double a, double b, double x)
-    const { // cosine interpolation
+generation::NoiseGenerator::interpolate_(
+    NoisePosition a, NoisePosition b, NoisePosition x
+) const { // cosine interpolation
     double ft = x * 3.1415927, f = (1 - cos(ft)) * 0.5;
     return a * (1 - f) + b * f;
 }
 
 double
-generation::NoiseGenerator::interpolated_noise_(int i, double x, double y)
-    const {
+generation::NoiseGenerator::interpolated_noise_(
+    size_t i, NoisePosition x, NoisePosition y
+) const {
     int integer_X = x;
     double fractional_X = x - integer_X;
     int integer_Y = y;

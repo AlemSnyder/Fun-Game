@@ -101,7 +101,7 @@ class SkyData {
     /**
      * @brief Get the number of stars
      *
-     * @return unsigned int number of stars
+     * @return size_t number of stars
      */
     [[nodiscard]] inline size_t
     get_num_stars() const {

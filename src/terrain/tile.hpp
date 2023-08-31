@@ -159,7 +159,7 @@ class Tile {
     /**
      * @brief Get the x position
      *
-     * @return int x position
+     * @return Dim x position
      */
     [[nodiscard]] inline Dim
     get_x() const noexcept {
@@ -169,7 +169,7 @@ class Tile {
     /**
      * @brief Get the y position
      *
-     * @return int y position
+     * @return Dim y position
      */
     [[nodiscard]] inline Dim
     get_y() const noexcept {
@@ -179,7 +179,7 @@ class Tile {
     /**
      * @brief Get the z position
      *
-     * @return int z position
+     * @return Dim z position
      */
     [[nodiscard]] inline Dim
     get_z() const noexcept {
@@ -189,7 +189,7 @@ class Tile {
     /**
      * @brief coordinate of tile
      *
-     * @return std::array<int, 3> array of x, y, z
+     * @return TerrainDim3 array of x, y, z
      */
     [[nodiscard]] TerrainDim3
     sop() const noexcept {

@@ -13,8 +13,8 @@ namespace voxel_utility {
 
 class VoxelBase {
  public:
-    ColorInt get_voxel(int x, int y, int z) const;
-    VoxelColorId get_voxel_color_id(int x, int y, int z) const;
+    ColorInt get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const;
+    VoxelColorId get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const;
     std::vector<ColorInt> get_color_ids() const;
     VoxelSize get_size() const;
     VoxelOffset get_offset() const;
@@ -31,8 +31,8 @@ class VoxelObject : VoxelBase {
     VoxelSize size_;
     bool ok_;
 
-    [[nodiscard]] inline int
-    get_position(int x, int y, int z) const {
+    [[nodiscard]] inline TileIndex
+    get_position(VoxelDim x, VoxelDim y, VoxelDim z) const {
         return ((x * size_.y + y) * size_.z + z);
     }
 
