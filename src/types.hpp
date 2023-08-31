@@ -34,7 +34,7 @@ using path_t = uint8_t;
  *********************/
 
 // Range over all space where a value can be found
-using NoisePosition = _Float64;
+using NoisePosition = double;
 // Range over all space where random values can be generator for
 using NoiseTileIndex = int32_t;
 

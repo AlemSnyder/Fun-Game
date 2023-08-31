@@ -1,7 +1,17 @@
 name: Build-Test
+
 on:
   push:
-    branches: [ main ]
+    branches: [ 'main' ]
+
+  pull_request:
+    branches: [ 'main' ]
+
+  workflow_dispatch:
+
+# We only care about the latest revision of a PR, so cancel all previous instances.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref_name }}
 jobs:
   build:
     runs-on: ubuntu-latest

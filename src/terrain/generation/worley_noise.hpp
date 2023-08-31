@@ -20,7 +20,8 @@ struct WorleyPoint {
 
     bool positive;
 
-    std::partial_ordering operator<=>(const WorleyPoint& other) const {
+    std::partial_ordering
+    operator<=>(const WorleyPoint& other) const {
         return x_position <=> other.x_position;
     }
 };
@@ -32,14 +33,16 @@ class WorleyNoise : public Noise {
     double positive_chance_ = 1;
 
  public:
-    WorleyNoise(NoisePosition tile_size = 1);
+    inline WorleyNoise(NoisePosition tile_size = 1) : tile_size_(tile_size){};
 
-    double get(NoisePosition x, NoisePosition y) const;
-
-    std::set<WorleyPoint> get_points(NoiseTileIndex x_t, NoiseTileIndex y_t) const;
+    [[nodiscard]] double get(NoisePosition x, NoisePosition y) const;
 
  protected:
-    static double distance(NoisePosition x, NoisePosition y, WorleyPoint);
+    [[nodiscard]] std::set<WorleyPoint>
+    get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t) const;
+
+    [[nodiscard]] static double
+    distance_(NoisePosition x, NoisePosition y, WorleyPoint);
 };
 
 class AlternativeWorleyNoise : public WorleyNoise {
@@ -47,10 +50,11 @@ class AlternativeWorleyNoise : public WorleyNoise {
     inline AlternativeWorleyNoise(NoisePosition tile_size = 1) :
         WorleyNoise(tile_size) {}
 
-    double get(NoisePosition x, NoisePosition y) const;
+    [[nodiscard]] double get(NoisePosition x, NoisePosition y) const;
 
  private:
-    double modified_cos_(NoisePosition distance, NoisePosition effective_radius) const;
+    [[nodiscard]] double
+    modified_cos_(NoisePosition distance, NoisePosition effective_radius) const;
 };
 
 } // namespace generation

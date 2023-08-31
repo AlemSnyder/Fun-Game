@@ -4,10 +4,9 @@ namespace terrain {
 
 namespace generation {
 
-WorleyNoise::WorleyNoise(NoisePosition tile_size) : tile_size_(tile_size) {}
 
-[[nodiscard]] NoisePosition
-WorleyNoise::distance(NoisePosition x, NoisePosition y, WorleyPoint point) {
+NoisePosition
+WorleyNoise::distance_(NoisePosition x, NoisePosition y, WorleyPoint point) {
     return std::sqrt(
         std::pow(x - point.x_position, 2) + std::pow(y - point.y_position, 2)
     );
@@ -18,11 +17,11 @@ WorleyNoise::get(NoisePosition x, NoisePosition y) const {
     NoiseTileIndex x_tile = x / tile_size_;
     NoiseTileIndex y_tile = y / tile_size_;
 
-    auto worley_points = get_points(x_tile, y_tile);
+    auto worley_points = get_points_(x_tile, y_tile);
 
     NoisePosition value = tile_size_ * 2;
     for (const auto& point : worley_points) {
-        NoisePosition d = distance(x, y, point);
+        NoisePosition d = distance_(x, y, point);
         if (d < value)
             value = d;
     }
@@ -31,7 +30,7 @@ WorleyNoise::get(NoisePosition x, NoisePosition y) const {
 }
 
 std::set<WorleyPoint>
-WorleyNoise::get_points(NoiseTileIndex x_t, NoiseTileIndex y_t) const {
+WorleyNoise::get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t) const {
     std::set<WorleyPoint> out;
     for (int dx = 0; dx < 2; dx++) {
         for (int dy = 0; dy < 2; dy++) {
@@ -50,11 +49,11 @@ AlternativeWorleyNoise::get(NoisePosition x, NoisePosition y) const {
     NoiseTileIndex x_t = x / tile_size_;
     NoiseTileIndex y_t = y / tile_size_;
 
-    auto worley_points = get_points(x_t, y_t);
+    auto worley_points = get_points_(x_t, y_t);
 
     NoisePosition value = 0;
     for (const auto& point : worley_points) {
-        NoisePosition d = distance(x, y, point);
+        NoisePosition d = distance_(x, y, point);
         if (point.positive)
             value += modified_cos_(d, point.radius);
         else
@@ -66,16 +65,21 @@ AlternativeWorleyNoise::get(NoisePosition x, NoisePosition y) const {
 
 double
 AlternativeWorleyNoise::modified_cos_(
-    NoisePosition distance, NoisePosition effective_radius
+    NoisePosition distance_, NoisePosition effective_radius
 ) const {
-    if (distance > 2 * effective_radius) {
+    // only use first period of cos
+    // 2 * effective radius is the maximum possible distance from any get point
+    // to a worley point that is not generated.
+    // that un used worley point must give zero in the function. This check
+    // garnitures that.
+    if (distance_ > 2 * effective_radius)
         return 0;
-    }
-    if (distance < 0) {
+    // distance under 0 should not exist
+    if (distance_ < 0)
         return 0;
-    }
 
-    return std::cos(distance / effective_radius);
+    // return value between 0 and 2
+    return std::cos(M_PI * distance_ / (2 * effective_radius))  + 1;
 }
 
 } // namespace generation
