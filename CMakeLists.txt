@@ -18,10 +18,17 @@ file(GLOB SOURCES7 "3rd-party/imgui/backends/imgui_impl_opengl3.cpp")
 file(GLOB SOURCES8 "3rd-party/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
-# complie quill with dedicated CMakeList.txt file
-add_subdirectory("3rd-party/quill/quill")
-# sol is header only
-# add_subdirectory("3rd-party/sol2")
+# compile quill and sol2
+block()
+    set(QUILL_BUILD_EXAMPLES   OFF)
+    set(QUILL_BUILD_TESTS      OFF)
+    set(QUILL_BUILD_BENCHMARKS OFF)
+    set(QUILL_DOCS_GEN         OFF)
+
+    add_subdirectory("3rd-party/quill")
+endblock()
+
+add_subdirectory("3rd-party/sol2")
 
 # prefer newer OpenGL
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
@@ -33,14 +40,14 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
-target_link_libraries(FunGame glfw)
-target_link_libraries(FunGame OpenGL::GL)
-target_link_libraries(FunGame GLEW::GLEW)
+target_link_libraries(FunGame PRIVATE glfw)
+target_link_libraries(FunGame PRIVATE OpenGL::GL)
+target_link_libraries(FunGame PRIVATE GLEW::GLEW)
 
 if(WIN32)
-target_link_libraries(FunGame glm)
+    target_link_libraries(FunGame PRIVATE glm)
 else()
-target_link_libraries(FunGame glm::glm)
+    target_link_libraries(FunGame PRIVATE glm::glm)
 endif()
 
 # Lua 5.2 just uses the name "Lua" while 5.1, and 5.0 used "Lua51", and "Lua50"
@@ -49,13 +56,15 @@ find_package(Lua REQUIRED)
 
 include_directories(${LUA_INCLUDE_DIR})
 
-# add quill
-target_link_libraries(FunGame quill::quill)
+# add quill and sol2
+target_link_libraries(FunGame PRIVATE quill::quill)
 
-# Add include dirs 
+target_link_libraries(FunGame PRIVATE sol2::sol2)
+target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
+
+# Add include dirs
 target_include_directories(FunGame PUBLIC "3rd-party")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
-target_link_libraries(FunGame ${LUA_LIBRARIES})
 
 # Set warning options
 if(MSVC)

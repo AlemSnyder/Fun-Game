@@ -97,20 +97,20 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     }());
 #else
     if (structured) {
-        file_handler = quill::json_file_handler(LOG_FILE + ".json", []() {
+        file_handler = quill::json_file_handler(LOG_FILE.string() + ".json", []() {
             quill::JsonFileHandlerConfig cfg;
             cfg.set_open_mode('w');
             cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
             return cfg;
         }());
-
     } else {
-        file_handler = quill::json_file_handler(LOG_FILE + ".json", []() {
+        file_handler = quill::file_handler(LOG_FILE, []() {
             quill::JsonFileHandlerConfig cfg;
             cfg.set_open_mode('w');
             cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
             return cfg;
         }());
+    }
 #endif
 
     file_handler->set_pattern(
