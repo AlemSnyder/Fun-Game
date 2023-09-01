@@ -72,24 +72,6 @@ FrameBufferMultisample::FrameBufferMultisample(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    // connect the texture to the frame buffer
-    glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single, 0
-    );
-
-    draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, draw_buffers);
-
-    framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-    if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
-        // log some error
-        LOG_ERROR(
-            logging::opengl_logger, "Framebuffer Incomplete with code {}",
-            framebuffer_status
-        );
-    }
 }
 
 } // namespace data_structures

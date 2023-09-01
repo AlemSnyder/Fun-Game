@@ -396,7 +396,7 @@ Terrain::get_path_type(
     else
         type = horizontal_direction;
 
-    bool open;
+    bool open = false;
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
