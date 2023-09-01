@@ -52,7 +52,7 @@ include_directories(${LUA_INCLUDE_DIR})
 target_link_libraries(FunGame quill::quill)
 
 # Add include dirs for vendored and configured headers
-target_include_directories(FunGame PUBLIC "vendor")
+target_include_directories(FunGame PUBLIC "3rd-party")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 target_link_libraries(FunGame ${LUA_LIBRARIES})
 
