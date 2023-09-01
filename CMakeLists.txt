@@ -19,8 +19,9 @@ file(GLOB SOURCES8 "3rd-party/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # complie quill with dedicated CMakeList.txt file
-add_subdirectory("3rd-party/quill")
-add_subdirectory("3rd-party/sol2")
+add_subdirectory("3rd-party/quill/quill")
+# sol is header only
+# add_subdirectory("3rd-party/sol2")
 
 # prefer newer OpenGL
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
@@ -53,6 +54,8 @@ target_link_libraries(FunGame quill::quill)
 
 # Add include dirs for vendored and configured headers
 target_include_directories(FunGame PUBLIC "3rd-party")
+target_include_directories(FunGame PUBLIC "3rd-party/quill/qill/include")
+target_include_directories(FunGame PUBLIC "3rd-party/sol2/include")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 target_link_libraries(FunGame ${LUA_LIBRARIES})
 

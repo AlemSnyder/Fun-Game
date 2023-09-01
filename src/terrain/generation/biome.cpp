@@ -89,7 +89,7 @@ Biome::Biome(const std::string& biome_name) {
     MacroDim x_map_tiles = map["x"]; // should be 16
     MacroDim y_map_tiles = map["y"];
     assert(
-        (y_map_tiles == x_map_tiles & x_map_tiles == map_tiles)
+        ((y_map_tiles == x_map_tiles) && (x_map_tiles == map_tiles))
         && "Map tile input and out put must all match"
     );
     tile_map_vector_.resize(x_map_tiles * y_map_tiles);
