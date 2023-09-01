@@ -18,6 +18,10 @@ file(GLOB SOURCES7 "3rd-party/imgui/backends/imgui_impl_opengl3.cpp")
 file(GLOB SOURCES8 "3rd-party/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
+# Set standard version
+set_property(TARGET FunGame PROPERTY CXX_STANDARD 20)
+set_property(TARGET FunGame PROPERTY C_STANDARD 17)
+
 # compile quill and sol2
 block()
     set(QUILL_BUILD_EXAMPLES   OFF)

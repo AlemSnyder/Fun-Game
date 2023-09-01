@@ -69,7 +69,7 @@ Biome::Biome(const std::string& biome_name) {
     );
 
     auto result =
-        lua.safe_script_file(lua_map_generator_file, sol::script_pass_on_error);
+        lua.safe_script_file(lua_map_generator_file.string(), sol::script_pass_on_error);
     if (!result.valid()) {
         sol::error err = result;
         sol::call_status status = result.status();
