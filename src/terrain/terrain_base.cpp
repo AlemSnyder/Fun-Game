@@ -285,6 +285,7 @@ TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {
 }
 
 // generates a x_map_tiles by y_map_tiles vector of macro tile types.
+// TODO This is a horrible function. Remove it and replace with lua
 std::vector<int>
 TerrainBase::generate_macro_map(
     unsigned int x_map_tiles, unsigned int y_map_tiles, const Json::Value& terrain_data
@@ -305,7 +306,7 @@ TerrainBase::generate_macro_map(
             static_cast<double>(tile_position.x) * spacing,
             static_cast<double>(tile_position.y) * spacing
         );
-        out[i] = static_cast<int>((p + 1) * (p + 1) * range);
+        out[i] = static_cast<int>(p * p * range);
     }
 
     // There should be some formatting for map.
