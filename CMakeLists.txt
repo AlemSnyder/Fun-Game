@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+include(cmake/functions.cmake)
+
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 17)
@@ -61,9 +63,9 @@ find_package(Lua REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
 # add quill and sol2
-target_link_libraries(FunGame PRIVATE quill::quill)
+target_link_libraries_system(FunGame PRIVATE quill::quill)
 
-target_link_libraries(FunGame PRIVATE sol2::sol2)
+target_link_libraries_system(FunGame PRIVATE sol2::sol2)
 target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
 # Add include dirs
