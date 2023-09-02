@@ -47,8 +47,8 @@ struct TileStamp {
     TerrainOffset y_end;   // Upper bound in the y direction.
     TerrainOffset z_end;   // Upper bound in the z direction.
 
-    const Material* mat; // Material that tiles will be set to.
-    ColorId color_id;    // color that tiles will be set to.
+    MaterialId mat;   // Material that tiles will be set to.
+    ColorId color_id; // color that tiles will be set to.
     // set of <material ID, color ID> determines what tiles types can be changed.
     std::set<std::pair<MaterialId, ColorId>> elements_can_stamp;
 };

@@ -25,10 +25,10 @@
 #include "../logging.hpp"
 #include "../types.hpp"
 #include "../util/voxel.hpp"
-#include "material.hpp"
-#include "path/unit_path.hpp"
 #include "generation/land_generator.hpp"
 #include "generation/tile_stamp.hpp"
+#include "material.hpp"
+#include "path/unit_path.hpp"
 #include "tile.hpp"
 
 #include <json/json.h>
@@ -234,7 +234,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     sop(TileIndex xyz) const {
         return {
             static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
-            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))
+        };
     }
 
     /**
@@ -253,7 +254,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
         }
         return {
             static_cast<Dim>(xyz / (ym * zm)), static_cast<Dim>((xyz / zm) % ym),
-            static_cast<Dim>(xyz % (zm))};
+            static_cast<Dim>(xyz % (zm))
+        };
     }
 
     /**
@@ -481,53 +483,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param x macro map x position
      * @param y macro map y position
      */
-    inline void
-    stamp_tile_region(const generation::TileStamp& tStamp, int x, int y) {
-        stamp_tile_region(
-            tStamp.x_start + x * area_size_ + area_size_ / 2,
-            tStamp.y_start + y * area_size_ + area_size_ / 2, tStamp.z_start,
-            tStamp.x_end + x * area_size_ + area_size_ / 2,
-            tStamp.y_end + y * area_size_ + area_size_ / 2, tStamp.z_end, tStamp.mat,
-            tStamp.elements_can_stamp, tStamp.color_id
-        );
-    }
-
-    /**
-     * @brief Set a group of tiles
-     *
-     * @param x_start lower x position
-     * @param y_start lower y position
-     * @param z_start lower z position
-     * @param x_end greater x position
-     * @param y_end greater y position
-     * @param z_end greater z position
-     * @param mat materials to set
-     * @param color_id color id to set
-     */
-    void stamp_tile_region(
-        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const Material* mat, ColorId color_id
-    );
-    /**
-     * @brief Set a group of tiles
-     *
-     * @param x_start lower x position
-     * @param y_start lower y position
-     * @param z_start lower z position
-     * @param x_end greater x position
-     * @param y_end greater y position
-     * @param z_end greater z position
-     * @param mat materials to set
-     * @param elements_can_stamp type of material that can be changed
-     *
-     * @param color_id color id to set
-     */
-    void stamp_tile_region(
-        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const Material* mat,
-        const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp,
-        ColorId color_id
-    );
+    inline void stamp_tile_region(const generation::TileStamp& tStamp, int x, int y);
 
     /**
      * @brief add material on top of extant voxels
@@ -575,6 +531,10 @@ class TerrainBase : public voxel_utility::VoxelBase {
     ) const {
         MaterialId mat_id = tile->get_material_id();
         ColorId color_id = tile->get_color_id();
+
+        //TODO need to check if the material found has color id = -1 then return
+        // return true.
+        // unfortunately color id is unsigned so need to use max int instead.
 
         return (
             material_test.find(std::make_pair(mat_id, color_id)) != material_test.end()

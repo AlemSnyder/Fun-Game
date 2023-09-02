@@ -88,7 +88,7 @@ TerrainBase::TerrainBase(
     // for tile macro in data biome
     for (const Json::Value& tile_macro : biome_data["Tile_Macros"]) {
         // create a land generator for each tile macro
-        generation::LandGenerator gen(materials, tile_macro["Land_Data"]);
+        generation::LandGenerator gen(tile_macro["Land_Data"]);
         land_generators.push_back(gen);
     }
 
@@ -238,19 +238,22 @@ TerrainBase::add_to_top(
 
 void
 TerrainBase::stamp_tile_region(
-    int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-    const Material* mat,
-    const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp, ColorId color_id
+    const generation::TileStamp& tStamp, int x_offset, int y_offset
 ) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.
+    int x_start = tStamp.x_start + x_offset * area_size_ + area_size_ / 2;
+    int y_start = tStamp.y_start + y_offset * area_size_ + area_size_ / 2;
+    int x_end = tStamp.x_end + x_offset * area_size_ + area_size_ / 2;
+    int y_end = tStamp.y_end + y_offset * area_size_ + area_size_ / 2;
+
     for (ssize_t x = x_start; x < x_end; x++) {
         for (ssize_t y = y_start; y < y_end; y++) {
-            for (ssize_t z = z_start; z < z_end; z++) {
+            for (ssize_t z = tStamp.z_start; z < tStamp.z_end; z++) {
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
-                    if (has_tile_material(elements_can_stamp, tile)) {
-                        tile->set_material(mat, color_id);
+                    if (has_tile_material(tStamp.elements_can_stamp, tile)) {
+                        tile->set_material(&materials_.at(tStamp.mat), tStamp.color_id);
                     }
                 }
             }
@@ -258,6 +261,9 @@ TerrainBase::stamp_tile_region(
     }
 }
 
+
+//TODO add this back when want to stamp all all types of materials.
+/*
 void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
@@ -273,7 +279,7 @@ TerrainBase::stamp_tile_region(
             }
         }
     }
-}
+}*/
 
 void
 TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {

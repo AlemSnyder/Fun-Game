@@ -29,13 +29,20 @@ namespace terrain {
 
 namespace generation {
 
-LandGenerator::LandGenerator(
-    const std::map<MaterialId, const Material>& materials_, const Json::Value data
-) :
-    current_region(0),
-    current_sub_region(0), materials(materials_), data_(data) {}
-
-// LandGenerator::LandGenerator() : current_region(0), current_sub_region(0) {}
+LandGenerator::LandGenerator(const Json::Value data) :
+    current_region(0), current_sub_region(0) {
+    for (const Json::Value& region : data) {
+        std::shared_ptr<JsonToTile> stamp_generator;
+        if (region["type"] == "Positions") {
+            stamp_generator = std::make_shared<FromPosition>(FromPosition(region));
+        } else if (region["type"] == "Radius") {
+            stamp_generator = std::make_shared<FromRadius>(FromRadius(region));
+        } else if (region["type"] == "Grid") {
+            stamp_generator = std::make_shared<FromGrid>(FromGrid(region));
+        }
+        stamp_generators_.push_back(stamp_generator);
+    }
+}
 
 unsigned int
 LandGenerator::get_num_stamps(const Json::Value& biome) {
@@ -51,127 +58,33 @@ LandGenerator::get_num_stamps(const Json::Value& biome) {
 
 TileStamp
 LandGenerator::get_this_stamp() const {
-    TileStamp out;
-    out.mat = &materials.at(data_[current_region]["Material_id"].as<int>());
-    out.color_id = data_[current_region]["Color_id"].asInt();
-    for (Json::Value::ArrayIndex i = 0; i < data_[current_region]["Can_Stamp"].size();
-         i++) {
-        int E = data_[current_region]["Can_Stamp"][i]["E"].asInt();
-        if (data_[current_region]["Can_Stamp"][i]["C"].isInt()) {
-            int C = data_[current_region]["Can_Stamp"][i]["C"].asInt();
-            out.elements_can_stamp.insert(std::make_pair(E, C));
-        } else if (data_[current_region]["Can_Stamp"][i]["C"].asBool()) {
-            for (unsigned int C = 0; C < materials.at(E).color.size(); C++) {
-                out.elements_can_stamp.insert(std::make_pair(E, C));
-            }
-        }
-    }
-    std::string type = data_[current_region]["Type"].asString();
+    TileStamp out = stamp_generators_[current_region]->operator()(current_sub_region);
 
-    if (type == "Positions") {
-        from_positions(current_region, current_sub_region, out);
-    } else if (type == "Radius") {
-        from_radius(current_region, current_sub_region, out);
-    } else if (type == "Grid") {
-        from_grid(current_region, current_sub_region, out);
-    }
     return out;
 }
 
 void
-LandGenerator::from_radius(int cr, int csr, TileStamp& ts) const {
-    int radius = data_[cr]["Radius"]["radius"].asInt();
-    int number = data_[cr]["Radius"]["number"].asInt();
-
-    double distance = static_cast<double>(8 * radius) / number * csr;
-    int side = static_cast<int>(distance) / 2 / radius;
-    int x_center, y_center;
-
-    if (side == 0) {
-        x_center = -radius;
-        y_center = -radius + std::fmod(distance, 2 * radius);
-    } else if (side == 1) {
-        x_center = -radius + std::fmod(distance, 2 * radius);
-        y_center = radius;
-    } else if (side == 2) {
-        x_center = radius;
-        y_center = radius - std::fmod(distance, 2 * radius);
-    } else if (side == 3) {
-        x_center = radius - std::fmod(distance, 2 * radius);
-        y_center = -radius;
-    } else {
-        throw std::invalid_argument("Something went horribly wrong");
+LandGenerator::next() {
+    current_sub_region++;
+    if (current_sub_region == stamp_generators_[current_region]->num()) {
+        current_region++;
+        current_sub_region = 0;
     }
-
-    int DC = data_[cr]["Radius"]["DC"].asInt();
-    int center[2][2] = {
-        {x_center - DC, y_center - DC},
-        {x_center + DC, y_center + DC}
-    };
-
-    std::array<int, 6> volume = get_volume(
-        center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
-    );
-
-    ts.x_start = volume[0];
-    ts.y_start = volume[1];
-    ts.z_start = volume[2];
-    ts.x_end = volume[3];
-    ts.y_end = volume[4];
-    ts.z_end = volume[5];
 }
 
-void
-LandGenerator::from_grid(int cr, int csr, TileStamp& ts) const {
-    int number = data_[cr]["Grid"]["number"].asInt();
-    int radius = data_[cr]["Grid"]["radius"].asInt();
+JsonToTile::JsonToTile(const Json::Value& data) :
+    elements_can_stamp_(read_elements_can_stamp(data)),
+    stamp_material_id_(data["Material_id"].asInt()),
+    stamp_color_id_(data["Color_id"].asInt()) {
+    width_ = data["Size"].asInt();
+    height_ = data["Height"].asInt();
 
-    int x_center = (1 + 2 * (csr % number)) * (radius / number) - radius;
-    int y_center = (1 + 2 * (csr / number)) * (radius / number) - radius;
-    int DC = data_[cr]["Grid"]["DC"].asInt();
-
-    int center[2][2] = {
-        {x_center - DC, y_center - DC},
-        {x_center + DC, y_center + DC}
-    };
-
-    std::array<int, 6> volume = get_volume(
-        center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
-    );
-
-    ts.x_start = volume[0];
-    ts.y_start = volume[1];
-    ts.z_start = volume[2];
-    ts.x_end = volume[3];
-    ts.y_end = volume[4];
-    ts.z_end = volume[5];
+    width_variance_ = data["DC"].asInt();
+    height_variance_ = data["DH"].asInt();
 }
 
-void
-LandGenerator::from_positions(int cr, int csr, TileStamp& ts) const {
-    Json::Value xy_positions = data_[cr]["Positions"][csr];
-    int center[2][2] = {
-        {xy_positions[0].asInt(), xy_positions[1].asInt()},
-        {xy_positions[0].asInt(), xy_positions[1].asInt()}
-    };
-
-    std::array<int, 6> volume = get_volume(
-        center, data_[cr]["Size"].asInt(), data_[cr]["Hight"].asInt(),
-        data_[cr]["DS"].asInt(), data_[cr]["DH"].asInt()
-    );
-
-    ts.x_start = volume[0];
-    ts.y_start = volume[1];
-    ts.z_start = volume[2];
-    ts.x_end = volume[3];
-    ts.y_end = volume[4];
-    ts.z_end = volume[5];
-}
-
-std::array<int, 6>
-LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const {
+TileStamp
+JsonToTile::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const {
     int center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
     int center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
     int size_x = rand() % (2 * Dxy + 1) + Sxy - Dxy;
@@ -195,16 +108,113 @@ LandGenerator::get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) co
     }
 
     int z_max = rand() % (Dz + 1) + Sz - Dz / 2;
-    return {x_min, y_min, 0, x_max, y_max, z_max};
+    return {
+        x_min,
+        y_min,
+        0,
+        x_max,
+        y_max,
+        z_max,
+        stamp_material_id_,
+        stamp_color_id_,
+        elements_can_stamp_
+    };
 }
 
-void
-LandGenerator::next() {
-    current_sub_region++;
-    if (current_sub_region == get_num_stamps(data_[current_region])) {
-        current_region++;
-        current_sub_region = 0;
+std::set<std::pair<MaterialId, ColorId>>
+JsonToTile::read_elements_can_stamp(const Json::Value& data) {
+    std::set<std::pair<MaterialId, ColorId>> out;
+
+    for (const Json::Value& material_data : data["Can_Stamp"]) {
+        int E = material_data["E"].asInt();
+        if (material_data["C"].isInt()) {
+            int C = material_data["C"].asInt();
+            out.insert(std::make_pair(E, C));
+        } else if (material_data["C"].asBool()) {
+            out.insert(std::make_pair(E, -1));
+        }
     }
+    return out;
+}
+
+FromRadius::FromRadius(const Json::Value& data) : JsonToTile(data) {
+    number_ = data["Radius"]["number"].asInt();
+    radius_ = data["Radius"]["radius"].asInt();
+
+    center_variance_ = data["DC"].asInt();
+}
+
+TileStamp
+FromRadius::operator()(int current_sub_region) const {
+    double distance = static_cast<double>(8 * radius_) / number_ * current_sub_region;
+    int side = static_cast<int>(distance) / 2 / radius_;
+    int x_center, y_center;
+
+    if (side == 0) {
+        x_center = -radius_;
+        y_center = -radius_ + std::fmod(distance, 2 * radius_);
+    } else if (side == 1) {
+        x_center = -radius_ + std::fmod(distance, 2 * radius_);
+        y_center = radius_;
+    } else if (side == 2) {
+        x_center = radius_;
+        y_center = radius_ - std::fmod(distance, 2 * radius_);
+    } else if (side == 3) {
+        x_center = radius_ - std::fmod(distance, 2 * radius_);
+        y_center = -radius_;
+    } else {
+        throw std::invalid_argument("Something went horribly wrong");
+    }
+
+    int center[2][2] = {
+        {x_center - center_variance_, y_center - center_variance_},
+        {x_center + center_variance_, y_center + center_variance_}
+    };
+
+    return get_volume(center, width_, height_, width_variance_, height_variance_);
+}
+
+FromPosition::FromPosition(const Json::Value& data) : JsonToTile(data) {
+    points_.reserve(data["Positions"].size());
+
+    for (const Json::Value& point : data["Positions"]) {
+        points_.push_back({point[0].asInt(), point.asInt()});
+    }
+
+    center_variance_ = data["DC"].asInt();
+}
+
+TileStamp
+FromPosition::operator()(int current_sub_region) const {
+    auto point = points_[current_sub_region];
+    int center[2][2]{
+        {point.x, point.y},
+        {point.x, point.y}
+    };
+
+    return get_volume(center, width_, height_, width_variance_, height_variance_);
+}
+
+FromGrid::FromGrid(const Json::Value& data) : JsonToTile(data) {
+    number_ = data["Radius"]["number"].asInt();
+    radius_ = data["Radius"]["radius"].asInt();
+
+    center_variance_ = data["DC"].asInt();
+}
+
+TileStamp
+FromGrid::operator()(int current_sub_region) const {
+    int x_center =
+        (1 + 2 * (current_sub_region % number_)) * (radius_ / number_) - radius_;
+    int y_center =
+        (1 + 2 * (current_sub_region / number_)) * (radius_ / number_) - radius_;
+
+    int center[2][2] = {
+        {x_center - center_variance_, y_center - center_variance_},
+        {x_center + center_variance_, y_center + center_variance_}
+    };
+
+    return get_volume(center, width_, height_, width_variance_, height_variance_);
 }
 
 } // namespace generation
