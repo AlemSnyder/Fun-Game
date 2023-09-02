@@ -80,7 +80,7 @@ class NonInstancedIMeshRenderer :
      */
     explicit NonInstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
 
-    ~NonInstancedIMeshRenderer();
+    virtual ~NonInstancedIMeshRenderer() {}
 
     /**
      * @brief adds a non-indexed mesh so it will cast a shadow
@@ -171,9 +171,6 @@ NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(ShaderHandler shader_han
 
     depth_bias_id_shadow_ = glGetUniformLocation(program_id_shadow_, "depthMVP");
 }
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::~NonInstancedIMeshRenderer() {}
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void

@@ -57,7 +57,7 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
      */
     explicit InstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
 
-    ~InstancedIMeshRenderer();
+    virtual ~InstancedIMeshRenderer() {}
 
     void load_transforms_buffer(std::shared_ptr<T> mesh) const;
 
