@@ -147,7 +147,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         Dim x_map_tiles, Dim y_map_tiles, Dim Area_size, Dim z_tiles,
         const std::map<MaterialId, const Material>& materials,
         const Json::Value& biome_data, std::vector<int> grass_grad_data,
-        unsigned int grass_mid, std::vector<int> Terrain_Maps
+        unsigned int grass_mid, std::vector<MapTile_t> Terrain_Maps
     );
 
     void qb_read(
@@ -502,9 +502,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param size_x number of tile types in x direction
      * @param size_y number of tile types in y direction
      * @param map_data json data on how to generate map
-     * @return std::vector<int> (size_x * size_y) vector of ints
+     * @return std::vector<MapTile_t> (size_x * size_y) vector of ints
      */
-    [[nodiscard]] static std::vector<int> generate_macro_map(
+    [[nodiscard]] static std::vector<MapTile_t> generate_macro_map(
         unsigned int size_x, unsigned int size_y, const Json::Value& map_data
     );
 

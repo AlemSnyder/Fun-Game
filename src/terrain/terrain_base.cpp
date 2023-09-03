@@ -69,7 +69,7 @@ TerrainBase::TerrainBase(
     Dim x_map_tiles, Dim y_mat_tiles, Dim area_size, Dim z_tiles,
     const std::map<MaterialId, const Material>& materials,
     const Json::Value& biome_data, std::vector<int> grass_grad_data,
-    unsigned int grass_mid, std::vector<int> Terrain_Maps
+    unsigned int grass_mid, std::vector<MapTile_t> Terrain_Maps
 ) :
     TerrainBase(
         materials, grass_grad_data, grass_mid, x_map_tiles, y_mat_tiles, area_size,
@@ -238,22 +238,22 @@ TerrainBase::add_to_top(
 
 void
 TerrainBase::stamp_tile_region(
-    const generation::TileStamp& tStamp, int x_offset, int y_offset
+    const generation::TileStamp& stamp, TerrainOffset x_offset, TerrainOffset y_offset
 ) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.
-    int x_start = tStamp.x_start + x_offset * area_size_ + area_size_ / 2;
-    int y_start = tStamp.y_start + y_offset * area_size_ + area_size_ / 2;
-    int x_end = tStamp.x_end + x_offset * area_size_ + area_size_ / 2;
-    int y_end = tStamp.y_end + y_offset * area_size_ + area_size_ / 2;
+    TerrainOffset x_start = stamp.x_start + x_offset * area_size_ + area_size_ / 2;
+    TerrainOffset y_start = stamp.y_start + y_offset * area_size_ + area_size_ / 2;
+    TerrainOffset x_end = stamp.x_end + x_offset * area_size_ + area_size_ / 2;
+    TerrainOffset y_end = stamp.y_end + y_offset * area_size_ + area_size_ / 2;
 
-    for (ssize_t x = x_start; x < x_end; x++) {
-        for (ssize_t y = y_start; y < y_end; y++) {
-            for (ssize_t z = tStamp.z_start; z < tStamp.z_end; z++) {
+    for (TerrainOffset x = x_start; x < x_end; x++) {
+        for (TerrainOffset y = y_start; y < y_end; y++) {
+            for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
-                    if (has_tile_material(tStamp.elements_can_stamp, tile)) {
-                        tile->set_material(&materials_.at(tStamp.mat), tStamp.color_id);
+                    if (has_tile_material(stamp.elements_can_stamp, tile)) {
+                        tile->set_material(&materials_.at(stamp.mat), stamp.color_id);
                     }
                 }
             }
@@ -292,11 +292,11 @@ TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {
 
 // generates a x_map_tiles by y_map_tiles vector of macro tile types.
 // TODO This is a horrible function. Remove it and replace with lua
-std::vector<int>
+std::vector<MapTile_t>
 TerrainBase::generate_macro_map(
     unsigned int x_map_tiles, unsigned int y_map_tiles, const Json::Value& terrain_data
 ) {
-    std::vector<int> out;
+    std::vector<MapTile_t> out;
     int background = terrain_data["BackGround"].asInt(); // default terrain type.
     int numOctaves = terrain_data["NumOctaves"].asInt(); // number of octaves
     double persistance = terrain_data["Persistance"].asDouble();

@@ -396,49 +396,53 @@ Terrain::get_path_type(
     else
         type = horizontal_direction;
 
-    bool open = false;
+    bool path_open = false;
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
         // same lever so the only thing that maters if the entity can stand on
         // both tiles
-        open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
+        path_open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
     } else if (type == DirectionFlags::HORIZONTAL2) {
         // still the same level
         // this test if the start and final locations are open,
         // and if the two between them are open
         // S O
         // O F
-        open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy)
-               && can_stand(xs, yf, zs, dz, dxy) && can_stand(xf, ys, zf, dz, dxy);
+        path_open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy)
+                    && can_stand(xs, yf, zs, dz, dxy) && can_stand(xf, ys, zf, dz, dxy);
     } else if (type == DirectionFlags::UP_AND_OVER) {
         if (zf > zs) {
             // going up, and over
-            open = can_stand(xs, ys, zs, dz + 1, dxy) && can_stand(xf, yf, zf, dz, dxy);
+            path_open =
+                can_stand(xs, ys, zs, dz + 1, dxy) && can_stand(xf, yf, zf, dz, dxy);
         } else {
             // going down and over
-            open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz + 1, dxy);
+            path_open =
+                can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz + 1, dxy);
         }
 
     } else if (type == DirectionFlags::UP_AND_DIAGONAL) {
         if (zf > zs) {
             // going up, and diagonal
-            open = can_stand(xs, ys, zs, dz + 1, dxy) && can_stand(xf, yf, zf, dz, dxy)
-                   && ((can_stand(xf, ys, zs, dz + 1, dxy)
-                        || can_stand(xf, ys, zf, dz, dxy))
-                       && (can_stand(xs, yf, zs, dz + 1, dxy)
-                           || can_stand(xs, yf, zf, dz, dxy)));
+            path_open = can_stand(xs, ys, zs, dz + 1, dxy)
+                        && can_stand(xf, yf, zf, dz, dxy)
+                        && ((can_stand(xf, ys, zs, dz + 1, dxy)
+                             || can_stand(xf, ys, zf, dz, dxy))
+                            && (can_stand(xs, yf, zs, dz + 1, dxy)
+                                || can_stand(xs, yf, zf, dz, dxy)));
         } else {
             // going down and diagonal
-            open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz + 1, dxy)
-                   && ((can_stand(xf, ys, zs, dz, dxy)
-                        || can_stand(xf, ys, zf, dz + 1, dxy))
-                       && (can_stand(xs, yf, zs, dz, dxy)
-                           || can_stand(xs, yf, zf, dz + 1, dxy)));
+            path_open = can_stand(xs, ys, zs, dz, dxy)
+                        && can_stand(xf, yf, zf, dz + 1, dxy)
+                        && ((can_stand(xf, ys, zs, dz, dxy)
+                             || can_stand(xf, ys, zf, dz + 1, dxy))
+                            && (can_stand(xs, yf, zs, dz, dxy)
+                                || can_stand(xs, yf, zf, dz + 1, dxy)));
         }
     }
 
-    return type | UnitPath(open);
+    return type | UnitPath(path_open);
 }
 
 std::set<const NodeGroup*>

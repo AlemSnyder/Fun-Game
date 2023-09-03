@@ -24,7 +24,10 @@ namespace generation {
 
 class Noise {
  protected:
-    static constexpr int32_t PRIMES[][3] = {
+    // The length of NoiseGenerator::primes
+    static constexpr uint16_t NUM_PRIMES = 10;
+
+    static constexpr int32_t PRIMES[NUM_PRIMES][3] = {
         {995615039, 600173719, 701464987},
         {831731269, 162318869, 136250887},
         {174329291, 946737083, 245679977},
@@ -36,9 +39,6 @@ class Noise {
         {531736441, 939683957, 810651871},
         {997169939, 842027887, 423882827}
     };
-
-    // The length of NoiseGenerator::primes
-    static constexpr uint16_t max_primes_ = 10;
 
     double get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) const;
 
@@ -68,7 +68,7 @@ class NoiseGenerator : public Noise {
     NoiseGenerator(int numOctaves, double persistence, int primeIndex) {
         num_octaves_ = numOctaves;
         persistence_ = persistence;
-        primeIndex_ = primeIndex % max_primes_;
+        primeIndex_ = primeIndex % NUM_PRIMES;
     }
 
     /**

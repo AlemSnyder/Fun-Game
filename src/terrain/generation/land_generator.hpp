@@ -39,6 +39,8 @@ namespace terrain {
 
 namespace generation {
 
+namespace stamps {
+
 class JsonToTile {
  protected:
     Dim height_;
@@ -51,31 +53,32 @@ class JsonToTile {
     const ColorId stamp_color_id_;
 
  public:
-    virtual TileStamp operator()(int current_sub_region) const = 0;
-    virtual size_t num() const = 0;
-
     JsonToTile(const Json::Value& data);
+    virtual TileStamp get_this_stamp(ssize_t current_sub_region) const = 0;
+    virtual size_t num_sub_region() const = 0;
+
+    virtual ~JsonToTile() {}
 
     static std::set<std::pair<MaterialId, ColorId>>
     read_elements_can_stamp(const Json::Value& data);
 
  protected:
-    TileStamp get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const;
-    void from_positions_(const Json::Value& data, int current_sub_region);
-    void from_radius_(const Json::Value& data, int current_sub_region);
-    void from_grid_(const Json::Value& data, int current_sub_region);
+    TileStamp get_volume(
+        glm::imat2x2 center, TerrainOffset Sxy, TerrainOffset Sz, TerrainOffset Dxy,
+        TerrainOffset Dz
+    ) const;
 };
 
 class FromPosition : public JsonToTile {
  private:
     std::vector<glm::ivec2> points_;
-    int center_variance_;
+    TerrainOffset center_variance_;
 
  public:
-    TileStamp operator()(int current_sub_region) const override;
+    TileStamp get_this_stamp(ssize_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
-    num() const override {
+    num_sub_region() const override {
         return points_.size();
     }
 
@@ -84,15 +87,15 @@ class FromPosition : public JsonToTile {
 
 class FromRadius : public JsonToTile {
  private:
-    int radius_;
-    int number_;
-    int center_variance_;
+    TerrainOffset radius_;
+    TerrainOffset number_;
+    TerrainOffset center_variance_;
 
  public:
-    TileStamp operator()(int current_sub_region) const override;
+    TileStamp get_this_stamp(ssize_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
-    num() const override {
+    num_sub_region() const override {
         return number_;
     }
 
@@ -101,20 +104,29 @@ class FromRadius : public JsonToTile {
 
 class FromGrid : public JsonToTile {
  private:
-    int radius_;
-    int number_;
-    int center_variance_;
+    TerrainOffset radius_;
+    TerrainOffset number_;
+    TerrainOffset center_variance_;
 
  public:
-    TileStamp operator()(int current_sub_region) const override;
+    TileStamp get_this_stamp(ssize_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
-    num() const override {
+    num_sub_region() const override {
         return number_ * number_;
     }
 
     FromGrid(const Json::Value& data);
 };
+
+enum struct Side {
+    TOP = 0,
+    RIGHT = 1,
+    BOTTOM = 2,
+    LEFT = 3,
+};
+
+} // namespace stamps
 
 /**
  * @brief Reads JSON data and generates TileStamp objects
@@ -129,13 +141,13 @@ class FromGrid : public JsonToTile {
  *
  */
 class LandGenerator {
-    unsigned int current_region;
-    unsigned int current_sub_region;
+    size_t current_region;
+    size_t current_sub_region;
 
     // const std::map<MaterialId, const Material>& materials;
     // const std::set<Material*> elements_can_stamp_;
     // const Material* material_;
-    std::vector<std::shared_ptr<JsonToTile>> stamp_generators_;
+    std::vector<std::shared_ptr<stamps::JsonToTile>> stamp_generators_;
     // Json::Value data_; // this should be a structure
 
  public:
@@ -145,7 +157,7 @@ class LandGenerator {
      * @param materials the materials used in this biome
      * @param data the description of how tiles stamps should be generated
      */
-    LandGenerator(const Json::Value data);
+    LandGenerator(const Json::Value& data);
 
     /**
      * @brief Construct a new LandGenerator object (default constructor)
@@ -187,14 +199,7 @@ class LandGenerator {
     };
 
  private:
-    unsigned int static get_num_stamps(const Json::Value& biome);
-
-    //    std::array<int, 6>
-    //    get_volume(int center[2][2], int Sxy, int Sz, int Dxy, int Dz) const;
-
-    //    void from_radius(int cr, int csr, TileStamp& ts) const;
-    //    void from_grid(int cr, int csr, TileStamp& ts) const;
-    //    void from_positions(int cr, int csr, TileStamp& ts) const;
+    size_t static get_num_stamps(const Json::Value& biome);
 };
 
 } // namespace generation
