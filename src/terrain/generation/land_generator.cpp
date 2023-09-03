@@ -166,7 +166,7 @@ FromRadius::get_this_stamp(ssize_t current_sub_region) const {
             break;
         default:
             // This should never happen. Not "its wrong for this to happen", but
-            // index our of bounds should ont happen.
+            // index out of bounds should ont happen.
             // the only way for this to happen is if
             // current_sub_region > num_sub_region
             LOG_CRITICAL(logging::terrain_logger, "Something went horribly wrong");
