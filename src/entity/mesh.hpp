@@ -140,7 +140,7 @@ greedy_mesh(
 
     VoxelSize object_geometry,
     const std::vector<std::pair<bool, VoxelColorId>>& color_info,
-    VoxelOffset axis_offset, std::size_t dims_index_1, std::size_t dims_index_2
+    VoxelOffset axis_offset, size_t dims_index_1, size_t dims_index_2
 ) {
     // takes object_geometry color_info and offset
     // modifies indicies, indexed_vertices, indexed_colors, indexed_normals
@@ -221,7 +221,7 @@ greedy_mesh(
                 offset_2[dims_index_1] = width;
             }
 
-            const std::size_t vertex_size = indexed_vertices.size();
+            const size_t vertex_size = indexed_vertices.size();
 
             indexed_vertices.push_back(voxel_position + axis_offset);
             indexed_vertices.push_back(voxel_position + offset_1 + axis_offset);
@@ -287,10 +287,10 @@ generate_mesh(T voxel_object) {
     VoxelOffset center = voxel_object.get_offset();
     // mesh size
     VoxelSize object_geometry = voxel_object.get_size();
-    for (std::size_t axis = 0; axis < 3; ++axis) {
+    for (size_t axis = 0; axis < 3; ++axis) {
         // in which directions is the mesh being drawn
-        const std::size_t dims_index_1 = (axis + 1) % 3;
-        const std::size_t dims_index_2 = (axis + 2) % 3;
+        const size_t dims_index_1 = (axis + 1) % 3;
+        const size_t dims_index_2 = (axis + 2) % 3;
 
         // position of a voxel in world space
         VoxelOffset voxel_position(0, 0, 0);
@@ -311,7 +311,7 @@ generate_mesh(T voxel_object) {
         // start the vertex position scan one less in the direction of axis
         voxel_position[axis] = -1;
         while (voxel_position[axis] < static_cast<int>(object_geometry[axis])) {
-            std::size_t counter = 0;
+            size_t counter = 0;
             // for each voxel in this level
             for (voxel_position[dims_index_2] = 0;
                  voxel_position[dims_index_2]
