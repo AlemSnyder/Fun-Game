@@ -1,5 +1,5 @@
 // -*- lsst-c++ -*-
-// Two-dimensional value noise_ based on Hugo Elias's description.
+// Two-dimensional value noise based on Hugo Elias's description.
 // I did not write this code, but the link to the original no longer exists.
 
 /**

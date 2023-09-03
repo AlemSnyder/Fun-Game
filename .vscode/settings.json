@@ -11,7 +11,8 @@
         "Parameteri",
         "Perlin",
         "vmask",
-        "voxel"
+        "voxel",
+        "Worley"
     ],
     "files.associations": {
         "**/*.html": "html",
