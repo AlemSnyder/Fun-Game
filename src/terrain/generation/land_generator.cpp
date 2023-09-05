@@ -106,13 +106,13 @@ JsonToTile::JsonToTile(const Json::Value& data) :
 
 TileStamp
 JsonToTile::get_volume(
-    glm::imat2x2 center, TerrainOffset Sxy, TerrainOffset Sz, TerrainOffset Dxy,
-    TerrainOffset Dz
+    glm::imat2x2 center, TerrainOffset width, TerrainOffset height,
+    TerrainOffset width_variance, TerrainOffset height_variance
 ) const {
     TerrainOffset center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
     TerrainOffset center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
-    TerrainOffset size_x = rand() % (2 * Dxy + 1) + Sxy - Dxy;
-    TerrainOffset size_y = rand() % (2 * Dxy + 1) + Sxy - Dxy;
+    TerrainOffset size_x = rand() % (2 * width_variance + 1) + width - width_variance;
+    TerrainOffset size_y = rand() % (2 * width_variance + 1) + width - width_variance;
     TerrainOffset x_min = center_x - size_x / 2;
     TerrainOffset x_max = center_x + size_x / 2;
     TerrainOffset y_min = center_y - size_y / 2;
@@ -131,7 +131,7 @@ JsonToTile::get_volume(
             y_max--;
     }
 
-    TerrainOffset z_max = rand() % (Dz + 1) + Sz - Dz / 2;
+    TerrainOffset z_max = rand() % (height_variance + 1) + height - height_variance / 2;
     return {
         x_min,
         y_min,
