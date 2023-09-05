@@ -263,7 +263,7 @@ TerrainBase::stamp_tile_region(
 
 
 //TODO add this back when want to stamp all all types of materials.
-/*
+#if 0
 void
 TerrainBase::stamp_tile_region(
     int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
@@ -279,7 +279,8 @@ TerrainBase::stamp_tile_region(
             }
         }
     }
-}*/
+}
+#endif
 
 void
 TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {

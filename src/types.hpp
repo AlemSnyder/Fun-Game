@@ -52,6 +52,9 @@ using ColorFloat = glm::vec4; // std::array<float, 4>;
 using MaterialId = uint8_t;
 using ColorId = uint8_t;
 
+static constexpr MaterialId MAT_ALL_MATERIAL = static_cast<MaterialId>(-1);
+static constexpr ColorId CLR_ALL_COLOR = static_cast<ColorId>(-1);
+
 // should be size of MaterialId + size of ColorId
 using MatColorId = uint16_t;
 static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));

@@ -532,9 +532,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
         MaterialId mat_id = tile->get_material_id();
         ColorId color_id = tile->get_color_id();
 
-        //TODO need to check if the material found has color id = -1 then return
-        // return true.
-        // unfortunately color id is unsigned so need to use max int instead.
+        //TODO need to check if the material found has color id = CLR_ALL_COLOR
+        // then return true.
+        // Still need to implement the check
 
         return (
             material_test.find(std::make_pair(mat_id, color_id)) != material_test.end()
