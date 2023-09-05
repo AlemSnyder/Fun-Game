@@ -33,7 +33,7 @@ namespace generation {
 LandGenerator::LandGenerator(const Json::Value& data) :
     current_region(0), current_sub_region(0) {
     for (const Json::Value& region : data) {
-        std::string type = region["type"].asString();
+        std::string type = region["Type"].asString();
         char first_character = type.at(0);
 
         std::shared_ptr<stamps::JsonToTile> stamp_generator;
@@ -213,8 +213,8 @@ FromPosition::get_this_stamp(ssize_t current_sub_region) const {
 }
 
 FromGrid::FromGrid(const Json::Value& data) :
-    JsonToTile(data), radius_(data["Radius"]["radius"].asInt()),
-    number_(data["Radius"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
+    JsonToTile(data), radius_(data["Grid"]["radius"].asInt()),
+    number_(data["Grid"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 
 TileStamp
 FromGrid::get_this_stamp(ssize_t current_sub_region) const {
