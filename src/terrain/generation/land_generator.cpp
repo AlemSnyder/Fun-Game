@@ -168,7 +168,7 @@ FromRadius::FromRadius(const Json::Value& data) :
 TileStamp
 FromRadius::get_stamp(size_t current_sub_region) const {
     double distance = static_cast<double>(8 * radius_) / number_ * current_sub_region;
-    Side side{static_cast<uint8_t>(distance) / 2 / radius_};
+    Side side{static_cast<uint8_t>(distance / 2 / radius_)};
     TerrainOffset x_center, y_center;
 
     switch (side) {
