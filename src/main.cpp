@@ -69,6 +69,30 @@ MacroMap() {
 }
 
 int
+NoiseTest(){
+    quill::Logger* logger = quill::get_logger();
+
+    terrain::generation::NoiseGenerator noise(1, 1, 3);
+
+    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(1,1));
+    LOG_INFO(logger, "Noise double again: {}", noise.getValueNoise(1,1));
+    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(2,1));
+    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(3,1));
+    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(4,1));
+
+
+    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(1, 3, 3));
+    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(2, 3, 3));
+    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(3, 3, 3));
+    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(4, 3, 3));
+    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(5, 3, 3));
+    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(6, 3, 3));
+    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(7, 3, 3));
+
+    return 0;
+}
+
+int
 save_test(const std::string path, const std::string save_path) {
     Json::Value materials_json;
     std::ifstream materials_file = files::open_data_file("base/materials.json");
@@ -280,6 +304,8 @@ main(int argc, char** argv) {
         return GenerateTerrain(path_in);
     } else if (run_function == "MacroMap") {
         return MacroMap();
+    } else if (run_function == "NoiseTest") {
+        return NoiseTest();
     } else if (run_function == "StressTest") {
         return StressTest();
     } else if (run_function == "SaveTest") {

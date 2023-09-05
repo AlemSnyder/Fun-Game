@@ -57,7 +57,7 @@ struct WorleyPoint {
  * @details This implementation uses one point per grid square and returns the
  * minimum distance to any point.
  */
-class WorleyNoise : public Noise {
+class WorleyNoise : protected Noise {
  protected:
     // side length of area used to generate points
     NoisePosition tile_size_ = 1;

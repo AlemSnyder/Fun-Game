@@ -33,13 +33,23 @@ namespace generation {
 LandGenerator::LandGenerator(const Json::Value& data) :
     current_region(0), current_sub_region(0) {
     for (const Json::Value& region : data) {
+        std::string type = region["type"].asString();
+        char first_character = type.at(0);
+
         std::shared_ptr<stamps::JsonToTile> stamp_generator;
-        if (region["type"] == "Positions") {
-            stamp_generator = std::make_shared<stamps::FromPosition>(region);
-        } else if (region["type"] == "Radius") {
-            stamp_generator = std::make_shared<stamps::FromRadius>(region);
-        } else if (region["type"] == "Grid") {
-            stamp_generator = std::make_shared<stamps::FromGrid>(region);
+        switch (first_character) {
+            case 'P':
+                stamp_generator = std::make_shared<stamps::FromPosition>(region);
+                break;
+            case 'R':
+                stamp_generator = std::make_shared<stamps::FromRadius>(region);
+                break;
+            case 'G':
+                stamp_generator = std::make_shared<stamps::FromGrid>(region);
+                break;
+            default:
+                LOG_WARNING(logging::terrain_logger, "Type {} is not valid.", type);
+                continue;
         }
         stamp_generators_.push_back(stamp_generator);
     }

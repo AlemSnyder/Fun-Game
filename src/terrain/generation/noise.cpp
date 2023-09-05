@@ -24,7 +24,7 @@ generation::NoiseGenerator::getValueNoise(NoisePosition x, NoisePosition y) cons
 
 // returns a value between [0, 1)
 double
-Noise::get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) const {
+Noise::get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) {
     int32_t n = x * 53 + y * 59;
     n = (n << 13) ^ n;
     int32_t a = PRIMES[i][0];
@@ -52,7 +52,8 @@ double
 generation::NoiseGenerator::interpolate_(
     NoisePosition a, NoisePosition b, NoisePosition x
 ) const { // cosine interpolation
-    double ft = x * 3.1415927, f = (1 - cos(ft)) * 0.5;
+    double ft = x * 3.1415927;
+    double f = (1 - cos(ft)) * 0.5;
     return a * (1 - f) + b * f;
 }
 

@@ -39,8 +39,8 @@ class Noise {
         {531736441, 939683957, 810651871},
         {997169939, 842027887, 423882827}
     };
-
-    double get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) const;
+ public:
+    static double get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y);
 
 }; // namespace noise
 
@@ -52,7 +52,7 @@ class Noise {
  * layers. The first layer is between -1, and 1. Subsequent have twice the
  * frequency, and amplitude of persistance times the previous amplitude.
  */
-class NoiseGenerator : public Noise {
+class NoiseGenerator : protected Noise {
     int num_octaves_ = 7;
     double persistence_ = 0.5;
     int primeIndex_ = 0;
