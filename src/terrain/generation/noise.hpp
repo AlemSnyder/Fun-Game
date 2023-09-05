@@ -55,6 +55,8 @@ class Noise {
         return get_double(0, x, y);
     }
 
+    virtual ~Noise() {}
+
 };
 
 template <class T>

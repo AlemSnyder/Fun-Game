@@ -38,16 +38,16 @@ LandGenerator::LandGenerator(const Json::Value& data) :
 
         std::shared_ptr<stamps::JsonToTile> stamp_generator;
         switch (first_character) {
-            case 'P':
-            [[fallthrough]] case 'p':
+            [[fallthrough]] case 'P':;
+            case 'p':
                 stamp_generator = std::make_shared<stamps::FromPosition>(region);
                 break;
-            case 'R':
-            [[fallthrough]] case 'r':
+            [[fallthrough]] case 'R':;
+            case 'r':
                 stamp_generator = std::make_shared<stamps::FromRadius>(region);
                 break;
-            case 'G':
-            [[fallthrough]] case 'g':
+            [[fallthrough]] case 'G':;
+            case 'g':
                 stamp_generator = std::make_shared<stamps::FromGrid>(region);
                 break;
             [[unlikely]] default:
@@ -165,7 +165,7 @@ FromRadius::FromRadius(const Json::Value& data) :
 TileStamp
 FromRadius::get_stamp(size_t current_sub_region) const {
     double distance = static_cast<double>(8 * radius_) / number_ * current_sub_region;
-    Side side{static_cast<int>(distance) / 2 / radius_};
+    Side side{static_cast<uint8_t>(distance) / 2 / radius_};
     TerrainOffset x_center, y_center;
 
     switch (side) {
