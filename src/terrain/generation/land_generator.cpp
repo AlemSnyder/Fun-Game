@@ -163,7 +163,7 @@ FromRadius::FromRadius(const Json::Value& data) :
     number_(data["Radius"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 
 TileStamp
-FromRadius::get_stamp(ssize_t current_sub_region) const {
+FromRadius::get_stamp(size_t current_sub_region) const {
     double distance = static_cast<double>(8 * radius_) / number_ * current_sub_region;
     Side side{static_cast<int>(distance) / 2 / radius_};
     TerrainOffset x_center, y_center;
@@ -212,7 +212,7 @@ FromPosition::FromPosition(const Json::Value& data) :
 }
 
 TileStamp
-FromPosition::get_stamp(ssize_t current_sub_region) const {
+FromPosition::get_stamp(size_t current_sub_region) const {
     auto point = points_[current_sub_region];
     glm::imat2x2 center = {
         {point.x, point.y},
@@ -227,7 +227,7 @@ FromGrid::FromGrid(const Json::Value& data) :
     number_(data["Grid"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 
 TileStamp
-FromGrid::get_stamp(ssize_t current_sub_region) const {
+FromGrid::get_stamp(size_t current_sub_region) const {
     TerrainOffset x_center =
         (1 + 2 * (current_sub_region % number_)) * (radius_ / number_) - radius_;
     TerrainOffset y_center =

@@ -67,7 +67,7 @@ class JsonToTile {
     /**
      * @brief Returns a tile stamp depending on the current sub region.
     */
-    virtual TileStamp get_stamp(ssize_t current_sub_region) const = 0;
+    virtual TileStamp get_stamp(size_t current_sub_region) const = 0;
     /**
      * @brief Returns the number of unique stamps this stamp generator can
      * generate.
@@ -110,7 +110,7 @@ class FromPosition : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(ssize_t current_sub_region) const override;
+    TileStamp get_stamp(size_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -127,7 +127,7 @@ class FromRadius : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(ssize_t current_sub_region) const override;
+    TileStamp get_stamp(size_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -144,7 +144,7 @@ class FromGrid : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(ssize_t current_sub_region) const override;
+    TileStamp get_stamp(size_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {

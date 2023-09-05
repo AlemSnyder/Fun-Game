@@ -285,7 +285,7 @@ TerrainBase::stamp_tile_region(
 void
 TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {
     while (!gen.empty()) {
-        stamp_tile_region(gen.get_this_stamp(), area_x, area_y);
+        stamp_tile_region(gen.get_stamp(), area_x, area_y);
         gen.next();
     }
     gen.reset();
@@ -304,12 +304,12 @@ TerrainBase::generate_macro_map(
     int range = terrain_data["Range"].asInt();
     int spacing = terrain_data["Spacing"].asInt();
     out.resize(x_map_tiles * y_map_tiles, background);
-    generation::NoiseGenerator ng =
-        generation::NoiseGenerator(numOctaves, persistance, 3);
+    generation::FractalNoise ng =
+        generation::FractalNoise(numOctaves, persistance, 3);
 
     for (size_t i = 0; i < out.size(); i++) {
         TerrainDim3 tile_position = sop(i, x_map_tiles, y_map_tiles, 1);
-        auto p = ng.getValueNoise(
+        auto p = ng.get_noise(
             static_cast<double>(tile_position.x) * spacing,
             static_cast<double>(tile_position.y) * spacing
         );
