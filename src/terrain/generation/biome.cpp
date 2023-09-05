@@ -40,20 +40,20 @@ Biome::Biome(const std::string& biome_name) {
     // add functions/libraries etc
     lua.open_libraries(sol::lib::base);
     lua.open_libraries(sol::lib::math);
-    lua.new_usertype<NoiseGenerator>(
+    lua.new_usertype<FractalNoise>(
         "FractalNoise", sol::meta_function::construct,
         sol::factories(
             // FractalNoise.new(...) -- dot syntax, no "self" value
             // passed in
             [](int num_octaves, double persistence, int prime_index) {
-                return std::make_shared<NoiseGenerator>(
+                return std::make_shared<FractalNoise>(
                     num_octaves, persistence, prime_index
                 );
             },
             // FractalNoise:new(...) -- colon syntax, passes in the
             // "self" value as first argument implicitly
             [](sol::object, int num_octaves, double persistence, int prime_index) {
-                return std::make_shared<NoiseGenerator>(
+                return std::make_shared<FractalNoise>(
                     num_octaves, persistence, prime_index
                 );
             }
@@ -61,15 +61,16 @@ Biome::Biome(const std::string& biome_name) {
         // FractalNoise(...) syntax, only
         sol::call_constructor,
         sol::factories([](int num_octaves, double persistence, int prime_index) {
-            return std::make_shared<NoiseGenerator>(
+            return std::make_shared<FractalNoise>(
                 num_octaves, persistence, prime_index
             );
         }),
-        "sample", &NoiseGenerator::getValueNoise
+        "sample", &FractalNoise::get_noise
     );
 
-    auto result =
-        lua.safe_script_file(lua_map_generator_file.string(), sol::script_pass_on_error);
+    auto result = lua.safe_script_file(
+        lua_map_generator_file.string(), sol::script_pass_on_error
+    );
     if (!result.valid()) {
         sol::error err = result;
         sol::call_status status = result.status();

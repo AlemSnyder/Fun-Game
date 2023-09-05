@@ -75,7 +75,7 @@ class WorleyNoise : protected Noise {
     /**
      * @brief Get the noise value at given position.
      */
-    [[nodiscard]] double get(NoisePosition x, NoisePosition y) const;
+    [[nodiscard]] virtual double get_noise(NoisePosition x, NoisePosition y) const override;
 
  protected:
     [[nodiscard]] std::set<WorleyPoint>
@@ -102,7 +102,7 @@ class AlternativeWorleyNoise : public WorleyNoise {
     inline AlternativeWorleyNoise(NoisePosition tile_size = 1) :
         WorleyNoise(tile_size) {}
 
-    [[nodiscard]] double get(NoisePosition x, NoisePosition y) const;
+    [[nodiscard]] virtual double get_noise(NoisePosition x, NoisePosition y) const override;
 
  private:
     [[nodiscard]] double

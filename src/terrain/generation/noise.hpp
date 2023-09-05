@@ -5,7 +5,7 @@
 /**
  * @file noise.hpp
  *
- * @brief Defines NoiseGenerator class.
+ * @brief Defines Noise class and FractalNoise class.
  *
  * @ingroup Terrain
  *
@@ -24,7 +24,7 @@ namespace generation {
 
 class Noise {
  protected:
-    // The length of NoiseGenerator::primes
+    // The length of Noise::primes
     static constexpr uint16_t NUM_PRIMES = 10;
 
     static constexpr int32_t PRIMES[NUM_PRIMES][3] = {
@@ -47,17 +47,29 @@ class Noise {
      */
     static double get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y);
 
-}; // namespace noise
+    /**
+     * @brief Virtual function that returns a value depending on the position.
+     * This function should be continuous.
+     */
+    inline virtual double get_noise(NoisePosition x, NoisePosition y) const {
+        return get_double(0, x, y);
+    }
+
+};
+
+template <class T>
+concept NoiseGenerator =
+    std::is_base_of<Noise, T>::value;
 
 /**
  * @brief Generates two dimensional Perlin noise.
  *
- * @details NoiseGenerator generates two dimensional Perlin noise with cosine
+ * @details FractalNoise generates two dimensional Perlin noise with cosine
  * interpolation, and geometric persistance. The noise consists of different
  * layers. The first layer is between -1, and 1. Subsequent have twice the
  * frequency, and amplitude of persistance times the previous amplitude.
  */
-class NoiseGenerator : protected Noise {
+class FractalNoise : protected Noise {
     int num_octaves_ = 7;
     double persistence_ = 0.5;
     int primeIndex_ = 0;
@@ -70,7 +82,7 @@ class NoiseGenerator : protected Noise {
      * @param persistence the strength of subsequent noise; between 0, and 1
      * @param primeIndex int for randomization (a worse version of a seed)
      */
-    NoiseGenerator(int numOctaves, double persistence, int primeIndex) {
+    FractalNoise(int numOctaves, double persistence, int primeIndex) {
         num_octaves_ = numOctaves;
         persistence_ = persistence;
         primeIndex_ = primeIndex % NUM_PRIMES;
@@ -83,7 +95,7 @@ class NoiseGenerator : protected Noise {
      * @param y postion in y direction
      * @return double the value of the noise
      */
-    double getValueNoise(NoisePosition x, NoisePosition y) const;
+    virtual double get_noise(NoisePosition x, NoisePosition y) const override;
 
  private:
     double smoothed_noise_(size_t i, NoiseTileIndex x, NoiseTileIndex y) const;

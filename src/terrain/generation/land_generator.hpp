@@ -67,7 +67,7 @@ class JsonToTile {
     /**
      * @brief Returns a tile stamp depending on the current sub region.
     */
-    virtual TileStamp get_this_stamp(ssize_t current_sub_region) const = 0;
+    virtual TileStamp get_stamp(ssize_t current_sub_region) const = 0;
     /**
      * @brief Returns the number of unique stamps this stamp generator can
      * generate.
@@ -84,7 +84,7 @@ class JsonToTile {
      * terrain. Use the "Can_Stamp" dictionary.
     */
     static std::set<std::pair<MaterialId, ColorId>>
-    read_elements_can_stamp(const Json::Value& data);
+    read_elements(const Json::Value& data);
 
  protected:
     /**
@@ -110,7 +110,7 @@ class FromPosition : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_this_stamp(ssize_t current_sub_region) const override;
+    TileStamp get_stamp(ssize_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -127,7 +127,7 @@ class FromRadius : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_this_stamp(ssize_t current_sub_region) const override;
+    TileStamp get_stamp(ssize_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -144,7 +144,7 @@ class FromGrid : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_this_stamp(ssize_t current_sub_region) const override;
+    TileStamp get_stamp(ssize_t current_sub_region) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -154,7 +154,7 @@ class FromGrid : public JsonToTile {
     FromGrid(const Json::Value& data);
 };
 
-enum struct Side {
+enum class Side : uint8_t {
     TOP = 0,
     RIGHT = 1,
     BOTTOM = 2,
@@ -218,7 +218,7 @@ class LandGenerator {
      *
      * @return TileStamp
      */
-    TileStamp get_this_stamp() const;
+    TileStamp get_stamp() const;
 
     /**
      * @brief increment the data of the Tile Stamp that will be generated

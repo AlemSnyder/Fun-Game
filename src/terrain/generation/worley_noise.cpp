@@ -13,7 +13,7 @@ WorleyNoise::distance_(NoisePosition x, NoisePosition y, WorleyPoint point) {
 }
 
 double
-WorleyNoise::get(NoisePosition x, NoisePosition y) const {
+WorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
     NoiseTileIndex x_tile = x / tile_size_;
     NoiseTileIndex y_tile = y / tile_size_;
 
@@ -45,7 +45,7 @@ WorleyNoise::get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t) const {
 }
 
 double
-AlternativeWorleyNoise::get(NoisePosition x, NoisePosition y) const {
+AlternativeWorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
     NoiseTileIndex x_t = x / tile_size_;
     NoiseTileIndex y_t = y / tile_size_;
 

@@ -72,13 +72,13 @@ int
 NoiseTest(){
     quill::Logger* logger = quill::get_logger();
 
-    terrain::generation::NoiseGenerator noise(1, 1, 3);
+    terrain::generation::FractalNoise noise(1, 1, 3);
 
-    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(1,1));
-    LOG_INFO(logger, "Noise double again: {}", noise.getValueNoise(1,1));
-    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(2,1));
-    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(3,1));
-    LOG_INFO(logger, "Noise double: {}", noise.getValueNoise(4,1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(1,1));
+    LOG_INFO(logger, "Noise double again: {}", noise.get_noise(1,1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(2,1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(3,1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(4,1));
 
 
     LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(1, 3, 3));

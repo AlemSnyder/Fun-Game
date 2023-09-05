@@ -5,6 +5,7 @@
 #include "noise.hpp"
 
 #include <cmath>
+#include <numbers>
 
 #define maxPrimeIndex 10
 
@@ -13,7 +14,7 @@ namespace terrain {
 namespace generation {
 
 double
-generation::NoiseGenerator::getValueNoise(NoisePosition x, NoisePosition y) const {
+generation::FractalNoise::get_noise(NoisePosition x, NoisePosition y) const {
     double total = 0, frequency = pow(2, num_octaves_), amplitude = 1;
     for (int i = 0; i < num_octaves_; ++i) {
         frequency /= 2;
@@ -39,36 +40,35 @@ Noise::get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) {
 }
 
 double
-generation::NoiseGenerator::smoothed_noise_(
-    size_t i, NoiseTileIndex x, NoiseTileIndex y
-) const {
+generation::FractalNoise::smoothed_noise_(size_t i, NoiseTileIndex x, NoiseTileIndex y)
+    const {
     // clang-format off
     double corners = (get_double(i, x - 1, y - 1)
                     + get_double(i, x + 1, y - 1)
                     + get_double(i, x - 1, y + 1)
-                    + get_double(i, x + 1, y + 1))
-                        / 16;
+                    + get_double(i, x + 1, y + 1)
+                    ) / 16;
     double sides = (get_double(i, x - 1, y)
                   + get_double(i, x + 1, y)
                   + get_double(i, x, y - 1)
-                  + get_double(i, x, y + 1))
-                      / 8;
+                  + get_double(i, x, y + 1)
+                  ) / 8;
     // clang-format on
     double center = get_double(i, x, y) / 4;
     return corners + sides + center;
 }
 
 double
-generation::NoiseGenerator::interpolate_(
+generation::FractalNoise::interpolate_(
     NoisePosition a, NoisePosition b, NoisePosition x
 ) const { // cosine interpolation
-    double ft = x * 3.1415927;
-    double f = (1 - cos(ft)) * 0.5;
+    double ft = x * std::numbers::pi;
+    double f = (1 - cos(ft)) / 2.0;
     return a * (1 - f) + b * f;
 }
 
 double
-generation::NoiseGenerator::interpolated_noise_(
+generation::FractalNoise::interpolated_noise_(
     size_t i, NoisePosition x, NoisePosition y
 ) const {
     int integer_X = x;
