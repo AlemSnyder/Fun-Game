@@ -38,15 +38,18 @@ LandGenerator::LandGenerator(const Json::Value& data) :
 
         std::shared_ptr<stamps::JsonToTile> stamp_generator;
         switch (first_character) {
-            [[fallthrough]] case 'P':;
+            case 'P':
+                [[fallthrough]];
             case 'p':
                 stamp_generator = std::make_shared<stamps::FromPosition>(region);
                 break;
-            [[fallthrough]] case 'R':;
+            case 'R':
+                [[fallthrough]];
             case 'r':
                 stamp_generator = std::make_shared<stamps::FromRadius>(region);
                 break;
-            [[fallthrough]] case 'G':;
+            case 'G':
+                [[fallthrough]];
             case 'g':
                 stamp_generator = std::make_shared<stamps::FromGrid>(region);
                 break;
