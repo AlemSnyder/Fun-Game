@@ -39,7 +39,12 @@ class Noise {
         {531736441, 939683957, 810651871},
         {997169939, 842027887, 423882827}
     };
+
  public:
+    /**
+     * @brief Returns a sem random double between [0, 1] depending on the seed
+     * values given
+     */
     static double get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y);
 
 }; // namespace noise

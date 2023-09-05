@@ -41,28 +41,63 @@ namespace generation {
 
 namespace stamps {
 
+/**
+ * @brief Reads JSON data and converts it to a stamp generator.
+ * 
+ * @details This is a virtual class that handles creating tile stamps from JSON
+ * Data. 
+*/
 class JsonToTile {
  protected:
-    Dim height_;
-    Dim height_variance_;
-    Dim width_;
-    Dim width_variance_;
+    Dim height_;            // Average height generated
+    Dim height_variance_;   // Maximum chance from height
+    Dim width_;             // Average width generated
+    Dim width_variance_;    // Maximum change in width generated
 
+    // set of tile materials-colors that can be changed by the returned stamp
     const std::set<std::pair<MaterialId, ColorId>> elements_can_stamp_;
-    const MaterialId stamp_material_id_;
-    const ColorId stamp_color_id_;
+    const MaterialId stamp_material_id_; // MaterialId that will be set
+    const ColorId stamp_color_id_;       // ColorId that will be set
 
  public:
+    /**
+     * @brief Default initializer use dictionary from "Tile_Macros" "Land_Data".
+    */
     JsonToTile(const Json::Value& data);
+    /**
+     * @brief Returns a tile stamp depending on the current sub region.
+    */
     virtual TileStamp get_this_stamp(ssize_t current_sub_region) const = 0;
+    /**
+     * @brief Returns the number of unique stamps this stamp generator can
+     * generate.
+     * 
+     * @details Do not try to use a sub region larger than the number of sub
+     * regions.
+    */
     virtual size_t num_sub_region() const = 0;
 
     virtual ~JsonToTile() {}
 
+    /**
+     * @brief Read the materials and colors that this stamp can overwrite in
+     * terrain. Use the "Can_Stamp" dictionary.
+    */
     static std::set<std::pair<MaterialId, ColorId>>
     read_elements_can_stamp(const Json::Value& data);
 
  protected:
+    /**
+     * @brief Gets a TileStamp given 
+     * 
+     * @param center glm::imat2x2 region with in center can be placed
+     * @param Sxy TerrainOffset width
+     * @param Sz TerrainOffset height
+     * @param Dxy TerrainOffset range of allowable difference in width
+     * @param Sz TerrainOffset range of allowable difference in height
+     * 
+     * @return TileStamp
+    */
     TileStamp get_volume(
         glm::imat2x2 center, TerrainOffset Sxy, TerrainOffset Sz, TerrainOffset Dxy,
         TerrainOffset Dz
@@ -131,10 +166,11 @@ enum struct Side {
 /**
  * @brief Reads JSON data and generates TileStamp objects
  *
- * @details The way biomes are generated is saved in data/biome_data.json.
+ * @details The way biomes are generated is saved in data/{mod}/biome_data.json.
  * The biome pipeline starts with getting a 2D tile map. Each tile in the map
- * a different type (usually height). Next is defining macros. These define how
- * some part of a map tile is generated. This is useful because some parts of a
+ * a different type (usually height). Next is defining how to generate that
+ * tile region. There are two parts. The smaller part can be used by multiple
+ * larger parts. This is useful because some parts of a
  * map tile will be the same as another with a different value (all bedrock is
  * the same). Each map tile type is now assigned macros. Land Generator
  * iterates though these macros, and creates Tile Stamps.

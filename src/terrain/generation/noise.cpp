@@ -1,3 +1,7 @@
+// -*- lsst-c++ -*-
+// Two-dimensional value noise based on Hugo Elias's description.
+// I did not write this code, but the link to the original no longer exists.
+
 #include "noise.hpp"
 
 #include <cmath>
@@ -38,13 +42,19 @@ double
 generation::NoiseGenerator::smoothed_noise_(
     size_t i, NoiseTileIndex x, NoiseTileIndex y
 ) const {
-    double corners = (get_double(i, x - 1, y - 1) + get_double(i, x + 1, y - 1)
-                      + get_double(i, x - 1, y + 1) + get_double(i, x + 1, y + 1))
-                     / 16,
-           sides = (get_double(i, x - 1, y) + get_double(i, x + 1, y)
-                    + get_double(i, x, y - 1) + get_double(i, x, y + 1))
-                   / 8,
-           center = get_double(i, x, y) / 4;
+    // clang-format off
+    double corners = (get_double(i, x - 1, y - 1)
+                    + get_double(i, x + 1, y - 1)
+                    + get_double(i, x - 1, y + 1)
+                    + get_double(i, x + 1, y + 1))
+                        / 16;
+    double sides = (get_double(i, x - 1, y)
+                  + get_double(i, x + 1, y)
+                  + get_double(i, x, y - 1)
+                  + get_double(i, x, y + 1))
+                      / 8;
+    // clang-format on
+    double center = get_double(i, x, y) / 4;
     return corners + sides + center;
 }
 
