@@ -99,7 +99,7 @@ TerrainBase::TerrainBase(
     // TODO make this faster 4
     for (size_t i = 0; i < x_map_tiles; i++)
         for (size_t j = 0; j < y_mat_tiles; j++) {
-            int tile_type = Terrain_Maps[j + i * y_mat_tiles];
+            MapTile_t tile_type = Terrain_Maps[j + i * y_mat_tiles];
             Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
             for (Json::Value generator_macro : macro_types) {
                 init_area(i, j, land_generators.at(generator_macro.asInt()));

@@ -68,6 +68,8 @@ static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));
 // possible tile types
 using MapTile_t = uint16_t;
 
+using TileMacro_t = uint16_t;
+
 /*************
  * VoxelBase *
  *************/

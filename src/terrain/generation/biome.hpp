@@ -39,9 +39,23 @@ class Biome {
     // 32 by 32 chunks that load data
     // each one will have a mutex lock so this can be threaded
 
+    // create a map of TileMacro_t -> LandGenerator
+    std::vector<generation::LandGenerator> land_generators_;
+
+    // map of TileMap_t -> vector of TileMacro_t
+    std::vector<std::vector<TileMacro_t>> macro_tile_types_;
+
+    void
+    read_tile_macro_data(const Json::Value& biome_data);
+
+    void
+    read_map_tile_data(const Json::Value& biome_data);
+
  public:
     Biome(const std::string& biome_json_path);
-    inline const std::vector<MapTile_t>& get_tile_vector(){
+
+    inline const std::vector<MapTile_t>&
+    get_tile_vector() {
         return tile_map_vector_;
     }
 };

@@ -35,6 +35,11 @@ Biome::Biome(const std::string& biome_name) {
         );
         return;
     }
+
+    read_tile_macro_data(biome_data);
+
+    read_map_tile_data(biome_data);
+
     sol::state lua;
 
     // add functions/libraries etc
@@ -96,6 +101,37 @@ Biome::Biome(const std::string& biome_name) {
     tile_map_vector_.resize(x_map_tiles * y_map_tiles);
     for (size_t i = 0; i < tile_map_vector_.size(); i++) {
         tile_map_vector_[i] = tile_map_map[i];
+    }
+}
+
+void
+Biome::read_tile_macro_data(const Json::Value& biome_data) {
+    // for tile macro in data biome
+    for (const Json::Value& tile_macro : biome_data["Tile_Macros"]) {
+        // create a land generator for each tile macro
+        generation::LandGenerator gen(tile_macro["Land_Data"]);
+        land_generators_.push_back(gen);
+    }
+}
+
+void
+Biome::read_map_tile_data(const Json::Value& biome_data) {
+    // add tile macro to tiles
+    for (const Json::Value& tile_type : biome_data["Tile_Data"]) {
+        std::vector<TileMacro_t> tile_macros;
+        for (const Json::Value& tile_macro_id : tile_type["Land_From"]) {
+            TileMacro_t tile_macro = tile_macro_id.asInt();
+            if (tile_macro >= land_generators_.size()) [[unlikely]] {
+                LOG_WARNING(
+                    logging::terrain_logger,
+                    "Tile Macro {} is not valid. There are only {} land generators.",
+                    tile_macro, land_generators_.size()
+                );
+                continue;
+            }
+            tile_macros.push_back(tile_macro_id.asInt());
+        }
+        macro_tile_types_.push_back(std::move(tile_macros));
     }
 }
 
