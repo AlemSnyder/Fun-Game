@@ -1,5 +1,5 @@
 {
-    "map_generator":"biome_map.lua",
+    "map_generator": "biome_map.lua",
     "Example": {
         "Land_Data": [
             {
@@ -63,8 +63,8 @@
         "Terrain_Data": {
             "BackGround": 1,
             "NumOctaves": 8,
-            "Range":2,
-            "Spacing":4,
+            "Range": 2,
+            "Spacing": 4,
             "Persistance": 0.8,
             "Lines": [
                 {
@@ -951,25 +951,49 @@
                     "Material_id": 1,
                     "Color_id": 0,
                     "above_colors": [
-                        { "E": 1, "C": true },
-                        { "E": 2, "C": true }
+                        {
+                            "E": 1,
+                            "C": true
+                        },
+                        {
+                            "E": 2,
+                            "C": true
+                        }
                     ],
-                    "how_to_add":[
+                    "overwrite_colors": [
+                        {
+                            "E": true,
+                            "C": true
+                        }
+                    ],
+                    "how_to_add": [
                         {
                             "add": 3,
-                            "from":[59,66]
+                            "from": [
+                                59,
+                                66
+                            ]
                         },
                         {
                             "to": 75,
-                            "from":[66,75]
+                            "from": [
+                                66,
+                                75
+                            ]
                         },
                         {
                             "add": 3,
-                            "from":[75,90]
+                            "from": [
+                                75,
+                                90
+                            ]
                         },
                         {
                             "to": 97,
-                            "from":[90,97]
+                            "from": [
+                                90,
+                                97
+                            ]
                         }
                     ]
                 }

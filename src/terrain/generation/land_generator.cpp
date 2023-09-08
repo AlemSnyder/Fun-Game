@@ -244,7 +244,14 @@ FromGrid::get_stamp(size_t current_sub_region) const {
     return get_volume(center, width_, height_, width_variance_, height_variance_);
 }
 
+
 } // namespace stamps
+
+AddToTop::AddToTop(const Json::Value& json_data) :
+    elements_above_(stamps::JsonToTile::read_elements(json_data["above_colors"])),
+    elements_can_overwrite_(stamps::JsonToTile::read_elements(json_data["overwrite_colors"])),
+    stamp_material_id_(json_data["Material_id"].asInt()),
+    stamp_color_id_(json_data["Color_id"].asInt()) {}
 
 } // namespace generation
 

@@ -35,15 +35,8 @@
 
 int
 GenerateTerrain(const std::string path) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
 
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
-
-    World world(materials_json, biome_data, 6, 6);
+    World world("base", 6, 6);
 
     world.qb_save(path);
 
@@ -94,11 +87,7 @@ NoiseTest(){
 
 int
 save_test(const std::string path, const std::string save_path) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    World world(materials_json, path);
+    World world("base", path);
 
     world.qb_save_debug(save_path);
 
@@ -117,7 +106,9 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-        World world(materials_json, biome_data, i);
+        // TODO move biome json up to world
+        //terrain::generation::biome_json_data biome_file_data {biome_name, materials_json, biome_data};
+        World world(biome_name, i);
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
         save_path /= "biome_";
@@ -139,11 +130,7 @@ int
 path_finder_test(const std::string& path, const std::string& save_path) {
     quill::Logger* logger = quill::get_logger();
 
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    World world(materials_json, path);
+    World world("base", path);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -171,7 +158,7 @@ path_finder_test(const std::string& path, const std::string& save_path) {
     for (const terrain::Tile* tile : tile_path) {
         world.get_terrain_main()
             .get_tile(world.get_terrain_main().pos(tile))
-            ->set_material(&world.get_materials()->at(7), 5);
+            ->set_material(&world.get_materials().at(7), 5);
     }
 
     world.qb_save(save_path);
@@ -181,45 +168,27 @@ path_finder_test(const std::string& path, const std::string& save_path) {
 
 int
 imgui_entry_main() {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
 
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world(materials_json, biome_data, 2, 2);
+    World world("base", 2, 2);
 
     return gui::imgui_entry(world);
 }
 
 int
 StressTest() {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
-
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world(materials_json, biome_data, 2, 2);
+    World world("base", 2, 2);
 
     return gui::opengl_entry(world);
 }
 
 int
 opengl_entry(const std::string& path) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
-    materials_file >> materials_json;
 
-    World world(materials_json, path);
+    World world("base", path);
 
     return gui::opengl_entry(world);
 }

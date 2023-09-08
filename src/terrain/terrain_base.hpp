@@ -395,17 +395,17 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     [[nodiscard]] inline uint8_t
     get_grass_grad_length() const noexcept {
-        return grass_grad_length_;
+        return biome_.get_grass_grad_length();
     }
 
     [[nodiscard]] inline uint8_t
     get_grass_mid() const {
-        return grass_mid_;
+        return biome_.get_grass_mid();
     }
 
     [[nodiscard]] inline const std::vector<ColorId>&
     get_grass_colors() const {
-        return grass_colors_;
+        return biome_.get_grass_colors();
     }
 
     [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
@@ -439,7 +439,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param material material type to add
      */
     void add_to_top(
-        const Json::Value& to_data, const std::map<MaterialId, const Material>& material
+        const generation::AddToTop& to_data
     );
 
     /**

@@ -43,7 +43,6 @@ class Mesh;
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
  *
- *
  * @details The world holds a Terrain objects, and contains entities like
  * flora, and
  * fauna. Paced objects, and other things will also be stored in

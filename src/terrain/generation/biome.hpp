@@ -23,6 +23,8 @@
 #include "../../util/files.hpp"
 #include "land_generator.hpp"
 
+#include <map>
+
 #pragma once
 
 namespace terrain {
@@ -46,6 +48,21 @@ class GrassData {
 
  public:
     GrassData(const Json::Value& json_grass_data);
+
+    [[nodiscard]] inline uint8_t
+    get_grass_grad_length() const noexcept {
+        return grass_grad_length_;
+    }
+
+    [[nodiscard]] inline uint8_t
+    get_grass_mid() const {
+        return grass_mid_;
+    }
+
+    [[nodiscard]] inline const std::vector<ColorId>&
+    get_grass_colors() const {
+        return grass_colors_;
+    }
 };
 
 class Biome {
@@ -63,6 +80,8 @@ class Biome {
 
     // map of MapTile_t -> vector of TileMacro_t
     std::vector<std::vector<TileMacro_t>> macro_tile_types_;
+
+    std::vector<AddToTop> add_to_top_generators_;
 
     // materials that exist
     std::map<MaterialId, const terrain::Material> materials_;
@@ -86,6 +105,26 @@ class Biome {
     inline const std::vector<TileMacro_t>&
     get_macro_ids(MapTile_t tile_id_type) const {
         return macro_tile_types_[tile_id_type];
+    }
+
+    const std::vector<AddToTop>
+    get_top_generators() const {
+        return add_to_top_generators_;
+    }
+
+    [[nodiscard]] inline uint8_t
+    get_grass_grad_length() const noexcept {
+        return grass_data_.get_grass_grad_length();
+    }
+
+    [[nodiscard]] inline uint8_t
+    get_grass_mid() const {
+        return grass_data_.get_grass_mid();
+    }
+
+    [[nodiscard]] inline const std::vector<ColorId>&
+    get_grass_colors() const {
+        return grass_data_.get_grass_colors();
     }
 
     inline const std::map<MaterialId, const terrain::Material>&
