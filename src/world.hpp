@@ -23,6 +23,7 @@
 #pragma once
 
 #include "gui/render/graphics_data/terrain_mesh.hpp"
+#include "terrain/generation/biome.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "types.hpp"
@@ -53,6 +54,9 @@ class World {
     // TODO change to a terrain color object that will handel gui things
     // materials that exist
     std::map<MaterialId, const terrain::Material> materials;
+
+    // Biome of the world. Will contain the materials, and grass data
+    //terrain::generation::Biome biome_;
 
     // terrain in the world
     terrain::Terrain terrain_main_;

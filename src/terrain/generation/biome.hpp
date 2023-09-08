@@ -45,19 +45,24 @@ class Biome {
     // map of TileMap_t -> vector of TileMacro_t
     std::vector<std::vector<TileMacro_t>> macro_tile_types_;
 
-    void
-    read_tile_macro_data(const Json::Value& biome_data);
+    // TODO materials
 
-    void
-    read_map_tile_data(const Json::Value& biome_data);
+    // TODO grass grad data
 
  public:
     Biome(const std::string& biome_json_path);
+
+    inline Biome() {}
 
     inline const std::vector<MapTile_t>&
     get_tile_vector() {
         return tile_map_vector_;
     }
+
+ private:
+    void read_tile_macro_data(const Json::Value& biome_data);
+
+    void read_map_tile_data(const Json::Value& biome_data);
 };
 
 } // namespace generation
