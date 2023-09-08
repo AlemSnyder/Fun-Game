@@ -2,6 +2,7 @@
 
 #include "../logging.hpp"
 #include "../types.hpp"
+#include "generation/biome.hpp"
 #include "generation/noise.hpp"
 
 // move add_to_top
@@ -38,6 +39,7 @@ TerrainBase::qb_read(
     }
 }
 
+#if 0
 // when data is given use different Y max
 TerrainBase::TerrainBase(
     const std::map<MaterialId, const terrain::Material>& materials,
@@ -65,44 +67,30 @@ TerrainBase::TerrainBase(
     grass_grad_length_ = grass_colors_.size();
 }
 
+#endif
+
 TerrainBase::TerrainBase(
-    Dim x_map_tiles, Dim y_mat_tiles, Dim area_size, Dim z_tiles,
-    const std::map<MaterialId, const Material>& materials,
-    const Json::Value& biome_data, std::vector<int> grass_grad_data,
-    unsigned int grass_mid, std::vector<MapTile_t> Terrain_Maps
+    Dim x_map_tiles, Dim y_map_tiles, Dim area_size_, Dim z, int seed_,
+    const generation::Biome& biome, const std::vector<MapTile_t>& macro_map
 ) :
-    TerrainBase(
-        materials, grass_grad_data, grass_mid, x_map_tiles, y_mat_tiles, area_size,
-        z_tiles
-    ) {
+    area_size_(area_size_),
+    biome_(biome), X_MAX(x_map_tiles * area_size_), Y_MAX(y_map_tiles * area_size_),
+    Z_MAX(z) {
+    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        tiles_.push_back(Tile(sop(xyz), &materials_.at(0), 0));
+        tiles_.push_back(Tile(sop(xyz), &biome_.get_materials().at(0), 0));
     }
 
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
-    // create a map of int -> LandGenerator
-    std::vector<generation::LandGenerator> land_generators;
-
-    // for tile macro in data biome
-    for (const Json::Value& tile_macro : biome_data["Tile_Macros"]) {
-        // create a land generator for each tile macro
-        generation::LandGenerator gen(tile_macro["Land_Data"]);
-        land_generators.push_back(gen);
-    }
-
-    LOG_INFO(
-        logging::terrain_logger, "End of land generator: create macro tile generator."
-    );
-
     // TODO make this faster 4
     for (size_t i = 0; i < x_map_tiles; i++)
-        for (size_t j = 0; j < y_mat_tiles; j++) {
-            MapTile_t tile_type = Terrain_Maps[j + i * y_mat_tiles];
-            Json::Value macro_types = biome_data["Tile_Data"][tile_type]["Land_From"];
-            for (Json::Value generator_macro : macro_types) {
-                init_area(i, j, land_generators.at(generator_macro.asInt()));
+        for (size_t j = 0; j < y_map_tiles; j++) {
+            MapTile_t tile_type = macro_map[j + i * y_map_tiles];
+            auto macro_types = biome_.get_macro_ids(tile_type);
+            for (auto generator_macro : macro_types) {
+                init_area(i, j, biome_.get_generator(generator_macro));
             }
         }
 
@@ -117,39 +105,13 @@ TerrainBase::TerrainBase(
 }
 
 TerrainBase::TerrainBase(
-    const std::map<MaterialId, const Material>& materials,
-    std::vector<int> grass_grad_data, unsigned int grass_mid,
-    voxel_utility::qb_data_t data
+    const generation::Biome& biome, voxel_utility::qb_data_t data
 ) :
     area_size_(32),
-    materials_(materials), X_MAX(data.size.x), Y_MAX(data.size.y), Z_MAX(data.size.z) {
+    biome_(biome), X_MAX(data.size.x), Y_MAX(data.size.y), Z_MAX(data.size.z) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
-    if (grass_mid >= grass_grad_data.size()) {
-        grass_mid_ = grass_grad_data.size() - 1;
-        std::cerr << "Grass Mid (from biome_data.json) not valid";
-    }
-
-    for (size_t i = 0; i < grass_grad_data.size(); i++) {
-        if (i == static_cast<size_t>(grass_mid)) {
-            grass_mid_ = grass_colors_.size();
-        }
-        for (int j = 0; j < grass_grad_data[i]; j++) {
-            grass_colors_.push_back(i);
-        }
-    }
-    grass_grad_length_ = grass_colors_.size();
-    std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
-    for (auto it = materials_.begin(); it != materials_.end(); it++) {
-        for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
-            materials_inverse.insert(
-                std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
-                    it->second.color.at(color_id).second,
-                    std::make_pair(&it->second, (ColorId)color_id)
-                )
-            );
-        }
-    }
+    auto materials_inverse = biome.get_colors_inverse_map();
 
     try {
         qb_read(data.data, materials_inverse);
@@ -181,8 +143,8 @@ TerrainBase::get_first_not(
                     return z;
                 }
             }
-            return Z_MAX; // -1? should not be minus one, but one should consider that
-                          // this is a possible return value
+            return Z_MAX; // -1? should not be minus one, but one should
+                          // consider that this is a possible return value
         }
     } else if (guess == 1) {
         return 0;
@@ -253,7 +215,9 @@ TerrainBase::stamp_tile_region(
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
                     if (has_tile_material(stamp.elements_can_stamp, tile)) {
-                        tile->set_material(&materials_.at(stamp.mat), stamp.color_id);
+                        tile->set_material(
+                            &biome_.get_materials().at(stamp.mat), stamp.color_id
+                        );
                     }
                 }
             }
@@ -261,8 +225,7 @@ TerrainBase::stamp_tile_region(
     }
 }
 
-
-//TODO add this back when want to stamp all all types of materials.
+// TODO add this back when want to stamp all all types of materials.
 #if 0
 void
 TerrainBase::stamp_tile_region(
@@ -304,8 +267,7 @@ TerrainBase::generate_macro_map(
     int range = terrain_data["Range"].asInt();
     int spacing = terrain_data["Spacing"].asInt();
     out.resize(x_map_tiles * y_map_tiles, background);
-    generation::FractalNoise ng =
-        generation::FractalNoise(numOctaves, persistance, 3);
+    generation::FractalNoise ng = generation::FractalNoise(numOctaves, persistance, 3);
 
     for (size_t i = 0; i < out.size(); i++) {
         TerrainDim3 tile_position = sop(i, x_map_tiles, y_map_tiles, 1);

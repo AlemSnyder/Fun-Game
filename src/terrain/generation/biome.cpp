@@ -17,18 +17,39 @@ namespace terrain {
 
 namespace generation {
 
-Biome::Biome(const std::string& biome_name) {
-    // quill::Logger* lua_logger;
+GrassData::GrassData(const Json::Value& json_grass_data) {
+    ColorId grass_mid_color_id = json_grass_data["midpoint"].asInt();
 
-    std::filesystem::path biome_json_path = files::get_data_path() / biome_name;
+    std::vector<int> grass_grad_data;
+    for (const Json::Value& grass_level : json_grass_data["levels"]) {
+        grass_grad_data.push_back(grass_level.asInt());
+    }
 
-    Json::Value biome_data;
-    std::ifstream biome_file =
-        files::open_data_file(biome_json_path / "biome_data.json");
-    biome_file >> biome_data;
+    if (grass_mid_color_id >= grass_grad_data.size()) {
+        grass_mid_color_id = grass_grad_data.size() - 1;
+        std::cerr << "Grass Mid (from biome_data.json) not valid";
+    }
+
+    for (ColorId i = 0; i < grass_grad_data.size(); i++) {
+        if (i == grass_mid_color_id) {
+            grass_mid_ = grass_colors_.size();
+        }
+        for (size_t j = 0; j < grass_grad_data[i]; j++) {
+            grass_colors_.push_back(i);
+        }
+    }
+    grass_grad_length_ = grass_colors_.size();
+}
+
+Biome::Biome(const std::string& biome_name) : Biome(get_json_data(biome_name)) {}
+
+Biome::Biome(const biome_json_data& biome_data) :
+    grass_data_(biome_data.materials_data["Dirt"]["Gradient"]) {
+    std::filesystem::path biome_json_path =
+        files::get_data_path() / biome_data.biome_name;
 
     std::filesystem::path lua_map_generator_file =
-        biome_json_path / biome_data["map_generator"].asString();
+        biome_json_path / biome_data.biome_data["map_generator"].asString();
     if (!std::filesystem::exists(lua_map_generator_file)) {
         LOG_ERROR(
             logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
@@ -36,9 +57,9 @@ Biome::Biome(const std::string& biome_name) {
         return;
     }
 
-    read_tile_macro_data(biome_data);
+    read_tile_macro_data(biome_data.biome_data);
 
-    read_map_tile_data(biome_data);
+    read_map_tile_data(biome_data.biome_data);
 
     sol::state lua;
 
@@ -133,6 +154,68 @@ Biome::read_map_tile_data(const Json::Value& biome_data) {
         }
         macro_tile_types_.push_back(std::move(tile_macros));
     }
+}
+
+std::map<MaterialId, const terrain::Material>
+Biome::init_materials(const Json::Value& material_data) {
+    std::map<MaterialId, const terrain::Material> out;
+    for (auto element_it = material_data.begin(); element_it != material_data.end();
+         element_it++) {
+        std::vector<std::pair<const std::string, ColorInt>> color_vector;
+
+        const Json::Value material = *element_it;
+        std::string name = element_it.key().asString();
+        for (const Json::Value& json_color : material["colors"]) {
+            const std::string color_name = json_color["name"].asString();
+            ColorInt color_value = std::stoll(json_color["hex"].asString(), 0, 16);
+            color_vector.push_back(std::make_pair(std::move(color_name), color_value));
+        }
+
+        terrain::Material mat{
+            color_vector,                                    // color
+            static_cast<float>(material["speed"].asFloat()), // speed_multiplier
+            material["solid"].asBool(),                      // solid
+            static_cast<MaterialId>(material["id"].asInt()), // element_id
+            name
+        }; // name
+        out.insert(std::make_pair(mat.element_id, mat));
+    }
+
+    terrain::TerrainColorMapping::assign_color_mapping(out);
+    return out;
+}
+
+std::map<ColorInt, std::pair<const Material*, ColorId>>
+Biome::get_colors_inverse_map() const {
+    std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
+    for (auto it = materials_.begin(); it != materials_.end(); it++) {
+        for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
+            materials_inverse.insert(
+                std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
+                    it->second.color.at(color_id).second,
+                    std::make_pair(&it->second, (ColorId)color_id)
+                )
+            );
+        }
+    }
+    return materials_inverse;
+}
+
+biome_json_data
+Biome::get_json_data(const std::string& biome_name) {
+    std::filesystem::path biome_json_path = files::get_data_path() / biome_name;
+
+    Json::Value biome_data;
+    std::ifstream biome_file =
+        files::open_data_file(biome_json_path / "biome_data.json");
+    biome_file >> biome_data;
+
+    Json::Value materials_data;
+    std::ifstream materials_file =
+        files::open_data_file(biome_json_path / "materials_data.json");
+    materials_file >> materials_data;
+
+    return {biome_name, biome_data, materials_data};
 }
 
 } // namespace generation

@@ -29,6 +29,25 @@ namespace terrain {
 
 namespace generation {
 
+struct biome_json_data {
+    const std::string& biome_name;
+    Json::Value biome_data;
+    Json::Value materials_data;
+};
+
+class GrassData {
+ private:
+    // vector that determines grass color from edge distance
+    std::vector<ColorId> grass_colors_;
+    // length of grass gradient
+    uint8_t grass_grad_length_;
+    // gradient index of grass not by an edge
+    uint8_t grass_mid_;
+
+ public:
+    GrassData(const Json::Value& json_grass_data);
+};
+
 class Biome {
  private:
     std::vector<MapTile_t> tile_map_vector_;
@@ -42,27 +61,55 @@ class Biome {
     // create a map of TileMacro_t -> LandGenerator
     std::vector<generation::LandGenerator> land_generators_;
 
-    // map of TileMap_t -> vector of TileMacro_t
+    // map of MapTile_t -> vector of TileMacro_t
     std::vector<std::vector<TileMacro_t>> macro_tile_types_;
 
-    // TODO materials
+    // materials that exist
+    std::map<MaterialId, const terrain::Material> materials_;
 
-    // TODO grass grad data
+    GrassData grass_data_;
 
  public:
-    Biome(const std::string& biome_json_path);
-
-    inline Biome() {}
+    Biome(const std::string& biome_name);
+    Biome(const biome_json_data& biome_data);
 
     inline const std::vector<MapTile_t>&
-    get_tile_vector() {
+    get_tile_vector() const {
         return tile_map_vector_;
     }
+
+    inline const LandGenerator&
+    get_generator(TileMacro_t tile_macro_id) const {
+        return land_generators_.at(tile_macro_id);
+    }
+
+    inline const std::vector<TileMacro_t>&
+    get_macro_ids(MapTile_t tile_id_type) const {
+        return macro_tile_types_[tile_id_type];
+    }
+
+    inline const std::map<MaterialId, const terrain::Material>&
+    get_materials() const {
+        return materials_;
+    }
+
+    std::map<ColorInt, std::pair<const Material*, ColorId>>
+    get_colors_inverse_map() const;
 
  private:
     void read_tile_macro_data(const Json::Value& biome_data);
 
     void read_map_tile_data(const Json::Value& biome_data);
+
+    /**
+     * @brief Load materials from json data
+     *
+     * @param material_data data to load from (see) data/materials.json
+     */
+    std::map<MaterialId, const terrain::Material>
+    init_materials(const Json::Value& material_data);
+
+    biome_json_data get_json_data(const std::string& biome_name);
 };
 
 } // namespace generation

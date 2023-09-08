@@ -27,6 +27,7 @@
 #include "../util/voxel.hpp"
 #include "../util/voxel_io.hpp"
 #include "chunk.hpp"
+#include "generation/biome.hpp"
 #include "generation/land_generator.hpp"
 #include "generation/noise.hpp"
 #include "generation/tile_stamp.hpp"
@@ -186,6 +187,8 @@ class Terrain : public TerrainBase {
         return pos(*(NG->get_tiles().begin()));
     }
 
+#if 0
+
     /**
      * @brief Terrain initializer for biome test
      *
@@ -201,18 +204,18 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         Dim area_size_, Dim z_tiles, MapTile_t tile_type, int seed_,
-        const std::map<MaterialId, const Material>& material,
-        const Json::Value biome_data, std::vector<int> grass_grad_data,
-        unsigned int grass_mid
+        const generation::Biome& biome
     );
     /**
      * @brief Construct a new Terrain object (most default constructor)
      */
     Terrain(
         Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
-        const std::map<MaterialId, const Material>& material,
-        std::vector<int> grass_grad_data, unsigned int grass_mid
+        const generation::Biome& biome
     );
+
+#endif
+
     /**
      * @brief Construct a new Terrain object
      *
@@ -229,9 +232,7 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
-        const std::map<MaterialId, const Material>& material,
-        const Json::Value biome_data, std::vector<int> grass_grad_data,
-        unsigned int grass_mid
+        const generation::Biome& biome, const std::vector<MapTile_t>& macro_map
     );
     /**
      * @brief Construct a new Terrain object
@@ -239,10 +240,7 @@ class Terrain : public TerrainBase {
      * @param path path to saved terrain
      * @param material materials of the world
      */
-    Terrain(
-        const std::string path, const std::map<MaterialId, const Material>& material,
-        std::vector<int> grass_grad_data, unsigned int grass_mid
-    );
+    Terrain(const std::string path, const generation::Biome& biome);
 
     // TODO place block
 

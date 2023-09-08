@@ -25,6 +25,7 @@
 #include "../logging.hpp"
 #include "../types.hpp"
 #include "../util/voxel.hpp"
+#include "generation/biome.hpp"
 #include "generation/land_generator.hpp"
 #include "generation/tile_stamp.hpp"
 #include "material.hpp"
@@ -56,14 +57,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     std::vector<Tile> tiles_;
     // size of terrain generation tile (see terrain generation)
     const Dim area_size_;
-    // vector that determines grass color from edge distance
-    std::vector<ColorId> grass_colors_;
-    // length of grass gradient
-    uint8_t grass_grad_length_;
-    // gradient index of grass not by an edge
-    uint8_t grass_mid_;
     // mat of material id to material that describes materials in this terrain
-    const std::map<MaterialId, const terrain::Material>& materials_;
+    const generation::Biome& biome_;
 
  public:
     // length in the x direction
@@ -85,9 +80,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z_tiles
      */
     TerrainBase(
-        const std::map<MaterialId, const terrain::Material>& materials,
-        const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-        Dim x_map_tiles = 1, Dim y_map_tiles = 1, Dim area_size = 32, Dim z_tiles = 1
+        Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
+        const std::vector<MapTile_t>& macro_map
     );
 
     /**
@@ -100,55 +94,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param grass_mid position in grass gradient data that denotes the middle
      * @param data qb_data_t read from file
      */
-    TerrainBase(
-        const std::map<MaterialId, const Material>& materials,
-        std::vector<int> grass_grad_data, unsigned int grass_mid,
-        voxel_utility::qb_data_t data
-    );
-
-    /**
-     * @brief Construct a new Terrain Base object for demonstrating biomes
-     *
-     * @param x_map_tiles
-     * @param y_map_tiles
-     * @param area_size
-     * @param z_tiles
-     * @param materials
-     * @param biome_data
-     * @param grass_grad_data
-     * @param grass_mid
-     */
-    inline TerrainBase(
-        Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles,
-        const std::map<MaterialId, const Material>& materials,
-        const Json::Value& biome_data, std::vector<int> grass_grad_data,
-        unsigned int grass_mid
-    ) :
-        TerrainBase(
-            x_map_tiles, y_map_tiles, area_size, z_tiles, materials, biome_data,
-            grass_grad_data, grass_mid,
-            generate_macro_map(x_map_tiles, y_map_tiles, biome_data["Terrain_Data"])
-        ) {}
-
-    /**
-     * @brief Construct a new Terrain Base object using terrain generation
-     *
-     * @param x_map_tiles
-     * @param y_map_tiles
-     * @param Area_size
-     * @param z_tiles
-     * @param materials
-     * @param biome_data
-     * @param grass_grad_data
-     * @param grass_mid
-     * @param Terrain_Maps
-     */
-    TerrainBase(
-        Dim x_map_tiles, Dim y_map_tiles, Dim Area_size, Dim z_tiles,
-        const std::map<MaterialId, const Material>& materials,
-        const Json::Value& biome_data, std::vector<int> grass_grad_data,
-        unsigned int grass_mid, std::vector<MapTile_t> Terrain_Maps
-    );
+    TerrainBase(const generation::Biome& biome, voxel_utility::qb_data_t data);
 
     void qb_read(
         std::vector<ColorInt> data,
@@ -415,7 +361,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
             previous_mat_id = mat_id;
             previous_color_id = color_id;
 
-            auto mat = materials_.at(previous_mat_id);
+            auto mat = biome_.get_materials().at(previous_mat_id);
             previous_out_color = mat.color[previous_color_id].second;
         }
 
@@ -464,7 +410,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const {
-        return materials_;
+        return biome_.get_materials();
     }
 
     /**
@@ -532,9 +478,9 @@ class TerrainBase : public voxel_utility::VoxelBase {
         MaterialId mat_id = tile->get_material_id();
         ColorId color_id = tile->get_color_id();
 
-        //TODO need to check if the material found has color id = CLR_ALL_COLOR
-        // then return true.
-        // Still need to implement the check
+        // TODO need to check if the material found has color id = CLR_ALL_COLOR
+        //  then return true.
+        //  Still need to implement the check
 
         return (
             material_test.find(std::make_pair(mat_id, color_id)) != material_test.end()

@@ -51,12 +51,8 @@ class Mesh;
  *
  */
 class World {
-    // TODO change to a terrain color object that will handel gui things
-    // materials that exist
-    std::map<MaterialId, const terrain::Material> materials;
-
     // Biome of the world. Will contain the materials, and grass data
-    //terrain::generation::Biome biome_;
+    terrain::generation::Biome biome_;
 
     // terrain in the world
     terrain::Terrain terrain_main_;
@@ -93,7 +89,7 @@ class World {
      * @param path
      * where world was saved
      */
-    World(const Json::Value& materials_json, const std::string path);
+    World(const std::string& biome_name, const std::string path);
     /**
      * @brief Construct a new World object to test biome generation.
      *
@@ -102,11 +98,8 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/generation/land_generator.hpp
      */
-    World(const Json::Value& materials_json, const Json::Value& biome_data, int type);
-    World(
-        const Json::Value& materials_json, const Json::Value& biome_data,
-        MacroDim x_tiles, MacroDim y_tiles
-    );
+    World(const std::string& biome_name, MapTile_t type);
+    World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles);
 
     constexpr static int macro_tile_size = 32;
     constexpr static int height = 128;
@@ -120,9 +113,9 @@ class World {
      * @return const std::map<int, const Material>* map of materials_id to
      * materials pointer
      */
-    inline const std::map<MaterialId, const terrain::Material>*
+    inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const noexcept {
-        return &materials;
+        return biome_.get_materials();
     }
 
     /**
@@ -132,14 +125,6 @@ class World {
      * @return const Material* corresponding material
      */
     const terrain::Material* get_material(MaterialId material_id) const;
-
-    /**
-     * @brief Load materials from json data
-     *
-     * @param material_data data to load from (see) data/materials.json
-     */
-    std::map<MaterialId, const terrain::Material>
-    init_materials(const Json::Value& material_data);
 
     /**
      * @brief Get the grass gradient data

@@ -40,7 +40,7 @@
 
 const terrain::Material*
 World::get_material(MaterialId material_id) const {
-    return &materials.at(material_id);
+    return &biome_.get_materials().at(material_id);
 }
 
 std::vector<int>
@@ -54,64 +54,26 @@ World::get_grass_grad_data(const Json::Value& materials_json) {
     return grass_grad_data;
 }
 
-std::map<MaterialId, const terrain::Material>
-World::init_materials(const Json::Value& material_data) {
-    std::map<MaterialId, const terrain::Material> out;
-    for (auto element_it = material_data.begin(); element_it != material_data.end();
-         element_it++) {
-        std::vector<std::pair<const std::string, ColorInt>> color_vector;
-
-        const Json::Value material = *element_it;
-        std::string name = element_it.key().asString();
-        for (const Json::Value& json_color : material["colors"]) {
-            const std::string color_name = json_color["name"].asString();
-            ColorInt color_value = std::stoll(json_color["hex"].asString(), 0, 16);
-            color_vector.push_back(std::make_pair(std::move(color_name), color_value));
-        }
-
-        terrain::Material mat{
-            color_vector,                                    // color
-            static_cast<float>(material["speed"].asFloat()), // speed_multiplier
-            material["solid"].asBool(),                      // solid
-            static_cast<MaterialId>(material["id"].asInt()), // element_id
-            name};                                           // name
-        out.insert(std::make_pair(mat.element_id, mat));
-    }
-
-    terrain::TerrainColorMapping::assign_color_mapping(out);
-    return out;
-}
-
-World::World(const Json::Value& materials_json, const std::string path) :
-    materials(init_materials(materials_json)),
+World::World(const std::string& biome_name, const std::string path) :
+    biome_(biome_name),
     terrain_main_(
-        path, materials, get_grass_grad_data(materials_json),
-        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+        path, biome_
     ) {
     initialize_chunks_mesh_();
 }
 
-World::World(
-    const Json::Value& materials_json, const Json::Value& biome_data, MacroDim x_tiles,
-    MacroDim y_tiles
-) :
-    materials(init_materials(materials_json)),
+World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
+    biome_(biome_name),
     terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, 5, materials, biome_data["Biome_1"],
-        get_grass_grad_data(materials_json),
-        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+        x_tiles, y_tiles, macro_tile_size, height, 5, biome_, biome_.get_tile_vector()
     ) {
     initialize_chunks_mesh_();
 }
 
-World::World(
-    const Json::Value& materials_json, const Json::Value& biome_data, int tile_type
-) :
-    materials(init_materials(materials_json)),
+World::World(const std::string& biome_name, MapTile_t tile_type) :
+    biome_(biome_name),
     terrain_main_(
-        macro_tile_size, height, 5, tile_type, materials, biome_data["Biome_1"],
-        get_grass_grad_data(materials_json),
-        materials_json["Dirt"]["Gradient"]["midpoint"].asInt()
+        3,3, macro_tile_size, height, 5, biome_, {0,0,0,0,tile_type,0,0,0,0}
     ) {
     // on initialization world reserves the space it would need for shared pointers
     initialize_chunks_mesh_();
@@ -123,7 +85,7 @@ World::update_single_mesh(ChunkIndex chunk_pos) {
     entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
 
     chunk_mesh.change_color_indexing(
-        materials, terrain::TerrainColorMapping::get_colors_inverse_map()
+        biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
     chunks_mesh_[chunk_pos]->update(chunk_mesh);

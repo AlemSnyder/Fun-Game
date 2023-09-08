@@ -28,14 +28,15 @@
 
 namespace terrain {
 
+#if 0
+
 // most important initializer
 Terrain::Terrain(
     Dim x_tiles, Dim y_tiles, Dim area_size, Dim z_tiles, int seed_,
-    const std::map<MaterialId, const Material>& material,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
+    const generation::Biome& biome
 ) :
     TerrainBase(
-        material, grass_grad_data, grass_mid, x_tiles, y_tiles, area_size, z_tiles
+        biome x_tiles, y_tiles, area_size, z_tiles
     ),
     seed(seed_) {}
 
@@ -51,34 +52,22 @@ Terrain::Terrain(
 
 Terrain::Terrain(
     Dim area_size, Dim z_tiles, MapTile_t tile_type, int seed_,
-    const std::map<MaterialId, const Material>& material, const Json::Value biome_data,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
+    const generation::Biome& biome
+
 ) :
     TerrainBase(
-        3, 3, area_size, z_tiles, material, biome_data, grass_grad_data, grass_mid,
+        3, 3, area_size, z_tiles, biome,
         {0, 0, 0, 0, tile_type, 0, 0, 0, 0}
     ),
     seed(seed_) {}
 
-Terrain::Terrain(
-    const std::string path, const std::map<MaterialId, const Material>& materials,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
-) :
-    TerrainBase(materials, grass_grad_data, grass_mid, voxel_utility::from_qb(path)) {
-    /*replace path with some struct that is returned from qb read*/
-
-    init_chunks();
-}
+#endif
 
 Terrain::Terrain(
-    Dim x, Dim y, Dim Area_size_, Dim z, int seed_,
-    const std::map<MaterialId, const Material>& materials, const Json::Value biome_data,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
-) :
-    TerrainBase(x, y, Area_size_, z, materials, biome_data, grass_grad_data, grass_mid),
-    seed(seed_) {
-    auto millisec_since_epoch = time_util::epoch_millis();
+    const std::string path, const generation::Biome& biome
 
+) :
+    TerrainBase(biome, voxel_utility::from_qb(path)) {
     // grows the grass
     init_grass();
 
@@ -87,10 +76,24 @@ Terrain::Terrain(
     //  TODO make this faster 1
     init_chunks();
 
-    LOG_INFO(
-        logging::terrain_logger, "End of land generator. Time elapsed: {}.",
-        time_util::epoch_millis() - millisec_since_epoch
-    );
+    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
+}
+
+Terrain::Terrain(
+    Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
+    const std::vector<MapTile_t>& macro_map
+) :
+    TerrainBase(x, y, area_size_, z, seed_, biome, macro_map),
+    seed(seed_) {
+    // grows the grass
+    init_grass();
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
+
+    //  TODO make this faster 1
+    init_chunks();
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
 }
 
 void
