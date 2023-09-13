@@ -49,6 +49,8 @@ opengl_entry(World& world) {
 
     ShaderHandler shader_handler = ShaderHandler();
 
+    terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
+    terrain::TerrainColorMapping::assign_color_texture();
     world.update_all_chunks_mesh();
     Scene main_scene(window_width, window_height, shadow_map_size);
     setup(main_scene, world);

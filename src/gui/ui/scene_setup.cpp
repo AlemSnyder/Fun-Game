@@ -10,6 +10,8 @@ void
 setup(Scene& scene, World& world) {
     ShaderHandler shader_handler;
 
+    terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
+    terrain::TerrainColorMapping::assign_color_texture();
     world.update_all_chunks_mesh();
 
     auto terrain_mesh = world.get_chunks_mesh();

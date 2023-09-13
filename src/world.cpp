@@ -52,7 +52,7 @@ World::World(const std::string& biome_name, const std::string path) :
     terrain_main_(
         path, biome_
     ) {
-    initialize_chunks_mesh_();
+    //initialize_chunks_mesh_();
 }
 
 World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
@@ -60,7 +60,7 @@ World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) 
     terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, 5, biome_, biome_.get_map()
     ) {
-    initialize_chunks_mesh_();
+    //initialize_chunks_mesh_();
 }
 
 World::World(const std::string& biome_name, MapTile_t tile_type) :
@@ -69,7 +69,7 @@ World::World(const std::string& biome_name, MapTile_t tile_type) :
         3,3, macro_tile_size, height, 5, biome_, {0,0,0,0,tile_type,0,0,0,0}
     ) {
     // on initialization world reserves the space it would need for shared pointers
-    initialize_chunks_mesh_();
+    //initialize_chunks_mesh_();
 }
 
 void
@@ -94,6 +94,7 @@ World::update_single_mesh(TerrainDim3 tile_sop) {
 
 void
 World::update_all_chunks_mesh() {
+    initialize_chunks_mesh_();
     for (size_t i = 0; i < chunks_mesh_.size(); i++)
         update_single_mesh(i);
 }

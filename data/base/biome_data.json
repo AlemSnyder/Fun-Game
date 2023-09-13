@@ -5,12 +5,12 @@
             {
                 "Type": "Positions",
                 "Material_id": 1,
-                "Can_Stamp": [
+                "Can_Overwrite": [
                     0
                 ],
                 "Size": 4,
                 "DS": 2,
-                "Hight": 16,
+                "Height": 16,
                 "DH": 4,
                 "Positions": [
                     [
@@ -26,12 +26,12 @@
             {
                 "Type": "Radius",
                 "Material_id": 1,
-                "Can_Stamp": [
+                "Can_Overwrite": [
                     0
                 ],
                 "Size": 4,
                 "DS": 2,
-                "Hight": 16,
+                "Height": 16,
                 "DH": 4,
                 "Radius": {
                     "radius": 16,
@@ -42,12 +42,12 @@
             {
                 "Type": "Grid",
                 "Material_id": 1,
-                "Can_Stamp": [
+                "Can_Overwrite": [
                     0
                 ],
                 "Size": 16,
                 "DS": 1,
-                "Hight": 16,
+                "Height": 16,
                 "DH": 4,
                 "Grid": {
                     "radius": 16,
@@ -162,7 +162,7 @@
                         "Type": "Grid",
                         "Material_id": 2,
                         "Color_id": 6,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -198,7 +198,7 @@
                         ],
                         "Size": 28,
                         "DS": 10,
-                        "Hight": 8,
+                        "Height": 8,
                         "DH": 2,
                         "Grid": {
                             "radius": 16,
@@ -214,7 +214,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 5,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -246,7 +246,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 8,
+                        "Height": 8,
                         "DH": 6,
                         "Radius": {
                             "radius": 16,
@@ -258,7 +258,7 @@
                         "Type": "Grid",
                         "Material_id": 2,
                         "Color_id": 5,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -290,7 +290,7 @@
                         ],
                         "Size": 19,
                         "DS": 2,
-                        "Hight": 16,
+                        "Height": 16,
                         "DH": 3,
                         "Grid": {
                             "radius": 16,
@@ -306,7 +306,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 4,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -334,7 +334,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 20,
+                        "Height": 20,
                         "DH": 6,
                         "Radius": {
                             "radius": 16,
@@ -346,7 +346,7 @@
                         "Type": "Grid",
                         "Material_id": 2,
                         "Color_id": 4,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -374,7 +374,7 @@
                         ],
                         "Size": 19,
                         "DS": 2,
-                        "Hight": 28,
+                        "Height": 28,
                         "DH": 3,
                         "Grid": {
                             "radius": 16,
@@ -390,7 +390,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 3,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -414,7 +414,7 @@
                         ],
                         "Size": 12,
                         "DS": 6,
-                        "Hight": 36,
+                        "Height": 36,
                         "DH": 8,
                         "Radius": {
                             "radius": 16,
@@ -426,7 +426,7 @@
                         "Type": "Grid",
                         "Material_id": 2,
                         "Color_id": 3,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -450,7 +450,7 @@
                         ],
                         "Size": 22,
                         "DS": 6,
-                        "Hight": 42,
+                        "Height": 42,
                         "DH": 3,
                         "Grid": {
                             "radius": 16,
@@ -466,7 +466,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 2,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -486,7 +486,7 @@
                         ],
                         "Size": 18,
                         "DS": 8,
-                        "Hight": 52,
+                        "Height": 52,
                         "DH": 4,
                         "Radius": {
                             "radius": 24,
@@ -498,7 +498,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 2,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -518,7 +518,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 62,
+                        "Height": 62,
                         "DH": 4,
                         "Radius": {
                             "radius": 20,
@@ -530,7 +530,7 @@
                         "Type": "Grid",
                         "Material_id": 2,
                         "Color_id": 2,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -550,7 +550,7 @@
                         ],
                         "Size": 19,
                         "DS": 2,
-                        "Hight": 67,
+                        "Height": 67,
                         "DH": 3,
                         "Grid": {
                             "radius": 16,
@@ -566,7 +566,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 2,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -586,7 +586,7 @@
                         ],
                         "Size": 18,
                         "DS": 4,
-                        "Hight": 65,
+                        "Height": 65,
                         "DH": 4,
                         "Radius": {
                             "radius": 18,
@@ -598,7 +598,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 1,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -614,7 +614,7 @@
                         ],
                         "Size": 17,
                         "DS": 4,
-                        "Hight": 80,
+                        "Height": 80,
                         "DH": 14,
                         "Radius": {
                             "radius": 16,
@@ -626,7 +626,7 @@
                         "Type": "Grid",
                         "Material_id": 2,
                         "Color_id": 1,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -642,7 +642,7 @@
                         ],
                         "Size": 15,
                         "DS": 3,
-                        "Hight": 92,
+                        "Height": 92,
                         "DH": 5,
                         "Grid": {
                             "radius": 16,
@@ -658,7 +658,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 1,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -674,7 +674,7 @@
                         ],
                         "Size": 14,
                         "DS": 6,
-                        "Hight": 60,
+                        "Height": 60,
                         "DH": 4,
                         "Radius": {
                             "radius": 24,
@@ -686,7 +686,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -694,7 +694,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 68,
+                        "Height": 68,
                         "DH": 10,
                         "Radius": {
                             "radius": 16,
@@ -706,7 +706,7 @@
                         "Type": "Radius",
                         "Material_id": 2,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -714,7 +714,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 74,
+                        "Height": 74,
                         "DH": 8,
                         "Radius": {
                             "radius": 12,
@@ -726,7 +726,7 @@
                         "Type": "Grid",
                         "Material_id": 2,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -734,7 +734,7 @@
                         ],
                         "Size": 12,
                         "DS": 2,
-                        "Hight": 90,
+                        "Height": 90,
                         "DH": 3,
                         "Grid": {
                             "radius": 8,
@@ -750,7 +750,7 @@
                         "Type": "Radius",
                         "Material_id": 1,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -758,7 +758,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 28,
+                        "Height": 28,
                         "DH": 6,
                         "Radius": {
                             "radius": 16,
@@ -770,7 +770,7 @@
                         "Type": "Grid",
                         "Material_id": 1,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -778,7 +778,7 @@
                         ],
                         "Size": 19,
                         "DS": 2,
-                        "Hight": 34,
+                        "Height": 34,
                         "DH": 0,
                         "Grid": {
                             "radius": 16,
@@ -794,7 +794,7 @@
                         "Type": "Radius",
                         "Material_id": 1,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -802,7 +802,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 40,
+                        "Height": 40,
                         "DH": 6,
                         "Radius": {
                             "radius": 16,
@@ -814,7 +814,7 @@
                         "Type": "Grid",
                         "Material_id": 1,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -822,7 +822,7 @@
                         ],
                         "Size": 19,
                         "DS": 2,
-                        "Hight": 46,
+                        "Height": 46,
                         "DH": 0,
                         "Grid": {
                             "radius": 16,
@@ -838,7 +838,7 @@
                         "Type": "Radius",
                         "Material_id": 1,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -846,7 +846,7 @@
                         ],
                         "Size": 12,
                         "DS": 4,
-                        "Hight": 52,
+                        "Height": 52,
                         "DH": 6,
                         "Radius": {
                             "radius": 16,
@@ -858,7 +858,7 @@
                         "Type": "Grid",
                         "Material_id": 1,
                         "Color_id": 0,
-                        "Can_Stamp": [
+                        "Can_Overwrite": [
                             {
                                 "E": 0,
                                 "C": 0
@@ -866,7 +866,7 @@
                         ],
                         "Size": 19,
                         "DS": 2,
-                        "Hight": 58,
+                        "Height": 58,
                         "DH": 0,
                         "Grid": {
                             "radius": 16,
@@ -960,7 +960,7 @@
                             "C": true
                         }
                     ],
-                    "overwrite_colors": [
+                    "Can_Overwrite": [
                         {
                             "E": true,
                             "C": true

@@ -25,6 +25,7 @@ function map(number)
             if height_map_value < 0 then
                 height_map_value = 0
             end
+            height_map_value = 2
             result["map"][x * number + y] = height_map_value
         end
     end

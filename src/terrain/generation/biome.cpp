@@ -65,9 +65,11 @@ Biome::Biome(const biome_json_data& biome_data) :
         return;
     }
 
-    read_tile_macro_data(biome_data.biome_data);
+    read_tile_macro_data(biome_data.biome_data["Biome"]);
 
     read_map_tile_data(biome_data.biome_data["Biome"]);
+
+    read_add_to_top_data(biome_data.biome_data["Biome"]["After_Effects"]);
 
     sol::state lua;
 
@@ -148,7 +150,7 @@ Biome::read_map_tile_data(const Json::Value& biome_data) {
     // add tile macro to tiles
     for (const Json::Value& tile_type : biome_data["Tile_Data"]) {
         std::vector<TileMacro_t> tile_macros;
-        for (const Json::Value& tile_macro_id : tile_type["Land_Data"]) {
+        for (const Json::Value& tile_macro_id : tile_type["Land_From"]) {
             TileMacro_t tile_macro = tile_macro_id.asInt();
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
@@ -161,6 +163,13 @@ Biome::read_map_tile_data(const Json::Value& biome_data) {
             tile_macros.push_back(tile_macro_id.asInt());
         }
         macro_tile_types_.push_back(std::move(tile_macros));
+    }
+}
+
+void Biome::read_add_to_top_data(const Json::Value& after_effects_data) {
+    for (const Json::Value& add_data : after_effects_data["Add_To_Top"]){
+        AddToTop generator(add_data);
+        add_to_top_generators_.push_back(std::move(generator));
     }
 }
 

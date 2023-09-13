@@ -14,9 +14,9 @@
 #include "land_generator.hpp"
 
 #include "../../logging.hpp"
+#include "../../types.hpp"
 #include "../material.hpp"
 #include "tile_stamp.hpp"
-#include "../../types.hpp"
 
 #include <json/json.h>
 
@@ -101,7 +101,7 @@ namespace stamps {
 JsonToTile::JsonToTile(const Json::Value& data) :
     height_(data["Height"].asInt()), height_variance_(data["DH"].asInt()),
     width_(data["Size"].asInt()), width_variance_(data["DC"].asInt()),
-    elements_can_stamp_(read_elements(data)),
+    elements_can_stamp_(read_elements(data["Can_Overwrite"])),
     stamp_material_id_(data["Material_id"].asInt()),
     stamp_color_id_(data["Color_id"].asInt()) {}
 
@@ -150,8 +150,12 @@ std::set<std::pair<MaterialId, ColorId>>
 JsonToTile::read_elements(const Json::Value& data) {
     std::set<std::pair<MaterialId, ColorId>> out;
 
-    for (const Json::Value& material_data : data["Can_Stamp"]) {
-        MaterialId E = material_data["E"].asInt();
+    for (const Json::Value& material_data : data) {
+        MaterialId E;
+        if (material_data["E"].isInt())
+            E = material_data["E"].asInt();
+        else
+            E = MAT_ANY_MATERIAL;
         if (material_data["C"].isInt()) {
             ColorId C = material_data["C"].asInt();
             out.insert(std::make_pair(E, C));
@@ -249,16 +253,14 @@ FromGrid::get_stamp(size_t current_sub_region) const {
 
 AddToTop::AddToTop(const Json::Value& json_data) :
     elements_above_(stamps::JsonToTile::read_elements(json_data["above_colors"])),
-    elements_can_overwrite_(
-        stamps::JsonToTile::read_elements(json_data["overwrite_colors"])
-    ),
+    elements_can_overwrite_(stamps::JsonToTile::read_elements(json_data["Can_Overwrite"]
+    )),
     stamp_material_id_(json_data["Material_id"].asInt()),
     stamp_color_id_(json_data["Color_id"].asInt()) {
     for (const Json::Value& range_data : json_data["how_to_add"]) {
         Dim start_height = range_data["how_to_add"][0].asInt();
         Dim end_height = range_data["how_to_add"][1].asInt();
         Dim data_value = range_data["data"].asInt();
-
 
         std::string type = range_data["Type"].asString();
         char first_character = type.at(0);

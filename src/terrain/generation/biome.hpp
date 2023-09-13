@@ -142,6 +142,8 @@ class Biome {
 
     void read_map_tile_data(const Json::Value& biome_data);
 
+    void read_add_to_top_data(const Json::Value& biome_data);
+
     /**
      * @brief Load materials from json data
      *

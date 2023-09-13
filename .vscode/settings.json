@@ -119,7 +119,8 @@
         "*.inc": "cpp",
         "hash_map": "cpp",
         "any": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "forward_list": "cpp"
     },
     "editor.detectIndentation": false,
     "cmake.configureOnOpen": false
