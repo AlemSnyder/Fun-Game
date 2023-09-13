@@ -443,18 +443,6 @@ class TerrainBase : public voxel_utility::VoxelBase {
     );
 
     /**
-     * @brief generates a 2D 'height' map to use to generate the terrain
-     *
-     * @param size_x number of tile types in x direction
-     * @param size_y number of tile types in y direction
-     * @param map_data json data on how to generate map
-     * @return std::vector<MapTile_t> (size_x * size_y) vector of ints
-     */
-    [[nodiscard]] static std::vector<MapTile_t> generate_macro_map(
-        unsigned int size_x, unsigned int size_y, const Json::Value& map_data
-    );
-
-    /**
      * @brief Get the max allowable height of added material
      *
      * @param height height of terrain in question

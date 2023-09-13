@@ -1,6 +1,7 @@
 #include "files.hpp"
 
 #include "config.h"
+#include "../logging.hpp"
 
 #include <whereami.h>
 
@@ -27,6 +28,15 @@ get_root_path() {
     }
 
     return root_path;
+}
+
+std::optional<std::ifstream>
+open_file(std::filesystem::path path) {
+    if (!std::filesystem::exists(path)) {
+        LOG_ERROR(logging::file_io_logger, "File, {}, not found", path.string());
+        return {};
+    }
+    return std::ifstream(path);
 }
 
 } // namespace files

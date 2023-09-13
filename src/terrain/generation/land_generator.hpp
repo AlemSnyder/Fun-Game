@@ -238,12 +238,40 @@ class LandGenerator {
     size_t static get_num_stamps(const Json::Value& biome);
 };
 
+enum class AddDirections : uint8_t{
+    None = 0,
+    To = 1,
+    Add = 2,
+};
+
+struct AddMethod
+{
+    // enum class about add n vs to n
+
+
+    Dim start;
+    Dim stop;
+    Dim data;
+
+    AddDirections add_directions;
+
+    bool operator<(const AddMethod& other) const {
+        return start < other.start;
+    }
+};
+
+
 class AddToTop {
     const std::set<std::pair<MaterialId, ColorId>> elements_above_;
 
     const std::set<std::pair<MaterialId, ColorId>> elements_can_overwrite_;
     const MaterialId stamp_material_id_; // MaterialId that will be set
     const ColorId stamp_color_id_;       // ColorId that will be set
+
+    std::set<AddMethod> data_;
+    // use ordering by start
+    // index into using find/ at
+    // will likely give the correct AddMethod, but still should be checked
 
  public:
     AddToTop(const Json::Value& json_data);

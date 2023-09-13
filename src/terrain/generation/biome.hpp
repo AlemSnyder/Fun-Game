@@ -92,8 +92,10 @@ class Biome {
     Biome(const std::string& biome_name);
     Biome(const biome_json_data& biome_data);
 
+
+
     inline const std::vector<MapTile_t>&
-    get_tile_vector() const {
+    get_map() const {
         return tile_map_vector_;
     }
 

@@ -57,7 +57,7 @@
             }
         ]
     },
-    "Biome_1": {
+    "Biome": {
         "Image": "path/to/image",
         "Description": "This is a test biome",
         "Terrain_Data": {
@@ -968,28 +968,32 @@
                     ],
                     "how_to_add": [
                         {
-                            "add": 3,
+                            "Type": "add",
+                            "data": 3,
                             "from": [
                                 59,
                                 66
                             ]
                         },
                         {
-                            "to": 75,
+                            "Type": "To",
+                            "data": 75,
                             "from": [
                                 66,
                                 75
                             ]
                         },
                         {
-                            "add": 3,
+                            "Type": "add",
+                            "data": 3,
                             "from": [
                                 75,
                                 90
                             ]
                         },
                         {
-                            "to": 97,
+                            "Type": "To",
+                            "data": 97,
                             "from": [
                                 90,
                                 97

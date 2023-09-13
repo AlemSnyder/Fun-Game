@@ -20,9 +20,16 @@ namespace generation {
 GrassData::GrassData(const Json::Value& json_grass_data) {
     ColorId grass_mid_color_id = json_grass_data["midpoint"].asInt();
 
-    std::vector<int> grass_grad_data;
+    // Should be much lower than a Dim
+    std::vector<Dim> grass_grad_data;
     for (const Json::Value& grass_level : json_grass_data["levels"]) {
-        grass_grad_data.push_back(grass_level.asInt());
+        Dim level_length = grass_level.asInt();
+        if (level_length > 16) {
+            LOG_WARNING(
+                logging::terrain_logger, "Quite long grass length {}", level_length
+            );
+        }
+        grass_grad_data.push_back(level_length);
     }
 
     if (grass_mid_color_id >= grass_grad_data.size()) {
@@ -44,6 +51,7 @@ GrassData::GrassData(const Json::Value& json_grass_data) {
 Biome::Biome(const std::string& biome_name) : Biome(get_json_data(biome_name)) {}
 
 Biome::Biome(const biome_json_data& biome_data) :
+    materials_(init_materials(biome_data.materials_data)),
     grass_data_(biome_data.materials_data["Dirt"]["Gradient"]) {
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
@@ -59,7 +67,7 @@ Biome::Biome(const biome_json_data& biome_data) :
 
     read_tile_macro_data(biome_data.biome_data);
 
-    read_map_tile_data(biome_data.biome_data);
+    read_map_tile_data(biome_data.biome_data["Biome"]);
 
     sol::state lua;
 
@@ -140,7 +148,7 @@ Biome::read_map_tile_data(const Json::Value& biome_data) {
     // add tile macro to tiles
     for (const Json::Value& tile_type : biome_data["Tile_Data"]) {
         std::vector<TileMacro_t> tile_macros;
-        for (const Json::Value& tile_macro_id : tile_type["Land_From"]) {
+        for (const Json::Value& tile_macro_id : tile_type["Land_Data"]) {
             TileMacro_t tile_macro = tile_macro_id.asInt();
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
@@ -180,8 +188,8 @@ Biome::init_materials(const Json::Value& material_data) {
         }; // name
         out.insert(std::make_pair(mat.element_id, mat));
     }
-
-    terrain::TerrainColorMapping::assign_color_mapping(out);
+    // I think this should be delayed
+    //terrain::TerrainColorMapping::assign_color_mapping(out);
     return out;
 }
 
@@ -206,14 +214,16 @@ Biome::get_json_data(const std::string& biome_name) {
     std::filesystem::path biome_json_path = files::get_data_path() / biome_name;
 
     Json::Value biome_data;
-    std::ifstream biome_file =
+    auto biome_file =
         files::open_data_file(biome_json_path / "biome_data.json");
-    biome_file >> biome_data;
+    if (biome_file.has_value()) 
+        biome_file.value() >> biome_data;
 
     Json::Value materials_data;
-    std::ifstream materials_file =
-        files::open_data_file(biome_json_path / "materials_data.json");
-    materials_file >> materials_data;
+    auto materials_file =
+        files::open_data_file(biome_json_path / "materials.json");
+    if (materials_file.has_value())
+        materials_file.value() >> materials_data;
 
     return {biome_name, biome_data, materials_data};
 }

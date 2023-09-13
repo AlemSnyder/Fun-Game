@@ -58,7 +58,7 @@ World::World(const std::string& biome_name, const std::string path) :
 World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
     biome_(biome_name),
     terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, 5, biome_, biome_.get_tile_vector()
+        x_tiles, y_tiles, macro_tile_size, height, 5, biome_, biome_.get_map()
     ) {
     initialize_chunks_mesh_();
 }

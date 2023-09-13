@@ -47,14 +47,10 @@ int
 MacroMap() {
     quill::Logger* logger = quill::get_logger();
 
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
+    terrain::generation::Biome biome("base");
 
-    // test terrain generation in a region of 64 by 64
-    auto map = terrain::TerrainBase::generate_macro_map(
-        64, 64, biome_data["Biome_1"]["Terrain_Data"]
-    );
+    // test terrain generation
+    auto map = biome.get_map();
 
     LOG_INFO(logger, "Map: {}", map);
 
@@ -99,9 +95,6 @@ save_terrain(
     Json::Value materials_json, Json::Value biome_data, std::string biome_name
 ) {
     quill::Logger* logger = quill::get_logger();
-
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
 
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
@@ -256,12 +249,14 @@ main(int argc, char** argv) {
         );
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
-        std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-        biome_file >> biome_data;
+        auto biome_file = files::open_data_file("base/biome_data.json");
+        if (biome_file.has_value())
+            biome_file.value() >> biome_data;
         std::string biome_name;
         Json::Value materials_json;
-        std::ifstream materials_file = files::open_data_file("base/materials.json");
-        materials_file >> materials_json;
+        auto materials_file = files::open_data_file("base/materials.json");
+        if (materials_file.has_value())
+            materials_file.value() >> materials_json;
 
         cmdl("biome-name", "Biome_1") >> biome_name;
 
@@ -289,7 +284,7 @@ main(int argc, char** argv) {
         return imgui_entry_main();
     } else if (run_function == "LuaTest") {
         auto biome = terrain::generation::Biome("base");
-        LOG_DEBUG(logging::lua_logger, "{}", biome.get_tile_vector());
+        LOG_DEBUG(logging::lua_logger, "{}", biome.get_map());
         return 0;
     } else {
         std::cout << "No known command" << std::endl;

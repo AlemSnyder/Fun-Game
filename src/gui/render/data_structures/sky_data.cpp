@@ -16,8 +16,12 @@ namespace data_structures {
 
 SkyData::SkyData(std::filesystem::path path) {
     Json::Value stars_json;
-    std::ifstream stars_file = files::open_data_file(path);
-    stars_file >> stars_json;
+    auto stars_file = files::open_data_file(path);
+    if (stars_file.has_value())
+        stars_file.value() >> stars_json;
+    else
+        return;
+
     std::vector<glm::vec4> stars_positions;
     std::vector<GLfloat> star_age;
 

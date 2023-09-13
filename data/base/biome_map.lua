@@ -18,7 +18,14 @@ function map(number)
 
     for x = 0, number-1 do
         for y = 0, number-1 do
-            result["map"][x * number + y] = math.floor( 3 * (noise:sample(x * spacing, y * spacing) + 1) )
+            height_map_value = math.floor( 3 * (noise:sample(x * spacing, y * spacing) + 1) )
+            if height_map_value > 6 then
+                height_map_value = 6
+            end
+            if height_map_value < 0 then
+                height_map_value = 0
+            end
+            result["map"][x * number + y] = height_map_value
         end
     end
     return result

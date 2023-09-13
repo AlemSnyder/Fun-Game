@@ -16,6 +16,7 @@
 #include "../../logging.hpp"
 #include "../material.hpp"
 #include "tile_stamp.hpp"
+#include "../../types.hpp"
 
 #include <json/json.h>
 
@@ -244,14 +245,82 @@ FromGrid::get_stamp(size_t current_sub_region) const {
     return get_volume(center, width_, height_, width_variance_, height_variance_);
 }
 
-
 } // namespace stamps
 
 AddToTop::AddToTop(const Json::Value& json_data) :
     elements_above_(stamps::JsonToTile::read_elements(json_data["above_colors"])),
-    elements_can_overwrite_(stamps::JsonToTile::read_elements(json_data["overwrite_colors"])),
+    elements_can_overwrite_(
+        stamps::JsonToTile::read_elements(json_data["overwrite_colors"])
+    ),
     stamp_material_id_(json_data["Material_id"].asInt()),
-    stamp_color_id_(json_data["Color_id"].asInt()) {}
+    stamp_color_id_(json_data["Color_id"].asInt()) {
+    for (const Json::Value& range_data : json_data["how_to_add"]) {
+        Dim start_height = range_data["how_to_add"][0].asInt();
+        Dim end_height = range_data["how_to_add"][1].asInt();
+        Dim data_value = range_data["data"].asInt();
+
+
+        std::string type = range_data["Type"].asString();
+        char first_character = type.at(0);
+
+        AddMethod adder;
+        switch (first_character) {
+            case 'A':
+                [[fallthrough]];
+            case 'a':
+                adder = {start_height, end_height, data_value, AddDirections::Add};
+                break;
+            case 'T':
+                [[fallthrough]];
+            case 't':
+                adder = {start_height, end_height, data_value, AddDirections::To};
+                break;
+            [[unlikely]] default:
+                LOG_WARNING(
+                    logging::terrain_logger,
+                    "Terrain stamp type {} is not valid. Must be one of Position, "
+                    "Radius, Grid",
+                    type
+                );
+                continue;
+        }
+        data_.insert(adder);
+    }
+}
+
+Dim
+AddToTop::get_final_height(Dim height) const {
+    auto add_data = data_.lower_bound(AddMethod(height, 0, 0, AddDirections::None));
+
+    if (add_data == data_.end()) {
+        return height;
+    }
+
+    switch (add_data->add_directions) {
+        case AddDirections::To:
+            return add_data->data;
+            break;
+        case AddDirections::Add:
+            return height + add_data->data;
+            break;
+
+        default:
+            return 0;
+            break;
+    }
+}
+
+bool
+AddToTop::can_overwrite_material(MaterialId material_id, ColorId color_id) const {
+    for (auto element : elements_can_overwrite_) {
+        if (element.first == MAT_ANY_MATERIAL || element.first == material_id) {
+            if (element.second == COLOR_ANY_COLOR || element.second == color_id) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 } // namespace generation
 
