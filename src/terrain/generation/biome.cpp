@@ -48,7 +48,6 @@ GrassData::GrassData(const Json::Value& json_grass_data) {
     grass_grad_length_ = grass_colors_.size();
 }
 
-Biome::Biome(const std::string& biome_name) : Biome(get_json_data(biome_name)) {}
 
 Biome::Biome(const biome_json_data& biome_data) :
     materials_(init_materials(biome_data.materials_data)),
@@ -193,9 +192,9 @@ Biome::init_materials(const Json::Value& material_data) {
             static_cast<float>(material["speed"].asFloat()), // speed_multiplier
             material["solid"].asBool(),                      // solid
             static_cast<MaterialId>(material["id"].asInt()), // element_id
-            name
-        }; // name
-        out.insert(std::make_pair(mat.element_id, mat));
+            name                                             // name
+        };
+        out.insert(std::make_pair(mat.element_id, std::move(mat)));
     }
     // I think this should be delayed
     //terrain::TerrainColorMapping::assign_color_mapping(out);
@@ -206,11 +205,11 @@ std::map<ColorInt, std::pair<const Material*, ColorId>>
 Biome::get_colors_inverse_map() const {
     std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
     for (auto it = materials_.begin(); it != materials_.end(); it++) {
-        for (size_t color_id = 0; color_id < it->second.color.size(); color_id++) {
+        for (ColorId color_id = 0; color_id < it->second.color.size(); color_id++) {
             materials_inverse.insert(
                 std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
                     it->second.color.at(color_id).second,
-                    std::make_pair(&it->second, (ColorId)color_id)
+                    std::make_pair(&it->second, color_id)
                 )
             );
         }
@@ -234,7 +233,7 @@ Biome::get_json_data(const std::string& biome_name) {
     if (materials_file.has_value())
         materials_file.value() >> materials_data;
 
-    return {biome_name, biome_data, materials_data};
+    return {biome_name, std::move(biome_data), std::move(materials_data)};
 }
 
 } // namespace generation

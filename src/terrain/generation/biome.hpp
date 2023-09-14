@@ -89,9 +89,8 @@ class Biome {
     GrassData grass_data_;
 
  public:
-    Biome(const std::string& biome_name);
     Biome(const biome_json_data& biome_data);
-
+    Biome(const std::string& biome_name) : Biome(get_json_data(biome_name)) {}
 
 
     inline const std::vector<MapTile_t>&
