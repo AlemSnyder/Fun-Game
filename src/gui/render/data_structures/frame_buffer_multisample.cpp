@@ -19,6 +19,7 @@ FrameBufferMultisample::FrameBufferMultisample(
     // generates a frame buffer, screen texture, and and a depth buffer
 
     // frame buffer (the container for the other two)
+    // -----------------
     glGenFramebuffers(1, &frame_buffer);
     FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
     // texture (what it looks like)
@@ -44,8 +45,8 @@ FrameBufferMultisample::FrameBufferMultisample(
         0
     );
 
-    GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, draw_buffers);
+    //GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    //glDrawBuffers(1, draw_buffers);
 
     GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -58,11 +59,11 @@ FrameBufferMultisample::FrameBufferMultisample(
     }
 
     // frame buffer (the container for the other two)
+    // --------------------------
     glGenFramebuffers(1, &frame_buffer_single);
     FrameBufferHandler::getInstance().bind_fbo(frame_buffer_single);
     // texture (what it looks like)
     glGenTextures(1, &render_texture_single);
-
     glBindTexture(GL_TEXTURE_2D, render_texture_single);
     glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, 0
@@ -72,6 +73,22 @@ FrameBufferMultisample::FrameBufferMultisample(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // connect the texture to the frame buffer
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single,
+        0
+    );
+
+    framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
+        // log some error
+        LOG_CRITICAL(
+            logging::opengl_logger, "Framebuffer Incomplete with code {}",
+            framebuffer_status
+        );
+    }
 }
 
 } // namespace data_structures
