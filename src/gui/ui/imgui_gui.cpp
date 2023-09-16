@@ -79,8 +79,6 @@ imgui_entry(World& world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
-    terrain::TerrainColorMapping::assign_color_texture();
-
     Scene main_scene(window_width, window_height, shadow_map_size);
     setup(main_scene, world);
 

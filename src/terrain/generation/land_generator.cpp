@@ -272,6 +272,7 @@ AddToTop::AddToTop(const Json::Value& json_data) :
             case 'a':
                 adder = {start_height, end_height, data_value, AddDirections::Add};
                 break;
+
             case 'T':
                 [[fallthrough]];
             case 't':

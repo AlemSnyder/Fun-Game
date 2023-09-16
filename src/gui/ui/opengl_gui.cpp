@@ -42,16 +42,10 @@ opengl_entry(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    // send color texture to gpu
-    terrain::TerrainColorMapping::assign_color_texture();
-
     render::QuadRenderer QR;
 
     ShaderHandler shader_handler = ShaderHandler();
 
-    terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
-    terrain::TerrainColorMapping::assign_color_texture();
-    world.update_all_chunks_mesh();
     Scene main_scene(window_width, window_height, shadow_map_size);
     setup(main_scene, world);
 

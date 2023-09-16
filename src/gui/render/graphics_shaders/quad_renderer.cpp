@@ -20,7 +20,7 @@ QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
-    texID = glGetUniformLocation(program_id_, "texture");
+    texID = glGetUniformLocation(program_id_, "texture_id");
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const GLfloat g_quad_vertex_buffer_data[] = {

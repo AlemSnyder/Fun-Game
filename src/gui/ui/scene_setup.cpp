@@ -10,7 +10,10 @@ void
 setup(Scene& scene, World& world) {
     ShaderHandler shader_handler;
 
+    // assign map from all color ids to each color
+    // to package as a texture
     terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
+    // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
     world.update_all_chunks_mesh();
 
