@@ -116,8 +116,8 @@ class Scene {
     }
 
     inline GLuint
-    get_frame_buffer() {
-        return frame_buffer_multisample_.get_frame_buffer_name();
+    get_frame_buffer_id() {
+        return frame_buffer_multisample_.get_frame_buffer_id();
     }
 
     /**

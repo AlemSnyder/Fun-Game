@@ -112,7 +112,7 @@ class FrameBufferMultisample {
      * @return GLuint frame buffer id
      */
     [[nodiscard]] inline GLuint
-    get_frame_buffer_name() const {
+    get_frame_buffer_id() const {
         return frame_buffer;
     }
 
@@ -152,7 +152,7 @@ class FrameBufferMultisample {
      * @return GLuint frame buffer single id
      */
     [[nodiscard]] inline GLuint
-    get_frame_buffer_single() {
+    get_frame_buffer_single_id() {
         return frame_buffer_single;
     }
 };

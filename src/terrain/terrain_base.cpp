@@ -49,7 +49,7 @@ TerrainBase::TerrainBase(
     Z_MAX(z) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-        tiles_.push_back(Tile(sop(xyz), &biome_.get_materials().at(0), 0));
+        tiles_.push_back(Tile(sop(xyz), biome_.get_material(0), 0));
     }
 
     // srand(seed);
@@ -147,7 +147,7 @@ TerrainBase::add_to_top(const generation::AddToTop& top_data) {
                         tile.get_material_id(), tile.get_color_id()
                     )) {
                     get_tile(x, y, z)->set_material(
-                        &biome_.get_materials().at(top_data.get_material_id()),
+                        biome_.get_material(top_data.get_material_id()),
                         top_data.get_color_id()
                     );
                 }
@@ -173,7 +173,7 @@ TerrainBase::stamp_tile_region(
                     Tile* tile = get_tile(x, y, z);
                     if (has_tile_material(stamp.elements_can_stamp, tile)) {
                         tile->set_material(
-                            &biome_.get_materials().at(stamp.mat), stamp.color_id
+                            biome_.get_material(stamp.mat), stamp.color_id
                         );
                     }
                 }

@@ -84,7 +84,7 @@ class Biome {
     std::vector<AddToTop> add_to_top_generators_;
 
     // materials that exist
-    std::map<MaterialId, const terrain::Material> materials_;
+    const std::map<MaterialId, const terrain::Material> materials_;
 
     GrassData grass_data_;
 
@@ -131,6 +131,15 @@ class Biome {
     inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const {
         return materials_;
+    }
+
+    inline const terrain::Material*
+    get_material(MaterialId mat_id) const {
+        auto mat = materials_.find(mat_id);
+        if (mat == materials_.end()){
+            return nullptr;
+        }
+        return &mat->second;
     }
 
     std::map<ColorInt, std::pair<const Material*, ColorId>>
