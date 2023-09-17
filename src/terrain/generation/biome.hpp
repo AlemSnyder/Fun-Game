@@ -32,7 +32,7 @@ namespace terrain {
 namespace generation {
 
 struct biome_json_data {
-    const std::string& biome_name;
+    std::string biome_name;
     Json::Value biome_data;
     Json::Value materials_data;
 };

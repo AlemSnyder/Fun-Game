@@ -34,20 +34,19 @@ GrassData::GrassData(const Json::Value& json_grass_data) {
 
     if (grass_mid_color_id >= grass_grad_data.size()) {
         grass_mid_color_id = grass_grad_data.size() - 1;
-        std::cerr << "Grass Mid (from biome_data.json) not valid";
+        LOG_WARNING(
+            logging::terrain_logger, "Grass Mid (from biome_data.json) too large"
+        );
     }
 
     for (ColorId i = 0; i < grass_grad_data.size(); i++) {
-        if (i == grass_mid_color_id) {
+        if (i == grass_mid_color_id)
             grass_mid_ = grass_colors_.size();
-        }
-        for (size_t j = 0; j < grass_grad_data[i]; j++) {
+        for (size_t j = 0; j < grass_grad_data[i]; j++)
             grass_colors_.push_back(i);
-        }
     }
     grass_grad_length_ = grass_colors_.size();
 }
-
 
 Biome::Biome(const biome_json_data& biome_data) :
     materials_(init_materials(biome_data.materials_data)),
@@ -165,10 +164,10 @@ Biome::read_map_tile_data(const Json::Value& biome_data) {
     }
 }
 
-void Biome::read_add_to_top_data(const Json::Value& after_effects_data) {
-    for (const Json::Value& add_data : after_effects_data["Add_To_Top"]){
-        AddToTop generator(add_data);
-        add_to_top_generators_.push_back(std::move(generator));
+void
+Biome::read_add_to_top_data(const Json::Value& after_effects_data) {
+    for (const Json::Value& add_data : after_effects_data["Add_To_Top"]) {
+        add_to_top_generators_.emplace_back(add_data);
     }
 }
 
@@ -197,19 +196,19 @@ Biome::init_materials(const Json::Value& material_data) {
         out.insert(std::make_pair(mat.element_id, std::move(mat)));
     }
     // I think this should be delayed
-    //terrain::TerrainColorMapping::assign_color_mapping(out);
+    // terrain::TerrainColorMapping::assign_color_mapping(out);
     return out;
 }
 
 std::map<ColorInt, std::pair<const Material*, ColorId>>
 Biome::get_colors_inverse_map() const {
     std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
-    for (auto it = materials_.begin(); it != materials_.end(); it++) {
-        for (ColorId color_id = 0; color_id < it->second.color.size(); color_id++) {
+    for (const auto& element : materials_) {
+        for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
             materials_inverse.insert(
                 std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
-                    it->second.color.at(color_id).second,
-                    std::make_pair(&it->second, color_id)
+                    element.second.color.at(color_id).second,
+                    std::make_pair(&element.second, color_id)
                 )
             );
         }
@@ -222,14 +221,12 @@ Biome::get_json_data(const std::string& biome_name) {
     std::filesystem::path biome_json_path = files::get_data_path() / biome_name;
 
     Json::Value biome_data;
-    auto biome_file =
-        files::open_data_file(biome_json_path / "biome_data.json");
-    if (biome_file.has_value()) 
+    auto biome_file = files::open_data_file(biome_json_path / "biome_data.json");
+    if (biome_file.has_value())
         biome_file.value() >> biome_data;
 
     Json::Value materials_data;
-    auto materials_file =
-        files::open_data_file(biome_json_path / "materials.json");
+    auto materials_file = files::open_data_file(biome_json_path / "materials.json");
     if (materials_file.has_value())
         materials_file.value() >> materials_data;
 

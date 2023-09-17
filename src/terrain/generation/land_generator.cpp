@@ -110,15 +110,21 @@ JsonToTile::get_volume(
     glm::imat2x2 center, TerrainOffset width, TerrainOffset height,
     TerrainOffset width_variance, TerrainOffset height_variance
 ) const {
+    // center_x between center[1][0] and center[0][0] inclusive
     TerrainOffset center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
+    // same with y
     TerrainOffset center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
+    // size 'centered' at width and can be between width-width_variance to width + width_variance
     TerrainOffset size_x = rand() % (2 * width_variance + 1) + width - width_variance;
     TerrainOffset size_y = rand() % (2 * width_variance + 1) + width - width_variance;
+    // convert center and side off sets to rectangle edge values
     TerrainOffset x_min = center_x - size_x / 2;
     TerrainOffset x_max = center_x + size_x / 2;
     TerrainOffset y_min = center_y - size_y / 2;
     TerrainOffset y_max = center_y + size_y / 2;
 
+    // mode edges for randomness
+    // I have long since forgotten the exact reason, but it has to do with randomness
     if (size_x % 2 != 0) {
         if (rand() % 2 - 1)
             x_min--;
@@ -132,6 +138,7 @@ JsonToTile::get_volume(
             y_max--;
     }
 
+    // z_max centered at height
     TerrainOffset z_max = rand() % (height_variance + 1) + height - height_variance / 2;
     return {
         x_min,
@@ -151,16 +158,16 @@ JsonToTile::read_elements(const Json::Value& data) {
     std::set<std::pair<MaterialId, ColorId>> out;
 
     for (const Json::Value& material_data : data) {
-        MaterialId E;
+        MaterialId mat_id;
         if (material_data["E"].isInt())
-            E = material_data["E"].asInt();
+            mat_id = material_data["E"].asInt();
         else
-            E = MAT_ANY_MATERIAL;
+            mat_id = MAT_ANY_MATERIAL;
         if (material_data["C"].isInt()) {
-            ColorId C = material_data["C"].asInt();
-            out.insert(std::make_pair(E, C));
+            ColorId color_id = material_data["C"].asInt();
+            out.insert(std::make_pair(mat_id, color_id));
         } else if (material_data["C"].asBool()) {
-            out.insert(std::make_pair(E, -1));
+            out.insert(std::make_pair(mat_id, -1));
         }
     }
     return out;

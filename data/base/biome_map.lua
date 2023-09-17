@@ -18,14 +18,18 @@ function map(number)
 
     for x = 0, number-1 do
         for y = 0, number-1 do
-            height_map_value = math.floor( 3 * (noise:sample(x * spacing, y * spacing) + 1) )
+            -- sample noise and set a value
+            height = 2 * noise:sample(x * spacing, y * spacing)
+            -- each value must be integers. math.floor changes doubles to ints
+            height_map_value = math.floor( height )
+            -- This biome only defines tile types between 0, and 6
             if height_map_value > 6 then
                 height_map_value = 6
             end
             if height_map_value < 0 then
                 height_map_value = 0
             end
-            height_map_value = 2
+            -- assign tile type to index in map
             result["map"][x * number + y] = height_map_value
         end
     end

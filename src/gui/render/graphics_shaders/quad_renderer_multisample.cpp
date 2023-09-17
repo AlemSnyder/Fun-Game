@@ -30,7 +30,7 @@ QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) {
     glGenBuffers(1, &quad_vertexbuffer_);
     glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, quad_vertices.size() * sizeof(GLfloat), quad_vertices.data(),
+        GL_ARRAY_BUFFER, quad_vertices.size() * sizeof(quad_vertices[0]), quad_vertices.data(),
         GL_STATIC_DRAW
     );
     width_id_ = glGetUniformLocation(program_id_, "width");
