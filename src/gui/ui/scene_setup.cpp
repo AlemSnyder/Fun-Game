@@ -25,8 +25,6 @@ setup(Scene& scene, World& world) {
     );
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture()
-        );
         chunk_renderer->add_mesh(chunk_mesh);
     }
 
