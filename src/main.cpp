@@ -90,6 +90,7 @@ save_test(const std::string path, const std::string save_path) {
     return 0;
 }
 
+// TODO materials_json is unused
 void
 save_terrain(
     Json::Value materials_json, Json::Value biome_data, std::string biome_name

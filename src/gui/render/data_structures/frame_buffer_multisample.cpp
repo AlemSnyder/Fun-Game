@@ -45,8 +45,8 @@ FrameBufferMultisample::FrameBufferMultisample(
         0
     );
 
-    //GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
-    //glDrawBuffers(1, draw_buffers);
+    GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, draw_buffers);
 
     GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -79,6 +79,8 @@ FrameBufferMultisample::FrameBufferMultisample(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single,
         0
     );
+
+    glDrawBuffers(1, draw_buffers);
 
     framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 

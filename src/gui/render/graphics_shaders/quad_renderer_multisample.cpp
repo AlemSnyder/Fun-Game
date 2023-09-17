@@ -15,6 +15,8 @@ namespace render {
 
 QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) :
     QuadRenderer(shader_handler) {
+    // QuadRenderer creates a unused program id
+    glDeleteProgram(program_id_);
     // program
     program_id_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
