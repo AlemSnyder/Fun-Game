@@ -115,6 +115,11 @@ class Scene {
         return shadow_map_.get_shadow_height();
     }
 
+    inline GLuint
+    get_frame_buffer() {
+        return frame_buffer_multisample_.get_frame_buffer_name();
+    }
+
     /**
      * @brief Get scene frame buffer multisample id
      */

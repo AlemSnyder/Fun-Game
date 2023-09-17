@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 
 #include <memory>
+#include <vector>
 
 namespace gui {
 
@@ -23,7 +24,7 @@ QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
     texID = glGetUniformLocation(program_id_, "texture_id");
 
     // The quad's FBO. Used only for visualizing the shadow map.
-    static const GLfloat g_quad_vertex_buffer_data[] = {
+    static const std::vector<GLfloat> quad_vertices = {
         -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
         -1.0f, 1.0f,  0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
     };
@@ -31,7 +32,7 @@ QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
     glGenBuffers(1, &quad_vertexbuffer_);
     glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer_);
     glBufferData(
-        GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data,
+        GL_ARRAY_BUFFER, quad_vertices.size() * sizeof(GLfloat), quad_vertices.data(),
         GL_STATIC_DRAW
     );
 }
