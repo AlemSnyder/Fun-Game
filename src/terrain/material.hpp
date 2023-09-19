@@ -110,9 +110,8 @@ material_in(
             return true;
         }
     }
-}
 
-return false;
+    return false;
 }
 
 } // namespace terrain

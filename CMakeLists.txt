@@ -13,11 +13,11 @@ project(FunGame VERSION 0.1.0)
 # add the executable
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
 
-file(GLOB SOURCES4 "vender/*.c*")
-file(GLOB SOURCES5 "vender/json/*.c*")
-file(GLOB SOURCES6 "vender/imgui/*.c*")
-file(GLOB SOURCES7 "vender/imgui/backends/imgui_impl_opengl3.cpp")
-file(GLOB SOURCES8 "vender/imgui/backends/imgui_impl_glfw.cpp")
+file(GLOB SOURCES4 "vendor/*.c*")
+file(GLOB SOURCES5 "vendor/json/*.c*")
+file(GLOB SOURCES6 "vendor/imgui/*.c*")
+file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # Set standard version
@@ -31,10 +31,10 @@ block()
     set(QUILL_BUILD_BENCHMARKS OFF)
     set(QUILL_DOCS_GEN         OFF)
 
-    add_subdirectory("vender/quill")
+    add_subdirectory("vendor/quill")
 endblock()
 
-add_subdirectory("vender/sol2")
+add_subdirectory("vendor/sol2")
 
 # prefer newer OpenGL
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
@@ -69,7 +69,7 @@ target_link_libraries_system(FunGame PRIVATE sol2::sol2)
 target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
 # Add include dirs
-target_include_directories(FunGame PUBLIC "vender")
+target_include_directories(FunGame PUBLIC "vendor")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
 # Set warning options
