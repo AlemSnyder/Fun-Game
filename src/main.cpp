@@ -35,7 +35,6 @@
 
 int
 GenerateTerrain(const std::string path) {
-
     World world("base", 6, 6);
 
     world.qb_save(path);
@@ -58,25 +57,38 @@ MacroMap() {
 }
 
 int
-NoiseTest(){
+NoiseTest() {
     quill::Logger* logger = quill::get_logger();
 
     terrain::generation::FractalNoise noise(1, 1, 3);
 
-    LOG_INFO(logger, "Noise double: {}", noise.get_noise(1,1));
-    LOG_INFO(logger, "Noise double again: {}", noise.get_noise(1,1));
-    LOG_INFO(logger, "Noise double: {}", noise.get_noise(2,1));
-    LOG_INFO(logger, "Noise double: {}", noise.get_noise(3,1));
-    LOG_INFO(logger, "Noise double: {}", noise.get_noise(4,1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(1, 1));
+    LOG_INFO(logger, "Noise double again: {}", noise.get_noise(1, 1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(2, 1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(3, 1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(4, 1));
 
-
-    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(1, 3, 3));
-    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(2, 3, 3));
-    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(3, 3, 3));
-    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(4, 3, 3));
-    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(5, 3, 3));
-    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(6, 3, 3));
-    LOG_INFO(logger, "Random double: {}", terrain::generation::Noise::get_double(7, 3, 3));
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(1, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(2, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(3, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(4, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(5, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(6, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(7, 3, 3)
+    );
 
     return 0;
 }
@@ -90,7 +102,6 @@ save_test(const std::string path, const std::string save_path) {
     return 0;
 }
 
-// TODO materials_json is unused
 void
 save_terrain(
     Json::Value materials_json, Json::Value biome_data, std::string biome_name
@@ -99,16 +110,25 @@ save_terrain(
 
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
-    for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-        // TODO move biome json up to world
-        //terrain::generation::biome_json_data biome_file_data {biome_name, materials_json, biome_data};
-        World world(biome_name, i);
+    terrain::generation::biome_json_data biome_file_data{
+        biome_name, materials_json, biome_data
+    };
+    for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
+        terrain::generation::Biome biome(biome_file_data);
+
+        MacroDim map_size = 3;
+        Dim terrain_height = 128;
+        std::vector<MapTile_t> macro_map = {0, 0, 0, 0, i, 0, 0, 0, 0};terrain::Terrain ter(
+            map_size, map_size, World::macro_tile_size,
+            terrain_height, 5, biome, macro_map
+        );
+
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
         save_path /= "biome_";
         save_path += std::to_string(i);
         save_path += ".qb";
-        world.qb_save(save_path.string());
+        ter.qb_save(save_path.string());
     }
 }
 
@@ -149,10 +169,12 @@ path_finder_test(const std::string& path, const std::string& save_path) {
         return 1;
     }
 
+    constexpr ColorId path_color_id = 5;
+    const terrain::Material* path_mat = world.get_material(DEBUG_MATERIAL);
     for (const terrain::Tile* tile : tile_path) {
         world.get_terrain_main()
             .get_tile(world.get_terrain_main().pos(tile))
-            ->set_material(&world.get_materials().at(7), 5);
+            ->set_material(path_mat, path_color_id);
     }
 
     world.qb_save(save_path);
@@ -162,7 +184,6 @@ path_finder_test(const std::string& path, const std::string& save_path) {
 
 int
 imgui_entry_main() {
-
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
     World world("base", 2, 2);
@@ -181,7 +202,6 @@ StressTest() {
 
 int
 opengl_entry(const std::string& path) {
-
     World world("base", path);
 
     return gui::opengl_entry(world);
@@ -253,6 +273,10 @@ main(int argc, char** argv) {
         auto biome_file = files::open_data_file("base/biome_data.json");
         if (biome_file.has_value())
             biome_file.value() >> biome_data;
+        else {
+            LOG_CRITICAL(logging::file_io_logger, "Could not open biome data");
+            return 1;
+        }
         std::string biome_name;
         Json::Value materials_json;
         auto materials_file = files::open_data_file("base/materials.json");
