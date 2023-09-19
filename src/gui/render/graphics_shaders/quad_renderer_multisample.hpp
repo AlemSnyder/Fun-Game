@@ -58,11 +58,6 @@ class QuadRendererMultisample : public QuadRenderer {
      */
     explicit QuadRendererMultisample(ShaderHandler shader_handler = ShaderHandler());
 
-    /*inline ~QuadRendererMultisample() {
-        glDeleteBuffers(1, &quad_vertexbuffer_);
-        glDeleteProgram(program_id_);
-    }*/
-
     /**
      * @brief renders the given meshes
      *
