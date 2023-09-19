@@ -1,6 +1,6 @@
 [submodule "vender/quill"]
-	path = vender/quill
+	path = vendor/quill
 	url = https://github.com/odygrd/quill.git
 [submodule "vender/sol2"]
-	path = vender/sol2
+	path = vendor/sol2
 	url = https://github.com/ThePhD/sol2.git
