@@ -32,8 +32,11 @@ namespace terrain {
 namespace generation {
 
 struct biome_json_data {
+    // Name of biome. Used both for file name and display name
     std::string biome_name;
+    // Json data that describes biome
     Json::Value biome_data;
+    // Json data that describes materials
     Json::Value materials_data;
 };
 
@@ -47,18 +50,38 @@ class GrassData {
     uint8_t grass_mid_;
 
  public:
+    /**
+     * @brief Construct a new GrassData ojbect
+     *
+     * @param json_grass_data Json data that describes grass gradient
+     */
     GrassData(const Json::Value& json_grass_data);
 
+    /**
+     * @brief Get the grass gradient length
+     *
+     * @return length of grass gradient
+     */
     [[nodiscard]] inline uint8_t
     get_grass_grad_length() const noexcept {
         return grass_grad_length_;
     }
 
+    /**
+     * @brief Get index where grass gradient splits
+     *
+     * @return grass mid point
+     */
     [[nodiscard]] inline uint8_t
     get_grass_mid() const {
         return grass_mid_;
     }
 
+    /**
+     * @brief Get grass gradient
+     *
+     * @return vector of grass color ids
+     */
     [[nodiscard]] inline const std::vector<ColorId>&
     get_grass_colors() const {
         return grass_colors_;
@@ -68,13 +91,12 @@ class GrassData {
 class Biome {
  private:
     std::vector<MapTile_t> tile_map_vector_;
-    // std::vector<LandGenerator> land_generators_;
-    //  vector of const data for creating land generators for every tile
 
     // std::vector<MacroTile> map_tiles_
     // 32 by 32 chunks that load data
     // each one will have a mutex lock so this can be threaded
 
+    //  vector of const data for creating land generators for every tile
     // create a map of TileMacro_t -> LandGenerator
     std::vector<generation::LandGenerator> land_generators_;
 
@@ -89,67 +111,132 @@ class Biome {
     GrassData grass_data_;
 
  public:
+    /**
+     * @brief Construct a new Biome object
+     *
+     * @param biome_data data containing biome_data material data and biome name
+     */
     Biome(const biome_json_data& biome_data);
+
+    /**
+     * @brief Construct a new Biome object
+     *
+     * @param biome_name name of biome
+     */
     Biome(const std::string& biome_name) : Biome(get_json_data(biome_name)) {}
 
-
+    /**
+     * @brief Get macro tile map
+     *
+     * @return 2D map of macro tiles
+     */
     inline const std::vector<MapTile_t>&
     get_map() const {
         return tile_map_vector_;
     }
 
+    /**
+     * @brief Get land generator from TileMacro_t
+     *
+     * @return land_generator
+     */
     inline const LandGenerator&
     get_generator(TileMacro_t tile_macro_id) const {
         return land_generators_.at(tile_macro_id);
     }
 
+    /**
+     * @brief Get TileMacros corrsponding to a tile map type
+     *
+     * @return vector of TileMacro_t used to generate terrain on given MapTile_t
+     */
     inline const std::vector<TileMacro_t>&
     get_macro_ids(MapTile_t tile_id_type) const {
         return macro_tile_types_[tile_id_type];
     }
 
+    /**
+     * @brief Get the top generators
+     *
+     * @return add_to_top_generators_
+     */
     const std::vector<AddToTop>
     get_top_generators() const {
         return add_to_top_generators_;
     }
 
+    /**
+     * @brief Get the grass gradient length
+     *
+     * @return length of grass gradient
+     */
     [[nodiscard]] inline uint8_t
     get_grass_grad_length() const noexcept {
         return grass_data_.get_grass_grad_length();
     }
 
+    /**
+     * @brief Get index where grass gradient splits
+     *
+     * @return grass mid point
+     */
     [[nodiscard]] inline uint8_t
     get_grass_mid() const {
         return grass_data_.get_grass_mid();
     }
 
+    /**
+     * @brief Get grass colors
+     *
+     * @return vector of grass color ids
+     */
     [[nodiscard]] inline const std::vector<ColorId>&
     get_grass_colors() const {
         return grass_data_.get_grass_colors();
     }
 
+    /**
+     * @brief Get materials map
+     *
+     * @return materials_ map of MaterialId to material
+     */
     inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const {
         return materials_;
     }
 
+    /**
+     * @brief Get material pointer if it exists else null pointer
+     *
+     * @param mat_id MaterialId id of material
+     *
+     * @return pointer to corresponding material
+     */
     inline const terrain::Material*
     get_material(MaterialId mat_id) const {
         auto mat = materials_.find(mat_id);
-        if (mat == materials_.end()){
+        if (mat == materials_.end()) {
             return nullptr;
         }
         return &mat->second;
     }
 
+    /**
+     * @brief Generate a map from Color to material and color id
+     *
+     * @return map from ColorInt to pair of material pointer and color id
+     */
     std::map<ColorInt, std::pair<const Material*, ColorId>>
     get_colors_inverse_map() const;
 
  private:
+    // read data to create generator component
     void read_tile_macro_data(const Json::Value& biome_data);
 
+    // read data to generate tile components for each macro map tile
     void read_map_tile_data(const Json::Value& biome_data);
 
+    // read data to generate the add to top after affect
     void read_add_to_top_data(const Json::Value& biome_data);
 
     /**

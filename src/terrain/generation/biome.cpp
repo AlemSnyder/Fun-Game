@@ -174,12 +174,11 @@ Biome::read_add_to_top_data(const Json::Value& after_effects_data) {
 std::map<MaterialId, const terrain::Material>
 Biome::init_materials(const Json::Value& material_data) {
     std::map<MaterialId, const terrain::Material> out;
-    for (auto element_it = material_data.begin(); element_it != material_data.end();
-         element_it++) {
+    for (const auto& key : material_data.getMemberNames()) {
         std::vector<std::pair<const std::string, ColorInt>> color_vector;
 
-        const Json::Value material = *element_it;
-        std::string name = element_it.key().asString();
+        const Json::Value material = material_data[key];
+        std::string name = key;
         for (const Json::Value& json_color : material["colors"]) {
             const std::string color_name = json_color["name"].asString();
             ColorInt color_value = std::stoll(json_color["hex"].asString(), 0, 16);
@@ -195,8 +194,6 @@ Biome::init_materials(const Json::Value& material_data) {
         };
         out.insert(std::make_pair(mat.element_id, std::move(mat)));
     }
-    // I think this should be delayed
-    // terrain::TerrainColorMapping::assign_color_mapping(out);
     return out;
 }
 
