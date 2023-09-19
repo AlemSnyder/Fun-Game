@@ -215,7 +215,7 @@ class Biome {
     inline const terrain::Material*
     get_material(MaterialId mat_id) const {
         auto mat = materials_.find(mat_id);
-        if (mat == materials_.end()) {
+        if (mat == materials_.end()) [[unlikely]] {
             return nullptr;
         }
         return &mat->second;

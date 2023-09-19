@@ -28,10 +28,10 @@
 
 #include <cstdint>
 #include <map>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <set>
 
 // not including all of glew
 using GLuint_p = unsigned int;
@@ -105,13 +105,14 @@ material_in(
     ColorId color_id
 ) {
     for (auto element : materials) {
-        if (element.first == MAT_ANY_MATERIAL || element.first == material_id) {
-            if (element.second == COLOR_ANY_COLOR || element.second == color_id) {
-                return true;
-            }
+        if ((element.first == MAT_ANY_MATERIAL || element.first == material_id)
+            && (element.second == COLOR_ANY_COLOR || element.second == color_id)) {
+            return true;
         }
     }
-    return false;
+}
+
+return false;
 }
 
 } // namespace terrain
