@@ -238,16 +238,14 @@ class LandGenerator {
     size_t static get_num_stamps(const Json::Value& biome);
 };
 
-enum class AddDirections : uint8_t{
+enum class AddDirections : uint8_t {
     None = 0,
     To = 1,
     Add = 2,
 };
 
-struct AddMethod
-{
+struct AddMethod {
     // enum class about add n vs to n
-
 
     Dim start;
     Dim stop;
@@ -255,11 +253,11 @@ struct AddMethod
 
     AddDirections add_directions;
 
-    bool operator<(const AddMethod& other) const {
+    bool
+    operator<(const AddMethod& other) const {
         return start < other.start;
     }
 };
-
 
 class AddToTop {
     const std::set<std::pair<MaterialId, ColorId>> elements_above_;
@@ -278,7 +276,10 @@ class AddToTop {
 
     Dim get_final_height(Dim height) const;
 
-    bool can_overwrite_material(MaterialId material_id, ColorId color_id) const;
+    [[nodiscard]] inline bool
+    can_overwrite_material(MaterialId material_id, ColorId color_id) const {
+        return material_in(elements_can_overwrite_, material_id, color_id);
+    }
 
     inline MaterialId
     get_material_id() const {

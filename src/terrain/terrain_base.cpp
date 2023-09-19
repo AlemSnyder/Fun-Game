@@ -105,12 +105,12 @@ TerrainBase::get_first_not(
         guess = Z_MAX - 1;
     }
     if (has_tile_material(materials, x, y, guess - 1)) {
-        if (has_tile_material(materials, x, y, guess)) {
+        if (!has_tile_material(materials, x, y, guess)) {
             return guess;
         } else {
             // go up
             for (Dim z = guess + 1; z < Z_MAX; z++) {
-                if (has_tile_material(materials, x, y, z)) {
+                if (!has_tile_material(materials, x, y, z)) {
                     return z;
                 }
             }
@@ -132,7 +132,7 @@ TerrainBase::get_first_not(
 
 void
 TerrainBase::add_to_top(const generation::AddToTop& top_data) {
-    Dim guess = 0;
+    Dim guess = Z_MAX/2;
     // for loop
     for (size_t x = 0; x < X_MAX; x++)
         for (size_t y = 0; y < Y_MAX; y++) {

@@ -438,9 +438,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * are added
      * @param material material type to add
      */
-    void add_to_top(
-        const generation::AddToTop& to_data
-    );
+    void add_to_top(const generation::AddToTop& to_data);
 
     /**
      * @brief Get the max allowable height of added material
@@ -466,13 +464,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         MaterialId mat_id = tile->get_material_id();
         ColorId color_id = tile->get_color_id();
 
-        // TODO need to check if the material found has color id = CLR_ALL_COLOR
-        //  then return true.
-        //  Still need to implement the check
-
-        return (
-            material_test.find(std::make_pair(mat_id, color_id)) != material_test.end()
-        );
+        return material_in(material_test, mat_id, color_id);
     }
 };
 

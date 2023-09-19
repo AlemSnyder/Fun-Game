@@ -265,8 +265,8 @@ AddToTop::AddToTop(const Json::Value& json_data) :
     stamp_material_id_(json_data["Material_id"].asInt()),
     stamp_color_id_(json_data["Color_id"].asInt()) {
     for (const Json::Value& range_data : json_data["how_to_add"]) {
-        Dim start_height = range_data["how_to_add"][0].asInt();
-        Dim end_height = range_data["how_to_add"][1].asInt();
+        Dim start_height = range_data["from"][0].asInt();
+        Dim end_height = range_data["from"][1].asInt();
         Dim data_value = range_data["data"].asInt();
 
         std::string type = range_data["Type"].asString();
@@ -318,18 +318,6 @@ AddToTop::get_final_height(Dim height) const {
             return 0;
             break;
     }
-}
-
-bool
-AddToTop::can_overwrite_material(MaterialId material_id, ColorId color_id) const {
-    for (auto element : elements_can_overwrite_) {
-        if (element.first == MAT_ANY_MATERIAL || element.first == material_id) {
-            if (element.second == COLOR_ANY_COLOR || element.second == color_id) {
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 } // namespace generation
