@@ -113,20 +113,24 @@ class NonInstancedIMeshRenderer :
     /**
      * @brief renders the given meshes
      *
-     * @param window the OpenGL window
+     * @param width width of frame buffer
+     * @param height height of frame buffer
      * @param GLuint frame buffer to render to
      */
-    void
-    render_frame_buffer(GLFWwindow* window, GLuint frame_buffer = 0) const override;
+    void render_frame_buffer(
+        screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
+    ) const override;
 
     /**
      * @brief renders the given meshes to multisample frame buffer
      *
-     * @param window the OpenGL window
+     * @param width width of frame buffer
+     * @param height height of frame buffer
      * @param GLuint frame buffer to render to
      */
-    void render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer = 0)
-        const override;
+    void render_frame_buffer_multisample(
+        screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
+    ) const override;
 
     /**
      * @brief renders the given meshes to a shadow map
@@ -319,22 +323,18 @@ NonInstancedIMeshRenderer<T>::setup_shadow() const {
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
 NonInstancedIMeshRenderer<T>::render_frame_buffer_multisample(
-    GLFWwindow* window, GLuint frame_buffer
+    screen_size_t width, screen_size_t height, GLuint frame_buffer
 ) const {
-    render_frame_buffer(window, frame_buffer);
+    render_frame_buffer(width, height, frame_buffer);
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
 NonInstancedIMeshRenderer<T>::render_frame_buffer(
-    GLFWwindow* window, GLuint frame_buffer
+    screen_size_t width, screen_size_t height, GLuint frame_buffer
 ) const {
     // Render to the screen
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
-
-    // get the window size
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
 
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right

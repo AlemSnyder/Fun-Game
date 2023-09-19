@@ -93,4 +93,6 @@ static_assert(sizeof(VoxelColorId) == sizeof(MatColorId));
  **********/
 
 // size in pixels of graphics objects
-using screen_size_t = size_t;
+using screen_size_t = int;
+// I'm so sorry, but this is needed because opengl uses ints to return from get
+// window size

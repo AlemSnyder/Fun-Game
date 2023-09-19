@@ -51,17 +51,16 @@ class Noise {
      * @brief Virtual function that returns a value depending on the position.
      * This function should be continuous.
      */
-    inline virtual double get_noise(NoisePosition x, NoisePosition y) const {
+    inline virtual double
+    get_noise(NoisePosition x, NoisePosition y) const {
         return get_double(0, x, y);
     }
 
     virtual ~Noise() {}
-
 };
 
 template <class T>
-concept NoiseGenerator =
-    std::is_base_of<Noise, T>::value;
+concept NoiseGenerator = std::is_base_of<Noise, T>::value;
 
 /**
  * @brief Generates two dimensional Perlin noise.
@@ -101,8 +100,8 @@ class FractalNoise : protected Noise {
 
  private:
     double smoothed_noise_(size_t i, NoiseTileIndex x, NoiseTileIndex y) const;
-    double interpolate_(NoisePosition a, NoisePosition b, NoisePosition x)
-        const; // cosine interpolation
+    // cosine interpolation
+    double interpolate_(NoisePosition a, NoisePosition b, NoisePosition x) const;
     double interpolated_noise_(size_t i, NoisePosition x, NoisePosition y) const;
 };
 

@@ -51,7 +51,8 @@ opengl_entry(World& world) {
 
     do {
         controls::computeMatricesFromInputs(window.value());
-        main_scene.update(window.value());
+        glfwGetWindowSize(window.value(), &window_width, &window_height);
+        main_scene.update(window_width, window_width);
 
         // bind the the screen
         FrameBufferHandler::getInstance().bind_fbo(0); // clear the screen

@@ -1,6 +1,6 @@
-[submodule "3rd-party/quill"]
-	path = 3rd-party/quill
+[submodule "vender/quill"]
+	path = vender/quill
 	url = https://github.com/odygrd/quill.git
-[submodule "3rd-party/sol2"]
-	path = 3rd-party/sol2
+[submodule "vender/sol2"]
+	path = vender/sol2
 	url = https://github.com/ThePhD/sol2.git

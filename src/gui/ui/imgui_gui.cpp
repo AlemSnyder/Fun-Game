@@ -99,7 +99,8 @@ imgui_entry(World& world) {
         // TODO
         // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
 
-        main_scene.update(window.value());
+        glfwGetWindowSize(window.value(), &window_width, &window_height);
+        main_scene.update(window_width, window_height);
 
         glm::vec3 position = controls::get_position_vector();
 

@@ -123,7 +123,7 @@ class Scene {
     /**
      * @brief Get scene frame buffer multisample id
      */
-    void update(GLFWwindow* window);
+    void update(screen_size_t width, screen_size_t height);
 
     // model attach
 

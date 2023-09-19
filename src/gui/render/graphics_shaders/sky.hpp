@@ -67,7 +67,7 @@ class SkyRenderer :
      *
      * @param window the OpenGL window
      */
-    void render(GLFWwindow* window, GLuint frame_buffer) const;
+    void render(screen_size_t width, screen_size_t height, GLuint frame_buffer) const;
 
     /**
      * @brief Renders sky to given framebuffer
@@ -76,9 +76,10 @@ class SkyRenderer :
      * @param frame_buffer frame buffer id
      */
     void
-    render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer)
-        const override {
-        return render(window, frame_buffer);
+    render_frame_buffer_multisample(
+        screen_size_t width, screen_size_t height, GLuint frame_buffer
+    ) const override {
+        return render(width, height, frame_buffer);
     }
 
     /**
@@ -88,8 +89,9 @@ class SkyRenderer :
      * @param frame_buffer frame buffer id
      */
     void
-    render_frame_buffer(GLFWwindow* window, GLuint frame_buffer) const override {
-        return render(window, frame_buffer);
+    render_frame_buffer(screen_size_t width, screen_size_t height, GLuint frame_buffer)
+        const override {
+        return render(width, height, frame_buffer);
     }
 };
 

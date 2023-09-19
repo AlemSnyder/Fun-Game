@@ -62,18 +62,28 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
     void load_transforms_buffer(std::shared_ptr<T> mesh) const;
 
     /**
-     * @brief renders the given meshes
+     * @brief Renders internal meshes to given framebuffer
      *
-     * @param window the OpenGL window
+     * @param width width of frame buffer
+     * @param height height of frame buffer
      */
-    void render_frame_buffer(GLFWwindow* window, GLuint frame_buffer = 0) const;
+    void render_frame_buffer(
+        screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
+    ) const override;
 
-    void
-    render_frame_buffer_multisample(GLFWwindow* window, GLuint frame_buffer = 0) const;
+    /**
+     * @brief Renders internal meshes to given multisample framebuffer
+     *
+     * @param width width of frame buffer
+     * @param height height of frame buffer
+     */
+    void render_frame_buffer_multisample(
+        screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
+    ) const override;
 
     void render_shadow_map(
         screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
-    ) const;
+    ) const override;
 };
 
 template <data_structures::InstancedIMeshGPUDataType T>
@@ -112,14 +122,11 @@ InstancedIMeshRenderer<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIMeshRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_buffer)
-    const {
+InstancedIMeshRenderer<T>::render_frame_buffer(
+    screen_size_t width, screen_size_t height, GLuint frame_buffer
+) const {
     // Render to the screen
     gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
-
-    // get he window size
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
 
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
@@ -155,9 +162,9 @@ InstancedIMeshRenderer<T>::render_frame_buffer(GLFWwindow* window, GLuint frame_
 template <data_structures::InstancedIMeshGPUDataType T>
 void
 InstancedIMeshRenderer<T>::render_frame_buffer_multisample(
-    GLFWwindow* window, GLuint frame_buffer
+    screen_size_t width, screen_size_t height, GLuint frame_buffer
 ) const {
-    render_frame_buffer(window, frame_buffer);
+    render_frame_buffer(width, height, frame_buffer);
 }
 
 template <data_structures::InstancedIMeshGPUDataType T>
