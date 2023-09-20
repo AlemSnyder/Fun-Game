@@ -28,41 +28,6 @@
 
 namespace terrain {
 
-#if 0
-
-// most important initializer
-Terrain::Terrain(
-    Dim x_tiles, Dim y_tiles, Dim area_size, Dim z_tiles, int seed_,
-    const generation::Biome& biome
-) :
-    TerrainBase(
-        biome x_tiles, y_tiles, area_size, z_tiles
-    ),
-    seed(seed_) {}
-
-// This function aims to generate a test that demonstrates the given terrain type
-// to do this a three by three area where the given type is generated in the
-// center is given
-//
-// 0,   0,  0
-// 0, type, 0
-// 0,   0,  0
-//
-// Is how the world map should look.
-
-Terrain::Terrain(
-    Dim area_size, Dim z_tiles, MapTile_t tile_type, int seed_,
-    const generation::Biome& biome
-
-) :
-    TerrainBase(
-        3, 3, area_size, z_tiles, biome,
-        {0, 0, 0, 0, tile_type, 0, 0, 0, 0}
-    ),
-    seed(seed_) {}
-
-#endif
-
 Terrain::Terrain(
     const std::string path, const generation::Biome& biome
 

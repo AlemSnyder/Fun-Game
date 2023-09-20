@@ -24,6 +24,7 @@
 
 #include "../material.hpp"
 
+#include <optional>
 #include <set>
 
 namespace terrain {
@@ -50,7 +51,7 @@ struct TileStamp {
     MaterialId mat;   // Material that tiles will be set to.
     ColorId color_id; // color that tiles will be set to.
     // set of <material ID, color ID> determines what tiles types can be changed.
-    std::set<std::pair<MaterialId, ColorId>> elements_can_stamp;
+    std::optional<std::set<std::pair<MaterialId, ColorId>>> elements_can_stamp;
 };
 
 } // namespace generation

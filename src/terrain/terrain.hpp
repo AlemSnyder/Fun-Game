@@ -187,35 +187,6 @@ class Terrain : public TerrainBase {
         return pos(*(NG->get_tiles().begin()));
     }
 
-#if 0
-
-    /**
-     * @brief Terrain initializer for biome test
-     *
-     * @param x_tiles number of macro tiles in x direction
-     * @param y_tiles number of macro tiles in y direction
-     * @param Area_size_ size of a macro map tile
-     * @param z_tiles number of voxel tiles in z direction
-     * @param seed seed of random number generator
-     * @param tile_type id of map tile type
-     * @param material set of materials used in the world
-     *
-     * @param biome_data json data  that contains biome data
-     */
-    Terrain(
-        Dim area_size_, Dim z_tiles, MapTile_t tile_type, int seed_,
-        const generation::Biome& biome
-    );
-    /**
-     * @brief Construct a new Terrain object (most default constructor)
-     */
-    Terrain(
-        Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
-        const generation::Biome& biome
-    );
-
-#endif
-
     /**
      * @brief Construct a new Terrain object
      *

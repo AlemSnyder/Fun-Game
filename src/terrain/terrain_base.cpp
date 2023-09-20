@@ -132,7 +132,7 @@ TerrainBase::get_first_not(
 
 void
 TerrainBase::add_to_top(const generation::AddToTop& top_data) {
-    Dim guess = Z_MAX/2;
+    Dim guess = Z_MAX / 2;
     // for loop
     for (size_t x = 0; x < X_MAX; x++)
         for (size_t y = 0; y < Y_MAX; y++) {
@@ -157,7 +157,8 @@ TerrainBase::add_to_top(const generation::AddToTop& top_data) {
 
 void
 TerrainBase::stamp_tile_region(
-    const generation::TileStamp& stamp, TerrainOffset x_offset, TerrainOffset y_offset
+    const generation::TileStamp& stamp, TerrainOffset x_offset = 0,
+    TerrainOffset y_offset = 0
 ) {
     // set tiles in region to mat and color_id if the current material is in
     // elements_can_stamp.
@@ -166,12 +167,27 @@ TerrainBase::stamp_tile_region(
     TerrainOffset x_end = stamp.x_end + x_offset * area_size_ + area_size_ / 2;
     TerrainOffset y_end = stamp.y_end + y_offset * area_size_ + area_size_ / 2;
 
-    for (TerrainOffset x = x_start; x < x_end; x++) {
-        for (TerrainOffset y = y_start; y < y_end; y++) {
-            for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
-                if (in_range(x, y, z)) {
-                    Tile* tile = get_tile(x, y, z);
-                    if (has_tile_material(stamp.elements_can_stamp, tile)) {
+    if (stamp.elements_can_stamp.has_value()) {
+        for (TerrainOffset x = x_start; x < x_end; x++) {
+            for (TerrainOffset y = y_start; y < y_end; y++) {
+                for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
+                    if (in_range(x, y, z)) {
+                        Tile* tile = get_tile(x, y, z);
+                        if (has_tile_material(stamp.elements_can_stamp.value(), tile)) {
+                            tile->set_material(
+                                biome_.get_material(stamp.mat), stamp.color_id
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        for (TerrainOffset x = x_start; x < x_end; x++) {
+            for (TerrainOffset y = y_start; y < y_end; y++) {
+                for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
+                    if (in_range(x, y, z)) {
+                        Tile* tile = get_tile(x, y, z);
                         tile->set_material(
                             biome_.get_material(stamp.mat), stamp.color_id
                         );
@@ -181,26 +197,6 @@ TerrainBase::stamp_tile_region(
         }
     }
 }
-
-// TODO add this back when want to stamp all all types of materials.
-#if 0
-void
-TerrainBase::stamp_tile_region(
-    int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-    const Material* mat, ColorId color_id
-) {
-    // set tiles in region to mat and color_id
-    for (ssize_t x = x_start; x < x_end; x++) {
-        for (ssize_t y = y_start; y < y_end; y++) {
-            for (ssize_t z = z_start; z < z_end; z++) {
-                if (in_range(x, y, z)) {
-                    get_tile(x, y, z)->set_material(mat, color_id);
-                }
-            }
-        }
-    }
-}
-#endif
 
 void
 TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {
