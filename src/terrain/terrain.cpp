@@ -471,9 +471,9 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
     std::set<const NodeGroup*> goal_nodes;
     bool no_goal = true;
     for (const Tile* g : goal_) {
-        TerrainOffset goal_z = g->get_z();
         if (can_stand_1(g)) {
             no_goal = false;
+            const NodeGroup* goal_node = get_node_group(g);
             goal_nodes.insert(goal_node);
         }
     }
