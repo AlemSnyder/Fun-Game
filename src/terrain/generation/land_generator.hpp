@@ -98,10 +98,7 @@ class JsonToTile {
      *
      * @return TileStamp
      */
-    TileStamp get_volume(
-        glm::imat2x2 center, TerrainOffset Sxy, TerrainOffset Sz, TerrainOffset Dxy,
-        TerrainOffset Dz
-    ) const;
+    TileStamp get_volume(glm::imat2x2 center) const;
 };
 
 class FromPosition : public JsonToTile {

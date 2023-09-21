@@ -106,17 +106,15 @@ JsonToTile::JsonToTile(const Json::Value& data) :
     stamp_color_id_(data["Color_id"].asInt()) {}
 
 TileStamp
-JsonToTile::get_volume(
-    glm::imat2x2 center, TerrainOffset width, TerrainOffset height,
-    TerrainOffset width_variance, TerrainOffset height_variance
-) const {
+JsonToTile::get_volume(glm::imat2x2 center) const {
     // center_x between center[1][0] and center[0][0] inclusive
     TerrainOffset center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
     // same with y
     TerrainOffset center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
-    // size 'centered' at width and can be between width-width_variance to width + width_variance
-    TerrainOffset size_x = rand() % (2 * width_variance + 1) + width - width_variance;
-    TerrainOffset size_y = rand() % (2 * width_variance + 1) + width - width_variance;
+    // size 'centered' at width and can be between width-width_variance to width +
+    // width_variance
+    TerrainOffset size_x = rand() % (2 * width_variance_ + 1) + width_ - width_variance_;
+    TerrainOffset size_y = rand() % (2 * width_variance_ + 1) + width_ - width_variance_;
     // convert center and side off sets to rectangle edge values
     TerrainOffset x_min = center_x - size_x / 2;
     TerrainOffset x_max = center_x + size_x / 2;
@@ -139,7 +137,7 @@ JsonToTile::get_volume(
     }
 
     // z_max centered at height
-    TerrainOffset z_max = rand() % (height_variance + 1) + height - height_variance / 2;
+    TerrainOffset z_max = rand() % (height_variance_ + 1) + height_ - height_variance_ / 2;
     return {
         x_min,
         y_min,
@@ -214,7 +212,7 @@ FromRadius::get_stamp(size_t current_sub_region) const {
         {x_center + center_variance_, y_center + center_variance_}
     };
 
-    return get_volume(center, width_, height_, width_variance_, height_variance_);
+    return get_volume(center);
 }
 
 FromPosition::FromPosition(const Json::Value& data) :
@@ -234,7 +232,7 @@ FromPosition::get_stamp(size_t current_sub_region) const {
         {point.x, point.y}
     };
 
-    return get_volume(center, width_, height_, width_variance_, height_variance_);
+    return get_volume(center);
 }
 
 FromGrid::FromGrid(const Json::Value& data) :
@@ -253,7 +251,7 @@ FromGrid::get_stamp(size_t current_sub_region) const {
         {x_center + center_variance_, y_center + center_variance_}
     };
 
-    return get_volume(center, width_, height_, width_variance_, height_variance_);
+    return get_volume(center);
 }
 
 } // namespace stamps
