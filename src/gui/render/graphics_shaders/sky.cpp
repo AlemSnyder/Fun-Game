@@ -32,13 +32,12 @@ SkyRenderer::~SkyRenderer() {
 }
 
 void
-SkyRenderer::render(GLFWwindow* window, GLuint frame_buffer) const {
+SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buffer)
+    const {
     FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
     glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE);
 
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
     // Use our shader

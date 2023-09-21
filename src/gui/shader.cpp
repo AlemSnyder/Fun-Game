@@ -127,7 +127,7 @@ ShaderHandler::load_shader(
     );
 
     char const* source_pointer = shader_code.c_str();
-    glShaderSource(shader_id, 1, &source_pointer, NULL);
+    glShaderSource(shader_id, 1, &source_pointer, nullptr);
     glCompileShader(shader_id);
 
     // Check Vertex Shader
@@ -136,7 +136,7 @@ ShaderHandler::load_shader(
     if (info_log_length > 0) {
         std::string shader_error_message(info_log_length + 1, '\0');
         glGetShaderInfoLog(
-            shader_id, info_log_length, NULL, shader_error_message.data()
+            shader_id, info_log_length, nullptr, shader_error_message.data()
         );
 
         LOG_ERROR(
@@ -174,7 +174,7 @@ ShaderHandler::load_program(
     if (info_log_length > 0) {
         std::string program_error_message(info_log_length + 1, '\0');
         glGetProgramInfoLog(
-            program_id, info_log_length, NULL, program_error_message.data()
+            program_id, info_log_length, nullptr, program_error_message.data()
         );
 
         LOG_ERROR(

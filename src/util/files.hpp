@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <optional>
 
 namespace files {
 
@@ -19,11 +20,17 @@ get_data_path() {
 }
 
 /**
+ * @brief Open a given path
+*/
+std::optional<std::ifstream>
+open_file(std::filesystem::path path);
+
+/**
  * @brief Get the path to a data file
  */
-inline std::ifstream
+inline std::optional<std::ifstream>
 open_data_file(std::filesystem::path path) {
-    return std::ifstream(get_data_path() / path);
+    return open_file(get_data_path() / path);
 }
 
 /**
@@ -37,9 +44,9 @@ get_resources_path() {
 /**
  * @brief Open a resource file
  */
-inline std::ifstream
+inline std::optional<std::ifstream>
 open_resource_file(std::filesystem::path path) {
-    return std::ifstream(get_resources_path() / path);
+    return open_file(get_resources_path() / path);
 }
 
 } // namespace files

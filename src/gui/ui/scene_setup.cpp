@@ -10,6 +10,11 @@ void
 setup(Scene& scene, World& world) {
     ShaderHandler shader_handler;
 
+    // assign map from all color ids to each color
+    // to package as a texture
+    terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
+    // send color texture to gpu
+    terrain::TerrainColorMapping::assign_color_texture();
     world.update_all_chunks_mesh();
 
     auto terrain_mesh = world.get_chunks_mesh();
@@ -20,8 +25,6 @@ setup(Scene& scene, World& world) {
     );
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_color_texture(terrain::TerrainColorMapping::get_color_texture()
-        );
         chunk_renderer->add_mesh(chunk_mesh);
     }
 

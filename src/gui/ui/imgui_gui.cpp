@@ -79,8 +79,6 @@ imgui_entry(World& world) {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
-    terrain::TerrainColorMapping::assign_color_texture();
-
     Scene main_scene(window_width, window_height, shadow_map_size);
     setup(main_scene, world);
 
@@ -101,7 +99,8 @@ imgui_entry(World& world) {
         // TODO
         // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
 
-        main_scene.update(window.value());
+        glfwGetWindowSize(window.value(), &window_width, &window_height);
+        main_scene.update(window_width, window_height);
 
         glm::vec3 position = controls::get_position_vector();
 

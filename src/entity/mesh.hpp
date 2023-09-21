@@ -45,8 +45,11 @@ class Mesh {
         const std::vector<glm::ivec3>& indexed_vertices,
         const std::vector<MatColorId>& indexed_color_ids,
         const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<ColorInt>& color_map
+        const std::vector<ColorInt>& color_map,
+        glm::ivec3 size,
+        glm::ivec3 center
     ) :
+        size_(size), center_(center),
         indices_(indices),
         indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
         indexed_normals_(indexed_normals), color_map_(color_map) {}
@@ -362,7 +365,7 @@ generate_mesh(T voxel_object) {
     }
     return Mesh(
         indices, indexed_vertices, indexed_colors, indexed_normals,
-        voxel_object.get_color_ids()
+        voxel_object.get_color_ids(), object_geometry, center
     );
 }
 
