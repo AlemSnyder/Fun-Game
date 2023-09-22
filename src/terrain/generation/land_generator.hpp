@@ -33,6 +33,7 @@
 #include <cstdint>
 #include <iostream>
 #include <map>
+#include <random>
 #include <string>
 
 namespace terrain {
@@ -67,7 +68,9 @@ class JsonToTile {
     /**
      * @brief Returns a tile stamp depending on the current sub region.
      */
-    virtual TileStamp get_stamp(size_t current_sub_region) const = 0;
+    virtual TileStamp get_stamp(
+        size_t current_sub_region, std::default_random_engine& rand_engine
+    ) const = 0;
     /**
      * @brief Returns the number of unique stamps this stamp generator can
      * generate.
@@ -98,7 +101,8 @@ class JsonToTile {
      *
      * @return TileStamp
      */
-    TileStamp get_volume(glm::imat2x2 center) const;
+    TileStamp
+    get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine) const;
 };
 
 class FromPosition : public JsonToTile {
@@ -107,7 +111,9 @@ class FromPosition : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(size_t current_sub_region) const override;
+    TileStamp get_stamp(
+        size_t current_sub_region, std::default_random_engine& rand_engine
+    ) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -124,7 +130,7 @@ class FromRadius : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(size_t current_sub_region) const override;
+    TileStamp get_stamp(size_t current_sub_region, std::default_random_engine& rand_engine) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -141,7 +147,7 @@ class FromGrid : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(size_t current_sub_region) const override;
+    TileStamp get_stamp(size_t current_sub_region, std::default_random_engine& rand_engine) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -215,7 +221,7 @@ class LandGenerator {
      *
      * @return TileStamp
      */
-    TileStamp get_stamp() const;
+    TileStamp get_stamp(std::default_random_engine& rand_engine) const;
 
     /**
      * @brief increment the data of the Tile Stamp that will be generated

@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <iostream>
 #include <map>
+#include <random>
 #include <string>
 
 namespace terrain {
@@ -80,8 +81,9 @@ LandGenerator::get_num_stamps(const Json::Value& biome) {
 }
 
 TileStamp
-LandGenerator::get_stamp() const {
-    TileStamp out = stamp_generators_[current_region]->get_stamp(current_sub_region);
+LandGenerator::get_stamp(std::default_random_engine& rand_engine) const {
+    TileStamp out =
+        stamp_generators_[current_region]->get_stamp(current_sub_region, rand_engine);
 
     return out;
 }
@@ -106,15 +108,21 @@ JsonToTile::JsonToTile(const Json::Value& data) :
     stamp_color_id_(data["Color_id"].asInt()) {}
 
 TileStamp
-JsonToTile::get_volume(glm::imat2x2 center) const {
+JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
+    const {
     // center_x between center[1][0] and center[0][0] inclusive
-    TerrainOffset center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
+    std::uniform_int_distribution<TerrainOffset> center_x_dist(center[1][0], center[0][0]);
+    TerrainOffset center_x = center_x_dist(rand_engine);
     // same with y
-    TerrainOffset center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
+    std::uniform_int_distribution<TerrainOffset> center_y_dist(center[1][1], center[0][1]);
+    TerrainOffset center_y = center_y_dist(rand_engine);
     // size 'centered' at width and can be between width-width_variance to width +
     // width_variance
-    TerrainOffset size_x = rand() % (2 * width_variance_ + 1) + width_ - width_variance_;
-    TerrainOffset size_y = rand() % (2 * width_variance_ + 1) + width_ - width_variance_;
+    std::uniform_int_distribution<TerrainOffset> size_dist(
+        -width_variance_, width_variance_
+    );
+    TerrainOffset size_x = width_ + size_dist(rand_engine);
+    TerrainOffset size_y = width_ + size_dist(rand_engine);
     // convert center and side off sets to rectangle edge values
     TerrainOffset x_min = center_x - size_x / 2;
     TerrainOffset x_max = center_x + size_x / 2;
@@ -123,21 +131,25 @@ JsonToTile::get_volume(glm::imat2x2 center) const {
 
     // mode edges for randomness
     // I have long since forgotten the exact reason, but it has to do with randomness
+    std::uniform_int_distribution<> bool_dist(0,1);
     if (size_x % 2 != 0) {
-        if (rand() % 2 - 1)
+        if (bool_dist(rand_engine))
             x_min--;
         else
             x_max--;
     }
     if (size_y % 2 != 0) {
-        if (rand() % 2 - 1)
+        if (bool_dist(rand_engine))
             y_min--;
         else
             y_max--;
     }
 
     // z_max centered at height
-    TerrainOffset z_max = rand() % (height_variance_ + 1) + height_ - height_variance_ / 2;
+    std::uniform_int_distribution<TerrainOffset> height_dist(
+        -height_variance_, height_variance_
+    );
+    TerrainOffset z_max = height_ + height_dist(rand_engine);
     return {
         x_min,
         y_min,
@@ -176,7 +188,9 @@ FromRadius::FromRadius(const Json::Value& data) :
     number_(data["Radius"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 
 TileStamp
-FromRadius::get_stamp(size_t current_sub_region) const {
+FromRadius::get_stamp(
+    size_t current_sub_region, std::default_random_engine& rand_engine
+) const {
     double distance = static_cast<double>(8 * radius_) / number_ * current_sub_region;
     Side side{static_cast<uint8_t>(distance / 2 / radius_)};
     TerrainOffset x_center, y_center;
@@ -212,7 +226,7 @@ FromRadius::get_stamp(size_t current_sub_region) const {
         {x_center + center_variance_, y_center + center_variance_}
     };
 
-    return get_volume(center);
+    return get_volume(center, rand_engine);
 }
 
 FromPosition::FromPosition(const Json::Value& data) :
@@ -225,14 +239,16 @@ FromPosition::FromPosition(const Json::Value& data) :
 }
 
 TileStamp
-FromPosition::get_stamp(size_t current_sub_region) const {
+FromPosition::get_stamp(
+    size_t current_sub_region, std::default_random_engine& rand_engine
+) const {
     auto point = points_[current_sub_region];
     glm::imat2x2 center = {
         {point.x, point.y},
         {point.x, point.y}
     };
 
-    return get_volume(center);
+    return get_volume(center, rand_engine);
 }
 
 FromGrid::FromGrid(const Json::Value& data) :
@@ -240,7 +256,8 @@ FromGrid::FromGrid(const Json::Value& data) :
     number_(data["Grid"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 
 TileStamp
-FromGrid::get_stamp(size_t current_sub_region) const {
+FromGrid::get_stamp(size_t current_sub_region, std::default_random_engine& rand_engine)
+    const {
     TerrainOffset x_center =
         (1 + 2 * (current_sub_region % number_)) * (radius_ / number_) - radius_;
     TerrainOffset y_center =
@@ -251,7 +268,7 @@ FromGrid::get_stamp(size_t current_sub_region) const {
         {x_center + center_variance_, y_center + center_variance_}
     };
 
-    return get_volume(center);
+    return get_volume(center, rand_engine);
 }
 
 } // namespace stamps

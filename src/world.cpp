@@ -23,6 +23,7 @@
 #include "world.hpp"
 
 #include "entity/mesh.hpp"
+#include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -55,19 +56,12 @@ World::World(const std::string& biome_name, const std::string path) :
 World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
     biome_(biome_name),
     terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, 5, biome_, biome_.get_map()
-    ) {
-    // initialize_chunks_mesh_();
-}
+        x_tiles, y_tiles, macro_tile_size, height, 5, biome_, biome_.get_map(x_tiles)
+    ) {}
 
 World::World(const std::string& biome_name, MapTile_t tile_type) :
     biome_(biome_name),
-    terrain_main_(
-        3, 3, macro_tile_size, height, 5, biome_, {0, 0, 0, 0, tile_type, 0, 0, 0, 0}
-    ) {
-    // on initialization world reserves the space it would need for shared pointers
-    // initialize_chunks_mesh_();
-}
+    terrain_main_(3, 3, macro_tile_size, height, 5, biome_, get_test_map(tile_type)) {}
 
 void
 World::update_single_mesh(ChunkIndex chunk_pos) {
@@ -79,7 +73,9 @@ World::update_single_mesh(ChunkIndex chunk_pos) {
     );
 
     chunks_mesh_[chunk_pos]->update(chunk_mesh);
-    chunks_mesh_[chunk_pos]->set_color_texture(terrain::TerrainColorMapping::get_color_texture());
+    chunks_mesh_[chunk_pos]->set_color_texture(
+        terrain::TerrainColorMapping::get_color_texture()
+    );
 }
 
 void
@@ -98,7 +94,7 @@ World::update_all_chunks_mesh() {
         chunks_mesh_.reserve(num_chunks);
         for (size_t i = 0; i < num_chunks; i++) {
             chunks_mesh_.push_back(std::make_shared<gui::data_structures::TerrainMesh>(
-                                       gui::data_structures::TerrainMesh()
+                gui::data_structures::TerrainMesh()
             ));
         }
     }

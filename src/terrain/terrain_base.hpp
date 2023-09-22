@@ -27,6 +27,7 @@
 #include "../util/voxel.hpp"
 #include "generation/biome.hpp"
 #include "generation/land_generator.hpp"
+#include "generation/map_tile.hpp"
 #include "generation/tile_stamp.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
@@ -81,7 +82,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      */
     TerrainBase(
         Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
-        const std::vector<MapTile_t>& macro_map
+        const std::vector<generation::MapTile>& macro_map
     );
 
     /**
@@ -420,7 +421,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param area_y area y coordinate
      * @param gen Generator object that generates tile types
      */
-    void init_area(int area_x, int area_y, generation::LandGenerator gen);
+    void init_area(generation::MapTile& map_tile, generation::LandGenerator gen);
 
     /**
      * @brief Set a group of tiles

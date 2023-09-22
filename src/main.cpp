@@ -49,9 +49,14 @@ MacroMap() {
     terrain::generation::Biome biome("base");
 
     // test terrain generation
-    auto map = biome.get_map();
+    auto map = biome.get_map(64);
 
-    LOG_INFO(logger, "Map: {}", map);
+    std::vector<TileMacro_t> int_map;
+    for (const auto& map_tile : map) {
+        int_map.push_back(map_tile.get_tile_type());
+    }
+
+    LOG_INFO(logger, "Map: {}", int_map);
 
     return 0;
 }
@@ -118,9 +123,10 @@ save_terrain(
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
-        std::vector<MapTile_t> macro_map = {0, 0, 0, 0, i, 0, 0, 0, 0};terrain::Terrain ter(
-            map_size, map_size, World::macro_tile_size,
-            terrain_height, 5, biome, macro_map
+        std::vector<terrain::generation::MapTile> macro_map = get_test_map(i);
+        terrain::Terrain ter(
+            map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
+            macro_map
         );
 
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
@@ -291,7 +297,7 @@ main(int argc, char** argv) {
             save_terrain(biome_data[biome_name], materials_json, biome_name);
     } else if (run_function == "GenerateTerrain") {
         return GenerateTerrain(path_in);
-    } else if (run_function == "MacroMap") {
+    } else if (run_function == "MacroMap" || run_function == "LuaTest") {
         return MacroMap();
     } else if (run_function == "NoiseTest") {
         return NoiseTest();
@@ -307,10 +313,6 @@ main(int argc, char** argv) {
         return LogTest();
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
-    } else if (run_function == "LuaTest") {
-        auto biome = terrain::generation::Biome("base");
-        LOG_DEBUG(logging::lua_logger, "{}", biome.get_map());
-        return 0;
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

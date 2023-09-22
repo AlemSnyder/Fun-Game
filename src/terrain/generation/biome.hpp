@@ -22,6 +22,9 @@
 
 #include "../../util/files.hpp"
 #include "land_generator.hpp"
+#include "map_tile.hpp"
+
+#include <sol/sol.hpp>
 
 #include <map>
 
@@ -90,7 +93,7 @@ class GrassData {
 
 class Biome {
  private:
-    std::vector<MapTile_t> tile_map_vector_;
+    // std::vector<MapTile_t> tile_map_vector_;
 
     // std::vector<MacroTile> map_tiles_
     // 32 by 32 chunks that load data
@@ -110,6 +113,9 @@ class Biome {
 
     GrassData grass_data_;
 
+    // lua state that generates macro map
+    sol::state lua_;
+
  public:
     /**
      * @brief Construct a new Biome object
@@ -128,19 +134,18 @@ class Biome {
     /**
      * @brief Get macro tile map
      *
-     * @return 2D map of macro tiles
+     * @param length side length of square map
+     *
+     * @return 2D map of map tiles
      */
-    inline const std::vector<MapTile_t>&
-    get_map() const {
-        return tile_map_vector_;
-    }
+    [[nodiscard]] const std::vector<MapTile> get_map(MacroDim length) const;
 
     /**
      * @brief Get land generator from TileMacro_t
      *
      * @return land_generator
      */
-    inline const LandGenerator&
+    [[nodiscard]] inline const LandGenerator&
     get_generator(TileMacro_t tile_macro_id) const {
         return land_generators_.at(tile_macro_id);
     }
@@ -150,7 +155,7 @@ class Biome {
      *
      * @return vector of TileMacro_t used to generate terrain on given MapTile_t
      */
-    inline const std::vector<TileMacro_t>&
+    [[nodiscard]] inline const std::vector<TileMacro_t>&
     get_macro_ids(MapTile_t tile_id_type) const {
         return macro_tile_types_[tile_id_type];
     }
@@ -160,7 +165,7 @@ class Biome {
      *
      * @return add_to_top_generators_
      */
-    const std::vector<AddToTop>
+    [[nodiscard]] const std::vector<AddToTop>
     get_top_generators() const {
         return add_to_top_generators_;
     }
@@ -200,7 +205,7 @@ class Biome {
      *
      * @return materials_ map of MaterialId to material
      */
-    inline const std::map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const {
         return materials_;
     }
@@ -212,7 +217,7 @@ class Biome {
      *
      * @return pointer to corresponding material
      */
-    inline const terrain::Material*
+    [[nodiscard]] inline const terrain::Material*
     get_material(MaterialId mat_id) const {
         auto mat = materials_.find(mat_id);
         if (mat == materials_.end()) [[unlikely]] {
@@ -226,7 +231,7 @@ class Biome {
      *
      * @return map from ColorInt to pair of material pointer and color id
      */
-    std::map<ColorInt, std::pair<const Material*, ColorId>>
+    [[nodiscard]] std::map<ColorInt, std::pair<const Material*, ColorId>>
     get_colors_inverse_map() const;
 
  private:
@@ -239,15 +244,17 @@ class Biome {
     // read data to generate the add to top after affect
     void read_add_to_top_data(const Json::Value& biome_data);
 
+    void init_lua_state(std::filesystem::path lua_map_generator_file);
+
     /**
      * @brief Load materials from json data
      *
      * @param material_data data to load from (see) data/materials.json
      */
-    std::map<MaterialId, const terrain::Material>
+    [[nodiscard]] std::map<MaterialId, const terrain::Material>
     init_materials(const Json::Value& material_data);
 
-    biome_json_data get_json_data(const std::string& biome_name);
+    [[nodiscard]] biome_json_data get_json_data(const std::string& biome_name);
 };
 
 } // namespace generation
