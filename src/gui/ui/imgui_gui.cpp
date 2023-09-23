@@ -128,7 +128,7 @@ imgui_entry(World& world) {
             );
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_scene()),
-                ImVec2(window_width, window_height)
+                ImVec2(window_width, window_height),  ImVec2(0, 1), ImVec2(1, 0)
             );
 
             if (ImGui::IsWindowFocused()) {
