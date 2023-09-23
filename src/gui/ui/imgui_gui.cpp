@@ -207,7 +207,7 @@ imgui_entry(World& world) {
                 ImVec2(
                     main_scene.get_shadow_width() / 8,
                     main_scene.get_shadow_height() / 8
-                )
+                ),ImVec2(0, 1), ImVec2(1, 0)
             );
 
             ImGui::End();
