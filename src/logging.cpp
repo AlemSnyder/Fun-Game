@@ -136,7 +136,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     lua_logger = get_logger("lua");
 
     // Start the logging backend thread
-    quill::start(/* enable_crash_handler = */ true);
+    quill::start(/* with_signal_handler = */ true);
 
     LOG_INFO(main_logger, "Logging initialized!");
 }
