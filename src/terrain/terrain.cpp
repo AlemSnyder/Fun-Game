@@ -28,6 +28,22 @@
 
 namespace terrain {
 
+namespace helper {
+
+template <class T>
+inline bool
+astar_compare(Node<T>* lhs, Node<T>* rhs) {
+    return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
+}
+
+template <class T>
+inline bool
+breadth_first_compare(Node<T>* lhs, Node<T>* rhs) {
+    return lhs->get_time_cost() > rhs->get_time_cost();
+}
+
+} // namespace helper
+
 Terrain::Terrain(
     const std::string path, const generation::Biome& biome
 
