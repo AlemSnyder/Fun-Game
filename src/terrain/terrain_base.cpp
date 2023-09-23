@@ -177,10 +177,11 @@ TerrainBase::stamp_tile_region(
                             tile->set_material(
                                 biome_.get_material(stamp.mat), stamp.color_id
                             );
-                    } else
+                    } else {
                         tile->set_material(
                             biome_.get_material(stamp.mat), stamp.color_id
                         );
+                    }
                 }
             }
         }
