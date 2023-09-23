@@ -173,12 +173,14 @@ TerrainBase::stamp_tile_region(
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
                     if (stamp.elements_can_stamp.has_value()) {
-                        if (has_tile_material(stamp.elements_can_stamp.value(), tile)) {
+                        if (has_tile_material(stamp.elements_can_stamp.value(), tile))
                             tile->set_material(
                                 biome_.get_material(stamp.mat), stamp.color_id
                             );
-                        }
-                    }
+                    } else
+                        tile->set_material(
+                            biome_.get_material(stamp.mat), stamp.color_id
+                        );
                 }
             }
         }
