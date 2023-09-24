@@ -42,20 +42,17 @@ opengl_entry(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    // send color texture to gpu
-    terrain::TerrainColorMapping::assign_color_texture();
-
     render::QuadRenderer QR;
 
     ShaderHandler shader_handler = ShaderHandler();
 
-    world.update_all_chunks_mesh();
     Scene main_scene(window_width, window_height, shadow_map_size);
     setup(main_scene, world);
 
     do {
         controls::computeMatricesFromInputs(window.value());
-        main_scene.update(window.value());
+        glfwGetWindowSize(window.value(), &window_width, &window_height);
+        main_scene.update(window_width, window_width);
 
         // bind the the screen
         FrameBufferHandler::getInstance().bind_fbo(0); // clear the screen

@@ -5,8 +5,8 @@
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
+#include "terrain/generation/biome.hpp"
 #include "terrain/terrain.hpp"
-#include "terrain/terrain_generation/biome.hpp"
 #include "util/files.hpp"
 #include "util/voxel_io.hpp"
 #include "world.hpp"
@@ -35,15 +35,7 @@
 
 int
 GenerateTerrain(const std::string path) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
-
-    World world(materials_json, biome_data, 6, 6);
+    World world("base", 6, 6);
 
     world.qb_save(path);
 
@@ -54,14 +46,10 @@ int
 MacroMap() {
     quill::Logger* logger = quill::get_logger();
 
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
+    terrain::generation::Biome biome("base");
 
-    // test terrain generation in a region of 64 by 64
-    auto map = terrain::TerrainBase::generate_macro_map(
-        64, 64, biome_data["Biome_1"]["Terrain_Data"]
-    );
+    // test terrain generation
+    auto map = biome.get_map();
 
     LOG_INFO(logger, "Map: {}", map);
 
@@ -69,12 +57,45 @@ MacroMap() {
 }
 
 int
-save_test(const std::string path, const std::string save_path) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
+NoiseTest() {
+    quill::Logger* logger = quill::get_logger();
 
-    World world(materials_json, path);
+    terrain::generation::FractalNoise noise(1, 1, 3);
+
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(1, 1));
+    LOG_INFO(logger, "Noise double again: {}", noise.get_noise(1, 1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(2, 1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(3, 1));
+    LOG_INFO(logger, "Noise double: {}", noise.get_noise(4, 1));
+
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(1, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(2, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(3, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(4, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(5, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(6, 3, 3)
+    );
+    LOG_INFO(
+        logger, "Random double: {}", terrain::generation::Noise::get_double(7, 3, 3)
+    );
+
+    return 0;
+}
+
+int
+save_test(const std::string path, const std::string save_path) {
+    World world("base", path);
 
     world.qb_save_debug(save_path);
 
@@ -87,19 +108,27 @@ save_terrain(
 ) {
     quill::Logger* logger = quill::get_logger();
 
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
-    for (unsigned int i = 0; i < biome_data["Tile_Data"].size(); i++) {
-        World world(materials_json, biome_data, i);
+    terrain::generation::biome_json_data biome_file_data{
+        biome_name, materials_json, biome_data
+    };
+    for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
+        terrain::generation::Biome biome(biome_file_data);
+
+        MacroDim map_size = 3;
+        Dim terrain_height = 128;
+        std::vector<MapTile_t> macro_map = {0, 0, 0, 0, i, 0, 0, 0, 0};terrain::Terrain ter(
+            map_size, map_size, World::macro_tile_size,
+            terrain_height, 5, biome, macro_map
+        );
+
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
         save_path /= biome_name;
         save_path /= "biome_";
         save_path += std::to_string(i);
         save_path += ".qb";
-        world.qb_save(save_path.string());
+        ter.qb_save(save_path.string());
     }
 }
 
@@ -115,11 +144,7 @@ int
 path_finder_test(const std::string& path, const std::string& save_path) {
     quill::Logger* logger = quill::get_logger();
 
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    World world(materials_json, path);
+    World world("base", path);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -144,10 +169,12 @@ path_finder_test(const std::string& path, const std::string& save_path) {
         return 1;
     }
 
+    constexpr ColorId path_color_id = 5;
+    const terrain::Material* path_mat = world.get_material(DEBUG_MATERIAL);
     for (const terrain::Tile* tile : tile_path) {
         world.get_terrain_main()
             .get_tile(world.get_terrain_main().pos(tile))
-            ->set_material(&world.get_materials()->at(7), 5);
+            ->set_material(path_mat, path_color_id);
     }
 
     world.qb_save(save_path);
@@ -157,45 +184,25 @@ path_finder_test(const std::string& path, const std::string& save_path) {
 
 int
 imgui_entry_main() {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
-
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world(materials_json, biome_data, 2, 2);
+    World world("base", 2, 2);
 
     return gui::imgui_entry(world);
 }
 
 int
 StressTest() {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("base/materials.json");
-    materials_file >> materials_json;
-
-    Json::Value biome_data;
-    std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-    biome_file >> biome_data;
-
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world(materials_json, biome_data, 2, 2);
+    World world("base", 2, 2);
 
     return gui::opengl_entry(world);
 }
 
 int
 opengl_entry(const std::string& path) {
-    Json::Value materials_json;
-    std::ifstream materials_file = files::open_data_file("materials.json");
-    materials_file >> materials_json;
-
-    World world(materials_json, path);
+    World world("base", path);
 
     return gui::opengl_entry(world);
 }
@@ -263,12 +270,18 @@ main(int argc, char** argv) {
         );
     } else if (run_function == "TerrainTypes") {
         Json::Value biome_data;
-        std::ifstream biome_file = files::open_data_file("base/biome_data.json");
-        biome_file >> biome_data;
+        auto biome_file = files::open_data_file("base/biome_data.json");
+        if (biome_file.has_value())
+            biome_file.value() >> biome_data;
+        else {
+            LOG_CRITICAL(logging::file_io_logger, "Could not open biome data");
+            return 1;
+        }
         std::string biome_name;
         Json::Value materials_json;
-        std::ifstream materials_file = files::open_data_file("base/materials.json");
-        materials_file >> materials_json;
+        auto materials_file = files::open_data_file("base/materials.json");
+        if (materials_file.has_value())
+            materials_file.value() >> materials_json;
 
         cmdl("biome-name", "Biome_1") >> biome_name;
 
@@ -280,6 +293,8 @@ main(int argc, char** argv) {
         return GenerateTerrain(path_in);
     } else if (run_function == "MacroMap") {
         return MacroMap();
+    } else if (run_function == "NoiseTest") {
+        return NoiseTest();
     } else if (run_function == "StressTest") {
         return StressTest();
     } else if (run_function == "SaveTest") {
@@ -293,8 +308,8 @@ main(int argc, char** argv) {
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
     } else if (run_function == "LuaTest") {
-        auto biome = terrain::terrain_generation::Biome("base");
-        LOG_DEBUG(logging::lua_logger, "{}", biome.get_tile_vector());
+        auto biome = terrain::generation::Biome("base");
+        LOG_DEBUG(logging::lua_logger, "{}", biome.get_map());
         return 0;
     } else {
         std::cout << "No known command" << std::endl;

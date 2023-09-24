@@ -10,9 +10,9 @@ namespace terrain {
 
 Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
     ter_(ter), Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z) {
-    for (int x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
-        for (int y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
-            for (int z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
+    for (Dim x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
+        for (Dim y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
+            for (Dim z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
                 if (ter->can_stand_1(x, y, z)) {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
@@ -107,14 +107,14 @@ Chunk::contains_nodeGroup(NodeGroup* NG) {
 }
 
 ColorInt
-terrain::Chunk::get_voxel(int x, int y, int z) const {
+terrain::Chunk::get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
     return ter_->get_voxel(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );
 }
 
 MatColorId
-terrain::Chunk::get_voxel_color_id(int x, int y, int z) const {
+terrain::Chunk::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
     return ter_->get_voxel_color_id(
         x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
     );

@@ -24,11 +24,12 @@
 
 #include "../material.hpp"
 
+#include <optional>
 #include <set>
 
 namespace terrain {
 
-namespace terrain_generation {
+namespace generation {
 
 /**
  * @brief Holds data used to set the material and color of a rectangular prism
@@ -40,19 +41,19 @@ namespace terrain_generation {
  * changed are also saved
  */
 struct TileStamp {
-    int x_start; // Lower bound in the x direction.
-    int y_start; // Lower bound in the y direction.
-    int z_start; // Lower bound in the z direction.
-    int x_end;   // Upper bound in the x direction.
-    int y_end;   // Upper bound in the y direction.
-    int z_end;   // Upper bound in the z direction.
+    TerrainOffset x_start; // Lower bound in the x direction.
+    TerrainOffset y_start; // Lower bound in the y direction.
+    TerrainOffset z_start; // Lower bound in the z direction.
+    TerrainOffset x_end;   // Upper bound in the x direction.
+    TerrainOffset y_end;   // Upper bound in the y direction.
+    TerrainOffset z_end;   // Upper bound in the z direction.
 
-    const Material* mat; // Material that tiles will be set to.
-    ColorId color_id;    // color that tiles will be set to.
+    MaterialId mat;   // Material that tiles will be set to.
+    ColorId color_id; // color that tiles will be set to.
     // set of <material ID, color ID> determines what tiles types can be changed.
-    std::set<std::pair<MaterialId, ColorId>> elements_can_stamp;
+    std::optional<std::set<std::pair<MaterialId, ColorId>>> elements_can_stamp;
 };
 
-} // namespace terrain_generation
+} // namespace generation
 
 } // namespace terrain

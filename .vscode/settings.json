@@ -11,7 +11,8 @@
         "Parameteri",
         "Perlin",
         "vmask",
-        "voxel"
+        "voxel",
+        "Worley"
     ],
     "files.associations": {
         "**/*.html": "html",
@@ -117,7 +118,9 @@
         "*.def": "cpp",
         "*.inc": "cpp",
         "hash_map": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "*.ipp": "cpp",
+        "forward_list": "cpp"
     },
     "editor.detectIndentation": false,
     "cmake.configureOnOpen": false

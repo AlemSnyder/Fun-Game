@@ -1,3 +1,5 @@
+#pragma once
+
 #include <glm/glm.hpp>
 
 #include <array>
@@ -16,7 +18,9 @@ using Dim = uint16_t;
 using TerrainDim3 = glm::u16vec3;
 // the vector indicies must have the same size as dim.
 static_assert(sizeof(TerrainDim3) == 3 * sizeof(Dim));
-using TerrainOffset = glm::i32vec3;
+using TerrainOffset = int32_t;
+using TerrainOffset3 = glm::i32vec3;
+static_assert(sizeof(TerrainOffset3) == 3 * sizeof(TerrainOffset));
 // Macro tile position in macro map.
 using MacroDim = uint16_t;
 
@@ -26,6 +30,15 @@ using MacroDim = uint16_t;
 
 // Stores data about path direction and clear-ness
 using path_t = uint8_t;
+
+/**********************
+ * Terrain Generation *
+ *********************/
+
+// Range over all space where a value can be found
+using NoisePosition = double;
+// Range over all space where random values can be generator for
+using NoiseTileIndex = int32_t;
 
 /*************
  * Materials *
@@ -41,6 +54,9 @@ using ColorFloat = glm::vec4; // std::array<float, 4>;
 using MaterialId = uint8_t;
 using ColorId = uint8_t;
 
+static constexpr MaterialId MAT_ANY_MATERIAL = static_cast<MaterialId>(-1);
+static constexpr ColorId COLOR_ANY_COLOR = static_cast<ColorId>(-1);
+
 // should be size of MaterialId + size of ColorId
 using MatColorId = uint16_t;
 static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));
@@ -49,7 +65,10 @@ static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));
  * Biome *
 **********/
 
+// possible tile types
 using MapTile_t = uint16_t;
+
+using TileMacro_t = uint16_t;
 
 /*************
  * VoxelBase *
@@ -74,4 +93,6 @@ static_assert(sizeof(VoxelColorId) == sizeof(MatColorId));
  **********/
 
 // size in pixels of graphics objects
-using screen_size_t = size_t;
+using screen_size_t = int;
+// I'm so sorry, but this is needed because opengl uses ints to return from get
+// window size

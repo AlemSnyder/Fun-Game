@@ -25,10 +25,11 @@
 #include "../logging.hpp"
 #include "../types.hpp"
 #include "../util/voxel.hpp"
+#include "generation/biome.hpp"
+#include "generation/land_generator.hpp"
+#include "generation/tile_stamp.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
-#include "terrain_generation/land_generator.hpp"
-#include "terrain_generation/tile_stamp.hpp"
 #include "tile.hpp"
 
 #include <json/json.h>
@@ -56,14 +57,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     std::vector<Tile> tiles_;
     // size of terrain generation tile (see terrain generation)
     const Dim area_size_;
-    // vector that determines grass color from edge distance
-    std::vector<ColorId> grass_colors_;
-    // length of grass gradient
-    uint8_t grass_grad_length_;
-    // gradient index of grass not by an edge
-    uint8_t grass_mid_;
     // mat of material id to material that describes materials in this terrain
-    const std::map<MaterialId, const terrain::Material>& materials_;
+    const generation::Biome& biome_;
 
  public:
     // length in the x direction
@@ -85,9 +80,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z_tiles
      */
     TerrainBase(
-        const std::map<MaterialId, const terrain::Material>& materials,
-        const std::vector<int>& grass_grad_data, unsigned int grass_mid,
-        Dim x_map_tiles = 1, Dim y_map_tiles = 1, Dim area_size = 32, Dim z_tiles = 1
+        Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
+        const std::vector<MapTile_t>& macro_map
     );
 
     /**
@@ -100,55 +94,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param grass_mid position in grass gradient data that denotes the middle
      * @param data qb_data_t read from file
      */
-    TerrainBase(
-        const std::map<MaterialId, const Material>& materials,
-        std::vector<int> grass_grad_data, unsigned int grass_mid,
-        voxel_utility::qb_data_t data
-    );
-
-    /**
-     * @brief Construct a new Terrain Base object for demonstrating biomes
-     *
-     * @param x_map_tiles
-     * @param y_map_tiles
-     * @param area_size
-     * @param z_tiles
-     * @param materials
-     * @param biome_data
-     * @param grass_grad_data
-     * @param grass_mid
-     */
-    inline TerrainBase(
-        Dim x_map_tiles, Dim y_map_tiles, Dim area_size, Dim z_tiles,
-        const std::map<MaterialId, const Material>& materials,
-        const Json::Value& biome_data, std::vector<int> grass_grad_data,
-        unsigned int grass_mid
-    ) :
-        TerrainBase(
-            x_map_tiles, y_map_tiles, area_size, z_tiles, materials, biome_data,
-            grass_grad_data, grass_mid,
-            generate_macro_map(x_map_tiles, y_map_tiles, biome_data["Terrain_Data"])
-        ) {}
-
-    /**
-     * @brief Construct a new Terrain Base object using terrain generation
-     *
-     * @param x_map_tiles
-     * @param y_map_tiles
-     * @param Area_size
-     * @param z_tiles
-     * @param materials
-     * @param biome_data
-     * @param grass_grad_data
-     * @param grass_mid
-     * @param Terrain_Maps
-     */
-    TerrainBase(
-        Dim x_map_tiles, Dim y_map_tiles, Dim Area_size, Dim z_tiles,
-        const std::map<MaterialId, const Material>& materials,
-        const Json::Value& biome_data, std::vector<int> grass_grad_data,
-        unsigned int grass_mid, std::vector<int> Terrain_Maps
-    );
+    TerrainBase(const generation::Biome& biome, voxel_utility::qb_data_t data);
 
     void qb_read(
         std::vector<ColorInt> data,
@@ -161,7 +107,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param x x coordinate
      * @param y y coordinate
      * @param z z coordinate
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(Dim x, Dim y, Dim z) const noexcept {
@@ -173,7 +119,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief position in tiles vector of given tile position
      *
      * @param sop coordinate as an array
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(const TerrainDim3& sop) const {
@@ -184,7 +130,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief position in tiles vector of given tile
      *
      * @param tile tile to find position of
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(const Tile* const tile) const {
@@ -195,7 +141,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @brief position in tiles vector of given tile
      *
      * @param tile tile to find position of
-     * @return int
+     * @return TileIndex
      */
     [[nodiscard]] inline TileIndex
     pos(const Tile tile) const {
@@ -234,7 +180,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     sop(TileIndex xyz) const {
         return {
             static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
-            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))
+        };
     }
 
     /**
@@ -253,13 +200,14 @@ class TerrainBase : public voxel_utility::VoxelBase {
         }
         return {
             static_cast<Dim>(xyz / (ym * zm)), static_cast<Dim>((xyz / zm) % ym),
-            static_cast<Dim>(xyz % (zm))};
+            static_cast<Dim>(xyz % (zm))
+        };
     }
 
     /**
      * @brief Get length of terrain in x direction
      *
-     * @return int length
+     * @return Dim length
      */
     [[nodiscard]] inline Dim
     get_X_MAX() const {
@@ -269,7 +217,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     /**
      * @brief Get length of terrain in x direction
      *
-     * @return int length
+     * @return Dim length
      */
     [[nodiscard]] inline Dim
     get_Y_MAX() const {
@@ -279,7 +227,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     /**
      * @brief Get length of terrain in x direction
      *
-     * @return int length
+     * @return Dim length
      */
     [[nodiscard]] inline Dim
     get_Z_MAX() const {
@@ -318,7 +266,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return false tile is not in bounds
      */
     [[nodiscard]] inline bool
-    in_range(int x, int y, int z) const {
+    in_range(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
         return (
             static_cast<Dim>(x) < X_MAX && x >= 0 && static_cast<Dim>(y) < Y_MAX
             && y >= 0 && static_cast<Dim>(z) < Z_MAX && z >= 0
@@ -326,7 +274,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     }
 
     [[nodiscard]] inline bool
-    in_range(TerrainDim3 xyz) const {
+    in_range(TerrainOffset3 xyz) const {
         return (xyz.x < X_MAX && xyz.y < Y_MAX && xyz.z < Z_MAX);
     }
 
@@ -340,12 +288,12 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return Tile* tile at given position
      */
     [[nodiscard]] inline Tile*
-    get_tile(int x, int y, int z) {
+    get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) {
         return const_cast<Tile*>(std::as_const(*this).get_tile(x, y, z));
     };
 
     [[nodiscard]] inline Tile*
-    get_tile(int xyz) {
+    get_tile(TileIndex xyz) {
         return const_cast<Tile*>(std::as_const(*this).get_tile(xyz));
     }
 
@@ -358,7 +306,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return Tile* tile at given position
      */
     [[nodiscard]] inline const Tile*
-    get_tile(int x, int y, int z) const {
+    get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
         if (!in_range(x, y, z)) {
             LOG_CRITICAL(
                 logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
@@ -378,8 +326,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return const Tile* tile at index
      */
     [[nodiscard]] inline const Tile*
-    get_tile(int xyz) const {
-        if (xyz < 0 || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
+    get_tile(TileIndex xyz) const {
+        if (xyz >= X_MAX * Y_MAX * Z_MAX) {
             LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
             throw std::invalid_argument("index out of range");
         }
@@ -395,7 +343,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @return ColorInt color or tile
      */
     [[nodiscard]] inline ColorInt
-    get_voxel(int x, int y, int z) const {
+    get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
         // using static ints to prevent dereferencing
         // The previous material id, and color id are cached so that materials do
         // not need to be dereferenced, and searched through.
@@ -413,7 +361,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
             previous_mat_id = mat_id;
             previous_color_id = color_id;
 
-            auto mat = materials_.at(previous_mat_id);
+            auto mat = biome_.get_materials().at(previous_mat_id);
             previous_out_color = mat.color[previous_color_id].second;
         }
 
@@ -421,7 +369,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
     }
 
     [[nodiscard]] inline VoxelColorId
-    get_voxel_color_id(int x, int y, int z) const {
+    get_voxel_color_id(Dim x, Dim y, Dim z) const {
         // if not in range, then considered to be air
         if (!in_range(x, y, z))
             return 0;
@@ -447,22 +395,22 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     [[nodiscard]] inline uint8_t
     get_grass_grad_length() const noexcept {
-        return grass_grad_length_;
+        return biome_.get_grass_grad_length();
     }
 
     [[nodiscard]] inline uint8_t
     get_grass_mid() const {
-        return grass_mid_;
+        return biome_.get_grass_mid();
     }
 
     [[nodiscard]] inline const std::vector<ColorId>&
     get_grass_colors() const {
-        return grass_colors_;
+        return biome_.get_grass_colors();
     }
 
     [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
     get_materials() const {
-        return materials_;
+        return biome_.get_materials();
     }
 
     /**
@@ -472,7 +420,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param area_y area y coordinate
      * @param gen Generator object that generates tile types
      */
-    void init_area(int area_x, int area_y, terrain_generation::LandGenerator gen);
+    void init_area(int area_x, int area_y, generation::LandGenerator gen);
 
     /**
      * @brief Set a group of tiles
@@ -481,53 +429,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param x macro map x position
      * @param y macro map y position
      */
-    inline void
-    stamp_tile_region(const terrain_generation::TileStamp& tStamp, int x, int y) {
-        stamp_tile_region(
-            tStamp.x_start + x * area_size_ + area_size_ / 2,
-            tStamp.y_start + y * area_size_ + area_size_ / 2, tStamp.z_start,
-            tStamp.x_end + x * area_size_ + area_size_ / 2,
-            tStamp.y_end + y * area_size_ + area_size_ / 2, tStamp.z_end, tStamp.mat,
-            tStamp.elements_can_stamp, tStamp.color_id
-        );
-    }
-
-    /**
-     * @brief Set a group of tiles
-     *
-     * @param x_start lower x position
-     * @param y_start lower y position
-     * @param z_start lower z position
-     * @param x_end greater x position
-     * @param y_end greater y position
-     * @param z_end greater z position
-     * @param mat materials to set
-     * @param color_id color id to set
-     */
-    void stamp_tile_region(
-        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const Material* mat, ColorId color_id
-    );
-    /**
-     * @brief Set a group of tiles
-     *
-     * @param x_start lower x position
-     * @param y_start lower y position
-     * @param z_start lower z position
-     * @param x_end greater x position
-     * @param y_end greater y position
-     * @param z_end greater z position
-     * @param mat materials to set
-     * @param elements_can_stamp type of material that can be changed
-     *
-     * @param color_id color id to set
-     */
-    void stamp_tile_region(
-        int x_start, int y_start, int z_start, int x_end, int y_end, int z_end,
-        const Material* mat,
-        const std::set<std::pair<MaterialId, ColorId>>& elements_can_stamp,
-        ColorId color_id
-    );
+    inline void stamp_tile_region(const generation::TileStamp& tStamp, int x, int y);
 
     /**
      * @brief add material on top of extant voxels
@@ -536,21 +438,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * are added
      * @param material material type to add
      */
-    void add_to_top(
-        const Json::Value& to_data, const std::map<MaterialId, const Material>& material
-    );
-
-    /**
-     * @brief generates a 2D 'height' map to use to generate the terrain
-     *
-     * @param size_x number of tile types in x direction
-     * @param size_y number of tile types in y direction
-     * @param map_data json data on how to generate map
-     * @return std::vector<int> (size_x * size_y) vector of ints
-     */
-    [[nodiscard]] static std::vector<int> generate_macro_map(
-        unsigned int size_x, unsigned int size_y, const Json::Value& map_data
-    );
+    void add_to_top(const generation::AddToTop& to_data);
 
     /**
      * @brief Get the max allowable height of added material
@@ -576,9 +464,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         MaterialId mat_id = tile->get_material_id();
         ColorId color_id = tile->get_color_id();
 
-        return (
-            material_test.find(std::make_pair(mat_id, color_id)) != material_test.end()
-        );
+        return material_in(material_test, mat_id, color_id);
     }
 };
 

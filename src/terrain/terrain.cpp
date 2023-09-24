@@ -6,12 +6,12 @@
 #include "../util/voxel.hpp"
 #include "../util/voxel_io.hpp"
 #include "chunk.hpp"
+#include "generation/land_generator.hpp"
+#include "generation/noise.hpp"
+#include "generation/tile_stamp.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
 #include "terrain_base.hpp"
-#include "terrain_generation/land_generator.hpp"
-#include "terrain_generation/noise.hpp"
-#include "terrain_generation/tile_stamp.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
 
@@ -28,57 +28,11 @@
 
 namespace terrain {
 
-// most important initializer
 Terrain::Terrain(
-    int x_tiles, int y_tiles, int area_size, int z_tiles, int seed_,
-    const std::map<MaterialId, const Material>& material,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
+    const std::string path, const generation::Biome& biome
+
 ) :
-    TerrainBase(
-        material, grass_grad_data, grass_mid, x_tiles, y_tiles, area_size, z_tiles
-    ),
-    seed(seed_) {}
-
-// This function aims to generate a test that demonstrates the given terrain type
-// to do this a three by three area where the given type is generated in the
-// center is given
-//
-// 0,   0,  0
-// 0, type, 0
-// 0,   0,  0
-//
-// Is how the world map should look.
-
-Terrain::Terrain(
-    int area_size, int z_tiles, int tile_type, int seed_,
-    const std::map<MaterialId, const Material>& material, const Json::Value biome_data,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
-) :
-    TerrainBase(
-        3, 3, area_size, z_tiles, material, biome_data, grass_grad_data, grass_mid,
-        {0, 0, 0, 0, tile_type, 0, 0, 0, 0}
-    ),
-    seed(seed_) {}
-
-Terrain::Terrain(
-    const std::string path, const std::map<MaterialId, const Material>& materials,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
-) :
-    TerrainBase(materials, grass_grad_data, grass_mid, voxel_utility::from_qb(path)) {
-    /*replace path with some struct that is returned from qb read*/
-
-    init_chunks();
-}
-
-Terrain::Terrain(
-    int x, int y, int Area_size_, int z, int seed_,
-    const std::map<MaterialId, const Material>& materials, const Json::Value biome_data,
-    std::vector<int> grass_grad_data, unsigned int grass_mid
-) :
-    TerrainBase(x, y, Area_size_, z, materials, biome_data, grass_grad_data, grass_mid),
-    seed(seed_) {
-    auto millisec_since_epoch = time_util::epoch_millis();
-
+    TerrainBase(biome, voxel_utility::from_qb(path)) {
     // grows the grass
     init_grass();
 
@@ -87,10 +41,24 @@ Terrain::Terrain(
     //  TODO make this faster 1
     init_chunks();
 
-    LOG_INFO(
-        logging::terrain_logger, "End of land generator. Time elapsed: {}.",
-        time_util::epoch_millis() - millisec_since_epoch
-    );
+    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
+}
+
+Terrain::Terrain(
+    Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
+    const std::vector<MapTile_t>& macro_map
+) :
+    TerrainBase(x, y, area_size_, z, seed_, biome, macro_map),
+    seed(seed_) {
+    // grows the grass
+    init_grass();
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
+
+    //  TODO make this faster 1
+    init_chunks();
+
+    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
 }
 
 void
@@ -105,9 +73,9 @@ Terrain::init_chunks() {
     }
 }
 
-int
-Terrain::get_Z_solid(int x, int y, int z_start) const {
-    for (int z = z_start; z >= 0; z--) {
+TerrainOffset
+Terrain::get_Z_solid(TerrainOffset x, TerrainOffset y, TerrainOffset z_start) const {
+    for (TerrainOffset z = z_start; z >= 0; z--) {
         if (this->get_tile(x, y, z)->is_solid()) {
             return z;
         }
@@ -115,13 +83,16 @@ Terrain::get_Z_solid(int x, int y, int z_start) const {
     return 0;
 }
 
-int
-Terrain::get_Z_solid(int x, int y) const {
+TerrainOffset
+Terrain::get_Z_solid(TerrainOffset x, TerrainOffset y) const {
     return get_Z_solid(x, y, Z_MAX - 1);
 }
 
 bool
-Terrain::can_stand(int x, int y, int z, int dz, int dxy) const {
+Terrain::can_stand(
+    TerrainOffset x, TerrainOffset y, TerrainOffset z, TerrainOffset dz,
+    TerrainOffset dxy
+) const {
     // x,y,z gives the position; dxy is the offset in x or y from the center,
     // and dz is the offset only upward
     if (!in_range(x + dxy - 1, y + dxy - 1, z - 1)
@@ -133,9 +104,9 @@ Terrain::can_stand(int x, int y, int z, int dz, int dxy) const {
         return false;
     }
     // is there air in the volume
-    for (int xp = -dxy + 1; xp < dxy; xp++) {
-        for (int yp = -dxy + 1; yp < dxy; yp++) {
-            for (int zp = 0; zp < dz; zp++) {
+    for (TerrainOffset xp = -dxy + 1; xp < dxy; xp++) {
+        for (TerrainOffset yp = -dxy + 1; yp < dxy; yp++) {
+            for (TerrainOffset zp = 0; zp < dz; zp++) {
                 if (get_tile(x + xp, y + yp, z + zp)->is_solid()) {
                     return false;
                 };
@@ -149,12 +120,12 @@ Terrain::can_stand(int x, int y, int z, int dz, int dxy) const {
 }
 
 bool
-Terrain::can_stand(const Tile* tile, int dz, int dxy) const {
+Terrain::can_stand(const Tile* tile, TerrainOffset dz, TerrainOffset dxy) const {
     return can_stand(tile->get_x(), tile->get_y(), tile->get_z(), dz, dxy);
 }
 
 bool
-Terrain::can_stand(const Tile tile, int dz, int dxy) const {
+Terrain::can_stand(const Tile tile, TerrainOffset dz, TerrainOffset dxy) const {
     return can_stand(tile.get_x(), tile.get_y(), tile.get_z(), dz, dxy);
 }
 
@@ -169,7 +140,9 @@ Terrain::paint(Tile* tile, const Material* mat, ColorId color_id) {
 }
 
 bool
-Terrain::player_set_tile_material(int xyz, const Material* mat, ColorId color_id) {
+Terrain::player_set_tile_material(
+    TileIndex xyz, const Material* mat, ColorId color_id
+) {
     Tile* tile = get_tile(xyz);
     if (tile->is_solid() && mat->solid) {
         // Can't change something from one material to another.
@@ -216,7 +189,7 @@ Terrain::init_grass() {
 
 // this should be the same as can_stand(x,y,z,1,1)
 bool
-Terrain::can_stand_1(int xyz) const {
+Terrain::can_stand_1(TileIndex xyz) const {
     if (static_cast<TileIndex>(xyz) % Z_MAX < 1
         || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
         return false;
@@ -258,21 +231,21 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
     return node.get_time_cots() + get_H_cost(tile.sop(), node.get_tile()->sop());
 }
 
-int
+TileIndex
 Terrain::pos(const NodeGroup* const node_group) const {
     auto [x, y, z] = node_group->sop();
-    int px = floor(x) / Chunk::SIZE;
-    int py = floor(y) / Chunk::SIZE;
-    int pz = floor(z) / Chunk::SIZE;
+    TerrainOffset px = floor(x) / Chunk::SIZE;
+    TerrainOffset py = floor(y) / Chunk::SIZE;
+    TerrainOffset pz = floor(z) / Chunk::SIZE;
     return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
            + pz;
 }
 
 ChunkIndex
 Terrain::get_chunk_from_tile(Dim x, Dim y, Dim z) const {
-    int px = floor(x) / Chunk::SIZE;
-    int py = floor(y) / Chunk::SIZE;
-    int pz = floor(z) / Chunk::SIZE;
+    TerrainOffset px = floor(x) / Chunk::SIZE;
+    TerrainOffset py = floor(y) / Chunk::SIZE;
+    TerrainOffset pz = floor(z) / Chunk::SIZE;
     return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
            + pz;
 }
@@ -310,7 +283,7 @@ Terrain::get_adjacent_nodes(
 }
 
 NodeGroup*
-Terrain::get_node_group(int xyz) {
+Terrain::get_node_group(TileIndex xyz) {
     auto node_group = tile_to_group_.find(xyz);
     if (node_group == tile_to_group_.end()) {
         return nullptr;
@@ -329,7 +302,7 @@ Terrain::get_node_group(const Tile* t) {
 }
 
 const NodeGroup*
-Terrain::get_node_group(int xyz) const {
+Terrain::get_node_group(TileIndex xyz) const {
     auto out = tile_to_group_.find(xyz);
     if (out == tile_to_group_.end()) {
         return nullptr;
@@ -362,11 +335,14 @@ Terrain::remove_node_group(NodeGroup* NG) {
 }
 
 const UnitPath
-Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
+Terrain::get_path_type(
+    TerrainOffset xs, TerrainOffset ys, TerrainOffset zs, TerrainOffset xf,
+    TerrainOffset yf, TerrainOffset zf
+) const {
     // the function should be passed the shape of the thing that wants to go on
     // the path just set them for now
-    int dz = 3;
-    int dxy = 1;
+    TerrainOffset dz = 3;
+    TerrainOffset dxy = 1;
 
     // so what is going on? Only god knows.
     // abs(_s - _f) returns zero or one depending on wether the final and
@@ -388,49 +364,53 @@ Terrain::get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const {
     else
         type = horizontal_direction;
 
-    bool open;
+    bool path_open = false;
     if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
         // same lever so the only thing that maters if the entity can stand on
         // both tiles
-        open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
+        path_open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
     } else if (type == DirectionFlags::HORIZONTAL2) {
         // still the same level
         // this test if the start and final locations are open,
         // and if the two between them are open
         // S O
         // O F
-        open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy)
-               && can_stand(xs, yf, zs, dz, dxy) && can_stand(xf, ys, zf, dz, dxy);
+        path_open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy)
+                    && can_stand(xs, yf, zs, dz, dxy) && can_stand(xf, ys, zf, dz, dxy);
     } else if (type == DirectionFlags::UP_AND_OVER) {
         if (zf > zs) {
             // going up, and over
-            open = can_stand(xs, ys, zs, dz + 1, dxy) && can_stand(xf, yf, zf, dz, dxy);
+            path_open =
+                can_stand(xs, ys, zs, dz + 1, dxy) && can_stand(xf, yf, zf, dz, dxy);
         } else {
             // going down and over
-            open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz + 1, dxy);
+            path_open =
+                can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz + 1, dxy);
         }
 
     } else if (type == DirectionFlags::UP_AND_DIAGONAL) {
         if (zf > zs) {
             // going up, and diagonal
-            open = can_stand(xs, ys, zs, dz + 1, dxy) && can_stand(xf, yf, zf, dz, dxy)
-                   && ((can_stand(xf, ys, zs, dz + 1, dxy)
-                        || can_stand(xf, ys, zf, dz, dxy))
-                       && (can_stand(xs, yf, zs, dz + 1, dxy)
-                           || can_stand(xs, yf, zf, dz, dxy)));
+            path_open = can_stand(xs, ys, zs, dz + 1, dxy)
+                        && can_stand(xf, yf, zf, dz, dxy)
+                        && ((can_stand(xf, ys, zs, dz + 1, dxy)
+                             || can_stand(xf, ys, zf, dz, dxy))
+                            && (can_stand(xs, yf, zs, dz + 1, dxy)
+                                || can_stand(xs, yf, zf, dz, dxy)));
         } else {
             // going down and diagonal
-            open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz + 1, dxy)
-                   && ((can_stand(xf, ys, zs, dz, dxy)
-                        || can_stand(xf, ys, zf, dz + 1, dxy))
-                       && (can_stand(xs, yf, zs, dz, dxy)
-                           || can_stand(xs, yf, zf, dz + 1, dxy)));
+            path_open = can_stand(xs, ys, zs, dz, dxy)
+                        && can_stand(xf, yf, zf, dz + 1, dxy)
+                        && ((can_stand(xf, ys, zs, dz, dxy)
+                             || can_stand(xf, ys, zf, dz + 1, dxy))
+                            && (can_stand(xs, yf, zs, dz, dxy)
+                                || can_stand(xs, yf, zf, dz + 1, dxy)));
         }
     }
 
-    return type | UnitPath(open);
+    return type | UnitPath(path_open);
 }
 
 std::set<const NodeGroup*>
@@ -446,7 +426,7 @@ std::vector<const Tile*>
 Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) const {
     const NodeGroup* goal_node;
     const NodeGroup* start_node;
-    int goal_z = goal_->get_z();
+    TerrainOffset goal_z = goal_->get_z();
     const Tile* goal;
 
     if (!can_stand_1(goal_)) {
@@ -460,7 +440,7 @@ Terrain::get_path_Astar(const Tile* start_, const Tile* goal_) const {
         goal = goal_;
     }
 
-    int start_z = start_->get_z();
+    TerrainOffset start_z = start_->get_z();
     const Tile* start;
 
     if (!can_stand_1(start_)) {
@@ -530,7 +510,7 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
     std::set<const NodeGroup*> goal_nodes;
     bool no_goal = true;
     for (const Tile* g : goal_) {
-        int goal_z = g->get_z();
+        TerrainOffset goal_z = g->get_z();
         if (can_stand_1(g)) {
             no_goal = false;
             goal_nodes.insert(get_node_group(g));

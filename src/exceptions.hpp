@@ -8,13 +8,13 @@
 namespace exc {
 
 class file_not_found_error : public std::runtime_error {
-    const std::string ERROR_PREFIX_ = "Could not open ";
+    constexpr static std::string ERROR_PREFIX_ = "Could not open ";
 
-    const std::filesystem::path path_;
+    std::filesystem::path path_;
 
  public:
-    file_not_found_error(const std::filesystem::path path) :
-        runtime_error(ERROR_PREFIX_ + path.string()), path_(path) {}
+    file_not_found_error(std::filesystem::path path) :
+        runtime_error(ERROR_PREFIX_ + path.string()), path_(std::move(path)) {}
 
     file_not_found_error(const file_not_found_error& other) noexcept = default;
 

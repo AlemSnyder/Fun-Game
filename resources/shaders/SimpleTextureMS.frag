@@ -3,7 +3,7 @@
 // Ouput data
 layout(location = 0) out vec3 color;
 
-uniform sampler2DMS texture;
+uniform sampler2DMS texture_id;
 uniform uint tex_samples;
 uniform uint height;
 uniform uint width;
@@ -20,5 +20,5 @@ vec3 texture_MS(sampler2DMS tex, ivec2 coord){
 
 void
 main() {
-    color = texture_MS(texture, ivec2(int(UV.x * width), int(UV.y * height)));
+    color = texture_MS(texture_id, ivec2(int(UV.x * width), int(UV.y * height)));
 }
