@@ -167,27 +167,17 @@ TerrainBase::stamp_tile_region(
     TerrainOffset x_end = stamp.x_end + x_offset * area_size_ + area_size_ / 2;
     TerrainOffset y_end = stamp.y_end + y_offset * area_size_ + area_size_ / 2;
 
-    if (stamp.elements_can_stamp.has_value()) {
-        for (TerrainOffset x = x_start; x < x_end; x++) {
-            for (TerrainOffset y = y_start; y < y_end; y++) {
-                for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
-                    if (in_range(x, y, z)) {
-                        Tile* tile = get_tile(x, y, z);
-                        if (has_tile_material(stamp.elements_can_stamp.value(), tile)) {
+    for (TerrainOffset x = x_start; x < x_end; x++) {
+        for (TerrainOffset y = y_start; y < y_end; y++) {
+            for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
+                if (in_range(x, y, z)) {
+                    Tile* tile = get_tile(x, y, z);
+                    if (stamp.elements_can_stamp.has_value()) {
+                        if (has_tile_material(stamp.elements_can_stamp.value(), tile))
                             tile->set_material(
                                 biome_.get_material(stamp.mat), stamp.color_id
                             );
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        for (TerrainOffset x = x_start; x < x_end; x++) {
-            for (TerrainOffset y = y_start; y < y_end; y++) {
-                for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
-                    if (in_range(x, y, z)) {
-                        Tile* tile = get_tile(x, y, z);
+                    } else {
                         tile->set_material(
                             biome_.get_material(stamp.mat), stamp.color_id
                         );
