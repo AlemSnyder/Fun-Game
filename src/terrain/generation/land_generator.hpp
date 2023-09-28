@@ -63,7 +63,13 @@ class JsonToTile {
     /**
      * @brief Default initializer use dictionary from "Tile_Macros" "Land_Data".
      */
-    JsonToTile(const Json::Value& data);
+    JsonToTile(const Json::Value& data) :
+        height_(data["Height"].asInt()), height_variance_(data["DH"].asInt()),
+        width_(data["Size"].asInt()), width_variance_(data["DC"].asInt()),
+        elements_can_stamp_(read_elements(data["Can_Overwrite"])),
+        stamp_material_id_(data["Material_id"].asInt()),
+        stamp_color_id_(data["Color_id"].asInt()) {}
+
     /**
      * @brief Returns a tile stamp depending on the current sub region.
      */
@@ -134,7 +140,10 @@ class FromRadius : public JsonToTile {
         return number_;
     }
 
-    FromRadius(const Json::Value& data);
+    FromRadius(const Json::Value& data) :
+        JsonToTile(data), radius_(data["Radius"]["radius"].asInt()),
+        number_(data["Radius"]["number"].asInt()),
+        center_variance_(data["DC"].asInt()) {}
 };
 
 class FromGrid : public JsonToTile {
@@ -151,7 +160,9 @@ class FromGrid : public JsonToTile {
         return number_ * number_;
     }
 
-    FromGrid(const Json::Value& data);
+    FromGrid(const Json::Value& data) :
+        JsonToTile(data), radius_(data["Grid"]["radius"].asInt()),
+        number_(data["Grid"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 };
 
 enum class Side : uint8_t {
@@ -218,7 +229,10 @@ class LandGenerator {
      *
      * @return TileStamp
      */
-    TileStamp get_stamp() const;
+    TileStamp
+    get_stamp() const {
+        return stamp_generators_[current_region]->get_stamp(current_sub_region);
+    }
 
     /**
      * @brief increment the data of the Tile Stamp that will be generated
