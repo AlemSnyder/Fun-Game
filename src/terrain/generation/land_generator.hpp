@@ -247,9 +247,6 @@ class LandGenerator {
         current_region = 0;
         current_sub_region = 0;
     };
-
- private:
-    size_t static get_num_stamps(const Json::Value& biome);
 };
 
 enum class AddDirections : uint8_t {

@@ -520,8 +520,8 @@ Terrain::get_path_breadth_first(const Tile* start, const std::set<const Tile*> g
     if (!goal)
         return {};
     std::set<const Tile*> search_through;
-    for (const NodeGroup* NG : node_path.value()) {
-        auto tiles = NG->get_tiles();
+    for (const NodeGroup* group : node_path.value()) {
+        auto tiles = group->get_tiles();
         search_through.insert(tiles.begin(), tiles.end());
     }
 

@@ -67,18 +67,6 @@ LandGenerator::LandGenerator(const Json::Value& data) :
     }
 }
 
-size_t
-LandGenerator::get_num_stamps(const Json::Value& biome) {
-    if (biome["Type"].asString() == "Positions") {
-        return biome["Positions"].size();
-    } else if (biome["Type"].asString() == "Grid") {
-        int num = biome[biome["Type"].asCString()]["number"].asInt();
-        return num * num;
-    } else {
-        return biome[biome["Type"].asString()]["number"].asInt();
-    }
-}
-
 void
 LandGenerator::next() {
     current_sub_region++;
