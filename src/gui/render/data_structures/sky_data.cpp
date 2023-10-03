@@ -19,8 +19,10 @@ SkyData::SkyData(std::filesystem::path path) {
     auto stars_file = files::open_data_file(path);
     if (stars_file.has_value())
         stars_file.value() >> stars_json;
-    else
+    else {
+        LOG_WARNING(logging::file_io_logger, "Could not open sky data from file {}.", path);
         return;
+    }
 
     std::vector<glm::vec4> stars_positions;
     std::vector<GLfloat> star_age;
