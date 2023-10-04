@@ -1,5 +1,7 @@
 #include "worley_noise.hpp"
 
+#include <numbers>
+
 namespace terrain {
 
 namespace generation {
@@ -77,7 +79,7 @@ AlternativeWorleyNoise::modified_cos_(
         return 0;
 
     // return value between 0 and 2
-    return std::cos(M_PI * distance_ / (2 * effective_radius)) + 1;
+    return std::cos(std::numbers::pi * distance_ / (2 * effective_radius)) + 1;
 }
 
 } // namespace generation
