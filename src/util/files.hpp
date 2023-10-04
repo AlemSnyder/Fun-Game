@@ -21,9 +21,8 @@ get_data_path() {
 
 /**
  * @brief Open a given path
-*/
-std::optional<std::ifstream>
-open_file(std::filesystem::path path);
+ */
+std::optional<std::ifstream> open_file(std::filesystem::path path);
 
 /**
  * @brief Get the path to a data file

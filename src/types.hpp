@@ -63,7 +63,7 @@ static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));
 
 /*********
  * Biome *
-**********/
+ *********/
 
 // possible tile types
 using MapTile_t = uint16_t;

@@ -115,7 +115,7 @@ JsonToTile::get_volume(
 
     // z_max centered at height
     TerrainOffset z_max = rand() % (height_variance + 1) + height - height_variance / 2;
-    
+
     return {
         x_min,
         y_min,

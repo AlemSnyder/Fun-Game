@@ -39,7 +39,9 @@ namespace render_to {
  */
 class FrameBuffer {
  public:
-    virtual void render_frame_buffer(screen_size_t width, screen_size_t height, GLuint frame_buffer) const = 0;
+    virtual void render_frame_buffer(
+        screen_size_t width, screen_size_t height, GLuint frame_buffer
+    ) const = 0;
 };
 
 /**
@@ -50,8 +52,9 @@ class FrameBuffer {
  */
 class FrameBufferMultisample {
  public:
-    virtual void
-    render_frame_buffer_multisample(screen_size_t width, screen_size_t height, GLuint frame_buffer) const = 0;
+    virtual void render_frame_buffer_multisample(
+        screen_size_t width, screen_size_t height, GLuint frame_buffer
+    ) const = 0;
 };
 
 /**

@@ -95,8 +95,7 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param z z position in chunk
      * @return ColorInt tile color id
      */
-    [[nodiscard]] ColorInt
-    get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const;
+    [[nodiscard]] ColorInt get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const;
 
     /**
      * @brief Get the voxel color id

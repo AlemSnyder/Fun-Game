@@ -1,7 +1,7 @@
 #include "files.hpp"
 
-#include "config.h"
 #include "../logging.hpp"
+#include "config.h"
 
 #include <whereami.h>
 

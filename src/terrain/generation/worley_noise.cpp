@@ -54,7 +54,7 @@ AlternativeWorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
     for (const auto& point : worley_points) {
         NoisePosition d = distance_(x, y, point);
         // change is 1 when point.positive is T, and -1 when positive is F.
-        uint8_t change = static_cast<uint8_t>(point.positive)* 2 - 1;
+        uint8_t change = static_cast<uint8_t>(point.positive) * 2 - 1;
         value += modified_cos_(d, point.radius) * change;
     }
 
@@ -77,7 +77,7 @@ AlternativeWorleyNoise::modified_cos_(
         return 0;
 
     // return value between 0 and 2
-    return std::cos(M_PI * distance_ / (2 * effective_radius))  + 1;
+    return std::cos(M_PI * distance_ / (2 * effective_radius)) + 1;
 }
 
 } // namespace generation

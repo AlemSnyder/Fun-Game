@@ -111,16 +111,16 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data
-    };
+        biome_name, materials_json, biome_data};
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data);
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
-        std::vector<MapTile_t> macro_map = {0, 0, 0, 0, i, 0, 0, 0, 0};terrain::Terrain ter(
-            map_size, map_size, World::macro_tile_size,
-            terrain_height, 5, biome, macro_map
+        std::vector<MapTile_t> macro_map = {0, 0, 0, 0, i, 0, 0, 0, 0};
+        terrain::Terrain ter(
+            map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
+            macro_map
         );
 
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
@@ -161,7 +161,7 @@ path_finder_test(const std::string& path, const std::string& save_path) {
     auto tile_path =
         world.get_terrain_main().get_path_Astar(start_end.first, start_end.second);
 
-    if (!tile_path){
+    if (!tile_path) {
         LOG_WARNING(logger, "NO PATH FOUND");
         world.qb_save_debug(save_path);
         return 1;

@@ -32,7 +32,7 @@ get_logger() {
 inline quill::Logger*
 get_logger(std::string name) {
     auto all_loggers = quill::get_all_loggers();
-    
+
     // Search for the logger
     auto logger_found = all_loggers.find(name);
 

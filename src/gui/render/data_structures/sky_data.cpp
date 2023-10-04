@@ -20,7 +20,9 @@ SkyData::SkyData(std::filesystem::path path) {
     if (stars_file.has_value())
         stars_file.value() >> stars_json;
     else {
-        LOG_WARNING(logging::file_io_logger, "Could not open sky data from file {}.", path);
+        LOG_WARNING(
+            logging::file_io_logger, "Could not open sky data from file {}.", path
+        );
         return;
     }
 
