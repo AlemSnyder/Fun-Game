@@ -24,11 +24,13 @@
 #include "../types.hpp"
 #include "../util/color.hpp"
 #include "../util/voxel.hpp"
+#include "vertex.hpp"
 
 #include <glm/glm.hpp>
 
 #include <filesystem>
 #include <map>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -133,6 +135,54 @@ class Mesh {
     );
 
 }; // class Mesh
+
+template <voxel_utility::VoxelLike T>
+std::optional<std::vector<Vertex>>
+analyze_voxel_interface(
+    T voxel_object, VoxelOffset position, VoxelOffset major_direction,
+    VoxelOffset minor_direction_1, VoxelOffset minor_direction_2
+) {
+    // maybe change to different type
+    VoxelColorId voxel_a = voxel_object.get_voxel_color_id(position.x, position.y, position.z);
+
+    VoxelColorId voxel_b = voxel_object.get_voxel_color_id(position + major_direction);
+
+    if ((voxel_a == AIR_MAT_COLOR_ID) && (voxel_b == AIR_MAT_COLOR_ID)) {
+        return {};
+    }
+    if ((voxel_a != AIR_MAT_COLOR_ID) && (voxel_b != AIR_MAT_COLOR_ID)) {
+        return {};
+    }
+
+    VoxelOffset normal = major_direction;
+
+    std::vector<Vertex> out;
+    VoxelColorId color = 0;
+    if (voxel_a == AIR_MAT_COLOR_ID) {
+        color = voxel_b;
+    } else {
+        color = voxel_a;
+        normal = -normal;
+    }
+    for (VoxelDim x = 0; x < 2; x++) {
+        for (VoxelDim y = 0; y < 2; y++) {
+            bool solid_1 = voxel_object.get_voxel(
+                position + normal + (2 * x - 1) * minor_direction_1
+            );
+            bool solid_2 = voxel_object.get_voxel(
+                position + normal + (2 * y - 1) * minor_direction_2
+            );
+            uint8_t ambient_occlusion = solid_1 + solid_2;
+
+            VoxelOffset vertex_position =
+                position + x * minor_direction_1 + y * minor_direction_2;
+            out.emplace_back(
+                vertex_position, glm::i8vec3(normal), color, ambient_occlusion
+            );
+        }
+    }
+    return out;
+}
 
 inline void
 greedy_mesh(
@@ -364,6 +414,157 @@ generate_mesh(T voxel_object) {
     return Mesh(
         indices, indexed_vertices, indexed_colors, indexed_normals,
         voxel_object.get_color_ids(), object_geometry, center
+    );
+}
+
+/**
+ * @brief Generates a Mesh given a voxel object
+ *
+ * @details Given a Voxel Object iterates over all the voxels and adds
+ * unobscured surfaces to the Mesh.This mesher will have prebacked ambient
+ * occlusion, and will use the same vertex when possible.
+ */
+
+/*psudocode time
+
+create outs
+vec indexes
+ie vect positions
+vec normals
+vec colors
+vec ambient occlusion
+
+size_t current vertex index = 0
+
+for dimension (x,y,z direction)
+    for major position in volume[major axis]
+        unit vector_major = x, y, or z which ever we are on.
+        unit minor_axis_1, 2 = the other two
+
+        unordered_map(vertex -> voxel index)
+        (hash map)
+
+        for minor_position in volume[minor_axis1]:
+        for minor_position in volume[minor_axis2]:
+
+            analyze the (major position + minor_position + minor_position)
+                and ((major position + 1) + minor_position + minor_position)
+                interface
+
+            this means
+                1) not obscured
+                    if it is obscured than continue (go to next interface)
+                2) creating a vertex at each intersection
+                    position (this is easy)
+                    normal determined by which of the two voxels is air
+                    color color of non-air voxel
+                    ambient occlusion
+                        0, 1, or 2
+                        zero add one for each ADJACENT to air of analyzed this
+                        is a solid voxel
+
+                in the vertex four loop four corners:
+
+                    crate vertex object
+
+                    hash vertex into unordered_map
+                    if it is already there use that index
+                        ie add that index to indicies
+                    if not
+                        add vertex_object to to hash map
+                            with index current vertex index
+                        add vertex_object to Mesh
+                        current_vertex_index +=1
+*/
+
+template <voxel_utility::VoxelLike T>
+Mesh
+ambient_occlusion_mesher(T voxel_object) {
+    std::vector<uint16_t> indicies;
+    std::vector<VoxelOffset> indexed_vertices;
+    std::vector<MatColorId> indexed_colors;
+    std::vector<glm::i8vec3> indexed_normals;
+    std::vector<uint8_t> indexed_occlusions;
+
+    VoxelOffset size = voxel_object.get_size();
+    VoxelOffset offset = voxel_object.get_offset();
+
+    std::unordered_map<Vertex, uint16_t> vertex_ids;
+
+    uint16_t current_vertex_index = 0;
+    for (size_t dim_major_index = 0; dim_major_index < 3; dim_major_index++) {
+        size_t dim_minor_index_1 = (dim_major_index + 1) % 3;
+        size_t dim_minor_index_2 = (dim_major_index + 2) % 3;
+
+        VoxelOffset major_direction({0, 0, 0});
+        major_direction[dim_major_index] = 1;
+
+        VoxelOffset minor_direction_1({0, 0, 0});
+        minor_direction_1[dim_minor_index_1] = 1;
+
+        VoxelOffset minor_direction_2({0, 0, 0});
+        minor_direction_2[dim_minor_index_2] = 1;
+
+        for (VoxelDim major_index = 0; major_index < size[dim_major_index];
+             major_index++) {
+            for (VoxelDim minor_index_1 = 0; minor_index_1 < size[dim_minor_index_1];
+                 minor_index_1++) {
+                for (VoxelDim minor_index_2 = 0;
+                     minor_index_2 < size[dim_minor_index_2]; minor_index_2++) {
+                    // is there a better way to write this?
+                    VoxelOffset position;
+                    position[dim_major_index] = major_index;
+                    position[dim_minor_index_1] = minor_index_1;
+                    position[dim_minor_index_2] = minor_index_2;
+
+                    auto corners = analyze_voxel_interface(
+                        voxel_object, position, major_direction, minor_direction_1,
+                        minor_direction_2
+                    );
+
+                    if (!corners) {
+                        continue;
+                    }
+
+                    uint16_t corner_indicies[4] = {0, 0, 0, 0};
+                    // if the vertex already exists
+                    for (size_t i = 0; i < 4; i++) {
+                        const Vertex& vertex = corners.value()[i];
+                        auto index_itr = vertex_ids.find(vertex);
+                        if (index_itr != vertex_ids.end()) {
+
+                            corner_indicies[i] = vertex_ids.at(vertex);
+
+                            indexed_colors.push_back(vertex.mat_color_id);
+                            indexed_normals.push_back(vertex.normal);
+                            indexed_occlusions.push_back(vertex.ambient_occlusion);
+                            indexed_vertices.push_back(vertex.position + offset);
+
+                        } else {
+                            // if the vertex does not already exist
+                            // add the vertex to the map
+                            vertex_ids.insert({vertex, current_vertex_index});
+                            // assign the corner to that index
+                            corner_indicies[i] = current_vertex_index;
+                            // increment the index by one
+                            current_vertex_index++;
+                        }
+                    }
+
+                    indicies.push_back(corner_indicies[0]);
+                    indicies.push_back(corner_indicies[1]);
+                    indicies.push_back(corner_indicies[2]);
+
+                    indicies.push_back(corner_indicies[2]);
+                    indicies.push_back(corner_indicies[3]);
+                    indicies.push_back(corner_indicies[1]);
+                }
+            }
+        }
+    }
+    return Mesh(
+        indicies, indexed_vertices, indexed_colors, indexed_normals,
+        voxel_object.get_color_ids(), size, offset
     );
 }
 

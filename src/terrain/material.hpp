@@ -59,10 +59,10 @@ struct Material {
         element_id(element_id_in), name(name_in){};
     // vector of <name hex color> for possible colors
     std::vector<std::pair<const std::string, ColorInt>> color;
-    float speed_multiplier = 1;     // speed on this material compared to base
-    bool solid = false;             // Is the material solid?
-    MaterialId element_id = 0;      // The ID of the material (Air is 0)
-    const std::string name = "Air"; // The material name
+    float speed_multiplier = 1;         // speed on this material
+    bool solid = false;                 // Is the material solid?
+    MaterialId element_id = AIR_MAT_ID; // The ID of the material (Air is 0)
+    const std::string name = "Air";     // The material name
     // int8_t deterioration from wind
     // int8_t deterioration from water
 };

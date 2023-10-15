@@ -180,7 +180,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     sop(TileIndex xyz) const {
         return {
             static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
-            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))
+        };
     }
 
     /**
@@ -199,7 +200,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
         }
         return {
             static_cast<Dim>(xyz / (ym * zm)), static_cast<Dim>((xyz / zm) % ym),
-            static_cast<Dim>(xyz % (zm))};
+            static_cast<Dim>(xyz % (zm))
+        };
     }
 
     /**
@@ -366,6 +368,11 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return previous_out_color;
     }
 
+    [[nodiscard]] inline ColorInt
+    get_voxel(VoxelOffset position) const {
+        return get_voxel(position.x, position.y, position.z);
+    }
+
     [[nodiscard]] inline VoxelColorId
     get_voxel_color_id(Dim x, Dim y, Dim z) const {
         // if not in range, then considered to be air
@@ -374,6 +381,11 @@ class TerrainBase : public voxel_utility::VoxelBase {
         // use mat color id for voxel color id because the tile has that data
         // it is therefore just a look up. (pointer dereference)
         return get_tile(x, y, z)->get_mat_color_id();
+    }
+
+    [[nodiscard]] inline VoxelColorId
+    get_voxel_color_id(VoxelOffset position) const {
+        return get_voxel_color_id(position.x, position.y, position.z);
     }
 
     /**

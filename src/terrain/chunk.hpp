@@ -97,6 +97,11 @@ class Chunk : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] ColorInt get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const;
 
+    [[nodiscard]] ColorInt
+    get_voxel(VoxelOffset position) const {
+        return get_voxel(position.x, position.y, position.z);
+    }
+
     /**
      * @brief Get the voxel color id
      *
@@ -109,9 +114,9 @@ class Chunk : public voxel_utility::VoxelBase {
     get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const;
 
     [[nodiscard]] inline MatColorId
-    get_voxel_color_id(VoxelOffset voxel_position) const {
-        return get_voxel_color_id(voxel_position.x, voxel_position.y, voxel_position.z);
-    };
+    get_voxel_color_id(VoxelOffset position) const {
+        return get_voxel_color_id(position.x, position.y, position.z);
+    }
 
     /**
      * @brief Get the colors used in terrain.
