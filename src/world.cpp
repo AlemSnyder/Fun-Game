@@ -23,6 +23,7 @@
 #include "world.hpp"
 
 #include "entity/mesh.hpp"
+#include "logging.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -62,10 +63,12 @@ World::World(const std::string& biome_name, MapTile_t tile_type) :
         3, 3, macro_tile_size, height, 5, biome_, {0, 0, 0, 0, tile_type, 0, 0, 0, 0}
     ) {}
 
-void
+// TODO optimize
+// This is consistently taking a total of 7+ seconds to run
+__attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {
     const auto& chunks = terrain_main_.get_chunks();
-    //entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
+    // entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
     entity::Mesh chunk_mesh = entity::ambient_occlusion_mesher(chunks[chunk_pos]);
 
     chunk_mesh.change_color_indexing(
@@ -88,6 +91,7 @@ World::update_single_mesh(TerrainDim3 tile_sop) {
 
 void
 World::update_all_chunks_mesh() {
+    LOG_DEBUG(logging::terrain_logger, "Begin load chunks mesh");
     size_t num_chunks = terrain_main_.get_chunks().size();
     if (chunks_mesh_.size() != num_chunks) {
         chunks_mesh_.clear();
@@ -101,6 +105,8 @@ World::update_all_chunks_mesh() {
 
     for (size_t i = 0; i < num_chunks; i++)
         update_single_mesh(i);
+
+    LOG_DEBUG(logging::terrain_logger, "End load chunks mesh");
 }
 
 void

@@ -37,11 +37,7 @@ struct std::hash<entity::Vertex> {
                             | (vertex.normal.y << 1)
                             | (vertex.normal.z);
 
-        return position_hash << 32
-             | vertex.mat_color_id << 16
-             | normal_hash << 8
-             | vertex.ambient_occlusion;
+        return position_hash ^ vertex.mat_color_id ^ normal_hash ^ vertex.ambient_occlusion;
         /* clang-format on */
     }
 };
-
