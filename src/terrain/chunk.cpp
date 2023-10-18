@@ -120,4 +120,38 @@ terrain::Chunk::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
     );
 }
 
+std::vector<MatColorId>
+ChunkData::get_mat_color_from_chunk(const Chunk& chunk) {
+    std::vector<MatColorId> out;
+    out.reserve(
+        (Chunk::SIZE + 2) * (terrain::Chunk::SIZE + 2) * (terrain::Chunk::SIZE + 2)
+    );
+    for (VoxelDim x = -1; x < static_cast<VoxelDim>(Chunk::SIZE + 1); x++) {
+        for (VoxelDim y = -1; y < static_cast<VoxelDim>(Chunk::SIZE + 1); y++) {
+            for (VoxelDim z = -1; z < static_cast<VoxelDim>(Chunk::SIZE + 1); z++) {
+                out.push_back(chunk.get_voxel_color_id(x, y, z));
+            }
+        }
+    }
+    return out;
+}
+
+MatColorId
+ChunkData::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
+    if (x < -1 || y < -1 || z < -1) {
+        return AIR_MAT_COLOR_ID; // 0
+    }
+    if (x > static_cast<VoxelDim>(Chunk::SIZE + 1)
+        || y > static_cast<VoxelDim>(Chunk::SIZE + 1)
+        || z > static_cast<VoxelDim>(Chunk::SIZE + 1)) {
+        return AIR_MAT_COLOR_ID; // 0
+    }
+
+    size_t position = ((x + 1)
+                       * (static_cast<VoxelDim>(Chunk::SIZE + 2)
+                          * static_cast<VoxelDim>(Chunk::SIZE + 2)))
+                      + ((y + 1) * static_cast<VoxelDim>(Chunk::SIZE + 2)) + z + 1;
+    return data_[position];
+}
+
 } // namespace terrain

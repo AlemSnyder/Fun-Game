@@ -160,7 +160,7 @@ analyze_voxel_interface(
     bool should_reverse = false;
 
     std::vector<Vertex> out;
-    VoxelColorId color = 0;
+    VoxelColorId color;
     if (voxel_a == AIR_MAT_COLOR_ID) {
         color = voxel_b;
         normal = -normal;

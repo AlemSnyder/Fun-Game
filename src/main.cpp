@@ -57,6 +57,30 @@ MacroMap() {
 }
 
 int
+ChunkDataTest() {
+    World world("base", 6, 6);
+
+    const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
+
+    terrain::ChunkData chunk_data(chunk);
+
+    for (VoxelDim x = -1; x < terrain::Chunk::SIZE; x++) {
+        for (VoxelDim y = -1; y < terrain::Chunk::SIZE; y++) {
+            for (VoxelDim z = -1; z < terrain::Chunk::SIZE; z++) {
+                MatColorId chunk_mat_color = chunk.get_voxel_color_id(x, y, z);
+                MatColorId chunk_data_mat_color_id =
+                    chunk_data.get_voxel_color_id(x, y, z);
+                if (chunk_mat_color != chunk_data_mat_color_id) {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+int
 NoiseTest() {
     quill::Logger* logger = quill::get_logger();
 
@@ -111,7 +135,8 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data);
 
@@ -315,6 +340,8 @@ main(int argc, char** argv) {
         return LogTest();
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
+    } else if (run_function == "ChunkDataTest") {
+        return ChunkDataTest();
     } else if (run_function == "LuaTest") {
         auto biome = terrain::generation::Biome("base");
         LOG_DEBUG(logging::lua_logger, "{}", biome.get_map());

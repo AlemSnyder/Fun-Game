@@ -69,7 +69,7 @@ __attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {
     const auto& chunks = terrain_main_.get_chunks();
     // entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
-    entity::Mesh chunk_mesh = entity::ambient_occlusion_mesher(chunks[chunk_pos]);
+    entity::Mesh chunk_mesh = entity::ambient_occlusion_mesher(terrain::ChunkData( chunks[chunk_pos]));
 
     chunk_mesh.change_color_indexing(
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()

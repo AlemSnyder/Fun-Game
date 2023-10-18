@@ -135,4 +135,83 @@ class Chunk : public voxel_utility::VoxelBase {
     void R_merge(NodeGroup& g1, std::set<NodeGroup*>& to_merge);
 };
 
+class ChunkData : public voxel_utility::VoxelBase {
+ public:
+    const std::vector<MatColorId> data_;
+    const VoxelOffset offset_;
+    const std::vector<ColorInt>& color_ids_;
+
+    [[nodiscard]] std::vector<MatColorId> get_mat_color_from_chunk(const Chunk& chunk);
+
+    inline ChunkData(const Chunk& chunk) :
+        data_(get_mat_color_from_chunk(chunk)), offset_(chunk.get_offset()),
+        color_ids_(chunk.get_color_ids()){};
+
+    /**
+     * @brief Used for getting mesh
+     *
+     * @return VoxelOffset offset of chunk in world space
+     */
+    [[nodiscard]] inline VoxelOffset
+    get_offset() const {
+        return offset_;
+    }
+
+    /**
+     * @brief Get the size of a chunk
+     *
+     * @return VoxelSize vector of Chunk::SIZE
+     */
+    [[nodiscard]] inline VoxelSize
+    get_size() {
+        return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
+    }
+
+    /**
+     * @brief Get the color of a tile
+     *
+     * @param x x position in chunk
+     * @param y y position in chunk
+     * @param z z position in chunk
+     * @return ColorInt tile color id
+     */
+    [[nodiscard]] inline ColorInt
+    get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
+        return get_voxel_color_id(x, y, z);
+    }
+
+    // This is questionable, but no narrowing conversion
+
+    [[nodiscard]] inline ColorInt
+    get_voxel(VoxelOffset position) const {
+        return get_voxel_color_id(position.x, position.y, position.z);
+    }
+
+    /**
+     * @brief Get the voxel color id
+     *
+     * @param x x position in chunk
+     * @param y y position in chunk
+     * @param z z position in chunk
+     * @return MatColorId material and color id
+     */
+    [[nodiscard]] MatColorId
+    get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const;
+
+    [[nodiscard]] inline MatColorId
+    get_voxel_color_id(VoxelOffset position) const {
+        return get_voxel_color_id(position.x, position.y, position.z);
+    }
+
+    /**
+     * @brief Get the colors used in terrain.
+     *
+     * @return const std::vector<ColorInt>&
+     */
+    [[nodiscard]] const inline std::vector<ColorInt>&
+    get_color_ids() const {
+        return color_ids_;
+    }
+};
+
 } // namespace terrain
