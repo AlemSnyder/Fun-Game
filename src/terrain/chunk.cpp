@@ -138,6 +138,11 @@ ChunkData::get_mat_color_from_chunk(const Chunk& chunk) {
 
 MatColorId
 ChunkData::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
+    // out side of data -> return 0
+    // In reality this should never be called.
+    // It might be beneficial to call Chunk get_voxel_..., but that would negate
+    // the benefit of copping the data.
+    // Not changing the code means it "fails" loudly
     if (x < -1 || y < -1 || z < -1) {
         return AIR_MAT_COLOR_ID; // 0
     }
@@ -145,6 +150,8 @@ ChunkData::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
         return AIR_MAT_COLOR_ID; // 0
     }
 
+    // stand vector position from 3D space
+    // That's not true. +1 because (-1,-1,-1) is in the zero vector position
     size_t position = ((x + 1) * (SIZE * SIZE)) + ((y + 1) * SIZE) + z + 1;
     return data_[position];
 }

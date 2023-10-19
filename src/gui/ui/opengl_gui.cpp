@@ -29,9 +29,10 @@ opengl_entry(World& world) {
     screen_size_t window_height = 800;
     screen_size_t shadow_map_size = 4096;
 
-    std::optional<GLFWwindow*> window = setup_opengl(window_width, window_height);
-    if (!window)
+    std::optional<GLFWwindow*> opt_window = setup_opengl(window_width, window_height);
+    if (!opt_window)
         return 1;
+    GLFWwindow* window = opt_window.value();
     setup_opengl_logging();
 
     // Vertex Arrays act like frame buffers.
@@ -50,8 +51,8 @@ opengl_entry(World& world) {
     setup(main_scene, world);
 
     do {
-        controls::computeMatricesFromInputs(window.value());
-        glfwGetWindowSize(window.value(), &window_width, &window_height);
+        controls::computeMatricesFromInputs(window);
+        glfwGetWindowSize(window, &window_width, &window_height);
         main_scene.update(window_width, window_width);
 
         // bind the the screen
@@ -60,22 +61,22 @@ opengl_entry(World& world) {
         // render to the screen
         QR.render(window_width, window_height, main_scene.get_scene(), 0);
 
-        if (controls::show_shadow_map(window.value())) {
+        if (controls::show_shadow_map(window)) {
             QR.render(512, 512, main_scene.get_depth_texture(), 0);
         }
 
         // Swap buffers
-        glfwSwapBuffers(window.value());
+        glfwSwapBuffers(window);
         glfwPollEvents();
 
     } // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(window.value(), GLFW_KEY_ESCAPE) != GLFW_PRESS
-           && glfwWindowShouldClose(window.value()) == 0);
+    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+           && glfwWindowShouldClose(window) == 0);
 
     // Cleanup VBO and shader
     glDeleteVertexArrays(1, &VertexArrayID);
 
-    glfwDestroyWindow(window.value());
+    glfwDestroyWindow(window);
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

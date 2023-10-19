@@ -136,30 +136,42 @@ class Mesh {
 
 }; // class Mesh
 
+/**
+ * @brief Analyzes two voxels and returns a vertex representation of the face
+ * between them.
+ *
+ * @details 80+% of this works
+ *
+ * @return std::optional<std::vector<Vertex>> an optional vector of four
+ * vertices. Returned object has a value only if there is a visible interface
+ * between the two given voxels.
+ */
 template <voxel_utility::VoxelLike T>
 std::optional<std::vector<Vertex>>
 analyze_voxel_interface(
     T voxel_object, VoxelOffset position, VoxelOffset major_direction,
     VoxelOffset minor_direction_1, VoxelOffset minor_direction_2
 ) {
-    // maybe change to different type
-    VoxelColorId voxel_a =
-        voxel_object.get_voxel_color_id(position.x, position.y, position.z);
+    VoxelColorId voxel_a = voxel_object.get_voxel_color_id(position);
 
     VoxelColorId voxel_b = voxel_object.get_voxel_color_id(position + major_direction);
 
-    if ((voxel_a == AIR_MAT_COLOR_ID) && (voxel_b == AIR_MAT_COLOR_ID)) {
+    // This tests if there is a visible face between the two voxels
+    // returns a optional without a value when there is not face
+    if ((voxel_a == AIR_MAT_COLOR_ID) && (voxel_b == AIR_MAT_COLOR_ID))
         return {};
-    }
-    if ((voxel_a != AIR_MAT_COLOR_ID) && (voxel_b != AIR_MAT_COLOR_ID)) {
+    if ((voxel_a != AIR_MAT_COLOR_ID) && (voxel_b != AIR_MAT_COLOR_ID))
         return {};
-    }
 
     VoxelOffset normal = major_direction;
 
     bool should_reverse = false;
 
     std::vector<Vertex> out;
+    // Set color as voxel that is not air
+    // set the normal to point from solid to air
+    // may need to reverse the direction of drawn vertices so that normal and
+    // opengl normal are the same (look up face culling)
     VoxelColorId color;
     if (voxel_a == AIR_MAT_COLOR_ID) {
         color = voxel_b;
@@ -179,6 +191,8 @@ analyze_voxel_interface(
                 position_1 = x;
                 position_2 = y;
             }
+            // ambient occlusion means less light when there are solid thing near the
+            // vertex
             bool solid_1 = voxel_object.get_voxel(
                 position + normal + (2 * position_1 - 1) * minor_direction_1
             );
@@ -197,14 +211,6 @@ analyze_voxel_interface(
     }
     return out;
 }
-
-/**
- * @brief Generates a Mesh given a voxel object
- *
- * @details Given a Voxel Object iterates over all the voxels and adds
- * unobscured surfaces to the Mesh.This mesher will have prebacked ambient
- * occlusion, and will use the same vertex when possible.
- */
 
 /*psudocode time
 
@@ -258,6 +264,13 @@ for dimension (x,y,z direction)
                         current_vertex_index +=1
 */
 
+/**
+ * @brief Generates a Mesh given a voxel object
+ *
+ * @details Given a Voxel Object iterates over all the voxels and adds
+ * unobscured surfaces to the Mesh.This mesher will have pre-backed ambient
+ * occlusion, and will use the same vertex when possible.
+ */
 template <voxel_utility::VoxelLike T>
 Mesh
 ambient_occlusion_mesher(T voxel_object) {

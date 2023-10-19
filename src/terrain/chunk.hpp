@@ -97,6 +97,12 @@ class Chunk : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] ColorInt get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const;
 
+    /**
+     * @brief Get the voxel color
+     *
+     * @param position VoxelOffset position in chunk
+     * @return ColorInt color as an integer
+     */
     [[nodiscard]] ColorInt
     get_voxel(VoxelOffset position) const {
         return get_voxel(position.x, position.y, position.z);
@@ -113,6 +119,12 @@ class Chunk : public voxel_utility::VoxelBase {
     [[nodiscard]] MatColorId
     get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const;
 
+    /**
+     * @brief Get the voxel color id
+     *
+     * @param position VoxelOffset position in chunk
+     * @return MatColorId material and color id
+     */
     [[nodiscard]] inline MatColorId
     get_voxel_color_id(VoxelOffset position) const {
         return get_voxel_color_id(position.x, position.y, position.z);
@@ -135,6 +147,16 @@ class Chunk : public voxel_utility::VoxelBase {
     void R_merge(NodeGroup& g1, std::set<NodeGroup*>& to_merge);
 };
 
+/**
+ * @brief ChunkData save the voxel color id data such that is can be rapidly accessed.
+ *
+ * @details ChunkData is used in the mesher. Not only is the data in the chunk
+ * important, but also the data that borders this chunk. The SIZE for ChunkData
+ * is the SIZE for Chunk plus two, one for each edge.
+ *
+ * The total data saved in ChunkData is 4 * 18 * 18 * 18 ~ 23 kb, small enough
+ * for a L1 cache. (I think I'm not an EE)
+ */
 class ChunkData : public voxel_utility::VoxelBase {
  public:
     static const VoxelDim SIZE = Chunk::SIZE + 2;
@@ -169,12 +191,7 @@ class ChunkData : public voxel_utility::VoxelBase {
     }
 
     /**
-     * @brief Get the color of a tile
-     *
-     * @param x x position in chunk
-     * @param y y position in chunk
-     * @param z z position in chunk
-     * @return ColorInt tile color id
+     * @deprecated This only exists for inheritance. Should not be used
      */
     [[nodiscard]] inline ColorInt
     get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
@@ -182,7 +199,9 @@ class ChunkData : public voxel_utility::VoxelBase {
     }
 
     // This is questionable, but no narrowing conversion
-
+    /**
+     * @deprecated This only exists for inheritance. Should not be used
+     */
     [[nodiscard]] inline ColorInt
     get_voxel(VoxelOffset position) const {
         return get_voxel_color_id(position.x, position.y, position.z);
@@ -199,6 +218,12 @@ class ChunkData : public voxel_utility::VoxelBase {
     [[nodiscard]] MatColorId
     get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const;
 
+    /**
+     * @brief Get the voxel color id
+     *
+     * @param position VoxelOffset position in chunk
+     * @return MatColorId material and color id
+     */
     [[nodiscard]] inline MatColorId
     get_voxel_color_id(VoxelOffset position) const {
         return get_voxel_color_id(position.x, position.y, position.z);
