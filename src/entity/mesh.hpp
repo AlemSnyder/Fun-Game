@@ -184,6 +184,7 @@ analyze_voxel_interface(
         for (VoxelDim y = 0; y < 2; y++) {
             VoxelDim position_1;
             VoxelDim position_2;
+            // reversing the order switches vertices 1 and 2 in figure 1 a
             if (should_reverse) {
                 position_1 = y;
                 position_2 = x;
@@ -201,9 +202,11 @@ analyze_voxel_interface(
             );
             uint8_t ambient_occlusion = solid_1 + solid_2;
 
+            /*clange-format off*/
             VoxelOffset vertex_position = position + position_1 * minor_direction_1
                                           + position_2 * minor_direction_2
                                           + major_direction;
+            /*clang-format on*/
             out.emplace_back(
                 vertex_position, glm::i8vec3(normal), color, ambient_occlusion
             );
@@ -346,11 +349,22 @@ ambient_occlusion_mesher(T voxel_object) {
                             current_vertex_index++;
                         }
                     }
+                    /*clange-format off*/
+                    /* Figure 1 a
+                      0 ------- 1  Wow did you know a square a actually two
+                      |       / |  triangles?! This is high level geometry
+                      |  1  /   |  that many people don't know. Now add the
+                      |   /  2  |  vertices in a counter-clock wise direction
+                      | /       |  so that the opengl thinks the normal is
+                      2 ------- 3  pointing toward the viewer.
+                    */
+                    /*clang-format on*/
 
+                    // triangle 1
                     indicies.push_back(corner_indicies[2]);
                     indicies.push_back(corner_indicies[1]);
                     indicies.push_back(corner_indicies[0]);
-
+                    // triangle 2
                     indicies.push_back(corner_indicies[2]);
                     indicies.push_back(corner_indicies[3]);
                     indicies.push_back(corner_indicies[1]);
