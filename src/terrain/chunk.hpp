@@ -137,6 +137,7 @@ class Chunk : public voxel_utility::VoxelBase {
 
 class ChunkData : public voxel_utility::VoxelBase {
  public:
+    static const VoxelDim SIZE = Chunk::SIZE + 2;
     const std::vector<MatColorId> data_;
     const VoxelOffset offset_;
     const std::vector<ColorInt>& color_ids_;

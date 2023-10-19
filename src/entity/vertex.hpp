@@ -1,4 +1,5 @@
 #include "../types.hpp"
+#include "../util/hash_combine.hpp"
 
 #include <glm/glm.hpp>
 
@@ -28,16 +29,22 @@ template <>
 struct std::hash<entity::Vertex> {
     size_t
     operator()(const entity::Vertex& vertex) const {
-        size_t position_hash = static_cast<uint32_t>(
-            vertex.position.x ^ vertex.position.y ^ vertex.position.z
-        );
+        size_t result = 0;
 
-        /* clang-format off */
-        uint8_t normal_hash = (vertex.normal.x << 2)
-                            | (vertex.normal.y << 1)
-                            | (vertex.normal.z);
+        // Position
+        utils::hash_combine(result, vertex.position.x);
+        utils::hash_combine(result, vertex.position.y);
+        utils::hash_combine(result, vertex.position.z);
 
-        return position_hash ^ vertex.mat_color_id ^ normal_hash ^ vertex.ambient_occlusion;
-        /* clang-format on */
+        // Normal
+        utils::hash_combine(result, vertex.normal.x << 2);
+        utils::hash_combine(result, vertex.normal.y << 1);
+        utils::hash_combine(result, vertex.normal.z);
+
+        // Color ID and ambient occlusion
+        utils::hash_combine(result, vertex.mat_color_id);
+        utils::hash_combine(result, vertex.ambient_occlusion);
+
+        return result;
     }
 };
