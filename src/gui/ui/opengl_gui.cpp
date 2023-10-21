@@ -31,6 +31,7 @@ opengl_entry(World& world) {
 
     std::optional<GLFWwindow*> opt_window = setup_opengl(window_width, window_height);
     if (!opt_window)
+        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
         return 1;
     GLFWwindow* window = opt_window.value();
     setup_opengl_logging();

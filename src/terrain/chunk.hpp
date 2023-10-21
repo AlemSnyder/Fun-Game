@@ -193,7 +193,7 @@ class ChunkData : public voxel_utility::VoxelBase {
     /**
      * @deprecated This only exists for inheritance. Should not be used
      */
-    [[nodiscard]] inline ColorInt
+    [[deprecated]] [[nodiscard]] inline ColorInt
     get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
         return get_voxel_color_id(x, y, z);
     }
@@ -202,7 +202,7 @@ class ChunkData : public voxel_utility::VoxelBase {
     /**
      * @deprecated This only exists for inheritance. Should not be used
      */
-    [[nodiscard]] inline ColorInt
+    [[deprecated]] [[nodiscard]] inline ColorInt
     get_voxel(VoxelOffset position) const {
         return get_voxel_color_id(position.x, position.y, position.z);
     }

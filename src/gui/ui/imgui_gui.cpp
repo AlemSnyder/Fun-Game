@@ -48,8 +48,10 @@ imgui_entry(World& world) {
     screen_size_t shadow_map_size = 4096;
 
     std::optional<GLFWwindow*> opt_window = setup_opengl(window_width, window_height);
-    if (!opt_window)
+    if (!opt_window){
+        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
         return 1;
+    }
     GLFWwindow* window = opt_window.value();
     setup_opengl_logging();
 

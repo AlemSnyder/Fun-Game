@@ -202,11 +202,12 @@ analyze_voxel_interface(
             );
             uint8_t ambient_occlusion = solid_1 + solid_2;
 
-            /*clange-format off*/
-            VoxelOffset vertex_position = position + position_1 * minor_direction_1
-                                          + position_2 * minor_direction_2
-                                          + major_direction;
-            /*clang-format on*/
+            //clang-format off
+            VoxelOffset vertex_position = position
+                                        + position_1 * minor_direction_1
+                                        + position_2 * minor_direction_2
+                                        + major_direction;
+            //clang-format on
             out.emplace_back(
                 vertex_position, glm::i8vec3(normal), color, ambient_occlusion
             );
@@ -349,7 +350,8 @@ ambient_occlusion_mesher(T voxel_object) {
                             current_vertex_index++;
                         }
                     }
-                    /*clange-format off*/
+                    //clang-format off
+
                     /* Figure 1 a
                       0 ------- 1  Wow did you know a square a actually two
                       |       / |  triangles?! This is high level geometry
@@ -358,7 +360,8 @@ ambient_occlusion_mesher(T voxel_object) {
                       | /       |  so that the opengl thinks the normal is
                       2 ------- 3  pointing toward the viewer.
                     */
-                    /*clang-format on*/
+
+                    //clang-format on
 
                     // triangle 1
                     indicies.push_back(corner_indicies[2]);
