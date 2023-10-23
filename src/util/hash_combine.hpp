@@ -6,9 +6,9 @@ namespace utils {
 
 /**
  * @brief Boost hash combine hash algorithm.
- * 
+ *
  * @details Modifies seed depending on the value v given.
-*/
+ */
 template <class T>
 inline void
 hash_combine(std::size_t& seed, const T& v) {
