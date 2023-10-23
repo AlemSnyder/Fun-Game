@@ -47,9 +47,12 @@ imgui_entry(World& world) {
     screen_size_t window_height = 800;
     screen_size_t shadow_map_size = 4096;
 
-    std::optional<GLFWwindow*> window = setup_opengl(window_width, window_height);
-    if (!window)
+    std::optional<GLFWwindow*> opt_window = setup_opengl(window_width, window_height);
+    if (!opt_window) {
+        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
         return 1;
+    }
+    GLFWwindow* window = opt_window.value();
     setup_opengl_logging();
 
     // send color texture to gpu
@@ -71,7 +74,7 @@ imgui_entry(World& world) {
     const char* glsl_version = "#version 450";
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window.value(), true);
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Our state
@@ -84,7 +87,7 @@ imgui_entry(World& world) {
 
     //! Main loop
 
-    while (!glfwWindowShouldClose(window.value())) {
+    while (!glfwWindowShouldClose(window)) {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if
         // dear imgui wants to use your inputs.
@@ -99,7 +102,7 @@ imgui_entry(World& world) {
         // TODO
         // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
 
-        glfwGetWindowSize(window.value(), &window_width, &window_height);
+        glfwGetWindowSize(window, &window_width, &window_height);
         main_scene.update(window_width, window_height);
 
         glm::vec3 position = controls::get_position_vector();
@@ -132,7 +135,7 @@ imgui_entry(World& world) {
             );
 
             if (ImGui::IsWindowFocused()) {
-                controls::computeMatricesFromInputs(window.value());
+                controls::computeMatricesFromInputs(window);
             }
 
             ImGui::End();
@@ -189,7 +192,7 @@ imgui_entry(World& world) {
 
         {
             ImGui::Begin("OpenGL Texture Text");
-            if (glfwGetKey(window.value(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 ImGui::SetWindowFocus();
             }
             ImGui::Text("pointer MS = %i", main_scene.get_scene());
@@ -200,7 +203,7 @@ imgui_entry(World& world) {
             ImGui::End();
         }
 
-        if (glfwGetKey(window.value(), GLFW_KEY_TAB) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
             ImGui::Begin("Shadow Depth Texture");
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
@@ -216,7 +219,7 @@ imgui_entry(World& world) {
         // Rendering
         ImGui::Render();
         int display_w, display_h;
-        glfwGetFramebufferSize(window.value(), &display_w, &display_h);
+        glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(
             clear_color.x * clear_color.w, clear_color.y * clear_color.w,
@@ -225,7 +228,7 @@ imgui_entry(World& world) {
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapBuffers(window.value());
+        glfwSwapBuffers(window);
     }
 
     // Cleanup VBO and shader
@@ -236,7 +239,7 @@ imgui_entry(World& world) {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window.value());
+    glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;

@@ -57,13 +57,18 @@ using ColorId = uint8_t;
 static constexpr MaterialId MAT_ANY_MATERIAL = static_cast<MaterialId>(-1);
 static constexpr ColorId COLOR_ANY_COLOR = static_cast<ColorId>(-1);
 
+static constexpr MaterialId AIR_MAT_ID = 0;
+static constexpr ColorId AIR_COLOR_ID = 0;
+
 // should be size of MaterialId + size of ColorId
 using MatColorId = uint16_t;
 static_assert(sizeof(MaterialId) + sizeof(ColorId) == sizeof(MatColorId));
 
+static constexpr MatColorId AIR_MAT_COLOR_ID = 0;
+
 /*********
  * Biome *
-**********/
+ *********/
 
 // possible tile types
 using MapTile_t = uint16_t;

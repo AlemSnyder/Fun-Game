@@ -59,7 +59,7 @@ class QuadRenderer {
      */
     QuadRenderer(ShaderHandler shader_handler = ShaderHandler());
 
-    ~QuadRenderer();
+    virtual ~QuadRenderer();
 
     /**
      * @brief renders the given meshes

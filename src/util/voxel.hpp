@@ -14,7 +14,9 @@ namespace voxel_utility {
 class VoxelBase {
  public:
     ColorInt get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const;
+    ColorInt get_voxel(const VoxelOffset& position) const;
     VoxelColorId get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const;
+    ColorInt get_voxel_color_id(const VoxelOffset& position) const;
     std::vector<ColorInt> get_color_ids() const;
     VoxelSize get_size() const;
     VoxelOffset get_offset() const;

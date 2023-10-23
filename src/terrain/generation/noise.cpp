@@ -7,8 +7,6 @@
 #include <cmath>
 #include <numbers>
 
-#define maxPrimeIndex 10
-
 namespace terrain {
 
 namespace generation {
@@ -20,7 +18,7 @@ generation::FractalNoise::get_noise(NoisePosition x, NoisePosition y) const {
         frequency /= 2;
         amplitude *= persistence_;
         total += interpolated_noise_(
-                     (primeIndex_ + i) % maxPrimeIndex, x / frequency, y / frequency
+                     (primeIndex_ + i) % NUM_PRIMES, x / frequency, y / frequency
                  )
                  * amplitude;
     }

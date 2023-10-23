@@ -67,25 +67,6 @@ LandGenerator::LandGenerator(const Json::Value& data) :
     }
 }
 
-size_t
-LandGenerator::get_num_stamps(const Json::Value& biome) {
-    if (biome["Type"].asString() == "Positions") {
-        return biome["Positions"].size();
-    } else if (biome["Type"].asString() == "Grid") {
-        int num = biome[biome["Type"].asCString()]["number"].asInt();
-        return num * num;
-    } else {
-        return biome[biome["Type"].asString()]["number"].asInt();
-    }
-}
-
-TileStamp
-LandGenerator::get_stamp() const {
-    TileStamp out = stamp_generators_[current_region]->get_stamp(current_sub_region);
-
-    return out;
-}
-
 void
 LandGenerator::next() {
     current_sub_region++;
@@ -98,13 +79,6 @@ LandGenerator::next() {
 
 namespace stamps {
 
-JsonToTile::JsonToTile(const Json::Value& data) :
-    height_(data["Height"].asInt()), height_variance_(data["DH"].asInt()),
-    width_(data["Size"].asInt()), width_variance_(data["DC"].asInt()),
-    elements_can_stamp_(read_elements(data["Can_Overwrite"])),
-    stamp_material_id_(data["Material_id"].asInt()),
-    stamp_color_id_(data["Color_id"].asInt()) {}
-
 TileStamp
 JsonToTile::get_volume(
     glm::imat2x2 center, TerrainOffset width, TerrainOffset height,
@@ -114,7 +88,8 @@ JsonToTile::get_volume(
     TerrainOffset center_x = rand() % (center[1][0] - center[0][0] + 1) + center[0][0];
     // same with y
     TerrainOffset center_y = rand() % (center[1][1] - center[0][1] + 1) + center[0][1];
-    // size 'centered' at width and can be between width-width_variance to width + width_variance
+    // size 'centered' at width and can be between width-width_variance to width +
+    // width_variance
     TerrainOffset size_x = rand() % (2 * width_variance + 1) + width - width_variance;
     TerrainOffset size_y = rand() % (2 * width_variance + 1) + width - width_variance;
     // convert center and side off sets to rectangle edge values
@@ -140,10 +115,11 @@ JsonToTile::get_volume(
 
     // z_max centered at height
     TerrainOffset z_max = rand() % (height_variance + 1) + height - height_variance / 2;
+
     return {
         x_min,
         y_min,
-        0,
+        0, // y_min = 0
         x_max,
         y_max,
         z_max,
@@ -172,10 +148,6 @@ JsonToTile::read_elements(const Json::Value& data) {
     }
     return out;
 }
-
-FromRadius::FromRadius(const Json::Value& data) :
-    JsonToTile(data), radius_(data["Radius"]["radius"].asInt()),
-    number_(data["Radius"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 
 TileStamp
 FromRadius::get_stamp(size_t current_sub_region) const {
@@ -236,10 +208,6 @@ FromPosition::get_stamp(size_t current_sub_region) const {
 
     return get_volume(center, width_, height_, width_variance_, height_variance_);
 }
-
-FromGrid::FromGrid(const Json::Value& data) :
-    JsonToTile(data), radius_(data["Grid"]["radius"].asInt()),
-    number_(data["Grid"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 
 TileStamp
 FromGrid::get_stamp(size_t current_sub_region) const {

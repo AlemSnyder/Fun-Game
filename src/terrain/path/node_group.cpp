@@ -75,17 +75,17 @@ NodeGroup::merge_groups(NodeGroup other) {
 }
 
 float
-NodeGroup::get_center_x() {
+NodeGroup::get_center_x() const {
     return center_x;
 }
 
 float
-NodeGroup::get_center_y() {
+NodeGroup::get_center_y() const {
     return center_y;
 }
 
 float
-NodeGroup::get_center_z() {
+NodeGroup::get_center_z() const {
     return center_z;
 }
 
