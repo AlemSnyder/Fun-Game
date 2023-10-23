@@ -194,10 +194,10 @@ analyze_voxel_interface(
             }
             // ambient occlusion means less light when there are solid thing near the
             // vertex
-            bool solid_1 = voxel_object.get_voxel(
+            bool solid_1 = voxel_object.get_voxel_color_id(
                 position + normal + (2 * position_1 - 1) * minor_direction_1
             );
-            bool solid_2 = voxel_object.get_voxel(
+            bool solid_2 = voxel_object.get_voxel_color_id(
                 position + normal + (2 * position_2 - 1) * minor_direction_2
             );
             uint8_t ambient_occlusion = solid_1 + solid_2;
