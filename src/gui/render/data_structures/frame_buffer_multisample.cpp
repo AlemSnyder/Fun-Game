@@ -24,7 +24,7 @@ FrameBufferMultisample::FrameBufferMultisample(
     // -----------------
     glGenFramebuffers(1, &frame_buffer);
     FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
-    
+
     // texture
     glGenTextures(1, &render_texture);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, render_texture);
@@ -76,9 +76,14 @@ FrameBufferMultisample::FrameBufferMultisample(
 
     // connect the texture to the frame buffer
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_single,
-        0
+        GL_FRAMEBUFFER,        // This is connected to the current framebuffer
+        GL_COLOR_ATTACHMENT0,  // Rendered from out location 0
+        GL_TEXTURE_2D,         // This is a 2D texture
+        render_texture_single, // Texture ID
+        0                      // must be 0.
     );
+    // I know "must be 0" isn't help full, but that comes directly from the
+    // documentation.
 
     framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 

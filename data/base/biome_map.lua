@@ -25,8 +25,7 @@ function map(number)
             -- This biome only defines tile types between 0, and 6
             if height_map_value > 6 then
                 height_map_value = 6
-            end
-            if height_map_value < 0 then
+            elseif height_map_value < 0 then
                 height_map_value = 0
             end
             -- assign tile type to index in map

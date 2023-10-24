@@ -59,10 +59,10 @@ struct Material {
         element_id(element_id_in), name(name_in){};
     // vector of <name hex color> for possible colors
     std::vector<std::pair<const std::string, ColorInt>> color;
-    float speed_multiplier = 1;     // speed on this material compared to base
-    bool solid = false;             // Is the material solid?
-    MaterialId element_id = 0;      // The ID of the material (Air is 0)
-    const std::string name = "Air"; // The material name
+    float speed_multiplier = 1;         // speed on this material
+    bool solid = false;                 // Is the material solid?
+    MaterialId element_id = AIR_MAT_ID; // The ID of the material (Air is 0)
+    const std::string name = "Air";     // The material name
     // int8_t deterioration from wind
     // int8_t deterioration from water
 };
@@ -104,11 +104,17 @@ material_in(
     const std::set<std::pair<MaterialId, ColorId>> materials, MaterialId material_id,
     ColorId color_id
 ) {
-    for (auto element : materials) {
-        if ((element.first == MAT_ANY_MATERIAL || element.first == material_id)
-            && (element.second == COLOR_ANY_COLOR || element.second == color_id)) {
+    auto same_mat = [&material_id](MaterialId m) {
+        return m == MAT_ANY_MATERIAL || m == material_id;
+    };
+
+    auto same_color = [&color_id](ColorId c) {
+        return c == COLOR_ANY_COLOR || c == color_id;
+    };
+
+    for (const auto& [mat, color] : materials) {
+        if (same_mat(mat) && same_color(color))
             return true;
-        }
     }
 
     return false;

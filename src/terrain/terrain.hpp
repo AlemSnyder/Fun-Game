@@ -43,7 +43,9 @@
 
 #include <array>
 #include <cstdint>
+#include <functional>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -521,16 +523,16 @@ class Terrain : public TerrainBase {
      * @param goal end tile
      * @return std::vector<const Tile *> path
      */
-    [[nodiscard]] std::vector<const Tile*>
+    [[nodiscard]] std::optional<std::vector<const Tile*>>
     get_path_Astar(const Tile* start, const Tile* goal) const;
     /**
      * @brief Get a path between start, and goal using the A* algorithm
      *
      * @param start start NodeGroup
      * @param goal end NodeGroup
-     * @return std::vector<const NodeGroup *> path
+     * @return std::optional<std::vector<const NodeGroup*>> path
      */
-    [[nodiscard]] std::vector<const NodeGroup*>
+    [[nodiscard]] std::optional<std::vector<const NodeGroup*>>
     get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const;
     /**
      * @brief Get a path between start, and any goal using the breadth first
@@ -538,9 +540,9 @@ class Terrain : public TerrainBase {
      *
      * @param start start tile
      * @param goal set of excitable goals
-     * @return std::vector<const Tile *> path to closest goal
+     * @return std::optional<std::vector<const Tile*>> path to closest goal
      */
-    [[nodiscard]] std::vector<const Tile*>
+    [[nodiscard]] std::optional<std::vector<const Tile*>>
     get_path_breadth_first(const Tile* start, const std::set<const Tile*> goal);
     /**
      * @brief Get a path between start, and any goal using the breadth first
@@ -548,9 +550,9 @@ class Terrain : public TerrainBase {
      *
      * @param start start NodeGroup
      * @param goal set of excitable goals
-     * @return std::vector<const NodeGroup *> path to closest goal
+     * @return std::optional<std::vector<const NodeGroup*>> path to closest goal
      */
-    [[nodiscard]] std::vector<const NodeGroup*> get_path_breadth_first(
+    [[nodiscard]] std::optional<std::vector<const NodeGroup*>> get_path_breadth_first(
         const NodeGroup* start, const std::set<const NodeGroup*> goal
     ) const;
     /**
@@ -563,11 +565,10 @@ class Terrain : public TerrainBase {
      * @param compare way to sort best path
      * @return std::vector<const T *> path optimized by compare
      */
-    template <class T>
-    [[nodiscard]] std::vector<const T*> get_path(
+    template <class T, bool compare(Node<const T>*, Node<const T>*)>
+    [[nodiscard]] std::optional<std::vector<const T*>> get_path(
         const T* start, const std::set<const T*> goal,
-        const std::set<const T*> search_through,
-        std::function<bool(Node<const T>*, Node<const T>*)> compare
+        const std::set<const T*> search_through
     ) const;
     /**
      * @brief initialize chunks
@@ -595,6 +596,7 @@ class Terrain : public TerrainBase {
     get_Z_solid(TerrainOffset x, TerrainOffset y, TerrainOffset z) const;
 
  private:
+    // TODO This is probably the least safe function that could possibly exist
     // trace nodes through parents to reach start
     template <class T>
     void

@@ -112,7 +112,7 @@ class Node {            // Used to find paths.
      * @return float time from start to this node
      */
     inline float
-    get_time_cots() const {
+    get_time_cost() const {
         return g_cost_;
     }
 

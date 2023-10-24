@@ -62,6 +62,30 @@ MacroMap() {
 }
 
 int
+ChunkDataTest() {
+    World world("base", 6, 6);
+
+    const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
+
+    terrain::ChunkData chunk_data(chunk);
+
+    for (VoxelDim x = -1; x < terrain::Chunk::SIZE; x++) {
+        for (VoxelDim y = -1; y < terrain::Chunk::SIZE; y++) {
+            for (VoxelDim z = -1; z < terrain::Chunk::SIZE; z++) {
+                MatColorId chunk_mat_color = chunk.get_voxel_color_id(x, y, z);
+                MatColorId chunk_data_mat_color_id =
+                    chunk_data.get_voxel_color_id(x, y, z);
+                if (chunk_mat_color != chunk_data_mat_color_id) {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+int
 NoiseTest() {
     quill::Logger* logger = quill::get_logger();
 
@@ -116,8 +140,7 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data
-    };
+        biome_name, materials_json, biome_data};
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data);
 
@@ -164,20 +187,26 @@ path_finder_test(const std::string& path, const std::string& save_path) {
         start_end.second->get_z()
     );
 
-    std::vector<const terrain::Tile*> tile_path =
+    auto tile_path =
         world.get_terrain_main().get_path_Astar(start_end.first, start_end.second);
 
-    LOG_INFO(logger, "Path length: {}", tile_path.size());
+    if (!tile_path) {
+        LOG_WARNING(logger, "NO PATH FOUND");
+        world.qb_save_debug(save_path);
+        return 1;
+    }
 
-    if (tile_path.size() == 0) {
-        LOG_INFO(logger, "No path");
+    LOG_INFO(logger, "Path length: {}", tile_path.value().size());
+
+    if (tile_path.value().size() == 0) {
+        LOG_WARNING(logger, "NO PATH FOUND");
         world.qb_save_debug(save_path);
         return 1;
     }
 
     constexpr ColorId path_color_id = 5;
     const terrain::Material* path_mat = world.get_material(DEBUG_MATERIAL);
-    for (const terrain::Tile* tile : tile_path) {
+    for (const terrain::Tile* tile : tile_path.value()) {
         world.get_terrain_main()
             .get_tile(world.get_terrain_main().pos(tile))
             ->set_material(path_mat, path_color_id);
@@ -242,6 +271,8 @@ LogTest() {
 
 int
 main(int argc, char** argv) {
+    // #lizard forgives the complexity
+    // Because iff else over command line args
     argh::parser cmdl;
 
     cmdl.add_params({
@@ -313,6 +344,13 @@ main(int argc, char** argv) {
         return LogTest();
     } else if (run_function == "UI-imgui") {
         return imgui_entry_main();
+    } else if (run_function == "ChunkDataTest") {
+        return ChunkDataTest();
+    } else if (run_function == "LuaTest") {
+        auto biome = terrain::generation::Biome("base");
+        biome.get_map(16);
+        LOG_DEBUG(logging::lua_logger, "works?");
+        return 0;
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

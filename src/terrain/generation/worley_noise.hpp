@@ -75,7 +75,8 @@ class WorleyNoise : protected Noise {
     /**
      * @brief Get the noise value at given position.
      */
-    [[nodiscard]] virtual double get_noise(NoisePosition x, NoisePosition y) const override;
+    [[nodiscard]] virtual double
+    get_noise(NoisePosition x, NoisePosition y) const override;
 
  protected:
     [[nodiscard]] std::set<WorleyPoint>
@@ -88,13 +89,13 @@ class WorleyNoise : protected Noise {
 /**
  * @brief AlternativeWorleyNoise is a noise generator that uses a cosine to
  * interpolate between positive and negative points
- * 
+ *
  * @details This implementation uses one point per grid square and returns a
  * sum of radial cosines centered at each point.
  */
 class AlternativeWorleyNoise : public WorleyNoise {
  public:
-     /**
+    /**
      * @brief Create a new AlternativeWorleyNoise object.
      *
      * @details Default constructor sets tile_size to 1;
@@ -102,7 +103,8 @@ class AlternativeWorleyNoise : public WorleyNoise {
     inline AlternativeWorleyNoise(NoisePosition tile_size = 1) :
         WorleyNoise(tile_size) {}
 
-    [[nodiscard]] virtual double get_noise(NoisePosition x, NoisePosition y) const override;
+    [[nodiscard]] virtual double
+    get_noise(NoisePosition x, NoisePosition y) const override;
 
  private:
     [[nodiscard]] double

@@ -24,6 +24,7 @@
 
 #include "entity/mesh.hpp"
 #include "terrain/generation/map_tile.hpp"
+#include "logging.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -49,9 +50,7 @@ World::get_grass_grad_data(const Json::Value& materials_json) {
 }
 
 World::World(const std::string& biome_name, const std::string path) :
-    biome_(biome_name), terrain_main_(path, biome_) {
-    // initialize_chunks_mesh_();
-}
+    biome_(biome_name), terrain_main_(path, biome_) {}
 
 World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
     biome_(biome_name),
@@ -63,10 +62,12 @@ World::World(const std::string& biome_name, MapTile_t tile_type) :
     biome_(biome_name),
     terrain_main_(3, 3, macro_tile_size, height, 5, biome_, get_test_map(tile_type)) {}
 
-void
+__attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {
     const auto& chunks = terrain_main_.get_chunks();
-    entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
+    // entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
+    entity::Mesh chunk_mesh =
+        entity::ambient_occlusion_mesher(terrain::ChunkData(chunks[chunk_pos]));
 
     chunk_mesh.change_color_indexing(
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
@@ -88,6 +89,7 @@ World::update_single_mesh(TerrainDim3 tile_sop) {
 
 void
 World::update_all_chunks_mesh() {
+    LOG_DEBUG(logging::terrain_logger, "Begin load chunks mesh");
     size_t num_chunks = terrain_main_.get_chunks().size();
     if (chunks_mesh_.size() != num_chunks) {
         chunks_mesh_.clear();
@@ -101,6 +103,8 @@ World::update_all_chunks_mesh() {
 
     for (size_t i = 0; i < num_chunks; i++)
         update_single_mesh(i);
+
+    LOG_DEBUG(logging::terrain_logger, "End load chunks mesh");
 }
 
 void

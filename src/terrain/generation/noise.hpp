@@ -83,11 +83,9 @@ class FractalNoise : protected Noise {
      * @param persistence the strength of subsequent noise; between 0, and 1
      * @param primeIndex int for randomization (a worse version of a seed)
      */
-    FractalNoise(int numOctaves, double persistence, int primeIndex) {
-        num_octaves_ = numOctaves;
-        persistence_ = persistence;
-        primeIndex_ = primeIndex % NUM_PRIMES;
-    }
+    FractalNoise(int numOctaves, double persistence, int primeIndex) :
+        num_octaves_(numOctaves), persistence_(persistence),
+        primeIndex_(primeIndex % NUM_PRIMES) {}
 
     /**
      * @brief Get the value of the noise.
