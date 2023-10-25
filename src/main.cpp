@@ -346,11 +346,6 @@ main(int argc, char** argv) {
         return imgui_entry_main();
     } else if (run_function == "ChunkDataTest") {
         return ChunkDataTest();
-    } else if (run_function == "LuaTest") {
-        auto biome = terrain::generation::Biome("base");
-        biome.get_map(16);
-        LOG_DEBUG(logging::lua_logger, "works?");
-        return 0;
     } else {
         std::cout << "No known command" << std::endl;
         return 0;
