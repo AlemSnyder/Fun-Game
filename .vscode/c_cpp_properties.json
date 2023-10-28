@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/build",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/vendor/quill/include"
+                "${workspaceFolder}/vendor/quill/quill/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -24,7 +24,7 @@
             "includePath": [
                 "${workspaceFolder}/build",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/vendor/quill/include"
+                "${workspaceFolder}/vendor/quill/quill/include"
             ],
             "defines": [
                 "_DEBUG",

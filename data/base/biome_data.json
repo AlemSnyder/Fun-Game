@@ -33,9 +33,9 @@
                 "DS": 2,
                 "Height": 16,
                 "DH": 4,
+                "DC": 2,
                 "Radius": {
                     "radius": 16,
-                    "DC": 2,
                     "number": 8
                 }
             },
@@ -200,9 +200,9 @@
                         "DS": 10,
                         "Height": 8,
                         "DH": 2,
+                        "DC": 0,
                         "Grid": {
                             "radius": 16,
-                            "DC": 0,
                             "number": 2
                         }
                     }
@@ -248,9 +248,9 @@
                         "DS": 4,
                         "Height": 8,
                         "DH": 6,
+                        "DC": 2,
                         "Radius": {
                             "radius": 16,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -292,9 +292,9 @@
                         "DS": 2,
                         "Height": 16,
                         "DH": 3,
+                        "DC": 0,
                         "Grid": {
                             "radius": 16,
-                            "DC": 0,
                             "number": 2
                         }
                     }
@@ -336,9 +336,9 @@
                         "DS": 4,
                         "Height": 20,
                         "DH": 6,
+                        "DC": 2,
                         "Radius": {
                             "radius": 16,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -376,9 +376,9 @@
                         "DS": 2,
                         "Height": 28,
                         "DH": 3,
+                        "DC": 0,
                         "Grid": {
                             "radius": 16,
-                            "DC": 0,
                             "number": 2
                         }
                     }
@@ -416,9 +416,9 @@
                         "DS": 6,
                         "Height": 36,
                         "DH": 8,
+                        "DC": 2,
                         "Radius": {
                             "radius": 16,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -452,9 +452,9 @@
                         "DS": 6,
                         "Height": 42,
                         "DH": 3,
+                        "DC": 0,
                         "Grid": {
                             "radius": 16,
-                            "DC": 0,
                             "number": 2
                         }
                     }
@@ -488,9 +488,9 @@
                         "DS": 8,
                         "Height": 52,
                         "DH": 4,
+                        "DC": 2,
                         "Radius": {
                             "radius": 24,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -520,9 +520,9 @@
                         "DS": 4,
                         "Height": 62,
                         "DH": 4,
+                        "DC": 2,
                         "Radius": {
                             "radius": 20,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -552,9 +552,9 @@
                         "DS": 2,
                         "Height": 67,
                         "DH": 3,
+                        "DC": 1,
                         "Grid": {
                             "radius": 16,
-                            "DC": 1,
                             "number": 4
                         }
                     }
@@ -588,9 +588,9 @@
                         "DS": 4,
                         "Height": 65,
                         "DH": 4,
+                        "DC": 2,
                         "Radius": {
                             "radius": 18,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -644,9 +644,9 @@
                         "DS": 3,
                         "Height": 92,
                         "DH": 5,
+                        "DC": 1,
                         "Grid": {
                             "radius": 16,
-                            "DC": 1,
                             "number": 4
                         }
                     }
@@ -676,9 +676,9 @@
                         "DS": 6,
                         "Height": 60,
                         "DH": 4,
+                        "DC": 2,
                         "Radius": {
                             "radius": 24,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -696,9 +696,9 @@
                         "DS": 4,
                         "Height": 68,
                         "DH": 10,
+                        "DC": 2,
                         "Radius": {
                             "radius": 16,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -716,9 +716,9 @@
                         "DS": 4,
                         "Height": 74,
                         "DH": 8,
+                        "DC": 4,
                         "Radius": {
                             "radius": 12,
-                            "DC": 4,
                             "number": 16
                         }
                     },
@@ -736,9 +736,9 @@
                         "DS": 2,
                         "Height": 90,
                         "DH": 3,
+                        "DC": 2,
                         "Grid": {
                             "radius": 8,
-                            "DC": 2,
                             "number": 2
                         }
                     }
@@ -760,9 +760,9 @@
                         "DS": 4,
                         "Height": 28,
                         "DH": 6,
+                        "DC": 2,
                         "Radius": {
                             "radius": 16,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -780,9 +780,9 @@
                         "DS": 2,
                         "Height": 34,
                         "DH": 0,
+                        "DC": 0,
                         "Grid": {
                             "radius": 16,
-                            "DC": 0,
                             "number": 2
                         }
                     }
@@ -804,9 +804,9 @@
                         "DS": 4,
                         "Height": 40,
                         "DH": 6,
+                        "DC": 2,
                         "Radius": {
                             "radius": 16,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -824,9 +824,9 @@
                         "DS": 2,
                         "Height": 46,
                         "DH": 0,
+                        "DC": 0,
                         "Grid": {
                             "radius": 16,
-                            "DC": 0,
                             "number": 2
                         }
                     }
@@ -848,9 +848,9 @@
                         "DS": 4,
                         "Height": 52,
                         "DH": 6,
+                        "DC": 2,
                         "Radius": {
                             "radius": 16,
-                            "DC": 2,
                             "number": 16
                         }
                     },
@@ -868,9 +868,9 @@
                         "DS": 2,
                         "Height": 58,
                         "DH": 0,
+                        "DC": 0,
                         "Grid": {
                             "radius": 16,
-                            "DC": 0,
                             "number": 2
                         }
                     }

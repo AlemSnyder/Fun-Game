@@ -191,7 +191,7 @@ TerrainBase::stamp_tile_region(
 void
 TerrainBase::init_area(generation::MapTile& map_tile, generation::LandGenerator gen) {
     while (!gen.empty()) {
-        stamp_tile_region(gen.get_stamp(map_tile.get_rand_engine()));
+        stamp_tile_region(gen.get_stamp(map_tile.get_rand_engine()), map_tile.get_x(), map_tile.get_y());
         gen.next();
     }
     gen.reset();

@@ -92,10 +92,10 @@ TileStamp
 JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
     const {
     // center_x between center[1][0] and center[0][0] inclusive
-    std::uniform_int_distribution<TerrainOffset> center_x_dist(center[1][0], center[0][0]);
+    std::uniform_int_distribution<TerrainOffset> center_x_dist(center[0][0], center[1][0]);
     TerrainOffset center_x = center_x_dist(rand_engine);
     // same with y
-    std::uniform_int_distribution<TerrainOffset> center_y_dist(center[1][1], center[0][1]);
+    std::uniform_int_distribution<TerrainOffset> center_y_dist(center[0][1], center[1][1]);
     TerrainOffset center_y = center_y_dist(rand_engine);
     // size 'centered' at width and can be between width-width_variance to width +
     // width_variance
