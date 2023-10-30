@@ -70,6 +70,7 @@ target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
 # Add include dirs
 target_include_directories(FunGame PUBLIC "vendor")
+target_include_directories(FunGame PUBLIC "vendor/imgui")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
 # Set warning options
