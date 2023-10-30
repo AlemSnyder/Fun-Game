@@ -21,7 +21,7 @@ class MapTile {
     std::default_random_engine rand_engine_; // random number generator
 
  public:
-    MapTile(MapTile_t tile_type, MacroDim x = 0, MacroDim y = 0);
+    MapTile(MapTile_t tile_type, size_t seed, MacroDim x = 0, MacroDim y = 0);
 
     [[nodiscard]] inline MacroDim
     get_x() const {

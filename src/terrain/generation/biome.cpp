@@ -48,9 +48,9 @@ GrassData::GrassData(const Json::Value& json_grass_data) {
     grass_grad_length_ = grass_colors_.size();
 }
 
-Biome::Biome(const biome_json_data& biome_data) :
+Biome::Biome(const biome_json_data& biome_data, size_t seed) :
     materials_(init_materials(biome_data.materials_data)),
-    grass_data_(biome_data.materials_data["Dirt"]["Gradient"]) {
+    grass_data_(biome_data.materials_data["Dirt"]["Gradient"]), seed_(seed) {
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
 
@@ -142,7 +142,7 @@ Biome::get_map(MacroDim length) const {
     for (MacroDim x = 0; x < x_map_tiles; x++) {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             size_t i = x * y_map_tiles + y;
-            out.emplace_back(tile_map_map[i], x, y);
+            out.emplace_back(tile_map_map[i], seed_, x, y);
         }
     }
 

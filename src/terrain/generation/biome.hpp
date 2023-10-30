@@ -116,20 +116,22 @@ class Biome {
     // lua state that generates macro map
     sol::state lua_;
 
+    size_t seed_;
+
  public:
     /**
      * @brief Construct a new Biome object
      *
      * @param biome_data data containing biome_data material data and biome name
      */
-    Biome(const biome_json_data& biome_data);
+    Biome(const biome_json_data& biome_data, size_t seed);
 
     /**
      * @brief Construct a new Biome object
      *
      * @param biome_name name of biome
      */
-    Biome(const std::string& biome_name) : Biome(get_json_data(biome_name)) {}
+    Biome(const std::string& biome_name, size_t seed = 2) : Biome(get_json_data(biome_name), seed) {}
 
     /**
      * @brief Get macro tile map
