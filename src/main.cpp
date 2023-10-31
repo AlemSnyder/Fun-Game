@@ -230,7 +230,7 @@ int
 StressTest() {
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world("base", 2, 2);
+    World world("base", 16, 16);
 
     return gui::opengl_entry(world);
 }

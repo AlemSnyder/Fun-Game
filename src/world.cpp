@@ -23,8 +23,8 @@
 #include "world.hpp"
 
 #include "entity/mesh.hpp"
-#include "terrain/generation/map_tile.hpp"
 #include "logging.hpp"
+#include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -62,7 +62,9 @@ World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) 
 
 World::World(const std::string& biome_name, MapTile_t tile_type) :
     biome_(biome_name, seed),
-    terrain_main_(3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)) {}
+    terrain_main_(
+        3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
+    ) {}
 
 __attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {
@@ -103,8 +105,10 @@ World::update_all_chunks_mesh() {
         }
     }
 
-    for (size_t i = 0; i < num_chunks; i++)
+    #pragma omp parallel for
+    for (size_t i = 0; i < num_chunks; i++) {
         update_single_mesh(i);
+    }
 
     LOG_DEBUG(logging::terrain_logger, "End load chunks mesh");
 }
