@@ -46,7 +46,7 @@ int
 MacroMap() {
     quill::Logger* logger = quill::get_logger();
 
-    terrain::generation::Biome biome("base");
+    terrain::generation::Biome biome("base", 2);
 
     // test terrain generation
     auto map = biome.get_map(64);

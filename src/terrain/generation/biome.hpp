@@ -93,12 +93,6 @@ class GrassData {
 
 class Biome {
  private:
-    // std::vector<MapTile_t> tile_map_vector_;
-
-    // std::vector<MacroTile> map_tiles_
-    // 32 by 32 chunks that load data
-    // each one will have a mutex lock so this can be threaded
-
     //  vector of const data for creating land generators for every tile
     // create a map of TileMacro_t -> LandGenerator
     std::vector<generation::LandGenerator> land_generators_;
@@ -131,7 +125,8 @@ class Biome {
      *
      * @param biome_name name of biome
      */
-    Biome(const std::string& biome_name, size_t seed = 2) : Biome(get_json_data(biome_name), seed) {}
+    Biome(const std::string& biome_name, size_t seed) :
+        Biome(get_json_data(biome_name), seed) {}
 
     /**
      * @brief Get macro tile map
