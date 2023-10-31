@@ -64,7 +64,7 @@ Terrain::Terrain(
     Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
     const std::vector<generation::MapTile>& macro_map
 ) :
-    TerrainBase(x, y, area_size_, z, seed_, biome, macro_map),
+    TerrainBase(x, y, area_size_, z, biome, macro_map),
     seed(seed_) {
     // grows the grass
     init_grass();

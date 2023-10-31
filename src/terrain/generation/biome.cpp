@@ -67,8 +67,8 @@ Biome::Biome(const biome_json_data& biome_data, size_t seed) :
 }
 
 void
-Biome::init_lua_state(std::filesystem::path lua_map_generator_file) {
-    if (!std::filesystem::exists(lua_map_generator_file)) {
+Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
+    if (!std::filesystem::exists(lua_map_generator_file)) [[unlikely]] {
         LOG_ERROR(
             logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
         );
@@ -141,8 +141,8 @@ Biome::get_map(MacroDim length) const {
     out.reserve(x_map_tiles * y_map_tiles);
     for (MacroDim x = 0; x < x_map_tiles; x++) {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
-            size_t i = x * y_map_tiles + y;
-            out.emplace_back(tile_map_map[i], seed_, x, y);
+            size_t map_index = x * y_map_tiles + y;
+            out.emplace_back(tile_map_map[map_index], seed_, x, y);
         }
     }
 

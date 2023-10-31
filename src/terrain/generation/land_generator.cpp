@@ -68,14 +68,6 @@ LandGenerator::LandGenerator(const Json::Value& data) :
     }
 }
 
-TileStamp
-LandGenerator::get_stamp(std::default_random_engine& rand_engine) const {
-    TileStamp out =
-        stamp_generators_[current_region]->get_stamp(current_sub_region, rand_engine);
-
-    return out;
-}
-
 void
 LandGenerator::next() {
     current_sub_region++;

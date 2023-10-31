@@ -81,7 +81,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param z_tiles
      */
     TerrainBase(
-        Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
+        Dim x, Dim y, Dim area_size_, Dim z, const generation::Biome& biome,
         const std::vector<generation::MapTile>& macro_map
     );
 

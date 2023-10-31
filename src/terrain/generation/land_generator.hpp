@@ -136,7 +136,9 @@ class FromRadius : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(size_t current_sub_region, std::default_random_engine& rand_engine) const override;
+    TileStamp get_stamp(
+        size_t current_sub_region, std::default_random_engine& rand_engine
+    ) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -156,7 +158,9 @@ class FromGrid : public JsonToTile {
     TerrainOffset center_variance_;
 
  public:
-    TileStamp get_stamp(size_t current_sub_region, std::default_random_engine& rand_engine) const override;
+    TileStamp get_stamp(
+        size_t current_sub_region, std::default_random_engine& rand_engine
+    ) const override;
 
     [[nodiscard]] inline size_t
     num_sub_region() const override {
@@ -232,11 +236,17 @@ class LandGenerator {
      *
      * @return TileStamp
      */
-    TileStamp get_stamp(std::default_random_engine& rand_engine) const;
+    TileStamp
+    get_stamp(std::default_random_engine& rand_engine) const {
+        return stamp_generators_[current_region]->get_stamp(
+            current_sub_region, rand_engine
+        );
+    }
 
     /**
      * @brief increment the data of the Tile Stamp that will be generated
      */
+
     void next();
 
     /**

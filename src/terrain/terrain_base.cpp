@@ -39,9 +39,8 @@ TerrainBase::qb_read(
     }
 }
 
-// TODO seed_ is unused
 TerrainBase::TerrainBase(
-    Dim x_map_tiles, Dim y_map_tiles, Dim area_size_, Dim z, int seed_,
+    Dim x_map_tiles, Dim y_map_tiles, Dim area_size_, Dim z,
     const generation::Biome& biome, const std::vector<generation::MapTile>& macro_map
 ) :
     area_size_(area_size_),
