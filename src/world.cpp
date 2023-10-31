@@ -66,7 +66,8 @@ World::World(const std::string& biome_name, MapTile_t tile_type) :
         3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
     ) {}
 
-__attribute__((optimize(2))) void
+//__attribute__((optimize(2)))
+void
 World::update_single_mesh(ChunkIndex chunk_pos) {
     const auto& chunks = terrain_main_.get_chunks();
     // entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
@@ -105,9 +106,27 @@ World::update_all_chunks_mesh() {
         }
     }
 
+    std::vector<std::unique_ptr<entity::Mesh>> temp_chunk_meshes;
+    temp_chunk_meshes.resize(num_chunks);
+
     #pragma omp parallel for
-    for (size_t i = 0; i < num_chunks; i++) {
-        update_single_mesh(i);
+    for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
+        temp_chunk_meshes[chunk_pos] =
+            std::make_unique<entity::Mesh>(entity::ambient_occlusion_mesher(
+                terrain::ChunkData(terrain_main_.get_chunk(chunk_pos))
+            ));
+
+        temp_chunk_meshes[chunk_pos]->change_color_indexing(
+            biome_.get_materials(),
+            terrain::TerrainColorMapping::get_colors_inverse_map()
+        );
+    }
+
+    for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
+        chunks_mesh_[chunk_pos]->update(*temp_chunk_meshes[chunk_pos]);
+        chunks_mesh_[chunk_pos]->set_color_texture(
+            terrain::TerrainColorMapping::get_color_texture()
+        );
     }
 
     LOG_DEBUG(logging::terrain_logger, "End load chunks mesh");
