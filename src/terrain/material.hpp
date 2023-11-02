@@ -67,6 +67,9 @@ struct Material {
     // int8_t deterioration from water
 };
 
+/**
+ * @brief Defines a map from colors to a color texture that is sent to the gpu.
+ */
 class TerrainColorMapping {
  private:
     // color map
@@ -93,10 +96,44 @@ class TerrainColorMapping {
         return colors_inverse_map;
     }
 
-    inline static unsigned int
+    inline static GLuint_p
     get_color_texture() {
         return color_texture_;
     };
+
+    inline static size_t
+    get_num_colors() {
+        return color_ids_map.size();
+    }
+};
+
+class MaterialGroup {
+ private:
+    std::map<MaterialId, std::set<ColorId>> allowable_;
+    std::set<MaterialId> allowable_materials_;
+
+ public:
+    MaterialGroup(){};
+    MaterialGroup(std::map<MaterialId, std::set<ColorId>> allowable,
+               std::set<MaterialId> allowable_materials) :
+        allowable_(allowable),
+        allowable_materials_(allowable_materials){};
+
+    [[nodiscard]] inline bool
+    material_in(MaterialId material_id, ColorId color_id) const {
+        if (material_in(material_id))
+            return true;
+        auto iter = allowable_.find(material_id);
+        if (iter != allowable_.end()) {
+            return iter->second.contains(color_id);
+        }
+        return false;
+    }
+
+    [[nodiscard]] inline bool
+    material_in(MaterialId material_id) const {
+        return allowable_materials_.contains(material_id);
+    }
 };
 
 [[nodiscard]] inline bool

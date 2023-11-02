@@ -33,6 +33,8 @@
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
 
+constexpr size_t STRESS_TEST_SIZE = 16;
+
 int
 GenerateTerrain(const std::string path) {
     World world("base", 6, 6);
@@ -230,7 +232,7 @@ int
 StressTest() {
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world("base", 16, 16);
+    World world("base", STRESS_TEST_SIZE, STRESS_TEST_SIZE);
 
     return gui::opengl_entry(world);
 }

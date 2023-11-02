@@ -84,10 +84,14 @@ TileStamp
 JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
     const {
     // center_x between center[1][0] and center[0][0] inclusive
-    std::uniform_int_distribution<TerrainOffset> center_x_dist(center[0][0], center[1][0]);
+    std::uniform_int_distribution<TerrainOffset> center_x_dist(
+        center[0][0], center[1][0]
+    );
     TerrainOffset center_x = center_x_dist(rand_engine);
     // same with y
-    std::uniform_int_distribution<TerrainOffset> center_y_dist(center[0][1], center[1][1]);
+    std::uniform_int_distribution<TerrainOffset> center_y_dist(
+        center[0][1], center[1][1]
+    );
     TerrainOffset center_y = center_y_dist(rand_engine);
     // size 'centered' at width and can be between width-width_variance to width +
     // width_variance
@@ -104,7 +108,7 @@ JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_eng
 
     // mode edges for randomness
     // I have long since forgotten the exact reason, but it has to do with randomness
-    std::uniform_int_distribution<> bool_dist(0,1);
+    std::uniform_int_distribution<> bool_dist(0, 1);
     if (size_x % 2 != 0) {
         if (bool_dist(rand_engine))
             x_min--;
@@ -124,36 +128,35 @@ JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_eng
     );
     TerrainOffset z_max = height_ + height_dist(rand_engine);
     return {
-        x_min,
-        y_min,
+        x_min, y_min,
         0, // y_min = 0
-        x_max,
-        y_max,
-        z_max,
-        stamp_material_id_,
-        stamp_color_id_,
-        elements_can_stamp_
+        x_max, y_max, z_max, stamp_material_id_, stamp_color_id_, elements_can_stamp_
     };
 }
 
-std::set<std::pair<MaterialId, ColorId>>
+MaterialGroup
 JsonToTile::read_elements(const Json::Value& data) {
-    std::set<std::pair<MaterialId, ColorId>> out;
+    std::map<MaterialId, std::set<ColorId>> allowable;
+    std::set<MaterialId> allowable_materials;
+    // std::set<std::pair<MaterialId, ColorId>> out;
 
     for (const Json::Value& material_data : data) {
         MaterialId mat_id;
         if (material_data["E"].isInt())
             mat_id = material_data["E"].asInt();
-        else
-            mat_id = MAT_ANY_MATERIAL;
         if (material_data["C"].isInt()) {
             ColorId color_id = material_data["C"].asInt();
-            out.insert(std::make_pair(mat_id, color_id));
+            auto iter = allowable.find(mat_id);
+            if (iter != allowable.end()){
+                iter->second.insert(color_id);
+            }
+            else
+                allowable.insert({mat_id, {color_id}});
         } else if (material_data["C"].asBool()) {
-            out.insert(std::make_pair(mat_id, -1));
+            allowable_materials.insert(mat_id);
         }
     }
-    return out;
+    return MaterialGroup(allowable, allowable_materials);
 }
 
 TileStamp

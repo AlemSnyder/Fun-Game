@@ -181,7 +181,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
     sop(TileIndex xyz) const {
         return {
             static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
-            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
+            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))
+        };
     }
 
     /**
@@ -200,7 +201,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
         }
         return {
             static_cast<Dim>(xyz / (ym * zm)), static_cast<Dim>((xyz / zm) % ym),
-            static_cast<Dim>(xyz % (zm))};
+            static_cast<Dim>(xyz % (zm))
+        };
     }
 
     /**
@@ -397,10 +399,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return int height
      */
-    [[nodiscard]] int get_first_not(
-        const std::set<std::pair<MaterialId, ColorId>>& materials, int x, int y,
-        int guess = 0
-    ) const;
+    [[nodiscard]] int
+    get_first_not(const MaterialGroup& materials, int x, int y, int guess = 0) const;
 
     [[nodiscard]] inline uint8_t
     get_grass_grad_length() const noexcept {
@@ -459,21 +459,16 @@ class TerrainBase : public voxel_utility::VoxelBase {
     [[nodiscard]] static int get_stop_height(int height, const Json::Value& how_to_add);
 
     [[nodiscard]] inline bool
-    has_tile_material(
-        const std::set<std::pair<MaterialId, ColorId>>& material_test, int x, int y,
-        int z
-    ) const {
+    has_tile_material(const MaterialGroup& material_test, int x, int y, int z) const {
         return has_tile_material(material_test, get_tile(x, y, z));
     }
 
     [[nodiscard]] inline bool
-    has_tile_material(
-        const std::set<std::pair<MaterialId, ColorId>>& material_test, const Tile* tile
-    ) const {
+    has_tile_material(const MaterialGroup& material_test, const Tile* tile) const {
         MaterialId mat_id = tile->get_material_id();
         ColorId color_id = tile->get_color_id();
 
-        return material_in(material_test, mat_id, color_id);
+        return material_test.material_in(mat_id, color_id);
     }
 };
 

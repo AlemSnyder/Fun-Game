@@ -56,7 +56,7 @@ class JsonToTile {
     Dim width_variance_;  // Maximum change in width generated
 
     // set of tile materials-colors that can be changed by the returned stamp
-    const std::set<std::pair<MaterialId, ColorId>> elements_can_stamp_;
+    const MaterialGroup elements_can_stamp_;
     const MaterialId stamp_material_id_; // MaterialId that will be set
     const ColorId stamp_color_id_;       // ColorId that will be set
 
@@ -92,7 +92,7 @@ class JsonToTile {
      * @brief Read the materials and colors that this stamp can overwrite in
      * terrain. Use the "Can_Stamp" dictionary.
      */
-    static std::set<std::pair<MaterialId, ColorId>>
+    static MaterialGroup
     read_elements(const Json::Value& data);
 
  protected:
@@ -281,9 +281,9 @@ struct AddMethod {
 };
 
 class AddToTop {
-    const std::set<std::pair<MaterialId, ColorId>> elements_above_;
+    const MaterialGroup elements_above_;
 
-    const std::set<std::pair<MaterialId, ColorId>> elements_can_overwrite_;
+    const MaterialGroup elements_can_overwrite_;
     const MaterialId stamp_material_id_; // MaterialId that will be set
     const ColorId stamp_color_id_;       // ColorId that will be set
 
@@ -299,7 +299,7 @@ class AddToTop {
 
     [[nodiscard]] inline bool
     can_overwrite_material(MaterialId material_id, ColorId color_id) const {
-        return material_in(elements_can_overwrite_, material_id, color_id);
+        return elements_can_overwrite_.material_in(material_id, color_id);
     }
 
     inline MaterialId
@@ -312,9 +312,14 @@ class AddToTop {
         return stamp_color_id_;
     }
 
-    inline const std::set<std::pair<MaterialId, ColorId>>&
+    inline const MaterialGroup&
     get_elements_above() const {
         return elements_above_;
+    }
+
+    inline const MaterialGroup&
+    get_elements_can_overwrite() const {
+        return elements_can_overwrite_;
     }
 };
 
