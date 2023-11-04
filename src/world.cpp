@@ -23,6 +23,7 @@
 #include "world.hpp"
 
 #include "entity/mesh.hpp"
+#include "global_context.hpp"
 #include "logging.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
@@ -66,30 +67,50 @@ World::World(const std::string& biome_name, MapTile_t tile_type) :
         3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
     ) {}
 
-//__attribute__((optimize(2)))
 void
+World::mark_for_update(ChunkIndex chunk_pos) {
+    chunks_to_update_mutex_.lock();
+    chunks_to_update_.insert(chunk_pos);
+    chunks_to_update_mutex_.unlock();
+}
+
+void
+World::mark_for_update(TerrainDim3 tile_sop) {
+    if (!terrain_main_.in_range(tile_sop))
+        return;
+    Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
+    mark_for_update(chunk_pos);
+}
+
+// Should not be called except by lambda function
+__attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {
-    const auto& chunks = terrain_main_.get_chunks();
-    // entity::Mesh chunk_mesh = entity::generate_mesh(chunks[chunk_pos]);
+    const auto& chunk = terrain_main_.get_chunk(chunk_pos);
     entity::Mesh chunk_mesh =
-        entity::ambient_occlusion_mesher(terrain::ChunkData(chunks[chunk_pos]));
+        entity::ambient_occlusion_mesher(terrain::ChunkData(chunk));
 
     chunk_mesh.change_color_indexing(
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
-    chunks_mesh_[chunk_pos]->update(chunk_mesh);
-    chunks_mesh_[chunk_pos]->set_color_texture(
-        terrain::TerrainColorMapping::get_color_texture()
-    );
+    meshes_to_update_mutex_.lock();
+    meshes_to_update_.insert({chunk_pos, chunk_mesh});
+    meshes_to_update_mutex_.unlock();
 }
 
+// TODO should set a limit the the number
 void
-World::update_single_mesh(TerrainDim3 tile_sop) {
-    if (!terrain_main_.in_range(tile_sop))
-        return;
-    Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
-    update_single_mesh(chunk_pos);
+World::update_marked_chunks_mesh() {
+    chunks_to_update_mutex_.lock();
+
+    for (auto chunk_pos : chunks_to_update_) {
+        GlobalContext& context = GlobalContext::getInstance();
+        context.thread_pool_.push_task(
+            [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
+        );
+    }
+    chunks_to_update_.clear();
+    chunks_to_update_mutex_.unlock();
 }
 
 void
@@ -106,30 +127,29 @@ World::update_all_chunks_mesh() {
         }
     }
 
-    std::vector<std::unique_ptr<entity::Mesh>> temp_chunk_meshes;
-    temp_chunk_meshes.resize(num_chunks);
-
-    #pragma omp parallel for
+    GlobalContext& context = GlobalContext::getInstance();
     for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
-        temp_chunk_meshes[chunk_pos] =
-            std::make_unique<entity::Mesh>(entity::ambient_occlusion_mesher(
-                terrain::ChunkData(terrain_main_.get_chunk(chunk_pos))
-            ));
-
-        temp_chunk_meshes[chunk_pos]->change_color_indexing(
-            biome_.get_materials(),
-            terrain::TerrainColorMapping::get_colors_inverse_map()
+        context.thread_pool_.push_task(
+            [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
         );
     }
 
-    for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
-        chunks_mesh_[chunk_pos]->update(*temp_chunk_meshes[chunk_pos]);
-        chunks_mesh_[chunk_pos]->set_color_texture(
+    // should only wait for the previously queued tasks, but I'm lazy and don't
+    // want to implement that until it will actually be used.
+    context.thread_pool_.wait_for_tasks();
+    send_updated_chunks_mesh();
+}
+
+void
+World::send_updated_chunks_mesh() {
+    meshes_to_update_mutex_.lock();
+    for (const auto& mesh_data : meshes_to_update_) {
+        chunks_mesh_[mesh_data.first]->update(mesh_data.second);
+        chunks_mesh_[mesh_data.first]->set_color_texture(
             terrain::TerrainColorMapping::get_color_texture()
         );
     }
-
-    LOG_DEBUG(logging::terrain_logger, "End load chunks mesh");
+    meshes_to_update_mutex_.unlock();
 }
 
 void
@@ -137,25 +157,25 @@ World::set_tile(Dim pos, const terrain::Material* mat, ColorId color_id) {
     terrain_main_.get_tile(pos)->set_material(mat, color_id);
 
     TerrainDim3 tile_sop = terrain_main_.sop(pos);
-    update_single_mesh(tile_sop);
+    mark_for_update(tile_sop);
 
     // do some math:
     // if the tile is on the edge of a chunk then both chunks must be updated.
     Dim edge_case = tile_sop.x % terrain::Chunk::SIZE;
     if (edge_case == 0)
-        update_single_mesh({tile_sop.x - 1, tile_sop.y, tile_sop.z});
+        mark_for_update({tile_sop.x - 1, tile_sop.y, tile_sop.z});
     else if (edge_case == terrain::Chunk::SIZE - 1)
-        update_single_mesh({tile_sop.x + 1, tile_sop.y, tile_sop.z});
+        mark_for_update({tile_sop.x + 1, tile_sop.y, tile_sop.z});
 
     edge_case = tile_sop.y % terrain::Chunk::SIZE;
     if (edge_case == 0)
-        update_single_mesh({tile_sop.x, tile_sop.y - 1, tile_sop.z});
+        mark_for_update({tile_sop.x, tile_sop.y - 1, tile_sop.z});
     else if (edge_case == terrain::Chunk::SIZE - 1)
-        update_single_mesh({tile_sop.x, tile_sop.y + 1, tile_sop.z});
+        mark_for_update({tile_sop.x, tile_sop.y + 1, tile_sop.z});
 
     edge_case = tile_sop.z % terrain::Chunk::SIZE;
     if (edge_case == 0)
-        update_single_mesh({tile_sop.x, tile_sop.y, tile_sop.z - 1});
+        mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z - 1});
     else if (edge_case == terrain::Chunk::SIZE - 1)
-        update_single_mesh({tile_sop.x, tile_sop.y, tile_sop.z + 1});
+        mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z + 1});
 }

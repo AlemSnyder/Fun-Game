@@ -13,8 +13,8 @@ project(FunGame VERSION 0.1.0)
 # add the executable
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
 
+# this is just one json file
 file(GLOB SOURCES4 "vendor/*.c*")
-file(GLOB SOURCES5 "vendor/json/*.c*")
 file(GLOB SOURCES6 "vendor/imgui/*.c*")
 file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
 file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")

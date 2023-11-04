@@ -45,10 +45,10 @@ get_test_map(MapTile_t type) {
     std::vector<terrain::generation::MapTile> out;
     out.reserve(9);
     for (size_t i = 0; i < 4; i++)
-        out.emplace_back(0,0);
+        out.emplace_back(0, 0);
     out.emplace_back(type, 2);
     for (size_t i = 0; i < 4; i++)
-        out.emplace_back(0,0);
+        out.emplace_back(0, 0);
 
     return out;
 }
@@ -71,8 +71,14 @@ class World {
 
     // TerrainMesh for each chunk in terrain
     std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> chunks_mesh_;
-
     // chunks_mesh like attorneys general
+
+    std::set<ChunkIndex> chunks_to_update_;
+    // This mutex is probably unused.
+    std::mutex chunks_to_update_mutex_;
+
+    std::map<ChunkIndex, entity::Mesh> meshes_to_update_;
+    std::mutex meshes_to_update_mutex_;
 
  public:
     const auto&
@@ -154,8 +160,13 @@ class World {
     void update_all_chunks_mesh();
 
     void update_single_mesh(ChunkIndex chunk_pos);
-
     void update_single_mesh(TerrainDim3 tile_sop);
+
+    void mark_for_update(ChunkIndex chunk_pos);
+    void mark_for_update(TerrainDim3 tile_sop);
+
+    void update_marked_chunks_mesh();
+    void send_updated_chunks_mesh();
 
     // set a region to given material, and color
     void set_tile(Dim pos, const terrain::Material* mat, ColorId color_id);
