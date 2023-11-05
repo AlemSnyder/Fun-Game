@@ -74,8 +74,6 @@ class World {
     // chunks_mesh like attorneys general
 
     std::set<ChunkIndex> chunks_to_update_;
-    // This mutex is probably unused.
-    std::mutex chunks_to_update_mutex_;
 
     std::map<ChunkIndex, entity::Mesh> meshes_to_update_;
     std::mutex meshes_to_update_mutex_;

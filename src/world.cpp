@@ -33,6 +33,7 @@
 #include <cstdint>
 #include <fstream>
 #include <string>
+#include <mutex>
 
 constexpr int seed = 5;
 
@@ -69,9 +70,7 @@ World::World(const std::string& biome_name, MapTile_t tile_type) :
 
 void
 World::mark_for_update(ChunkIndex chunk_pos) {
-    chunks_to_update_mutex_.lock();
     chunks_to_update_.insert(chunk_pos);
-    chunks_to_update_mutex_.unlock();
 }
 
 void
@@ -93,15 +92,15 @@ World::update_single_mesh(ChunkIndex chunk_pos) {
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
-    meshes_to_update_mutex_.lock();
+    std::scoped_lock lock(meshes_to_update_mutex_);
     meshes_to_update_.insert({chunk_pos, chunk_mesh});
-    meshes_to_update_mutex_.unlock();
 }
 
 // TODO should set a limit the the number
+// update_marked_chunks_mesh runs every frame, so the number of chunks updated
+// each frame should be capped.
 void
 World::update_marked_chunks_mesh() {
-    chunks_to_update_mutex_.lock();
 
     for (auto chunk_pos : chunks_to_update_) {
         GlobalContext& context = GlobalContext::getInstance();
@@ -110,7 +109,6 @@ World::update_marked_chunks_mesh() {
         );
     }
     chunks_to_update_.clear();
-    chunks_to_update_mutex_.unlock();
 }
 
 void
@@ -142,14 +140,13 @@ World::update_all_chunks_mesh() {
 
 void
 World::send_updated_chunks_mesh() {
-    meshes_to_update_mutex_.lock();
+    std::scoped_lock lock(meshes_to_update_mutex_);
     for (const auto& mesh_data : meshes_to_update_) {
         chunks_mesh_[mesh_data.first]->update(mesh_data.second);
         chunks_mesh_[mesh_data.first]->set_color_texture(
             terrain::TerrainColorMapping::get_color_texture()
         );
     }
-    meshes_to_update_mutex_.unlock();
 }
 
 void
