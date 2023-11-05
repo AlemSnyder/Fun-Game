@@ -33,7 +33,7 @@
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
 
-constexpr size_t STRESS_TEST_SIZE = 16;
+constexpr static size_t STRESS_TEST_SIZE = 16;
 
 int
 GenerateTerrain(const std::string path) {

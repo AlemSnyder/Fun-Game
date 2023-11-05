@@ -49,6 +49,11 @@ gprof ./FunGame gmon.out | gprof2dot | dot -Tsvg -o output.svg
 ```
 Don't know how to turn this off though
 
+```sh
+rm -rf build # or
+cmake --fresh
+```
+
 ## Formatting
 
 POSIX shells only

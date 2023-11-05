@@ -50,7 +50,7 @@ find_package(OpenMP)
 target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
-target_link_libraries(FunGame PUBLIC OpenMP::OpenMP_CXX)
+#target_link_libraries(FunGame PUBLIC OpenMP::OpenMP_CXX)
 
 if(WIN32)
     target_link_libraries(FunGame PRIVATE glm)
@@ -71,8 +71,9 @@ target_link_libraries_system(FunGame PRIVATE sol2::sol2)
 target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
 # Add include dirs
-target_include_directories(FunGame PUBLIC "vendor")
-target_include_directories(FunGame PUBLIC "vendor/imgui")
+target_include_directories(FunGame PRIVATE "vendor")
+target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
+target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
 # Set warning options

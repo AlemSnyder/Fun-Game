@@ -105,7 +105,7 @@ World::update_marked_chunks_mesh() {
 
     for (auto chunk_pos : chunks_to_update_) {
         GlobalContext& context = GlobalContext::getInstance();
-        context.thread_pool_.push_task(
+        context.push_task(
             [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
         );
     }
@@ -129,14 +129,14 @@ World::update_all_chunks_mesh() {
 
     GlobalContext& context = GlobalContext::getInstance();
     for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
-        context.thread_pool_.push_task(
+        context.push_task(
             [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
         );
     }
 
     // should only wait for the previously queued tasks, but I'm lazy and don't
     // want to implement that until it will actually be used.
-    context.thread_pool_.wait_for_tasks();
+    context.wait_for_tasks();
     send_updated_chunks_mesh();
 }
 
