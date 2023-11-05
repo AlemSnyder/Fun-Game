@@ -23,8 +23,8 @@
 #include "world.hpp"
 
 #include "entity/mesh.hpp"
-#include "terrain/generation/map_tile.hpp"
 #include "logging.hpp"
+#include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -32,8 +32,6 @@
 #include <cstdint>
 #include <fstream>
 #include <string>
-
-constexpr int seed = 5;
 
 const terrain::Material*
 World::get_material(MaterialId material_id) const {
@@ -51,18 +49,20 @@ World::get_grass_grad_data(const Json::Value& materials_json) {
     return grass_grad_data;
 }
 
-World::World(const std::string& biome_name, const std::string path) :
+World::World(const std::string& biome_name, const std::string& path, size_t seed) :
     biome_(biome_name, seed), terrain_main_(path, biome_) {}
 
-World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
+World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed) :
     biome_(biome_name, seed),
     terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, seed, biome_, biome_.get_map(x_tiles)
     ) {}
 
-World::World(const std::string& biome_name, MapTile_t tile_type) :
+World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
     biome_(biome_name, seed),
-    terrain_main_(3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)) {}
+    terrain_main_(
+        3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
+    ) {}
 
 __attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {

@@ -215,7 +215,7 @@ class Terrain : public TerrainBase {
      * @param path path to saved terrain
      * @param material materials of the world
      */
-    Terrain(const std::string path, const generation::Biome& biome);
+    Terrain(const std::string& path, const generation::Biome& biome);
 
     // TODO place block
 

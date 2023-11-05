@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../../types.hpp"
+#include "noise.hpp"
 
 #include <mutex>
 #include <random>
-#include "noise.hpp"
 
 namespace terrain {
 
@@ -26,7 +26,11 @@ class MapTile {
     std::default_random_engine rand_engine_; // random number generator
 
  public:
-    MapTile(MapTile_t tile_type, size_t seed, MacroDim x = 0, MacroDim y = 0);
+    MapTile(MapTile_t tile_type, size_t seed, MacroDim x = 0, MacroDim y = 0) :
+        x_(x), y_(y), tile_type_(tile_type),
+        rand_engine_(
+            Noise::get_double((seed ^ tile_type) % RANDOM_NUMBER, x, y) * INT32_MAX
+        ){};
 
     [[nodiscard]] inline MacroDim
     get_x() const {
@@ -48,13 +52,6 @@ class MapTile {
         return rand_engine_;
     }
 };
-
-inline
-MapTile::MapTile(MapTile_t tile_type, size_t seed, MacroDim x, MacroDim y) :
-    x_(x), y_(y), tile_type_(tile_type),
-    rand_engine_(
-        Noise::get_double((seed ^ tile_type) % RANDOM_NUMBER, x, y) * INT32_MAX
-    ) {}
 
 } // namespace generation
 
