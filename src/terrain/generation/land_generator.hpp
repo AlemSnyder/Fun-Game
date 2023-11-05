@@ -246,7 +246,6 @@ class LandGenerator {
     /**
      * @brief increment the data of the Tile Stamp that will be generated
      */
-
     void next();
 
     /**
