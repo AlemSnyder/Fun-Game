@@ -75,7 +75,7 @@ save_all_terrain(const Json::Value& materials_json, const Json::Value& biome_dat
 }
 
 int
-TerrainTypes(argh::parser cmdl) {
+TerrainTypes(const argh::parser& cmdl) {
     Json::Value biome_data;
     std::string biome_name;
 
@@ -116,7 +116,7 @@ TerrainTypes(argh::parser cmdl) {
 }
 
 int
-GenerateTerrain(argh::parser cmdl) {
+GenerateTerrain(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
@@ -211,7 +211,7 @@ NoiseTest() {
 }
 
 int
-save_test(argh::parser cmdl) {
+save_test(const argh::parser& cmdl) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
     size_t seed;
@@ -224,7 +224,7 @@ save_test(argh::parser cmdl) {
 }
 
 int
-path_finder_test(argh::parser cmdl) {
+path_finder_test(const argh::parser& cmdl) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
     quill::Logger* logger = quill::get_logger();
@@ -275,7 +275,7 @@ path_finder_test(argh::parser cmdl) {
 }
 
 int
-imgui_entry_main(argh::parser cmdl) {
+imgui_entry_main(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
@@ -288,7 +288,7 @@ imgui_entry_main(argh::parser cmdl) {
 }
 
 int
-StressTest(argh::parser cmdl) {
+StressTest(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
@@ -301,7 +301,7 @@ StressTest(argh::parser cmdl) {
 }
 
 int
-opengl_entry(argh::parser cmdl) {
+opengl_entry(const argh::parser& cmdl) {
     std::string path_in = cmdl(2).str();
 
     size_t seed;
