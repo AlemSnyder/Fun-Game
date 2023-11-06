@@ -24,6 +24,7 @@
 
 #include "entity/mesh.hpp"
 #include "logging.hpp"
+#include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
@@ -48,23 +49,21 @@ World::get_grass_grad_data(const Json::Value& materials_json) {
     return grass_grad_data;
 }
 
-World::World(const std::string& biome_name, const std::string path) :
-    biome_(biome_name), terrain_main_(path, biome_) {}
+World::World(const std::string& biome_name, const std::string& path, size_t seed) :
+    biome_(biome_name, seed), terrain_main_(path, biome_) {}
 
-World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
-    biome_(biome_name),
+World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed) :
+    biome_(biome_name, seed),
     terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, 5, biome_, biome_.get_map()
+        x_tiles, y_tiles, macro_tile_size, height, seed, biome_, biome_.get_map(x_tiles)
     ) {}
 
-World::World(const std::string& biome_name, MapTile_t tile_type) :
-    biome_(biome_name),
+World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
+    biome_(biome_name, seed),
     terrain_main_(
-        3, 3, macro_tile_size, height, 5, biome_, {0, 0, 0, 0, tile_type, 0, 0, 0, 0}
+        3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
     ) {}
 
-// TODO optimize
-// This is consistently taking a total of 7+ seconds to run
 __attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {
     const auto& chunks = terrain_main_.get_chunks();

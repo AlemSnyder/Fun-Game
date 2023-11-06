@@ -40,6 +40,19 @@ namespace entity {
 class Mesh;
 }
 
+inline std::vector<terrain::generation::MapTile>
+get_test_map(MapTile_t type) {
+    std::vector<terrain::generation::MapTile> out;
+    out.reserve(9);
+    for (size_t i = 0; i < 4; i++)
+        out.emplace_back(0, 0);
+    out.emplace_back(type, 2);
+    for (size_t i = 0; i < 4; i++)
+        out.emplace_back(0, 0);
+
+    return out;
+}
+
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
  *
@@ -88,7 +101,7 @@ class World {
      * @param path
      * where world was saved
      */
-    World(const std::string& biome_name, const std::string path);
+    World(const std::string& biome_name, const std::string& path, size_t seed);
     /**
      * @brief Construct a new World object to test biome generation.
      *
@@ -97,8 +110,10 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/generation/land_generator.hpp
      */
-    World(const std::string& biome_name, MapTile_t type);
-    World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles);
+    World(const std::string& biome_name, MapTile_t type, size_t seed);
+    World(
+        const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed
+    );
 
     constexpr static int macro_tile_size = 32;
     constexpr static int height = 128;

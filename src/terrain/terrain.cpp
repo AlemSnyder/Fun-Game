@@ -45,7 +45,7 @@ breadth_first_compare(Node<T>* lhs, Node<T>* rhs) {
 } // namespace helper
 
 Terrain::Terrain(
-    const std::string path, const generation::Biome& biome
+    const std::string& path, const generation::Biome& biome
 
 ) :
     TerrainBase(biome, voxel_utility::from_qb(path)) {
@@ -62,9 +62,9 @@ Terrain::Terrain(
 
 Terrain::Terrain(
     Dim x, Dim y, Dim area_size_, Dim z, int seed_, const generation::Biome& biome,
-    const std::vector<MapTile_t>& macro_map
+    const std::vector<generation::MapTile>& macro_map
 ) :
-    TerrainBase(x, y, area_size_, z, seed_, biome, macro_map),
+    TerrainBase(x, y, area_size_, z, biome, macro_map),
     seed(seed_) {
     // grows the grass
     init_grass();

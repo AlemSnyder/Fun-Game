@@ -39,10 +39,9 @@ TerrainBase::qb_read(
     }
 }
 
-// TODO seed_ is unused
 TerrainBase::TerrainBase(
-    Dim x_map_tiles, Dim y_map_tiles, Dim area_size_, Dim z, int seed_,
-    const generation::Biome& biome, const std::vector<MapTile_t>& macro_map
+    Dim x_map_tiles, Dim y_map_tiles, Dim area_size_, Dim z,
+    const generation::Biome& biome, const std::vector<generation::MapTile>& macro_map
 ) :
     area_size_(area_size_),
     biome_(biome), X_MAX(x_map_tiles * area_size_), Y_MAX(y_map_tiles * area_size_),
@@ -58,10 +57,10 @@ TerrainBase::TerrainBase(
     // TODO make this faster 4
     for (size_t i = 0; i < x_map_tiles; i++)
         for (size_t j = 0; j < y_map_tiles; j++) {
-            MapTile_t tile_type = macro_map[j + i * y_map_tiles];
-            auto macro_types = biome_.get_macro_ids(tile_type);
+            generation::MapTile map_tile = macro_map[j + i * y_map_tiles];
+            auto macro_types = biome_.get_macro_ids(map_tile.get_tile_type());
             for (auto generator_macro : macro_types) {
-                init_area(i, j, biome_.get_generator(generator_macro));
+                init_area(map_tile, biome_.get_generator(generator_macro));
             }
         }
 
@@ -189,9 +188,9 @@ TerrainBase::stamp_tile_region(
 }
 
 void
-TerrainBase::init_area(int area_x, int area_y, generation::LandGenerator gen) {
+TerrainBase::init_area(generation::MapTile& map_tile, generation::LandGenerator gen) {
     while (!gen.empty()) {
-        stamp_tile_region(gen.get_stamp(), area_x, area_y);
+        stamp_tile_region(gen.get_stamp(map_tile.get_rand_engine()), map_tile.get_x(), map_tile.get_y());
         gen.next();
     }
     gen.reset();

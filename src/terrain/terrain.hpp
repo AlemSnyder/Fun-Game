@@ -29,6 +29,7 @@
 #include "chunk.hpp"
 #include "generation/biome.hpp"
 #include "generation/land_generator.hpp"
+#include "generation/map_tile.hpp"
 #include "generation/noise.hpp"
 #include "generation/tile_stamp.hpp"
 #include "material.hpp"
@@ -205,7 +206,8 @@ class Terrain : public TerrainBase {
      */
     Terrain(
         Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
-        const generation::Biome& biome, const std::vector<MapTile_t>& macro_map
+        const generation::Biome& biome,
+        const std::vector<generation::MapTile>& macro_map
     );
     /**
      * @brief Construct a new Terrain object
@@ -213,7 +215,7 @@ class Terrain : public TerrainBase {
      * @param path path to saved terrain
      * @param material materials of the world
      */
-    Terrain(const std::string path, const generation::Biome& biome);
+    Terrain(const std::string& path, const generation::Biome& biome);
 
     // TODO place block
 

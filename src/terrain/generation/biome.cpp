@@ -48,20 +48,14 @@ GrassData::GrassData(const Json::Value& json_grass_data) {
     grass_grad_length_ = grass_colors_.size();
 }
 
-Biome::Biome(const biome_json_data& biome_data) :
+Biome::Biome(const biome_json_data& biome_data, size_t seed) :
     materials_(init_materials(biome_data.materials_data)),
-    grass_data_(biome_data.materials_data["Dirt"]["Gradient"]) {
+    grass_data_(biome_data.materials_data["Dirt"]["Gradient"]), seed_(seed) {
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
 
     std::filesystem::path lua_map_generator_file =
         biome_json_path / biome_data.biome_data["map_generator"].asString();
-    if (!std::filesystem::exists(lua_map_generator_file)) {
-        LOG_ERROR(
-            logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
-        );
-        return;
-    }
 
     read_tile_macro_data(biome_data.biome_data["Biome"]);
 
@@ -69,12 +63,22 @@ Biome::Biome(const biome_json_data& biome_data) :
 
     read_add_to_top_data(biome_data.biome_data["Biome"]["After_Effects"]);
 
-    sol::state lua;
+    init_lua_state(lua_map_generator_file);
+}
+
+void
+Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
+    if (!std::filesystem::exists(lua_map_generator_file)) [[unlikely]] {
+        LOG_ERROR(
+            logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
+        );
+        return;
+    }
 
     // add functions/libraries etc
-    lua.open_libraries(sol::lib::base);
-    lua.open_libraries(sol::lib::math);
-    lua.new_usertype<FractalNoise>(
+    lua_.open_libraries(sol::lib::base);
+    lua_.open_libraries(sol::lib::math);
+    lua_.new_usertype<FractalNoise>(
         "FractalNoise", sol::meta_function::construct,
         sol::factories(
             // FractalNoise.new(...) -- dot syntax, no "self" value
@@ -102,7 +106,7 @@ Biome::Biome(const biome_json_data& biome_data) :
         "sample", &FractalNoise::get_noise
     );
 
-    auto result = lua.safe_script_file(
+    auto result = lua_.safe_script_file(
         lua_map_generator_file.string(), sol::script_pass_on_error
     );
     if (!result.valid()) {
@@ -112,25 +116,37 @@ Biome::Biome(const biome_json_data& biome_data) :
         return;
     }
 
-    sol::protected_function map_function = lua["map"];
+    sol::protected_function map_function = lua_["map"];
     if (!map_function.valid()) {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
         return;
     }
-    MacroDim map_tiles = 16;
-    sol::table map = map_function(map_tiles);
+}
+
+const std::vector<MapTile>
+Biome::get_map(MacroDim length) const {
+    std::vector<MapTile> out;
+
+    sol::protected_function map_function = lua_["map"];
+
+    sol::table map = map_function(length);
 
     auto tile_map_map = map["map"];
     MacroDim x_map_tiles = map["x"]; // should be 16
     MacroDim y_map_tiles = map["y"];
     assert(
-        ((y_map_tiles == x_map_tiles) && (x_map_tiles == map_tiles))
+        ((y_map_tiles == x_map_tiles) && (x_map_tiles == length))
         && "Map tile input and out put must all match"
     );
-    tile_map_vector_.resize(x_map_tiles * y_map_tiles);
-    for (size_t i = 0; i < tile_map_vector_.size(); i++) {
-        tile_map_vector_[i] = tile_map_map[i];
+    out.reserve(x_map_tiles * y_map_tiles);
+    for (MacroDim x = 0; x < x_map_tiles; x++) {
+        for (MacroDim y = 0; y < y_map_tiles; y++) {
+            size_t map_index = x * y_map_tiles + y;
+            out.emplace_back(tile_map_map[map_index], seed_, x, y);
+        }
     }
+
+    return out;
 }
 
 void
