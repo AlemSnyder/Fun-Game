@@ -78,4 +78,4 @@ jobs:
           cd build
 
           cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build . -fopenmp=libomp
+          cmake --build .
