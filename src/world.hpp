@@ -105,7 +105,7 @@ class World {
      * @param path
      * where world was saved
      */
-    World(const std::string& biome_name, const std::string path);
+    World(const std::string& biome_name, const std::string& path, size_t seed);
     /**
      * @brief Construct a new World object to test biome generation.
      *
@@ -114,8 +114,10 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/generation/land_generator.hpp
      */
-    World(const std::string& biome_name, MapTile_t type);
-    World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles);
+    World(const std::string& biome_name, MapTile_t type, size_t seed);
+    World(
+        const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed
+    );
 
     constexpr static int macro_tile_size = 32;
     constexpr static int height = 128;

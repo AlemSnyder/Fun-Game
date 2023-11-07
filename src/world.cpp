@@ -32,10 +32,8 @@
 
 #include <cstdint>
 #include <fstream>
-#include <string>
 #include <mutex>
-
-constexpr int seed = 5;
+#include <string>
 
 const terrain::Material*
 World::get_material(MaterialId material_id) const {
@@ -53,16 +51,18 @@ World::get_grass_grad_data(const Json::Value& materials_json) {
     return grass_grad_data;
 }
 
-World::World(const std::string& biome_name, const std::string path) :
+World::World(const std::string& biome_name, const std::string& path, size_t seed) :
     biome_(biome_name, seed), terrain_main_(path, biome_) {}
 
-World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles) :
+World::World(
+    const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed
+) :
     biome_(biome_name, seed),
     terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, seed, biome_, biome_.get_map(x_tiles)
     ) {}
 
-World::World(const std::string& biome_name, MapTile_t tile_type) :
+World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
     biome_(biome_name, seed),
     terrain_main_(
         3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
@@ -101,7 +101,6 @@ World::update_single_mesh(ChunkIndex chunk_pos) {
 // each frame should be capped.
 void
 World::update_marked_chunks_mesh() {
-
     for (auto chunk_pos : chunks_to_update_) {
         GlobalContext& context = GlobalContext::getInstance();
         context.push_task(
