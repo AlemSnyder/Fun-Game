@@ -127,36 +127,53 @@ JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_eng
         -height_variance_, height_variance_
     );
     TerrainOffset z_max = height_ + height_dist(rand_engine);
+    // clang-format off
     return {
-        x_min, y_min,
-        0, // y_min = 0
-        x_max, y_max, z_max, stamp_material_id_, stamp_color_id_, elements_can_stamp_
+        x_min,
+        y_min,
+        0, // z_min = 0
+        x_max,
+        y_max,
+        z_max,
+        stamp_material_id_,
+        stamp_color_id_,
+        elements_can_stamp_,
     };
+    // clang-format on
 }
 
 MaterialGroup
 JsonToTile::read_elements(const Json::Value& data) {
-    std::map<MaterialId, std::set<ColorId>> allowable;
-    std::set<MaterialId> allowable_materials;
-    // std::set<std::pair<MaterialId, ColorId>> out;
+    // want to return a group that represents the given data
+    // There will be elements with no requirements on the color
+    std::set<MaterialId> materials;
+    // amd some with requirements on the color
+    std::map<MaterialId, std::set<ColorId>> materials_w_color;
 
     for (const Json::Value& material_data : data) {
+        // read the material id from the data
         MaterialId mat_id;
         if (material_data["E"].isInt())
             mat_id = material_data["E"].asInt();
+        // determine what colors are excepted
         if (material_data["C"].isInt()) {
+            // if colors are color ids
             ColorId color_id = material_data["C"].asInt();
-            auto iter = allowable.find(mat_id);
-            if (iter != allowable.end()){
+            auto iter = materials_w_color.find(mat_id);
+            if (iter != materials_w_color.end()) {
+                // add the color to the material if it exits
                 iter->second.insert(color_id);
+            } else {
+                // add both if it does not
+                materials_w_color.insert({mat_id, {color_id}});
             }
-            else
-                allowable.insert({mat_id, {color_id}});
         } else if (material_data["C"].asBool()) {
-            allowable_materials.insert(mat_id);
+            // if color is a bool, then its probably true and we except all
+            // colors
+            materials.insert(mat_id);
         }
     }
-    return MaterialGroup(allowable, allowable_materials);
+    return MaterialGroup(materials, materials_w_color);
 }
 
 TileStamp

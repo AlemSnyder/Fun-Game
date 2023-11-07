@@ -162,8 +162,18 @@ class World {
     void update_single_mesh(ChunkIndex chunk_pos);
     void update_single_mesh(TerrainDim3 tile_sop);
 
-    void mark_for_update(ChunkIndex chunk_pos);
-    void mark_for_update(TerrainDim3 tile_sop);
+    void
+    mark_for_update(ChunkIndex chunk_pos) {
+        chunks_to_update_.insert(chunk_pos);
+    }
+
+    void
+    mark_for_update(TerrainDim3 tile_sop) {
+        if (!terrain_main_.in_range(tile_sop))
+            return;
+        Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
+        mark_for_update(chunk_pos);
+    }
 
     void update_marked_chunks_mesh();
     void send_updated_chunks_mesh();

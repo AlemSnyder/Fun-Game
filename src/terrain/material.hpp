@@ -1,4 +1,3 @@
-
 // -*- lsst-c++ -*-
 /*
  * This program is free software: you can redistribute it and/or modify
@@ -109,22 +108,28 @@ class TerrainColorMapping {
 
 class MaterialGroup {
  private:
-    std::map<MaterialId, std::set<ColorId>> allowable_;
-    std::set<MaterialId> allowable_materials_;
+    // Set of materials in the group. Any material and color no mater the color
+    // is in this group if the material is in the below set.
+    std::set<MaterialId> materials_no_color_requirement_;
+    // Map of materials to allowable color. For a material and color to be in
+    // this group the material key must map to a set containing the given color.
+    std::map<MaterialId, std::set<ColorId>> materials_with_color_requirement_;
 
  public:
     MaterialGroup(){};
-    MaterialGroup(std::map<MaterialId, std::set<ColorId>> allowable,
-               std::set<MaterialId> allowable_materials) :
-        allowable_(allowable),
-        allowable_materials_(allowable_materials){};
+    MaterialGroup(
+        std::set<MaterialId> materials,
+        std::map<MaterialId, std::set<ColorId>> materials_w_color
+    ) :
+        materials_no_color_requirement_(materials),
+        materials_with_color_requirement_(materials_w_color) {};
 
     [[nodiscard]] inline bool
     material_in(MaterialId material_id, ColorId color_id) const {
         if (material_in(material_id))
             return true;
-        auto iter = allowable_.find(material_id);
-        if (iter != allowable_.end()) {
+        auto iter = materials_with_color_requirement_.find(material_id);
+        if (iter != materials_with_color_requirement_.end()) {
             return iter->second.contains(color_id);
         }
         return false;
@@ -132,7 +137,7 @@ class MaterialGroup {
 
     [[nodiscard]] inline bool
     material_in(MaterialId material_id) const {
-        return allowable_materials_.contains(material_id);
+        return materials_no_color_requirement_.contains(material_id);
     }
 };
 

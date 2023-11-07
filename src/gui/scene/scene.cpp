@@ -11,7 +11,7 @@ namespace gui {
 
 void
 Scene::update(screen_size_t width, screen_size_t height) {
-    FrameBufferHandler::getInstance().bind_fbo(shadow_map_.get_frame_buffer_id());
+    FrameBufferHandler::instance().bind_fbo(shadow_map_.get_frame_buffer_id());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto& shadow : mid_ground_shadow_) {
@@ -21,7 +21,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
         );
     }
 
-    FrameBufferHandler::getInstance().bind_fbo(
+    FrameBufferHandler::instance().bind_fbo(
         frame_buffer_multisample_.get_frame_buffer_id()
     );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

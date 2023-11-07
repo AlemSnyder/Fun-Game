@@ -107,7 +107,7 @@ imgui_entry(World& world) {
 
         glm::vec3 position = controls::get_position_vector();
 
-        FrameBufferHandler::getInstance().bind_fbo(0);
+        FrameBufferHandler::instance().bind_fbo(0);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();

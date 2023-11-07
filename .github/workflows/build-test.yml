@@ -70,7 +70,7 @@ jobs:
             libglfw3 libglfw3-dev \
             libglew-dev \
             libglm-dev \
-            libomp.dev
+            libomp-dev
 
       - name: Build
         run: |

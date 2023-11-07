@@ -68,19 +68,6 @@ World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
         3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
     ) {}
 
-void
-World::mark_for_update(ChunkIndex chunk_pos) {
-    chunks_to_update_.insert(chunk_pos);
-}
-
-void
-World::mark_for_update(TerrainDim3 tile_sop) {
-    if (!terrain_main_.in_range(tile_sop))
-        return;
-    Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
-    mark_for_update(chunk_pos);
-}
-
 // Should not be called except by lambda function
 __attribute__((optimize(2))) void
 World::update_single_mesh(ChunkIndex chunk_pos) {
@@ -102,8 +89,8 @@ World::update_single_mesh(ChunkIndex chunk_pos) {
 void
 World::update_marked_chunks_mesh() {
     for (auto chunk_pos : chunks_to_update_) {
-        GlobalContext& context = GlobalContext::getInstance();
-        context.push_task(
+        GlobalContext& context = GlobalContext::instance();
+        context.submit(
             [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
         );
     }
@@ -124,19 +111,23 @@ World::update_all_chunks_mesh() {
         }
     }
 
-    GlobalContext& context = GlobalContext::getInstance();
+    std::vector<std::future<void>> wait_for;
+    wait_for.reserve(num_chunks);
+    GlobalContext& context = GlobalContext::instance();
     for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
-        context.push_task(
+        auto future = context.submit(
             [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
         );
+        wait_for.push_back(std::move(future));
     }
-
-    // should only wait for the previously queued tasks, but I'm lazy and don't
-    // want to implement that until it will actually be used.
-    context.wait_for_tasks();
+    // Should only wait for the previously queued tasks.
+    for (const auto& task : wait_for) {
+        task.wait();
+    }
     send_updated_chunks_mesh();
 }
 
+// will be called once per frame
 void
 World::send_updated_chunks_mesh() {
     std::scoped_lock lock(meshes_to_update_mutex_);

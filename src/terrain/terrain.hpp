@@ -339,6 +339,7 @@ class Terrain : public TerrainBase {
 
     [[nodiscard]] inline const Chunk&
     get_chunk(size_t i) const {
+        assert(i < chunks_.size());
         return chunks_[i];
     }
 
