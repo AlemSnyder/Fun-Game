@@ -73,9 +73,15 @@ class World {
     std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> chunks_mesh_;
     // chunks_mesh like attorneys general
 
+    // Set of chunks that need to be updated on gpu.
+    // They Need to be re-meshed, and that mesh need to be sent to gpu.
     std::set<ChunkIndex> chunks_to_update_;
 
+    // Set of meshes that need to be sent to gpu. These meshes should be sent
+    // once per frame.
     std::map<ChunkIndex, entity::Mesh> meshes_to_update_;
+    // Multiple threads are writing to this map concurrently so this is its
+    // mutex
     std::mutex meshes_to_update_mutex_;
 
  public:
