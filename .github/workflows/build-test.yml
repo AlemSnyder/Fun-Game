@@ -25,7 +25,7 @@ jobs:
           # - macos-latest
         compiler: [
             { cc: "gcc-13", cxx: "g++-13"},
-            { cc: "clang-16", cxx: "clang++-16"}
+            { cc: "clang-17", cxx: "clang++-17"}
           ]
 
     name: Build ${{ matrix.os }} with ${{ matrix.compiler.cc }}
@@ -40,15 +40,15 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install LLVM 16
+      - name: Install LLVM 17
         run: |
           sudo mkdir -p /etc/apt/trusted.gpg.d
           curl -sL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 
-          sudo apt-add-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
+          sudo apt-add-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main"
           sudo apt update
 
-          sudo apt install llvm-16 llvm-16-dev llvm-16-tools clang-16 clang-tidy-16 clang-tools-16 libclang-16-dev -y
+          sudo apt install llvm-17 llvm-17-dev llvm-17-tools clang-17 clang-tidy-17 clang-tools-17 libclang-17-dev -y
 
       - name: Install GCC 13
         run: |
@@ -70,7 +70,7 @@ jobs:
             libglfw3 libglfw3-dev \
             libglew-dev \
             libglm-dev \
-            libomp-dev
+            libomp-17-dev
 
       - name: Build
         run: |
