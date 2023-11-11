@@ -47,7 +47,6 @@ find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(OpenMP REQUIRED)
 
-
 target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
