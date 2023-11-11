@@ -40,19 +40,6 @@ namespace entity {
 class Mesh;
 }
 
-inline std::vector<terrain::generation::MapTile>
-get_test_map(MapTile_t type) {
-    std::vector<terrain::generation::MapTile> out;
-    out.reserve(9);
-    for (size_t i = 0; i < 4; i++)
-        out.emplace_back(0, 0);
-    out.emplace_back(type, 2);
-    for (size_t i = 0; i < 4; i++)
-        out.emplace_back(0, 0);
-
-    return out;
-}
-
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
  *
@@ -85,16 +72,25 @@ class World {
     std::mutex meshes_to_update_mutex_;
 
  public:
+    /**
+     * @brief Get terrain
+     */
     const auto&
     get_terrain_main() const {
         return terrain_main_;
     }
 
+    /**
+     * @brief Get terrain
+     */
     auto&
     get_terrain_main() {
         return terrain_main_;
     }
 
+    /**
+     * @brief Get gui mesh data
+     */
     const auto&
     get_chunks_mesh() const {
         return chunks_mesh_;
@@ -159,20 +155,23 @@ class World {
      */
     std::vector<int> get_grass_grad_data(const Json::Value& material_json);
 
+    // Updating chunks works by changing a tile in terrain. This marks the
+    // chunk's mesh for update, and surrounding chunks is applicable.
+    // Update marked chunks mesh runs update single mesh on marked chunks in a
+    // background thread. The returned meshes are saved and sent to the gpu when
+    // send_updated_chunks_mesh is called.
+
     /**
-     * @brief update all chunk mesh
-     *
+     * @brief Marks a single chunk given by its position to be updated.
      */
-    void update_all_chunks_mesh();
-
-    void update_single_mesh(ChunkIndex chunk_pos);
-    void update_single_mesh(TerrainDim3 tile_sop);
-
     void
     mark_for_update(ChunkIndex chunk_pos) {
         chunks_to_update_.insert(chunk_pos);
     }
 
+    /**
+     * @brief Marks a single chunk given by a tile in the chunk for update
+     */
     void
     mark_for_update(TerrainDim3 tile_sop) {
         if (!terrain_main_.in_range(tile_sop))
@@ -181,8 +180,28 @@ class World {
         mark_for_update(chunk_pos);
     }
 
+    /**
+     * @brief Runs a loop over marked chunks and generates a mesh.
+     */
     void update_marked_chunks_mesh();
+
+    /**
+     * @brief Generates a mesh for a single chunk.
+     */
+    void update_single_mesh(ChunkIndex chunk_pos);
+
+    /**
+     * @brief Sends chunk mesh data to gpu.
+     */
     void send_updated_chunks_mesh();
+
+    /**
+     * @brief Update all chunk mesh.
+     *
+     * @details Updates and initializes all chunks mesh.
+     *
+     */
+    void update_all_chunks_mesh();
 
     // set a region to given material, and color
     void set_tile(Dim pos, const terrain::Material* mat, ColorId color_id);

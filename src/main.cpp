@@ -52,7 +52,7 @@ save_terrain(
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
-        std::vector<terrain::generation::MapTile> macro_map = get_test_map(i);
+        std::vector<terrain::generation::MapTile> macro_map = terrain::generation::Biome::get_test_map(i);
         terrain::Terrain ter(
             map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
             macro_map
