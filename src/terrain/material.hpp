@@ -122,7 +122,7 @@ class MaterialGroup {
         std::map<MaterialId, std::set<ColorId>> materials_w_color
     ) :
         materials_no_color_requirement_(materials),
-        materials_with_color_requirement_(materials_w_color) {};
+        materials_with_color_requirement_(materials_w_color){};
 
     [[nodiscard]] inline bool
     material_in(MaterialId material_id, ColorId color_id) const {

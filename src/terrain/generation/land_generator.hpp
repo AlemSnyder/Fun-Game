@@ -92,8 +92,7 @@ class JsonToTile {
      * @brief Read the materials and colors that this stamp can overwrite in
      * terrain. Use the "Can_Stamp" dictionary.
      */
-    static MaterialGroup
-    read_elements(const Json::Value& data);
+    static MaterialGroup read_elements(const Json::Value& data);
 
  protected:
     /**
