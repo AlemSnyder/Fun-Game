@@ -8,6 +8,7 @@
 #include "terrain/generation/biome.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
+#include "util/png_image.hpp"
 #include "util/voxel_io.hpp"
 #include "world.hpp"
 
@@ -21,9 +22,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <imgui/imgui.h>
-#include <quill/Quill.h>
-// #include <png++/png.hpp>
 #include <png.h>
+#include <quill/Quill.h>
 #include <stdint.h>
 
 #include <cstdlib>
@@ -155,73 +155,12 @@ int
 image_test() {
     // png::image<png::rgb_pixel> image(16,16);
 
-    std::filesystem::path terrain_png =
-        files::get_root_path() / "terrain_test" / "test.png";
+    std::filesystem::path png_path =
+        files::get_root_path() / "terrain_output_data" / "test.png";
 
-    std::FILE* file = fopen(terrain_png.string().data(), "wb");
-    // std::FILE fp (file);
-    //  TODO add tests on validity of file & path
+    image::ImageTest image;
 
-    // god a hate c. How is one supposed to know this is a pointer?
-    // TODO these nullptr should be function pointers
-    png_structp png_ptr =
-        png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-
-    if (png_ptr == nullptr) {
-        return 1;
-    }
-
-    png_infop info_ptr = png_create_info_struct(png_ptr);
-    if (info_ptr == nullptr) {
-        png_destroy_write_struct(&png_ptr, nullptr);
-        return 1;
-    }
-
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        fclose(file);
-        return 1;
-    }
-
-    png_init_io(png_ptr, file);
-
-    size_t WIDTH = 1000;
-    size_t HEIGHT = 1000;
-
-    png_set_IHDR(
-        png_ptr, info_ptr, WIDTH, HEIGHT, 8, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE,
-        PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT
-    );
-
-    png_text meta_data;
-    meta_data.compression = PNG_TEXT_COMPRESSION_NONE;
-    meta_data.lang_key = "en";
-    meta_data.key = "An Image";
-    meta_data.text = "Some text";
-    png_set_text(png_ptr, info_ptr, &meta_data, 1);
-    png_write_info(png_ptr, info_ptr);
-
-    // png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, nullptr);
-
-    // std::vector<png_byte*> row_pointers(HEIGHT);
-
-    png_bytep row = (png_bytep)malloc(WIDTH * sizeof(png_byte));
-    for (size_t i = 0; i < HEIGHT; i++) {
-        // TODO free this memory
-        for (size_t j = 0; j < WIDTH; j++) {
-            row[j] = i*j;
-        }
-        // row_pointers[i] = row;
-        png_write_row(png_ptr, row);
-    }
-    free(row);
-
-    png_write_end(png_ptr, info_ptr);
-    png_destroy_write_struct(&png_ptr, &info_ptr);
-
-    // for (size_t i = 0; i < HEIGHT; i++) {
-    //     free(row_pointers[i]);
-    // }
+    image::write_image(image, png_path);
 
     return 0;
 }
