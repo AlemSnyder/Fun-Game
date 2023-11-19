@@ -59,9 +59,9 @@ write_image(T image, std::filesystem::path path) {
 
     png_text meta_data;
     meta_data.compression = PNG_TEXT_COMPRESSION_NONE;
-    meta_data.lang_key = "en";
-    meta_data.key = "An Image";
-    meta_data.text = "Some text";
+    meta_data.lang_key = const_cast<char *>("en");
+    meta_data.key = const_cast<char *>("An Image");
+    meta_data.text = const_cast<char *>("Some text");
     png_set_text(png_ptr, info_ptr, &meta_data, 1);
     png_write_info(png_ptr, info_ptr);
 
