@@ -84,6 +84,14 @@ class TerrainMacroMap {
     const std::vector<MapTile>& data(){
         return terrain_map_;
     }
+
+    MacroDim get_width() const {
+        return width_;
+    }
+
+    MacroDim get_height() const {
+        return height_;
+    }
 };
 
 } // namespace generation

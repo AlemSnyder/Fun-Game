@@ -69,6 +69,11 @@ Biome::Biome(const biome_json_data& biome_data, size_t seed) :
 
 void
 Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
+    init_lua_state(lua_, lua_map_generator_file);
+}
+
+void
+Biome::init_lua_state(sol::state& lua, const std::filesystem::path& lua_map_generator_file) {
     if (!std::filesystem::exists(lua_map_generator_file)) [[unlikely]] {
         LOG_ERROR(
             logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
@@ -77,9 +82,9 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
     }
 
     // add functions/libraries etc
-    lua_.open_libraries(sol::lib::base);
-    lua_.open_libraries(sol::lib::math);
-    lua_.new_usertype<FractalNoise>(
+    lua.open_libraries(sol::lib::base);
+    lua.open_libraries(sol::lib::math);
+    lua.new_usertype<FractalNoise>(
         "FractalNoise", sol::meta_function::construct,
         sol::factories(
             // FractalNoise.new(...) -- dot syntax, no "self" value
@@ -107,7 +112,7 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
         "sample", &FractalNoise::get_noise
     );
 
-    lua_.new_usertype<WorleyNoise>(
+    lua.new_usertype<WorleyNoise>(
         "WorleyNoise", sol::meta_function::construct,
         sol::factories(
             // WorleyNoise.new(...) -- dot syntax, no "self" value
@@ -126,7 +131,7 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
         "sample", &WorleyNoise::get_noise
     );
 
-    lua_.new_usertype<AlternativeWorleyNoise>(
+    lua.new_usertype<AlternativeWorleyNoise>(
         "AlternativeWorleyNoise", sol::meta_function::construct,
         sol::factories(
             // AlternativeWorleyNoise.new(...) -- dot syntax, no "self" value
@@ -147,7 +152,7 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
         "sample", &AlternativeWorleyNoise::get_noise
     );
 
-    auto result = lua_.safe_script_file(
+    auto result = lua.safe_script_file(
         lua_map_generator_file.string(), sol::script_pass_on_error
     );
     if (!result.valid()) {
@@ -157,7 +162,7 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
         return;
     }
 
-    sol::protected_function map_function = lua_["map"];
+    sol::protected_function map_function = lua["map"];
     if (!map_function.valid()) {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
         return;

@@ -153,15 +153,31 @@ MacroMap() {
 }
 
 int
-image_test() {
-    // png::image<png::rgb_pixel> image(16,16);
+image_test(const argh::parser& cmdl) {
+    if (cmdl.size() < 2) {
+        // png::image<png::rgb_pixel> image(16,16);
 
-    std::filesystem::path png_path =
-        files::get_root_path() / "terrain_output_data" / "test.png";
+        std::filesystem::path png_path =
+            files::get_root_path() / "terrain_output_data" / "test.png";
 
-    image::ImageTest image;
+        image::ImageTest image;
 
-    image::write_image(image, png_path);
+        image::write_image(image, png_path);
+
+    } else {
+        std::string path_in = cmdl(2).str();
+        std::filesystem::path lua_file_path = files::get_root_path() / path_in;
+
+        std::string path_out = cmdl(3).str();
+        std::filesystem::path png_path = files::get_root_path() / path_out;
+        size_t size;
+        cmdl("size", 6) >> size;
+
+        terrain::generation::TerrainMacroMap map =
+            terrain::generation::Biome::map_generation_test(lua_file_path, size);
+
+        image::write_image(map, png_path);
+    }
 
     return 0;
 }
@@ -409,7 +425,7 @@ main(int argc, char** argv) {
     } else if (run_function == "ChunkDataTest") {
         return ChunkDataTest();
     } else if (run_function == "imageTest") {
-        return image_test();
+        return image_test(cmdl);
     } else {
         std::cout << "No known command" << std::endl;
         return 0;
