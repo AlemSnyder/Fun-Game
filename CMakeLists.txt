@@ -45,10 +45,12 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
+find_package(PNG REQUIRED)
 
 target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
+target_link_libraries(FunGame PRIVATE PNG::PNG)
 
 if(WIN32)
     target_link_libraries(FunGame PRIVATE glm)
@@ -72,6 +74,7 @@ target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 target_include_directories(FunGame PUBLIC "vendor")
 target_include_directories(FunGame PUBLIC "vendor/imgui")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
+target_include_directories(FunGame PUBLIC "vendor/pngpp/include")
 
 # Set warning options
 if(MSVC)
