@@ -2,6 +2,7 @@
 
 #include "../../logging.hpp"
 #include "noise.hpp"
+#include "worley_noise.hpp"
 
 #include <json/json.h>
 
@@ -104,6 +105,46 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
             );
         }),
         "sample", &FractalNoise::get_noise
+    );
+
+    lua_.new_usertype<WorleyNoise>(
+        "WorleyNoise", sol::meta_function::construct,
+        sol::factories(
+            // WorleyNoise.new(...) -- dot syntax, no "self" value
+            // passed in
+            [](int tile_size) { return std::make_shared<WorleyNoise>(tile_size); },
+            // WorleyNoise:new(...) -- colon syntax, passes in the
+            // "self" value as first argument implicitly
+            [](sol::object, int tile_size) {
+                return std::make_shared<WorleyNoise>(tile_size);
+            }
+        ),
+        // WorleyNoise(...) syntax, only
+        sol::call_constructor, sol::factories([](int tile_size) {
+            return std::make_shared<WorleyNoise>(tile_size);
+        }),
+        "sample", &WorleyNoise::get_noise
+    );
+
+    lua_.new_usertype<AlternativeWorleyNoise>(
+        "AlternativeWorleyNoise", sol::meta_function::construct,
+        sol::factories(
+            // AlternativeWorleyNoise.new(...) -- dot syntax, no "self" value
+            // passed in
+            [](int tile_size) {
+                return std::make_shared<AlternativeWorleyNoise>(tile_size);
+            },
+            // AlternativeWorleyNoise:new(...) -- colon syntax, passes in the
+            // "self" value as first argument implicitly
+            [](sol::object, int tile_size) {
+                return std::make_shared<AlternativeWorleyNoise>(tile_size);
+            }
+        ),
+        // AlternativeWorleyNoise(...) syntax, only
+        sol::call_constructor, sol::factories([](int tile_size) {
+            return std::make_shared<AlternativeWorleyNoise>(tile_size);
+        }),
+        "sample", &AlternativeWorleyNoise::get_noise
     );
 
     auto result = lua_.safe_script_file(
