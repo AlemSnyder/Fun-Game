@@ -61,7 +61,7 @@ World::World(const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, 
 World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
     biome_(biome_name, seed),
     terrain_main_(
-        3, 3, macro_tile_size, height, seed, biome_, get_test_map(tile_type)
+        3, 3, macro_tile_size, height, seed, biome_, terrain::generation::Biome::get_test_map(tile_type)
     ) {}
 
 __attribute__((optimize(2))) void

@@ -40,6 +40,7 @@
 #include "terrain_base.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
+#include "generation/map_tile.hpp"
 
 #include <array>
 #include <cstdint>
@@ -207,7 +208,7 @@ class Terrain : public TerrainBase {
     Terrain(
         Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
         const generation::Biome& biome,
-        const std::vector<generation::MapTile>& macro_map
+        const generation::TerrainMacroMap& macro_map
     );
     /**
      * @brief Construct a new Terrain object

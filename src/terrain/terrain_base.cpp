@@ -41,7 +41,7 @@ TerrainBase::qb_read(
 
 TerrainBase::TerrainBase(
     Dim x_map_tiles, Dim y_map_tiles, Dim area_size_, Dim z,
-    const generation::Biome& biome, const std::vector<generation::MapTile>& macro_map
+    const generation::Biome& biome, const generation::TerrainMacroMap& macro_map
 ) :
     area_size_(area_size_),
     biome_(biome), X_MAX(x_map_tiles * area_size_), Y_MAX(y_map_tiles * area_size_),
@@ -57,7 +57,7 @@ TerrainBase::TerrainBase(
     // TODO make this faster 4
     for (size_t i = 0; i < x_map_tiles; i++)
         for (size_t j = 0; j < y_map_tiles; j++) {
-            generation::MapTile map_tile = macro_map[j + i * y_map_tiles];
+            generation::MapTile map_tile = macro_map.get_tile(i, j);
             auto macro_types = biome_.get_macro_ids(map_tile.get_tile_type());
             for (auto generator_macro : macro_types) {
                 init_area(map_tile, biome_.get_generator(generator_macro));

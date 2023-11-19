@@ -8,15 +8,6 @@
 
 namespace image {
 
-// T should be int8_t for grayscale, or other for other types
-template <class T>
-class ImageBase {
- public:
-    virtual T get(size_t i, size_t j) = 0;
-    virtual size_t get_height() = 0;
-    virtual size_t get_width() = 0;
-};
-
 template <class T>
 void
 write_image(T image, std::filesystem::path path) {
@@ -73,7 +64,7 @@ write_image(T image, std::filesystem::path path) {
     for (size_t i = 0; i < HEIGHT; i++) {
         // TODO free this memory
         for (size_t j = 0; j < WIDTH; j++) {
-            row[j] = image.get(i, j);
+            row[j] = image.get_color(i, j);
         }
         // row_pointers[i] = row;
         png_write_row(png_ptr, row);
@@ -101,7 +92,7 @@ class ImageTest {
     }
 
     png_byte
-    get(size_t i, size_t j) {
+    get_color(size_t i, size_t j) {
         return static_cast<png_byte>(i * j);
     }
 };

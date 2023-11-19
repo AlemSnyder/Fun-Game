@@ -135,7 +135,20 @@ class Biome {
      *
      * @return 2D map of map tiles
      */
-    [[nodiscard]] const std::vector<MapTile> get_map(MacroDim length) const;
+    [[nodiscard]] const TerrainMacroMap get_map(MacroDim length) const;
+
+    inline static TerrainMacroMap
+    get_test_map(MapTile_t type) {
+        std::vector<terrain::generation::MapTile> out;
+        out.reserve(9);
+        for (size_t i = 0; i < 4; i++)
+            out.emplace_back(0, 0);
+        out.emplace_back(type, 2);
+        for (size_t i = 0; i < 4; i++)
+            out.emplace_back(0, 0);
+
+        return TerrainMacroMap(out, 3, 3);
+    }
 
     /**
      * @brief Get land generator from TileMacro_t

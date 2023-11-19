@@ -164,7 +164,7 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
     }
 }
 
-const std::vector<MapTile>
+const TerrainMacroMap
 Biome::get_map(MacroDim length) const {
     std::vector<MapTile> out;
 
@@ -187,7 +187,7 @@ Biome::get_map(MacroDim length) const {
         }
     }
 
-    return out;
+    return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
 void

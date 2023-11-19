@@ -40,19 +40,6 @@ namespace entity {
 class Mesh;
 }
 
-inline std::vector<terrain::generation::MapTile>
-get_test_map(MapTile_t type) {
-    std::vector<terrain::generation::MapTile> out;
-    out.reserve(9);
-    for (size_t i = 0; i < 4; i++)
-        out.emplace_back(0, 0);
-    out.emplace_back(type, 2);
-    for (size_t i = 0; i < 4; i++)
-        out.emplace_back(0, 0);
-
-    return out;
-}
-
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
  *
