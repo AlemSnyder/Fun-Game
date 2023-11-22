@@ -33,10 +33,12 @@ WorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
 std::set<WorleyPoint>
 WorleyNoise::get_points_(NoiseTileIndex xt, NoiseTileIndex yt) const {
     std::set<WorleyPoint> out;
-    for (int dx = 0; dx < 2; dx++) {
-        for (int dy = 0; dy < 2; dy++) {
-            NoisePosition x_position = get_double(0, xt + dx, yt + dy);
-            NoisePosition y_position = get_double(1, xt + dx, yt + dy);
+    for (int dx = -1; dx < 3; dx++) {
+        for (int dy = -1; dy < 3; dy++) {
+            NoisePosition x_position =
+                (get_double(0, xt + dx, yt + dy) + xt + dx - .5) * tile_size_;
+            NoisePosition y_position =
+                (get_double(1, xt + dx, yt + dy) + yt + dy - .5) * tile_size_;
             bool positive = (get_double(2, xt + dx, yt + dy) < positive_chance_);
             WorleyPoint point({x_position, y_position, 1, positive});
             out.insert(WorleyPoint(point));
