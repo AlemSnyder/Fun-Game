@@ -73,7 +73,9 @@ Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
 }
 
 void
-Biome::init_lua_state(sol::state& lua, const std::filesystem::path& lua_map_generator_file) {
+Biome::init_lua_state(
+    sol::state& lua, const std::filesystem::path& lua_map_generator_file
+) {
     if (!std::filesystem::exists(lua_map_generator_file)) [[unlikely]] {
         LOG_ERROR(
             logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
@@ -136,18 +138,25 @@ Biome::init_lua_state(sol::state& lua, const std::filesystem::path& lua_map_gene
         sol::factories(
             // AlternativeWorleyNoise.new(...) -- dot syntax, no "self" value
             // passed in
-            [](int tile_size) {
-                return std::make_shared<AlternativeWorleyNoise>(tile_size);
+            [](int tile_size, double positive_chance, double radius) {
+                return std::make_shared<AlternativeWorleyNoise>(
+                    tile_size, positive_chance, radius
+                );
             },
             // AlternativeWorleyNoise:new(...) -- colon syntax, passes in the
             // "self" value as first argument implicitly
-            [](sol::object, int tile_size) {
-                return std::make_shared<AlternativeWorleyNoise>(tile_size);
+            [](sol::object, int tile_size, double positive_chance, double radius) {
+                return std::make_shared<AlternativeWorleyNoise>(
+                    tile_size, positive_chance, radius
+                );
             }
         ),
         // AlternativeWorleyNoise(...) syntax, only
-        sol::call_constructor, sol::factories([](int tile_size) {
-            return std::make_shared<AlternativeWorleyNoise>(tile_size);
+        sol::call_constructor,
+        sol::factories([](int tile_size, double positive_chance, double radius) {
+            return std::make_shared<AlternativeWorleyNoise>(
+                tile_size, positive_chance, radius
+            );
         }),
         "sample", &AlternativeWorleyNoise::get_noise
     );

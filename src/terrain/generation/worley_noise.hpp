@@ -80,7 +80,7 @@ class WorleyNoise : protected Noise {
 
  protected:
     [[nodiscard]] std::set<WorleyPoint>
-    get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t) const;
+    get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t, NoiseTileIndex range = 2) const;
 
     [[nodiscard]] static double
     distance_(NoisePosition x, NoisePosition y, WorleyPoint);
@@ -94,14 +94,22 @@ class WorleyNoise : protected Noise {
  * sum of radial cosines centered at each point.
  */
 class AlternativeWorleyNoise : public WorleyNoise {
+ private:
+    NoisePosition point_radius_;
+
  public:
     /**
      * @brief Create a new AlternativeWorleyNoise object.
      *
      * @details Default constructor sets tile_size to 1;
      */
-    inline AlternativeWorleyNoise(NoisePosition tile_size = 1) :
-        WorleyNoise(tile_size) {}
+    inline AlternativeWorleyNoise(
+        NoisePosition tile_size, double positive_chance, NoisePosition radius
+    ) :
+        WorleyNoise(tile_size),
+        point_radius_(radius) {
+        positive_chance_ = positive_chance;
+    }
 
     [[nodiscard]] virtual double
     get_noise(NoisePosition x, NoisePosition y) const override;

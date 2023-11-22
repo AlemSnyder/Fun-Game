@@ -14,17 +14,22 @@ function map(number)
     result.y = number
     result["map"] = {}
 
-    noise = WorleyNoise:new(64)
+    noise = AlternativeWorleyNoise:new(64, 0.5, 64)
 
     for x = 0, number-1 do
         for y = 0, number-1 do
             -- sample noise and set a value
-            height = 4 * noise:sample(x * spacing, y * spacing)
+            height = noise:sample(x * spacing, y * spacing)
             -- each value must be integers. math.floor changes doubles to ints
-            height_map_value = math.floor( height )
+
+            if height <= 0 then
+                height_map_value = 1
+            else
+                height_map_value = 255
+            end
 
             -- assign tile type to index in map
-            result["map"][x * number + y] = height_map_value*16
+            result["map"][x * number + y] = height_map_value
         end
     end
     return result

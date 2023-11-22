@@ -31,16 +31,24 @@ WorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
 }
 
 std::set<WorleyPoint>
-WorleyNoise::get_points_(NoiseTileIndex xt, NoiseTileIndex yt) const {
+WorleyNoise::get_points_(NoiseTileIndex xt, NoiseTileIndex yt, NoiseTileIndex range)
+    const {
+    assert(range % 2 == 0 && "range must be even");
     std::set<WorleyPoint> out;
-    for (int dx = -1; dx < 3; dx++) {
-        for (int dy = -1; dy < 3; dy++) {
+    for (int dx = 0; dx < range; dx++) {
+        for (int dy = 0; dy < range; dy++) {
+            // compute index of worley tile
+            NoiseTileIndex x_index = xt + dx - range / 2;
+            NoiseTileIndex y_index = yt + dy - range / 2;
+
+            // determine where the worley point is in the tile
             NoisePosition x_position =
-                (get_double(0, xt + dx, yt + dy) + xt + dx - .5) * tile_size_;
+                (get_double(0, x_index, y_index) + x_index - .5) * tile_size_;
             NoisePosition y_position =
-                (get_double(1, xt + dx, yt + dy) + yt + dy - .5) * tile_size_;
-            bool positive = (get_double(2, xt + dx, yt + dy) < positive_chance_);
-            WorleyPoint point({x_position, y_position, 1, positive});
+                (get_double(1, x_index, y_index) + y_index - .5) * tile_size_;
+            bool positive =
+                (get_double(2, x_index, y_index) < positive_chance_);
+            WorleyPoint point({x_position, y_position, tile_size_ / 2, positive});
             out.insert(WorleyPoint(point));
         }
     }
@@ -52,14 +60,18 @@ AlternativeWorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
     NoiseTileIndex xt = x / tile_size_;
     NoiseTileIndex yt = y / tile_size_;
 
-    auto worley_points = get_points_(xt, yt);
+    // the range is determined by the ratio between 
+    // point_radius_, and tile_size_
+    NoiseTileIndex range = (point_radius_/tile_size_ + 2) * 2;
+
+    auto worley_points = get_points_(xt, yt, range);
 
     NoisePosition value = 0;
     for (const auto& point : worley_points) {
         NoisePosition d = distance_(x, y, point);
         // change is 1 when point.positive is T, and -1 when positive is F.
-        uint8_t change = static_cast<uint8_t>(point.positive) * 2 - 1;
-        value += modified_cos_(d, point.radius) * change;
+        double change = static_cast<double>(point.positive) * 2 - 1;
+        value += modified_cos_(d, point_radius_) * change;
     }
 
     return value;
