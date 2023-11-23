@@ -126,7 +126,7 @@ InstancedIMeshRenderer<T>::render_frame_buffer(
     screen_size_t width, screen_size_t height, GLuint frame_buffer
 ) const {
     // Render to the screen
-    gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
+    gui::FrameBufferHandler::instance().bind_fbo(frame_buffer);
 
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
@@ -172,7 +172,7 @@ void
 InstancedIMeshRenderer<T>::render_shadow_map(
     screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer_name_
 ) const {
-    gui::FrameBufferHandler::getInstance().bind_fbo(frame_buffer_name_);
+    gui::FrameBufferHandler::instance().bind_fbo(frame_buffer_name_);
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
     glViewport(0, 0, shadow_width_, shadow_height_);

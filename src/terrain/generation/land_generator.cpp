@@ -84,10 +84,14 @@ TileStamp
 JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
     const {
     // center_x between center[1][0] and center[0][0] inclusive
-    std::uniform_int_distribution<TerrainOffset> center_x_dist(center[0][0], center[1][0]);
+    std::uniform_int_distribution<TerrainOffset> center_x_dist(
+        center[0][0], center[1][0]
+    );
     TerrainOffset center_x = center_x_dist(rand_engine);
     // same with y
-    std::uniform_int_distribution<TerrainOffset> center_y_dist(center[0][1], center[1][1]);
+    std::uniform_int_distribution<TerrainOffset> center_y_dist(
+        center[0][1], center[1][1]
+    );
     TerrainOffset center_y = center_y_dist(rand_engine);
     // size 'centered' at width and can be between width-width_variance to width +
     // width_variance
@@ -104,7 +108,7 @@ JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_eng
 
     // mode edges for randomness
     // I have long since forgotten the exact reason, but it has to do with randomness
-    std::uniform_int_distribution<> bool_dist(0,1);
+    std::uniform_int_distribution<> bool_dist(0, 1);
     if (size_x % 2 != 0) {
         if (bool_dist(rand_engine))
             x_min--;
@@ -123,37 +127,53 @@ JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_eng
         -height_variance_, height_variance_
     );
     TerrainOffset z_max = height_ + height_dist(rand_engine);
+    // clang-format off
     return {
         x_min,
         y_min,
-        0, // y_min = 0
+        0, // z_min = 0
         x_max,
         y_max,
         z_max,
         stamp_material_id_,
         stamp_color_id_,
-        elements_can_stamp_
+        elements_can_stamp_,
     };
+    // clang-format on
 }
 
-std::set<std::pair<MaterialId, ColorId>>
+MaterialGroup
 JsonToTile::read_elements(const Json::Value& data) {
-    std::set<std::pair<MaterialId, ColorId>> out;
+    // want to return a group that represents the given data
+    // There will be elements with no requirements on the color
+    std::set<MaterialId> materials;
+    // amd some with requirements on the color
+    std::map<MaterialId, std::set<ColorId>> materials_w_color;
 
     for (const Json::Value& material_data : data) {
+        // read the material id from the data
         MaterialId mat_id;
         if (material_data["E"].isInt())
             mat_id = material_data["E"].asInt();
-        else
-            mat_id = MAT_ANY_MATERIAL;
+        // determine what colors are excepted
         if (material_data["C"].isInt()) {
+            // if colors are color ids
             ColorId color_id = material_data["C"].asInt();
-            out.insert(std::make_pair(mat_id, color_id));
+            auto iter = materials_w_color.find(mat_id);
+            if (iter != materials_w_color.end()) {
+                // add the color to the material if it exits
+                iter->second.insert(color_id);
+            } else {
+                // add both if it does not
+                materials_w_color.insert({mat_id, {color_id}});
+            }
         } else if (material_data["C"].asBool()) {
-            out.insert(std::make_pair(mat_id, -1));
+            // if color is a bool, then its probably true and we except all
+            // colors
+            materials.insert(mat_id);
         }
     }
-    return out;
+    return MaterialGroup(materials, materials_w_color);
 }
 
 TileStamp

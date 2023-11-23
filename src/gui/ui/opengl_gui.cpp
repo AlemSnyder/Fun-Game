@@ -58,7 +58,7 @@ opengl_entry(World& world) {
         main_scene.update(window_width, window_width);
 
         // bind the the screen
-        FrameBufferHandler::getInstance().bind_fbo(0); // clear the screen
+        FrameBufferHandler::instance().bind_fbo(0); // clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // render to the screen
         QR.render(window_width, window_height, main_scene.get_scene(), 0);

@@ -23,7 +23,7 @@ FrameBufferMultisample::FrameBufferMultisample(
     // frame buffer (the container for the other two)
     // -----------------
     glGenFramebuffers(1, &frame_buffer);
-    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
+    FrameBufferHandler::instance().bind_fbo(frame_buffer);
 
     // texture
     glGenTextures(1, &render_texture);
@@ -61,7 +61,7 @@ FrameBufferMultisample::FrameBufferMultisample(
     // frame buffer (the container for the other two)
     // --------------------------
     glGenFramebuffers(1, &frame_buffer_single);
-    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_single);
+    FrameBufferHandler::instance().bind_fbo(frame_buffer_single);
     // texture (what it looks like)
     glGenTextures(1, &render_texture_single);
     glBindTexture(GL_TEXTURE_2D, render_texture_single);

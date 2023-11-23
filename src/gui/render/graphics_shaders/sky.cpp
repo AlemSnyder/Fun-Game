@@ -34,7 +34,7 @@ SkyRenderer::~SkyRenderer() {
 void
 SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buffer)
     const {
-    FrameBufferHandler::getInstance().bind_fbo(frame_buffer);
+    FrameBufferHandler::instance().bind_fbo(frame_buffer);
     glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE);
 

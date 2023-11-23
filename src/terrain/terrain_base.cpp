@@ -94,10 +94,9 @@ TerrainBase::TerrainBase(
     }
 }
 
-int
-TerrainBase::get_first_not(
-    const std::set<std::pair<MaterialId, ColorId>>& materials, int x, int y, int guess
-) const {
+Dim
+TerrainBase::get_first_not(const MaterialGroup& materials, Dim x, Dim y, Dim guess)
+    const {
     if (guess < 1) {
         guess = 1;
     } else if (static_cast<Dim>(guess) >= Z_MAX) {
@@ -172,7 +171,9 @@ TerrainBase::stamp_tile_region(
                 if (in_range(x, y, z)) {
                     Tile* tile = get_tile(x, y, z);
                     if (stamp.elements_can_stamp.has_value()) {
-                        if (has_tile_material(stamp.elements_can_stamp.value(), tile))
+                        if (stamp.elements_can_stamp.value().material_in(
+                                tile->get_material_id(), tile->get_color_id()
+                            ))
                             tile->set_material(
                                 biome_.get_material(stamp.mat), stamp.color_id
                             );
@@ -190,14 +191,17 @@ TerrainBase::stamp_tile_region(
 void
 TerrainBase::init_area(generation::MapTile& map_tile, generation::LandGenerator gen) {
     while (!gen.empty()) {
-        stamp_tile_region(gen.get_stamp(map_tile.get_rand_engine()), map_tile.get_x(), map_tile.get_y());
+        stamp_tile_region(
+            gen.get_stamp(map_tile.get_rand_engine()), map_tile.get_x(),
+            map_tile.get_y()
+        );
         gen.next();
     }
     gen.reset();
 }
 
-int
-TerrainBase::get_stop_height(int height, const Json::Value& how_to_add) {
+Dim
+TerrainBase::get_stop_height(Dim height, const Json::Value& how_to_add) {
     for (auto& add_data : how_to_add) {
         if (height >= add_data["from"][0].asInt()
             && height < add_data["from"][1].asInt()) {

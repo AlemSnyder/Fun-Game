@@ -52,7 +52,7 @@ class FrameBufferHandler {
 
     // Instance accessor
     static inline FrameBufferHandler&
-    getInstance() {
+    instance() {
         static FrameBufferHandler obj;
         return obj;
     }
