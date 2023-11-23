@@ -13,8 +13,8 @@ project(FunGame VERSION 0.1.0)
 # add the executable
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
 
+# this is one json file and whereami
 file(GLOB SOURCES4 "vendor/*.c*")
-file(GLOB SOURCES5 "vendor/json/*.c*")
 file(GLOB SOURCES6 "vendor/imgui/*.c*")
 file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
 file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
@@ -46,11 +46,13 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(PNG REQUIRED)
+find_package(OpenMP REQUIRED)
 
 target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
 target_link_libraries(FunGame PRIVATE PNG::PNG)
+target_link_libraries(FunGame PUBLIC OpenMP::OpenMP_CXX)
 
 if(WIN32)
     target_link_libraries(FunGame PRIVATE glm)
@@ -71,8 +73,9 @@ target_link_libraries_system(FunGame PRIVATE sol2::sol2)
 target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
 # Add include dirs
-target_include_directories(FunGame PUBLIC "vendor")
-target_include_directories(FunGame PUBLIC "vendor/imgui")
+target_include_directories(FunGame PRIVATE "vendor")
+target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
+target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 target_include_directories(FunGame PUBLIC "vendor/pngpp/include")
 

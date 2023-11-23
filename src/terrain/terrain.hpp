@@ -338,6 +338,12 @@ class Terrain : public TerrainBase {
         return chunks_;
     }
 
+    [[nodiscard]] inline const Chunk&
+    get_chunk(size_t i) const {
+        assert(i < chunks_.size());
+        return chunks_[i];
+    }
+
     /**
      * @brief charge the color id but not the material of the tile
      *

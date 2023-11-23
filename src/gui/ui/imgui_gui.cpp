@@ -107,7 +107,7 @@ imgui_entry(World& world) {
 
         glm::vec3 position = controls::get_position_vector();
 
-        FrameBufferHandler::getInstance().bind_fbo(0);
+        FrameBufferHandler::instance().bind_fbo(0);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -131,7 +131,7 @@ imgui_entry(World& world) {
             );
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_scene()),
-                ImVec2(window_width, window_height),  ImVec2(0, 1), ImVec2(1, 0)
+                ImVec2(window_width, window_height), ImVec2(0, 1), ImVec2(1, 0)
             );
 
             if (ImGui::IsWindowFocused()) {
@@ -210,7 +210,8 @@ imgui_entry(World& world) {
                 ImVec2(
                     main_scene.get_shadow_width() / 8,
                     main_scene.get_shadow_height() / 8
-                ),ImVec2(0, 1), ImVec2(1, 0)
+                ),
+                ImVec2(0, 1), ImVec2(1, 0)
             );
 
             ImGui::End();

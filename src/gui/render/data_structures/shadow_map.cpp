@@ -20,7 +20,7 @@ ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
     shadow_height_ = h;
 
     glGenFramebuffers(1, &frame_buffer_id_);
-    FrameBufferHandler::getInstance().bind_fbo(frame_buffer_id_);
+    FrameBufferHandler::instance().bind_fbo(frame_buffer_id_);
 
     // Depth texture. Slower than a depth buffer, but you can sample it later in
     // your shader

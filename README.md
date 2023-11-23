@@ -1,5 +1,5 @@
 # Fun-Game
-I am just practicing c++. Feel free to enjoy.
+I will be the reason copilot doesn't work.
 
 ## Setup
 
@@ -36,6 +36,22 @@ cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
 ninja
 ninja package
 ninja package_source
+```
+
+## Profile
+```sh
+cd build
+cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg -G Ninja .. -DCMAKE_BUILD_TYPE=Debug
+ninja
+
+./FunGame <args>
+gprof ./FunGame gmon.out | gprof2dot | dot -Tsvg -o output.svg
+```
+Don't know how to turn this off though
+
+```sh
+rm -rf build # or
+cmake --fresh
 ```
 
 ## Formatting

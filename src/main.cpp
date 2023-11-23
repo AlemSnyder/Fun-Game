@@ -35,6 +35,7 @@
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
 
+constexpr static size_t STRESS_TEST_SIZE = 16;
 constexpr static size_t SEED = 5;
 
 void
@@ -46,14 +47,13 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data
-    };
+        biome_name, materials_json, biome_data};
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
-        terrain::generation::TerrainMacroMap macro_map =
+        auto macro_map =
             terrain::generation::Biome::get_test_map(i);
         terrain::Terrain ter(
             map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
@@ -325,10 +325,11 @@ StressTest(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
-    cmdl("size", 2) >> size;
+    cmdl("size", STRESS_TEST_SIZE) >> size;
     World world("base", size, size, seed);
     // Create world object from material data, biome data, and the number of
-    // chunks in the x,y direction. Here the size is 2,2.
+    // chunks in the x,y direction. Here the size is a user parameter that
+    // defaults to STRESS_TEST_SIZE.
 
     return gui::opengl_entry(world);
 }
