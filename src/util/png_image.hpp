@@ -105,7 +105,7 @@ write_image(T image, const std::filesystem::path& path) {
     png_bytep row;
 
     // allocate data for row
-    row = malloc(WIDTH * sizeof(png_byte));
+    row = static_cast<png_bytep>(malloc(WIDTH * sizeof(png_byte)));
     if (!row) {
         // log_e(images, "Could not allocate memory for row data");
 
