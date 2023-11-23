@@ -88,6 +88,7 @@ build/*
 
 # this is a lot of qb files
 SavedTerrain/*
+terrain_output_data/*
 
 # generated log folder, and files
 logs

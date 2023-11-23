@@ -13,21 +13,21 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
     for (Dim x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
         for (Dim y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
             for (Dim z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
-                if (ter->can_stand_1(x, y, z)) {
+                if (ter_->can_stand_1(x, y, z)) {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
                     // look at onePath for more information
-                    NodeGroup group = NodeGroup(ter->get_tile(x, y, z), 31);
+                    NodeGroup group = NodeGroup(ter_->get_tile(x, y, z), 31);
                     node_groups_.push_back(group);
-                    ter->add_node_group(&node_groups_.back());
+                    ter_->add_node_group(&node_groups_.back());
                 }
             }
 
     for (NodeGroup& NG : node_groups_)
         for (const Tile* tile_main : NG.get_tiles()) {
-            auto it = ter_->get_tile_adjacent_iterator(ter->pos(tile_main), 31);
+            auto it = ter_->get_tile_adjacent_iterator(ter_->pos(tile_main), 31);
             for (; !it.end(); it++) {
-                if (NodeGroup* to_add = ter->get_node_group(it.get_pos())) {
+                if (NodeGroup* to_add = ter_->get_node_group(it.get_pos())) {
                     // possible to go in both directions
                     // like add adjacent from above, and below
                     NG.add_adjacent(to_add, 31);
@@ -45,6 +45,7 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
             }
         }
         R_merge((*it), to_merge);
+        ter_->add_node_group( &(*it) );
         it++;
     }
 }
@@ -54,21 +55,20 @@ Chunk::R_merge(NodeGroup& G1, std::set<NodeGroup*>& to_merge) {
     if (to_merge.size() == 0) {
         return;
     }
-    std::set<NodeGroup*> new_merge;
+    //std::set<NodeGroup*> new_merge;
     while (to_merge.size() > 0) {
         auto G2 = to_merge.begin();
         std::map<NodeGroup*, UnitPath> to_add = G1.merge_groups(**(G2));
         delNodeGroup(**G2);
-        new_merge.erase(*G2);
-        ter_->add_node_group(&G1);
+        //new_merge.erase(*G2);
         for (std::pair<NodeGroup* const, UnitPath> NG : to_add) {
             if (contains_nodeGroup(NG.first) && &G1 != NG.first) {
-                new_merge.insert(NG.first);
+                to_merge.insert(NG.first);
             }
         }
         to_merge.erase(G2);
     }
-    R_merge(G1, new_merge);
+    //R_merge(G1, new_merge);
 }
 
 void
