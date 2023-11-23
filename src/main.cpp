@@ -143,7 +143,7 @@ MacroMap() {
     auto map = biome.get_map(64);
 
     std::vector<TileMacro_t> int_map;
-    for (const auto& map_tile : map.data()) {
+    for (const auto& map_tile : map) {
         int_map.push_back(map_tile.get_tile_type());
     }
 

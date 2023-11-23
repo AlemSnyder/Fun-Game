@@ -81,6 +81,14 @@ class TerrainMacroMap {
         return get_tile(i, j).get_tile_type();
     }
 
+    const auto begin() const {
+        return terrain_map_.begin();
+    }
+
+    const auto end() const {
+        return terrain_map_.end();
+    }
+
     const std::vector<MapTile>& data(){
         return terrain_map_;
     }
