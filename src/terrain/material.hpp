@@ -127,12 +127,12 @@ class MaterialGroup {
     [[nodiscard]] inline bool
     material_in(MaterialId material_id, ColorId color_id) const {
         if (material_in(material_id))
-            return true;
+            return true; // material found in set that disregards color
         auto iter = materials_with_color_requirement_.find(material_id);
-        if (iter != materials_with_color_requirement_.end()) {
-            return iter->second.contains(color_id);
-        }
-        return false;
+        if (iter == materials_with_color_requirement_.end())
+            return false; // material not found
+        // material found; find color
+        return iter->second.contains(color_id);
     }
 
     [[nodiscard]] inline bool

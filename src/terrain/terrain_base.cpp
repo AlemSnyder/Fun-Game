@@ -94,8 +94,8 @@ TerrainBase::TerrainBase(
     }
 }
 
-int
-TerrainBase::get_first_not(const MaterialGroup& materials, int x, int y, int guess)
+Dim
+TerrainBase::get_first_not(const MaterialGroup& materials, Dim x, Dim y, Dim guess)
     const {
     if (guess < 1) {
         guess = 1;
@@ -200,8 +200,8 @@ TerrainBase::init_area(generation::MapTile& map_tile, generation::LandGenerator 
     gen.reset();
 }
 
-int
-TerrainBase::get_stop_height(int height, const Json::Value& how_to_add) {
+Dim
+TerrainBase::get_stop_height(Dim height, const Json::Value& how_to_add) {
     for (auto& add_data : how_to_add) {
         if (height >= add_data["from"][0].asInt()
             && height < add_data["from"][1].asInt()) {

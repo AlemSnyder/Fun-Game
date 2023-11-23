@@ -155,7 +155,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    [[nodiscard]] inline int
+    [[nodiscard]] inline TileIndex
     pos_for_map(const Tile tile) const {
         return pos(tile);
     }
@@ -166,7 +166,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    [[nodiscard]] inline int
+    [[nodiscard]] inline TileIndex
     pos_for_map(const Tile* const tile) const {
         return pos(tile);
     }
@@ -397,8 +397,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
      *
      * @return int height
      */
-    [[nodiscard]] int
-    get_first_not(const MaterialGroup& materials, int x, int y, int guess = 0) const;
+    [[nodiscard]] Dim
+    get_first_not(const MaterialGroup& materials, Dim x, Dim y, Dim guess = 0) const;
 
     [[nodiscard]] inline uint8_t
     get_grass_grad_length() const noexcept {
@@ -454,10 +454,10 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param how_to_add json data that defines biome generation
      * @return int max height
      */
-    [[nodiscard]] static int get_stop_height(int height, const Json::Value& how_to_add);
+    [[nodiscard]] static Dim get_stop_height(Dim height, const Json::Value& how_to_add);
 
     [[nodiscard]] inline bool
-    has_tile_material(const MaterialGroup& material_test, int x, int y, int z) const {
+    has_tile_material(const MaterialGroup& material_test, Dim x, Dim y, Dim z) const {
         return has_tile_material(material_test, get_tile(x, y, z));
     }
 
