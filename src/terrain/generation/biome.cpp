@@ -68,11 +68,6 @@ Biome::Biome(const biome_json_data& biome_data, size_t seed) :
 }
 
 void
-Biome::init_lua_state(const std::filesystem::path& lua_map_generator_file) {
-    init_lua_state(lua_, lua_map_generator_file);
-}
-
-void
 Biome::init_lua_state(
     sol::state& lua, const std::filesystem::path& lua_map_generator_file
 ) {
@@ -119,16 +114,16 @@ Biome::init_lua_state(
         sol::factories(
             // WorleyNoise.new(...) -- dot syntax, no "self" value
             // passed in
-            [](int tile_size) { return std::make_shared<WorleyNoise>(tile_size); },
+            [](int tile_size, double radius) { return std::make_shared<WorleyNoise>(tile_size, radius); },
             // WorleyNoise:new(...) -- colon syntax, passes in the
             // "self" value as first argument implicitly
-            [](sol::object, int tile_size) {
-                return std::make_shared<WorleyNoise>(tile_size);
+            [](sol::object, int tile_size, double radius) {
+                return std::make_shared<WorleyNoise>(tile_size, radius);
             }
         ),
         // WorleyNoise(...) syntax, only
-        sol::call_constructor, sol::factories([](int tile_size) {
-            return std::make_shared<WorleyNoise>(tile_size);
+        sol::call_constructor, sol::factories([](int tile_size, double radius) {
+            return std::make_shared<WorleyNoise>(tile_size, radius);
         }),
         "sample", &WorleyNoise::get_noise
     );

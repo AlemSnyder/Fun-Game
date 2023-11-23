@@ -18,7 +18,9 @@ WorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
     NoiseTileIndex x_tile = x / tile_size_;
     NoiseTileIndex y_tile = y / tile_size_;
 
-    auto worley_points = get_points_(x_tile, y_tile);
+    NoiseTileIndex range = (point_radius_/tile_size_ + 2) * 2;
+
+    auto worley_points = get_points_(x_tile, y_tile, range);
 
     NoisePosition value = tile_size_ * 2;
     for (const auto& point : worley_points) {
@@ -35,17 +37,17 @@ WorleyNoise::get_points_(NoiseTileIndex xt, NoiseTileIndex yt, NoiseTileIndex ra
     const {
     assert(range % 2 == 0 && "range must be even");
     std::set<WorleyPoint> out;
-    for (int dx = 0; dx < range; dx++) {
-        for (int dy = 0; dy < range; dy++) {
+    for (NoiseTileIndex dx = 0; dx < range; dx++) {
+        for (NoiseTileIndex dy = 0; dy < range; dy++) {
             // compute index of worley tile
             NoiseTileIndex x_index = xt + dx - range / 2;
             NoiseTileIndex y_index = yt + dy - range / 2;
 
             // determine where the worley point is in the tile
             NoisePosition x_position =
-                (get_double(0, x_index, y_index) + x_index - .5) * tile_size_;
+                (get_double(0, x_index, y_index) + x_index - 0.5) * tile_size_;
             NoisePosition y_position =
-                (get_double(1, x_index, y_index) + y_index - .5) * tile_size_;
+                (get_double(1, x_index, y_index) + y_index - 0.5) * tile_size_;
             bool positive =
                 (get_double(2, x_index, y_index) < positive_chance_);
             WorleyPoint point({x_position, y_position, tile_size_ / 2, positive});

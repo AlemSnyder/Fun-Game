@@ -77,7 +77,6 @@ target_include_directories(FunGame PRIVATE "vendor")
 target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
-target_include_directories(FunGame PUBLIC "vendor/pngpp/include")
 
 # Set warning options
 if(MSVC)

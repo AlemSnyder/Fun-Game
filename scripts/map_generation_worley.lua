@@ -14,7 +14,7 @@ function map(number)
     result.y = number
     result["map"] = {}
 
-    noise = WorleyNoise:new(64)
+    noise = WorleyNoise:new(64, 64)
 
     for x = 0, number-1 do
         for y = 0, number-1 do
