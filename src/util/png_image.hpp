@@ -5,6 +5,7 @@
 #include <png.h>
 
 #include <filesystem>
+#include <new>
 
 namespace image {
 
@@ -105,7 +106,7 @@ write_image(T image, const std::filesystem::path& path) {
     png_bytep row;
 
     // allocate data for row
-    row = static_cast<png_bytep>(malloc(WIDTH * sizeof(png_byte)));
+    row = new(std::nothrow) png_byte[WIDTH];
     if (!row) {
         // log_e(images, "Could not allocate memory for row data");
 
@@ -127,7 +128,7 @@ write_image(T image, const std::filesystem::path& path) {
      * Cleanups
      */
     // Free our row data
-    free(row);
+    delete[] row;
 
 row_malloc_failed:
     // Finish our write
