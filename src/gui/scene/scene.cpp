@@ -34,7 +34,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
         render->render_frame_buffer(
             width, height, frame_buffer_multisample_.get_depth_buffer_name()
         );
-    }
+    } 
 
     for (const auto& render : mid_ground_frame_buffer_multisample_) {
         render->render_frame_buffer_multisample(
