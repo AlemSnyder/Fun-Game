@@ -22,28 +22,38 @@ extern quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 extern quill::Logger* game_map_logger; // for terrain generation
 extern quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 extern quill::Logger* file_io_logger;  // for file io
-#if 0
 extern quill::Logger* lua_logger;      // for lua logging
-#endif
 
 inline quill::Logger*
-get_logger()
-{
+get_logger() {
     return quill::get_logger();
 }
 
 inline quill::Logger*
-get_logger(std::string name);
+get_logger(std::string name) {
+    auto all_loggers = quill::get_all_loggers();
+
+    // Search for the logger
+    auto logger_found = all_loggers.find(name);
+
+    // Found it, return it
+    if (logger_found != all_loggers.end())
+        return logger_found->second;
+
+    // Create a new logger
+    quill::Logger* logger = quill::create_logger(name);
+    logger->set_log_level(_LOG_LEVEL);
+    logger->init_backtrace(5, quill::LogLevel::Error);
+    return logger;
+}
 
 inline void
-set_thread_name(std::string name)
-{
+set_thread_name(std::string name) {
     quill::detail::set_thread_name(name.c_str());
 }
 
 inline std::filesystem::path
-log_dir() noexcept
-{
+log_dir() noexcept {
     return files::get_root_path() / "logs";
 }
 

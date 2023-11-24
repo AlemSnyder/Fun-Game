@@ -20,11 +20,10 @@ namespace voxel_utility {
 
 void
 from_qb(
-    const std::filesystem::path path, std::vector<qb_layer_data_t> layer_data
-
-    //, std::vector<ColorInt>& data, VoxelOffset& center,
-    // VoxelSize& size
+    std::filesystem::path path, std::vector<ColorInt>& data, VoxelOffset& center,
+    VoxelSize& size
 ) {
+    path = std::filesystem::absolute(path);
     LOG_INFO(logging::file_io_logger, "Reading voxels from {}.", path.string());
 
     // Read the tiles from the path specified, and save
@@ -60,7 +59,6 @@ from_qb(
     // everything after this line should be for each layer
 
     for (uint32_t l = 0; l < number_of_layers; l++) {
-
         std::vector<ColorInt> data;
         VoxelOffset center;
         VoxelSize size;
@@ -127,9 +125,6 @@ from_qb(
                 }
 
         LOG_INFO(logging::file_io_logger, "Voxels read: {}", voxels_read);
-
-        layer_data.push_back(qb_layer_data_t(data, center, size, name));
-
     }
 }
 

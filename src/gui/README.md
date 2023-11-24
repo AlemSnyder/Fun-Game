@@ -63,3 +63,5 @@ maybe this to include things
 https://registry.khronos.org/OpenGL/extensions/ARB/ARB_shading_language_include.txt
 This may allow compiling from different paths
 https://stackoverflow.com/a/25987964
+
+meshloader.hpp no longer exists

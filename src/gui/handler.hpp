@@ -1,21 +1,68 @@
-// handles fbo, and other things if necessary
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file handler.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Define FrameBufferHandler class
+ *
+ * @ingroup GUI
+ *
+ */
+
+// TODO add vertex buffer
+
+#pragma once
 
 #include <GL/glew.h>
 
-namespace gui{
+namespace gui {
 
+/**
+ * @brief Handles frame buffer on gpu
+ *
+ * @details Binds frame buffer, and guaranties that bound buffers are not bound
+ * again
+ */
 class FrameBufferHandler {
  private:
-    static GLuint fbo_name;
+    GLuint fbo_id;
+
+    // Private CTOR as this is a singleton
+    FrameBufferHandler() : fbo_id(0) {}
 
  public:
-    static inline GLuint
-    get_current_fbo() {
-        return fbo_name;
+    // Delete all CTORs and CTOR-like operators
+    FrameBufferHandler(FrameBufferHandler&&) = delete;
+    FrameBufferHandler(FrameBufferHandler const&) = delete;
+
+    void operator=(FrameBufferHandler&&) = delete;
+    void operator=(FrameBufferHandler const&) = delete;
+
+    // Instance accessor
+    static inline FrameBufferHandler&
+    getInstance() {
+        static FrameBufferHandler obj;
+        return obj;
     }
 
-    static void
-    bind_fbo(GLuint new_fbo);
+    inline GLuint
+    get_current_fbo() {
+        return fbo_id;
+    };
+
+    void bind_fbo(GLuint new_fbo_id);
 };
 
-}
+} // namespace gui

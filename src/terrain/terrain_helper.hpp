@@ -1,14 +1,13 @@
 // -*- lsst-c++ -*-
 /*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  */
 
 /**
@@ -36,7 +35,6 @@ namespace helper {
  * part is inside the iteration
  *
  * @warning This function should not be called.
- *
  * @tparam getter(Tile*) get the paramater that will be set (grow data high/low)
  * @tparam setter(Tile*, int) set the paramater (grow data high/low)
  * @param ter terrain to do operation on

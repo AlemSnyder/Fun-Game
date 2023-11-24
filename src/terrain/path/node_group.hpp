@@ -124,19 +124,19 @@ class NodeGroup {
      *
      * @return float
      */
-    float get_center_x();
+    float get_center_x() const;
     /**
      * @brief Get the center in the y direction
      *
      * @return float
      */
-    float get_center_y();
+    float get_center_y() const;
     /**
      * @brief Get the center in the z direction
      *
      * @return float
      */
-    float get_center_z();
+    float get_center_z() const;
     /**
      * @brief vector to volumetric center
      *
@@ -146,7 +146,6 @@ class NodeGroup {
 
     bool operator==(const NodeGroup& other) const;
     bool operator>(const NodeGroup& other) const;
-
 };
 
 } // namespace terrain

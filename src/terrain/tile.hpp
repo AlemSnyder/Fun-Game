@@ -1,14 +1,13 @@
 // -*- lsst-c++ -*-
 /*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  */
 
 /**
@@ -83,9 +82,7 @@ class Tile {
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(
-        TerrainDim3 sop, const terrain::Material* material, uint8_t color_id = 0
-    );
+    Tile(TerrainDim3 sop, const terrain::Material* material, ColorId color_id = 0);
 
     // This probably should not be used.
     Tile() :
@@ -145,8 +142,9 @@ class Tile {
      */
     void try_grow_grass();
     /**
-     * @brief Set the color id if this tile is grass. Updates the grass color to account
-     * for edge gradient. The gradient mimics shadows caused by cliffs.
+     * @brief Set the color id if this tile is grass. Updates the grass color
+     * to account for edge gradient. The gradient mimics shadows caused by
+     * cliffs.
      *
      * @param grass_grad_length total length of grass gradient
      * @param grass_mid index of color not effected by edge affects
@@ -154,14 +152,14 @@ class Tile {
      */
     void set_grass_color(
         unsigned int grass_grad_length, unsigned int grass_mid,
-        std::vector<uint8_t> grass_colors
+        std::vector<ColorId> grass_colors
     );
 
     // Getters
     /**
      * @brief Get the x position
      *
-     * @return int x position
+     * @return Dim x position
      */
     [[nodiscard]] inline Dim
     get_x() const noexcept {
@@ -171,7 +169,7 @@ class Tile {
     /**
      * @brief Get the y position
      *
-     * @return int y position
+     * @return Dim y position
      */
     [[nodiscard]] inline Dim
     get_y() const noexcept {
@@ -181,7 +179,7 @@ class Tile {
     /**
      * @brief Get the z position
      *
-     * @return int z position
+     * @return Dim z position
      */
     [[nodiscard]] inline Dim
     get_z() const noexcept {
@@ -191,7 +189,7 @@ class Tile {
     /**
      * @brief coordinate of tile
      *
-     * @return std::array<int, 3> array of x, y, z
+     * @return TerrainDim3 array of x, y, z
      */
     [[nodiscard]] TerrainDim3
     sop() const noexcept {

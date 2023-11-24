@@ -4,12 +4,16 @@
         "animatrons",
         "Astar",
         "Framebuffer",
+        "glew",
+        "glfw",
         "goxel",
         "lsst",
+        "multisample",
         "Parameteri",
         "Perlin",
         "vmask",
-        "voxel"
+        "voxel",
+        "Worley"
     ],
     "files.associations": {
         "**/*.html": "html",
@@ -114,6 +118,11 @@
         "future": "cpp",
         "*.def": "cpp",
         "*.inc": "cpp",
-        "hash_map": "cpp"
-    }
+        "hash_map": "cpp",
+        "any": "cpp",
+        "*.ipp": "cpp",
+        "forward_list": "cpp"
+    },
+    "editor.detectIndentation": false,
+    "cmake.configureOnOpen": false
 }

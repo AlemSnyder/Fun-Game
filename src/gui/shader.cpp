@@ -9,58 +9,110 @@
 #include <string>
 #include <vector>
 
-// TODO(alem): what do we do on error
+namespace gui {
+
+std::string
+get_shader_string(GLuint gl_shader_type) {
+    switch (gl_shader_type) {
+        case GL_VERTEX_SHADER:
+            return "vertex";
+        case GL_FRAGMENT_SHADER:
+            return "fragment";
+        case GL_GEOMETRY_SHADER:
+            return "geometry";
+
+        default:
+            return "NOT A VALID SHADER TYPE";
+    }
+}
+
+void
+ShaderHandler::clear() {
+    for (auto it = shaders.begin(); it != shaders.end(); it++) {
+        GLuint shader_id = it->second;
+        glDeleteShader(shader_id);
+    }
+    shaders.clear();
+}
+
+// public
 GLuint
-load_shaders(
-    const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
+ShaderHandler::get_shader(
+    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
 ) {
-    logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
-    // get the paths
-    std::filesystem::path vertex_file_path = std::filesystem::absolute(vertex_file);
-    std::filesystem::path fragment_file_path = std::filesystem::absolute(fragment_file);
+    GLuint shader_id;
+
+    auto it = shaders.find(file_relative_path);
+    if (it == shaders.end()) {
+        shader_id = load_shader(file_relative_path, gl_shader_type);
+        if (shader_id != 0) {
+            shaders.insert_or_assign(file_relative_path, shader_id);
+        }
+    } else {
+        shader_id = it->second;
+    }
+
+    return shader_id;
+}
+
+// public
+GLuint
+ShaderHandler::reload_shader(
+    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
+) {
+    GLuint shader_id;
+
+    auto it = shaders.find(file_relative_path);
+    if (it != shaders.end()) {
+        shader_id = it->second;
+    } else {
+        shader_id = load_shader(file_relative_path, gl_shader_type);
+        if (shader_id != 0) {
+            shaders.insert_or_assign(file_relative_path, shader_id);
+        }
+        return shader_id;
+    }
+
+    GLuint shader_id_new = load_shader(file_relative_path, gl_shader_type);
+    // I could log an error, but load_shader should also do this.
+    if (shader_id_new != 0) {
+        shaders.insert_or_assign(file_relative_path, shader_id_new);
+        glDeleteShader(shader_id);
+    }
+
+    return shader_id;
+}
+
+// private
+GLuint
+ShaderHandler::load_shader(
+    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
+) {
+    std::filesystem::path file_absolute_path =
+        std::filesystem::absolute(file_relative_path);
+
+    std::string shader_type_string = get_shader_string(gl_shader_type);
 
     // Create the shaders
-    GLuint vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
-    GLuint fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
+    GLuint shader_id = glCreateShader(gl_shader_type);
 
     // Read the Vertex Shader code from the file
     LOG_BACKTRACE(
-        logging::opengl_logger, "Loading vertex shader from {}",
-        vertex_file_path.string()
+        logging::opengl_logger, "Loading {} shader from {}", shader_type_string,
+        file_absolute_path.string()
     );
 
-    std::string vertex_shader_code;
-    std::ifstream vertex_shader_stream(vertex_file_path, std::ios::in);
-    if (vertex_shader_stream.is_open()) {
+    std::string shader_code;
+    std::ifstream shader_stream(file_absolute_path, std::ios::in);
+    if (shader_stream.is_open()) {
         std::stringstream sstr;
-        sstr << vertex_shader_stream.rdbuf();
-        vertex_shader_code = sstr.str();
-        vertex_shader_stream.close();
+        sstr << shader_stream.rdbuf();
+        shader_code = sstr.str();
+        shader_stream.close();
     } else {
         LOG_ERROR(
-            logging::opengl_logger, "Cannot open {}. Are you in the right directory?",
-            vertex_file_path.string()
-        );
-        return 0;
-    }
-
-    // Read the Fragment Shader code from the file
-    LOG_BACKTRACE(
-        logging::opengl_logger, "Loading fragment shader from {}",
-        fragment_file_path.string()
-    );
-
-    std::string fragment_shader_code;
-    std::ifstream fragment_shader_stream(fragment_file_path, std::ios::in);
-    if (fragment_shader_stream.is_open()) {
-        std::stringstream sstr;
-        sstr << fragment_shader_stream.rdbuf();
-        fragment_shader_code = sstr.str();
-        fragment_shader_stream.close();
-    } else {
-        LOG_ERROR(
-            logging::opengl_logger, "Cannot open {}. Are you in the right directory?",
-            fragment_file_path.string()
+            logging::opengl_logger, "Cannot open {}. Is this the right directory?",
+            file_absolute_path.string()
         );
         return 0;
     }
@@ -70,56 +122,46 @@ load_shaders(
 
     // Compile Vertex Shader
     LOG_BACKTRACE(
-        logging::opengl_logger, "Compiling vertex shader {}", vertex_file_path.string()
+        logging::opengl_logger, "Compiling {} shader {}", shader_type_string,
+        file_absolute_path.string()
     );
 
-    char const* vertex_source_pointer = vertex_shader_code.c_str();
-    glShaderSource(vertex_shader_id, 1, &vertex_source_pointer, NULL);
-    glCompileShader(vertex_shader_id);
+    char const* source_pointer = shader_code.c_str();
+    glShaderSource(shader_id, 1, &source_pointer, nullptr);
+    glCompileShader(shader_id);
 
     // Check Vertex Shader
-    glGetShaderiv(vertex_shader_id, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(vertex_shader_id, GL_INFO_LOG_LENGTH, &info_log_length);
+    glGetShaderiv(shader_id, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
-        std::string vertex_shader_error_message(info_log_length + 1, '\0');
+        std::string shader_error_message(info_log_length + 1, '\0');
         glGetShaderInfoLog(
-            vertex_shader_id, info_log_length, NULL, vertex_shader_error_message.data()
+            shader_id, info_log_length, nullptr, shader_error_message.data()
         );
 
         LOG_ERROR(
-            logging::opengl_logger, "Vertex shader error: {}",
-            vertex_shader_error_message
+            logging::opengl_logger, "{} shader error: {}", shader_type_string,
+            shader_error_message
         );
     }
+    return shader_id;
+}
 
-    // Compile Fragment Shader
-    LOG_BACKTRACE(
-        logging::opengl_logger, "Compiling fragment shader {}",
-        fragment_file_path.string()
-    );
+// TODO(alem): what do we do on error
+GLuint
+ShaderHandler::load_program(
+    const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
+) {
+    logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
 
-    char const* fragment_source_pointer = fragment_shader_code.c_str();
-    glShaderSource(fragment_shader_id, 1, &fragment_source_pointer, NULL);
-    glCompileShader(fragment_shader_id);
+    GLint vertex_shader_id = get_shader(vertex_file, GL_VERTEX_SHADER);
+    GLint fragment_shader_id = get_shader(fragment_file, GL_FRAGMENT_SHADER);
 
-    // Check Fragment Shader
-    glGetShaderiv(fragment_shader_id, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(fragment_shader_id, GL_INFO_LOG_LENGTH, &info_log_length);
-    if (info_log_length > 0) {
-        std::string fragment_shader_error_message(info_log_length + 1, '\0');
-        glGetShaderInfoLog(
-            fragment_shader_id, info_log_length, NULL,
-            fragment_shader_error_message.data()
-        );
-
-        LOG_ERROR(
-            logging::opengl_logger, "Fragment shader error: {}",
-            fragment_shader_error_message
-        );
-    }
+    GLint Result = GL_FALSE;
+    int info_log_length;
 
     // Link the program
-    //LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
+    // LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
 
     GLuint program_id = glCreateProgram();
     glAttachShader(program_id, vertex_shader_id);
@@ -132,7 +174,7 @@ load_shaders(
     if (info_log_length > 0) {
         std::string program_error_message(info_log_length + 1, '\0');
         glGetProgramInfoLog(
-            program_id, info_log_length, NULL, program_error_message.data()
+            program_id, info_log_length, nullptr, program_error_message.data()
         );
 
         LOG_ERROR(
@@ -144,15 +186,16 @@ load_shaders(
     glDetachShader(program_id, vertex_shader_id);
     glDetachShader(program_id, fragment_shader_id);
 
-    glDeleteShader(vertex_shader_id);
-    glDeleteShader(fragment_shader_id);
-
     LOG_INFO(
         logging::opengl_logger, "Shader compiled successfully with program ID {}",
         program_id
     );
 
-    LOG_BACKTRACE(logging::opengl_logger, "New Backtrace, because quill won't let me clear it.");
+    LOG_BACKTRACE(
+        logging::opengl_logger, "New Backtrace, because quill won't let me clear it."
+    );
 
     return program_id;
 }
+
+} // namespace gui

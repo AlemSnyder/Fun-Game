@@ -21,6 +21,7 @@
  */
 
 #pragma once
+#include "../../types.hpp"
 
 #include <cstdint>
 
@@ -30,7 +31,7 @@ namespace terrain {
  * @brief enum class defining possible directions between two tiles
  *
  */
-enum class DirectionFlags : uint8_t {
+enum class DirectionFlags : path_t {
     NONE = 0,
     OPEN = 1 << 0,
     HORIZONTAL1 = 1 << 1,
@@ -43,20 +44,20 @@ enum class DirectionFlags : uint8_t {
 inline DirectionFlags
 operator|(DirectionFlags lhs, DirectionFlags rhs) {
     return static_cast<DirectionFlags>(
-        static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)
+        static_cast<path_t>(lhs) | static_cast<path_t>(rhs)
     );
 }
 
 inline DirectionFlags
 operator&(DirectionFlags lhs, DirectionFlags rhs) {
     return static_cast<DirectionFlags>(
-        static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)
+        static_cast<path_t>(lhs) & static_cast<path_t>(rhs)
     );
 }
 
 inline DirectionFlags
 operator~(DirectionFlags val) {
-    return static_cast<DirectionFlags>(~static_cast<uint8_t>(val));
+    return static_cast<DirectionFlags>(~static_cast<path_t>(val));
 }
 
 /**
@@ -83,7 +84,7 @@ class UnitPath {
      *
      * @param type_ path type between the tiles
      */
-    UnitPath(uint8_t type_) : type(static_cast<DirectionFlags>(type_)) {}
+    UnitPath(path_t type_) : type(static_cast<DirectionFlags>(type_)) {}
 
     /**
      * @brief Construct a new Unit Path object
@@ -141,10 +142,10 @@ class UnitPath {
         type = type | DirectionFlags::OPEN;
     }
 
-    // return the path represented as a uint8_t
-    inline uint8_t
+    // return the path represented as a path_t
+    inline path_t
     get_type() const {
-        return static_cast<uint8_t>(type);
+        return static_cast<path_t>(type);
     }
 
     // is this path compatible with the given test
@@ -157,7 +158,7 @@ class UnitPath {
     // is this path compatible with the given test
     // same as is path::type a subset of test
     inline bool
-    compatible(uint8_t test) const {
+    compatible(path_t test) const {
         return compatible(static_cast<DirectionFlags>(test));
     }
 
@@ -174,7 +175,7 @@ class UnitPath {
     }
 
     bool
-    operator==(const uint8_t other) const {
+    operator==(const path_t other) const {
         return static_cast<DirectionFlags>(other) == this->type;
     }
 

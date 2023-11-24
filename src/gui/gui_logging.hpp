@@ -1,8 +1,32 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file gui_logging.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines message_callback function
+ *
+ * @ingroup GUI
+ *
+ */
+
 #pragma once
 
 #include "../logging.hpp"
 
-#include <glm/glm.hpp>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <string>
@@ -19,6 +43,8 @@ message_callback(
     [[maybe_unused]] GLsizei length, const char* message,
     [[maybe_unused]] const void* userParam
 ) {
+    // #lizard forgives the complexity
+    // Because it's all cases
     std::string source_sting;
     std::string type_string;
     // clang-format off
@@ -46,28 +72,28 @@ message_callback(
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             LOG_ERROR(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_MEDIUM:
             LOG_WARNING(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_LOW:
             LOG_DEBUG(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_NOTIFICATION:
             LOG_DEBUG(
-                logging::opengl_logger, "{}: {}, ({}): {}", type, source_sting, id,
+                logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;

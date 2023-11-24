@@ -24,8 +24,10 @@ struct qb_data_t{
 
 class VoxelBase {
  public:
-    ColorInt get_voxel(int x, int y, int z) const;
-    VoxelColorId get_voxel_color_id(int x, int y, int z) const;
+    ColorInt get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const;
+    ColorInt get_voxel(const VoxelOffset& position) const;
+    VoxelColorId get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const;
+    ColorInt get_voxel_color_id(const VoxelOffset& position) const;
     std::vector<ColorInt> get_color_ids() const;
     VoxelSize get_size() const;
     VoxelOffset get_offset() const;
@@ -42,8 +44,8 @@ class VoxelObject : VoxelBase {
     bool ok_;
     std::vector<VoxelColorId> data_;
 
-    [[nodiscard]] inline int
-    get_position(int x, int y, int z) const {
+    [[nodiscard]] inline TileIndex
+    get_position(VoxelDim x, VoxelDim y, VoxelDim z) const {
         return ((x * size_.y + y) * size_.z + z);
     }
 
@@ -90,7 +92,7 @@ class VoxelObject : VoxelBase {
      * @param x x position
      * @param y y position
      * @param z z position
-     * @return uint16_t
+     * @return VoxelColorId
      */
     [[nodiscard]] inline VoxelColorId
     get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
@@ -119,8 +121,8 @@ class VoxelObject : VoxelBase {
     }
 
     /**
-     * @brief Get the center of the object
-     * use full to find where to rotate around
+     * @brief Get the center of the object use full to find where to rotate
+     * around
      *
      * @return VoxelOffset
      */

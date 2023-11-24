@@ -24,11 +24,13 @@
 #include "../types.hpp"
 #include "../util/color.hpp"
 #include "../util/voxel.hpp"
+#include "vertex.hpp"
 
 #include <glm/glm.hpp>
 
 #include <filesystem>
 #include <map>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -43,13 +45,14 @@ class Mesh {
     Mesh(
         const std::vector<uint16_t>& indices,
         const std::vector<glm::ivec3>& indexed_vertices,
-        const std::vector<uint16_t>& indexed_color_ids,
+        const std::vector<MatColorId>& indexed_color_ids,
         const std::vector<glm::i8vec3>& indexed_normals,
-        const std::vector<ColorInt>& color_map
+        const std::vector<ColorInt>& color_map, glm::ivec3 size, glm::ivec3 center
     ) :
-        indices_(indices),
-        indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
-        indexed_normals_(indexed_normals), color_map_(color_map) {}
+        size_(size),
+        center_(center), indices_(indices), indexed_vertices_(indexed_vertices),
+        indexed_color_ids_(indexed_color_ids), indexed_normals_(indexed_normals),
+        color_map_(color_map) {}
 
     // friend World;
 
@@ -63,14 +66,13 @@ class Mesh {
     // position of vertices in mesh space
     std::vector<glm::ivec3> indexed_vertices_;
     // color of vertex
-    std::vector<uint16_t> indexed_color_ids_;
+    std::vector<MatColorId> indexed_color_ids_;
     // normal direction
     std::vector<glm::i8vec3> indexed_normals_;
     // color map
     std::vector<ColorInt> color_map_;
 
  public:
-
     // x, y, z length of the mesh
     [[nodiscard]] inline const glm::ivec3&
     get_size() const noexcept {
@@ -84,7 +86,7 @@ class Mesh {
     }
 
     // indices of each vertex that is drawn
-    [[nodiscard]] inline const std::vector<std::uint16_t>&
+    [[nodiscard]] inline const std::vector<uint16_t>&
     get_indices() const noexcept {
         return indices_;
     }
@@ -96,7 +98,7 @@ class Mesh {
     }
 
     // color of vertex
-    [[nodiscard]] inline const std::vector<std::uint16_t>&
+    [[nodiscard]] inline const std::vector<MatColorId>&
     get_indexed_color_ids() const noexcept {
         return indexed_color_ids_;
     }
@@ -108,13 +110,11 @@ class Mesh {
     }
 
     // color mapping from color id (vector index) to 8 bit color
-    [[nodiscard]] inline const std::vector<uint32_t>&
+    [[nodiscard]] inline const std::vector<ColorInt>&
     get_color_map() const noexcept {
         return color_map_;
     }
 
-    // private:
-    // set this back to private when world::get_mesh_greedy is removed in the next pr.
     /**
      * @brief Set the color indexing to what the GPU uses
      *
@@ -137,226 +137,247 @@ class Mesh {
 }; // class Mesh
 
 /**
- * @brief Generates a mesh from the given 3D voxel structure
+ * @brief Analyzes two voxels and returns a vertex representation of the face
+ * between them.
  *
- * @tparam T is_base_of voxel_utility::VoxelLike, T
- * @param voxel_object
+ * @details 80+% of this works
+ *
+ * @return std::optional<std::vector<Vertex>> an optional vector of four
+ * vertices. Returned object has a value only if there is a visible interface
+ * between the two given voxels.
+ */
+template <voxel_utility::VoxelLike T>
+std::optional<std::vector<Vertex>>
+analyze_voxel_interface(
+    T voxel_object, VoxelOffset position, VoxelOffset major_direction,
+    VoxelOffset minor_direction_1, VoxelOffset minor_direction_2
+) {
+    VoxelColorId voxel_a = voxel_object.get_voxel_color_id(position);
+
+    VoxelColorId voxel_b = voxel_object.get_voxel_color_id(position + major_direction);
+
+    // This tests if there is a visible face between the two voxels
+    // returns a optional without a value when there is not face
+    if ((voxel_a == AIR_MAT_COLOR_ID) && (voxel_b == AIR_MAT_COLOR_ID))
+        return {};
+    if ((voxel_a != AIR_MAT_COLOR_ID) && (voxel_b != AIR_MAT_COLOR_ID))
+        return {};
+
+    VoxelOffset normal = major_direction;
+
+    bool should_reverse = false;
+
+    std::vector<Vertex> out;
+    // Set color as voxel that is not air
+    // set the normal to point from solid to air
+    // may need to reverse the direction of drawn vertices so that normal and
+    // opengl normal are the same (look up face culling)
+    VoxelColorId color;
+    if (voxel_a == AIR_MAT_COLOR_ID) {
+        color = voxel_b;
+        normal = -normal;
+        should_reverse = true;
+    } else {
+        color = voxel_a;
+    }
+    for (VoxelDim x = 0; x < 2; x++) {
+        for (VoxelDim y = 0; y < 2; y++) {
+            VoxelDim position_1;
+            VoxelDim position_2;
+            // reversing the order switches vertices 1 and 2 in figure 1 a
+            if (should_reverse) {
+                position_1 = y;
+                position_2 = x;
+            } else {
+                position_1 = x;
+                position_2 = y;
+            }
+            // ambient occlusion means less light when there are solid thing near the
+            // vertex
+            bool solid_1 = voxel_object.get_voxel_color_id(
+                position + normal + (2 * position_1 - 1) * minor_direction_1
+            );
+            bool solid_2 = voxel_object.get_voxel_color_id(
+                position + normal + (2 * position_2 - 1) * minor_direction_2
+            );
+            uint8_t ambient_occlusion = solid_1 + solid_2;
+
+            //clang-format off
+            VoxelOffset vertex_position = position
+                                        + position_1 * minor_direction_1
+                                        + position_2 * minor_direction_2
+                                        + major_direction;
+            //clang-format on
+            out.emplace_back(
+                vertex_position, glm::i8vec3(normal), color, ambient_occlusion
+            );
+        }
+    }
+    return out;
+}
+
+/*psudocode time
+
+create outs
+vec indexes
+ie vect positions
+vec normals
+vec colors
+vec ambient occlusion
+
+size_t current vertex index = 0
+
+for dimension (x,y,z direction)
+    for major position in volume[major axis]
+        unit vector_major = x, y, or z which ever we are on.
+        unit minor_axis_1, 2 = the other two
+
+        unordered_map(vertex -> voxel index)
+        (hash map)
+
+        for minor_position in volume[minor_axis1]:
+        for minor_position in volume[minor_axis2]:
+
+            analyze the (major position + minor_position + minor_position)
+                and ((major position + 1) + minor_position + minor_position)
+                interface
+
+            this means
+                1) not obscured
+                    if it is obscured than continue (go to next interface)
+                2) creating a vertex at each intersection
+                    position (this is easy)
+                    normal determined by which of the two voxels is air
+                    color color of non-air voxel
+                    ambient occlusion
+                        0, 1, or 2
+                        zero add one for each ADJACENT to air of analyzed this
+                        is a solid voxel
+
+                in the vertex four loop four corners:
+
+                    crate vertex object
+
+                    hash vertex into unordered_map
+                    if it is already there use that index
+                        ie add that index to indicies
+                    if not
+                        add vertex_object to to hash map
+                            with index current vertex index
+                        add vertex_object to Mesh
+                        current_vertex_index +=1
+*/
+
+/**
+ * @brief Generates a Mesh given a voxel object
+ *
+ * @details Given a Voxel Object iterates over all the voxels and adds
+ * unobscured surfaces to the Mesh.This mesher will have pre-backed ambient
+ * occlusion, and will use the same vertex when possible.
  */
 template <voxel_utility::VoxelLike T>
 Mesh
-generate_mesh(T voxel_object, glm::ivec3 limb_offset = glm::ivec3(0)) {
-    std::vector<uint16_t> indices;
-    std::vector<glm::ivec3> indexed_vertices;
-    std::vector<uint16_t> indexed_colors;
-
+ambient_occlusion_mesher(T voxel_object) {
+    std::vector<uint16_t> indicies;
+    std::vector<VoxelOffset> indexed_vertices;
+    std::vector<MatColorId> indexed_colors;
     std::vector<glm::i8vec3> indexed_normals;
-    // mesh off set
-    VoxelOffset center = voxel_object.get_offset() + limb_offset;
-    VoxelSize object_geometry = voxel_object.get_size();
-    for (std::size_t axis = 0; axis < 3; ++axis) {
-        // in which directions is the mesh being drawn
-        const std::size_t dims_index_1 = (axis + 1) % 3;
-        const std::size_t dims_index_2 = (axis + 2) % 3;
+    std::vector<uint8_t> indexed_occlusions;
 
-        int voxel_position[3] = {0}; // position of a voxel in world space
-        int mesh_normal[3] = {0};    // direction that the mesh is not changing in
+    VoxelOffset size = voxel_object.get_size();
+    VoxelOffset offset = voxel_object.get_offset();
 
-        // the color of all tiles at the same "level".
-        std::vector<std::pair<bool, uint16_t>> color_info(
-            object_geometry[dims_index_1] * object_geometry[dims_index_2]
-        );
+    std::unordered_map<Vertex, uint16_t> vertex_ids;
 
-        // Compute color_info
-        mesh_normal[axis] = 1;
-        // for each layer going in the direction of axis
-        for (voxel_position[axis] = -1; voxel_position[axis] < static_cast<int>(object_geometry[axis]);) {
-            std::size_t counter = 0;
-            // for each voxel in this level
-            for (voxel_position[dims_index_2] = 0;
-                 voxel_position[dims_index_2] < static_cast<int>(object_geometry[dims_index_2]);
-                 ++voxel_position[dims_index_2])
-                for (voxel_position[dims_index_1] = 0;
-                     voxel_position[dims_index_1] < static_cast<int>(object_geometry[dims_index_1]);
-                     ++voxel_position[dims_index_1], ++counter) {
-                    // tile in the level above
-                    const uint16_t voxel_above = voxel_object.get_voxel_color_id(
-                        voxel_position[0], voxel_position[1], voxel_position[2]
+    uint16_t current_vertex_index = 0;
+    for (size_t dim_major_index = 0; dim_major_index < 3; dim_major_index++) {
+        size_t dim_minor_index_1 = (dim_major_index + 1) % 3;
+        size_t dim_minor_index_2 = (dim_major_index + 2) % 3;
+
+        VoxelOffset major_direction({0, 0, 0});
+        major_direction[dim_major_index] = 1;
+
+        VoxelOffset minor_direction_1({0, 0, 0});
+        minor_direction_1[dim_minor_index_1] = 1;
+
+        VoxelOffset minor_direction_2({0, 0, 0});
+        minor_direction_2[dim_minor_index_2] = 1;
+
+        for (VoxelDim major_index = -1; major_index < size[dim_major_index];
+             major_index++) {
+            for (VoxelDim minor_index_1 = 0; minor_index_1 < size[dim_minor_index_1];
+                 minor_index_1++) {
+                for (VoxelDim minor_index_2 = 0;
+                     minor_index_2 < size[dim_minor_index_2]; minor_index_2++) {
+                    // is there a better way to write this?
+                    VoxelOffset position;
+                    position[dim_major_index] = major_index;
+                    position[dim_minor_index_1] = minor_index_1;
+                    position[dim_minor_index_2] = minor_index_2;
+
+                    auto corners = analyze_voxel_interface(
+                        voxel_object, position, major_direction, minor_direction_1,
+                        minor_direction_2
                     );
-                    // tiles in the level below
-                    const uint16_t voxel_below = voxel_object.get_voxel_color_id(
-                        voxel_position[0] + mesh_normal[0],
-                        voxel_position[1] + mesh_normal[1],
-                        voxel_position[2] + mesh_normal[2]
-                    );
-                    const bool bool_a = voxel_above;
-                    // if both solid or both not solid then don't make
-                    // voxel_above face between the voxels
-                    if ((voxel_below != 0) == bool_a) {
-                        color_info[counter] = std::make_pair(false, 0);
+
+                    if (!corners) {
+                        continue;
                     }
-                    // if voxel_above is solid make face with voxel_above's
-                    // color facing up
-                    else if (bool_a) {
-                        color_info[counter] = std::make_pair(true, voxel_above);
-                    }
-                    // voxel_below is solid make face with voxel_below's color
-                    // facing down
-                    else {
-                        color_info[counter] = std::make_pair(false, voxel_below);
-                    }
-                }
 
-            ++voxel_position[axis]; // go to the next level
+                    uint16_t corner_indicies[4] = {0, 0, 0, 0};
+                    // if the vertex already exists
+                    for (size_t i = 0; i < 4; i++) {
+                        const Vertex& vertex = corners.value()[i];
+                        auto index_itr = vertex_ids.find(vertex);
+                        // TODO The issue is here
+                        if (index_itr != vertex_ids.end()) {
+                            // The vertex exists add the index
+                            corner_indicies[i] = vertex_ids.at(vertex);
 
-            // Generate mesh for color_info using lexicographic ordering
-            unsigned int width = 0, height = 0;
-
-            counter = 0;
-            for (unsigned int j = 0; j < object_geometry[dims_index_2]; ++j)
-                for (unsigned int i = 0; i < object_geometry[dims_index_1];) {
-                    // color and direction of the face between two voxels
-                    std::pair<bool, uint16_t> color = color_info[counter];
-                    // if there is a face between two voxels
-                    if (color.second) {
-                        // find the size of all faces that have the same color
-                        // and direction like this: first expands over the
-                        // width, then expanding over the height
-
-                        // clang-format off
-// c c c c c n n n     # c c c c n n n     # # # # #[n]n n     # # # # # n n n
-// c c c c c c n n     c c c c c c n n     c c c c c c n n     # # # # # c n n
-// c c c c c c c n - > c c c c c c c n - > c c c c c c c n - > # # # # # c c n
-// c c c c c n n n     c c c c c n n n     c c c c c n n n     # # # # # n n n
-// c c n c c n c c     c c n c c n c c     c c n c c n c c     c c[n]c c n c c
-                        // clang-format on
-
-                        // Compute width
-                        width = 1;
-                        while (color == color_info[counter + width]
-                               && i + width < object_geometry[dims_index_1]) {
-                            ++width;
-                        }
-                        // Compute height
-                        bool done = false;
-                        for (height = 1; j + height < object_geometry[dims_index_2]; ++height) {
-                            // expand until one of the tiles in the next row is
-                            // not the same color/facing direction
-                            for (unsigned int k = 0; k < width; ++k) {
-                                // if the direction and color of the original
-                                // face is different from the direction and
-                                // color of the face currently being tested
-                                std::pair<bool, uint16_t> test_against = color_info
-                                    [counter + k + height * object_geometry[dims_index_1]];
-                                if (color != test_against) {
-                                    done = true;
-                                    break;
-                                }
-                            }
-                            if (done)
-                                break;
-                        }
-
-                        // Add quad
-                        voxel_position[dims_index_1] = i;
-                        voxel_position[dims_index_2] = j;
-
-                        int offset_1[3] = {0};
-                        int offset_2[3] = {0};
-
-                        // depending on the normal direction set the width, and
-                        // height
-                        if (color.first) {
-                            offset_2[dims_index_2] = height;
-                            offset_1[dims_index_1] = width;
                         } else {
-                            offset_1[dims_index_2] = height;
-                            offset_2[dims_index_1] = width;
+                            // if the vertex does not already exist
+                            // add the vertex to the map
+                            vertex_ids.insert({vertex, current_vertex_index});
+
+                            indexed_colors.push_back(vertex.mat_color_id);
+                            indexed_normals.push_back(vertex.normal);
+                            indexed_occlusions.push_back(vertex.ambient_occlusion);
+                            indexed_vertices.push_back(vertex.position + offset);
+                            // assign the corner to that index
+                            corner_indicies[i] = current_vertex_index;
+
+                            // increment the index by one
+                            current_vertex_index++;
                         }
-
-                        const std::size_t vertex_size = indexed_vertices.size();
-
-                        indexed_vertices.push_back(
-                            glm::ivec3(
-                                voxel_position[0], voxel_position[1], voxel_position[2]
-                            )
-                            + center
-                        );
-                        indexed_vertices.push_back(
-                            glm::ivec3(
-                                voxel_position[0] + offset_1[0],
-                                voxel_position[1] + offset_1[1],
-                                voxel_position[2] + offset_1[2]
-                            )
-                            + center
-                        );
-                        indexed_vertices.push_back(
-                            glm::ivec3(
-                                voxel_position[0] + offset_1[0] + offset_2[0],
-                                voxel_position[1] + offset_1[1] + offset_2[1],
-                                voxel_position[2] + offset_1[2] + offset_2[2]
-                            )
-                            + center
-                        );
-                        indexed_vertices.push_back(
-                            glm::ivec3(
-                                voxel_position[0] + offset_2[0],
-                                voxel_position[1] + offset_2[1],
-                                voxel_position[2] + offset_2[2]
-                            )
-                            + center
-                        );
-
-                        // how many corners on a square are there?
-                        for (size_t voxel_position = 0; voxel_position < 4;
-                             voxel_position++) {
-                            indexed_colors.push_back(color.second);
-                        }
-
-                        glm::i8vec3 triangle_normal = glm::i8vec3(
-                            glm::normalize(glm::cross(
-                                glm::vec3(
-                                    indexed_vertices[vertex_size]
-                                    - indexed_vertices[vertex_size + 1]
-                                ),
-                                glm::vec3(
-                                    indexed_vertices[vertex_size]
-                                    - indexed_vertices[vertex_size + 2]
-                                )
-                            ))
-                            + glm::vec3(.5, .5, .5)
-                        );
-                        // how many corners on a square are there?
-                        for (size_t voxel_position = 0; voxel_position < 4;
-                             voxel_position++) {
-                            indexed_normals.push_back(triangle_normal);
-                        }
-                        // the first half of the rectangle
-                        indices.push_back(vertex_size);
-                        indices.push_back(vertex_size + 1);
-                        indices.push_back(vertex_size + 2);
-                        // the second half of the rectangle
-                        indices.push_back(vertex_size + 2);
-                        indices.push_back(vertex_size + 3);
-                        indices.push_back(vertex_size);
-
-                        for (unsigned int w = 0; w < width; ++w)
-                            for (unsigned int h = 0; h < height; ++h)
-                                color_info[counter + w + h * object_geometry[dims_index_1]] =
-                                    std::make_pair(false, 0);
-
-                        // Increment counters
-                        i += width;
-                        counter += width;
-                    } else {
-                        ++i;
-                        ++counter;
                     }
+                    //clang-format off
+
+                    /* Figure 1 a
+                      0 ------- 1  Wow did you know a square a actually two
+                      |       / |  triangles?! This is high level geometry
+                      |  1  /   |  that many people don't know. Now add the
+                      |   /  2  |  vertices in a counter-clock wise direction
+                      | /       |  so that the opengl thinks the normal is
+                      2 ------- 3  pointing toward the viewer.
+                    */
+
+                    //clang-format on
+
+                    // triangle 1
+                    indicies.push_back(corner_indicies[2]);
+                    indicies.push_back(corner_indicies[1]);
+                    indicies.push_back(corner_indicies[0]);
+                    // triangle 2
+                    indicies.push_back(corner_indicies[2]);
+                    indicies.push_back(corner_indicies[3]);
+                    indicies.push_back(corner_indicies[1]);
                 }
+            }
         }
     }
     return Mesh(
-        indices, indexed_vertices, indexed_colors, indexed_normals,
-        voxel_object.get_color_ids()
+        indicies, indexed_vertices, indexed_colors, indexed_normals,
+        voxel_object.get_color_ids(), size, offset
     );
 }
 
