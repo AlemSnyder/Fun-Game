@@ -88,7 +88,7 @@ class TerrainMacroMap {
         return terrain_map_.end();
     }
 
-    const std::vector<MapTile>& data(){
+    const std::vector<MapTile>& data() const{
         return terrain_map_;
     }
 

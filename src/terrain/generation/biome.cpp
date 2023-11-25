@@ -114,7 +114,9 @@ Biome::init_lua_state(
         sol::factories(
             // WorleyNoise.new(...) -- dot syntax, no "self" value
             // passed in
-            [](int tile_size, double radius) { return std::make_shared<WorleyNoise>(tile_size, radius); },
+            [](int tile_size, double radius) {
+                return std::make_shared<WorleyNoise>(tile_size, radius);
+            },
             // WorleyNoise:new(...) -- colon syntax, passes in the
             // "self" value as first argument implicitly
             [](sol::object, int tile_size, double radius) {
@@ -171,6 +173,38 @@ Biome::init_lua_state(
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
         return;
     }
+}
+
+TerrainMacroMap
+Biome::map_generation_test(
+    const std::filesystem::path& lua_map_generator_file, size_t size
+) {
+    sol::state lua;
+
+    Biome::init_lua_state(lua, lua_map_generator_file);
+
+    std::vector<MapTile> out;
+
+    sol::protected_function map_function = lua["map"];
+
+    sol::table map = map_function(size);
+
+    auto tile_map_map = map["map"];
+    MacroDim x_map_tiles = map["x"]; // should be 16
+    MacroDim y_map_tiles = map["y"];
+    assert(
+        ((y_map_tiles == x_map_tiles) && (x_map_tiles == size))
+        && "Map tile input and out put must all match"
+    );
+    out.reserve(x_map_tiles * y_map_tiles);
+    for (MacroDim x = 0; x < x_map_tiles; x++) {
+        for (MacroDim y = 0; y < y_map_tiles; y++) {
+            size_t map_index = x * y_map_tiles + y;
+            out.emplace_back(tile_map_map[map_index], 0, x, y);
+        }
+    }
+
+    return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
 const TerrainMacroMap

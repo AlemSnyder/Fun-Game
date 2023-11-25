@@ -138,7 +138,7 @@ class Biome {
     [[nodiscard]] const TerrainMacroMap get_map(MacroDim length) const;
 
     inline static TerrainMacroMap
-    get_test_map(MapTile_t type) {
+    single_tile_type_map(MapTile_t type) {
         std::vector<terrain::generation::MapTile> out;
         out.reserve(9);
         for (size_t i = 0; i < 4; i++)
@@ -248,37 +248,9 @@ class Biome {
         sol::state& lua, const std::filesystem::path& lua_map_generator_file
     );
 
-    static TerrainMacroMap
-    map_generation_test(
+    static TerrainMacroMap map_generation_test(
         const std::filesystem::path& lua_map_generator_file, size_t size
-    ) {
-        sol::state lua;
-
-        Biome::init_lua_state(lua, lua_map_generator_file);
-
-        std::vector<MapTile> out;
-
-        sol::protected_function map_function = lua["map"];
-
-        sol::table map = map_function(size);
-
-        auto tile_map_map = map["map"];
-        MacroDim x_map_tiles = map["x"]; // should be 16
-        MacroDim y_map_tiles = map["y"];
-        assert(
-            ((y_map_tiles == x_map_tiles) && (x_map_tiles == size))
-            && "Map tile input and out put must all match"
-        );
-        out.reserve(x_map_tiles * y_map_tiles);
-        for (MacroDim x = 0; x < x_map_tiles; x++) {
-            for (MacroDim y = 0; y < y_map_tiles; y++) {
-                size_t map_index = x * y_map_tiles + y;
-                out.emplace_back(tile_map_map[map_index], 0, x, y);
-            }
-        }
-
-        return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
-    }
+    );
 
  private:
     // read data to create generator component

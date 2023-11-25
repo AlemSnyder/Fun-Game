@@ -47,14 +47,14 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
-        auto macro_map =
-            terrain::generation::Biome::get_test_map(i);
+        auto macro_map = terrain::generation::Biome::single_tile_type_map(i);
         terrain::Terrain ter(
             map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
             macro_map
