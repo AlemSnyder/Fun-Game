@@ -35,17 +35,20 @@ setup(Scene& scene, World& world) {
     glm::mat4 depth_projection_matrix =
         glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
 
+//    chunk_renderer->set_light_direction(light_direction);
+//    chunk_renderer->set_depth_projection_matrix(depth_projection_matrix);
+
+//    chunk_renderer->set_depth_texture(scene.get_depth_texture());
+
     // Renders the Shadow depth map
-    chunk_renderer->set_light_direction(light_direction);
-    chunk_renderer->set_depth_projection_matrix(depth_projection_matrix);
-
-    chunk_renderer->set_depth_texture(scene.get_depth_texture());
-
     scene.set_shadow_light_direction(light_direction);
     scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
     scene.frame_buffer_multisample_attach(chunk_renderer);
     scene.shadow_attach(chunk_renderer);
+
 }
+
+
 
 } // namespace gui

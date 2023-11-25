@@ -115,6 +115,11 @@ class Scene {
         return shadow_map_.get_shadow_height();
     }
 
+    const data_structures::ShadowMap&
+    get_shadow_map() const {
+        return shadow_map_;
+    }
+
     inline GLuint
     get_frame_buffer_id() {
         return frame_buffer_multisample_.get_frame_buffer_id();
@@ -134,6 +139,7 @@ class Scene {
      */
     inline void
     shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
+        shadow->set_shadow_map(&shadow_map_);
         mid_ground_shadow_.push_back(shadow);
     }
 
