@@ -65,7 +65,8 @@ World::World(
 World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
     biome_(biome_name, seed),
     terrain_main_(
-        3, 3, macro_tile_size, height, seed, biome_, terrain::generation::Biome::single_tile_type_map(tile_type)
+        3, 3, macro_tile_size, height, seed, biome_,
+        terrain::generation::Biome::single_tile_type_map(tile_type)
     ) {}
 
 // Should not be called except by lambda function

@@ -126,7 +126,7 @@ class Biome {
      * @param biome_name name of biome
      */
     Biome(const std::string& biome_name, size_t seed) :
-        Biome(get_json_data(biome_name), seed) {}
+        Biome(get_json_data_(biome_name), seed) {}
 
     /**
      * @brief Get macro tile map
@@ -254,16 +254,16 @@ class Biome {
 
  private:
     // read data to create generator component
-    void read_tile_macro_data(const Json::Value& biome_data);
+    void read_tile_macro_data_(const Json::Value& biome_data);
 
     // read data to generate tile components for each macro map tile
-    void read_map_tile_data(const Json::Value& biome_data);
+    void read_map_tile_data_(const Json::Value& biome_data);
 
     // read data to generate the add to top after affect
-    void read_add_to_top_data(const Json::Value& biome_data);
+    void read_add_to_top_data_(const Json::Value& biome_data);
 
     void
-    init_lua_state(const std::filesystem::path& lua_map_generator_file) {
+    init_lua_state_(const std::filesystem::path& lua_map_generator_file) {
         init_lua_state(lua_, lua_map_generator_file);
     };
 
@@ -273,9 +273,9 @@ class Biome {
      * @param material_data data to load from (see) data/materials.json
      */
     [[nodiscard]] std::map<MaterialId, const terrain::Material>
-    init_materials(const Json::Value& material_data);
+    init_materials_(const Json::Value& material_data);
 
-    [[nodiscard]] biome_json_data get_json_data(const std::string& biome_name);
+    [[nodiscard]] biome_json_data get_json_data_(const std::string& biome_name);
 };
 
 } // namespace generation

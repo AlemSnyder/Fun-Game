@@ -46,7 +46,7 @@ write_image(T image, const std::filesystem::path& path) {
         status = WR_FOPEN_FAILED;
         goto fopen_failed;
     }
-    
+
     // Create our write struct
     // TODO these nullptr should be function pointers
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
@@ -86,12 +86,12 @@ write_image(T image, const std::filesystem::path& path) {
     // Set metadata about the PNG file
     png_text meta_data;
     memset(&meta_data, 0, sizeof(meta_data)); // clear struct
-    
+
     meta_data.compression = PNG_TEXT_COMPRESSION_NONE; // no compression
     meta_data.lang_key = meta_lang;
     meta_data.key = meta_key;
     meta_data.text = meta_text;
-    
+
     png_set_text(png_ptr, info_ptr, &meta_data, 1);
     png_write_info(png_ptr, info_ptr);
 
@@ -106,7 +106,7 @@ write_image(T image, const std::filesystem::path& path) {
     png_bytep row;
 
     // allocate data for row
-    row = new(std::nothrow) png_byte[WIDTH];
+    row = new (std::nothrow) png_byte[WIDTH];
     if (!row) {
         // log_e(images, "Could not allocate memory for row data");
 

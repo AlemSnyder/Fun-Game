@@ -76,27 +76,33 @@ class TerrainMacroMap {
         return terrain_map_[height_ * j + i];
     }
 
-    MapTile_t get_color(size_t i, size_t j) const {
+    MapTile_t
+    get_color(size_t i, size_t j) const {
         return get_tile(i, j).get_tile_type();
     }
 
-    const auto begin() const {
+    const auto
+    begin() const {
         return terrain_map_.begin();
     }
 
-    const auto end() const {
+    const auto
+    end() const {
         return terrain_map_.end();
     }
 
-    const std::vector<MapTile>& data() const{
+    const std::vector<MapTile>&
+    data() const {
         return terrain_map_;
     }
 
-    MacroDim get_width() const {
+    MacroDim
+    get_width() const {
         return width_;
     }
 
-    MacroDim get_height() const {
+    MacroDim
+    get_height() const {
         return height_;
     }
 };

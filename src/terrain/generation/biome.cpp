@@ -50,7 +50,7 @@ GrassData::GrassData(const Json::Value& json_grass_data) {
 }
 
 Biome::Biome(const biome_json_data& biome_data, size_t seed) :
-    materials_(init_materials(biome_data.materials_data)),
+    materials_(init_materials_(biome_data.materials_data)),
     grass_data_(biome_data.materials_data["Dirt"]["Gradient"]), seed_(seed) {
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
@@ -58,13 +58,13 @@ Biome::Biome(const biome_json_data& biome_data, size_t seed) :
     std::filesystem::path lua_map_generator_file =
         biome_json_path / biome_data.biome_data["map_generator"].asString();
 
-    read_tile_macro_data(biome_data.biome_data["Biome"]);
+    read_tile_macro_data_(biome_data.biome_data["Biome"]);
 
-    read_map_tile_data(biome_data.biome_data["Biome"]);
+    read_map_tile_data_(biome_data.biome_data["Biome"]);
 
-    read_add_to_top_data(biome_data.biome_data["Biome"]["After_Effects"]);
+    read_add_to_top_data_(biome_data.biome_data["Biome"]["After_Effects"]);
 
-    init_lua_state(lua_map_generator_file);
+    init_lua_state_(lua_map_generator_file);
 }
 
 void
@@ -234,7 +234,7 @@ Biome::get_map(MacroDim length) const {
 }
 
 void
-Biome::read_tile_macro_data(const Json::Value& biome_data) {
+Biome::read_tile_macro_data_(const Json::Value& biome_data) {
     // for tile macro in data biome
     for (const Json::Value& tile_macro : biome_data["Tile_Macros"]) {
         // create a land generator for each tile macro
@@ -244,7 +244,7 @@ Biome::read_tile_macro_data(const Json::Value& biome_data) {
 }
 
 void
-Biome::read_map_tile_data(const Json::Value& biome_data) {
+Biome::read_map_tile_data_(const Json::Value& biome_data) {
     // add tile macro to tiles
     for (const Json::Value& tile_type : biome_data["Tile_Data"]) {
         std::vector<TileMacro_t> tile_macros;
@@ -265,14 +265,14 @@ Biome::read_map_tile_data(const Json::Value& biome_data) {
 }
 
 void
-Biome::read_add_to_top_data(const Json::Value& after_effects_data) {
+Biome::read_add_to_top_data_(const Json::Value& after_effects_data) {
     for (const Json::Value& add_data : after_effects_data["Add_To_Top"]) {
         add_to_top_generators_.emplace_back(add_data);
     }
 }
 
 std::map<MaterialId, const terrain::Material>
-Biome::init_materials(const Json::Value& material_data) {
+Biome::init_materials_(const Json::Value& material_data) {
     std::map<MaterialId, const terrain::Material> out;
     for (const auto& key : material_data.getMemberNames()) {
         std::vector<std::pair<const std::string, ColorInt>> color_vector;
@@ -314,7 +314,7 @@ Biome::get_colors_inverse_map() const {
 }
 
 biome_json_data
-Biome::get_json_data(const std::string& biome_name) {
+Biome::get_json_data_(const std::string& biome_name) {
     std::filesystem::path biome_json_path = files::get_data_path() / biome_name;
 
     Json::Value biome_data;
