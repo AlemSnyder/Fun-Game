@@ -78,33 +78,11 @@ ShadowMap::update() {
         for (int y = -1; y < 2; y += 2) {
             glm::vec4 corner = {x, y, 1, 1}; // z=1, w=1
 
-            glm::vec3 direction = inverse_view_projection * corner;
+            glm::vec4 direction = inverse_view_projection * corner;
 
-            direction = direction / direction.z;
+            direction = direction / direction.w;
 
-            double x_slope;
-            double y_slope;
-
-            if (direction.x < 0) {
-                // camera is point up
-                // x,y shadow set to max values
-                x_slope = 10;
-            } else {
-                x_slope = direction.x;
-            }
-
-            if (direction.y < 0) {
-                // camera is point up
-                // x,y shadow set to max values
-                y_slope = 10;
-            } else {
-                y_slope = direction.y;
-            }
-
-            double x_shadow = position.x + x_slope * position.z;
-            double y_shadow = position.y + y_slope * position.z;
-
-            shadow_range_corners.emplace_back(x_shadow, y_shadow, 0, 1);
+            shadow_range_corners.emplace_back(direction);
         }
     }
 
@@ -139,8 +117,7 @@ ShadowMap::update() {
 
     // z_mzx is not used should maybe be removed
 
-    depth_projection_matrix_ = glm::ortho(x_max, x_min, y_max, y_min, 200.0, z_min);
-
+    depth_projection_matrix_ = glm::ortho(x_min, x_max, y_min, y_max, z_min, 200.0);
 }
 
 } // namespace data_structures
