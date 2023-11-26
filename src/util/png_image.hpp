@@ -19,7 +19,7 @@ enum write_result_t {
 };
 
 template <class T>
-write_result_t
+[[nodiscard]] write_result_t
 write_image(T image, const std::filesystem::path& path) {
     // Keep track of if we succeeded or not
     write_result_t status = WR_OK;
