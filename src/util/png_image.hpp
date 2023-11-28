@@ -18,7 +18,17 @@ enum write_result_t {
     WR_ROW_MALLOC_FAILED,
 };
 
+class image_bw {
+ public:
+    virtual size_t get_height() const = 0;
+    virtual size_t get_width() const = 0;
+    virtual png_byte get_color(size_t i, size_t j) const = 0;
+};
+
 template <class T>
+concept image_bw_c = std::is_base_of<image_bw, T>::value;
+
+template <image_bw_c T>
 [[nodiscard]] write_result_t
 write_image(T image, const std::filesystem::path& path) {
     // Keep track of if we succeeded or not
@@ -41,8 +51,6 @@ write_image(T image, const std::filesystem::path& path) {
     std::FILE* file = fopen(path_str.c_str(), "wb");
 
     if (!file) {
-        // log_e(images, "Could not open file for writing");
-
         status = WR_FOPEN_FAILED;
         goto fopen_failed;
     }
@@ -51,8 +59,6 @@ write_image(T image, const std::filesystem::path& path) {
     // TODO these nullptr should be function pointers
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr) {
-        // log_e(images, "Could not create PNG write struct");
-
         status = WR_CREATE_WRITE_STRUCT_FAILED;
         goto png_create_write_struct_failed;
     }
@@ -60,16 +66,12 @@ write_image(T image, const std::filesystem::path& path) {
     // Create our info struct for this png image
     info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        // log_e(images, "Could not create PNG info struct");
-
         status = WR_CREATE_INFO_STRUCT_FAILED;
         goto png_create_info_struct_failed;
     }
 
     // Set jump buffer for callbacks
     if (setjmp(png_jmpbuf(png_ptr))) {
-        // log_e(images, "Could not set callback jump buffer");
-
         status = WR_SETJMP_PNG_JMPBUF_FAILED;
         goto setjmp_png_jmpbuf_failed;
     }
@@ -85,7 +87,9 @@ write_image(T image, const std::filesystem::path& path) {
 
     // Set metadata about the PNG file
     png_text meta_data;
-    memset(&meta_data, 0, sizeof(meta_data)); // clear struct
+    // @egelja what is this?
+    // I removed it and things still work. Adding it breaks things.
+    //memset(&meta_data, 0, sizeof(meta_data)); // clear struct
 
     meta_data.compression = PNG_TEXT_COMPRESSION_NONE; // no compression
     meta_data.lang_key = meta_lang;
@@ -96,7 +100,7 @@ write_image(T image, const std::filesystem::path& path) {
     png_write_info(png_ptr, info_ptr);
 
     // multiple colors are written in the same row
-    // not sure how I want to implement this
+    // not sure how I want to implement this in a template safe way
     // https://stackoverflow.com/questions/48757099/write-an-image-row-by-row-with-libpng-using-c
 
     /*
@@ -108,8 +112,6 @@ write_image(T image, const std::filesystem::path& path) {
     // allocate data for row
     row = new (std::nothrow) png_byte[WIDTH];
     if (!row) {
-        // log_e(images, "Could not allocate memory for row data");
-
         status = WR_ROW_MALLOC_FAILED;
         goto row_malloc_failed;
     }
@@ -147,24 +149,27 @@ fopen_failed:
     return status;
 }
 
+int
+image_result_logger(write_result_t result, const std::filesystem::path& path);
+
 // #if DEBUG()
 
-class ImageTest {
+class ImageTest : public image_bw{
  public:
     ImageTest(){};
 
     size_t
-    get_height() {
+    get_height() const override {
         return 1000;
     }
 
     size_t
-    get_width() {
+    get_width() const override {
         return 1000;
     }
 
     png_byte
-    get_color(size_t i, size_t j) {
+    get_color(size_t i, size_t j) const override {
         return static_cast<png_byte>(i * j);
     }
 };

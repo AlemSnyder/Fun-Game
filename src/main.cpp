@@ -47,7 +47,8 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
@@ -161,7 +162,9 @@ image_test(const argh::parser& cmdl) {
 
         image::ImageTest image;
 
-        image::write_image(image, png_path);
+        image::write_result_t result = image::write_image(image, png_path);
+
+        return image::image_result_logger(result, png_path);
 
     } else {
         std::string path_in = cmdl(2).str();
@@ -175,7 +178,10 @@ image_test(const argh::parser& cmdl) {
         terrain::generation::TerrainMacroMap map =
             terrain::generation::Biome::map_generation_test(lua_file_path, size);
 
-        image::write_image(map, png_path);
+        image::write_result_t result = image::write_image(map, png_path);
+
+        return image::image_result_logger(result, png_path);
+
     }
 
     return 0;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../types.hpp"
+#include "../../util/png_image.hpp"
 #include "noise.hpp"
 
 #include <random>
@@ -53,7 +54,7 @@ class MapTile {
     }
 };
 
-class TerrainMacroMap {
+class TerrainMacroMap : public image::image_bw {
  private:
     MacroDim width_;
     MacroDim height_;
@@ -61,7 +62,7 @@ class TerrainMacroMap {
     std::vector<MapTile> terrain_map_;
 
  public:
-    // TerrainMacroMap();
+    inline TerrainMacroMap() : width_(0), height_(0) {};
     inline TerrainMacroMap(
         std::vector<MapTile> terrain_map, size_t width, size_t height
     ) :
@@ -76,7 +77,8 @@ class TerrainMacroMap {
         return terrain_map_[height_ * j + i];
     }
 
-    MapTile_t
+    //MapTile_t
+    png_byte
     get_color(size_t i, size_t j) const {
         return get_tile(i, j).get_tile_type();
     }
@@ -96,12 +98,14 @@ class TerrainMacroMap {
         return terrain_map_;
     }
 
-    MacroDim
+    //MacroDim
+    size_t
     get_width() const {
         return width_;
     }
 
-    MacroDim
+    //MacroDim
+    size_t
     get_height() const {
         return height_;
     }

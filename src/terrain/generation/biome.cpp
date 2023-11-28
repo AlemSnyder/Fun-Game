@@ -187,6 +187,11 @@ Biome::map_generation_test(
 
     sol::protected_function map_function = lua["map"];
 
+    if (!map_function.valid()) {
+        LOG_ERROR(logging::lua_logger, "Function map not defined.");
+        return {};
+    }
+
     sol::table map = map_function(size);
 
     auto tile_map_map = map["map"];
