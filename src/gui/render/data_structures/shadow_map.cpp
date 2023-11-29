@@ -69,22 +69,27 @@ ShadowMap::update() {
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 inverse_view_projection = glm::inverse(projection_matrix * view_matrix);
 
-    glm::vec3 position = controls::get_position_vector();
-
     std::vector<glm::vec4> shadow_range_corners;
-    shadow_range_corners.emplace_back(position, 1);
+    glm::vec4 center(0,0,0,0);
 
     for (int x = -1; x < 2; x += 2) {
         for (int y = -1; y < 2; y += 2) {
-            glm::vec4 corner = {x, y, 1, 1}; // z=1, w=1
+            for (int z = -1; z < 2; z += 2) {
+                glm::vec4 corner = {x, y, z, 1}; // w = 1
 
-            glm::vec4 direction = inverse_view_projection * corner;
-
-            direction = direction / direction.w;
-
-            shadow_range_corners.emplace_back(direction);
+                glm::vec4 direction = inverse_view_projection * corner;
+                direction = direction / direction.w;
+                shadow_range_corners.emplace_back(direction);
+                center =+ direction;
+            }
         }
     }
+
+    center = center / center.w;
+    glm::vec3 center3 = center;
+
+    depth_view_matrix_ =
+        glm::lookAt(light_direction_ + center3, center3, glm::vec3(0, 1, 0));
 
     for (size_t i = 0; i < shadow_range_corners.size(); i++) {
         shadow_range_corners[i] = depth_view_matrix_ * shadow_range_corners[i];
@@ -115,9 +120,9 @@ ShadowMap::update() {
         }
     }
 
-    // z_mzx is not used should maybe be removed
-
-    depth_projection_matrix_ = glm::ortho(x_min, x_max, y_min, y_max, z_min, 200.0);
+    depth_projection_matrix_ = glm::ortho(
+        x_min, x_max, y_min, y_max, -z_max - 100.0, -z_min
+    );
 }
 
 } // namespace data_structures
