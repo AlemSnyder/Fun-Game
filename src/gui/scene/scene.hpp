@@ -182,6 +182,21 @@ class Scene {
     }
 
     /**
+     * @brief Get the light direction vector
+     * 
+     * @return glm::vec3 the direction of the light.
+    */
+    inline glm::vec3
+    get_light_direction(){
+        return shadow_map_.get_light_direction();
+    }
+
+    inline const scene::Environment_Cycle&
+    get_lighting_environment() const {
+        return environment_;
+    }
+
+    /**
      * @brief Set the depth projection matrix
      *
      * @param depth_projection_matrix the projection matrix

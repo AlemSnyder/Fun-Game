@@ -14,8 +14,15 @@ class Environment_Cycle {
 
     float latitude_;
 
+
+
  public:
-    glm::vec3 light_direction() const;
+    float earth_angle;
+    float sun_angle;
+    float total_angle;
+    float mod_angle;
+
+    glm::vec3 light_direction();
     double diffuse_light_intensity() const;
 
     Environment_Cycle(

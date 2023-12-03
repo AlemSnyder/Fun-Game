@@ -13,17 +13,17 @@ namespace gui {
 namespace scene {
 
 glm::vec3
-Environment_Cycle::light_direction() const {
+Environment_Cycle::light_direction() {
     std::chrono::milliseconds game_time = time_util::get_time();
 
     float f_time = game_time.count();
 
     float time = fmod(f_time / 1000.0, (day_seconds_ * year_days_));
 
-    float earth_angle = 2 * std::numbers::pi * time / day_seconds_;
-    float sun_angle = 2 * std::numbers::pi * time / ( day_seconds_ * year_days_);
-    float total_angle = earth_angle + sun_angle;
-    float mod_angle = fmod(total_angle, 2 * std::numbers::pi);
+    earth_angle = 2 * std::numbers::pi * time / day_seconds_;
+    sun_angle = 2 * std::numbers::pi * time / ( day_seconds_ * year_days_);
+    total_angle = earth_angle + sun_angle;
+    mod_angle = fmod(total_angle, 2 * std::numbers::pi);
 
     glm::mat4 ident = glm::mat4(1);
     glm::vec3 z(0,0,1);

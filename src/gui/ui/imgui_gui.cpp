@@ -79,6 +79,7 @@ imgui_entry(World& world) {
 
     // Our state
     bool show_another_window = false;
+    bool show_scene_data = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
@@ -155,6 +156,7 @@ imgui_entry(World& world) {
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Another Window", &show_another_window);
+            ImGui::Checkbox("Show Scene Data", &show_scene_data);
 
             ImGui::SliderFloat(
                 "float", &f, 0.0f, 1.0f
@@ -187,6 +189,26 @@ imgui_entry(World& world) {
             );
             if (ImGui::Button("Close Me"))
                 show_another_window = false;
+            ImGui::End();
+        }
+
+        if (show_scene_data) {
+            glm::vec3 light_direction = main_scene.get_light_direction();
+            ImGui::Begin("Scene Data", &show_scene_data);
+
+            ImGui::Text(
+                "light_direction <%.3f, %.3f, %.3f>", light_direction.x,
+                light_direction.y, light_direction.z
+            );
+
+            const scene::Environment_Cycle& cycle =
+                main_scene.get_lighting_environment();
+
+            ImGui::Text("Sun angle %.3f", cycle.sun_angle);
+            ImGui::Text("Earth angle %.3f", cycle.earth_angle);
+            ImGui::Text("Total angle %.3f", cycle.total_angle);
+            ImGui::Text("Modulo angle %.3f", cycle.mod_angle);
+
             ImGui::End();
         }
 
