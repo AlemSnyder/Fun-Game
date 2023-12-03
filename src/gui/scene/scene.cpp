@@ -4,6 +4,7 @@
 #include "../handler.hpp"
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 namespace gui {
 
@@ -13,6 +14,10 @@ void
 Scene::update(screen_size_t width, screen_size_t height) {
 
     shadow_map_.update();
+
+    glm::vec3 light_direction = static_cast<float>(120.0) * environment_.light_direction();
+
+    set_shadow_light_direction(light_direction);
 
     FrameBufferHandler::instance().bind_fbo(shadow_map_.get_frame_buffer_id());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -21,6 +21,8 @@
  *
  */
 
+#include "environment.hpp"
+
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
@@ -59,6 +61,9 @@ class Scene {
     // other
     render::QuadRendererMultisample quad_renderer_multisample_;
 
+    // TODO add day night cycle
+    scene::Environment_Cycle environment_;
+
  public:
     /**
      * @brief Scene constructor
@@ -73,7 +78,8 @@ class Scene {
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
         shadow_map_(shadow_map_width_height, shadow_map_width_height), sky_renderer_(),
-        quad_renderer_multisample_() {}
+        quad_renderer_multisample_(),
+        environment_(.3, 5, 60, .3) {}
 
     /**
      * @brief Get scene frame buffer multisample id
