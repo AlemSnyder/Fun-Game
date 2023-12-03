@@ -16,14 +16,14 @@ glm::vec3
 Environment_Cycle::light_direction() {
     std::chrono::milliseconds game_time = time_util::get_time();
 
-    float f_time = game_time.count();
+    double f_time = static_cast<double>(game_time.count()) / 1000.0;
 
-    float time = fmod(f_time / 1000.0, (day_seconds_ * year_days_));
+    double time = std::remainder(f_time, (day_seconds_ * year_days_));
 
     earth_angle = 2 * std::numbers::pi * time / day_seconds_;
     sun_angle = 2 * std::numbers::pi * time / ( day_seconds_ * year_days_);
     total_angle = earth_angle + sun_angle;
-    mod_angle = fmod(total_angle, 2 * std::numbers::pi);
+    mod_angle = std::remainder(total_angle, 2 * std::numbers::pi);
 
     glm::mat4 ident = glm::mat4(1);
     glm::vec3 z(0,0,1);
