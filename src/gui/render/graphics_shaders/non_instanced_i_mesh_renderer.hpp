@@ -330,8 +330,8 @@ template <data_structures::NonInstancedIMeshGPUDataType T>
 void
 NonInstancedIMeshRenderer<T>::setup_shadow() const {
     // Cull back-facing triangles -> draw only front-facing triangles
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
 
     // Clear the screen
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
