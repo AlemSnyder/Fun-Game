@@ -80,6 +80,8 @@ imgui_entry(World& world) {
     // Our state
     bool show_another_window = false;
     bool show_scene_data = false;
+    bool manual_light_direction = false;
+    float input_light_direction[3];
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // ImVec2 button_size = ImVec2(100, 100);
 
@@ -104,6 +106,18 @@ imgui_entry(World& world) {
         // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
 
         glfwGetWindowSize(window, &window_width, &window_height);
+
+        if (manual_light_direction) {
+            glm::vec3 input_light_direction_v3(
+                input_light_direction[0], input_light_direction[1],
+                input_light_direction[2]
+            );
+            main_scene.manual_set_light_direction(input_light_direction_v3);
+        }
+        else {
+            main_scene.set_environment_light_direction();
+        }
+
         main_scene.update(window_width, window_height);
 
         glm::vec3 position = controls::get_position_vector();
@@ -208,6 +222,12 @@ imgui_entry(World& world) {
             ImGui::Text("Earth angle %.3f", cycle.earth_angle);
             ImGui::Text("Total angle %.3f", cycle.total_angle);
             ImGui::Text("Modulo angle %.3f", cycle.mod_angle);
+
+            ImGui::Checkbox("Manually set light direction", &manual_light_direction);
+
+            if (manual_light_direction) {
+                ImGui::DragFloat3("Light Direction", input_light_direction);
+            }
 
             ImGui::End();
         }

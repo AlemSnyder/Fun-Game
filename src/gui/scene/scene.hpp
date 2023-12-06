@@ -21,8 +21,6 @@
  *
  */
 
-#include "environment.hpp"
-
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
@@ -30,6 +28,7 @@
 #include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
 #include "../render/graphics_shaders/quad_renderer_multisample.hpp"
 #include "../render/graphics_shaders/sky.hpp"
+#include "environment.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -78,8 +77,7 @@ class Scene {
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
         shadow_map_(shadow_map_width_height, shadow_map_width_height), sky_renderer_(),
-        quad_renderer_multisample_(),
-        environment_(.3, 5, 60, .3) {}
+        quad_renderer_multisample_(), environment_(.3, 5, 60, .3) {}
 
     /**
      * @brief Get scene frame buffer multisample id
@@ -183,11 +181,11 @@ class Scene {
 
     /**
      * @brief Get the light direction vector
-     * 
+     *
      * @return glm::vec3 the direction of the light.
-    */
+     */
     inline glm::vec3
-    get_light_direction(){
+    get_light_direction() {
         return shadow_map_.get_light_direction();
     }
 
@@ -204,6 +202,22 @@ class Scene {
     inline void
     set_shadow_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
         shadow_map_.set_depth_projection_matrix(depth_projection_matrix);
+    }
+
+    inline void
+    set_environment_light_direction() {
+        glm::vec3 light_direction =
+            static_cast<float>(120.0) * environment_.light_direction();
+
+        set_shadow_light_direction(light_direction);
+    }
+
+    inline void
+    manual_set_light_direction(glm::vec3 light_direction_in) {
+        glm::vec3 light_direction =
+            static_cast<float>(120.0) * glm::normalize(light_direction_in);
+
+        set_shadow_light_direction(light_direction);
     }
 };
 
