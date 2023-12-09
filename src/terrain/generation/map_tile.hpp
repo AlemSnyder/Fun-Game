@@ -54,7 +54,7 @@ class MapTile {
     }
 };
 
-class TerrainMacroMap : public image::image_bw {
+class TerrainMacroMap {
  private:
     MacroDim width_;
     MacroDim height_;
@@ -62,7 +62,8 @@ class TerrainMacroMap : public image::image_bw {
     std::vector<MapTile> terrain_map_;
 
  public:
-    inline TerrainMacroMap() : width_(0), height_(0) {};
+    inline TerrainMacroMap() : width_(0), height_(0){};
+
     inline TerrainMacroMap(
         std::vector<MapTile> terrain_map, size_t width, size_t height
     ) :
@@ -77,7 +78,7 @@ class TerrainMacroMap : public image::image_bw {
         return terrain_map_[height_ * j + i];
     }
 
-    //MapTile_t
+    // MapTile_t
     png_byte
     get_color(size_t i, size_t j) const {
         return get_tile(i, j).get_tile_type();
@@ -98,14 +99,12 @@ class TerrainMacroMap : public image::image_bw {
         return terrain_map_;
     }
 
-    //MacroDim
-    size_t
+    MacroDim
     get_width() const {
         return width_;
     }
 
-    //MacroDim
-    size_t
+    MacroDim
     get_height() const {
         return height_;
     }

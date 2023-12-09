@@ -29,6 +29,7 @@ image_result_logger(write_result_t result, const std::filesystem::path& path) {
             return 1;
 
         default:
+            LOG_ERROR(logging::file_io_logger, "UNKNOWN PNG WRITE STATUS.");
             return 1;
     }
 }

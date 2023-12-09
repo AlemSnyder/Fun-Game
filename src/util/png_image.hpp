@@ -18,17 +18,14 @@ enum write_result_t {
     WR_ROW_MALLOC_FAILED,
 };
 
-class image_bw {
- public:
-    virtual size_t get_height() const = 0;
-    virtual size_t get_width() const = 0;
-    virtual png_byte get_color(size_t i, size_t j) const = 0;
+template <class T>
+concept ImageBW = requires(T const img, size_t i, size_t j) {
+    { img.get_height() } -> std::convertible_to<size_t>;
+    { img.get_width() } -> std::convertible_to<size_t>;
+    { img.get_color(i, j) } -> std::same_as<png_byte>;
 };
 
-template <class T>
-concept image_bw_c = std::is_base_of<image_bw, T>::value;
-
-template <image_bw_c T>
+template <ImageBW T>
 [[nodiscard]] write_result_t
 write_image(T image, const std::filesystem::path& path) {
     // Keep track of if we succeeded or not
@@ -89,7 +86,7 @@ write_image(T image, const std::filesystem::path& path) {
     png_text meta_data;
     // @egelja what is this?
     // I removed it and things still work. Adding it breaks things.
-    //memset(&meta_data, 0, sizeof(meta_data)); // clear struct
+    // memset(&meta_data, 0, sizeof(meta_data)); // clear struct
 
     meta_data.compression = PNG_TEXT_COMPRESSION_NONE; // no compression
     meta_data.lang_key = meta_lang;
@@ -149,27 +146,26 @@ fopen_failed:
     return status;
 }
 
-int
-image_result_logger(write_result_t result, const std::filesystem::path& path);
+int image_result_logger(write_result_t result, const std::filesystem::path& path);
 
 // #if DEBUG()
 
-class ImageTest : public image_bw{
+class ImageTest {
  public:
     ImageTest(){};
 
     size_t
-    get_height() const override {
+    get_height() const {
         return 1000;
     }
 
     size_t
-    get_width() const override {
+    get_width() const {
         return 1000;
     }
 
     png_byte
-    get_color(size_t i, size_t j) const override {
+    get_color(size_t i, size_t j) const {
         return static_cast<png_byte>(i * j);
     }
 };

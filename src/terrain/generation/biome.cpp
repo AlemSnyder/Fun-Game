@@ -187,7 +187,7 @@ Biome::map_generation_test(
 
     sol::protected_function map_function = lua["map"];
 
-    if (!map_function.valid()) {
+    if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
         return {};
     }
