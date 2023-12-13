@@ -80,7 +80,8 @@ main() {
 
     // ...variable bias
     float bias = 0.002 * tan(acos(cosTheta));
-    bias = clamp(bias, 0.00005, 0.01);
+    //bias = clamp(bias, 0.00005, 0.01);
+    bias = 0.0005;
 
     // Sample the shadow map 4 times
     for (int i = 0; i < 4; i++) {
@@ -102,8 +103,8 @@ main() {
             * (1.0
                - texture(
                    shadowMap, vec3(
-                                  ShadowCoord.xy + poissonDisk[index] / (700.0 * 4),
-                                  (ShadowCoord.z - bias) / ShadowCoord.w
+                                  ShadowCoord.xy + poissonDisk[index] / (10000.0),
+                                  (ShadowCoord.z + bias) / ShadowCoord.w
                               )
                ));
     }

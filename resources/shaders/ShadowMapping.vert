@@ -3,7 +3,7 @@
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in ivec3 vertexPosition_modelspace;
 layout(location = 1) in uint vertex_color_id;
-layout(location = 2) in ivec3 vertexNormal_modelspace;
+layout(location = 2) in ivec3 vertexNormal_modelspace_int;
 
 // Output data ; will be interpolated for each fragment.
 out uint Vertex_color_id;
@@ -24,7 +24,9 @@ main() {
     // Output position of the vertex, in clip space : MVP * position
     gl_Position = MVP * vec4(vertexPosition_modelspace, 1);
 
-    ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace, 1);
+    vec3 vertexNormal_modelspace = vec3(vertexNormal_modelspace_int);
+
+    ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace + vertexNormal_modelspace * .5, 1);
 
     // Position of the vertex, in worldspace : M * position
     Position_worldspace = (vec4(vertexPosition_modelspace, 1)).xyz;
