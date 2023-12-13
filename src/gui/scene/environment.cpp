@@ -26,13 +26,23 @@ Environment_Cycle::light_direction() {
     mod_angle = std::remainder(total_angle, 2 * std::numbers::pi);
 
     glm::mat4 ident = glm::mat4(1);
+
+    // rotation due to sun and earth angle/position
     glm::vec3 z(0,0,1);
     glm::mat4 rotation_z = glm::rotate(ident, mod_angle, z);
 
+    // rotation due to latitude;
     glm::vec3 y(0,1,0);
-    glm::mat4 rotation_x = glm::rotate(ident, latitude_, y);
+    glm::mat4 rotation_y = glm::rotate(ident, latitude_, y);
+    glm::mat4 inverse_rotation_y = glm::rotate(ident, latitude_, y);
 
-    glm::mat4 rotation = rotation_z * rotation_x;
+    float mod_earth_angle = std::remainder(earth_angle, 2 * std::numbers::pi);
+
+    glm::mat4 sky_rotation_z = glm::rotate(ident, -mod_earth_angle, z);
+
+    sky_rotation_ = inverse_rotation_y * sky_rotation_z;
+
+    glm::mat4 rotation = rotation_z * rotation_y;
 
     glm::vec4 light_direction_solar_system(glm::cos(sun_angle), glm::sin(sun_angle), 0, 1);
 

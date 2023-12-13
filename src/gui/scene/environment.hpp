@@ -14,7 +14,7 @@ class Environment_Cycle {
 
     float latitude_;
 
-
+    glm::mat4 sky_rotation_;
 
  public:
     float earth_angle;
@@ -24,6 +24,11 @@ class Environment_Cycle {
 
     glm::vec3 light_direction();
     double diffuse_light_intensity() const;
+
+    inline glm::mat4
+    get_sky_rotation() const {
+        return sky_rotation_;
+    }
 
     Environment_Cycle(
         double earth_tilt, double year_days, double day_seconds, double latitude

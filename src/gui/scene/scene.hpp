@@ -44,6 +44,8 @@ namespace gui {
 class Scene {
  private:
     data_structures::FrameBufferMultisample frame_buffer_multisample_;
+    // TODO add day night cycle
+    scene::Environment_Cycle environment_;
     data_structures::ShadowMap shadow_map_;
 
     // background
@@ -60,9 +62,6 @@ class Scene {
     // other
     render::QuadRendererMultisample quad_renderer_multisample_;
 
-    // TODO add day night cycle
-    scene::Environment_Cycle environment_;
-
  public:
     /**
      * @brief Scene constructor
@@ -76,8 +75,10 @@ class Scene {
         uint32_t shadow_map_width_height
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
-        shadow_map_(shadow_map_width_height, shadow_map_width_height), sky_renderer_(),
-        quad_renderer_multisample_(), environment_(.3, 5, 60, .3) {}
+        environment_(.3, 5, 60, .3),
+        shadow_map_(shadow_map_width_height, shadow_map_width_height),
+        sky_renderer_(environment_),
+        quad_renderer_multisample_() {}
 
     /**
      * @brief Get scene frame buffer multisample id

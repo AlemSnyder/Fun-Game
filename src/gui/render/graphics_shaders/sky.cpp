@@ -16,8 +16,11 @@ namespace gui {
 
 namespace render {
 
-SkyRenderer::SkyRenderer(ShaderHandler shader_handler) :
-    sky_data_(files::get_data_path() / "stars.json") {
+SkyRenderer::SkyRenderer(
+    scene::Environment_Cycle& environment, ShaderHandler shader_handler
+) :
+    sky_data_(files::get_data_path() / "stars.json"),
+    environment_(environment) {
     programID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Sky.vert",
         files::get_resources_path() / "shaders" / "Sky.frag"
@@ -25,6 +28,7 @@ SkyRenderer::SkyRenderer(ShaderHandler shader_handler) :
     // ---- set uniforms ----
     matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
     pixel_matrix_ID_ = glGetUniformLocation(programID_, "pixel_projection");
+    sky_matrix_ID_ = glGetUniformLocation(programID_, "sky_matrix");
 }
 
 SkyRenderer::~SkyRenderer() {
@@ -34,8 +38,11 @@ SkyRenderer::~SkyRenderer() {
 void
 SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buffer)
     const {
+    // Bind framebuffer
     FrameBufferHandler::instance().bind_fbo(frame_buffer);
+    // Draw over everything
     glDisable(GL_CULL_FACE);
+    // The sky has no depth
     glDepthMask(GL_FALSE);
 
     glViewport(0, 0, width, height);
@@ -56,11 +63,15 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     glm::mat4 view_matrix = controls::get_view_matrix();
     glm::mat4 MVP = projection_matrix * view_matrix; // Model View Projection
 
+    glm::mat4 sky_rotation_matrix = environment_.get_sky_rotation();
+
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
     glUniformMatrix4fv(matrix_view_projection_ID_, 1, GL_FALSE, &MVP[0][0]);
     // in the "pixel_projection" uniform
     glUniformMatrix4fv(pixel_matrix_ID_, 1, GL_FALSE, &pixel_window[0][0]);
+
+    glUniformMatrix4fv(sky_matrix_ID_, 1, GL_FALSE, &sky_rotation_matrix[0][0]);
 
     // 1st attribute buffer : positions
     glEnableVertexAttribArray(0);
@@ -118,6 +129,9 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
 
     // Use our shader
     glUseProgram(programID_);
+
+
+
 }
 
 } // namespace render
