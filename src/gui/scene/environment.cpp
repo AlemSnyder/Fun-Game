@@ -34,7 +34,7 @@ Environment_Cycle::light_direction() {
     // rotation due to latitude;
     glm::vec3 y(0,1,0);
     glm::mat4 rotation_y = glm::rotate(ident, latitude_, y);
-    glm::mat4 inverse_rotation_y = glm::rotate(ident, latitude_, y);
+    glm::mat4 inverse_rotation_y = glm::rotate(ident, -latitude_, y);
 
     float mod_earth_angle = std::remainder(earth_angle, 2 * std::numbers::pi);
 

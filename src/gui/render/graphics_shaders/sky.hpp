@@ -21,10 +21,10 @@
  */
 #pragma once
 
+#include "../../scene/environment.hpp"
 #include "../../shader.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "gui_render_types.hpp"
-#include "../../scene/environment.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -49,19 +49,29 @@ class SkyRenderer :
     public render_to::FrameBufferMultisample,
     public render_to::FrameBuffer {
  private:
-    GLuint programID_;                  // ID of Program
+    GLuint programID_; // ID of Program
+    GLuint sun_programID_;
     GLuint matrix_view_projection_ID_;  // ID of world to camera space transform matrix
     GLuint pixel_matrix_ID_;            // ID of view to pixel space matrix
     GLuint sky_matrix_ID_;              // ID of Sky matrix (rotates stars)
     data_structures::SkyData sky_data_; // star data
     scene::Environment_Cycle& environment_;
 
+    GLuint
+        sun_matrix_view_projection_ID_; // ID of world to camera space transform matrix
+    GLuint sun_pixel_matrix_ID_;        // ID of view to pixel space matrix
+
+    GLuint sun_sky_position_ID_;
+
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    explicit SkyRenderer(scene::Environment_Cycle& environment, ShaderHandler shader_handler = ShaderHandler());
+    explicit SkyRenderer(
+        scene::Environment_Cycle& environment,
+        ShaderHandler shader_handler = ShaderHandler()
+    );
 
     ~SkyRenderer();
 

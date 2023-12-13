@@ -25,10 +25,18 @@ SkyRenderer::SkyRenderer(
         files::get_resources_path() / "shaders" / "Sky.vert",
         files::get_resources_path() / "shaders" / "Sky.frag"
     );
+    sun_programID_ = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "Sun.vert",
+        files::get_resources_path() / "shaders" / "Sun.frag"
+    );
     // ---- set uniforms ----
     matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
     pixel_matrix_ID_ = glGetUniformLocation(programID_, "pixel_projection");
     sky_matrix_ID_ = glGetUniformLocation(programID_, "sky_matrix");
+
+    sun_matrix_view_projection_ID_ = glGetUniformLocation(sun_programID_, "MVP");
+    sun_pixel_matrix_ID_ = glGetUniformLocation(sun_programID_, "pixel_projection");
+    sun_sky_position_ID_ = glGetUniformLocation(sun_programID_, "sun_position");
 }
 
 SkyRenderer::~SkyRenderer() {
@@ -125,13 +133,36 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     glVertexAttribDivisor(1, 0);
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+    // glDisableVertexAttribArray(2);
+
+    // Use our shader
+    glUseProgram(sun_programID_);
+
+    // Send our transformation to the currently bound shader,
+    // in the "MVP" uniform
+    glUniformMatrix4fv(sun_matrix_view_projection_ID_, 1, GL_FALSE, &MVP[0][0]);
+    // in the "pixel_projection" uniform
+    glUniformMatrix4fv(sun_pixel_matrix_ID_, 1, GL_FALSE, &pixel_window[0][0]);
+
+    auto light_direction = environment_.light_direction();
+
+    glUniform3f(
+        sun_sky_position_ID_, light_direction.x, light_direction.y, light_direction.z
+    );
+
+    // Draw the triangles !
+    glDrawArraysInstanced(
+        GL_TRIANGLE_STRIP,        // mode
+        0,                        // start
+        4,                        // number of vertices
+        sky_data_.get_num_stars() // number of models
+
+    );
+
     glDisableVertexAttribArray(2);
 
     // Use our shader
-    glUseProgram(programID_);
-
-
-
+    //glUseProgram(sun_programID_);
 }
 
 } // namespace render
