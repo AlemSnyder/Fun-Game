@@ -16,6 +16,7 @@ layout(location = 0) out vec3 color;
 uniform vec3 LightPosition_worldspace;
 uniform sampler2DShadow shadowMap;
 uniform sampler1D meshColors;
+uniform vec3 LightColor;
 
 vec2 poissonDisk[16] = vec2[](
     vec2(-0.94201624, -0.39906216), vec2(0.94558609, -0.76890725),
@@ -38,9 +39,6 @@ random(vec3 seed, int i) {
 
 void
 main() {
-    // Light emission properties
-    vec3 LightColor = vec3(1, 1, 1);
-    float LightPower = 1.0f;
 
     vec3 Vertex_color = vec3(texelFetch(meshColors, int(Vertex_color_id), 0).rgb);
 
@@ -98,15 +96,13 @@ main() {
 
         // being fully in the shadow will eat up 4*0.3 = 1.2
         // 0.2 potentially remain, which is quite dark.
-        visibility -=
-            0.3
-            * (1.0
-               - texture(
-                   shadowMap, vec3(
-                                  ShadowCoord.xy + poissonDisk[index] / (10000.0),
-                                  (ShadowCoord.z + bias) / ShadowCoord.w
-                              )
-               ));
+
+        vec3 texture_map_position = vec3(
+            ShadowCoord.xy + poissonDisk[index] / (10000.0),
+            (ShadowCoord.z + bias) / ShadowCoord.w
+        );
+
+        visibility -= 0.3 * (1.0 - texture( shadowMap, texture_map_position ));
     }
 
     visibility = max(visibility, 0.0);
@@ -120,7 +116,9 @@ main() {
             //  Ambient : simulates indirect lighting
         MaterialAmbientColor +
         // Diffuse : "color" of the object
-        visibility * MaterialDiffuseColor * LightColor * LightPower * cosTheta; // +
+        visibility * MaterialDiffuseColor * LightColor * cosTheta;
+        
+        // +
     // Specular : reflective highlight, like a mirror
     // visibility * MaterialSpecularColor * LightColor * LightPower * min(pow(cosAlpha,
     // 5), 1);

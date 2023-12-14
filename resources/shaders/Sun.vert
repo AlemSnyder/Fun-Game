@@ -13,7 +13,7 @@ void
 main() {
     vec4 star_center_camera_space = MVP * vec4(sun_position, 0);
 
-    vec4 position = star_center_camera_space / star_center_camera_space.w
+    vec4 position = star_center_camera_space / abs(star_center_camera_space.w)
                     + pixel_projection * vec4(star_corner * sun_size, 0, 0);
     // I have no idea why I have to do this.
     position.z = star_center_camera_space.z/3;

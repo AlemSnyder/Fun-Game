@@ -24,6 +24,7 @@
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
 #include "../../scene/controls.hpp"
+#include "../../scene/environment.hpp"
 #include "../../shader.hpp"
 #include "../graphics_data/non_instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
@@ -64,18 +65,13 @@ class NonInstancedIMeshRenderer :
     GLuint color_map_id_render_;   // ID of the color map for indexed meshes
     GLuint light_direction_id_render_; // ID of the light direction uniform for indexed
 
+    GLuint light_color_id_render_; // ID of light color uniform
+
     GLuint depth_bias_id_shadow_; // ID of depth projection matrix for indexed meshes
 
+    const scene::Environment_Cycle& environment_;
     // ------ the below are added to the class ------
     const data_structures::ShadowMap* shadow_map_;
-    // const ShadowMap& shadow_map_;
-
-    // GLuint depth_texture_;              // ID of the shadow depth texture
-    // glm::vec3 light_direction_;         // direction of sun light
-    // glm::mat4 depth_projection_matrix_; // projection matrix of the light source
-    // glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
-
-    //  light direction
 
     std::vector<std::shared_ptr<T>> meshes_;
 
@@ -85,7 +81,10 @@ class NonInstancedIMeshRenderer :
      *
      * @param ShaderHandler
      */
-    explicit NonInstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
+    explicit NonInstancedIMeshRenderer(
+        const scene::Environment_Cycle& environment,
+        ShaderHandler shader_handler = ShaderHandler()
+    );
 
     virtual ~NonInstancedIMeshRenderer() {}
 
@@ -96,28 +95,7 @@ class NonInstancedIMeshRenderer :
      */
     void add_mesh(std::shared_ptr<T> mesh);
 
-    /**
-     * @brief Set the depth texture ID
-     *
-     * @param texture_id the depth texture ID
-     */
-    void set_depth_texture(GLuint texture_id);
-
     virtual void set_shadow_map(const data_structures::ShadowMap* shadow_map) override;
-
-    /**
-     * @brief Set the light direction vector
-     *
-     * @param light_direction the direction of the light
-     */
-    void set_light_direction(glm::vec3 light_direction);
-
-    /**
-     * @brief Set the depth projection matrix
-     *
-     * @param depth_projection_matrix the projection matrix
-     */
-    void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
     /**
      * @brief renders the given meshes
@@ -162,7 +140,10 @@ class NonInstancedIMeshRenderer :
 };
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(ShaderHandler shader_handler) {
+NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
+    const scene::Environment_Cycle& environment, ShaderHandler shader_handler
+) :
+    environment_(environment) {
     // non-indexed program
     program_id_render_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "ShadowMapping.vert",
@@ -183,6 +164,8 @@ NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(ShaderHandler shader_han
         glGetUniformLocation(program_id_render_, "LightInvDirection_worldspace");
 
     depth_bias_id_shadow_ = glGetUniformLocation(program_id_shadow_, "depthMVP");
+
+    light_color_id_render_ = glGetUniformLocation(program_id_render_, "LightColor");
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
@@ -191,12 +174,6 @@ NonInstancedIMeshRenderer<T>::add_mesh(std::shared_ptr<T> mesh) {
     meshes_.push_back(std::move(mesh));
 }
 
-// template <data_structures::NonInstancedIMeshGPUDataType T>
-// void
-// NonInstancedIMeshRenderer<T>::set_depth_texture(GLuint texture_id) {
-//     depth_texture_ = texture_id;/
-// }
-
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
 NonInstancedIMeshRenderer<T>::set_shadow_map(
@@ -204,22 +181,6 @@ NonInstancedIMeshRenderer<T>::set_shadow_map(
 ) {
     shadow_map_ = shadow_map;
 }
-
-// template <data_structures::NonInstancedIMeshGPUDataType T>
-// void
-// NonInstancedIMeshRenderer<T>::set_light_direction(glm::vec3 light_direction) {
-//     light_direction_ = light_direction;
-//     depth_view_matrix_ =
-//         glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-// }
-
-/*template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshRenderer<T>::set_depth_projection_matrix(
-    glm::mat4 depth_projection_matrix
-) {
-    depth_projection_matrix_ = depth_projection_matrix;
-}*/
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
@@ -309,6 +270,12 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
     glUniformMatrix4fv(matrix_id_render_, 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(view_matrix_id_render_, 1, GL_FALSE, &view_matrix[0][0]);
     glUniformMatrix4fv(depth_bias_id_render_, 1, GL_FALSE, &depth_bias_MVP[0][0]);
+
+    const glm::vec3 sunlight_color = environment_.get_specular_light();
+
+    glUniform3f(
+        light_color_id_render_, sunlight_color.r, sunlight_color.g, sunlight_color.b
+    );
 
     const glm::vec3& light_direction = shadow_map_->get_light_direction();
 

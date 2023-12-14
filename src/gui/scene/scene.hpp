@@ -207,8 +207,9 @@ class Scene {
 
     inline void
     set_environment_light_direction() {
+        environment_.update();
         glm::vec3 light_direction =
-            static_cast<float>(120.0) * environment_.light_direction();
+            static_cast<float>(120.0) * environment_.get_light_direction();
 
         set_shadow_light_direction(light_direction);
     }
@@ -217,6 +218,8 @@ class Scene {
     manual_set_light_direction(glm::vec3 light_direction_in) {
         glm::vec3 light_direction =
             static_cast<float>(120.0) * glm::normalize(light_direction_in);
+
+        environment_.update_sunlight_color(light_direction);
 
         set_shadow_light_direction(light_direction);
     }

@@ -144,7 +144,7 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     // in the "pixel_projection" uniform
     glUniformMatrix4fv(sun_pixel_matrix_ID_, 1, GL_FALSE, &pixel_window[0][0]);
 
-    auto light_direction = environment_.light_direction();
+    auto light_direction = environment_.get_light_direction();
 
     glUniform3f(
         sun_sky_position_ID_, light_direction.x, light_direction.y, light_direction.z

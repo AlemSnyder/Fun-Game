@@ -21,7 +21,7 @@ setup(Scene& scene, World& world) {
 
     // should check that this does what I want it to.
     auto chunk_renderer = std::make_shared<
-        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(shader_handler
+        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(scene.get_lighting_environment(), shader_handler
     );
 
     for (const auto& chunk_mesh : terrain_mesh) {
