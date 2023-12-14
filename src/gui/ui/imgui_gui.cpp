@@ -221,7 +221,6 @@ imgui_entry(World& world) {
             ImGui::Text("Sun angle %.3f", cycle.sun_angle);
             ImGui::Text("Earth angle %.3f", cycle.earth_angle);
             ImGui::Text("Total angle %.3f", cycle.total_angle);
-            ImGui::Text("Modulo angle %.3f", cycle.mod_angle);
 
             ImGui::Checkbox("Manually set light direction", &manual_light_direction);
 

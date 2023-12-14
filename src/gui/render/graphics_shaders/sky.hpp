@@ -49,19 +49,27 @@ class SkyRenderer :
     public render_to::FrameBufferMultisample,
     public render_to::FrameBuffer {
  private:
-    GLuint programID_; // ID of Program
-    GLuint sun_programID_;
-    GLuint matrix_view_projection_ID_;  // ID of world to camera space transform matrix
-    GLuint pixel_matrix_ID_;            // ID of view to pixel space matrix
-    GLuint sky_matrix_ID_;              // ID of Sky matrix (rotates stars)
-    data_structures::SkyData sky_data_; // star data
-    scene::Environment_Cycle& environment_;
+    GLuint star_programID_; // ID of star program
+    GLuint sun_programID_;  // ID of sun program
+    GLuint sky_programID_;  // ID of sky program
 
-    GLuint
-        sun_matrix_view_projection_ID_; // ID of world to camera space transform matrix
-    GLuint sun_pixel_matrix_ID_;        // ID of view to pixel space matrix
+    GLuint star_view_projection_ID_;     // ID of world to camera space transform matrix
+    GLuint pixel_matrix_ID_;             // ID of view to pixel space matrix
+    GLuint star_rotation_ID_;            // ID of Sky matrix (rotates stars)
+    data_structures::SkyData star_data_; // star data
+
+    GLuint sun_view_projection_ID_; // ID of world to camera space transform matrix
+    GLuint sun_pixel_matrix_ID_;    // ID of view to pixel space matrix
 
     GLuint sun_sky_position_ID_;
+
+    GLuint sky_view_projection_ID_; // ID of camera space to world space transform matrix
+    GLuint sky_pixel_matrix_ID_;    // ID of view to pixel space matrix
+
+    GLuint sky_sky_position_ID_;
+    GLuint sky_sunlight_color_ID_;
+
+    scene::Environment_Cycle& environment_;
 
  public:
     /**

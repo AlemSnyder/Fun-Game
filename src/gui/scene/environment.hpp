@@ -26,7 +26,7 @@ class Environment_Cycle {
     float earth_angle;
     float sun_angle;
     float total_angle;
-    
+
     Environment_Cycle(
         double earth_tilt, double year_days, double day_seconds, double latitude
     ) :
@@ -46,6 +46,9 @@ class Environment_Cycle {
         return light_direction_;
     };
 
+    /**
+     * @brief Get the sunlight color
+     */
     [[nodiscard]] inline glm::vec3
     get_specular_light() const {
         return sunlight_color_;
