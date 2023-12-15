@@ -17,6 +17,7 @@ uniform vec3 LightPosition_worldspace;
 uniform sampler2DShadow shadowMap;
 uniform sampler1D meshColors;
 uniform vec3 LightColor;
+uniform vec3 ambient_light_color;
 
 vec2 poissonDisk[16] = vec2[](
     vec2(-0.94201624, -0.39906216), vec2(0.94558609, -0.76890725),
@@ -44,7 +45,7 @@ main() {
 
     // Material properties
     vec3 MaterialDiffuseColor = Vertex_color * 0.6;
-    vec3 MaterialAmbientColor = vec3(0.5, 0.5, 0.5) * MaterialDiffuseColor;
+    vec3 MaterialAmbientColor = ambient_light_color * MaterialDiffuseColor;
     // ivec3 MaterialSpecularColor = ivec3(0.3,0.3,0.3);
 
     // Distance to the light

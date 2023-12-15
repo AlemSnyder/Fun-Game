@@ -64,6 +64,7 @@ class NonInstancedIMeshRenderer :
     GLuint shadow_map_id_render_;  // ID of the shadow map for indexed meshes
     GLuint color_map_id_render_;   // ID of the color map for indexed meshes
     GLuint light_direction_id_render_; // ID of the light direction uniform for indexed
+    GLuint ambient_light_color_id_render_; // ID of the ambient light color
 
     GLuint light_color_id_render_; // ID of light color uniform
 
@@ -166,6 +167,9 @@ NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
     depth_bias_id_shadow_ = glGetUniformLocation(program_id_shadow_, "depthMVP");
 
     light_color_id_render_ = glGetUniformLocation(program_id_render_, "LightColor");
+
+    ambient_light_color_id_render_ =
+        glGetUniformLocation(program_id_render_, "ambient_light_color");
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
@@ -275,6 +279,12 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
 
     glUniform3f(
         light_color_id_render_, sunlight_color.r, sunlight_color.g, sunlight_color.b
+    );
+
+    const glm::vec3 ambient_light_color = environment_.get_diffuse_light();
+
+    glUniform3f(
+        ambient_light_color_id_render_, ambient_light_color.r, ambient_light_color.g, ambient_light_color.b
     );
 
     const glm::vec3& light_direction = shadow_map_->get_light_direction();

@@ -39,6 +39,7 @@ SkyRenderer::SkyRenderer(
     star_view_projection_ID_ = glGetUniformLocation(star_programID_, "MVP");
     pixel_matrix_ID_ = glGetUniformLocation(star_programID_, "pixel_projection");
     star_rotation_ID_ = glGetUniformLocation(star_programID_, "sky_matrix");
+    star_sun_position_ID_ = glGetUniformLocation(star_programID_, "sun_position");
 
     sun_view_projection_ID_ = glGetUniformLocation(sun_programID_, "MVP");
     sun_pixel_matrix_ID_ = glGetUniformLocation(sun_programID_, "pixel_projection");
@@ -132,6 +133,11 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
 
     // Use our shader
     glUseProgram(star_programID_);
+
+    // the sun direction
+    glUniform3f(
+        star_sun_position_ID_, light_direction.x, light_direction.y, light_direction.z
+    );
 
     glm::mat4 sky_rotation_matrix = environment_.get_sky_rotation();
 

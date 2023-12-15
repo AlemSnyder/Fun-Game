@@ -16,6 +16,7 @@ class Environment_Cycle {
 
     float earth_radius = 6.0;
     float atmosphere_height = 0.5;
+    glm::vec3 color_intensities_ = glm::vec3(0.8, 0.85, 0.9);
 
     glm::mat4 sky_rotation_;
 
@@ -37,8 +38,8 @@ class Environment_Cycle {
     void update_sunlight_color(glm::vec3 light_direction);
 
     [[nodiscard]] inline glm::vec3
-    get_diffuse_light_intensity() const {
-        return glm::vec3(1, 1, 1);
+    get_diffuse_light() const {
+        return 2 * glm::length(sunlight_color_) * color_intensities_;
     }
 
     [[nodiscard]] inline glm::vec3
