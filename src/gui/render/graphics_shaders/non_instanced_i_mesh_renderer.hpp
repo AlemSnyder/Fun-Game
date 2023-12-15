@@ -147,13 +147,13 @@ NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
     environment_(environment) {
     // non-indexed program
     program_id_render_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "ShadowMapping.vert",
-        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.vert",
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
     );
     // indexed program
     program_id_shadow_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "DepthRTT.vert",
-        files::get_resources_path() / "shaders" / "DepthRTT.frag"
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.vert",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
     // ------ indexed program ------
     matrix_id_render_ = glGetUniformLocation(program_id_render_, "MVP");

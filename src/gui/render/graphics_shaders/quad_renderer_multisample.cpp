@@ -17,7 +17,7 @@ QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) {
     // program
     program_id_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
-        files::get_resources_path() / "shaders" / "SimpleTextureMS.frag"
+        files::get_resources_path() / "shaders" / "overlay" / "SimpleTextureMS.frag"
     );
     texID = glGetUniformLocation(program_id_, "texture_id");
 

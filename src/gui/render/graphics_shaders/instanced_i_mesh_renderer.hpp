@@ -91,13 +91,13 @@ InstancedIMeshRenderer<T>::InstancedIMeshRenderer(ShaderHandler shader_handler) 
     // TODO should pass these paths
     // non-indexed program
     this->programID_render_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
-        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMappingInstanced.vert",
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
     );
     // indexed program
     this->programID_shadow_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
-        files::get_resources_path() / "shaders" / "DepthRTT.frag"
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTTInstanced.vert",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 }
 

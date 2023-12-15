@@ -13,5 +13,4 @@ GUI
         add for loop into vertex shader that rotates the 
 
     sun
-        changing sky color
         maybe other plants

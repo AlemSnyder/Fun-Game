@@ -22,17 +22,17 @@ SkyRenderer::SkyRenderer(
     star_data_(files::get_data_path() / "stars.json"),
     environment_(environment) {
     star_programID_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Stars.vert",
-        files::get_resources_path() / "shaders" / "Stars.frag"
+        files::get_resources_path() / "shaders" / "background" / "Stars.vert",
+        files::get_resources_path() / "shaders" / "background" / "Stars.frag"
     );
     sun_programID_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Sun.vert",
-        files::get_resources_path() / "shaders" / "Sun.frag"
+        files::get_resources_path() / "shaders" / "background" / "Sun.vert",
+        files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
 
     sky_programID_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Sky.vert",
-        files::get_resources_path() / "shaders" / "Sky.frag"
+        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+        files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
     // ---- set uniforms ----
