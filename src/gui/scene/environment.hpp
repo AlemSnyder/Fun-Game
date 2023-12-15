@@ -15,7 +15,7 @@ class Environment_Cycle {
     float latitude_;
 
     float earth_radius = 6.0;
-    float atmosphere_height = 1.5;
+    float atmosphere_height = 0.5;
 
     glm::mat4 sky_rotation_;
 

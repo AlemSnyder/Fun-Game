@@ -43,10 +43,12 @@ SkyRenderer::SkyRenderer(
     sun_view_projection_ID_ = glGetUniformLocation(sun_programID_, "MVP");
     sun_pixel_matrix_ID_ = glGetUniformLocation(sun_programID_, "pixel_projection");
     sun_sky_position_ID_ = glGetUniformLocation(sun_programID_, "sun_position");
+    sun_sunlight_color_ID_ = glGetUniformLocation(sun_programID_, "sunlight_color");
 
     sky_view_projection_ID_ = glGetUniformLocation(sky_programID_, "MVIP");
     sky_pixel_matrix_ID_ = glGetUniformLocation(sky_programID_, "pixel_projection");
     sky_sky_position_ID_ = glGetUniformLocation(sky_programID_, "sun_position");
+    sky_sunlight_color_ID_ = glGetUniformLocation(sky_programID_, "sunlight_color");
 }
 
 SkyRenderer::~SkyRenderer() {
@@ -101,12 +103,32 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     );
 
     // the sun color
-    glUniform3f(
-        sky_sunlight_color_ID_, light_color.x, light_color.y, light_color.z
+    glUniform3f(sky_sunlight_color_ID_, light_color.x, light_color.y, light_color.z);
+
+    // 1st attribute buffer : vertices
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, screen_data_.get_vertex_buffer());
+    glVertexAttribPointer(
+        0,        // attribute
+        3,        // size
+        GL_FLOAT, // type
+        GL_FALSE, // normalized?
+        0,        // stride
+        nullptr   // array buffer offset
     );
 
+    // Index buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, screen_data_.get_element_buffer());
 
+    // Draw the triangles @!
+    glDrawElements(
+        GL_TRIANGLE_STRIP,               // mode
+        screen_data_.get_num_vertices(), // count
+        GL_UNSIGNED_SHORT,               // type
+        nullptr                          // element array buffer offset
+    );
 
+    glDisableVertexAttribArray(0);
 
     // Use our shader
     glUseProgram(star_programID_);
@@ -130,7 +152,7 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
         GL_FLOAT, // type
         GL_FALSE, // normalized?
         0,        // stride
-        (void*)0  // array buffer offset
+        nullptr   // array buffer offset
     );
 
     // 2nd attribute buffer : age
@@ -142,7 +164,7 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
         GL_FLOAT, // type
         GL_FALSE, // normalized?
         0,        // stride
-        (void*)0  // array buffer offset
+        nullptr   // array buffer offset
     );
 
     // 3rd attribute buffer : vertices
@@ -154,7 +176,7 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
         GL_FLOAT, // type
         GL_FALSE, // normalized?
         0,        // stride
-        (void*)0  // array buffer offset
+        nullptr   // array buffer offset
     );
 
     glVertexAttribDivisor(0, 1);
@@ -177,6 +199,8 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
 
     // Use our shader
     glUseProgram(sun_programID_);
+
+    glUniform3f(sun_sunlight_color_ID_, light_color.x, light_color.y, light_color.z);
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform

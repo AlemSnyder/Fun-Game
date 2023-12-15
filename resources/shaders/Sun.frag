@@ -1,7 +1,9 @@
 #version 450 core
 
 // Input data
-in vec3 color_in;
+//in vec3 color_in;
+
+uniform vec3 sunlight_color;
 
 // Ouput data
 layout(location = 0) out vec3 color;
@@ -9,5 +11,5 @@ layout(location = 0) out vec3 color;
 void
 main(){
 
-    color = color_in;
+    color = sunlight_color*2;
 }

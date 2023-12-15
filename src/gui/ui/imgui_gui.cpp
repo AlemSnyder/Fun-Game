@@ -222,6 +222,10 @@ imgui_entry(World& world) {
             ImGui::Text("Earth angle %.3f", cycle.earth_angle);
             ImGui::Text("Total angle %.3f", cycle.total_angle);
 
+            glm::vec3 color = cycle.get_specular_light();
+
+            ImGui::TextColored({color.r, color.g, color.b, 1}, "##");
+
             ImGui::Checkbox("Manually set light direction", &manual_light_direction);
 
             if (manual_light_direction) {
