@@ -15,11 +15,11 @@ namespace render {
 
 QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) {
     // program
-    program_id_ = shader_handler.load_program(
+    main_PID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "overlay" / "SimpleTextureMS.frag"
     );
-    texID = glGetUniformLocation(program_id_, "texture_id");
+    texture_UID_ = glGetUniformLocation(main_PID_, "texture_id");
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const std::vector<GLfloat> quad_vertices = {
@@ -33,9 +33,9 @@ QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) {
         GL_ARRAY_BUFFER, quad_vertices.size() * sizeof(quad_vertices[0]),
         quad_vertices.data(), GL_STATIC_DRAW
     );
-    width_id_ = glGetUniformLocation(program_id_, "width");
-    height_id_ = glGetUniformLocation(program_id_, "height");
-    tex_samples_id_ = glGetUniformLocation(program_id_, "tex_samples");
+    width_UID_ = glGetUniformLocation(main_PID_, "width");
+    height_UID_ = glGetUniformLocation(main_PID_, "height");
+    num_samples_UID_ = glGetUniformLocation(main_PID_, "tex_samples");
 }
 
 } // namespace render

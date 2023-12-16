@@ -13,11 +13,11 @@ layout(location = 0) out vec3 color;
 
 // Values that stay constant for the whole mesh.
 // uniform sampler2D myTextureSampler;
-uniform vec3 LightPosition_worldspace;
-uniform sampler2DShadow shadowMap;
-uniform sampler1D meshColors;
-uniform vec3 LightColor;
-uniform vec3 ambient_light_color;
+// uniform vec3 LightPosition_worldspace;
+uniform sampler2DShadow shadow_texture;
+uniform sampler1D material_color_texture;
+uniform vec3 direct_light_color;
+uniform vec3 diffuse_light_color;
 
 vec2 poissonDisk[16] = vec2[](
     vec2(-0.94201624, -0.39906216), vec2(0.94558609, -0.76890725),
@@ -41,11 +41,11 @@ random(vec3 seed, int i) {
 void
 main() {
 
-    vec3 Vertex_color = vec3(texelFetch(meshColors, int(Vertex_color_id), 0).rgb);
+    vec3 Vertex_color = vec3(texelFetch(material_color_texture, int(Vertex_color_id), 0).rgb);
 
     // Material properties
     vec3 MaterialDiffuseColor = Vertex_color * 0.6;
-    vec3 MaterialAmbientColor = ambient_light_color * MaterialDiffuseColor;
+    vec3 MaterialAmbientColor = diffuse_light_color * MaterialDiffuseColor;
     // ivec3 MaterialSpecularColor = ivec3(0.3,0.3,0.3);
 
     // Distance to the light
@@ -103,24 +103,24 @@ main() {
             (ShadowCoord.z + bias) / ShadowCoord.w
         );
 
-        visibility -= 0.3 * (1.0 - texture( shadowMap, texture_map_position ));
+        visibility -= 0.3 * (1.0 - texture( shadow_texture, texture_map_position ));
     }
 
     visibility = max(visibility, 0.0);
 
     // For spot lights, use either one of these lines instead.
-    // if ( texture( shadowMap, (ShadowCoord.xy/ShadowCoord.w) ).z  <
-    // (ShadowCoord.z-bias)/ShadowCoord.w ) if ( textureProj( shadowMap, ShadowCoord.xyw
+    // if ( texture( shadow_texture, (ShadowCoord.xy/ShadowCoord.w) ).z  <
+    // (ShadowCoord.z-bias)/ShadowCoord.w ) if ( textureProj( shadow_texture, ShadowCoord.xyw
     // ).z  <  (ShadowCoord.z-bias)/ShadowCoord.w )
 
     color = // base_color
             //  Ambient : simulates indirect lighting
         MaterialAmbientColor +
         // Diffuse : "color" of the object
-        visibility * MaterialDiffuseColor * LightColor * cosTheta;
+        visibility * MaterialDiffuseColor * direct_light_color * cosTheta;
         
         // +
     // Specular : reflective highlight, like a mirror
-    // visibility * MaterialSpecularColor * LightColor * LightPower * min(pow(cosAlpha,
+    // visibility * MaterialSpecularColor * direct_light_color * LightPower * min(pow(cosAlpha,
     // 5), 1);
 }

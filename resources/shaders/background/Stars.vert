@@ -6,7 +6,7 @@ layout(location = 1) in float age_in;
 layout(location = 2) in vec2 star_corner;
 uniform mat4 MVP;
 uniform mat4 pixel_projection;
-uniform mat4 sky_matrix;
+uniform mat4 star_rotation;
 uniform vec3 sun_position;
 
 // Output data ; will be interpolated for each fragment.
@@ -26,7 +26,7 @@ main() {
         gl_Position = vec4(0,0,-2,1);
     }
     else{
-        vec4 star_center_camera_space = MVP * sky_matrix * vec4(pos.xyz, 0);
+        vec4 star_center_camera_space = MVP * star_rotation * vec4(pos.xyz, 0);
         vec4 position = star_center_camera_space
                         / abs(star_center_camera_space.w)
                         + pixel_projection * vec4(star_corner * pos.w, 0, 0);

@@ -12,5 +12,5 @@ main(){
     float green = mix(.8, .7, age);
     float blue = mix(.5, 1, age);
 
-    color = vec3(red,green,blue);
+    color = vec3(red, green, blue);
 }

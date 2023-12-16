@@ -54,27 +54,27 @@ class SkyRenderer :
     data_structures::ScreenData screen_data_; // screen data
     scene::Environment_Cycle& environment_;   // light environment
 
-    GLuint star_programID_; // ID of star program
-    GLuint sun_programID_;  // ID of sun program
-    GLuint sky_programID_;  // ID of sky program
+    GLuint star_PID_; // ID of star program
+    GLuint sun_PID_;  // ID of sun program
+    GLuint sky_PID_;  // ID of sky program
 
-    GLuint star_view_projection_ID_; // ID of world to camera space transform matrix
-    GLuint pixel_matrix_ID_;         // ID of view to pixel space matrix
-    GLuint star_rotation_ID_;        // ID of Sky matrix (rotates stars)
-    GLuint star_sun_position_ID_;    // ID of Sun position for star renderer
+    // star program uniforms
+    GLuint view_projection_star_UID_;  // view projection matrix for star program
+    GLuint pixel_projection_star_UID_; // ID of view to pixel space matrix
+    GLuint star_rotation_star_UID_;    // ID of Sky matrix (rotates stars)
+    GLuint sun_position_star_UID_;     // ID of Sun position for star renderer
 
-    GLuint sun_view_projection_ID_; // ID of world to camera space transform matrix
-    GLuint sun_pixel_matrix_ID_;    // ID of view to pixel space matrix
+    // sun program uniforms
+    GLuint view_projection_sun_UID_;  // view projection matrix for sun program
+    GLuint pixel_projection_sun_UID_; // ID of view to pixel space matrix
+    GLuint sun_position_sun_UID_;
+    GLuint sunlight_color_sun_UID_;
 
-    GLuint sun_sky_position_ID_;
-    GLuint sun_sunlight_color_ID_;
-
-    GLuint
-        sky_view_projection_ID_; // ID of camera space to world space transform matrix
-    GLuint sky_pixel_matrix_ID_; // ID of view to pixel space matrix
-
-    GLuint sky_sky_position_ID_;
-    GLuint sky_sunlight_color_ID_;
+    // sky program uniforms
+    GLuint view_projection_sky_UID_;  // view projection matrix for sky program
+    GLuint pixel_projection_sky_UID_; // ID of view to pixel space matrix
+    GLuint sun_position_sky_UID_;     // sun position/light direction vector
+    GLuint sunlight_color_sky_UID_;   // sunlight color vector
 
  public:
     /**

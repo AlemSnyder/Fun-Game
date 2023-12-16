@@ -47,9 +47,9 @@ namespace render {
  */
 class QuadRendererMultisample : public QuadRenderer {
  private:
-    GLuint width_id_;       // uniform ID for width of reading texture
-    GLuint height_id_;      // uniform ID for height or reading texture
-    GLuint tex_samples_id_; // uniform ID for number pixel samples
+    GLuint width_UID_;       // uniform ID for width of reading texture
+    GLuint height_UID_;      // uniform ID for height or reading texture
+    GLuint num_samples_UID_; // uniform ID for number pixel samples
 
  public:
     /**
@@ -71,9 +71,9 @@ class QuadRendererMultisample : public QuadRenderer {
         GLuint window_render_texture, GLuint frame_buffer = 0
     ) const {
         QuadRenderer::setup(width, height, window_render_texture, frame_buffer);
-        glUniform1ui(width_id_, width);
-        glUniform1ui(height_id_, height);
-        glUniform1ui(tex_samples_id_, samples);
+        glUniform1ui(width_UID_, width);
+        glUniform1ui(height_UID_, height);
+        glUniform1ui(num_samples_UID_, samples);
         QuadRenderer::draw();
     }
 };
