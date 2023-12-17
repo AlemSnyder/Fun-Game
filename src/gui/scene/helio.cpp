@@ -1,6 +1,5 @@
-#include "environment.hpp"
-
 #include "../../util/time.hpp"
+#include "helio.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -14,7 +13,7 @@ namespace gui {
 namespace scene {
 
 void
-Environment_Cycle::update() {
+Helio::update() {
     std::chrono::milliseconds game_time = time_util::get_time();
 
     double f_time = static_cast<double>(game_time.count()) / 1000.0;
@@ -61,7 +60,7 @@ Environment_Cycle::update() {
 }
 
 void
-Environment_Cycle::update_sunlight_color(glm::vec3 light_direction) {
+Helio::update_sunlight_color(glm::vec3 light_direction) {
     float slope = light_direction.z
                   / pow(pow(light_direction.x, 2) + pow(light_direction.y, 2), .5);
 

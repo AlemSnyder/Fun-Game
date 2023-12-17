@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#include "../../scene/environment.hpp"
+#include "../uniform_types.hpp"
 #include "../../shader.hpp"
 #include "../data_structures/screen_data.hpp"
 #include "../data_structures/sky_data.hpp"
@@ -33,17 +33,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <memory>
 
 namespace gui {
 
 namespace render {
 
 /**
- * @brief Renders the meshes to the screen
+ * @brief Renders the sky background
  *
- * @details SkyRenderer renders the meshes given to it to the screen.
- * this class handles the light direction, applied the meshes, and loading
- * shaders.
+ * @details SkyRenderer renders the stars sun, and sky. It handles sun and star
+ * position.
  *
  */
 class SkyRenderer :
@@ -52,7 +52,9 @@ class SkyRenderer :
  private:
     data_structures::SkyData star_data_;      // star data
     data_structures::ScreenData screen_data_; // screen data
-    scene::Environment_Cycle& environment_;   // light environment
+    std::shared_ptr<render::LightEnvironment> lighting_; // lighting
+    std::shared_ptr<render::StarRotation> star_rotation_; // relative position of the stars
+    //scene::Helio& environment_;               // light environment
 
     GLuint star_PID_; // ID of star program
     GLuint sun_PID_;  // ID of sun program
@@ -82,8 +84,7 @@ class SkyRenderer :
      *
      */
     explicit SkyRenderer(
-        scene::Environment_Cycle& environment,
-        ShaderHandler shader_handler = ShaderHandler()
+        std::shared_ptr<render::LightEnvironment> lighting, std::shared_ptr<render::StarRotation> star_rotation, ShaderHandler shader_handler = ShaderHandler()
     );
 
     ~SkyRenderer();

@@ -24,10 +24,10 @@
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
 #include "../../scene/controls.hpp"
-#include "../../scene/environment.hpp"
 #include "../../shader.hpp"
 #include "../graphics_data/non_instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
+#include "../uniform_types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -71,7 +71,7 @@ class NonInstancedIMeshRenderer :
     GLuint depth_bias_shadow_UID_; // ID of depth projection matrix for indexed meshes
 
     // TODO change to interface
-    const scene::Environment_Cycle& environment_;
+    const std::shared_ptr<render::LightEnvironment> lighting_;
     // ------ the below are added to the class ------
     const data_structures::ShadowMap* shadow_map_;
 
@@ -84,7 +84,7 @@ class NonInstancedIMeshRenderer :
      * @param ShaderHandler
      */
     explicit NonInstancedIMeshRenderer(
-        const scene::Environment_Cycle& environment,
+        const std::shared_ptr<render::LightEnvironment> lighting,
         ShaderHandler shader_handler = ShaderHandler()
     );
 
@@ -143,9 +143,9 @@ class NonInstancedIMeshRenderer :
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
-    const scene::Environment_Cycle& environment, ShaderHandler shader_handler
+    const std::shared_ptr<render::LightEnvironment> lighting, ShaderHandler shader_handler
 ) :
-    environment_(environment) {
+    lighting_(lighting) {
     // non-indexed program
     render_PID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.vert",
@@ -281,13 +281,13 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
     glUniformMatrix4fv(view_matrix_render_UID_, 1, GL_FALSE, &view_matrix[0][0]);
     glUniformMatrix4fv(depth_bias_render_UID_, 1, GL_FALSE, &depth_bias_MVP[0][0]);
 
-    const glm::vec3 sunlight_color = environment_.get_specular_light();
+    const glm::vec3 sunlight_color = lighting_->get_specular_light();
 
     glUniform3f(
         direct_light_color_render_UID_, sunlight_color.r, sunlight_color.g, sunlight_color.b
     );
 
-    const glm::vec3 diffuse_light_color = environment_.get_diffuse_light();
+    const glm::vec3 diffuse_light_color = lighting_->get_diffuse_light();
 
     glUniform3f(
         diffuse_light_color_render_UID_, diffuse_light_color.r, diffuse_light_color.g,

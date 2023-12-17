@@ -28,7 +28,7 @@
 #include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
 #include "../render/graphics_shaders/quad_renderer_multisample.hpp"
 #include "../render/graphics_shaders/sky.hpp"
-#include "environment.hpp"
+#include "helio.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -44,8 +44,7 @@ namespace gui {
 class Scene {
  private:
     data_structures::FrameBufferMultisample frame_buffer_multisample_;
-    // TODO add day night cycle
-    scene::Environment_Cycle environment_;
+    std::shared_ptr<scene::Helio> environment_;
     data_structures::ShadowMap shadow_map_;
 
     // background
@@ -75,10 +74,9 @@ class Scene {
         uint32_t shadow_map_width_height
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
-        environment_(.3, 5, 60, .3),
+        environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)),
         shadow_map_(shadow_map_width_height, shadow_map_width_height),
-        sky_renderer_(environment_),
-        quad_renderer_multisample_() {}
+        sky_renderer_(environment_, environment_), quad_renderer_multisample_() {}
 
     /**
      * @brief Get scene frame buffer multisample id
@@ -190,7 +188,7 @@ class Scene {
         return shadow_map_.get_light_direction();
     }
 
-    inline const scene::Environment_Cycle&
+    inline const std::shared_ptr<scene::Helio>
     get_lighting_environment() const {
         return environment_;
     }
@@ -207,9 +205,9 @@ class Scene {
 
     inline void
     set_environment_light_direction() {
-        environment_.update();
+        environment_->update();
         glm::vec3 light_direction =
-            static_cast<float>(120.0) * environment_.get_light_direction();
+            static_cast<float>(120.0) * environment_->get_light_direction();
 
         set_shadow_light_direction(light_direction);
     }
@@ -219,7 +217,7 @@ class Scene {
         glm::vec3 light_direction =
             static_cast<float>(120.0) * glm::normalize(light_direction_in);
 
-        environment_.update_sunlight_color(light_direction);
+        environment_->update_sunlight_color(light_direction);
 
         set_shadow_light_direction(light_direction);
     }

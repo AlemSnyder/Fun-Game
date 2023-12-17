@@ -1,12 +1,14 @@
 #pragma once
 
+#include "../render/uniform_types.hpp"
+
 #include <glm/glm.hpp>
 
 namespace gui {
 
 namespace scene {
 
-class Environment_Cycle {
+class Helio : public render::LightEnvironment, public render::StarRotation{
  private:
     double earth_tilt_;
     double year_days_;
@@ -28,7 +30,7 @@ class Environment_Cycle {
     float sun_angle;
     float total_angle;
 
-    Environment_Cycle(
+    Helio(
         double earth_tilt, double year_days, double day_seconds, double latitude
     ) :
         earth_tilt_(earth_tilt),
@@ -38,12 +40,12 @@ class Environment_Cycle {
     void update_sunlight_color(glm::vec3 light_direction);
 
     [[nodiscard]] inline glm::vec3
-    get_diffuse_light() const {
+    get_diffuse_light() const override {
         return 2 * glm::length(sunlight_color_) * color_intensities_;
     }
 
     [[nodiscard]] inline glm::vec3
-    get_light_direction() const {
+    get_light_direction() const override {
         return light_direction_;
     };
 
@@ -51,12 +53,12 @@ class Environment_Cycle {
      * @brief Get the sunlight color
      */
     [[nodiscard]] inline glm::vec3
-    get_specular_light() const {
+    get_specular_light() const override {
         return sunlight_color_;
     }
 
-    inline glm::mat4
-    get_sky_rotation() const {
+    [[nodiscard]] inline glm::mat4
+    get_sky_rotation() const override {
         return sky_rotation_;
     }
 

@@ -17,10 +17,11 @@ namespace gui {
 namespace render {
 
 SkyRenderer::SkyRenderer(
-    scene::Environment_Cycle& environment, ShaderHandler shader_handler
+    const std::shared_ptr<LightEnvironment> lighting,
+    const std::shared_ptr<StarRotation> star_rotation, ShaderHandler shader_handler
 ) :
     star_data_(files::get_data_path() / "stars.json"),
-    environment_(environment) {
+    lighting_(lighting), star_rotation_(star_rotation) {
     star_PID_ = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "background" / "Stars.vert",
         files::get_resources_path() / "shaders" / "background" / "Stars.frag"
@@ -77,9 +78,9 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     glm::mat4 view_matrix = controls::get_view_matrix();
     glm::mat4 MVP = projection_matrix * view_matrix; // Model View Projection
 
-    glm::vec3 light_direction = environment_.get_light_direction();
+    glm::vec3 light_direction = lighting_->get_light_direction();
 
-    glm::vec3 light_color = environment_.get_specular_light();
+    glm::vec3 light_color = lighting_->get_specular_light();
 
     // Bind framebuffer
     FrameBufferHandler::instance().bind_fbo(frame_buffer);
@@ -149,7 +150,7 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
         sun_position_star_UID_, light_direction.x, light_direction.y, light_direction.z
     );
 
-    glm::mat4 sky_rotation_matrix = environment_.get_sky_rotation();
+    glm::mat4 sky_rotation_matrix = star_rotation_->get_sky_rotation();
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform

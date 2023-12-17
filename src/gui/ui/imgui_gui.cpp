@@ -215,14 +215,14 @@ imgui_entry(World& world) {
                 light_direction.y, light_direction.z
             );
 
-            const scene::Environment_Cycle& cycle =
+            const std::shared_ptr<scene::Helio> cycle =
                 main_scene.get_lighting_environment();
 
-            ImGui::Text("Sun angle %.3f", cycle.sun_angle);
-            ImGui::Text("Earth angle %.3f", cycle.earth_angle);
-            ImGui::Text("Total angle %.3f", cycle.total_angle);
+            ImGui::Text("Sun angle %.3f", cycle->sun_angle);
+            ImGui::Text("Earth angle %.3f", cycle->earth_angle);
+            ImGui::Text("Total angle %.3f", cycle->total_angle);
 
-            glm::vec3 color = cycle.get_specular_light();
+            glm::vec3 color = cycle->get_specular_light();
 
             ImGui::TextColored({color.r, color.g, color.b, 1}, "##");
 
