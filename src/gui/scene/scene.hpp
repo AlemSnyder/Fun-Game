@@ -118,11 +118,21 @@ class Scene {
         return shadow_map_.get_shadow_height();
     }
 
+    /**
+     * @brief Get shadow map
+     *
+     * @return ShadowMap& shadow map used by this scene.
+     */
     const data_structures::ShadowMap&
     get_shadow_map() const {
         return shadow_map_;
     }
 
+    /**
+     * @brief Get framebuffer id being rendered to.
+     *
+     * @return GLuint framebuffer id.
+     */
     inline GLuint
     get_frame_buffer_id() {
         return frame_buffer_multisample_.get_frame_buffer_id();
@@ -132,8 +142,6 @@ class Scene {
      * @brief Get scene frame buffer multisample id
      */
     void update(screen_size_t width, screen_size_t height);
-
-    // model attach
 
     /**
      * @brief Attach shadow renderer.
@@ -203,8 +211,14 @@ class Scene {
         shadow_map_.set_depth_projection_matrix(depth_projection_matrix);
     }
 
+    /**
+     * @brief Update light using Heliocentric model.
+     *
+     * @details This function also updates the light color and intensity
+     * depending on the sun position.
+     */
     inline void
-    set_environment_light_direction() {
+    update_light_direction() {
         environment_->update();
         glm::vec3 light_direction =
             static_cast<float>(120.0) * environment_->get_light_direction();
@@ -212,8 +226,14 @@ class Scene {
         set_shadow_light_direction(light_direction);
     }
 
+    /**
+     * @brief Update lighting with given light direction
+     *
+     * @details This function also updates the light color and intensity
+     * depending on the sun position.
+     */
     inline void
-    manual_set_light_direction(glm::vec3 light_direction_in) {
+    manual_update_light_direction(glm::vec3 light_direction_in) {
         glm::vec3 light_direction =
             static_cast<float>(120.0) * glm::normalize(light_direction_in);
 

@@ -329,7 +329,6 @@ ambient_occlusion_mesher(T voxel_object) {
                     for (size_t i = 0; i < 4; i++) {
                         const Vertex& vertex = corners.value()[i];
                         auto index_itr = vertex_ids.find(vertex);
-                        // TODO The issue is here
                         if (index_itr != vertex_ids.end()) {
                             // The vertex exists add the index
                             corner_indicies[i] = vertex_ids.at(vertex);

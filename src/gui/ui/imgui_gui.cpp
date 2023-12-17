@@ -112,10 +112,9 @@ imgui_entry(World& world) {
                 input_light_direction[0], input_light_direction[1],
                 input_light_direction[2]
             );
-            main_scene.manual_set_light_direction(input_light_direction_v3);
-        }
-        else {
-            main_scene.set_environment_light_direction();
+            main_scene.manual_update_light_direction(input_light_direction_v3);
+        } else {
+            main_scene.update_light_direction();
         }
 
         main_scene.update(window_width, window_height);

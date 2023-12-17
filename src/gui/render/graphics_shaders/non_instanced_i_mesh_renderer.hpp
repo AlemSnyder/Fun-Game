@@ -26,8 +26,8 @@
 #include "../../scene/controls.hpp"
 #include "../../shader.hpp"
 #include "../graphics_data/non_instanced_i_mesh.hpp"
-#include "gui_render_types.hpp"
 #include "../uniform_types.hpp"
+#include "gui_render_types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -63,18 +63,18 @@ class NonInstancedIMeshRenderer :
     GLuint view_matrix_render_UID_; // ID of view projection matrix for indexed meshes
     GLuint depth_bias_render_UID_;  // ID of depth projection matrix for indexed meshes
     GLuint shadow_texture_render_UID_;  // ID of the shadow map for indexed meshes
-    GLuint material_color_texture_UID_;   // ID of the color map for indexed meshes
+    GLuint material_color_texture_UID_; // ID of the color map for indexed meshes
     GLuint light_direction_render_UID_; // ID of the light direction uniform for indexed
     GLuint diffuse_light_color_render_UID_; // ID of the diffuse light color
-    GLuint direct_light_color_render_UID_; // ID of light color uniform
+    GLuint direct_light_color_render_UID_;  // ID of light color uniform
     // Shadow program uniforms
     GLuint depth_bias_shadow_UID_; // ID of depth projection matrix for indexed meshes
 
-    // TODO change to interface
+    // Lighting interface. Will give information about sun position/color
     const std::shared_ptr<render::LightEnvironment> lighting_;
-    // ------ the below are added to the class ------
+    // pointer to shadow texture
     const data_structures::ShadowMap* shadow_map_;
-
+    // vector of meshes that are rendered.
     std::vector<std::shared_ptr<T>> meshes_;
 
  public:
@@ -143,7 +143,8 @@ class NonInstancedIMeshRenderer :
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
-    const std::shared_ptr<render::LightEnvironment> lighting, ShaderHandler shader_handler
+    const std::shared_ptr<render::LightEnvironment> lighting,
+    ShaderHandler shader_handler
 ) :
     lighting_(lighting) {
     // non-indexed program
@@ -161,16 +162,16 @@ NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
     view_matrix_render_UID_ = glGetUniformLocation(render_PID_, "view_matrix");
     depth_bias_render_UID_ = glGetUniformLocation(render_PID_, "depth_MVP");
     shadow_texture_render_UID_ = glGetUniformLocation(render_PID_, "shadow_texture");
-    material_color_texture_UID_ = glGetUniformLocation(render_PID_, "material_color_texture");
-    light_direction_render_UID_ =
-        glGetUniformLocation(render_PID_, "light_direction");
-    direct_light_color_render_UID_ = glGetUniformLocation(render_PID_, "direct_light_color");
+    material_color_texture_UID_ =
+        glGetUniformLocation(render_PID_, "material_color_texture");
+    light_direction_render_UID_ = glGetUniformLocation(render_PID_, "light_direction");
+    direct_light_color_render_UID_ =
+        glGetUniformLocation(render_PID_, "direct_light_color");
 
     diffuse_light_color_render_UID_ =
         glGetUniformLocation(render_PID_, "diffuse_light_color");
 
     depth_bias_shadow_UID_ = glGetUniformLocation(shadow_PID_, "depth_MVP");
-
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
@@ -284,7 +285,8 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
     const glm::vec3 sunlight_color = lighting_->get_specular_light();
 
     glUniform3f(
-        direct_light_color_render_UID_, sunlight_color.r, sunlight_color.g, sunlight_color.b
+        direct_light_color_render_UID_, sunlight_color.r, sunlight_color.g,
+        sunlight_color.b
     );
 
     const glm::vec3 diffuse_light_color = lighting_->get_diffuse_light();
