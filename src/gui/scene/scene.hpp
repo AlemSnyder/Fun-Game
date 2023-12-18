@@ -169,12 +169,19 @@ class Scene {
         shadow_map_.set_depth_projection_matrix(depth_projection_matrix);
     }
 
+    /**
+     * @brief Copy the framebuffer to the screen.
+     * 
+     * @details Only a screen-sized portion of this framebuffer is rendered to.
+     * In this call that portion is rendered to the screen.
+    */
     inline void
     copy_to_window(screen_size_t width, screen_size_t height) {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, get_frame_buffer_id());
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // window framebuffer
         glBlitFramebuffer(
-            0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST
+            0, 0, width, height, 0, 0, width, height, // region of framebuffer
+            GL_COLOR_BUFFER_BIT, GL_NEAREST // copy the color
         );
     }
 };

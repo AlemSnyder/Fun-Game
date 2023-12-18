@@ -57,7 +57,6 @@ imgui_entry(World& world) {
 
     // send color texture to gpu
 
-    // No idea why this is necessary, but it is
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -80,7 +79,6 @@ imgui_entry(World& world) {
     // Our state
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    // ImVec2 button_size = ImVec2(100, 100);
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -115,8 +113,6 @@ imgui_entry(World& world) {
 
         // "render" scene to the screen
         main_scene.copy_to_window(window_width, window_height);
-
-        // FrameBufferHandler::instance().bind_fbo(0);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -202,11 +198,6 @@ imgui_entry(World& world) {
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        /*glClearColor(
-            clear_color.x * clear_color.w, clear_color.y * clear_color.w,
-            clear_color.z * clear_color.w, clear_color.w
-        );*/
-        // glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
