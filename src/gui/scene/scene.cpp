@@ -41,13 +41,6 @@ Scene::update(screen_size_t width, screen_size_t height) {
             width, height, frame_buffer_multisample_.get_depth_buffer_name()
         );
     }
-
-    quad_renderer_multisample_.render(
-        width, height,
-        frame_buffer_multisample_.get_num_samples(),
-        frame_buffer_multisample_.get_texture_name(),
-        frame_buffer_multisample_.get_frame_buffer_single_id()
-    );
 }
 
 } // namespace gui

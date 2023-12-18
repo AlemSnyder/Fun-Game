@@ -175,7 +175,7 @@ imgui_entry(World& world) {
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 ImGui::SetWindowFocus();
             }
-            ImGui::Text("pointer MS = %i", main_scene.get_scene());
+            ImGui::Text("pointer MS = %i", main_scene.get_frame_buffer_id());
             ImGui::Text(
                 "size = %d x %d", static_cast<int>(window_width),
                 static_cast<int>(window_height)

@@ -76,16 +76,6 @@ class Scene {
         quad_renderer_multisample_() {}
 
     /**
-     * @brief Get scene frame buffer multisample id
-     *
-     * @return GLuint frame buffer multisample id
-     */
-    inline GLuint
-    get_scene() {
-        return frame_buffer_multisample_.get_single_sample_texture();
-    }
-
-    /**
      * @brief Get scene shadow mat depth texture id
      *
      * @return GLuint shadow mat depth texture id
