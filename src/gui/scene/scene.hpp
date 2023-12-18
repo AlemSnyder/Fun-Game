@@ -178,6 +178,15 @@ class Scene {
     set_shadow_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
         shadow_map_.set_depth_projection_matrix(depth_projection_matrix);
     }
+
+    inline void
+    copy_to_window(screen_size_t width, screen_size_t height) {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, get_frame_buffer_id());
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(
+            0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST
+        );
+    }
 };
 
 } // namespace gui

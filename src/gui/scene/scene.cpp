@@ -43,7 +43,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     }
 
     quad_renderer_multisample_.render(
-        frame_buffer_multisample_.get_width(), frame_buffer_multisample_.get_height(),
+        width, height,
         frame_buffer_multisample_.get_num_samples(),
         frame_buffer_multisample_.get_texture_name(),
         frame_buffer_multisample_.get_frame_buffer_single_id()
