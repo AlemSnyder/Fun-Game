@@ -119,6 +119,8 @@ imgui_entry(World& world) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::ShowDemoWindow();
+
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
         {

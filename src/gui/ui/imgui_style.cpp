@@ -1,5 +1,7 @@
 #include "imgui_style.hpp"
 
+#include "../../util/files.hpp"
+
 #include <imgui/imgui.h>
 
 namespace gui {
@@ -9,19 +11,21 @@ set_imgui_style() {
     // ImGui::StyleColorsDark();
     // ImGui::StyleColorsLight();
 
+    float global_scale = 1.2;
+
     ImGuiStyle* style = &ImGui::GetStyle();
 
-    style->WindowPadding = ImVec2(15, 15);
-    style->WindowRounding = 5.0f;
-    style->FramePadding = ImVec2(5, 5);
-    style->FrameRounding = 4.0f;
-    style->ItemSpacing = ImVec2(12, 8);
-    style->ItemInnerSpacing = ImVec2(8, 6);
-    style->IndentSpacing = 25.0f;
-    style->ScrollbarSize = 15.0f;
-    style->ScrollbarRounding = 9.0f;
-    style->GrabMinSize = 5.0f;
-    style->GrabRounding = 3.0f;
+    style->WindowPadding = ImVec2(15 * global_scale, 15 * global_scale);
+    style->WindowRounding = 5.0f * global_scale;
+    style->FramePadding = ImVec2(5 * global_scale, 5 * global_scale);
+    style->FrameRounding = 4.0f * global_scale;
+    style->ItemSpacing = ImVec2(12 * global_scale, 8 * global_scale);
+    style->ItemInnerSpacing = ImVec2(8 * global_scale, 6 * global_scale);
+    style->IndentSpacing = 25.0f * global_scale;
+    style->ScrollbarSize = 15.0f * global_scale;
+    style->ScrollbarRounding = 9.0f * global_scale;
+    style->GrabMinSize = 5.0f * global_scale;
+    style->GrabRounding = 3.0f * global_scale;
 
     style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
     style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
@@ -34,7 +38,7 @@ set_imgui_style() {
     style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
     style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
     style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-    style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+    style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.07f, 0.07f, 0.09f, 1.00);
     style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
     style->Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
     style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
@@ -69,6 +73,12 @@ set_imgui_style() {
     // 0.73f);
 
     // Load Fonts
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    std::filesystem::path mono_font =
+        files::get_root_path() / "vendor" / "fonts" / "UbuntuMono-Regular.ttf";
+
     // - If no fonts are loaded, dear imgui will use the default font. You can also load
     // multiple fonts and use ImGui::PushFont()/PopFont() to select them.
     // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to
@@ -87,7 +97,7 @@ set_imgui_style() {
     // - Our Emscripten build process allows embedding fonts to be accessible at runtime
     // from the "fonts/" folder. See Makefile.emscripten for details.
     // io.Fonts->AddFontDefault();
-    // io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+    io.Fonts->AddFontFromFileTTF(mono_font.c_str(), 24.0f * global_scale);
     // io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
     // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
     // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
