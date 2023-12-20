@@ -86,7 +86,9 @@ class Shader {
  public:
     inline Shader(const std::vector<File> files, GLuint shader_type) :
         files_(files), shader_ID_(0), shader_type_(shader_type),
-        status_(ShaderStatus::EMPTY) {}
+        status_(ShaderStatus::EMPTY) {
+        reload();
+    }
 
     void reload();
 
@@ -131,7 +133,9 @@ class Program {
  public:
     inline Program(Shader& vertex_shader, Shader& fragment_shader) :
         program_ID_(0), vertex_shader_(vertex_shader),
-        fragment_shader_(fragment_shader), status_(ProgramStatus::EMPTY){};
+        fragment_shader_(fragment_shader), status_(ProgramStatus::EMPTY) {
+        reload();
+    }
 
     void reload();
 
