@@ -21,9 +21,9 @@
  */
 #pragma once
 
-#include "../../shader.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "gui_render_types.hpp"
+#include "../../opengl_program.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -46,9 +46,9 @@ namespace render {
  */
 class SkyRenderer :
     public render_to::FrameBufferMultisample,
-    public render_to::FrameBuffer {
+    public render_to::FrameBuffer,
+    public OpenGLProgramExecuter {
  private:
-    GLuint programID_;                  // ID of Program
     GLuint matrix_view_projection_ID_;  // ID of world to camera space transform matrix
     GLuint pixel_matrix_ID_;            // ID of view to pixel space matrix
     data_structures::SkyData sky_data_; // star data
@@ -58,9 +58,11 @@ class SkyRenderer :
      * @brief Construct a new Main Renderer object
      *
      */
-    explicit SkyRenderer(ShaderHandler shader_handler = ShaderHandler());
+    SkyRenderer(shader::Program& shader_program);
 
     ~SkyRenderer();
+
+    virtual void reload_program() override;
 
     /**
      * @brief renders the given meshes

@@ -26,11 +26,6 @@
 #include "gui_render_types.hpp"
 #include "quad_renderer.hpp"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <memory>
 #include <vector>
 
@@ -56,7 +51,9 @@ class QuadRendererMultisample : public QuadRenderer {
      * @brief Construct a new Main Renderer object
      *
      */
-    explicit QuadRendererMultisample(ShaderHandler shader_handler = ShaderHandler());
+    QuadRendererMultisample(shader::Program& shader_program);
+
+    void reload_program() override;
 
     /**
      * @brief renders the given meshes

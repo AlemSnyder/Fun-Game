@@ -55,7 +55,7 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
      * @brief Construct a new Main Renderer object
      *
      */
-    explicit InstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
+    explicit InstancedIMeshRenderer(GLuint render_program, GLuint shadow_program);
 
     virtual ~InstancedIMeshRenderer() {}
 
@@ -87,19 +87,10 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
 };
 
 template <data_structures::InstancedIMeshGPUDataType T>
-InstancedIMeshRenderer<T>::InstancedIMeshRenderer(ShaderHandler shader_handler) {
-    // TODO should pass these paths
-    // non-indexed program
-    this->programID_render_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
-        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
-    );
-    // indexed program
-    this->programID_shadow_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
-        files::get_resources_path() / "shaders" / "DepthRTT.frag"
-    );
-}
+InstancedIMeshRenderer<T>::InstancedIMeshRenderer(
+    GLuint render_program, GLuint shadow_program
+) :
+    NonInstancedIMeshRenderer<T>(render_program, shadow_program) {}
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void

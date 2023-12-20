@@ -22,16 +22,12 @@
 #pragma once
 
 #include "../../../types.hpp"
+#include "../../opengl_program.hpp"
 #include "../../shader.hpp"
 #include "gui_render_types.hpp"
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
-#include <memory>
-#include <vector>
 
 namespace gui {
 
@@ -45,9 +41,8 @@ namespace render {
  * shaders.
  *
  */
-class QuadRenderer {
+class QuadRenderer : public OpenGLProgramExecuter {
  protected:
-    GLuint program_id_; // ID of non-indexed mesh Program
     GLuint quad_vertexbuffer_;
     GLuint texID;
 
@@ -57,7 +52,7 @@ class QuadRenderer {
      *
      * @param ShaderHandler
      */
-    QuadRenderer(ShaderHandler shader_handler = ShaderHandler());
+    QuadRenderer(shader::Program& shader_program);
 
     virtual ~QuadRenderer();
 
@@ -87,6 +82,11 @@ class QuadRenderer {
         screen_size_t width, screen_size_t height, GLuint window_render_texture,
         GLuint frame_buffer
     ) const;
+
+    inline void
+    reload_program() override {
+        texID = glGetUniformLocation(get_program_ID(), "texture_id");
+    }
 
     /**
      * @brief Helper function to call program.

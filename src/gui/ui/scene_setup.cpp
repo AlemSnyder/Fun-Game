@@ -8,7 +8,7 @@ namespace gui {
 
 void
 setup(Scene& scene, World& world) {
-    ShaderHandler shader_handler;
+    shader::ShaderHandler shader_handler;
 
     // assign map from all color ids to each color
     // to package as a texture
@@ -19,10 +19,18 @@ setup(Scene& scene, World& world) {
 
     auto terrain_mesh = world.get_chunks_mesh();
 
+    shader::Program render_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
+        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
+    );
+    shader::Program shadow_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
+        files::get_resources_path() / "shaders" / "DepthRTT.frag"
+    );
+
     // should check that this does what I want it to.
     auto chunk_renderer = std::make_shared<
-        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(shader_handler
-    );
+        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(render_program.get_program_ID(), shadow_program.get_program_ID());
 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_renderer->add_mesh(chunk_mesh);
@@ -44,7 +52,7 @@ setup(Scene& scene, World& world) {
     scene.set_shadow_light_direction(light_direction);
     scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
-    scene.frame_buffer_multisample_attach(chunk_renderer);
+    scene.add_mid_ground_renderer(chunk_renderer);
     scene.shadow_attach(chunk_renderer);
 }
 

@@ -4,8 +4,6 @@
 #include "../../shader.hpp"
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 
 #include <memory>
 
@@ -13,13 +11,9 @@ namespace gui {
 
 namespace render {
 
-QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) {
-    // program
-    program_id_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
-        files::get_resources_path() / "shaders" / "SimpleTextureMS.frag"
-    );
-    texID = glGetUniformLocation(program_id_, "texture_id");
+QuadRendererMultisample::QuadRendererMultisample(shader::Program& program) :
+    QuadRenderer(program) {
+    reload_program();
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const std::vector<GLfloat> quad_vertices = {
@@ -33,9 +27,15 @@ QuadRendererMultisample::QuadRendererMultisample(ShaderHandler shader_handler) {
         GL_ARRAY_BUFFER, quad_vertices.size() * sizeof(quad_vertices[0]),
         quad_vertices.data(), GL_STATIC_DRAW
     );
-    width_id_ = glGetUniformLocation(program_id_, "width");
-    height_id_ = glGetUniformLocation(program_id_, "height");
-    tex_samples_id_ = glGetUniformLocation(program_id_, "tex_samples");
+}
+
+void
+QuadRendererMultisample::reload_program() {
+    GLuint program_id = get_program_ID();
+    texID = glGetUniformLocation(program_id, "texture_id");
+    width_id_ = glGetUniformLocation(program_id, "width");
+    height_id_ = glGetUniformLocation(program_id, "height");
+    tex_samples_id_ = glGetUniformLocation(program_id, "tex_samples");
 }
 
 } // namespace render

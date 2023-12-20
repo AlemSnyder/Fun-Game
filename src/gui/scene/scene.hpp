@@ -20,6 +20,7 @@
  * @ingroup GUI
  *
  */
+#pragma once
 
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
@@ -31,7 +32,6 @@
 
 #include <GLFW/glfw3.h>
 
-#pragma once
 
 #define SAMPLES 4
 
@@ -46,18 +46,17 @@ class Scene {
     data_structures::ShadowMap shadow_map_;
 
     // background
-    render::SkyRenderer sky_renderer_;
+//    render::SkyRenderer sky_renderer_;
+    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>>
+        background_frame_buffer_;
 
     // "mid" ground
-    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_frame_buffer_;
-    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>>
-        mid_ground_frame_buffer_multisample_;
+    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>> mid_ground_frame_buffer_;
     std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
 
     // foreground, maybe
 
     // other
-    render::QuadRendererMultisample quad_renderer_multisample_;
 
  public:
     /**
@@ -72,8 +71,7 @@ class Scene {
         uint32_t shadow_map_width_height
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
-        shadow_map_(shadow_map_width_height, shadow_map_width_height), sky_renderer_(),
-        quad_renderer_multisample_() {}
+        shadow_map_(shadow_map_width_height, shadow_map_width_height) {}
 
     /**
      * @brief Get scene shadow mat depth texture id
@@ -133,20 +131,8 @@ class Scene {
      * @param render object that can render to a framebuffer.
      */
     inline void
-    frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render) {
+    add_mid_ground_renderer(const std::shared_ptr<render_to::FrameBufferMultisample>& render) {
         mid_ground_frame_buffer_.push_back(render);
-    }
-
-    /**
-     * @brief Attach multisample renderer.
-     *
-     * @param render object that can render to a multisample framebuffer.
-     */
-    inline void
-    frame_buffer_multisample_attach(
-        const std::shared_ptr<render_to::FrameBufferMultisample>& render
-    ) {
-        mid_ground_frame_buffer_multisample_.push_back(render);
     }
 
     /**

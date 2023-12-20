@@ -23,6 +23,7 @@
 
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
+#include "../../opengl_program.hpp"
 #include "../../scene/controls.hpp"
 #include "../../shader.hpp"
 #include "../graphics_data/non_instanced_i_mesh.hpp"
@@ -78,7 +79,7 @@ class NonInstancedIMeshRenderer :
      *
      * @param ShaderHandler
      */
-    explicit NonInstancedIMeshRenderer(ShaderHandler shader_handler = ShaderHandler());
+    NonInstancedIMeshRenderer(GLuint program_id_render, GLuint program_id_shadow);
 
     virtual ~NonInstancedIMeshRenderer() {}
 
@@ -153,17 +154,11 @@ class NonInstancedIMeshRenderer :
 };
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(ShaderHandler shader_handler) {
-    // non-indexed program
-    program_id_render_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "ShadowMapping.vert",
-        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
-    );
-    // indexed program
-    program_id_shadow_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "DepthRTT.vert",
-        files::get_resources_path() / "shaders" / "DepthRTT.frag"
-    );
+NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
+    GLuint program_id_render, GLuint program_id_shadow
+) :
+    program_id_render_(program_id_render),
+    program_id_shadow_(program_id_shadow) {
     // ------ indexed program ------
     matrix_id_render_ = glGetUniformLocation(program_id_render_, "MVP");
     view_matrix_id_render_ = glGetUniformLocation(program_id_render_, "V");

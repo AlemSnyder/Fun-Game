@@ -1,6 +1,7 @@
 #include "shader.hpp"
 
 #include "../logging.hpp"
+#include "render/graphics_shaders/gui_render_types.hpp"
 
 #include <GL/glew.h>
 
@@ -10,6 +11,28 @@
 #include <vector>
 
 namespace gui {
+
+namespace shader {
+
+std::optional<std::string>
+File::get_file_content() {
+    std::ifstream shader_stream(file_, std::ios::in);
+    if (shader_stream.is_open()) {
+        std::stringstream sstr;
+        sstr << shader_stream.rdbuf();
+        std::string shader_code = sstr.str();
+        shader_stream.close();
+        status_ = FileStatus::OK;
+        return shader_code;
+    } else {
+        LOG_ERROR(
+            logging::opengl_logger, "Cannot open {}. Is this the right directory?",
+            file_.string()
+        );
+        status_ = FileStatus::FILE_NOT_FOUND;
+        return {};
+    }
+}
 
 std::string
 get_shader_string(GLuint gl_shader_type) {
@@ -27,135 +50,86 @@ get_shader_string(GLuint gl_shader_type) {
 }
 
 void
-ShaderHandler::clear() {
-    for (auto it = shaders.begin(); it != shaders.end(); it++) {
-        GLuint shader_id = it->second;
-        glDeleteShader(shader_id);
+Shader::reload() {
+    if (shader_ID_ != 0) {
+        glDeleteShader(shader_ID_);
     }
-    shaders.clear();
-}
 
-// public
-GLuint
-ShaderHandler::get_shader(
-    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
-) {
-    GLuint shader_id;
+    std::vector<const char*> source;
+    std::string shader_type_string = get_shader_string(shader_type_);
 
-    auto it = shaders.find(file_relative_path);
-    if (it == shaders.end()) {
-        shader_id = load_shader(file_relative_path, gl_shader_type);
-        if (shader_id != 0) {
-            shaders.insert_or_assign(file_relative_path, shader_id);
+    // Create the shader
+    shader_ID_ = glCreateShader(shader_type_);
+
+    for (File file : files_) {
+        std::optional<std::string> file_read = file.get_file_content();
+
+        if (file.get_status() != FileStatus::OK) {
+            status_ = ShaderStatus::INVALID_FILE;
+            return;
         }
-    } else {
-        shader_id = it->second;
-    }
 
-    return shader_id;
-}
-
-// public
-GLuint
-ShaderHandler::reload_shader(
-    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
-) {
-    GLuint shader_id;
-
-    auto it = shaders.find(file_relative_path);
-    if (it != shaders.end()) {
-        shader_id = it->second;
-    } else {
-        shader_id = load_shader(file_relative_path, gl_shader_type);
-        if (shader_id != 0) {
-            shaders.insert_or_assign(file_relative_path, shader_id);
+        if (!file_read) {
+            status_ = ShaderStatus::INVALID_FILE;
+            return;
         }
-        return shader_id;
-    }
 
-    GLuint shader_id_new = load_shader(file_relative_path, gl_shader_type);
-    // I could log an error, but load_shader should also do this.
-    if (shader_id_new != 0) {
-        shaders.insert_or_assign(file_relative_path, shader_id_new);
-        glDeleteShader(shader_id);
-    }
-
-    return shader_id;
-}
-
-// private
-GLuint
-ShaderHandler::load_shader(
-    const std::filesystem::path& file_relative_path, GLuint gl_shader_type
-) {
-    std::filesystem::path file_absolute_path =
-        std::filesystem::absolute(file_relative_path);
-
-    std::string shader_type_string = get_shader_string(gl_shader_type);
-
-    // Create the shaders
-    GLuint shader_id = glCreateShader(gl_shader_type);
-
-    // Read the Vertex Shader code from the file
-    LOG_BACKTRACE(
-        logging::opengl_logger, "Loading {} shader from {}", shader_type_string,
-        file_absolute_path.string()
-    );
-
-    std::string shader_code;
-    std::ifstream shader_stream(file_absolute_path, std::ios::in);
-    if (shader_stream.is_open()) {
-        std::stringstream sstr;
-        sstr << shader_stream.rdbuf();
-        shader_code = sstr.str();
-        shader_stream.close();
-    } else {
-        LOG_ERROR(
-            logging::opengl_logger, "Cannot open {}. Is this the right directory?",
-            file_absolute_path.string()
-        );
-        return 0;
+        source.push_back(file_read.value().c_str());
     }
 
     GLint Result = GL_FALSE;
     int info_log_length;
 
     // Compile Vertex Shader
-    LOG_BACKTRACE(
-        logging::opengl_logger, "Compiling {} shader {}", shader_type_string,
-        file_absolute_path.string()
-    );
-
-    char const* source_pointer = shader_code.c_str();
-    glShaderSource(shader_id, 1, &source_pointer, nullptr);
-    glCompileShader(shader_id);
+    LOG_BACKTRACE(logging::opengl_logger, "Compiling {} shader.", shader_type_string);
+    glShaderSource(shader_ID_, 1, source.data(), nullptr);
+    glCompileShader(shader_ID_);
 
     // Check Vertex Shader
-    glGetShaderiv(shader_id, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_log_length);
+    glGetShaderiv(shader_ID_, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(shader_ID_, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
         std::string shader_error_message(info_log_length + 1, '\0');
         glGetShaderInfoLog(
-            shader_id, info_log_length, nullptr, shader_error_message.data()
+            shader_ID_, info_log_length, nullptr, shader_error_message.data()
         );
 
         LOG_ERROR(
             logging::opengl_logger, "{} shader error: {}", shader_type_string,
             shader_error_message
         );
+        status_ = ShaderStatus::COMPILATION_ERROR;
+        return;
     }
-    return shader_id;
+
+    status_ = ShaderStatus::OK;
 }
 
-// TODO(alem): what do we do on error
-GLuint
-ShaderHandler::load_program(
-    const std::filesystem::path& vertex_file, const std::filesystem::path& fragment_file
-) {
-    logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
+void
+Program::reload() {
+    if (vertex_shader_.get_status() != ShaderStatus::OK) {
+        // Not ok reload
+        vertex_shader_.reload();
+        // second fail
+        if (vertex_shader_.get_status() != ShaderStatus::OK) {
+            LOG_ERROR(logging::opengl_logger, "Some error occurred.");
+            status_ = ProgramStatus::INVALID_SHADER;
+            return;
+        }
+    }
+    if (fragment_shader_.get_status() != ShaderStatus::OK) {
+        // Not ok reload
+        fragment_shader_.reload();
+        // second fail
+        if (fragment_shader_.get_status() != ShaderStatus::OK) {
+            LOG_ERROR(logging::opengl_logger, "Some error occurred.");
+            status_ = ProgramStatus::INVALID_SHADER;
+            return;
+        }
+    }
 
-    GLint vertex_shader_id = get_shader(vertex_file, GL_VERTEX_SHADER);
-    GLint fragment_shader_id = get_shader(fragment_file, GL_FRAGMENT_SHADER);
+    GLint vertex_shader_id = vertex_shader_.get_shader_ID();
+    GLint fragment_shader_id = fragment_shader_.get_shader_ID();
 
     GLint Result = GL_FALSE;
     int info_log_length;
@@ -163,39 +137,101 @@ ShaderHandler::load_program(
     // Link the program
     // LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
 
-    GLuint program_id = glCreateProgram();
-    glAttachShader(program_id, vertex_shader_id);
-    glAttachShader(program_id, fragment_shader_id);
-    glLinkProgram(program_id);
+    program_ID_ = glCreateProgram();
+    glAttachShader(program_ID_, vertex_shader_id);
+    glAttachShader(program_ID_, fragment_shader_id);
+    glLinkProgram(program_ID_);
 
     // Check the program
-    glGetProgramiv(program_id, GL_LINK_STATUS, &Result);
-    glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &info_log_length);
+    glGetProgramiv(program_ID_, GL_LINK_STATUS, &Result);
+    glGetProgramiv(program_ID_, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
         std::string program_error_message(info_log_length + 1, '\0');
         glGetProgramInfoLog(
-            program_id, info_log_length, nullptr, program_error_message.data()
+            program_ID_, info_log_length, nullptr, program_error_message.data()
         );
 
         LOG_ERROR(
             logging::opengl_logger, "Shader program linking error: {}",
             program_error_message
         );
+        status_ = ProgramStatus::LINKING_FAILED;
+        goto detach_shader;
     }
-
-    glDetachShader(program_id, vertex_shader_id);
-    glDetachShader(program_id, fragment_shader_id);
 
     LOG_INFO(
         logging::opengl_logger, "Shader compiled successfully with program ID {}",
-        program_id
+        program_ID_
     );
 
-    LOG_BACKTRACE(
-        logging::opengl_logger, "New Backtrace, because quill won't let me clear it."
-    );
+detach_shader:
 
-    return program_id;
+    glDetachShader(program_ID_, vertex_shader_id);
+    glDetachShader(program_ID_, fragment_shader_id);
 }
+
+void
+ShaderHandler::clear() {
+    for (auto it = shaders_.begin(); it != shaders_.end(); it++) {
+        GLuint shader_id = it->second.get_shader_ID();
+        glDeleteShader(shader_id);
+    }
+    shaders_.clear();
+}
+
+// public
+Shader&
+ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader_type) {
+    auto it = shaders_.find(source_files);
+    if (it == shaders_.end()) {
+        Shader shader = Shader(source_files, gl_shader_type);
+        auto inserted_iterator = shaders_.emplace(source_files, std::move(shader));
+        // auto shader = ;
+        return inserted_iterator.first->second;
+    } else {
+        return it->second;
+    }
+}
+
+// TODO(alem): what do we do on error
+const Program&
+ShaderHandler::load_program(
+    const std::vector<std::filesystem::path> vertex_file_paths,
+    const std::vector<std::filesystem::path> fragment_file_paths
+) {
+    logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
+
+    std::vector<File> vertex_source_files_(
+        vertex_file_paths.begin(), vertex_file_paths.end()
+    );
+    std::vector<File> fragment_source_files_(
+        fragment_file_paths.begin(), fragment_file_paths.end()
+    );
+
+    Shader& vertex_shader = get_shader(vertex_source_files_, GL_VERTEX_SHADER);
+    Shader& fragment_shader = get_shader(fragment_source_files_, GL_FRAGMENT_SHADER);
+
+    // test if we already have the program
+    Program test_program(vertex_shader, fragment_shader);
+    auto it = programs_.find(test_program);
+
+    // already have the program
+    if (it != programs_.end()) {
+        Program& program = it->second;
+        // Program is not ok
+        if (program.get_status() != ProgramStatus::OK) {
+            program.reload();
+            return program;
+        }
+        // program is ok
+        return program;
+    }
+
+    // don't have the program
+    auto inserted_iterator = programs_.emplace(test_program, test_program);
+    return inserted_iterator.first->second;
+}
+
+} // namespace shader
 
 } // namespace gui

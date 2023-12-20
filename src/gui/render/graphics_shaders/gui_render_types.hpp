@@ -21,11 +21,11 @@
  *
  */
 
+#pragma once
+
 #include "../../../types.hpp"
 
-#include <GLFW/glfw3.h>
-
-#pragma once
+#include <GL/glew.h>
 
 namespace gui {
 

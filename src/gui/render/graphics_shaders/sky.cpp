@@ -2,6 +2,7 @@
 
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
+#include "../../opengl_program.hpp"
 #include "../../scene/controls.hpp"
 #include "../../shader.hpp"
 #include "../data_structures/sky_data.hpp"
@@ -16,19 +17,20 @@ namespace gui {
 
 namespace render {
 
-SkyRenderer::SkyRenderer(ShaderHandler shader_handler) :
+SkyRenderer::SkyRenderer(shader::Program& shader_program) :
+    OpenGLProgramExecuter(shader_program),
     sky_data_(files::get_data_path() / "stars.json") {
-    programID_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Sky.vert",
-        files::get_resources_path() / "shaders" / "Sky.frag"
-    );
-    // ---- set uniforms ----
-    matrix_view_projection_ID_ = glGetUniformLocation(programID_, "MVP");
-    pixel_matrix_ID_ = glGetUniformLocation(programID_, "pixel_projection");
+    reload_program();
 }
 
 SkyRenderer::~SkyRenderer() {
-    glDeleteProgram(programID_);
+    glDeleteProgram(get_program_ID());
+}
+
+void
+SkyRenderer::reload_program() {
+    matrix_view_projection_ID_ = glGetUniformLocation(get_program_ID(), "MVP");
+    pixel_matrix_ID_ = glGetUniformLocation(get_program_ID(), "pixel_projection");
 }
 
 void
@@ -41,7 +43,7 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     glViewport(0, 0, width, height);
 
     // Use our shader
-    glUseProgram(programID_);
+    glUseProgram(get_program_ID());
 
     // Compute the MVP matrix from keyboard and mouse input
     // clang-format off
@@ -115,9 +117,6 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
-
-    // Use our shader
-    glUseProgram(programID_);
 }
 
 } // namespace render

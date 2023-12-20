@@ -1,27 +1,15 @@
 #include "quad_renderer.hpp"
 
-#include "../../../util/files.hpp"
 #include "../../handler.hpp"
-#include "../../shader.hpp"
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-
-#include <memory>
-#include <vector>
 
 namespace gui {
 
 namespace render {
 
-QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
+QuadRenderer::QuadRenderer(shader::Program& shader_program) :
+    OpenGLProgramExecuter(shader_program) {
     // program
-    program_id_ = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
-        files::get_resources_path() / "shaders" / "SimpleTexture.frag"
-    );
-    texID = glGetUniformLocation(program_id_, "texture_id");
+    reload_program();
 
     // The quad's FBO. Used only for visualizing the shadow map.
     static const std::vector<GLfloat> quad_vertices = {
@@ -39,7 +27,7 @@ QuadRenderer::QuadRenderer(ShaderHandler shader_handler) {
 
 QuadRenderer::~QuadRenderer() {
     glDeleteBuffers(1, &quad_vertexbuffer_);
-    glDeleteProgram(program_id_);
+    
 }
 
 void
@@ -58,7 +46,7 @@ QuadRenderer::setup(
 
     glClear(GL_DEPTH_BUFFER_BIT);
     // Use our shader
-    glUseProgram(program_id_);
+    glUseProgram(get_program_ID());
 
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);

@@ -45,9 +45,14 @@ opengl_entry(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    render::QuadRenderer QR;
+    shader::ShaderHandler shader_handler = shader::ShaderHandler();
 
-    ShaderHandler shader_handler = ShaderHandler();
+    shader::Program quad_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "Passthrough.vert",
+        files::get_resources_path() / "shaders" / "SimpleTexture.frag"
+    );
+
+    render::QuadRenderer QR(quad_program);
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
