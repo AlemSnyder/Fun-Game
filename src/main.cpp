@@ -164,7 +164,9 @@ image_test(const argh::parser& cmdl) {
 
         image::write_result_t result = image::write_image(image, png_path);
 
-        return image::image_result_logger(result, png_path);
+        image::log_result(result, png_path);
+
+        return result;
 
     } else {
         std::string path_in = cmdl(2).str();
@@ -180,8 +182,9 @@ image_test(const argh::parser& cmdl) {
 
         image::write_result_t result = image::write_image(map, png_path);
 
-        return image::image_result_logger(result, png_path);
+        image::log_result(result, png_path);
 
+        return result;
     }
 
     return 0;

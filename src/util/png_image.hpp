@@ -146,7 +146,7 @@ fopen_failed:
     return status;
 }
 
-int image_result_logger(write_result_t result, const std::filesystem::path& path);
+void log_result(write_result_t result, const std::filesystem::path& path);
 
 // #if DEBUG()
 
