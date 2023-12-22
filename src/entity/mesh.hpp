@@ -202,12 +202,12 @@ analyze_voxel_interface(
             );
             uint8_t ambient_occlusion = solid_1 + solid_2;
 
-            //clang-format off
+            // clang-format off
             VoxelOffset vertex_position = position
                                         + position_1 * minor_direction_1
                                         + position_2 * minor_direction_2
                                         + major_direction;
-            //clang-format on
+            // clang-format on
             out.emplace_back(
                 vertex_position, glm::i8vec3(normal), color, ambient_occlusion
             );

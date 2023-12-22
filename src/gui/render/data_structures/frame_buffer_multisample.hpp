@@ -44,8 +44,6 @@ class FrameBufferMultisample {
     GLuint frame_buffer;
     GLuint render_texture;
     GLuint depth_buffer;
-    GLuint frame_buffer_single;
-    GLuint render_texture_single;
     screen_size_t width_;
     screen_size_t height_;
     uint32_t samples_;
@@ -72,8 +70,6 @@ class FrameBufferMultisample {
         glDeleteRenderbuffers(1, &depth_buffer);
         glDeleteTextures(1, &render_texture);
         glDeleteFramebuffers(1, &frame_buffer);
-        glDeleteTextures(1, &render_texture_single);
-        glDeleteFramebuffers(1, &frame_buffer_single);
     }
 
     /**
@@ -134,26 +130,6 @@ class FrameBufferMultisample {
     [[nodiscard]] inline GLuint
     get_depth_buffer_name() const {
         return depth_buffer;
-    }
-
-    /**
-     * @brief Get id of single-sample image texture
-     *
-     * @return GLuint render texture single id
-     */
-    [[nodiscard]] inline GLuint
-    get_single_sample_texture() {
-        return render_texture_single;
-    }
-
-    /**
-     * @brief Get id of single-sample frame buffer
-     *
-     * @return GLuint frame buffer single id
-     */
-    [[nodiscard]] inline GLuint
-    get_frame_buffer_single_id() {
-        return frame_buffer_single;
     }
 };
 

@@ -57,7 +57,6 @@ imgui_entry(World& world) {
 
     // send color texture to gpu
 
-    // No idea why this is necessary, but it is
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -83,10 +82,14 @@ imgui_entry(World& world) {
     bool manual_light_direction = false;
     float input_light_direction[3];
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    // ImVec2 button_size = ImVec2(100, 100);
 
-    Scene main_scene(window_width, window_height, shadow_map_size);
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+    Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, world);
+
+    glm::vec3 position;
 
     //! Main loop
 
@@ -102,8 +105,9 @@ imgui_entry(World& world) {
         // your application based on those two flags.
         glfwPollEvents();
 
-        // TODO
-        // https://stackoverflow.com/questions/23362497/how-can-i-resize-existing-texture-attachments-at-my-framebuffer
+        if (!io.WantCaptureKeyboard) {
+            controls::computeMatricesFromInputs(window);
+        }
 
         glfwGetWindowSize(window, &window_width, &window_height);
 
@@ -119,43 +123,15 @@ imgui_entry(World& world) {
 
         main_scene.update(window_width, window_height);
 
-        glm::vec3 position = controls::get_position_vector();
+        position = controls::get_position_vector();
 
-        FrameBufferHandler::instance().bind_fbo(0);
+        // "render" scene to the screen
+        main_scene.copy_to_window(window_width, window_height);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        // the scene frame
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        // the scene frame has no rounding/padding on border
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-        {
-            ImGui::Begin(
-                "OpenGL Texture Image", 0,
-                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
-                    | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
-                    | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
-                    | ImGuiWindowFlags_NoScrollWithMouse
-                    | ImGuiWindowFlags_NoBringToFrontOnFocus
-            );
-            ImGui::Image(
-                reinterpret_cast<ImTextureID>(main_scene.get_scene()),
-                ImVec2(window_width, window_height), ImVec2(0, 1), ImVec2(1, 0)
-            );
-
-            if (ImGui::IsWindowFocused()) {
-                controls::computeMatricesFromInputs(window);
-            }
-
-            ImGui::End();
-        }
-        // remove changes to style
-        ImGui::PopStyleVar(3);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
@@ -239,7 +215,7 @@ imgui_entry(World& world) {
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 ImGui::SetWindowFocus();
             }
-            ImGui::Text("pointer MS = %i", main_scene.get_scene());
+            ImGui::Text("pointer MS = %i", main_scene.get_frame_buffer_id());
             ImGui::Text(
                 "size = %d x %d", static_cast<int>(window_width),
                 static_cast<int>(window_height)
@@ -266,11 +242,6 @@ imgui_entry(World& world) {
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(
-            clear_color.x * clear_color.w, clear_color.y * clear_color.w,
-            clear_color.z * clear_color.w, clear_color.w
-        );
-        glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
