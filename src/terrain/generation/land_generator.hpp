@@ -28,8 +28,9 @@
 
 #include <json/json.h>
 
-#include <math.h>
+#include <glm/gtc/matrix_integer.hpp>
 
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <map>

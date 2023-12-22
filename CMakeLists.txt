@@ -40,6 +40,9 @@ add_subdirectory("vendor/sol2")
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
 cmake_policy(SET CMP0072 NEW)
 
+# Link against libdl for dlclose (used in latest IMGUI)
+target_link_libraries(FunGame PRIVATE ${CMAKE_DL_LIBS})
+
 # Find GL packages
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
@@ -52,7 +55,7 @@ target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
 target_link_libraries(FunGame PRIVATE PNG::PNG)
-target_link_libraries(FunGame PUBLIC OpenMP::OpenMP_CXX)
+target_link_libraries(FunGame PRIVATE OpenMP::OpenMP_CXX)
 
 if(WIN32)
     target_link_libraries(FunGame PRIVATE glm)
