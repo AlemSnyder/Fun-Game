@@ -7,6 +7,8 @@
 #include <filesystem>
 #include <new>
 
+#include <cstring>
+
 namespace image {
 
 enum write_result_t {
@@ -84,9 +86,7 @@ write_image(T image, const std::filesystem::path& path) {
 
     // Set metadata about the PNG file
     png_text meta_data;
-    // @egelja what is this?
-    // I removed it and things still work. Adding it breaks things.
-    // memset(&meta_data, 0, sizeof(meta_data)); // clear struct
+    memset(&meta_data, 0, sizeof(meta_data)); // clear struct
 
     meta_data.compression = PNG_TEXT_COMPRESSION_NONE; // no compression
     meta_data.lang_key = meta_lang;
