@@ -1,7 +1,7 @@
 #include "shader.hpp"
 
-#include "../logging.hpp"
-#include "render/graphics_shaders/gui_render_types.hpp"
+#include "../../../logging.hpp"
+#include "gui_render_types.hpp"
 
 #include <GL/glew.h>
 
@@ -55,7 +55,7 @@ Shader::reload() {
         glDeleteShader(shader_ID_);
     }
 
-    std::vector<const char*> source;
+    std::vector<std::string> source_string;
     std::string shader_type_string = get_shader_string(shader_type_);
 
     // Create the shader
@@ -74,7 +74,13 @@ Shader::reload() {
             return;
         }
 
-        source.push_back(file_read.value().c_str());
+        source_string.push_back(std::move(file_read.value()));
+    }
+
+    std::vector<const char*> source_char;
+
+    for (size_t i = 0; i < source_string.size(); i++){
+        source_char.push_back(source_string[i].c_str());
     }
 
     GLint Result = GL_FALSE;
@@ -82,7 +88,7 @@ Shader::reload() {
 
     // Compile Vertex Shader
     LOG_BACKTRACE(logging::opengl_logger, "Compiling {} shader.", shader_type_string);
-    glShaderSource(shader_ID_, 1, source.data(), nullptr);
+    glShaderSource(shader_ID_, 1, source_char.data(), nullptr);
     glCompileShader(shader_ID_);
 
     // Check Vertex Shader

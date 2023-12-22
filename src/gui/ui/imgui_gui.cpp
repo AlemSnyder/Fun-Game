@@ -14,7 +14,7 @@
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
-#include "../shader.hpp"
+#include "../render/graphics_shaders/shader.hpp"
 #include "imgui_style.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"

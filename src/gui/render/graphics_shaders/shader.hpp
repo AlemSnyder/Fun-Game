@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "../types.hpp"
+#include "../../../types.hpp"
 #include "opengl_program_status.hpp"
 
 #include <GL/glew.h>

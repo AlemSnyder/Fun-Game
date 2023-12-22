@@ -22,10 +22,10 @@
 #pragma once
 
 #include "../../../types.hpp"
-#include "shader.hpp"
+#include "../../shader.hpp"
 #include "../graphics_data/instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
-#include "non_instanced_i_mesh_renderer.hpp"
+#include "non_instanced_i_mesh_shadow.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -49,49 +49,32 @@ namespace models {
 
 // template <gui::data_structures::InstancedIntLike T>
 template <data_structures::InstancedIMeshGPUDataType T>
-class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
+class NonInstancedIMeshShadow : public NonInstancedIMeshShadow<T> {
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    InstancedIMeshRenderer(shader::Program);
+    NonInstancedIMeshShadow(shader::Program);
 
-    virtual ~InstancedIMeshRenderer() {}
+    virtual ~NonInstancedIMeshShadow() {}
 
     void load_transforms_buffer(std::shared_ptr<T> mesh) const;
 
-    /**
-     * @brief Renders internal meshes to given framebuffer
-     *
-     * @param width width of frame buffer
-     * @param height height of frame buffer
-     */
-    void render_frame_buffer(
-        screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
+    void render_shadow_map(
+        screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
     ) const override;
-
-    /**
-     * @brief Renders internal meshes to given multisample framebuffer
-     *
-     * @param width width of frame buffer
-     * @param height height of frame buffer
-     */
-    void render_frame_buffer_multisample(
-        screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
-    ) const override;
-
 };
 
 template <data_structures::InstancedIMeshGPUDataType T>
-InstancedIMeshRenderer<T>::InstancedIMeshRenderer(
-    shader::Program render_program
+NonInstancedIMeshShadow<T>::NonInstancedIMeshShadow(
+    GLuint shadow_program
 ) :
-    NonInstancedIMeshRenderer<T>(render_program) {}
+    NonInstancedIMeshShadow<T>(shadow_program) {}
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIMeshRenderer<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
+NonInstancedIMeshShadow<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
     // 4nd attribute buffer : transform
     glEnableVertexAttribArray(3);
 
@@ -110,27 +93,25 @@ InstancedIMeshRenderer<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIMeshRenderer<T>::render_frame_buffer(
-    screen_size_t width, screen_size_t height, GLuint frame_buffer
+NonInstancedIMeshShadow<T>::render_shadow_map(
+    screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer_name_
 ) const {
-    // Render to the screen
-    gui::FrameBufferHandler::instance().bind_fbo(frame_buffer);
-
+    gui::FrameBufferHandler::instance().bind_fbo(frame_buffer_name_);
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, shadow_width_, shadow_height_);
 
-    NonInstancedIMeshRenderer<T>::setup_render();
+    NonInstancedIMeshRenderer<T>::setup_shadow();
 
+    // draw the indexed meshes
     for (std::shared_ptr<T> mesh : this->meshes_) {
         if (!mesh->do_render()) {
             continue;
         }
 
-        load_vertex_buffer(mesh);
-        load_color_buffers(mesh);
+        NonInstancedIMeshRenderer<T>::load_vertex_buffer(mesh);
 
-        load_transforms_buffer();
+        load_transforms_buffer(mesh);
 
         // Draw the triangles !
         glDrawElementsInstanced(
@@ -140,19 +121,10 @@ InstancedIMeshRenderer<T>::render_frame_buffer(
             (void*)0,                 // element array buffer offset
             mesh->get_num_models()
         );
+
         glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
         glDisableVertexAttribArray(3);
     }
-}
-
-template <data_structures::InstancedIMeshGPUDataType T>
-void
-InstancedIMeshRenderer<T>::render_frame_buffer_multisample(
-    screen_size_t width, screen_size_t height, GLuint frame_buffer
-) const {
-    render_frame_buffer(width, height, frame_buffer);
 }
 
 } // namespace models

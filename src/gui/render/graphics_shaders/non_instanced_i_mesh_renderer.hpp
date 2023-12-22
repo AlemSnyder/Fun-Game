@@ -23,11 +23,11 @@
 
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
-#include "../../opengl_program.hpp"
 #include "../../scene/controls.hpp"
-#include "../../shader.hpp"
 #include "../graphics_data/non_instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
+#include "opengl_program.hpp"
+#include "shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -52,10 +52,9 @@ template <data_structures::NonInstancedIMeshGPUDataType T>
 class NonInstancedIMeshRenderer :
     public render_to::FrameBufferMultisample,
     public render_to::FrameBuffer,
-    public render_to::ShadowMap {
+    public OpenGLProgramExecuter {
  protected:
-    GLuint program_id_render_; // ID of render program
-    GLuint program_id_shadow_; // ID of shadow program
+    //    GLuint program_id_render_; // ID of render program
 
     GLuint matrix_id_render_;      // uniform ID of transform matrix
     GLuint view_matrix_id_render_; // ID of view projection matrix for indexed meshes
@@ -64,7 +63,6 @@ class NonInstancedIMeshRenderer :
     GLuint color_map_id_render_;   // ID of the color map for indexed meshes
     GLuint light_direction_id_render_; // ID of the light direction uniform for indexed
 
-    GLuint depth_bias_id_shadow_; // ID of depth projection matrix for indexed meshes
     // ------ the below are added to the class ------
     GLuint depth_texture_;              // ID of the shadow depth texture
     glm::vec3 light_direction_;         // direction of sun light
@@ -79,9 +77,11 @@ class NonInstancedIMeshRenderer :
      *
      * @param ShaderHandler
      */
-    NonInstancedIMeshRenderer(GLuint program_id_render, GLuint program_id_shadow);
+    NonInstancedIMeshRenderer(shader::Program render_program);
 
     virtual ~NonInstancedIMeshRenderer() {}
+
+    virtual void reload_program() override;
 
     /**
      * @brief adds a non-indexed mesh so it will cast a shadow
@@ -133,42 +133,31 @@ class NonInstancedIMeshRenderer :
         screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
     ) const override;
 
-    /**
-     * @brief renders the given meshes to a shadow map
-     *
-     * @param screen_size_t shadow map width
-     * @param screen_size_t shadow map height
-     */
-    void render_shadow_map(
-        screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
-    ) const override;
-
  protected:
     void load_vertex_buffer(std::shared_ptr<T> mesh) const;
 
     void load_color_buffers(std::shared_ptr<T> mesh) const;
 
     void setup_render() const;
-
-    void setup_shadow() const;
 };
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
-    GLuint program_id_render, GLuint program_id_shadow
+NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(shader::Program render_program
 ) :
-    program_id_render_(program_id_render),
-    program_id_shadow_(program_id_shadow) {
-    // ------ indexed program ------
-    matrix_id_render_ = glGetUniformLocation(program_id_render_, "MVP");
-    view_matrix_id_render_ = glGetUniformLocation(program_id_render_, "V");
-    depth_bias_id_render_ = glGetUniformLocation(program_id_render_, "DepthBiasMVP");
-    shadow_map_id_render_ = glGetUniformLocation(program_id_render_, "shadowMap");
-    color_map_id_render_ = glGetUniformLocation(program_id_render_, "meshColors");
-    light_direction_id_render_ =
-        glGetUniformLocation(program_id_render_, "LightInvDirection_worldspace");
+    OpenGLProgramExecuter(render_program) {
+reload_program();
+}
 
-    depth_bias_id_shadow_ = glGetUniformLocation(program_id_shadow_, "depthMVP");
+template <data_structures::NonInstancedIMeshGPUDataType T>
+void NonInstancedIMeshRenderer<T>::reload_program(
+) {
+    // ------ indexed program ------
+    matrix_id_render_ = get_uniform("MVP");
+    view_matrix_id_render_ = get_uniform("V");
+    depth_bias_id_render_ = get_uniform("DepthBiasMVP");
+    shadow_map_id_render_ = get_uniform("shadowMap");
+    color_map_id_render_ = get_uniform("meshColors");
+    light_direction_id_render_ = get_uniform("LightInvDirection_worldspace");
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
@@ -275,7 +264,7 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
     glm::mat4 depth_bias_MVP = bias_matrix * depthMVP;
 
     // Use our shader
-    glUseProgram(program_id_render_);
+    glUseProgram(get_program_ID());
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
@@ -293,26 +282,6 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glUniform1i(shadow_map_id_render_, 1);
-}
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshRenderer<T>::setup_shadow() const {
-    // Cull back-facing triangles -> draw only front-facing triangles
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
-
-    // Clear the screen
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glUseProgram(program_id_shadow_);
-
-    // matrix to calculate the length of a light ray in model space
-    glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
-
-    // Send our transformation to the currently bound shader,
-    // in the "MVP" uniform (Model View Projection)
-    glUniformMatrix4fv(depth_bias_id_shadow_, 1, GL_FALSE, &depthMVP[0][0]);
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
@@ -356,38 +325,6 @@ NonInstancedIMeshRenderer<T>::render_frame_buffer(
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
-    }
-}
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshRenderer<T>::render_shadow_map(
-    screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer_name_
-) const {
-    gui::FrameBufferHandler::instance().bind_fbo(frame_buffer_name_);
-    // Render on the whole framebuffer, complete
-    // from the lower left corner to the upper right
-    glViewport(0, 0, shadow_width_, shadow_height_);
-
-    setup_shadow();
-
-    // draw the indexed meshes
-    for (std::shared_ptr<T> mesh : meshes_) {
-        if (!mesh->do_render()) {
-            continue;
-        }
-
-        load_vertex_buffer(mesh);
-
-        // Draw the triangles !
-        glDrawElements(
-            GL_TRIANGLES,             // mode
-            mesh->get_num_vertices(), // count
-            GL_UNSIGNED_SHORT,        // type
-            (void*)0                  // element array buffer offset
-        );
-
-        glDisableVertexAttribArray(0);
     }
 }
 

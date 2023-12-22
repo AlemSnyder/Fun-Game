@@ -1,7 +1,7 @@
 #include "quad_renderer_multisample.hpp"
 
 #include "../../../util/files.hpp"
-#include "../../shader.hpp"
+#include "shader.hpp"
 
 #include <GL/glew.h>
 

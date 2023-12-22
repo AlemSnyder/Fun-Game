@@ -2,9 +2,9 @@
 
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
-#include "../../opengl_program.hpp"
+#include "opengl_program.hpp"
 #include "../../scene/controls.hpp"
-#include "../../shader.hpp"
+#include "shader.hpp"
 #include "../data_structures/sky_data.hpp"
 
 #include <GL/glew.h>

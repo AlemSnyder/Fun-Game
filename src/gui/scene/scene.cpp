@@ -26,12 +26,14 @@ Scene::update(screen_size_t width, screen_size_t height) {
     );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // background
     for (const auto& render : background_frame_buffer_) {
         render->render_frame_buffer_multisample(
             width, height, frame_buffer_multisample_.get_depth_buffer_name()
         );
     }
 
+    // mid ground
     for (const auto& render : mid_ground_frame_buffer_) {
         render->render_frame_buffer_multisample(
             width, height, frame_buffer_multisample_.get_depth_buffer_name()

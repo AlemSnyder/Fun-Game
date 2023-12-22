@@ -4,6 +4,8 @@
 
 #include <GL/glew.h>
 
+#include <string>
+
 namespace gui {
 
 namespace shader {
@@ -27,6 +29,10 @@ class OpenGLProgramExecuter {
 
     [[nodiscard]] GLuint get_program_ID() const noexcept;
     // get program status
+
+    [[nodiscard]] GLuint inline get_uniform(std::string uniform_name) {
+        return glGetUniformLocation(get_program_ID(), uniform_name.c_str());
+    }
 
     [[nodiscard]] shader::ProgramStatus get_program_status() const noexcept;
 };

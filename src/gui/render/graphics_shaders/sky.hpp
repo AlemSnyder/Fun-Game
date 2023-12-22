@@ -23,7 +23,7 @@
 
 #include "../data_structures/sky_data.hpp"
 #include "gui_render_types.hpp"
-#include "../../opengl_program.hpp"
+#include "opengl_program.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

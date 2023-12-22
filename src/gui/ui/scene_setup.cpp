@@ -1,6 +1,7 @@
 #include "scene_setup.hpp"
 
 #include "../../world.hpp"
+#include "../render/graphics_shaders/non_instanced_i_mesh_shadow.hpp"
 
 #include <memory>
 
@@ -30,10 +31,17 @@ setup(Scene& scene, World& world) {
 
     // should check that this does what I want it to.
     auto chunk_renderer = std::make_shared<
-        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(render_program.get_program_ID(), shadow_program.get_program_ID());
+        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(render_program);
 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_renderer->add_mesh(chunk_mesh);
+    }
+
+    auto chunk_shadow = std::make_shared<
+        models::NonInstancedIMeshShadow<data_structures::TerrainMesh>>(shadow_program);
+
+    for (const auto& chunk_mesh : terrain_mesh) {
+        chunk_shadow->add_mesh(chunk_mesh);
     }
 
     glm::vec3 light_direction =
@@ -53,7 +61,7 @@ setup(Scene& scene, World& world) {
     scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
     scene.add_mid_ground_renderer(chunk_renderer);
-    scene.shadow_attach(chunk_renderer);
+    scene.shadow_attach(chunk_shadow);
 }
 
 } // namespace gui
