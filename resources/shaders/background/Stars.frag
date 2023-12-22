@@ -8,9 +8,9 @@ in float age;
 void
 main(){
 
-    float red = mix(1, .7, age);
-    float green = mix(.8, .7, age);
-    float blue = mix(.5, 1, age);
+    float red = mix(1.0, 0.7, age);
+    float green = mix(0.8, 0.7, age);
+    float blue = mix(0.5, 1.0, age);
 
     color = vec3(red, green, blue);
 }
