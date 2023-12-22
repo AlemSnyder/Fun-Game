@@ -85,7 +85,7 @@ target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 if(MSVC)
   target_compile_options(FunGame PRIVATE /W4 /WX)
 else()
-  target_compile_options(FunGame PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(FunGame PRIVATE -Wall -Wextra -Wpedantic -pedantic -fdiagnostics-color=always)
 endif()
 
 # Resource and data handling
