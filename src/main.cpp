@@ -8,6 +8,7 @@
 #include "terrain/generation/biome.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
+#include "util/png_image.hpp"
 #include "util/voxel_io.hpp"
 #include "world.hpp"
 
@@ -21,6 +22,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <imgui/imgui.h>
+#include <png.h>
 #include <quill/Quill.h>
 #include <stdint.h>
 
@@ -45,14 +47,14 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
-        auto macro_map =
-            terrain::generation::Biome::get_test_map(i);
+        auto macro_map = terrain::generation::Biome::single_tile_type_map(i);
         terrain::Terrain ter(
             map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
             macro_map
@@ -146,6 +148,44 @@ MacroMap() {
     }
 
     LOG_INFO(logger, "Map: {}", int_map);
+
+    return 0;
+}
+
+int
+image_test(const argh::parser& cmdl) {
+    if (cmdl.size() < 2) {
+        // png::image<png::rgb_pixel> image(16,16);
+
+        std::filesystem::path png_path =
+            files::get_root_path() / "terrain_output_data" / "test.png";
+
+        image::ImageTest image;
+
+        image::write_result_t result = image::write_image(image, png_path);
+
+        image::log_result(result, png_path);
+
+        return result;
+
+    } else {
+        std::string path_in = cmdl(2).str();
+        std::filesystem::path lua_file_path = files::get_root_path() / path_in;
+
+        std::string path_out = cmdl(3).str();
+        std::filesystem::path png_path = files::get_root_path() / path_out;
+        size_t size;
+        cmdl("size", 6) >> size;
+
+        terrain::generation::TerrainMacroMap map =
+            terrain::generation::Biome::map_generation_test(lua_file_path, size);
+
+        image::write_result_t result = image::write_image(map, png_path);
+
+        image::log_result(result, png_path);
+
+        return result;
+    }
 
     return 0;
 }
@@ -393,6 +433,8 @@ main(int argc, char** argv) {
         return imgui_entry_main(cmdl);
     } else if (run_function == "ChunkDataTest") {
         return ChunkDataTest();
+    } else if (run_function == "imageTest") {
+        return image_test(cmdl);
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

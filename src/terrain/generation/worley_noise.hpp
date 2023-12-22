@@ -61,6 +61,7 @@ class WorleyNoise : protected Noise {
  protected:
     // side length of area used to generate points
     NoisePosition tile_size_ = 1;
+    NoisePosition point_radius_;
     // chance that any point is positive
     double positive_chance_ = 1;
 
@@ -70,7 +71,8 @@ class WorleyNoise : protected Noise {
      *
      * @details Default constructor sets tile_size to 1;
      */
-    inline WorleyNoise(NoisePosition tile_size = 1) : tile_size_(tile_size){};
+    inline WorleyNoise(NoisePosition tile_size, NoisePosition point_radius) :
+        tile_size_(tile_size), point_radius_(point_radius){};
 
     /**
      * @brief Get the noise value at given position.
@@ -80,10 +82,10 @@ class WorleyNoise : protected Noise {
 
  protected:
     [[nodiscard]] std::set<WorleyPoint>
-    get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t) const;
+    get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t, NoiseTileIndex range) const;
 
     [[nodiscard]] static double
-    distance_(NoisePosition x, NoisePosition y, WorleyPoint);
+    distance_(NoisePosition x, NoisePosition y, WorleyPoint point);
 };
 
 /**
@@ -100,8 +102,12 @@ class AlternativeWorleyNoise : public WorleyNoise {
      *
      * @details Default constructor sets tile_size to 1;
      */
-    inline AlternativeWorleyNoise(NoisePosition tile_size = 1) :
-        WorleyNoise(tile_size) {}
+    inline AlternativeWorleyNoise(
+        NoisePosition tile_size, double positive_chance, NoisePosition radius
+    ) :
+        WorleyNoise(tile_size, radius) {
+        positive_chance_ = positive_chance;
+    }
 
     [[nodiscard]] virtual double
     get_noise(NoisePosition x, NoisePosition y) const override;

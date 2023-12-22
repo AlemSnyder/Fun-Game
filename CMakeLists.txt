@@ -45,11 +45,13 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
+find_package(PNG REQUIRED)
 find_package(OpenMP REQUIRED)
 
 target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
+target_link_libraries(FunGame PRIVATE PNG::PNG)
 target_link_libraries(FunGame PUBLIC OpenMP::OpenMP_CXX)
 
 if(WIN32)
