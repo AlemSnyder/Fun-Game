@@ -71,8 +71,8 @@ class ShadowMap {
      *
      * @return GLuint& reference to depth texture ID
      */
-    inline GLuint&
-    get_depth_texture() {
+    inline GLuint
+    get_depth_texture() const {
         return depth_texture_id_;
     }
 
@@ -100,6 +100,18 @@ class ShadowMap {
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
+    const glm::vec3& get_light_direction() const {
+        return light_direction_;
+    }
+
+    const glm::mat4& get_depth_projection_matrix() const {
+        return depth_projection_matrix_;
+    }
+
+    const glm::mat4& get_depth_view_matrix() const {
+        return depth_view_matrix_;
+    }
+
     /**
      * @brief Get shadow width in pixels
      *
@@ -119,6 +131,13 @@ class ShadowMap {
     get_shadow_height() const {
         return shadow_height_;
     }
+
+    void update();
+
+    void update(glm::vec3 light_direction){
+        set_light_direction(light_direction);
+        update();
+    };
 };
 
 } // namespace data_structures

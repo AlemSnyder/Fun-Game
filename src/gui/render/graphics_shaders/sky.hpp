@@ -21,7 +21,9 @@
  */
 #pragma once
 
+#include "../uniform_types.hpp"
 #include "../../shader.hpp"
+#include "../data_structures/screen_data.hpp"
 #include "../data_structures/sky_data.hpp"
 #include "gui_render_types.hpp"
 
@@ -31,34 +33,59 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <memory>
 
 namespace gui {
 
 namespace render {
 
 /**
- * @brief Renders the meshes to the screen
+ * @brief Renders the sky background
  *
- * @details SkyRenderer renders the meshes given to it to the screen.
- * this class handles the light direction, applied the meshes, and loading
- * shaders.
+ * @details SkyRenderer renders the stars sun, and sky. It handles sun and star
+ * position.
  *
  */
 class SkyRenderer :
     public render_to::FrameBufferMultisample,
     public render_to::FrameBuffer {
  private:
-    GLuint programID_;                  // ID of Program
-    GLuint matrix_view_projection_ID_;  // ID of world to camera space transform matrix
-    GLuint pixel_matrix_ID_;            // ID of view to pixel space matrix
-    data_structures::SkyData sky_data_; // star data
+    data_structures::SkyData star_data_;      // star data
+    data_structures::ScreenData screen_data_; // screen data
+    std::shared_ptr<render::LightEnvironment> lighting_; // lighting
+    std::shared_ptr<render::StarRotation> star_rotation_; // relative position of the stars
+    //scene::Helio& environment_;               // light environment
+
+    GLuint star_PID_; // ID of star program
+    GLuint sun_PID_;  // ID of sun program
+    GLuint sky_PID_;  // ID of sky program
+
+    // star program uniforms
+    GLuint view_projection_star_UID_;  // view projection matrix for star program
+    GLuint pixel_projection_star_UID_; // ID of view to pixel space matrix
+    GLuint star_rotation_star_UID_;    // ID of Sky matrix (rotates stars)
+    GLuint sun_position_star_UID_;     // ID of Sun position for star renderer
+
+    // sun program uniforms
+    GLuint view_projection_sun_UID_;  // view projection matrix for sun program
+    GLuint pixel_projection_sun_UID_; // ID of view to pixel space matrix
+    GLuint sun_position_sun_UID_;
+    GLuint sunlight_color_sun_UID_;
+
+    // sky program uniforms
+    GLuint view_projection_sky_UID_;  // view projection matrix for sky program
+    GLuint pixel_projection_sky_UID_; // ID of view to pixel space matrix
+    GLuint sun_position_sky_UID_;     // sun position/light direction vector
+    GLuint sunlight_color_sky_UID_;   // sunlight color vector
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    explicit SkyRenderer(ShaderHandler shader_handler = ShaderHandler());
+    explicit SkyRenderer(
+        std::shared_ptr<render::LightEnvironment> lighting, std::shared_ptr<render::StarRotation> star_rotation, ShaderHandler shader_handler = ShaderHandler()
+    );
 
     ~SkyRenderer();
 
