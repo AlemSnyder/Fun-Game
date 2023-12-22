@@ -105,8 +105,16 @@ imgui_entry(World& world) {
         // your application based on those two flags.
         glfwPollEvents();
 
-        if (!io.WantCaptureKeyboard) {
+        if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
+            // Disable the mouse so it doesn't appear while playing
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+            // Process inputs
             controls::computeMatricesFromInputs(window);
+        }
+        else {
+            // Show the mouse for use with IMGUI
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
         glfwGetWindowSize(window, &window_width, &window_height);
