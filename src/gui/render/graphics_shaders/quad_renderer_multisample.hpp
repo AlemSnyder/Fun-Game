@@ -42,9 +42,9 @@ namespace render {
  */
 class QuadRendererMultisample : public QuadRenderer {
  private:
-    GLuint width_id_;       // uniform ID for width of reading texture
-    GLuint height_id_;      // uniform ID for height or reading texture
-    GLuint tex_samples_id_; // uniform ID for number pixel samples
+    GLint width_id_;       // uniform ID for width of reading texture
+    GLint height_id_;      // uniform ID for height or reading texture
+    GLint tex_samples_id_; // uniform ID for number pixel samples
 
  public:
     /**

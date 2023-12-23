@@ -31,11 +31,10 @@ QuadRendererMultisample::QuadRendererMultisample(shader::Program& program) :
 
 void
 QuadRendererMultisample::reload_program() {
-    GLuint program_id = get_program_ID();
-    texID = glGetUniformLocation(program_id, "texture_id");
-    width_id_ = glGetUniformLocation(program_id, "width");
-    height_id_ = glGetUniformLocation(program_id, "height");
-    tex_samples_id_ = glGetUniformLocation(program_id, "tex_samples");
+    texID = get_uniform("texture_id");
+    width_id_ = get_uniform("width");
+    height_id_ = get_uniform("height");
+    tex_samples_id_ = get_uniform("tex_samples");
 }
 
 } // namespace render

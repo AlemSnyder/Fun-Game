@@ -55,7 +55,7 @@ class NonInstancedIMeshShadow :
  protected:
 //    GLuint program_id_shadow_; // ID of shadow program
 
-    GLuint depth_bias_id_shadow_; // ID of depth projection matrix for indexed meshes
+    GLint depth_bias_id_shadow_; // ID of depth projection matrix for indexed meshes
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sun light
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
@@ -108,8 +108,6 @@ class NonInstancedIMeshShadow :
 
  protected:
     void load_vertex_buffer(std::shared_ptr<T> mesh) const;
-
-    void load_color_buffers(std::shared_ptr<T> mesh) const;
 
     void setup_shadow() const;
 };

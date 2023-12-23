@@ -56,12 +56,12 @@ class NonInstancedIMeshRenderer :
  protected:
     //    GLuint program_id_render_; // ID of render program
 
-    GLuint matrix_id_render_;      // uniform ID of transform matrix
-    GLuint view_matrix_id_render_; // ID of view projection matrix for indexed meshes
-    GLuint depth_bias_id_render_;  // ID of depth projection matrix for indexed meshes
-    GLuint shadow_map_id_render_;  // ID of the shadow map for indexed meshes
-    GLuint color_map_id_render_;   // ID of the color map for indexed meshes
-    GLuint light_direction_id_render_; // ID of the light direction uniform for indexed
+    GLint matrix_id_render_;      // uniform ID of transform matrix
+    GLint view_matrix_id_render_; // ID of view projection matrix for indexed meshes
+    GLint depth_bias_id_render_;  // ID of depth projection matrix for indexed meshes
+    GLint shadow_map_id_render_;  // ID of the shadow map for indexed meshes
+    GLint color_map_id_render_;   // ID of the color map for indexed meshes
+    GLint light_direction_id_render_; // ID of the light direction uniform for indexed
 
     // ------ the below are added to the class ------
     GLuint depth_texture_;              // ID of the shadow depth texture
