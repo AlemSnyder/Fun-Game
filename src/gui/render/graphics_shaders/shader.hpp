@@ -137,6 +137,8 @@ class Program {
         reload();
     }
 
+    ~Program();
+
     void reload();
 
     inline void

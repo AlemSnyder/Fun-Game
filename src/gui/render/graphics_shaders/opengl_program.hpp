@@ -18,6 +18,7 @@ class Program;
 class OpenGLProgramExecuter {
  private:
     shader::Program& shader_program_;
+    bool program_exists_ = true;
 
  public:
     OpenGLProgramExecuter(shader::Program& shader_program);
@@ -26,6 +27,10 @@ class OpenGLProgramExecuter {
 
     // callback for when the program is updated
     virtual void reload_program() = 0;
+
+    inline virtual void no_program(){
+        program_exists_ = false;
+    }
 
     [[nodiscard]] GLuint get_program_ID() const noexcept;
     // get program status

@@ -80,11 +80,13 @@ imgui_entry(World& world) {
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    shader::ShaderHandler shader_handler;
+
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, world);
+    setup(main_scene, shader_handler, world);
 
     glm::vec3 position;
 

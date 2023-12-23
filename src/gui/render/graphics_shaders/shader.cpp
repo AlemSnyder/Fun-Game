@@ -2,6 +2,7 @@
 
 #include "../../../logging.hpp"
 #include "gui_render_types.hpp"
+#include "opengl_program.hpp"
 
 #include <GL/glew.h>
 
@@ -31,6 +32,12 @@ File::get_file_content() {
         );
         status_ = FileStatus::FILE_NOT_FOUND;
         return {};
+    }
+}
+
+Program::~Program(){
+    for (OpenGLProgramExecuter* executer : program_executors_){
+        executer->no_program();
     }
 }
 

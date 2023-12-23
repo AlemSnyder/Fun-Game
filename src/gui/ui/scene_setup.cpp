@@ -8,9 +8,7 @@
 namespace gui {
 
 void
-setup(Scene& scene, World& world) {
-    shader::ShaderHandler shader_handler;
-
+setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     // assign map from all color ids to each color
     // to package as a texture
     terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
@@ -31,14 +29,17 @@ setup(Scene& scene, World& world) {
 
     // should check that this does what I want it to.
     auto chunk_renderer = std::make_shared<
-        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(render_program);
+        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(render_program
+    );
 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_renderer->add_mesh(chunk_mesh);
     }
 
-    auto chunk_shadow = std::make_shared<
-        models::NonInstancedIMeshShadow<data_structures::TerrainMesh>>(shadow_program);
+    auto chunk_shadow =
+        std::make_shared<models::NonInstancedIMeshShadow<data_structures::TerrainMesh>>(
+            shadow_program
+        );
 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_shadow->add_mesh(chunk_mesh);

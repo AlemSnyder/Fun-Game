@@ -7,9 +7,9 @@
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../render/graphics_shaders/quad_renderer.hpp"
+#include "../render/graphics_shaders/shader.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
-#include "../render/graphics_shaders/shader.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 
@@ -45,7 +45,7 @@ opengl_entry(World& world) {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    shader::ShaderHandler shader_handler = shader::ShaderHandler();
+    shader::ShaderHandler shader_handler;
 
     shader::Program quad_program = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "Passthrough.vert",
@@ -58,7 +58,7 @@ opengl_entry(World& world) {
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, world);
+    setup(main_scene, shader_handler, world);
 
     do {
         controls::computeMatricesFromInputs(window);
