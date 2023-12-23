@@ -58,6 +58,9 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     chunk_renderer->set_depth_texture(scene.get_depth_texture());
 
+    chunk_shadow->set_light_direction(light_direction);
+    chunk_shadow->set_depth_projection_matrix(depth_projection_matrix);
+
     scene.set_shadow_light_direction(light_direction);
     scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
