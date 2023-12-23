@@ -69,7 +69,7 @@ class NonInstancedIMeshShadow :
      *
      * @param ShaderHandler
      */
-    NonInstancedIMeshShadow(shader::Program shadow_program);
+    NonInstancedIMeshShadow(shader::Program& shadow_program);
 
     virtual ~NonInstancedIMeshShadow() {}
 
@@ -115,7 +115,7 @@ class NonInstancedIMeshShadow :
 };
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshShadow<T>::NonInstancedIMeshShadow(shader::Program shader_program) :
+NonInstancedIMeshShadow<T>::NonInstancedIMeshShadow(shader::Program& shader_program) :
     OpenGLProgramExecuter(shader_program) {
     reload_program();
 }

@@ -35,8 +35,8 @@ File::get_file_content() {
     }
 }
 
-Program::~Program(){
-    for (OpenGLProgramExecuter* executer : program_executors_){
+Program::~Program() {
+    for (OpenGLProgramExecuter* executer : program_executors_) {
         executer->no_program();
     }
 }
@@ -86,7 +86,7 @@ Shader::reload() {
 
     std::vector<const char*> source_char;
 
-    for (size_t i = 0; i < source_string.size(); i++){
+    for (size_t i = 0; i < source_string.size(); i++) {
         source_char.push_back(source_string[i].c_str());
     }
 
@@ -207,7 +207,7 @@ ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader
 }
 
 // TODO(alem): what do we do on error
-const Program&
+Program&
 ShaderHandler::load_program(
     const std::vector<std::filesystem::path> vertex_file_paths,
     const std::vector<std::filesystem::path> fragment_file_paths

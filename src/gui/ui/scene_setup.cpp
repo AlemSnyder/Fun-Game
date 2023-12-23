@@ -18,11 +18,11 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     auto terrain_mesh = world.get_chunks_mesh();
 
-    shader::Program render_program = shader_handler.load_program(
+    shader::Program& render_program = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "ShadowMappingInstanced.vert",
         files::get_resources_path() / "shaders" / "ShadowMapping.frag"
     );
-    shader::Program shadow_program = shader_handler.load_program(
+    shader::Program& shadow_program = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "DepthRTTInstanced.vert",
         files::get_resources_path() / "shaders" / "DepthRTT.frag"
     );

@@ -55,7 +55,7 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
      * @brief Construct a new Main Renderer object
      *
      */
-    InstancedIMeshRenderer(shader::Program);
+    InstancedIMeshRenderer(shader::Program& shader_program);
 
     virtual ~InstancedIMeshRenderer() {}
 
@@ -85,7 +85,7 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
 
 template <data_structures::InstancedIMeshGPUDataType T>
 InstancedIMeshRenderer<T>::InstancedIMeshRenderer(
-    shader::Program render_program
+    shader::Program& render_program
 ) :
     NonInstancedIMeshRenderer<T>(render_program) {}
 

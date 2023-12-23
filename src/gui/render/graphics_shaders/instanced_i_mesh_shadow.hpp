@@ -22,7 +22,7 @@
 #pragma once
 
 #include "../../../types.hpp"
-#include "../../shader.hpp"
+#include "shader.hpp"
 #include "../graphics_data/instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
 #include "non_instanced_i_mesh_shadow.hpp"
@@ -49,15 +49,15 @@ namespace models {
 
 // template <gui::data_structures::InstancedIntLike T>
 template <data_structures::InstancedIMeshGPUDataType T>
-class NonInstancedIMeshShadow : public NonInstancedIMeshShadow<T> {
+class InstancedIMeshShadow : public NonInstancedIMeshShadow<T> {
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    NonInstancedIMeshShadow(shader::Program);
+    InstancedIMeshShadow(shader::Program& shader_program);
 
-    virtual ~NonInstancedIMeshShadow() {}
+    virtual ~InstancedIMeshShadow() {}
 
     void load_transforms_buffer(std::shared_ptr<T> mesh) const;
 
@@ -67,14 +67,14 @@ class NonInstancedIMeshShadow : public NonInstancedIMeshShadow<T> {
 };
 
 template <data_structures::InstancedIMeshGPUDataType T>
-NonInstancedIMeshShadow<T>::NonInstancedIMeshShadow(
-    GLuint shadow_program
+InstancedIMeshShadow<T>::InstancedIMeshShadow(
+    shader::Program& shadow_program
 ) :
-    NonInstancedIMeshShadow<T>(shadow_program) {}
+    InstancedIMeshShadow<T>(shadow_program) {}
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void
-NonInstancedIMeshShadow<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
+InstancedIMeshShadow<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
     // 4nd attribute buffer : transform
     glEnableVertexAttribArray(3);
 
@@ -93,7 +93,7 @@ NonInstancedIMeshShadow<T>::load_transforms_buffer(std::shared_ptr<T> mesh) cons
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void
-NonInstancedIMeshShadow<T>::render_shadow_map(
+InstancedIMeshShadow<T>::render_shadow_map(
     screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer_name_
 ) const {
     gui::FrameBufferHandler::instance().bind_fbo(frame_buffer_name_);

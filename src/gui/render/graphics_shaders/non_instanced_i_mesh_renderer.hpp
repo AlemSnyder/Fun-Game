@@ -77,7 +77,7 @@ class NonInstancedIMeshRenderer :
      *
      * @param ShaderHandler
      */
-    NonInstancedIMeshRenderer(shader::Program render_program);
+    NonInstancedIMeshRenderer(shader::Program& render_program);
 
     virtual ~NonInstancedIMeshRenderer() {}
 
@@ -142,7 +142,7 @@ class NonInstancedIMeshRenderer :
 };
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(shader::Program render_program
+NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(shader::Program& render_program
 ) :
     OpenGLProgramExecuter(render_program) {
 reload_program();

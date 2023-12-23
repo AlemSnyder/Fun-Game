@@ -216,12 +216,12 @@ class ShaderHandler {
     shader::Shader&
     get_shader(const std::vector<shader::File> source_files, GLuint gl_shader_type);
 
-    const shader::Program& load_program(
+    shader::Program& load_program(
         const std::vector<std::filesystem::path> vertex_file_path,
         const std::vector<std::filesystem::path> fragment_file_path
     );
 
-    [[nodiscard]] inline const shader::Program&
+    [[nodiscard]] inline shader::Program&
     load_program(
         const std::filesystem::path vertex_file_path,
         const std::filesystem::path fragment_file_path
