@@ -53,7 +53,9 @@ class NonInstancedIMeshShadow :
     public render_to::ShadowMap,
     public OpenGLProgramExecuter {
  protected:
-//    GLuint program_id_shadow_; // ID of shadow program
+
+    const data_structures::ShadowMap* shadow_map_;
+
 
     GLint depth_bias_id_shadow_; // ID of depth projection matrix for indexed meshes
     // ------ the below are added to the class ------
@@ -81,6 +83,8 @@ class NonInstancedIMeshShadow :
      * @param mesh the mesh to add
      */
     void add_mesh(std::shared_ptr<T> mesh);
+
+    virtual void set_shadow_map(const data_structures::ShadowMap* shadow_map);
 
     /**
      * @brief Set the light direction vector
@@ -128,6 +132,15 @@ void
 NonInstancedIMeshShadow<T>::add_mesh(std::shared_ptr<T> mesh) {
     meshes_.push_back(std::move(mesh));
 }
+
+template <data_structures::NonInstancedIMeshGPUDataType T>
+void
+NonInstancedIMeshShadow<T>::set_shadow_map(
+    const data_structures::ShadowMap* shadow_map
+) {
+    shadow_map_ = shadow_map;
+}
+
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void

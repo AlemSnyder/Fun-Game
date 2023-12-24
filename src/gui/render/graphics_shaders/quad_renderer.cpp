@@ -27,7 +27,6 @@ QuadRenderer::QuadRenderer(shader::Program& shader_program) :
 
 QuadRenderer::~QuadRenderer() {
     glDeleteBuffers(1, &quad_vertexbuffer_);
-    
 }
 
 void
@@ -52,7 +51,7 @@ QuadRenderer::setup(
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, window_render_texture);
     // Set our "renderedTexture" sampler to use Texture Unit 0
-    glUniform1i(texID, 0);
+    glUniform1i(texture_UID_, 0);
 }
 
 void

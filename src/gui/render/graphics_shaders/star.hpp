@@ -43,29 +43,32 @@ namespace render {
 /**
  * @brief Renders the sky background
  *
- * @details SkyRenderer renders the stars sun, and sky. It handles sun and star
- * position.
+ * @details StarRenderer renders the stars. It handles sun and star position.
  *
  */
-class SkyRenderer :
+class StarRenderer :
     public render_to::FrameBuffer,
     public OpenGLProgramExecuter {
  private:
+    data_structures::SkyData star_data_;                 // star data
     data_structures::ScreenData screen_data_;            // screen data
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting
+    std::shared_ptr<render::StarRotation>
+        star_rotation_; // relative position of the stars
 
-    // sky program uniforms
-    GLuint view_projection_sky_UID_;  // view projection matrix for sky program
-    GLuint pixel_projection_sky_UID_; // ID of view to pixel space matrix
-    GLuint sun_position_sky_UID_;     // sun position/light direction vector
-    GLuint sunlight_color_sky_UID_;   // sunlight color vector
+    // star program uniforms
+    GLuint view_projection_star_UID_;  // view projection matrix for star program
+    GLuint pixel_projection_star_UID_; // ID of view to pixel space matrix
+    GLuint star_rotation_star_UID_;    // ID of Sky matrix (rotates stars)
+    GLuint sun_position_star_UID_;     // ID of Sun position for star renderer
+    GLint sunlight_color_;
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    SkyRenderer(
+    StarRenderer(
         std::shared_ptr<render::LightEnvironment> lighting,
         std::shared_ptr<render::StarRotation> star_rotation,
         shader::Program& shader_program

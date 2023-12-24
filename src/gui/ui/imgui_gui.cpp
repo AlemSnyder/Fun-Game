@@ -78,6 +78,9 @@ imgui_entry(World& world) {
 
     // Our state
     bool show_another_window = false;
+    bool show_scene_data = false;
+    bool manual_light_direction = false;
+    float input_light_direction[3];
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     shader::ShaderHandler shader_handler;
@@ -104,11 +107,30 @@ imgui_entry(World& world) {
         // your application based on those two flags.
         glfwPollEvents();
 
-        if (!io.WantCaptureKeyboard) {
+        if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
+            // Disable the mouse so it doesn't appear while playing
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+            // Process inputs
             controls::computeMatricesFromInputs(window);
+        }
+        else {
+            // Show the mouse for use with IMGUI
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
         glfwGetWindowSize(window, &window_width, &window_height);
+
+        if (manual_light_direction) {
+            glm::vec3 input_light_direction_v3(
+                input_light_direction[0], input_light_direction[1],
+                input_light_direction[2]
+            );
+            main_scene.manual_update_light_direction(input_light_direction_v3);
+        } else {
+            main_scene.update_light_direction();
+        }
+
         main_scene.update(window_width, window_height);
 
         position = controls::get_position_vector();
@@ -135,6 +157,7 @@ imgui_entry(World& world) {
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Another Window", &show_another_window);
+            ImGui::Checkbox("Show Scene Data", &show_scene_data);
 
             ImGui::SliderFloat(
                 "float", &f, 0.0f, 1.0f
@@ -167,6 +190,35 @@ imgui_entry(World& world) {
             );
             if (ImGui::Button("Close Me"))
                 show_another_window = false;
+            ImGui::End();
+        }
+
+        if (show_scene_data) {
+            glm::vec3 light_direction = main_scene.get_light_direction();
+            ImGui::Begin("Scene Data", &show_scene_data);
+
+            ImGui::Text(
+                "light_direction <%.3f, %.3f, %.3f>", light_direction.x,
+                light_direction.y, light_direction.z
+            );
+
+            const std::shared_ptr<scene::Helio> cycle =
+                main_scene.get_lighting_environment();
+
+            ImGui::Text("Sun angle %.3f", cycle->sun_angle);
+            ImGui::Text("Earth angle %.3f", cycle->earth_angle);
+            ImGui::Text("Total angle %.3f", cycle->total_angle);
+
+            glm::vec3 color = cycle->get_specular_light();
+
+            ImGui::TextColored({color.r, color.g, color.b, 1}, "##");
+
+            ImGui::Checkbox("Manually set light direction", &manual_light_direction);
+
+            if (manual_light_direction) {
+                ImGui::DragFloat3("Light Direction", input_light_direction);
+            }
+
             ImGui::End();
         }
 

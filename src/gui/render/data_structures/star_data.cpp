@@ -1,4 +1,4 @@
-#include "sky_data.hpp"
+#include "star_data.hpp"
 
 #include "../../../entity/mesh.hpp"
 #include "../../../logging.hpp"

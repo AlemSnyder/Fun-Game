@@ -31,10 +31,9 @@ QuadRendererMultisample::QuadRendererMultisample(shader::Program& program) :
 
 void
 QuadRendererMultisample::reload_program() {
-    texID = get_uniform("texture_id");
-    width_id_ = get_uniform("width");
-    height_id_ = get_uniform("height");
-    tex_samples_id_ = get_uniform("tex_samples");
+    width_UID_ = get_uniform("width");
+    height_UID_ = get_uniform("height");
+    num_samples_UID_ = get_uniform("tex_samples");
 }
 
 } // namespace render

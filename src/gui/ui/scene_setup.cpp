@@ -2,6 +2,9 @@
 
 #include "../../world.hpp"
 #include "../render/graphics_shaders/non_instanced_i_mesh_shadow.hpp"
+#include "../render/graphics_shaders/sky.hpp"
+#include "../render/graphics_shaders/star.hpp"
+#include "../render/graphics_shaders/sun.hpp"
 
 #include <memory>
 
@@ -19,12 +22,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     auto terrain_mesh = world.get_chunks_mesh();
 
     shader::Program& render_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "ShadowMapping.vert",
-        files::get_resources_path() / "shaders" / "ShadowMapping.frag"
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.vert",
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
     );
     shader::Program& shadow_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "DepthRTT.vert",
-        files::get_resources_path() / "shaders" / "DepthRTT.frag"
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.vert",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 
     // should check that this does what I want it to.
@@ -46,26 +49,44 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     }
 
     glm::vec3 light_direction =
-        glm::normalize(glm::vec3(40.0f, 8.2f, 120.69f)) // direction
-        * 128.0f;                                       // length
-
-    glm::mat4 depth_projection_matrix =
-        glm::ortho<float>(0.0f, 192.0f, 0.0f, 192.0f, 0.0f, 128.0f);
+        glm::normalize(glm::vec3(40.0f, 40.2f, 40.4)) // direction
+        * 128.0f;                                     // length
 
     // Renders the Shadow depth map
-    chunk_renderer->set_light_direction(light_direction);
-    chunk_renderer->set_depth_projection_matrix(depth_projection_matrix);
+    // chunk_renderer->set_light_direction(light_direction);
+    // chunk_renderer->set_depth_projection_matrix(depth_projection_matrix);
 
-    chunk_renderer->set_depth_texture(scene.get_depth_texture());
+    // chunk_renderer->set_depth_texture(scene.get_depth_texture());
 
     chunk_shadow->set_light_direction(light_direction);
-    chunk_shadow->set_depth_projection_matrix(depth_projection_matrix);
+    // chunk_shadow->set_depth_projection_matrix(depth_projection_matrix);
 
     scene.set_shadow_light_direction(light_direction);
-    scene.set_shadow_depth_projection_matrix(depth_projection_matrix);
 
     scene.add_mid_ground_renderer(chunk_renderer);
     scene.shadow_attach(chunk_shadow);
+
+    std::shared_ptr<scene::Helio> environment_;
+
+    shader::Program& sky_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+        files::get_resources_path() / "shaders" / "background" / "Sky.frag"
+    );
+
+    shader::Program& stars_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "background" / "Stars.vert",
+        files::get_resources_path() / "shaders" / "background" / "Stars.frag"
+    );
+
+    shader::Program& sun_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "background" / "Sun.vert",
+        files::get_resources_path() / "shaders" / "background" / "Sun.frag"
+    );
+
+    // in this order
+    render::SkyRenderer sky_renderer_(environment_, environment_, sky_program);
+    render::StarRenderer star_renderer_(environment_, environment_, stars_program);
+    render::SunRenderer sun_renderer_(environment_, environment_, sun_program);
 }
 
 } // namespace gui

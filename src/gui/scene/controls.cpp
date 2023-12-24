@@ -8,6 +8,8 @@
 #define _USE_MATH_DEFINES // Include math constants
 #include <cmath>
 
+namespace {
+
 glm::mat4 view_matrix;
 glm::mat4 projection_matrix;
 
@@ -25,23 +27,27 @@ float initialFoV = 45.0f;
 float speed = 10.0f; // 3 units / second
 float mouseSpeed = 0.005f;
 
+}
+
+namespace controls {
+
 glm::mat4
-controls::get_view_matrix() {
+get_view_matrix() {
     return view_matrix;
 }
 
 glm::mat4
-controls::get_projection_matrix() {
+get_projection_matrix() {
     return projection_matrix;
 }
 
 glm::vec3
-controls::get_position_vector() {
+get_position_vector() {
     return position;
 }
 
 void
-controls::computeMatricesFromInputs(GLFWwindow* window) {
+computeMatricesFromInputs(GLFWwindow* window) {
     glfwGetWindowSize(window, &width, &height);
 
     // glfwGetTime is called only once, the first time this function is called
@@ -85,11 +91,11 @@ controls::computeMatricesFromInputs(GLFWwindow* window) {
     // speed boost
     speed_boost = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 10.0f : 1.0f;
     // Move forward
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         position += direction * deltaTime * speed * speed_boost;
     }
     // Move backward
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         position -= direction * deltaTime * speed * speed_boost;
     }
     // Strafe right
@@ -101,11 +107,11 @@ controls::computeMatricesFromInputs(GLFWwindow* window) {
         position -= screen_right * deltaTime * speed * speed_boost;
     }
     // Strafe up
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         position += screen_up * deltaTime * speed * speed_boost;
     }
     // Strafe down
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         position -= screen_up * deltaTime * speed * speed_boost;
     }
 
@@ -129,4 +135,6 @@ controls::computeMatricesFromInputs(GLFWwindow* window) {
 
     // For the next frame, the "last time" will be "now"
     lastTime = currentTime;
+}
+
 }

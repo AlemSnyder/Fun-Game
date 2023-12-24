@@ -21,10 +21,9 @@
  */
 #pragma once
 
+#include "../uniform_types.hpp"
 #include "shader.hpp"
 #include "../data_structures/screen_data.hpp"
-#include "../data_structures/star_data.hpp"
-#include "../uniform_types.hpp"
 #include "gui_render_types.hpp"
 #include "opengl_program.hpp"
 
@@ -33,8 +32,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <memory>
 #include <vector>
+#include <memory>
 
 namespace gui {
 
@@ -43,33 +42,30 @@ namespace render {
 /**
  * @brief Renders the sky background
  *
- * @details SkyRenderer renders the stars sun, and sky. It handles sun and star
- * position.
+ * @details SunRenderer renders the sun. It handles sun position.
  *
  */
-class SkyRenderer :
+class SunRenderer :
     public render_to::FrameBuffer,
     public OpenGLProgramExecuter {
  private:
-    data_structures::ScreenData screen_data_;            // screen data
-    std::shared_ptr<render::LightEnvironment> lighting_; // lighting
 
-    // sky program uniforms
-    GLuint view_projection_sky_UID_;  // view projection matrix for sky program
-    GLuint pixel_projection_sky_UID_; // ID of view to pixel space matrix
-    GLuint sun_position_sky_UID_;     // sun position/light direction vector
-    GLuint sunlight_color_sky_UID_;   // sunlight color vector
+    data_structures::ScreenData screen_data_; // screen data
+    std::shared_ptr<render::LightEnvironment> lighting_; // lighting
+    std::shared_ptr<render::StarRotation> star_rotation_; // relative position of the stars
+
+    // sun program uniforms
+    GLuint view_projection_sun_UID_;  // view projection matrix for sun program
+    GLuint pixel_projection_sun_UID_; // ID of view to pixel space matrix
+    GLuint sun_position_sun_UID_;
+    GLuint sunlight_color_sun_UID_;
 
  public:
     /**
      * @brief Construct a new Main Renderer object
      *
      */
-    SkyRenderer(
-        std::shared_ptr<render::LightEnvironment> lighting,
-        std::shared_ptr<render::StarRotation> star_rotation,
-        shader::Program& shader_program
-    );
+    SunRenderer(std::shared_ptr<render::LightEnvironment> lighting, std::shared_ptr<render::StarRotation> star_rotation, shader::Program& shader_program);
 
     virtual void reload_program() override;
 

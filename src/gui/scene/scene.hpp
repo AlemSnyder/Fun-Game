@@ -29,6 +29,7 @@
 #include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
 #include "../render/graphics_shaders/quad_renderer_multisample.hpp"
 #include "../render/graphics_shaders/sky.hpp"
+#include "helio.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -43,6 +44,7 @@ namespace gui {
 class Scene {
  private:
     data_structures::FrameBufferMultisample frame_buffer_multisample_;
+    std::shared_ptr<scene::Helio> environment_;
     data_structures::ShadowMap shadow_map_;
 
     // background
@@ -71,7 +73,8 @@ class Scene {
         uint32_t shadow_map_width_height
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
-        shadow_map_(shadow_map_width_height, shadow_map_width_height) {}
+        environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)),
+        shadow_map_(shadow_map_width_height, shadow_map_width_height){}
 
     /**
      * @brief Get scene shadow mat depth texture id
@@ -103,6 +106,21 @@ class Scene {
         return shadow_map_.get_shadow_height();
     }
 
+    /**
+     * @brief Get shadow map
+     *
+     * @return ShadowMap& shadow map used by this scene.
+     */
+    const data_structures::ShadowMap&
+    get_shadow_map() const {
+        return shadow_map_;
+    }
+
+    /**
+     * @brief Get framebuffer id being rendered to.
+     *
+     * @return GLuint framebuffer id.
+     */
     inline GLuint
     get_frame_buffer_id() {
         return frame_buffer_multisample_.get_frame_buffer_id();
@@ -113,8 +131,6 @@ class Scene {
      */
     void update(screen_size_t width, screen_size_t height);
 
-    // model attach
-
     /**
      * @brief Attach shadow renderer.
      *
@@ -122,6 +138,7 @@ class Scene {
      */
     inline void
     shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
+        shadow->set_shadow_map(&shadow_map_);
         mid_ground_shadow_.push_back(shadow);
     }
 
@@ -146,6 +163,21 @@ class Scene {
     }
 
     /**
+     * @brief Get the light direction vector
+     *
+     * @return glm::vec3 the direction of the light.
+     */
+    inline glm::vec3
+    get_light_direction() {
+        return shadow_map_.get_light_direction();
+    }
+
+    inline const std::shared_ptr<scene::Helio>
+    get_lighting_environment() const {
+        return environment_;
+    }
+
+    /**
      * @brief Set the depth projection matrix
      *
      * @param depth_projection_matrix the projection matrix
@@ -156,8 +188,39 @@ class Scene {
     }
 
     /**
+     * @brief Update light using Heliocentric model.
+     *
+     * @details This function also updates the light color and intensity
+     * depending on the sun position.
+     */
+    inline void
+    update_light_direction() {
+        environment_->update();
+        glm::vec3 light_direction =
+            static_cast<float>(120.0) * environment_->get_light_direction();
+
+        set_shadow_light_direction(light_direction);
+    }
+
+    /**
+     * @brief Update lighting with given light direction
+     *
+     * @details This function also updates the light color and intensity
+     * depending on the sun position.
+     */
+    inline void
+    manual_update_light_direction(glm::vec3 light_direction_in) {
+        glm::vec3 light_direction =
+            static_cast<float>(120.0) * glm::normalize(light_direction_in);
+
+        environment_->update_sunlight_color(light_direction);
+
+        set_shadow_light_direction(light_direction);
+    }
+
+    /*
      * @brief Copy the framebuffer to the screen.
-     * 
+     *
      * @details Only a screen-sized portion of this framebuffer is rendered to.
      * In this call that portion is rendered to the screen.
     */

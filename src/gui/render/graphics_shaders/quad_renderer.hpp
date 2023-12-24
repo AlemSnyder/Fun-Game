@@ -44,7 +44,7 @@ namespace render {
 class QuadRenderer : public OpenGLProgramExecuter {
  protected:
     GLuint quad_vertexbuffer_;
-    GLint texID;
+    GLuint texture_UID_; // ID of the texture id uniform
 
  public:
     /**
@@ -85,7 +85,7 @@ class QuadRenderer : public OpenGLProgramExecuter {
 
     inline void
     reload_program() override {
-        texID = get_uniform("texture_id");
+        texture_UID_ = get_uniform("texture_id");
     }
 
     /**
