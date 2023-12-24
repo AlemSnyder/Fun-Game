@@ -124,7 +124,7 @@ NonInstancedIMeshShadow<T>::NonInstancedIMeshShadow(shader::Program& shader_prog
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void NonInstancedIMeshShadow<T>::reload_program() {
-    depth_bias_id_shadow_ = get_uniform("depthMVP");
+    depth_bias_id_shadow_ = get_uniform("depth_MVP");
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>

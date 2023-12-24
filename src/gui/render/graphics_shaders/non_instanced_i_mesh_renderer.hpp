@@ -140,13 +140,13 @@ void NonInstancedIMeshRenderer<T>::reload_program(
 ) {
     // ------ indexed program ------
     matrix_id_render_ = get_uniform("MVP");
-    view_matrix_id_render_ = get_uniform("V");
-    depth_bias_id_render_ = get_uniform("DepthBiasMVP");
-    shadow_map_id_render_ = get_uniform("shadowMap");
-    color_map_id_render_ = get_uniform("meshColors");
+    view_matrix_id_render_ = get_uniform("view_matrix");
+    depth_bias_id_render_ = get_uniform("depth_MVP");
+    shadow_map_id_render_ = get_uniform("shadow_texture");
+    color_map_id_render_ = get_uniform("material_color_texture");
     direct_light_color_ = get_uniform("direct_light_color");
     diffuse_light_color_ = get_uniform("diffuse_light_color");
-    light_direction_id_render_ = get_uniform("LightInvDirection_worldspace");
+    light_direction_id_render_ = get_uniform("light_direction");
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
