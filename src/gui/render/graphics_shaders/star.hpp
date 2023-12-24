@@ -57,11 +57,11 @@ class StarRenderer :
         star_rotation_; // relative position of the stars
 
     // star program uniforms
-    GLuint view_projection_star_UID_;  // view projection matrix for star program
-    GLuint pixel_projection_star_UID_; // ID of view to pixel space matrix
-    GLuint star_rotation_star_UID_;    // ID of Sky matrix (rotates stars)
-    GLuint sun_position_star_UID_;     // ID of Sun position for star renderer
-    GLint sunlight_color_;
+    GLint view_projection_UID_;  // view projection matrix for star program
+    GLint pixel_projection_UID_; // ID of view to pixel space matrix
+    GLint star_rotation_UID_;    // ID of Sky matrix (rotates stars)
+    GLint sun_position_UID_;     // ID of Sun position for star renderer
+    GLint sunlight_color_UID_;
 
  public:
     /**

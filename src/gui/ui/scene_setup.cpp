@@ -14,6 +14,7 @@ void
 setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     // assign map from all color ids to each color
     // to package as a texture
+
     terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
@@ -32,7 +33,8 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     // should check that this does what I want it to.
     auto chunk_renderer = std::make_shared<
-        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(render_program
+        models::NonInstancedIMeshRenderer<data_structures::TerrainMesh>>(
+        render_program, scene.get_lighting_environment()
     );
 
     for (const auto& chunk_mesh : terrain_mesh) {
@@ -53,10 +55,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         * 128.0f;                                     // length
 
     // Renders the Shadow depth map
-    // chunk_renderer->set_light_direction(light_direction);
-    // chunk_renderer->set_depth_projection_matrix(depth_projection_matrix);
-
-    // chunk_renderer->set_depth_texture(scene.get_depth_texture());
+    chunk_renderer->set_shadow_map(&scene.get_shadow_map());
 
     chunk_shadow->set_light_direction(light_direction);
     // chunk_shadow->set_depth_projection_matrix(depth_projection_matrix);
@@ -65,8 +64,6 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     scene.add_mid_ground_renderer(chunk_renderer);
     scene.shadow_attach(chunk_shadow);
-
-    std::shared_ptr<scene::Helio> environment_;
 
     shader::Program& sky_program = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "background" / "Sky.vert",
@@ -84,9 +81,14 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     );
 
     // in this order
-    render::SkyRenderer sky_renderer_(environment_, environment_, sky_program);
-    render::StarRenderer star_renderer_(environment_, environment_, stars_program);
-    render::SunRenderer sun_renderer_(environment_, environment_, sun_program);
+    render::SkyRenderer sky_renderer_(scene.get_lighting_environment(), sky_program);
+    render::StarRenderer star_renderer_(
+        scene.get_lighting_environment(), scene.get_lighting_environment(),
+        stars_program
+    );
+    render::SunRenderer sun_renderer_(
+        scene.get_lighting_environment(), scene.get_lighting_environment(), sun_program
+    );
 }
 
 } // namespace gui

@@ -55,10 +55,10 @@ class SunRenderer :
     std::shared_ptr<render::StarRotation> star_rotation_; // relative position of the stars
 
     // sun program uniforms
-    GLuint view_projection_sun_UID_;  // view projection matrix for sun program
-    GLuint pixel_projection_sun_UID_; // ID of view to pixel space matrix
-    GLuint sun_position_sun_UID_;
-    GLuint sunlight_color_sun_UID_;
+    GLuint view_projection_UID_;  // view projection matrix for sun program
+    GLuint pixel_projection_UID_; // ID of view to pixel space matrix
+    GLuint sun_position_UID_;
+    GLuint sunlight_color_UID_;
 
  public:
     /**

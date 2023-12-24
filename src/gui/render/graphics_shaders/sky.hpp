@@ -55,10 +55,10 @@ class SkyRenderer :
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting
 
     // sky program uniforms
-    GLuint view_projection_sky_UID_;  // view projection matrix for sky program
-    GLuint pixel_projection_sky_UID_; // ID of view to pixel space matrix
-    GLuint sun_position_sky_UID_;     // sun position/light direction vector
-    GLuint sunlight_color_sky_UID_;   // sunlight color vector
+    GLuint view_projection_UID_;  // view projection matrix for sky program
+    GLuint pixel_projection_UID_; // ID of view to pixel space matrix
+    GLuint sun_position_UID_;     // sun position/light direction vector
+    GLuint sunlight_color_UID_;   // sunlight color vector
 
  public:
     /**
@@ -67,7 +67,6 @@ class SkyRenderer :
      */
     SkyRenderer(
         std::shared_ptr<render::LightEnvironment> lighting,
-        std::shared_ptr<render::StarRotation> star_rotation,
         shader::Program& shader_program
     );
 

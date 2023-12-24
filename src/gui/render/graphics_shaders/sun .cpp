@@ -25,10 +25,10 @@ SunRenderer::SunRenderer(
 
 void
 SunRenderer::reload_program() {
-    view_projection_sun_UID_ = get_uniform("MVP");
-    pixel_projection_sun_UID_ = get_uniform("pixel_projection");
-    sun_position_sun_UID_ = get_uniform("sun_position");
-    sunlight_color_sun_UID_ = get_uniform("sunlight_color");
+    view_projection_UID_ = get_uniform("MVP");
+    pixel_projection_UID_ = get_uniform("pixel_projection");
+    sun_position_UID_ = get_uniform("sun_position");
+    sunlight_color_UID_ = get_uniform("sunlight_color");
 }
 
 void
@@ -71,16 +71,16 @@ SunRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     // Use our shader
     glUseProgram(get_program_ID());
 
-    glUniform3f(sunlight_color_sun_UID_, light_color.x, light_color.y, light_color.z);
+    glUniform3f(sunlight_color_UID_, light_color.x, light_color.y, light_color.z);
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
-    glUniformMatrix4fv(view_projection_sun_UID_, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(view_projection_UID_, 1, GL_FALSE, &MVP[0][0]);
     // in the "pixel_projection" uniform
-    glUniformMatrix4fv(pixel_projection_sun_UID_, 1, GL_FALSE, &pixel_window[0][0]);
+    glUniformMatrix4fv(pixel_projection_UID_, 1, GL_FALSE, &pixel_window[0][0]);
 
     glUniform3f(
-        sun_position_sun_UID_, light_direction.x, light_direction.y, light_direction.z
+        sun_position_UID_, light_direction.x, light_direction.y, light_direction.z
     );
 
     // Draw the triangles !

@@ -59,7 +59,7 @@ class NonInstancedIMeshRenderer :
  protected:
     const data_structures::ShadowMap* shadow_map_;
 
-    render::LightEnvironment* lighting_;
+    std::shared_ptr<render::LightEnvironment> lighting_;
     
     //    GLuint program_id_render_; // ID of render program
 
@@ -83,7 +83,7 @@ class NonInstancedIMeshRenderer :
      *
      * @param ShaderHandler
      */
-    NonInstancedIMeshRenderer(shader::Program& render_program);
+    NonInstancedIMeshRenderer(shader::Program& render_program, std::shared_ptr<render::LightEnvironment> lighting);
 
     virtual ~NonInstancedIMeshRenderer() {}
 
@@ -129,9 +129,9 @@ class NonInstancedIMeshRenderer :
 };
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(shader::Program& render_program
+NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(shader::Program& render_program, std::shared_ptr<render::LightEnvironment> lighting
 ) :
-    OpenGLProgramExecuter(render_program) {
+    OpenGLProgramExecuter(render_program), lighting_(lighting) {
 reload_program();
 }
 

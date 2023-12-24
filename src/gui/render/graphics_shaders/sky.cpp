@@ -17,19 +17,18 @@ namespace gui {
 namespace render {
 
 SkyRenderer::SkyRenderer(
-    std::shared_ptr<render::LightEnvironment> lighting,
-    std::shared_ptr<render::StarRotation> star_rotation, shader::Program& shader_program
+    std::shared_ptr<render::LightEnvironment> lighting, shader::Program& shader_program
 ) :
-    OpenGLProgramExecuter(shader_program) {
+    OpenGLProgramExecuter(shader_program), lighting_(lighting) {
     reload_program();
 }
 
 void
 SkyRenderer::reload_program() {
-    view_projection_sky_UID_ = get_uniform("MVP");
-    pixel_projection_sky_UID_ = get_uniform("pixel_projection");
-    sun_position_sky_UID_ = get_uniform("sun_position");
-    sunlight_color_sky_UID_ = get_uniform("sunlight_color");
+    view_projection_UID_ = get_uniform("MVP");
+    pixel_projection_UID_ = get_uniform("pixel_projection");
+    sun_position_UID_ = get_uniform("sun_position");
+    sunlight_color_UID_ = get_uniform("sunlight_color");
 }
 
 void
@@ -78,18 +77,18 @@ SkyRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
     glm::mat4 sky_rotation = glm::inverse(MVP);
 
     // "pixel_projection" uniform
-    glUniformMatrix4fv(pixel_projection_sky_UID_, 1, GL_FALSE, &pixel_window[0][0]);
+    glUniformMatrix4fv(pixel_projection_UID_, 1, GL_FALSE, &pixel_window[0][0]);
 
     // "MVIP" uniform I for inverse
-    glUniformMatrix4fv(view_projection_sky_UID_, 1, GL_FALSE, &sky_rotation[0][0]);
+    glUniformMatrix4fv(view_projection_UID_, 1, GL_FALSE, &sky_rotation[0][0]);
 
     // the sun direction
     glUniform3f(
-        sun_position_sky_UID_, light_direction.x, light_direction.y, light_direction.z
+        sun_position_UID_, light_direction.x, light_direction.y, light_direction.z
     );
 
     // the sun color
-    glUniform3f(sunlight_color_sky_UID_, light_color.x, light_color.y, light_color.z);
+    glUniform3f(sunlight_color_UID_, light_color.x, light_color.y, light_color.z);
 
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
