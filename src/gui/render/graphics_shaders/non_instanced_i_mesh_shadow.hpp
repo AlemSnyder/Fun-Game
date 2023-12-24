@@ -166,13 +166,6 @@ NonInstancedIMeshShadow<T>::load_vertex_buffer(std::shared_ptr<T> mesh) const {
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
 NonInstancedIMeshShadow<T>::setup_shadow() const {
-    // Cull back-facing triangles -> draw only front-facing triangles
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
-
-    // Clear the screen
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glUseProgram(get_program_ID());
 
     // matrix to calculate the length of a light ray in model space
