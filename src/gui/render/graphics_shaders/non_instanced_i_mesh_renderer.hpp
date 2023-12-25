@@ -53,7 +53,6 @@ namespace models {
  */
 template <data_structures::NonInstancedIMeshGPUDataType T>
 class NonInstancedIMeshRenderer :
-    public render_to::FrameBufferMultisample,
     public render_to::FrameBuffer,
     public OpenGLProgramExecuter {
  protected:
@@ -106,17 +105,6 @@ class NonInstancedIMeshRenderer :
      * @param GLuint frame buffer to render to
      */
     void render_frame_buffer(
-        screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
-    ) const override;
-
-    /**
-     * @brief Renders the previously given meshes to multisample frame buffer.
-     *
-     * @param width width of frame buffer
-     * @param height height of frame buffer
-     * @param GLuint frame buffer to render to
-     */
-    void render_frame_buffer_multisample(
         screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
     ) const override;
 
@@ -284,14 +272,6 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depth_texture);
     glUniform1i(shadow_map_id_render_, 1);
-}
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshRenderer<T>::render_frame_buffer_multisample(
-    screen_size_t width, screen_size_t height, GLuint frame_buffer
-) const {
-    render_frame_buffer(width, height, frame_buffer);
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>

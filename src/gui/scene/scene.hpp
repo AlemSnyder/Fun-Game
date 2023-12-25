@@ -48,15 +48,16 @@ class Scene {
 
     // background
     //    render::SkyRenderer sky_renderer_;
-    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>>
-        background_frame_buffer_;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> background_frame_buffer_;
 
     // "mid" ground
-    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>>
-        mid_ground_frame_buffer_;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_frame_buffer_;
+
+    // foreground
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> foreground_frame_buffer_;
+
     std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
 
-    // foreground, maybe
 
     // other
 
@@ -148,10 +149,29 @@ class Scene {
      * @param render object that can render to a framebuffer.
      */
     inline void
-    add_mid_ground_renderer(
-        const std::shared_ptr<render_to::FrameBufferMultisample>& render
+    add_background_ground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render
     ) {
+        background_frame_buffer_.push_back(render);
+    }
+
+    /**
+     * @brief Attach renderer.
+     *
+     * @param render object that can render to a framebuffer.
+     */
+    inline void
+    add_mid_ground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render) {
         mid_ground_frame_buffer_.push_back(render);
+    }
+
+    /**
+     * @brief Attach renderer.
+     *
+     * @param render object that can render to a framebuffer.
+     */
+    inline void
+    add_foreground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render) {
+        foreground_frame_buffer_.push_back(render);
     }
 
     /**

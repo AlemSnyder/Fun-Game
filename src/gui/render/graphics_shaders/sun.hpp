@@ -21,19 +21,19 @@
  */
 #pragma once
 
-#include "../uniform_types.hpp"
-#include "shader.hpp"
 #include "../data_structures/screen_data.hpp"
+#include "../uniform_types.hpp"
 #include "gui_render_types.hpp"
 #include "opengl_program.hpp"
+#include "shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace gui {
 
@@ -45,14 +45,10 @@ namespace render {
  * @details SunRenderer renders the sun. It handles sun position.
  *
  */
-class SunRenderer :
-    public render_to::FrameBuffer,
-    public OpenGLProgramExecuter {
+class SunRenderer : public render_to::FrameBuffer, public OpenGLProgramExecuter {
  private:
-
-    data_structures::ScreenData screen_data_; // screen data
+    data_structures::ScreenData screen_data_;            // screen data
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting
-    std::shared_ptr<render::StarRotation> star_rotation_; // relative position of the stars
 
     // sun program uniforms
     GLuint view_projection_UID_;  // view projection matrix for sun program
@@ -65,7 +61,10 @@ class SunRenderer :
      * @brief Construct a new Main Renderer object
      *
      */
-    SunRenderer(std::shared_ptr<render::LightEnvironment> lighting, std::shared_ptr<render::StarRotation> star_rotation, shader::Program& shader_program);
+    SunRenderer(
+        std::shared_ptr<render::LightEnvironment> lighting,
+        shader::Program& shader_program
+    );
 
     virtual void reload_program() override;
 

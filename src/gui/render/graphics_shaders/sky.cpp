@@ -25,7 +25,7 @@ SkyRenderer::SkyRenderer(
 
 void
 SkyRenderer::reload_program() {
-    view_projection_UID_ = get_uniform("MVP");
+    view_projection_UID_ = get_uniform("MVIP");
     pixel_projection_UID_ = get_uniform("pixel_projection");
     sun_position_UID_ = get_uniform("sun_position");
     sunlight_color_UID_ = get_uniform("sunlight_color");

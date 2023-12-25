@@ -33,7 +33,6 @@ StarRenderer::reload_program() {
     pixel_projection_UID_ = get_uniform("pixel_projection");
     star_rotation_UID_ = get_uniform("star_rotation");
     sun_position_UID_ = get_uniform("sun_position");
-    sunlight_color_UID_ = get_uniform("sunlight_color");
 }
 
 void

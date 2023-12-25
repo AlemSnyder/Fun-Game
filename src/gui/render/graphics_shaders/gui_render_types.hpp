@@ -46,19 +46,6 @@ class FrameBuffer {
 };
 
 /**
- * @brief Defines virtual classes for rendering to multisample frame buffer
- *
- * @details Class with render_frame_buffer method that renders to a multisample
- * frame buffer.
- */
-class FrameBufferMultisample {
- public:
-    virtual void render_frame_buffer_multisample(
-        screen_size_t width, screen_size_t height, GLuint frame_buffer
-    ) const = 0;
-};
-
-/**
  * @brief Defines virtual classes for rendering shadows
  *
  * @details Class with render_shadow_map method that renders to a shadow

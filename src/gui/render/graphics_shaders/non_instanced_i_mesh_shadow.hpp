@@ -59,10 +59,6 @@ class NonInstancedIMeshShadow :
 
     GLint depth_bias_id_shadow_; // ID of depth projection matrix for indexed meshes
     // ------ the below are added to the class ------
-    glm::vec3 light_direction_;         // direction of sun light
-    glm::mat4 depth_projection_matrix_; // projection matrix of the light source
-    glm::mat4 depth_view_matrix_; // convert a point in world space to depth in light
-    //  light direction
     std::vector<std::shared_ptr<T>> meshes_;
 
  public:
@@ -141,23 +137,6 @@ NonInstancedIMeshShadow<T>::set_shadow_map(
     shadow_map_ = shadow_map;
 }
 
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshShadow<T>::set_light_direction(glm::vec3 light_direction) {
-    light_direction_ = light_direction;
-    depth_view_matrix_ =
-        glm::lookAt(light_direction_, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-}
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshShadow<T>::set_depth_projection_matrix(
-    glm::mat4 depth_projection_matrix
-) {
-    depth_projection_matrix_ = depth_projection_matrix;
-}
-
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
 NonInstancedIMeshShadow<T>::load_vertex_buffer(std::shared_ptr<T> mesh) const {
@@ -181,8 +160,12 @@ void
 NonInstancedIMeshShadow<T>::setup_shadow() const {
     glUseProgram(get_program_ID());
 
+    glm::mat4 depth_projection_matrix = shadow_map_->get_depth_projection_matrix();
+
+    glm::mat4 depth_view_matrix = shadow_map_->get_depth_view_matrix();
+
     // matrix to calculate the length of a light ray in model space
-    glm::mat4 depthMVP = depth_projection_matrix_ * depth_view_matrix_;
+    glm::mat4 depthMVP = depth_projection_matrix * depth_view_matrix;
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform (Model View Projection)

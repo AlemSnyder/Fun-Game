@@ -16,10 +16,10 @@ namespace gui {
 namespace render {
 
 SunRenderer::SunRenderer(
-    std::shared_ptr<render::LightEnvironment> lighting,
-    std::shared_ptr<render::StarRotation> star_rotation, shader::Program& shader_program
+    std::shared_ptr<render::LightEnvironment> lighting, shader::Program& shader_program
 ) :
-    OpenGLProgramExecuter(shader_program) {
+    OpenGLProgramExecuter(shader_program),
+    lighting_(lighting) {
     reload_program();
 }
 

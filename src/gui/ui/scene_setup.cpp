@@ -50,17 +50,8 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         chunk_shadow->add_mesh(chunk_mesh);
     }
 
-    glm::vec3 light_direction =
-        glm::normalize(glm::vec3(40.0f, 40.2f, 40.4)) // direction
-        * 128.0f;                                     // length
-
     // Renders the Shadow depth map
     chunk_renderer->set_shadow_map(&scene.get_shadow_map());
-
-    chunk_shadow->set_light_direction(light_direction);
-    // chunk_shadow->set_depth_projection_matrix(depth_projection_matrix);
-
-    scene.set_shadow_light_direction(light_direction);
 
     scene.add_mid_ground_renderer(chunk_renderer);
     scene.shadow_attach(chunk_shadow);
@@ -81,14 +72,21 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     );
 
     // in this order
-    render::SkyRenderer sky_renderer_(scene.get_lighting_environment(), sky_program);
-    render::StarRenderer star_renderer_(
+    auto sky_renderer = std::make_shared<render::SkyRenderer>(
+        scene.get_lighting_environment(), sky_program
+    );
+
+    auto star_renderer = std::make_shared<render::StarRenderer>(
         scene.get_lighting_environment(), scene.get_lighting_environment(),
         stars_program
     );
-    render::SunRenderer sun_renderer_(
-        scene.get_lighting_environment(), scene.get_lighting_environment(), sun_program
+    auto sun_renderer = std::make_shared<render::SunRenderer>(
+        scene.get_lighting_environment(), sun_program
     );
+
+    scene.add_background_ground_renderer(sky_renderer);
+    scene.add_background_ground_renderer(star_renderer);
+    scene.add_background_ground_renderer(sun_renderer);
 }
 
 } // namespace gui
