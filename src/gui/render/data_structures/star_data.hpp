@@ -15,7 +15,7 @@
  *
  * @author @AlemSnyder
  *
- * @brief Defines SkyData class
+ * @brief Defines StarData class
  *
  * @ingroup GUI  DATA_STRUCTURES
  *
@@ -36,17 +36,34 @@ namespace gui {
 
 namespace data_structures {
 
+class StarShape {
+ protected:
+    GLuint shape_buffer_; // id of vertex buffer of star shape
+
+ public:
+    StarShape(const StarShape& obj) = delete;
+    StarShape& operator=(const StarShape& obj) = delete;
+
+    StarShape();
+
+    ~StarShape() { glDeleteBuffers(1, &shape_buffer_); }
+
+    [[nodiscard]] inline GLuint
+    get_star_shape() const {
+        return shape_buffer_;
+    }
+};
+
 /**
  * @brief Contains a shadow depth buffer that can be rendered to.
  *
  * @details ShadowMap holds the depth texture. When added to a scene object
  * shadows are cast to this depth texture, and used when rendering the scene.
  */
-class SkyData {
+class StarData : public StarShape {
  private:
     GLuint star_positions_; // id of vertex buffer for star positions
     GLuint age_buffer_;     // id of vertex buffer for star age
-    GLuint shape_buffer_;   // id of vertex buffer of star shape
     size_t num_stars_;      // number of stars to draw
 
  public:
@@ -57,7 +74,7 @@ class SkyData {
      *
      * @param obj
      */
-    SkyData(const SkyData& obj) = delete;
+    StarData(const StarData& obj) = delete;
 
     /**
      * @brief The copy operator
@@ -65,23 +82,22 @@ class SkyData {
      * @warning You shouldn't do this. This will delete the buffer from the gpu
      *
      * @param obj
-     * @return SkyData&
+     * @return StarData&
      */
-    SkyData& operator=(const SkyData& obj) = delete;
+    StarData& operator=(const StarData& obj) = delete;
 
     /**
      * @brief Construct a new Sky Data object, default constructor
      *
      */
-    inline SkyData(){};
+    inline StarData(){};
 
-    ~SkyData() {
+    ~StarData() {
         glDeleteBuffers(1, &star_positions_);
         glDeleteBuffers(1, &age_buffer_);
-        glDeleteBuffers(1, &shape_buffer_);
     }
 
-    SkyData(std::filesystem::path path);
+    StarData(std::filesystem::path path);
 
     [[nodiscard]] inline GLuint
     get_star_positions() const {
@@ -91,11 +107,6 @@ class SkyData {
     [[nodiscard]] inline GLuint
     get_star_age_() const {
         return age_buffer_;
-    }
-
-    [[nodiscard]] inline GLuint
-    get_star_shape() const {
-        return shape_buffer_;
     }
 
     /**

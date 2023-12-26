@@ -14,7 +14,26 @@ namespace gui {
 
 namespace data_structures {
 
-SkyData::SkyData(std::filesystem::path path) {
+StarShape::StarShape(){
+        // four point making a diamond centered at 0,0
+    // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
+    std::vector<glm::vec2> star_shape({
+        {0,  1 },
+        {1,  0 },
+        {-1, 0 },
+        {0,  -1}
+    });
+
+    // Generate a buffer for the for corners of a "star"
+    glGenBuffers(1, &shape_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, shape_buffer_);
+    glBufferData(
+        GL_ARRAY_BUFFER, star_shape.size() * sizeof(glm::vec2), star_shape.data(),
+        GL_STATIC_DRAW
+    );
+}
+
+StarData::StarData(std::filesystem::path path) {
     Json::Value stars_json;
     auto stars_file = files::open_data_file(path);
     if (stars_file.has_value())
@@ -57,23 +76,6 @@ SkyData::SkyData(std::filesystem::path path) {
     glBindBuffer(GL_ARRAY_BUFFER, age_buffer_);
     glBufferData(
         GL_ARRAY_BUFFER, star_age.size() * sizeof(GLfloat), star_age.data(),
-        GL_STATIC_DRAW
-    );
-
-    // four point making a diamond centered at 0,0
-    // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
-    std::vector<glm::vec2> star_shape({
-        {0,  1 },
-        {1,  0 },
-        {-1, 0 },
-        {0,  -1}
-    });
-
-    // Generate a buffer for the for corners of a "star"
-    glGenBuffers(1, &shape_buffer_);
-    glBindBuffer(GL_ARRAY_BUFFER, shape_buffer_);
-    glBufferData(
-        GL_ARRAY_BUFFER, star_shape.size() * sizeof(glm::vec2), star_shape.data(),
         GL_STATIC_DRAW
     );
 }

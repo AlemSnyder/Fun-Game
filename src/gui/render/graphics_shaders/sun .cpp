@@ -83,6 +83,18 @@ SunRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
         sun_position_UID_, light_direction.x, light_direction.y, light_direction.z
     );
 
+    // 1st attribute buffer : vertices
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, star_shape_.get_star_shape());
+    glVertexAttribPointer(
+        0,        // attribute
+        2,        // size
+        GL_FLOAT, // type
+        GL_FALSE, // normalized?
+        0,        // stride
+        nullptr   // array buffer offset
+    );
+
     // Draw the triangles !
     glDrawArraysInstanced(
         GL_TRIANGLE_STRIP, // mode
@@ -92,7 +104,7 @@ SunRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buff
 
     );
 
-    glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(0);
 }
 
 } // namespace render

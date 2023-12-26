@@ -1,7 +1,7 @@
 #version 450 core
 
 // Input vertex data, different for all executions of this shader.
-layout(location = 2) in vec2 star_corner;
+layout(location = 0) in vec2 star_corner;
 uniform mat4 MVP;
 uniform mat4 pixel_projection;
 uniform vec3 sun_position;

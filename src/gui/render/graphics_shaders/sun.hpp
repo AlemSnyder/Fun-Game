@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../data_structures/screen_data.hpp"
+#include "../data_structures/star_data.hpp"
 #include "../uniform_types.hpp"
 #include "gui_render_types.hpp"
 #include "opengl_program.hpp"
@@ -48,6 +49,7 @@ namespace render {
 class SunRenderer : public render_to::FrameBuffer, public OpenGLProgramExecuter {
  private:
     data_structures::ScreenData screen_data_;            // screen data
+    data_structures::StarShape star_shape_;     // Star Shape buffer
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting
 
     // sun program uniforms

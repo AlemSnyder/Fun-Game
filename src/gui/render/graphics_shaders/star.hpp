@@ -50,7 +50,7 @@ class StarRenderer :
     public render_to::FrameBuffer,
     public OpenGLProgramExecuter {
  private:
-    data_structures::SkyData star_data_;                 // star data
+    data_structures::StarData star_data_;                 // star data
     data_structures::ScreenData screen_data_;            // screen data
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting
     std::shared_ptr<render::StarRotation>
