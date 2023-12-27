@@ -239,10 +239,11 @@ ShaderHandler::clear() {
 // public
 Shader&
 ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader_type) {
-    auto it = shaders_.find(source_files);
+        ShaderData shader_data(source_files, gl_shader_type);
+    auto it = shaders_.find(shader_data);
     if (it == shaders_.end()) {
-        Shader shader = Shader(source_files, gl_shader_type);
-        auto inserted_iterator = shaders_.emplace(source_files, std::move(shader));
+        Shader shader = Shader(shader_data);
+        auto inserted_iterator = shaders_.emplace(shader_data, std::move(shader));
         // auto shader = ;
         return inserted_iterator.first->second;
     } else {

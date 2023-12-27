@@ -8,7 +8,7 @@ namespace shader {
 
 namespace display_windows {
 
-void display_data(std::map<const shader::Program, shader::Program>& programs);
+void display_data(std::map<const shader::ProgramData, shader::Program>& programs);
 
 }
 

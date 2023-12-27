@@ -34,8 +34,8 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace gui {
 
@@ -76,18 +76,40 @@ class File {
     }
 };
 
-class Shader {
- private:
+class ShaderData {
+ protected:
     const std::vector<File> files_;
+    GLuint shader_type_;
+
+ public:
+    inline ShaderData(const std::vector<File> files, GLuint shader_type) :
+        files_(files), shader_type_(shader_type) {}
+
+    [[nodiscard]] inline std::strong_ordering
+    operator<=>(const ShaderData& other) const noexcept {
+        return files_ <=> other.files_;
+    }
+
+    [[nodiscard]] inline bool
+    operator==(const ShaderData& other) const noexcept {
+        return files_ == other.files_;
+    }
+};
+
+class Shader : public ShaderData {
+ private:
     GLuint shader_ID_;
-    const GLuint shader_type_;
 
     ShaderStatus status_;
 
  public:
     inline Shader(const std::vector<File> files, GLuint shader_type) :
-        files_(files), shader_ID_(0), shader_type_(shader_type),
-        status_(ShaderStatus::EMPTY) {
+        ShaderData(files, shader_type), shader_ID_(0), status_(ShaderStatus::EMPTY) {
+        reload();
+    }
+
+    inline Shader(const ShaderData shader_data) :
+        ShaderData(shader_data), shader_ID_(0), status_(ShaderStatus::EMPTY) {
         reload();
     }
 
@@ -102,28 +124,12 @@ class Shader {
     get_shader_ID() const noexcept {
         return shader_ID_;
     }
-
-    [[nodiscard]] inline std::strong_ordering
-    operator<=>(const Shader& other) const noexcept {
-        return files_ <=> other.files_;
-    }
-
-    [[nodiscard]] inline bool
-    operator==(const Shader& other) const noexcept {
-        return files_ == other.files_;
-    }
 };
 
-class Program {
- private:
-    GLuint program_ID_;
-
+class ProgramData {
+ protected:
     Shader& vertex_shader_;
     Shader& fragment_shader_;
-
-    ProgramStatus status_;
-
-    std::set<OpenGLProgramExecuter*> program_executors_;
 
     /* These aren't implemented because I don't know how to use them.
     std::optional<Shader> geometry_shader_;
@@ -132,9 +138,45 @@ class Program {
     */
 
  public:
+    inline ProgramData(Shader& vertex_shader, Shader& fragment_shader) :
+        vertex_shader_(vertex_shader), fragment_shader_(fragment_shader) {}
+
+    [[nodiscard]] inline bool
+    operator==(const ProgramData& other) const {
+        return vertex_shader_ == other.vertex_shader_
+               && fragment_shader_ == other.fragment_shader_;
+    }
+
+    [[nodiscard]] inline std::strong_ordering
+    operator<=>(const ProgramData& other) const noexcept {
+        std::strong_ordering vert_order = vertex_shader_ <=> other.vertex_shader_;
+        if (vert_order == std::strong_ordering::equivalent) {
+            std::strong_ordering frag_order =
+                fragment_shader_ <=> other.fragment_shader_;
+            return frag_order;
+        }
+        return vert_order;
+    };
+};
+
+class Program : public ProgramData {
+ private:
+    GLuint program_ID_;
+
+    ProgramStatus status_;
+
+    std::set<OpenGLProgramExecuter*> program_executors_;
+
+ public:
     inline Program(Shader& vertex_shader, Shader& fragment_shader) :
-        program_ID_(0), vertex_shader_(vertex_shader),
-        fragment_shader_(fragment_shader), status_(ProgramStatus::EMPTY) {
+        ProgramData(vertex_shader, fragment_shader), program_ID_(0),
+        status_(ProgramStatus::EMPTY) {
+        reload();
+    }
+
+    inline Program(ProgramData program_data) :
+        ProgramData(program_data), program_ID_(0),
+        status_(ProgramStatus::EMPTY) {
         reload();
     }
 
@@ -163,23 +205,6 @@ class Program {
     get_program_ID() const noexcept {
         return program_ID_;
     }
-
-    [[nodiscard]] inline bool
-    operator==(const Program& other) const {
-        return vertex_shader_ == other.vertex_shader_
-               && fragment_shader_ == other.fragment_shader_;
-    }
-
-    [[nodiscard]] inline std::strong_ordering
-    operator<=>(const Program& other) const noexcept {
-        std::strong_ordering vert_order = vertex_shader_ <=> other.vertex_shader_;
-        if (vert_order == std::strong_ordering::equivalent) {
-            std::strong_ordering frag_order =
-                fragment_shader_ <=> other.fragment_shader_;
-            return frag_order;
-        }
-        return vert_order;
-    };
 };
 
 /**
@@ -201,12 +226,12 @@ class ShaderHandler {
     // maybe these should be copies?
     //    std::map<const std::filesystem::path, GLuint> shaders;
 
-    std::set<shader::File> files_;
+    std::set<File> files_;
 
     // I should be tries for the cpp crimes
-    std::map<const std::vector<shader::File>, shader::Shader> shaders_;
+    std::map<const ShaderData, Shader> shaders_;
 
-    std::map<const shader::Program, shader::Program> programs_;
+    std::map<const ProgramData, Program> programs_;
 
  public:
     // file extensions are for losers One must pass the type in addition
@@ -216,20 +241,19 @@ class ShaderHandler {
      * @details Returns a shader program either from cache or by loading one
      * on success, or 0 on failure.
      */
-    shader::Shader&
-    get_shader(const std::vector<shader::File> source_files, GLuint gl_shader_type);
+    Shader& get_shader(const std::vector<File> source_files, GLuint gl_shader_type);
 
-    [[nodiscard]] inline std::map<const shader::Program, shader::Program>&
+    [[nodiscard]] inline std::map<const ProgramData, Program>&
     get_programs() {
         return programs_;
     }
 
-    shader::Program& load_program(
+    Program& load_program(
         const std::vector<std::filesystem::path> vertex_file_path,
         const std::vector<std::filesystem::path> fragment_file_path
     );
 
-    [[nodiscard]] inline shader::Program&
+    [[nodiscard]] inline Program&
     load_program(
         const std::filesystem::path vertex_file_path,
         const std::filesystem::path fragment_file_path
