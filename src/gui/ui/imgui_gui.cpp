@@ -15,6 +15,7 @@
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "../render/graphics_shaders/shader.hpp"
+#include "imgui_windows.hpp"
 #include "imgui_style.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
@@ -221,6 +222,8 @@ imgui_entry(World& world) {
 
             ImGui::End();
         }
+
+        shader::display_windows::display_data(shader_handler.get_programs());
 
         {
             ImGui::Begin("OpenGL Texture Text");

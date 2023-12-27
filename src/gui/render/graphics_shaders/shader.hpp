@@ -35,6 +35,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace gui {
 
@@ -156,6 +157,8 @@ class Program {
         return status_;
     }
 
+    [[nodiscard]] const std::pair<std::string, std::string>& get_status_string() const;
+
     [[nodiscard]] inline GLuint
     get_program_ID() const noexcept {
         return program_ID_;
@@ -194,7 +197,7 @@ std::string get_shader_string(GLuint gl_shader_type);
  * @details
  */
 class ShaderHandler {
- private:
+ protected:
     // maybe these should be copies?
     //    std::map<const std::filesystem::path, GLuint> shaders;
 
@@ -215,6 +218,11 @@ class ShaderHandler {
      */
     shader::Shader&
     get_shader(const std::vector<shader::File> source_files, GLuint gl_shader_type);
+
+    [[nodiscard]] inline std::map<const shader::Program, shader::Program>&
+    get_programs() {
+        return programs_;
+    }
 
     shader::Program& load_program(
         const std::vector<std::filesystem::path> vertex_file_path,
