@@ -71,13 +71,13 @@ Shader::reload() {
     for (File file : files_) {
         std::optional<std::string> file_read = file.get_file_content();
 
-        if (file.get_status() != FileStatus::OK) {
+        if (file.get_status() != FileStatus::OK || !file_read) {
             status_ = ShaderStatus::INVALID_FILE;
-            return;
-        }
-
-        if (!file_read) {
-            status_ = ShaderStatus::INVALID_FILE;
+            LOG_ERROR(
+                logging::file_io_logger,
+                "Could not open {}. Check that the files exists.",
+                file.get_file_path()
+            );
             return;
         }
 
@@ -239,7 +239,7 @@ ShaderHandler::clear() {
 // public
 Shader&
 ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader_type) {
-        ShaderData shader_data(source_files, gl_shader_type);
+    ShaderData shader_data(source_files, gl_shader_type);
     auto it = shaders_.find(shader_data);
     if (it == shaders_.end()) {
         Shader shader = Shader(shader_data);

@@ -12,7 +12,7 @@
  */
 
 /**
- * @file sky.hpp
+ * @file star.hpp
  *
  * @brief Defines MainRender class.
  *
@@ -41,7 +41,7 @@ namespace gui {
 namespace render {
 
 /**
- * @brief Renders the sky background
+ * @brief Renders the stars
  *
  * @details StarRenderer renders the stars. It handles sun and star position.
  *
@@ -77,14 +77,14 @@ class StarRenderer :
     virtual void reload_program() override;
 
     /**
-     * @brief renders the given meshes
+     * @brief Renders the stars
      *
      * @param window the OpenGL window
      */
     void render(screen_size_t width, screen_size_t height, GLuint frame_buffer) const;
 
     /**
-     * @brief Renders sky to given framebuffer
+     * @brief Renders stars to the  given framebuffer
      *
      * @param window OpenGL window
      * @param frame_buffer frame buffer id

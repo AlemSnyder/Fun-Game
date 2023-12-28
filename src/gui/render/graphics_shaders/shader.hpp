@@ -17,7 +17,7 @@
  *
  * @brief Define ShaderHandler
  *
- * @ingroup GUI
+ * @ingroup GUI  SHADER
  *
  */
 
@@ -43,23 +43,49 @@ class OpenGLProgramExecuter;
 
 namespace shader {
 
+/**
+ * @brief File that can be opened.
+ *
+ * @details Has the file path, and stores the status of the file.
+ */
 class File {
  private:
+    // path to file
     const std::filesystem::path file_;
-
+    // file status
     FileStatus status_;
 
  public:
+    /**
+     * @brief Construct a new File object.
+     *
+     * @param file file path
+     */
     inline File(const std::filesystem::path file) :
         file_(std::filesystem::absolute(file)), status_(FileStatus::EMPTY) {}
 
+    /**
+     * @brief Returns file contents as a string.
+     *
+     * @return std::optional<std::string> file contents
+     */
     [[nodiscard]] std::optional<std::string> get_file_content();
 
+    /**
+     * @brief Get file status.
+     *
+     * @return FileStatus
+     */
     [[nodiscard]] inline FileStatus
     get_status() const {
         return status_;
     }
 
+    /**
+     * @brief Get the file path.
+     *
+     * @return std::filesystem::path file path
+     */
     [[nodiscard]] inline std::filesystem::path
     get_file_path() const {
         return file_;
@@ -76,6 +102,11 @@ class File {
     }
 };
 
+/**
+ * @brief Data that is used to create a shader.
+ *
+ * @details In particular this holds the file path and the shader type.
+ */
 class ShaderData {
  protected:
     const std::vector<File> files_;
@@ -96,6 +127,11 @@ class ShaderData {
     }
 };
 
+/**
+ * @brief Represents a shader. Part of a render program.
+ *
+ * @details A shader is one part the the render pipeline.
+ */
 class Shader : public ShaderData {
  private:
     GLuint shader_ID_;
@@ -113,6 +149,12 @@ class Shader : public ShaderData {
         reload();
     }
 
+    /**
+     * @brief Reload this shader.
+     *
+     * @details Tries to reread the files and compile the shader. Will stop if one of
+     * the files is missing or if there is a shader error.
+     */
     void reload();
 
     [[nodiscard]] inline ShaderStatus
@@ -126,6 +168,9 @@ class Shader : public ShaderData {
     }
 };
 
+/**
+ * @brief Contains the data to identify and create a program.
+ */
 class ProgramData {
  protected:
     Shader& vertex_shader_;
@@ -167,6 +212,11 @@ class Program : public ProgramData {
 
     std::set<OpenGLProgramExecuter*> program_executors_;
 
+    /**
+     * @brief An entire OpenGL program pipeline.
+     *
+     * @details Programs are used to render things in OpenGL.
+     */
  public:
     inline Program(Shader& vertex_shader, Shader& fragment_shader) :
         ProgramData(vertex_shader, fragment_shader), program_ID_(0),
@@ -175,8 +225,7 @@ class Program : public ProgramData {
     }
 
     inline Program(ProgramData program_data) :
-        ProgramData(program_data), program_ID_(0),
-        status_(ProgramStatus::EMPTY) {
+        ProgramData(program_data), program_ID_(0), status_(ProgramStatus::EMPTY) {
         reload();
     }
 
@@ -184,23 +233,48 @@ class Program : public ProgramData {
 
     void reload();
 
+    /**
+     * @brief Add OpenGLProgramExecuter so that when the program is updated
+     * uniforms will also be updated.
+     */
     inline void
     add_executor(OpenGLProgramExecuter* program_executor) {
         program_executors_.insert(program_executor);
     }
 
+    /**
+     * @brief Remove OpenGLProgramExecuter usually when the executer is being
+     * deleted.
+     */
     inline void
     remove_executor(OpenGLProgramExecuter* program_executor) {
         program_executors_.erase(program_executor);
     }
 
+    /**
+     * @brief Return the status of the program.
+     *
+     * @details Gives information about the status of the compilation of the
+     * program.
+     */
     [[nodiscard]] inline ProgramStatus
     get_status() const noexcept {
         return status_;
     }
 
+    /**
+     * @brief Get the status of the program as a string.
+     *
+     * @details Returns a pair of strings. The first a short description, and
+     * the second an in-depth description of the error.
+     */
     [[nodiscard]] const std::pair<std::string, std::string>& get_status_string() const;
 
+    /**
+     * @brief Get the ID of the compiled program.
+     * 
+     * @details If the program ID is 0 then the program has not ben compiled.
+    */
     [[nodiscard]] inline GLuint
     get_program_ID() const noexcept {
         return program_ID_;
@@ -248,11 +322,20 @@ class ShaderHandler {
         return programs_;
     }
 
+    /**
+     * @brief Load program from given file paths.
+     * 
+     * @details Technically this should be changed so that one can add other
+     * types of shaders.
+    */
     Program& load_program(
         const std::vector<std::filesystem::path> vertex_file_path,
         const std::vector<std::filesystem::path> fragment_file_path
     );
 
+    /**
+     * @brief Load program from files. In this case only one file.
+    */
     [[nodiscard]] inline Program&
     load_program(
         const std::filesystem::path vertex_file_path,
@@ -261,6 +344,9 @@ class ShaderHandler {
         return load_program(std::vector({vertex_file_path}), {fragment_file_path});
     };
 
+    /**
+     * @brief Deletes all shaders.
+    */
     void clear();
 
     inline ShaderHandler(){};

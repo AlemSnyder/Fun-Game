@@ -12,7 +12,7 @@
  */
 
 /**
- * @file sky.hpp
+ * @file sun.hpp
  *
  * @brief Defines MainRender class.
  *
@@ -41,26 +41,26 @@ namespace gui {
 namespace render {
 
 /**
- * @brief Renders the sky background
+ * @brief Renders the sun
  *
- * @details SunRenderer renders the sun. It handles sun position.
+ * @details SunRenderer renders the sun. It handles sun position and light color.
  *
  */
 class SunRenderer : public render_to::FrameBuffer, public OpenGLProgramExecuter {
  private:
     data_structures::ScreenData screen_data_;            // screen data
-    data_structures::StarShape star_shape_;     // Star Shape buffer
+    data_structures::StarShape star_shape_;              // Star Shape buffer
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting
 
     // sun program uniforms
     GLuint view_projection_UID_;  // view projection matrix for sun program
     GLuint pixel_projection_UID_; // ID of view to pixel space matrix
-    GLuint sun_position_UID_;
-    GLuint sunlight_color_UID_;
+    GLuint sun_position_UID_;     // Sun position uniform
+    GLuint sunlight_color_UID_;   // Sunlight color uniform
 
  public:
     /**
-     * @brief Construct a new Main Renderer object
+     * @brief Construct a new SunRenderer object
      *
      */
     SunRenderer(
@@ -71,14 +71,14 @@ class SunRenderer : public render_to::FrameBuffer, public OpenGLProgramExecuter 
     virtual void reload_program() override;
 
     /**
-     * @brief renders the given meshes
+     * @brief Renders the sun to the given frame    buffer
      *
      * @param window the OpenGL window
      */
     void render(screen_size_t width, screen_size_t height, GLuint frame_buffer) const;
 
     /**
-     * @brief Renders sky to given framebuffer
+     * @brief Renders sun to given framebuffer
      *
      * @param window OpenGL window
      * @param frame_buffer frame buffer id
