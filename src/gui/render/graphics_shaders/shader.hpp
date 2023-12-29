@@ -351,7 +351,6 @@ class ShaderHandler {
 
     inline ShaderHandler(){};
 
-    // TODO delete programs
     inline ~ShaderHandler() { shaders_.clear(); }
 };
 

@@ -251,7 +251,7 @@ ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader
     }
 }
 
-// TODO(alem): what do we do on error
+
 Program&
 ShaderHandler::load_program(
     const std::vector<std::filesystem::path> vertex_file_paths,
