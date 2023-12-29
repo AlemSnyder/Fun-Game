@@ -43,7 +43,7 @@ opengl_entry(World& world) {
     // this. Can I make multiple vertex arrays? If so why should I?
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
     shader::ShaderHandler shader_handler;
 

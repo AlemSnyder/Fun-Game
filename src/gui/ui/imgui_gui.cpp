@@ -60,7 +60,7 @@ imgui_entry(World& world) {
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
