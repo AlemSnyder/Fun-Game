@@ -10,7 +10,7 @@ namespace gui {
 
 namespace shader {
 
-// forward decliration of program
+// forward declaration of program
 class Program;
 
 } // namespace shader
