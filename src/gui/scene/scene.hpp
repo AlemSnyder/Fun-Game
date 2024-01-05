@@ -58,7 +58,6 @@ class Scene {
 
     std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
 
-
     // other
 
  public:

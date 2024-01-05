@@ -1,5 +1,6 @@
-#include "../../util/time.hpp"
 #include "helio.hpp"
+
+#include "../../util/time.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>

@@ -53,9 +53,7 @@ class NonInstancedIMeshShadow :
     public render_to::ShadowMap,
     public OpenGLProgramExecuter {
  protected:
-
     const data_structures::ShadowMap* shadow_map_;
-
 
     GLint depth_bias_id_shadow_; // ID of depth projection matrix for indexed meshes
     // ------ the below are added to the class ------
@@ -119,7 +117,8 @@ NonInstancedIMeshShadow<T>::NonInstancedIMeshShadow(shader::Program& shader_prog
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-void NonInstancedIMeshShadow<T>::reload_program() {
+void
+NonInstancedIMeshShadow<T>::reload_program() {
     depth_bias_id_shadow_ = get_uniform("depth_MVP");
 }
 
@@ -131,8 +130,7 @@ NonInstancedIMeshShadow<T>::add_mesh(std::shared_ptr<T> mesh) {
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
 void
-NonInstancedIMeshShadow<T>::set_shadow_map(
-    const data_structures::ShadowMap* shadow_map
+NonInstancedIMeshShadow<T>::set_shadow_map(const data_structures::ShadowMap* shadow_map
 ) {
     shadow_map_ = shadow_map;
 }

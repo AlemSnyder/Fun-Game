@@ -17,7 +17,7 @@ class LightEnvironment {
 };
 
 class StarRotation {
-    public:
+ public:
     virtual ~StarRotation(){};
     virtual glm::mat4 get_sky_rotation() const = 0;
 };

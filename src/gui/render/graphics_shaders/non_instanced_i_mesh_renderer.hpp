@@ -24,10 +24,9 @@
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
 #include "../../scene/controls.hpp"
-#include "../uniform_types.hpp"
+#include "../data_structures/shadow_map.hpp"
 #include "../graphics_data/non_instanced_i_mesh.hpp"
 #include "../uniform_types.hpp"
-#include "../data_structures/shadow_map.hpp"
 #include "gui_render_types.hpp"
 #include "opengl_program.hpp"
 #include "shader.hpp"
@@ -59,7 +58,7 @@ class NonInstancedIMeshRenderer :
     const data_structures::ShadowMap* shadow_map_;
 
     std::shared_ptr<render::LightEnvironment> lighting_;
-    
+
     //    GLuint program_id_render_; // ID of render program
 
     GLint matrix_id_render_;      // uniform ID of transform matrix
@@ -72,7 +71,7 @@ class NonInstancedIMeshRenderer :
     GLint diffuse_light_color_;
 
     // ------ the below are added to the class ------
-    GLuint depth_texture_;              // ID of the shadow depth texture
+    GLuint depth_texture_; // ID of the shadow depth texture
     //  light direction
     std::vector<std::shared_ptr<T>> meshes_;
 
@@ -82,7 +81,10 @@ class NonInstancedIMeshRenderer :
      *
      * @param ShaderHandler
      */
-    NonInstancedIMeshRenderer(shader::Program& render_program, std::shared_ptr<render::LightEnvironment> lighting);
+    NonInstancedIMeshRenderer(
+        shader::Program& render_program,
+        std::shared_ptr<render::LightEnvironment> lighting
+    );
 
     virtual ~NonInstancedIMeshRenderer() {}
 
@@ -117,15 +119,17 @@ class NonInstancedIMeshRenderer :
 };
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(shader::Program& render_program, std::shared_ptr<render::LightEnvironment> lighting
+NonInstancedIMeshRenderer<T>::NonInstancedIMeshRenderer(
+    shader::Program& render_program, std::shared_ptr<render::LightEnvironment> lighting
 ) :
-    OpenGLProgramExecuter(render_program), lighting_(lighting) {
-reload_program();
+    OpenGLProgramExecuter(render_program),
+    lighting_(lighting) {
+    reload_program();
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
-void NonInstancedIMeshRenderer<T>::reload_program(
-) {
+void
+NonInstancedIMeshRenderer<T>::reload_program() {
     // ------ indexed program ------
     matrix_id_render_ = get_uniform("MVP");
     view_matrix_id_render_ = get_uniform("view_matrix");
@@ -247,8 +251,7 @@ NonInstancedIMeshRenderer<T>::setup_render() const {
     const glm::vec3 sunlight_color = lighting_->get_specular_light();
 
     glUniform3f(
-        direct_light_color_, sunlight_color.r, sunlight_color.g,
-        sunlight_color.b
+        direct_light_color_, sunlight_color.r, sunlight_color.g, sunlight_color.b
     );
 
     const glm::vec3 diffuse_light_color = lighting_->get_diffuse_light();

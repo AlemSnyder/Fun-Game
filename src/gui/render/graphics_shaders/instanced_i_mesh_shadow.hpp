@@ -22,10 +22,10 @@
 #pragma once
 
 #include "../../../types.hpp"
-#include "shader.hpp"
 #include "../graphics_data/instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
 #include "non_instanced_i_mesh_shadow.hpp"
+#include "shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -67,9 +67,7 @@ class InstancedIMeshShadow : public NonInstancedIMeshShadow<T> {
 };
 
 template <data_structures::InstancedIMeshGPUDataType T>
-InstancedIMeshShadow<T>::InstancedIMeshShadow(
-    shader::Program& shadow_program
-) :
+InstancedIMeshShadow<T>::InstancedIMeshShadow(shader::Program& shadow_program) :
     InstancedIMeshShadow<T>(shadow_program) {}
 
 template <data_structures::InstancedIMeshGPUDataType T>

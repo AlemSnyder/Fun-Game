@@ -28,11 +28,13 @@ class OpenGLProgramExecuter {
     // callback for when the program is updated
     virtual void reload_program() = 0;
 
-    inline virtual void no_program(){
+    inline virtual void
+    no_program() {
         program_exists_ = false;
     }
 
     [[nodiscard]] GLuint get_program_ID() const noexcept;
+
     // get program status
 
     [[nodiscard]] GLint inline get_uniform(std::string uniform_name) {

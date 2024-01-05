@@ -75,8 +75,7 @@ Shader::reload() {
             status_ = ShaderStatus::INVALID_FILE;
             LOG_ERROR(
                 logging::file_io_logger,
-                "Could not open {}. Check that the files exists.",
-                file.get_file_path()
+                "Could not open {}. Check that the files exists.", file.get_file_path()
             );
             return;
         }
@@ -190,28 +189,24 @@ Program::get_status_string() const {
     static std::pair<std::string, std::string> ok_string = {
         "OK",
         "This program and its corresponding shaders have compiled successfully. If "
-        "there is still some error check that Uniforms and Locations are set correctly."
-    };
+        "there is still some error check that Uniforms and Locations are set "
+        "correctly."};
 
     static std::pair<std::string, std::string> linking_failed_string = {
         "Linking Failed",
         "There is an error when connecting different shader types together. Check that "
-        "the inputs and output between shaders align."
-    };
+        "the inputs and output between shaders align."};
 
     static std::pair<std::string, std::string> invalid_shader_string = {
         "Shader Failed", "Error compiling constituent shader(s). Check the log file "
-                         "for more information."
-    };
+                         "for more information."};
 
     static std::pair<std::string, std::string> empty_program_string = {
-        "No Program; Reload", "Program has not been loaded. Click the reload button."
-    };
+        "No Program; Reload", "Program has not been loaded. Click the reload button."};
 
     static std::pair<std::string, std::string> other_string = {
         "This should not happen",
-        "This is a bug that should be reported to the developers."
-    };
+        "This is a bug that should be reported to the developers."};
 
     switch (status_) {
         case ProgramStatus::OK:
@@ -250,7 +245,6 @@ ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader
         return it->second;
     }
 }
-
 
 Program&
 ShaderHandler::load_program(

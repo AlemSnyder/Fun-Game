@@ -23,7 +23,7 @@ StarRenderer::StarRenderer(
 ) :
     OpenGLProgramExecuter(shader_program),
     star_data_(files::get_data_path() / "stars.json"), lighting_(lighting),
-    star_rotation_(star_rotation){
+    star_rotation_(star_rotation) {
     reload_program();
 }
 
@@ -84,9 +84,7 @@ StarRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buf
         sun_position_UID_, light_direction.x, light_direction.y, light_direction.z
     );
     // the sun color
-        glUniform3f(
-        sunlight_color_UID_, light_color.r, light_color.g, light_color.b
-    );
+    glUniform3f(sunlight_color_UID_, light_color.r, light_color.g, light_color.b);
 
     glm::mat4 sky_rotation_matrix = star_rotation_->get_sky_rotation();
 
@@ -96,9 +94,7 @@ StarRenderer::render(screen_size_t width, screen_size_t height, GLuint frame_buf
     // in the "pixel_projection" uniform
     glUniformMatrix4fv(pixel_projection_UID_, 1, GL_FALSE, &pixel_window[0][0]);
 
-    glUniformMatrix4fv(
-        star_rotation_UID_, 1, GL_FALSE, &sky_rotation_matrix[0][0]
-    );
+    glUniformMatrix4fv(star_rotation_UID_, 1, GL_FALSE, &sky_rotation_matrix[0][0]);
 
     // 1st attribute buffer : positions
     glEnableVertexAttribArray(0);

@@ -21,12 +21,12 @@
  */
 #pragma once
 
-#include "shader.hpp"
 #include "../data_structures/screen_data.hpp"
 #include "../data_structures/star_data.hpp"
 #include "../uniform_types.hpp"
 #include "gui_render_types.hpp"
 #include "opengl_program.hpp"
+#include "shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -47,9 +47,7 @@ namespace render {
  * position.
  *
  */
-class SkyRenderer :
-    public render_to::FrameBuffer,
-    public OpenGLProgramExecuter {
+class SkyRenderer : public render_to::FrameBuffer, public OpenGLProgramExecuter {
  private:
     data_structures::ScreenData screen_data_;            // screen data
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting

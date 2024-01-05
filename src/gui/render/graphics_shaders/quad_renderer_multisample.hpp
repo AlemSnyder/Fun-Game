@@ -22,9 +22,9 @@
 #pragma once
 
 #include "../../../types.hpp"
-#include "shader.hpp"
 #include "gui_render_types.hpp"
 #include "quad_renderer.hpp"
+#include "shader.hpp"
 
 #include <memory>
 #include <vector>

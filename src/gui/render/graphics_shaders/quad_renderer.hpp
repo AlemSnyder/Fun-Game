@@ -22,12 +22,11 @@
 #pragma once
 
 #include "../../../types.hpp"
+#include "gui_render_types.hpp"
 #include "opengl_program.hpp"
 #include "shader.hpp"
-#include "gui_render_types.hpp"
 
 #include <GL/glew.h>
-
 
 namespace gui {
 

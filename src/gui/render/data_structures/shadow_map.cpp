@@ -70,7 +70,7 @@ ShadowMap::update() {
     glm::mat4 inverse_view_projection = glm::inverse(projection_matrix * view_matrix);
 
     std::vector<glm::vec4> shadow_range_corners;
-    glm::vec4 center(0,0,0,0);
+    glm::vec4 center(0, 0, 0, 0);
 
     for (int x = -1; x < 2; x += 2) {
         for (int y = -1; y < 2; y += 2) {
@@ -80,7 +80,7 @@ ShadowMap::update() {
                 glm::vec4 direction = inverse_view_projection * corner;
                 direction = direction / direction.w;
                 shadow_range_corners.emplace_back(direction);
-                center =+ direction;
+                center = +direction;
             }
         }
     }
@@ -120,9 +120,8 @@ ShadowMap::update() {
         }
     }
 
-    depth_projection_matrix_ = glm::ortho(
-        x_min, x_max, y_min, y_max, -z_max - 100.0, -z_min
-    );
+    depth_projection_matrix_ =
+        glm::ortho(x_min, x_max, y_min, y_max, -z_max - 100.0, -z_min);
 }
 
 } // namespace data_structures

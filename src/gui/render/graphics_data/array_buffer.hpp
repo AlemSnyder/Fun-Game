@@ -28,6 +28,7 @@ enum class GL_draw_type : GLenum {
     // clang-format one
 };
 
+
 // cursed
 class array_buffer_type {
  protected:
@@ -38,18 +39,55 @@ class array_buffer_type {
 
 
  public:
-    template <std::integral T>
-    array_buffer_type(T i);
-
-    template <int i, class T, glm::qualifier Q>
-    array_buffer_type(glm::vec<i, T, Q> vec);
-
-    template <class T>
-    array_buffer_type(T other);
 
     array_buffer_type(int vec_size, int type_size, bool is_int, GL_draw_type draw_type);
 
-    constexpr GL_draw_type presume_type(std::integral auto i);
+    template <std::integral T>
+    constexpr GL_draw_type presume_type() {
+        switch (sizeof(T)) {
+        case sizeof(int8_t):
+            if (std::is_unsigned_v<T>)
+                return GL_draw_type::UNSIGNED_BYTE;
+            else
+                return GL_draw_type::BYTE;
+
+        case (sizeof(int16_t)):
+            if (std::is_unsigned_v<T>)
+                return GL_draw_type::UNSIGNED_SHORT;
+            else
+                return GL_draw_type::SHORT;
+
+        case (sizeof(int32_t)):
+            if (std::is_unsigned_v<T>)
+                return GL_draw_type::UNSIGNED_INT;
+            else
+                return GL_draw_type::INT;
+
+        default:
+            assert(false && "Invalid type.");
+            break;
+        }
+    }
+
+    template <std::integral T>
+    inline constexpr static array_buffer_type init() {
+        return array_buffer_type(1, sizeof(T), true, presume_type<T>());
+    }
+
+    template <int i, class T, glm::qualifier Q>
+    constexpr static array_buffer_type init(){
+        return array_buffer_type(i,
+            sizeof(T),
+            std::is_integral_v<T>(),
+            presume_type<T>());
+        }
+
+    template <class T>
+    constexpr static array_buffer_type init(){
+        assert(false && "Invalid type.");
+        return {0,0,0,GL_draw_type::BYTE};
+    }
+
 };
 
 class ArrayBuffer : public array_buffer_type {

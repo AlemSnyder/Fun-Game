@@ -12,11 +12,11 @@
 #include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
+#include "../render/graphics_shaders/shader.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
-#include "../render/graphics_shaders/shader.hpp"
-#include "imgui_windows.hpp"
 #include "imgui_style.hpp"
+#include "imgui_windows.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 
@@ -110,12 +110,11 @@ imgui_entry(World& world) {
 
         if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
             // Disable the mouse so it doesn't appear while playing
-            //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
             // Process inputs
             controls::computeMatricesFromInputs(window);
-        }
-        else {
+        } else {
             // Show the mouse for use with IMGUI
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }

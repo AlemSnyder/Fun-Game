@@ -14,8 +14,8 @@ namespace gui {
 
 namespace data_structures {
 
-StarShape::StarShape(){
-        // four point making a diamond centered at 0,0
+StarShape::StarShape() {
+    // four point making a diamond centered at 0,0
     // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
     std::vector<glm::vec2> star_shape({
         {0,  1 },

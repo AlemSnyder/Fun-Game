@@ -27,7 +27,6 @@
 
 namespace gui {
 
-
 class BinderBase {
  protected:
     // Private CTOR as this is a singleton
@@ -40,7 +39,6 @@ class BinderBase {
 
     void operator=(BinderBase&&) = delete;
     void operator=(BinderBase const&) = delete;
-
 };
 
 /**

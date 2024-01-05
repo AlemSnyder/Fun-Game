@@ -22,10 +22,10 @@
 #pragma once
 
 #include "../../../types.hpp"
-#include "shader.hpp"
 #include "../graphics_data/instanced_i_mesh.hpp"
 #include "gui_render_types.hpp"
 #include "non_instanced_i_mesh_renderer.hpp"
+#include "shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -80,13 +80,10 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
     void render_frame_buffer_multisample(
         screen_size_t width, screen_size_t height, GLuint frame_buffer = 0
     ) const override;
-
 };
 
 template <data_structures::InstancedIMeshGPUDataType T>
-InstancedIMeshRenderer<T>::InstancedIMeshRenderer(
-    shader::Program& render_program
-) :
+InstancedIMeshRenderer<T>::InstancedIMeshRenderer(shader::Program& render_program) :
     NonInstancedIMeshRenderer<T>(render_program) {}
 
 template <data_structures::InstancedIMeshGPUDataType T>

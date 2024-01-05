@@ -4,7 +4,8 @@ namespace gui {
 
 namespace shader {
 void
-display_windows::display_data(std::map<const shader::ProgramData, shader::Program>& programs
+display_windows::display_data(
+    std::map<const shader::ProgramData, shader::Program>& programs
 ) {
     ImGui::Begin("Shader Programs");
 

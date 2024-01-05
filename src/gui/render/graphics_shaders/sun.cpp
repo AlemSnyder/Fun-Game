@@ -1,9 +1,10 @@
+#include "sun.hpp"
+
 #include "../../../util/files.hpp"
 #include "../../handler.hpp"
 #include "../../scene/controls.hpp"
 #include "opengl_program.hpp"
 #include "shader.hpp"
-#include "sun.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

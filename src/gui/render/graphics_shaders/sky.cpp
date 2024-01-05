@@ -19,7 +19,8 @@ namespace render {
 SkyRenderer::SkyRenderer(
     std::shared_ptr<render::LightEnvironment> lighting, shader::Program& shader_program
 ) :
-    OpenGLProgramExecuter(shader_program), lighting_(lighting) {
+    OpenGLProgramExecuter(shader_program),
+    lighting_(lighting) {
     reload_program();
 }
 

@@ -24,5 +24,4 @@ VertexBufferHandler::bind_vertex_buffer(GLuint new_vertex_buffer) {
     }
 }
 
-
 } // namespace gui

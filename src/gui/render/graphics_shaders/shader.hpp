@@ -272,9 +272,9 @@ class Program : public ProgramData {
 
     /**
      * @brief Get the ID of the compiled program.
-     * 
+     *
      * @details If the program ID is 0 then the program has not ben compiled.
-    */
+     */
     [[nodiscard]] inline GLuint
     get_program_ID() const noexcept {
         return program_ID_;
@@ -324,10 +324,10 @@ class ShaderHandler {
 
     /**
      * @brief Load program from given file paths.
-     * 
+     *
      * @details Technically this should be changed so that one can add other
      * types of shaders.
-    */
+     */
     Program& load_program(
         const std::vector<std::filesystem::path> vertex_file_path,
         const std::vector<std::filesystem::path> fragment_file_path
@@ -335,7 +335,7 @@ class ShaderHandler {
 
     /**
      * @brief Load program from files. In this case only one file.
-    */
+     */
     [[nodiscard]] inline Program&
     load_program(
         const std::filesystem::path vertex_file_path,
@@ -346,7 +346,7 @@ class ShaderHandler {
 
     /**
      * @brief Deletes all shaders.
-    */
+     */
     void clear();
 
     inline ShaderHandler(){};

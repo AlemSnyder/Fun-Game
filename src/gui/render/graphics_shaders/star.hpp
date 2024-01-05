@@ -21,12 +21,12 @@
  */
 #pragma once
 
-#include "shader.hpp"
 #include "../data_structures/screen_data.hpp"
 #include "../data_structures/star_data.hpp"
 #include "../uniform_types.hpp"
 #include "gui_render_types.hpp"
 #include "opengl_program.hpp"
+#include "shader.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -46,11 +46,9 @@ namespace render {
  * @details StarRenderer renders the stars. It handles sun and star position.
  *
  */
-class StarRenderer :
-    public render_to::FrameBuffer,
-    public OpenGLProgramExecuter {
+class StarRenderer : public render_to::FrameBuffer, public OpenGLProgramExecuter {
  private:
-    data_structures::StarData star_data_;                 // star data
+    data_structures::StarData star_data_;                // star data
     data_structures::ScreenData screen_data_;            // screen data
     std::shared_ptr<render::LightEnvironment> lighting_; // lighting
     std::shared_ptr<render::StarRotation>

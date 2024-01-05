@@ -1,7 +1,7 @@
 #include "config.h"
 #include "entity/mesh.hpp"
-#include "gui/scene/controls.hpp"
 #include "gui/render/graphics_shaders/shader.hpp"
+#include "gui/scene/controls.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
@@ -47,8 +47,7 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data
-    };
+        biome_name, materials_json, biome_data};
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
