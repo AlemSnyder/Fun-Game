@@ -22,6 +22,7 @@
  */
 
 #include "../../../entity/mesh.hpp"
+#include "array_buffer.hpp"
 #include "non_instanced_i_mesh.hpp"
 
 #include <GL/glew.h>
@@ -44,7 +45,7 @@ namespace data_structures {
  */
 class InstancedIMeshGPU : public NonInstancedIMeshGPU {
  private:
-    GLuint transforms_buffer_;
+    ArrayBuffer transforms_array_;
     uint32_t num_models_;
 
  public:
@@ -58,11 +59,21 @@ class InstancedIMeshGPU : public NonInstancedIMeshGPU {
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
     );
 
-    inline ~InstancedIMeshGPU() { glDeleteBuffers(1, &transforms_buffer_); }
+    inline void
+    bind() const {
+        NonInstancedIMeshGPU::bind();
+        transforms_array_.bind(3, 3);
+    }
 
-    [[nodiscard]] inline GLuint
+    inline void
+    bind_color() const {
+        NonInstancedIMeshGPU::bind_color();
+        transforms_array_.bind(3, 3);
+    }
+
+    [[nodiscard]] inline const ArrayBuffer&
     get_model_transforms() const noexcept {
-        return transforms_buffer_;
+        return transforms_array_;
     }
 
     [[nodiscard]] inline uint32_t

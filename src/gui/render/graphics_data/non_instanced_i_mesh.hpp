@@ -26,6 +26,7 @@
 // Also no namespace terrain
 
 #include "../../../entity/mesh.hpp"
+#include "array_buffer.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -47,10 +48,10 @@ namespace data_structures {
  */
 class NonInstancedIMeshGPU {
  protected:
-    GLuint vertex_buffer_;
-    GLuint color_buffer_;
-    GLuint normal_buffer_;
-    GLuint element_buffer_;
+    ArrayBuffer vertex_array_;
+    ArrayBuffer color_array_;
+    ArrayBuffer normal_array_;
+    ArrayBuffer element_array_;
     GLuint color_texture_;
     uint32_t num_vertices_;
     bool do_render_;
@@ -62,42 +63,43 @@ class NonInstancedIMeshGPU {
     NonInstancedIMeshGPU& operator=(const NonInstancedIMeshGPU& other) = delete;
     NonInstancedIMeshGPU& operator=(NonInstancedIMeshGPU&& other) = default;
 
-    inline NonInstancedIMeshGPU(){};
+    inline NonInstancedIMeshGPU() : NonInstancedIMeshGPU(entity::Mesh()) {}
 
-    explicit inline NonInstancedIMeshGPU(const entity::Mesh& mesh) { update(mesh); }
+    explicit inline NonInstancedIMeshGPU(const entity::Mesh& mesh) :
+        vertex_array_(mesh.get_indexed_vertices()),
+        color_array_(mesh.get_indexed_color_ids()),
+        normal_array_(mesh.get_indexed_normals()),
+        element_array_(mesh.get_indices(), 0, buffer_type::ELEMENT_ARRAY_BUFFER) {}
 
     void update(const entity::Mesh& mesh);
 
-    inline ~NonInstancedIMeshGPU() {
-        glDeleteBuffers(1, &vertex_buffer_);
-        glDeleteBuffers(1, &color_buffer_);
-        glDeleteBuffers(1, &normal_buffer_);
-        glDeleteBuffers(1, &element_buffer_);
-    }
+    void bind() const;
+
+    void bind_color() const;
 
     [[nodiscard]] inline bool
     do_render() const noexcept {
         return do_render_;
     }
 
-    [[nodiscard]] inline GLuint
+    [[nodiscard]] inline const ArrayBuffer
     get_color_buffer() const noexcept {
-        return color_buffer_;
+        return color_array_;
     }
 
-    [[nodiscard]] inline GLuint
+    [[nodiscard]] inline const ArrayBuffer
     get_element_buffer() const noexcept {
-        return element_buffer_;
+        return element_array_;
     }
 
-    [[nodiscard]] inline GLuint
+    [[nodiscard]] inline const ArrayBuffer
     get_normal_buffer() const noexcept {
-        return normal_buffer_;
+        return normal_array_;
     }
 
-    [[nodiscard]] inline GLuint
+    [[nodiscard]] inline const ArrayBuffer
     get_vertex_buffer() const noexcept {
-        return vertex_buffer_;
+        return vertex_array_;
     }
 
     [[nodiscard]] inline GLuint

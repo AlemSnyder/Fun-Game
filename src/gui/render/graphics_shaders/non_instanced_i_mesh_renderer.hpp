@@ -111,10 +111,6 @@ class NonInstancedIMeshRenderer :
     ) const override;
 
  protected:
-    void load_vertex_buffer(std::shared_ptr<T> mesh) const;
-
-    void load_color_buffers(std::shared_ptr<T> mesh) const;
-
     void setup_render() const;
 };
 
@@ -153,54 +149,6 @@ NonInstancedIMeshRenderer<T>::set_shadow_map(
     const data_structures::ShadowMap* shadow_map
 ) {
     shadow_map_ = shadow_map;
-}
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshRenderer<T>::load_vertex_buffer(std::shared_ptr<T> mesh) const {
-    // 1rst attribute buffer : vertices
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-    glVertexAttribIPointer(
-        0,       // attribute
-        3,       // size
-        GL_INT,  // type
-        0,       // stride
-        (void*)0 // array buffer offset
-    );
-
-    // Index buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
-}
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshRenderer<T>::load_color_buffers(std::shared_ptr<T> mesh) const {
-    // 2nd attribute buffer : colors
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->get_color_buffer());
-    glVertexAttribIPointer(
-        1,                 // attribute
-        1,                 // size
-        GL_UNSIGNED_SHORT, // type
-        0,                 // stride
-        (void*)0           // array buffer offset
-    );
-
-    // 3rd attribute buffer : normals
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->get_normal_buffer());
-    glVertexAttribIPointer(
-        2,       // attribute
-        3,       // size
-        GL_BYTE, // type
-        0,       // stride
-        (void*)0 // array buffer offset
-    );
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_1D, mesh->get_color_texture());
-    glUniform1i(color_map_id_render_, 2);
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
@@ -296,9 +244,7 @@ NonInstancedIMeshRenderer<T>::render_frame_buffer(
             continue;
         }
 
-        load_vertex_buffer(mesh);
-
-        load_color_buffers(mesh);
+        mesh->bind_color();
 
         // Draw the triangles !
         glDrawElements(

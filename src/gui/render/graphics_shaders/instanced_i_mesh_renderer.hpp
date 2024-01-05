@@ -59,8 +59,6 @@ class InstancedIMeshRenderer : public NonInstancedIMeshRenderer<T> {
 
     virtual ~InstancedIMeshRenderer() {}
 
-    void load_transforms_buffer(std::shared_ptr<T> mesh) const;
-
     /**
      * @brief Renders internal meshes to given framebuffer
      *
@@ -88,25 +86,6 @@ InstancedIMeshRenderer<T>::InstancedIMeshRenderer(shader::Program& render_progra
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void
-InstancedIMeshRenderer<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
-    // 4nd attribute buffer : transform
-    glEnableVertexAttribArray(3);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
-    glVertexAttribIPointer(
-        3,       // attribute
-        3,       // size
-        GL_INT,  // type
-        0,       // stride
-        (void*)0 // array buffer offset
-    );
-    glVertexAttribDivisor(3, 1);
-    // to undo the vertex attribute divisor do
-    // glVertexAttribDivisor(3, 0);
-}
-
-template <data_structures::InstancedIMeshGPUDataType T>
-void
 InstancedIMeshRenderer<T>::render_frame_buffer(
     screen_size_t width, screen_size_t height, GLuint frame_buffer
 ) const {
@@ -124,10 +103,7 @@ InstancedIMeshRenderer<T>::render_frame_buffer(
             continue;
         }
 
-        load_vertex_buffer(mesh);
-        load_color_buffers(mesh);
-
-        load_transforms_buffer();
+        mesh->bind_color();
 
         // Draw the triangles !
         glDrawElementsInstanced(

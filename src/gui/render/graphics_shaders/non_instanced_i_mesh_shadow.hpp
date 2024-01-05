@@ -81,20 +81,6 @@ class NonInstancedIMeshShadow :
     virtual void set_shadow_map(const data_structures::ShadowMap* shadow_map);
 
     /**
-     * @brief Set the light direction vector
-     *
-     * @param light_direction the direction of the light
-     */
-    void set_light_direction(glm::vec3 light_direction);
-
-    /**
-     * @brief Set the depth projection matrix
-     *
-     * @param depth_projection_matrix the projection matrix
-     */
-    void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
-
-    /**
      * @brief renders the given meshes to a shadow map
      *
      * @param screen_size_t shadow map width
@@ -105,8 +91,6 @@ class NonInstancedIMeshShadow :
     ) const override;
 
  protected:
-    void load_vertex_buffer(std::shared_ptr<T> mesh) const;
-
     void setup_shadow() const;
 };
 
@@ -133,24 +117,6 @@ void
 NonInstancedIMeshShadow<T>::set_shadow_map(const data_structures::ShadowMap* shadow_map
 ) {
     shadow_map_ = shadow_map;
-}
-
-template <data_structures::NonInstancedIMeshGPUDataType T>
-void
-NonInstancedIMeshShadow<T>::load_vertex_buffer(std::shared_ptr<T> mesh) const {
-    // 1rst attribute buffer : vertices
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->get_vertex_buffer());
-    glVertexAttribIPointer(
-        0,       // attribute
-        3,       // size
-        GL_INT,  // type
-        0,       // stride
-        (void*)0 // array buffer offset
-    );
-
-    // Index buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->get_element_buffer());
 }
 
 template <data_structures::NonInstancedIMeshGPUDataType T>
@@ -188,7 +154,7 @@ NonInstancedIMeshShadow<T>::render_shadow_map(
             continue;
         }
 
-        load_vertex_buffer(mesh);
+        mesh->bind();
 
         // Draw the triangles !
         glDrawElements(

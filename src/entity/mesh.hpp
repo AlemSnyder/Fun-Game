@@ -54,6 +54,10 @@ class Mesh {
         indexed_color_ids_(indexed_color_ids), indexed_normals_(indexed_normals),
         color_map_(color_map) {}
 
+    Mesh() :
+        size_({0, 0, 0}), center_({0, 0, 0}), indices_({}), indexed_vertices_({}),
+        indexed_color_ids_({}), indexed_normals_({}), color_map_({}) {}
+
     // friend World;
 
  protected:

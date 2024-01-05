@@ -59,8 +59,6 @@ class InstancedIMeshShadow : public NonInstancedIMeshShadow<T> {
 
     virtual ~InstancedIMeshShadow() {}
 
-    void load_transforms_buffer(std::shared_ptr<T> mesh) const;
-
     void render_shadow_map(
         screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
     ) const override;
@@ -69,25 +67,6 @@ class InstancedIMeshShadow : public NonInstancedIMeshShadow<T> {
 template <data_structures::InstancedIMeshGPUDataType T>
 InstancedIMeshShadow<T>::InstancedIMeshShadow(shader::Program& shadow_program) :
     InstancedIMeshShadow<T>(shadow_program) {}
-
-template <data_structures::InstancedIMeshGPUDataType T>
-void
-InstancedIMeshShadow<T>::load_transforms_buffer(std::shared_ptr<T> mesh) const {
-    // 4nd attribute buffer : transform
-    glEnableVertexAttribArray(3);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->get_model_transforms());
-    glVertexAttribIPointer(
-        3,       // attribute
-        3,       // size
-        GL_INT,  // type
-        0,       // stride
-        (void*)0 // array buffer offset
-    );
-    glVertexAttribDivisor(3, 1);
-    // to undo the vertex attribute divisor do
-    // glVertexAttribDivisor(3, 0);
-}
 
 template <data_structures::InstancedIMeshGPUDataType T>
 void
@@ -107,18 +86,16 @@ InstancedIMeshShadow<T>::render_shadow_map(
             continue;
         }
 
-        NonInstancedIMeshRenderer<T>::load_vertex_buffer(mesh);
+        mesh->bind()
 
-        load_transforms_buffer(mesh);
-
-        // Draw the triangles !
-        glDrawElementsInstanced(
-            GL_TRIANGLES,             // mode
-            mesh->get_num_vertices(), // count
-            GL_UNSIGNED_SHORT,        // type
-            (void*)0,                 // element array buffer offset
-            mesh->get_num_models()
-        );
+            // Draw the triangles !
+            glDrawElementsInstanced(
+                GL_TRIANGLES,             // mode
+                mesh->get_num_vertices(), // count
+                GL_UNSIGNED_SHORT,        // type
+                (void*)0,                 // element array buffer offset
+                mesh->get_num_models()
+            );
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(3);
