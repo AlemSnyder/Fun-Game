@@ -27,6 +27,7 @@
 
 #include "../../../entity/mesh.hpp"
 #include "array_buffer.hpp"
+#include "gpu_data.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -46,7 +47,7 @@ namespace data_structures {
  * @details Handles non-instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class NonInstancedIMeshGPU {
+class NonInstancedIMeshGPU : virtual public GPUDataElements{
  protected:
     ArrayBuffer vertex_array_;
     ArrayBuffer color_array_;
@@ -71,14 +72,13 @@ class NonInstancedIMeshGPU {
         normal_array_(mesh.get_indexed_normals()),
         element_array_(mesh.get_indices(), 0, buffer_type::ELEMENT_ARRAY_BUFFER) {}
 
-    void update(const entity::Mesh& mesh);
+    virtual void update(const entity::Mesh& mesh);
 
-    void bind() const;
+    virtual void bind() const;
 
-    void bind_color() const;
+    virtual void release() const;
 
-    [[nodiscard]] inline bool
-    do_render() const noexcept {
+    [[nodiscard]] inline bool virtual do_render() const noexcept override {
         return do_render_;
     }
 
@@ -107,14 +107,17 @@ class NonInstancedIMeshGPU {
         return color_texture_;
     }
 
-    [[nodiscard]] inline uint32_t
-    get_num_vertices() const noexcept {
+    [[nodiscard]] inline uint32_t virtual
+    get_num_vertices() const noexcept override {
         return num_vertices_;
     }
-};
 
-template <class T>
-concept NonInstancedIMeshGPUDataType = std::is_base_of<NonInstancedIMeshGPU, T>::value;
+
+    [[nodiscard]] inline GLenum virtual
+    get_element_type() const noexcept override {
+        return static_cast<GLenum>(element_array_.get_draw_type());
+    }
+};
 
 } // namespace data_structures
 

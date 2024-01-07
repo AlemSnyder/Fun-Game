@@ -1,6 +1,7 @@
 #include "opengl_program.hpp"
 
-#include "shader.hpp"
+#include "program_handler.hpp"
+#include "uniform.hpp"
 
 namespace gui {
 
@@ -10,22 +11,29 @@ OpenGLProgramExecuter::OpenGLProgramExecuter(shader::Program& shader_program) :
 }
 
 OpenGLProgramExecuter::~OpenGLProgramExecuter() {
-    if (program_exists_)
+    if (program_exists_) [[likely]]
         shader_program_.remove_executor(this);
 }
 
 GLuint
-gui::OpenGLProgramExecuter::get_program_ID() const noexcept {
-    if (program_exists_)
+OpenGLProgramExecuter::get_program_ID() const noexcept {
+    if (program_exists_) [[likely]]
         return shader_program_.get_program_ID();
     return 0;
 }
 
-gui::shader::ProgramStatus
-gui::OpenGLProgramExecuter::get_program_status() const noexcept {
-    if (program_exists_)
+shader::ProgramStatus
+OpenGLProgramExecuter::get_program_status() const noexcept {
+    if (program_exists_) [[likely]]
         return shader_program_.get_status();
     return shader::ProgramStatus::EMPTY;
+}
+
+void
+OpenGLProgramExecuter::attach_uniforms(shader::Uniforms& uniforms) {
+    for (auto& uniform : uniforms) {
+        uniform->uniform_ID_ = get_uniform(uniform->get_name());
+    }
 }
 
 } // namespace gui

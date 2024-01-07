@@ -25,13 +25,15 @@ void
 NonInstancedIMeshGPU::bind() const {
     vertex_array_.bind(0, 0);
     element_array_.bind(-1, -1);
+    color_array_.bind(1, 1);
+    normal_array_.bind(2, 2);
 }
 
 void
-NonInstancedIMeshGPU::bind_color() const {
-    bind();
-    color_array_.bind(1, 1);
-    normal_array_.bind(2, 2);
+NonInstancedIMeshGPU::release() const {
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 }
 
 } // namespace data_structures

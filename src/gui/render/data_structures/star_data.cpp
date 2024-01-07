@@ -14,23 +14,15 @@ namespace gui {
 
 namespace data_structures {
 
-StarShape::StarShape() {
-    // four point making a diamond centered at 0,0
-    // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
-    std::vector<glm::vec2> star_shape({
+StarShape::StarShape() :
+    shape_buffer_(ArrayBuffer(std::vector<glm::vec2>({
         {0,  1 },
         {1,  0 },
         {-1, 0 },
         {0,  -1}
-    });
-
-    // Generate a buffer for the for corners of a "star"
-    glGenBuffers(1, &shape_buffer_);
-    glBindBuffer(GL_ARRAY_BUFFER, shape_buffer_);
-    glBufferData(
-        GL_ARRAY_BUFFER, star_shape.size() * sizeof(glm::vec2), star_shape.data(),
-        GL_STATIC_DRAW
-    );
+}))) {
+    // four point making a diamond centered at 0,0
+    // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
 }
 
 StarData::StarData(std::filesystem::path path) {

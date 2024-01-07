@@ -1,6 +1,6 @@
 #include "config.h"
 #include "entity/mesh.hpp"
-#include "gui/render/graphics_shaders/shader.hpp"
+#include "gui/render/graphics_shaders/program_handler.hpp"
 #include "gui/scene/controls.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"

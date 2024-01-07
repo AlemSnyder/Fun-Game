@@ -33,7 +33,7 @@ namespace data_structures {
  * @details Shallow derived class of IndividualInt. Color texture is made
  * for all materials in the terrain.
  */
-class TerrainMesh : public NonInstancedIMeshGPU {
+class TerrainMesh : public virtual NonInstancedIMeshGPU {
  public:
     inline TerrainMesh(){};
 

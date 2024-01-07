@@ -23,6 +23,9 @@
 
 #pragma once
 
+#include "../graphics_data/array_buffer.hpp"
+#include "../graphics_data/gpu_data.hpp"
+
 #include <json/json.h>
 
 #include <GL/glew.h>
@@ -36,9 +39,9 @@ namespace gui {
 
 namespace data_structures {
 
-class StarShape {
+class StarShape : public virtual GPUData {
  protected:
-    GLuint shape_buffer_; // id of vertex buffer of star shape
+    ArrayBuffer shape_buffer_; // id of vertex buffer of star shape
 
  public:
     StarShape(const StarShape& obj) = delete;
@@ -46,12 +49,32 @@ class StarShape {
 
     StarShape();
 
-    ~StarShape() { glDeleteBuffers(1, &shape_buffer_); }
-
-    [[nodiscard]] inline GLuint
+    [[nodiscard]] inline const ArrayBuffer
     get_star_shape() const {
         return shape_buffer_;
     }
+
+    inline virtual void
+    bind() const {
+        shape_buffer_.bind(0, 0);
+    }
+
+    inline virtual void
+    release() const {
+        glDisableVertexAttribArray(0);
+    }
+
+    inline virtual bool
+    do_render() const {
+        return true;
+    }
+
+    inline virtual uint32_t
+    get_num_vertices() const {
+        return 4;
+    }
+
+    inline virtual GLenum get_element_type() const = 0;
 };
 
 /**
@@ -60,7 +83,7 @@ class StarShape {
  * @details ShadowMap holds the depth texture. When added to a scene object
  * shadows are cast to this depth texture, and used when rendering the scene.
  */
-class StarData : public StarShape {
+class StarData : public StarShape, public virtual GPUDataInstanced {
  private:
     GLuint star_positions_; // id of vertex buffer for star positions
     GLuint age_buffer_;     // id of vertex buffer for star age

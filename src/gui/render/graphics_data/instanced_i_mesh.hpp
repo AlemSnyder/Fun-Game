@@ -23,6 +23,7 @@
 
 #include "../../../entity/mesh.hpp"
 #include "array_buffer.hpp"
+#include "gpu_data.hpp"
 #include "non_instanced_i_mesh.hpp"
 
 #include <GL/glew.h>
@@ -43,7 +44,7 @@ namespace data_structures {
  * @details Handles instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class InstancedIMeshGPU : public NonInstancedIMeshGPU {
+class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
  private:
     ArrayBuffer transforms_array_;
     uint32_t num_models_;
@@ -59,16 +60,14 @@ class InstancedIMeshGPU : public NonInstancedIMeshGPU {
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
     );
 
-    inline void
-    bind() const {
+    inline void virtual bind() const override {
         NonInstancedIMeshGPU::bind();
         transforms_array_.bind(3, 3);
     }
 
-    inline void
-    bind_color() const {
-        NonInstancedIMeshGPU::bind_color();
-        transforms_array_.bind(3, 3);
+    inline void virtual release() const override {
+        NonInstancedIMeshGPU::release();
+        glDisableVertexAttribArray(3);
     }
 
     [[nodiscard]] inline const ArrayBuffer&
@@ -76,14 +75,10 @@ class InstancedIMeshGPU : public NonInstancedIMeshGPU {
         return transforms_array_;
     }
 
-    [[nodiscard]] inline uint32_t
-    get_num_models() const noexcept {
+    [[nodiscard]] inline uint32_t virtual get_num_models() const noexcept {
         return num_models_;
     }
 };
-
-template <class T>
-concept InstancedIMeshGPUDataType = std::is_base_of<InstancedIMeshGPU, T>::value;
 
 } // namespace data_structures
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../graphics_data/array_buffer.hpp"
+#include "../graphics_data/gpu_data.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -12,10 +15,10 @@ namespace gui {
 
 namespace data_structures {
 
-class ScreenData {
+class ScreenData : public virtual GPUDataElements {
  private:
-    GLuint vertex_buffer_;
-    GLuint element_buffer_;
+    ArrayBuffer vertex_array_;
+    ArrayBuffer element_array_;
     unsigned int num_vertices_;
 
  public:
@@ -44,22 +47,13 @@ class ScreenData {
     ScreenData();
 
     /**
-     * @brief Destroy the Screen Data object
-     *
-     */
-    inline ~ScreenData() {
-        glDeleteBuffers(1, &vertex_buffer_);
-        glDeleteBuffers(1, &element_buffer_);
-    }
-
-    /**
      * @brief Get the vertex buffer id
      *
-     * @return GLuint id of vertex buffer on gpu
+     * @return ArrayBuffer id of vertex buffer on gpu
      */
-    inline GLuint
+    inline const ArrayBuffer
     get_vertex_buffer() const {
-        return vertex_buffer_;
+        return vertex_array_;
     }
 
     /**
@@ -67,11 +61,11 @@ class ScreenData {
      *
      * @deprecated this is 0,1,2,3 should probably be removed
      *
-     * @return GLuint id of element buffer on gpu
+     * @return ArrayBuffer id of element buffer on gpu
      */
-    inline GLuint
+    inline const ArrayBuffer
     get_element_buffer() const {
-        return element_buffer_;
+        return element_array_;
     }
 
     /**
@@ -83,6 +77,24 @@ class ScreenData {
     get_num_vertices() const {
         return num_vertices_;
     }
+
+    inline virtual void
+    bind() const {
+        vertex_array_.bind(0,0);
+        element_array_.bind(-1,-1);
+    };
+
+    virtual void release() const = 0;
+
+    inline virtual bool
+    do_render() const {
+        return true;
+    };
+
+    inline virtual GLenum
+    get_element_type() const {
+        return static_cast<GLenum>(element_array_.get_draw_type());
+    };
 };
 
 } // namespace data_structures

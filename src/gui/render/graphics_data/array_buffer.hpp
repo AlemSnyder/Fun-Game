@@ -53,6 +53,10 @@ class array_buffer_type {
 
     //inline array_buffer_type() : array_buffer_type(0,0,0,GL_draw_type::BYTE) {}
 
+    inline GL_draw_type get_draw_type() const {
+        return draw_type_;
+    }
+
     template <std::integral T>
     constexpr inline static GL_draw_type presume_type() {
         switch (sizeof(T)) {
@@ -73,6 +77,22 @@ class array_buffer_type {
                 return GL_draw_type::UNSIGNED_INT;
             else
                 return GL_draw_type::INT;
+
+        default:
+            assert(false && "Invalid type.");
+            break;
+        }
+    }
+
+        template <typename T> // float/ double
+    constexpr inline static GL_draw_type presume_type() {
+        switch (sizeof(T)) {
+        case sizeof(glm::float32):
+        
+                return GL_draw_type::FLOAT;
+
+        case (sizeof(glm::float64)):
+                return GL_draw_type::DOUBLE;
 
         default:
             assert(false && "Invalid type.");

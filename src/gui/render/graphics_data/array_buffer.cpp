@@ -22,8 +22,6 @@ ArrayBuffer::bind(GLuint attribute, GLuint index) const {
 
     switch (buffer_type_) {
         case buffer_type::ARRAY_BUFFER:
-            /* code */
-
             if (is_int_) {
                 glVertexAttribIPointer(
                     attribute,                       // attribute

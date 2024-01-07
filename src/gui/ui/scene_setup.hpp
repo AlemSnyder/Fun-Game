@@ -25,6 +25,7 @@
 
 #include "../../world.hpp"
 #include "../scene/scene.hpp"
+#include "../render/graphics_shaders/program_handler.hpp"
 
 namespace gui {
 

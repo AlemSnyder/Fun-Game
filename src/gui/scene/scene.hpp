@@ -25,10 +25,10 @@
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
-#include "../render/graphics_shaders/instanced_i_mesh_renderer.hpp"
-#include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
-#include "../render/graphics_shaders/quad_renderer_multisample.hpp"
-#include "../render/graphics_shaders/sky.hpp"
+//#include "../render/graphics_shaders/instanced_i_mesh_renderer.hpp"
+//#include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
+//#include "../render/graphics_shaders/quad_renderer_multisample.hpp"
+//#include "../render/graphics_shaders/sky.hpp"
 #include "helio.hpp"
 
 #include <GLFW/glfw3.h>
@@ -56,7 +56,7 @@ class Scene {
     // foreground
     std::vector<std::shared_ptr<render_to::FrameBuffer>> foreground_frame_buffer_;
 
-    std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_;
 
     // other
 
@@ -137,8 +137,7 @@ class Scene {
      * @param render object that can render to a shadow framebuffer.
      */
     inline void
-    shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
-        shadow->set_shadow_map(&shadow_map_);
+    shadow_attach(const std::shared_ptr<render_to::FrameBuffer> shadow) {
         mid_ground_shadow_.push_back(shadow);
     }
 
@@ -148,7 +147,7 @@ class Scene {
      * @param render object that can render to a framebuffer.
      */
     inline void
-    add_background_ground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render
+    add_background_ground_renderer(const std::shared_ptr<render_to::FrameBuffer> render
     ) {
         background_frame_buffer_.push_back(render);
     }

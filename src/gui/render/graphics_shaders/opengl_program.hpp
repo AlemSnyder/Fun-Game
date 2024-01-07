@@ -10,6 +10,8 @@ namespace gui {
 
 namespace shader {
 
+class Uniforms;
+
 // forward declaration of program
 class Program;
 
@@ -35,11 +37,19 @@ class OpenGLProgramExecuter {
 
     [[nodiscard]] GLuint get_program_ID() const noexcept;
 
+    inline void
+    use_program() const {
+        glUseProgram(get_program_ID());
+    }
+
     // get program status
 
     [[nodiscard]] GLint inline get_uniform(std::string uniform_name) {
         return glGetUniformLocation(get_program_ID(), uniform_name.c_str());
     }
+
+
+    void attach_uniforms(shader::Uniforms& uniforms);
 
     [[nodiscard]] shader::ProgramStatus get_program_status() const noexcept;
 };
