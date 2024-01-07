@@ -191,8 +191,8 @@ class MatrixViewInverseProjection : public shader::Uniform {
 
 class PixelProjection : public shader::Uniform {
  private:
-    static screen_size_t width_;
-    static screen_size_t height_;
+    inline static screen_size_t width_;
+    inline static screen_size_t height_;
 
  public:
     PixelProjection() : Uniform("pixel_projection") {}
@@ -213,7 +213,7 @@ class PixelProjection : public shader::Uniform {
         glUniformMatrix4fv(uniform_ID_, 1, GL_FALSE, &pixel_window[0][0]);
     }
 
-    static void update(screen_size_t width, screen_size_t height) {
+    inline static void update(screen_size_t width, screen_size_t height) {
         width_ = width;
         height_ = height;
     }

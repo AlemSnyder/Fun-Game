@@ -40,9 +40,10 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 
-    std::shared_ptr<render::MatrixViewProjection> matrix_view_projection_uniform;
+    auto matrix_view_projection_uniform =
+        std::make_shared<render::MatrixViewProjection>();
 
-    std::shared_ptr<render::ViewMatrix> view_matrix_uniform;
+    auto view_matrix_uniform = std::make_shared<render::ViewMatrix>();
 
     auto light_depth_projection_uniform =
         std::make_shared<render::LightDepthProjection>(&scene.get_shadow_map());
@@ -53,11 +54,14 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     auto material_color_texture_uniform =
         std::make_shared<render::TextureUniform>("material_color_texture", 0);
 
-    std::shared_ptr<render::SpectralLight> spectral_light_color_uniform;
+    auto spectral_light_color_uniform =
+        std::make_shared<render::SpectralLight>(scene.get_lighting_environment());
 
-    std::shared_ptr<render::DiffuseLight> diffuse_light_color_uniform;
+    auto diffuse_light_color_uniform =
+        std::make_shared<render::DiffuseLight>(scene.get_lighting_environment());
 
-    std::shared_ptr<render::LightDirection> light_direction_uniform;
+    auto light_direction_uniform =
+        std::make_shared<render::LightDirection>(scene.get_lighting_environment());
 
     shader::Uniforms chunks_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
@@ -128,14 +132,13 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
 
-    std::shared_ptr<render::MatrixViewInverseProjection> matrix_view_inverse_projection;
+    auto matrix_view_inverse_projection =
+        std::make_shared<render::MatrixViewInverseProjection>();
 
-    std::shared_ptr<render::PixelProjection> pixel_projection;
-
-    std::shared_ptr<render::StarRotation> star_rotation_matrix;
+    auto pixel_projection = std::make_shared<render::PixelProjection>();
 
     auto star_rotation_uniform =
-        std::make_shared<render::StarRotationUniform>(star_rotation_matrix);
+        std::make_shared<render::StarRotationUniform>(scene.get_lighting_environment());
 
     // sky
 
@@ -162,10 +165,8 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     shader::Uniforms star_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
-            {std::shared_ptr<shader::Uniform>(matrix_view_inverse_projection),
-             std::shared_ptr<shader::Uniform>(pixel_projection),
-             std::shared_ptr<shader::Uniform>(star_rotation_uniform),
-             std::shared_ptr<shader::Uniform>(light_direction_uniform)}
+            {matrix_view_inverse_projection, pixel_projection, star_rotation_uniform,
+             light_direction_uniform}
         )
     );
 

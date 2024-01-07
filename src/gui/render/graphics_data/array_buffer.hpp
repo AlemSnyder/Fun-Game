@@ -45,7 +45,7 @@ class array_buffer_type {
 
 
  public:
-    inline array_buffer_type(
+    inline constexpr array_buffer_type(
         int vec_size, int type_size, bool is_int, GL_draw_type draw_type
     ) :
         vec_size_(vec_size),
@@ -53,7 +53,7 @@ class array_buffer_type {
 
     //inline array_buffer_type() : array_buffer_type(0,0,0,GL_draw_type::BYTE) {}
 
-    inline GL_draw_type get_draw_type() const {
+    inline constexpr GL_draw_type get_draw_type() const {
         return draw_type_;
     }
 
@@ -84,7 +84,7 @@ class array_buffer_type {
         }
     }
 
-        template <typename T> // float/ double
+    template <typename T> // float/ double
     constexpr inline static GL_draw_type presume_type() {
         switch (sizeof(T)) {
         case sizeof(glm::float32):
