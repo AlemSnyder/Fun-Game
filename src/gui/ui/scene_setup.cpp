@@ -100,16 +100,16 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     //    render_program, scene.get_lighting_environment()
     //);
 
-    // for (const auto& chunk_mesh : terrain_mesh) {
-    //     chunks_render_program.data.push_back(chunk_mesh);
-    // }
+    for (const auto& chunk_mesh : terrain_mesh) {
+        chunks_render_program->data.push_back(chunk_mesh);
+    }
 
     // auto chunk_shadow =
     //     std::make_shared<data_structures::NonInstancedIMeshShadow>(shadow_program);
 
-    // for (const auto& chunk_mesh : terrain_mesh) {
-    //     chunk_shadow->add_mesh(chunk_mesh);
-    // }
+    for (const auto& chunk_mesh : terrain_mesh) {
+        chunks_shadow_program->data.push_back(chunk_mesh);
+    }
 
     // Renders the Shadow depth map
     // chunk_renderer->set_shadow_map(&scene.get_shadow_map());
@@ -214,6 +214,17 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     scene.add_background_ground_renderer(sky_renderer);
     scene.add_background_ground_renderer(star_renderer);
     scene.add_background_ground_renderer(sun_renderer);
+
+    auto star_shape = std::make_shared<data_structures::StarShape>();
+
+    auto star_data = std::make_shared<data_structures::StarData>(files::get_data_path() / "stars.json");
+
+    auto screen_data = std::make_shared<data_structures::ScreenData>();
+
+    sky_renderer->data.push_back(screen_data);
+    star_renderer->data.push_back(star_data);
+    sun_renderer->data.push_back(star_shape);
+
 }
 
 } // namespace gui

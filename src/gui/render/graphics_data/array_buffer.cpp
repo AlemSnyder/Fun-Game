@@ -17,7 +17,9 @@ ArrayBuffer::~ArrayBuffer() {
 
 void
 ArrayBuffer::bind(GLuint attribute, GLuint index) const {
-    glEnableVertexAttribArray(index);
+    if (buffer_type_ != buffer_type::ELEMENT_ARRAY_BUFFER)
+        glEnableVertexAttribArray(index);
+
     glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
 
     switch (buffer_type_) {

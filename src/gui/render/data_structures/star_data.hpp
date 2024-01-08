@@ -73,8 +73,11 @@ class StarShape : public virtual GPUData {
     get_num_vertices() const {
         return 4;
     }
+};
 
-    inline virtual GLenum get_element_type() const = 0;
+struct star_data {
+    std::vector<glm::vec4> star_position;
+    std::vector<GLfloat> star_age;
 };
 
 /**
@@ -85,9 +88,9 @@ class StarShape : public virtual GPUData {
  */
 class StarData : public StarShape, public virtual GPUDataInstanced {
  private:
-    GLuint star_positions_; // id of vertex buffer for star positions
-    GLuint age_buffer_;     // id of vertex buffer for star age
-    size_t num_stars_;      // number of stars to draw
+    ArrayBuffer star_positions_; // id of vertex buffer for star positions
+    ArrayBuffer age_buffer_;     // id of vertex buffer for star age
+    size_t num_stars_;           // number of stars to draw
 
  public:
     /**
@@ -109,25 +112,19 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
      */
     StarData& operator=(const StarData& obj) = delete;
 
-    /**
-     * @brief Construct a new Sky Data object, default constructor
-     *
-     */
-    inline StarData(){};
+    static star_data read_data_from_file(std::filesystem::path path);
 
-    ~StarData() {
-        glDeleteBuffers(1, &star_positions_);
-        glDeleteBuffers(1, &age_buffer_);
-    }
+    inline StarData(const star_data data) :
+        star_positions_(data.star_position), age_buffer_(data.star_age), num_stars_(data.star_age.size()) {}
 
-    StarData(std::filesystem::path path);
+    StarData(std::filesystem::path path) : StarData(read_data_from_file(path)) {}
 
-    [[nodiscard]] inline GLuint
+    [[nodiscard]] inline const ArrayBuffer
     get_star_positions() const {
         return star_positions_;
     }
 
-    [[nodiscard]] inline GLuint
+    [[nodiscard]] inline const ArrayBuffer
     get_star_age_() const {
         return age_buffer_;
     }
@@ -137,9 +134,14 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
      *
      * @return size_t number of stars
      */
-    [[nodiscard]] inline size_t
+    [[nodiscard]] inline uint32_t
     get_num_stars() const {
         return num_stars_;
+    }
+
+    inline virtual uint32_t
+    get_num_models() const {
+        return get_num_stars();
     }
 };
 

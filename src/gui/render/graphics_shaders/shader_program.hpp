@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../../../logging.hpp"
 #include "../../../types.hpp"
 #include "../../handler.hpp"
 #include "../graphics_data/gpu_data.hpp"
@@ -43,6 +44,8 @@ class ShaderProgram_Standard :
         OpenGLProgramExecuter(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
         attach_uniforms(uniforms_);
+        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
+        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
     }
 
     // template <data_structures::GPUdata_or_something T>
@@ -52,6 +55,14 @@ class ShaderProgram_Standard :
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     ) {
+#if DEBUG()
+        static bool has_logged = false;
+        if (data.size() == 0 && !has_logged) {
+            LOG_WARNING(logging::opengl_logger, "Nothing to be rendered.");
+            has_logged = true;
+        }
+#endif
+
         // Render to the screen
         gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
 
@@ -120,6 +131,8 @@ class ShaderProgram_Elements :
         OpenGLProgramExecuter(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
         attach_uniforms(uniforms_);
+        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
+        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
     }
 
     // template <data_structures::GPUdata_or_something T>
@@ -129,6 +142,14 @@ class ShaderProgram_Elements :
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     ) {
+#if DEBUG()
+        static bool has_logged = false;
+        if (data.size() == 0 && !has_logged) {
+            LOG_WARNING(logging::opengl_logger, "Nothing to be rendered.");
+            has_logged = true;
+        }
+#endif
+
         // Render to the screen
         gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
 
@@ -151,12 +172,15 @@ class ShaderProgram_Elements :
 
             // test if T inherits from Instancing or not
 
+            auto num_vertices = mesh->get_num_vertices();
+            auto element_type = mesh->get_element_type();
+
             // Draw the triangles !
             glDrawElements(
-                GL_TRIANGLES,             // mode
-                mesh->get_num_vertices(), // count
-                mesh->get_element_type(), // type
-                (void*)0                  // element array buffer offset
+                GL_TRIANGLES,                      // mode
+                num_vertices,                      // count
+                static_cast<GLenum>(element_type), // type
+                (void*)0                           // element array buffer offset
             );
 
             // Draw the triangles !
@@ -197,6 +221,8 @@ class ShaderProgram_Instanced :
         OpenGLProgramExecuter(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
         attach_uniforms(uniforms_);
+        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
+        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
     }
 
     // template <data_structures::GPUdata_or_something T>
@@ -206,6 +232,14 @@ class ShaderProgram_Instanced :
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     ) {
+#if DEBUG()
+        static bool has_logged = false;
+        if (data.size() == 0 && !has_logged) {
+            LOG_WARNING(logging::opengl_logger, "Nothing to be rendered.");
+            has_logged = true;
+        }
+#endif
+
         // Render to the screen
         gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
 
@@ -265,6 +299,8 @@ class ShaderProgram_ElementsInstanced :
         OpenGLProgramExecuter(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
         attach_uniforms(uniforms_);
+        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
+        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
     }
 
     // template <data_structures::GPUdata_or_something T>
@@ -274,6 +310,14 @@ class ShaderProgram_ElementsInstanced :
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     ) {
+#if DEBUG()
+        static bool has_logged = false;
+        if (data.size() == 0 && !has_logged) {
+            LOG_WARNING(logging::opengl_logger, "Nothing to be rendered.");
+            has_logged = true;
+        }
+#endif
+
         // Render to the screen
         gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
 
@@ -294,12 +338,14 @@ class ShaderProgram_ElementsInstanced :
 
             mesh->bind();
 
+            auto element_type = mesh->get_element_type();
+
             // Draw the triangles !
             glDrawElementsInstanced(
-                GL_TRIANGLES,             // mode
-                mesh->get_num_vertices(), // count
-                mesh->get_element_type(), // type
-                (void*)0,                 // element array buffer offset
+                GL_TRIANGLES,                      // mode
+                mesh->get_num_vertices(),          // count
+                static_cast<GLenum>(element_type), // type
+                (void*)0,                          // element array buffer offset
                 mesh->get_num_models()
             );
 

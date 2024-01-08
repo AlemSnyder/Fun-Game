@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "array_buffer.hpp"
+
 #include <stdint.h>
 
 namespace gui {
@@ -28,7 +30,7 @@ class GPUDataElements {
 
     virtual uint32_t get_num_vertices() const = 0;
 
-    virtual GLenum get_element_type() const = 0;
+    virtual GL_draw_type get_element_type() const = 0;
 };
 
 class GPUDataInstanced : virtual public GPUData {
@@ -40,20 +42,6 @@ class GPUDataElementsInstanced : virtual public GPUDataElements {
  public:
     virtual uint32_t get_num_models() const = 0;
 };
-
-
-template <class T>
-concept VertexData = std::is_base_of<GPUData, T>::value;
-
-template <class T>
-concept VertexElementsData = std::is_base_of<GPUDataElements, T>::value;
-
-template <class T>
-concept InstancedVertexData = std::is_base_of<GPUDataInstanced, T>::value;
-
-template <class T>
-concept GPUdata_or_something =
-    std::is_base_of<GPUData, T>::value || std::is_base_of<GPUDataElements, T>::value;
 
 } // namespace data_structures
 

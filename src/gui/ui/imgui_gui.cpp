@@ -12,7 +12,7 @@
 #include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-//#include "../render/graphics_shaders/shader.hpp"
+// #include "../render/graphics_shaders/shader.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "imgui_style.hpp"
@@ -89,6 +89,7 @@ imgui_entry(World& world) {
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, shader_handler, world);
 

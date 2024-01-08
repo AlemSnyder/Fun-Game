@@ -80,20 +80,23 @@ class ScreenData : public virtual GPUDataElements {
 
     inline virtual void
     bind() const {
-        vertex_array_.bind(0,0);
-        element_array_.bind(-1,-1);
+        vertex_array_.bind(0, 0);
+        element_array_.bind(-1, -1);
     };
 
-    virtual void release() const = 0;
+    inline virtual void
+    release() const {
+        glDisableVertexAttribArray(0);
+    }
 
     inline virtual bool
     do_render() const {
         return true;
     };
 
-    inline virtual GLenum
+    inline virtual GL_draw_type
     get_element_type() const {
-        return static_cast<GLenum>(element_array_.get_draw_type());
+        return element_array_.get_draw_type();
     };
 };
 

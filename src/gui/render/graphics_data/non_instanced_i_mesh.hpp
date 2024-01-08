@@ -47,7 +47,7 @@ namespace data_structures {
  * @details Handles non-instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class NonInstancedIMeshGPU : virtual public GPUDataElements{
+class NonInstancedIMeshGPU : virtual public GPUDataElements {
  protected:
     ArrayBuffer vertex_array_;
     ArrayBuffer color_array_;
@@ -70,7 +70,9 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements{
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
         normal_array_(mesh.get_indexed_normals()),
-        element_array_(mesh.get_indices(), 0, buffer_type::ELEMENT_ARRAY_BUFFER) {}
+        element_array_(mesh.get_indices(), 0, buffer_type::ELEMENT_ARRAY_BUFFER),
+        num_vertices_(mesh.get_indices().size()),
+        do_render_(mesh.get_indices().size()) {}
 
     virtual void update(const entity::Mesh& mesh);
 
@@ -112,10 +114,9 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements{
         return num_vertices_;
     }
 
-
-    [[nodiscard]] inline GLenum virtual
-    get_element_type() const noexcept override {
-        return static_cast<GLenum>(element_array_.get_draw_type());
+    [[nodiscard]] inline GL_draw_type virtual get_element_type(
+    ) const noexcept override {
+        return element_array_.get_draw_type();
     }
 };
 

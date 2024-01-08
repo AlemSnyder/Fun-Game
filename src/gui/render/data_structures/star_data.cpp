@@ -25,7 +25,7 @@ StarShape::StarShape() :
     // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
 }
 
-StarData::StarData(std::filesystem::path path) {
+star_data StarData::read_data_from_file(std::filesystem::path path) {
     Json::Value stars_json;
     auto stars_file = files::open_data_file(path);
     if (stars_file.has_value())
@@ -34,7 +34,7 @@ StarData::StarData(std::filesystem::path path) {
         LOG_WARNING(
             logging::file_io_logger, "Could not open sky data from file {}.", path
         );
-        return;
+        return {};
     }
 
     std::vector<glm::vec4> stars_positions;
@@ -53,23 +53,8 @@ StarData::StarData(std::filesystem::path path) {
         star_age.push_back(star["age"].asFloat());
     }
 
-    num_stars_ = stars_positions.size();
+    return {stars_positions, star_age};
 
-    // A buffer for the vertex positions
-    glGenBuffers(1, &star_positions_);
-    glBindBuffer(GL_ARRAY_BUFFER, star_positions_);
-    glBufferData(
-        GL_ARRAY_BUFFER, stars_positions.size() * sizeof(glm::vec4),
-        stars_positions.data(), GL_STATIC_DRAW
-    );
-
-    // A buffer for the colors
-    glGenBuffers(1, &age_buffer_);
-    glBindBuffer(GL_ARRAY_BUFFER, age_buffer_);
-    glBufferData(
-        GL_ARRAY_BUFFER, star_age.size() * sizeof(GLfloat), star_age.data(),
-        GL_STATIC_DRAW
-    );
 }
 
 } // namespace data_structures

@@ -66,13 +66,13 @@ class array_buffer_type {
             else
                 return GL_draw_type::BYTE;
 
-        case (sizeof(int16_t)):
+        case sizeof(int16_t):
             if (std::is_unsigned_v<T>)
                 return GL_draw_type::UNSIGNED_SHORT;
             else
                 return GL_draw_type::SHORT;
 
-        case (sizeof(int32_t)):
+        case sizeof(int32_t):
             if (std::is_unsigned_v<T>)
                 return GL_draw_type::UNSIGNED_INT;
             else
@@ -91,7 +91,7 @@ class array_buffer_type {
         
                 return GL_draw_type::FLOAT;
 
-        case (sizeof(glm::float64)):
+        case sizeof(glm::float64):
                 return GL_draw_type::DOUBLE;
 
         default:
@@ -103,6 +103,11 @@ class array_buffer_type {
     template <std::integral T>
     inline constexpr static array_buffer_type init([[maybe_unused]] T i) {
         return array_buffer_type(1, sizeof(T), true, presume_type<T>());
+    }
+
+    template <std::floating_point T>
+    inline constexpr static array_buffer_type init([[maybe_unused]] T i) {
+        return array_buffer_type(1, sizeof(T), false, presume_type<T>());
     }
 
     template <int i, class T, glm::qualifier Q>
@@ -160,12 +165,14 @@ class ArrayBuffer : public array_buffer_type {
 };
 
 template <class T>
-ArrayBuffer::ArrayBuffer(std::vector<T> buffer_data, GLuint devisor, buffer_type bt) : array_buffer_type(array_buffer_type::init(T())),
-    devisor_(devisor), buffer_type_(bt) {
+ArrayBuffer::ArrayBuffer(std::vector<T> buffer_data, GLuint devisor, buffer_type bt) :
+        array_buffer_type(array_buffer_type::init(T())),
+        devisor_(devisor), buffer_type_(bt)
+    {
     glGenBuffers(1, &buffer_ID_);
     glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
     glBufferData(
-        static_cast<GLenum>(buffer_type_), buffer_data.size() * type_size_,
+        static_cast<GLenum>(buffer_type_), buffer_data.size() * type_size_ * vec_size_,
         buffer_data.data(),
         GL_DYNAMIC_DRAW // TODO
     );
@@ -181,9 +188,22 @@ ArrayBuffer::update(std::vector<T> buffer_data, GLuint devisor) {
 
     assert(classes_are_equivelent && "Class must be the same");
 
-    glBufferSubData(
-        static_cast<GLenum>(buffer_type_), 0, buffer_data.size(), buffer_data.data()
+    glDeleteBuffers(1, &buffer_ID_);
+
+    glGenBuffers(1, &buffer_ID_);
+    glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
+    glBufferData(
+        static_cast<GLenum>(buffer_type_), buffer_data.size() * type_size_ * vec_size_,
+        buffer_data.data(),
+        GL_DYNAMIC_DRAW // TODO
     );
+
+    /*glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
+    glBufferData(
+        static_cast<GLenum>(buffer_type_), buffer_data.size() * type_size_ * vec_size_,
+        buffer_data.data(),
+        GL_DYNAMIC_DRAW
+    );*/
 }
 
 } // namespace data_structures
