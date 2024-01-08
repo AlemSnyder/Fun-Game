@@ -8,6 +8,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -80,7 +81,33 @@ Shader::reload() {
             return;
         }
 
-        source_string.push_back(std::move(file_read.value()));
+        std::string file_text = file_read.value();
+
+        source_string.push_back(file_text);
+
+        std::regex uniform_regex("\n[ |\t]{0,}uniform[ |\t]{1,}(\\w*)[ |\t]{1,}(\\w*);"
+        );
+
+        // default constructor = end-of-sequence:
+        std::regex_token_iterator<std::string::iterator> rend;
+
+        std::regex_token_iterator<std::string::iterator> type_iter(
+            file_text.begin(), file_text.end(), uniform_regex, 1
+        );
+
+        std::regex_token_iterator<std::string::iterator> name_iter(
+            file_text.begin(), file_text.end(), uniform_regex, 2
+        );
+        while (type_iter != rend) {
+            auto matched_type = *type_iter++;
+            auto matched_name = *name_iter++;
+
+            LOG_DEBUG(
+                logging::file_io_logger,
+                "Uniform found with regex type = {}, name = {}.", matched_type.str(),
+                matched_name.str()
+            );
+        }
     }
 
     std::vector<const char*> source_char;
