@@ -27,6 +27,9 @@ NonInstancedIMeshGPU::bind() const {
     element_array_.bind(-1, -1);
     color_array_.bind(1, 1);
     normal_array_.bind(2, 2);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_1D, color_texture_);
 }
 
 void

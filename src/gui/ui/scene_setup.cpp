@@ -49,10 +49,10 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         std::make_shared<render::LightDepthProjection>(&scene.get_shadow_map());
 
     auto shadow_texture_uniform =
-        std::make_shared<render::TextureUniform>("shadow_texture", 1);
+        std::make_shared<render::TextureUniform>("shadow_texture", "sampler2DShadow", 1);
 
     auto material_color_texture_uniform =
-        std::make_shared<render::TextureUniform>("material_color_texture", 0);
+        std::make_shared<render::TextureUniform>("material_color_texture", "sampler1D", 0);
 
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(scene.get_lighting_environment());
@@ -165,7 +165,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     shader::Uniforms star_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
-            {matrix_view_inverse_projection, pixel_projection, star_rotation_uniform,
+            {matrix_view_projection_uniform, pixel_projection, star_rotation_uniform,
              light_direction_uniform}
         )
     );
@@ -190,7 +190,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     shader::Uniforms sun_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
-            {matrix_view_inverse_projection, pixel_projection, light_direction_uniform,
+            {matrix_view_projection_uniform, pixel_projection, light_direction_uniform,
              spectral_light_color_uniform}
         )
     );

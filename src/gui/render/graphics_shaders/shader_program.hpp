@@ -10,20 +10,44 @@
 #include "opengl_program.hpp"
 #include "uniform.hpp"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
+#include <utility>
 #include <vector>
 
 namespace gui {
 
 namespace shader {
 
-// struct program_setup {
-//     void operator()() const;
-// };
+void
+log_uniforms(
+    std::set<std::pair<std::string, std::string>> want_uniforms,
+    std::set<std::pair<std::string, std::string>> has_uniforms
+) {
+#if DEBUG()
 
-//
-// template <data_structures::GPUdata_or_something T>
+    std::set<std::pair<std::string, std::string>> uniforms_needed;
+    std::set<std::pair<std::string, std::string>> uniforms_not_needed;
+
+    std::set_difference(
+        want_uniforms.begin(), want_uniforms.end(), has_uniforms.begin(),
+        has_uniforms.end(), std::inserter(uniforms_needed, uniforms_needed.begin())
+    );
+
+    std::set_difference(
+        has_uniforms.begin(), has_uniforms.end(), want_uniforms.begin(),
+        want_uniforms.end(), std::inserter(uniforms_not_needed, uniforms_not_needed.begin())
+    );
+
+    if (uniforms_needed.size() > 0)
+        LOG_WARNING(logging::opengl_logger, "Needed uniforms {}", uniforms_needed);
+    if (uniforms_not_needed.size() > 0)
+        LOG_DEBUG(logging::opengl_logger, "Not needed uniforms {}", uniforms_not_needed);
+
+#endif
+}
+
 class ShaderProgram_Standard :
     virtual public render_to::FrameBuffer,
     virtual public OpenGLProgramExecuter {
@@ -44,8 +68,7 @@ class ShaderProgram_Standard :
         OpenGLProgramExecuter(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
         attach_uniforms(uniforms_);
-        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
-        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
+        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
     // template <data_structures::GPUdata_or_something T>
@@ -123,7 +146,6 @@ class ShaderProgram_Elements :
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<std::shared_ptr<data_structures::GPUDataElements>> data;
 
-    //    template <data_structures::GPUdata_or_something T>
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         Uniforms uniforms
@@ -131,8 +153,7 @@ class ShaderProgram_Elements :
         OpenGLProgramExecuter(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
         attach_uniforms(uniforms_);
-        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
-        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
+        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
     // template <data_structures::GPUdata_or_something T>
@@ -221,8 +242,7 @@ class ShaderProgram_Instanced :
         OpenGLProgramExecuter(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
         attach_uniforms(uniforms_);
-        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
-        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
+        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
     // template <data_structures::GPUdata_or_something T>

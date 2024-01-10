@@ -1,5 +1,7 @@
 #include "uniform.hpp"
 
+#include <set>
+
 namespace gui {
 
 namespace shader {
@@ -11,12 +13,12 @@ Uniforms::bind() {
     }
 }
 
-const std::vector<std::string>
+std::set<std::pair<std::string, std::string>>
 Uniforms::get_names() const {
-    std::vector<std::string> out;
+    std::set<std::pair<std::string, std::string>> out;
 
     for (auto uniform : uniforms_) {
-        out.push_back(uniform->get_name());
+        out.emplace(uniform->get_name(), uniform->get_type());
     }
 
     return out;

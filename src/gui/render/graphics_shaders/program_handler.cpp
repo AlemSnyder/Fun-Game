@@ -9,7 +9,9 @@
 #include <filesystem>
 #include <fstream>
 #include <regex>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace gui {
@@ -63,6 +65,8 @@ Shader::reload() {
         glDeleteShader(shader_ID_);
     }
 
+    found_uniforms_.clear();
+
     std::vector<std::string> source_string;
     std::string shader_type_string = get_shader_string(shader_type_);
 
@@ -102,11 +106,13 @@ Shader::reload() {
             auto matched_type = *type_iter++;
             auto matched_name = *name_iter++;
 
-            LOG_DEBUG(
-                logging::file_io_logger,
-                "Uniform found with regex type = {}, name = {}.", matched_type.str(),
-                matched_name.str()
-            );
+            found_uniforms_.emplace(std::make_pair(matched_name, matched_type));
+
+            // LOG_DEBUG(
+            // logging::file_io_logger,
+            // "Uniform found with regex type = {}, name = {}.", matched_type.str(),
+            //    matched_name.str()
+            //);
         }
     }
 
@@ -146,6 +152,8 @@ Shader::reload() {
 
 void
 Program::reload() {
+    found_uniforms_.clear();
+
     if (vertex_shader_.get_status() != ShaderStatus::OK) {
         // Not ok reload
         vertex_shader_.reload();
@@ -166,6 +174,13 @@ Program::reload() {
             return;
         }
     }
+
+    found_uniforms_.insert(
+        vertex_shader_.uniform_begin(), vertex_shader_.uniform_end()
+    );
+    found_uniforms_.insert(
+        fragment_shader_.uniform_begin(), fragment_shader_.uniform_end()
+    );
 
     GLint vertex_shader_id = vertex_shader_.get_shader_ID();
     GLint fragment_shader_id = fragment_shader_.get_shader_ID();
@@ -217,23 +232,28 @@ Program::get_status_string() const {
         "OK",
         "This program and its corresponding shaders have compiled successfully. If "
         "there is still some error check that Uniforms and Locations are set "
-        "correctly."};
+        "correctly."
+    };
 
     static std::pair<std::string, std::string> linking_failed_string = {
         "Linking Failed",
         "There is an error when connecting different shader types together. Check that "
-        "the inputs and output between shaders align."};
+        "the inputs and output between shaders align."
+    };
 
     static std::pair<std::string, std::string> invalid_shader_string = {
         "Shader Failed", "Error compiling constituent shader(s). Check the log file "
-                         "for more information."};
+                         "for more information."
+    };
 
     static std::pair<std::string, std::string> empty_program_string = {
-        "No Program; Reload", "Program has not been loaded. Click the reload button."};
+        "No Program; Reload", "Program has not been loaded. Click the reload button."
+    };
 
     static std::pair<std::string, std::string> other_string = {
         "This should not happen",
-        "This is a bug that should be reported to the developers."};
+        "This is a bug that should be reported to the developers."
+    };
 
     switch (status_) {
         case ProgramStatus::OK:

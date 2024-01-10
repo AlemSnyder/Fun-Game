@@ -5,7 +5,7 @@ layout(location = 0) in vec3 pos;
 
 uniform mat4 MVIP;
 uniform mat4 pixel_projection;
-uniform vec3 sun_position;
+uniform vec3 light_direction; // same as sun position
 
 // Output data ; will be interpolated for each fragment.
 out vec2 EyeDirectionScreenSpace;
@@ -14,7 +14,7 @@ out flat vec3 sunlight_direction_unit;
 
 void
 main() {
-    sunlight_direction_unit = sun_position/length(sun_position);
+    sunlight_direction_unit = light_direction/length(light_direction);
     gl_Position = vec4(pos, 1);
     EyeDirectionScreenSpace = (pixel_projection * gl_Position).xy;
 }

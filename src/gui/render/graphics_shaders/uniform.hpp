@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <set>
+#include <utility>
 
 namespace gui {
 
@@ -20,6 +22,7 @@ class Uniform {
 
  protected:
     const std::string name_;
+    const std::string type_;
 
     GLint uniform_ID_;
 
@@ -29,11 +32,14 @@ class Uniform {
         return name_;
     }
 
-    // might want to add a get type ie vec3 etc
+    inline virtual const std::string&
+    get_type() const {
+        return type_;
+    }
 
     virtual void bind() = 0;
 
-    inline Uniform(std::string name) : name_(name), uniform_ID_(-1) {}
+    inline Uniform(std::string name, std::string type) : name_(name), type_(type), uniform_ID_(-1) {}
 };
 
 class Uniforms {
@@ -43,7 +49,7 @@ class Uniforms {
     std::vector<std::shared_ptr<Uniform>> uniforms_;
 
  public:
-    const std::vector<std::string> get_names() const;
+    std::set<std::pair<std::string, std::string>> get_names() const;
 
     void bind() ;
 

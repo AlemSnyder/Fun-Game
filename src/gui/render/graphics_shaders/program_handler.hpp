@@ -138,6 +138,8 @@ class Shader : public ShaderData {
 
     ShaderStatus status_;
 
+    std::set<std::pair<std::string, std::string>> found_uniforms_;
+
  public:
     inline Shader(const std::vector<File> files, GLuint shader_type) :
         ShaderData(files, shader_type), shader_ID_(0), status_(ShaderStatus::EMPTY) {
@@ -166,6 +168,14 @@ class Shader : public ShaderData {
     get_shader_ID() const noexcept {
         return shader_ID_;
     }
+
+    inline auto uniform_begin() {
+        return found_uniforms_.begin();
+    }
+    inline auto uniform_end() {
+        return found_uniforms_.end();
+    }
+
 };
 
 /**
@@ -181,6 +191,9 @@ class ProgramData {
     std::optional<Shader> tesselation_control_shader_;
     std::optional<Shader> tesselation_evaluation_shader_;
     */
+
+    std::set<std::pair<std::string, std::string>> found_uniforms_;
+
 
  public:
     inline ProgramData(Shader& vertex_shader, Shader& fragment_shader) :
@@ -260,6 +273,11 @@ class Program : public ProgramData {
     [[nodiscard]] inline ProgramStatus
     get_status() const noexcept {
         return status_;
+    }
+
+    [[nodiscard]] inline std::set<std::pair<std::string, std::string>>
+    get_detected_uniforms() const noexcept {
+        return found_uniforms_;
     }
 
     /**
