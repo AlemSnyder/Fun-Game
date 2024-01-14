@@ -115,7 +115,8 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
     static star_data read_data_from_file(std::filesystem::path path);
 
     inline StarData(const star_data data) :
-        star_positions_(data.star_position), age_buffer_(data.star_age), num_stars_(data.star_age.size()) {}
+        star_positions_(data.star_position), age_buffer_(data.star_age),
+        num_stars_(data.star_age.size()) {}
 
     StarData(std::filesystem::path path) : StarData(read_data_from_file(path)) {}
 
@@ -127,6 +128,20 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
     [[nodiscard]] inline const ArrayBuffer
     get_star_age_() const {
         return age_buffer_;
+    }
+
+    inline virtual void
+    bind() const {
+        star_positions_.bind(0, 0);
+        age_buffer_.bind(1, 1);
+        shape_buffer_.bind(2, 2);
+    }
+
+    inline virtual void
+    release() const {
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
     }
 
     /**

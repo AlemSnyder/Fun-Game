@@ -13,7 +13,7 @@ ScreenData::ScreenData() :
         {glm::vec3(-1, -1, 0), glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0),
          glm::vec3(1, -1, 0)}
     ))),
-    element_array_(ArrayBuffer(std::vector<unsigned short>({0, 1, 3, 2}))) {}
+    element_array_(std::vector<unsigned short>({0, 1, 3, 2}), 0, buffer_type::ELEMENT_ARRAY_BUFFER) {}
 
 } // namespace data_structures
 
