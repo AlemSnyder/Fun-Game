@@ -89,6 +89,11 @@ class VertexBufferHandler : public BinderBase {
 
     void bind_vertex_buffer(GLuint new_vertex_buffer);
 
+    inline void
+    unbind_vertex_buffer() {
+        bind_vertex_buffer(0);
+    }
+
     // Instance accessor
     static inline VertexBufferHandler&
     instance() {

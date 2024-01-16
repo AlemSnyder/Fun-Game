@@ -20,7 +20,7 @@ namespace gui {
 
 namespace shader {
 
-void
+inline void
 log_uniforms(
     std::set<std::pair<std::string, std::string>> want_uniforms,
     std::set<std::pair<std::string, std::string>> has_uniforms
@@ -37,13 +37,16 @@ log_uniforms(
 
     std::set_difference(
         has_uniforms.begin(), has_uniforms.end(), want_uniforms.begin(),
-        want_uniforms.end(), std::inserter(uniforms_not_needed, uniforms_not_needed.begin())
+        want_uniforms.end(),
+        std::inserter(uniforms_not_needed, uniforms_not_needed.begin())
     );
 
     if (uniforms_needed.size() > 0)
         LOG_WARNING(logging::opengl_logger, "Needed uniforms {}", uniforms_needed);
     if (uniforms_not_needed.size() > 0)
-        LOG_DEBUG(logging::opengl_logger, "Not needed uniforms {}", uniforms_not_needed);
+        LOG_DEBUG(
+            logging::opengl_logger, "Not needed uniforms {}", uniforms_not_needed
+        );
 
 #endif
 }

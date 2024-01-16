@@ -2,6 +2,7 @@
 #include "entity/mesh.hpp"
 #include "gui/render/graphics_shaders/program_handler.hpp"
 #include "gui/scene/controls.hpp"
+#include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
@@ -47,7 +48,8 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
@@ -434,6 +436,8 @@ main(int argc, char** argv) {
         return ChunkDataTest();
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
+    } else if (run_function == "RefactoredProgramTest") {
+        return gui::revised_gui_test();
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

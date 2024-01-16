@@ -48,11 +48,13 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     auto light_depth_projection_uniform =
         std::make_shared<render::LightDepthProjection>(&scene.get_shadow_map());
 
-    auto shadow_texture_uniform =
-        std::make_shared<render::TextureUniform>("shadow_texture", "sampler2DShadow", 1);
+    auto shadow_texture_uniform = std::make_shared<render::TextureUniform>(
+        "shadow_texture", "sampler2DShadow", 1
+    );
 
-    auto material_color_texture_uniform =
-        std::make_shared<render::TextureUniform>("material_color_texture", "sampler1D", 0);
+    auto material_color_texture_uniform = std::make_shared<render::TextureUniform>(
+        "material_color_texture", "sampler1D", 0
+    );
 
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(scene.get_lighting_environment());
@@ -153,11 +155,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         // Draw over everything
         glDisable(GL_CULL_FACE);
         // The sky has no depth
+        glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
     };
 
     // in this order
-    auto sky_renderer = std::make_shared<shader::ShaderProgram_Elements>(
+    auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
     );
 
@@ -203,6 +206,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         // Draw over everything
         glDisable(GL_CULL_FACE);
         // The sky has no depth
+        glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
     };
 
@@ -217,14 +221,15 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     auto star_shape = std::make_shared<data_structures::StarShape>();
 
-    auto star_data = std::make_shared<data_structures::StarData>(files::get_data_path() / "stars.json");
+    auto star_data = std::make_shared<data_structures::StarData>(
+        files::get_data_path() / "stars.json"
+    );
 
     auto screen_data = std::make_shared<data_structures::ScreenData>();
 
     sky_renderer->data.push_back(screen_data);
     star_renderer->data.push_back(star_data);
     sun_renderer->data.push_back(star_shape);
-
 }
 
 } // namespace gui
