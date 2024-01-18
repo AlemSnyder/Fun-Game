@@ -27,19 +27,19 @@ ArrayBuffer::bind(GLuint attribute, GLuint index) const {
             if (is_int_) {
                 glVertexAttribIPointer(
                     attribute,                       // attribute
-                    type_size_,                      // size
+                    vec_size_,                       // size
                     static_cast<GLenum>(draw_type_), // type
-                    0,                               // stride
+                    vec_size_ * type_size_,          // stride
                     (void*)0                         // array buffer offset
                 );
             } else {
                 glVertexAttribPointer(
-                    attribute,  // attribute
-                    type_size_, // size
-                    GL_FLAT,    // type
-                    false,      // normalize
-                    0,          // stride
-                    (void*)0    // array buffer offset
+                    attribute,                 // attribute
+                    vec_size_,                 // size
+                    GL_FLOAT,                  // type
+                    false,                     // normalize
+                    vec_size_ * sizeof(float), // stride
+                    (void*)0                   // array buffer offset
                 );
             }
 
