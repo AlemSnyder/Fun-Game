@@ -1,5 +1,7 @@
 #include "gui_test.hpp"
 
+#include "../scene/helio.hpp"
+
 namespace gui {
 
 int
@@ -15,6 +17,8 @@ revised_gui_test() {
     GLFWwindow* window = opt_window.value();
     setup_opengl_logging();
 
+    controls::computeMatricesFromInputs(window);
+
     shader::ShaderHandler shader_handler;
 
     shader::Program& green_program = shader_handler.load_program(
@@ -27,6 +31,11 @@ revised_gui_test() {
         files::get_resources_path() / "shaders" / "Blue.frag"
     );
 
+    shader::Program& sky_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+        files::get_resources_path() / "shaders" / "background" / "Sky.frag"
+    );
+
     std::function<void()> sky_render_setup = []() {
         // Draw over everything
         glDisable(GL_CULL_FACE);
@@ -35,39 +44,37 @@ revised_gui_test() {
         glDepthMask(GL_FALSE);
     };
 
+    auto lighting_environment = std::make_shared<scene::Helio>(.3, 5, 60, .3);
+
     auto pixel_projection = std::make_shared<render::PixelProjection>();
 
+    pixel_projection->update(window_width, window_height);
+
+    auto matrix_view_inverse_projection =
+        std::make_shared<render::MatrixViewInverseProjection>();
+
+    auto light_direction_uniform =
+        std::make_shared<render::LightDirection>(lighting_environment);
+
+    auto spectral_light_color_uniform =
+        std::make_shared<render::SpectralLight>(lighting_environment);
+
     shader::Uniforms sky_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>({/*pixel_projection*/})
+        std::vector<std::shared_ptr<shader::Uniform>>(
+            {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
+             spectral_light_color_uniform}
+        )
+    );
+
+    shader::Uniforms no_uniforms({});
+
+    auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
+        sky_program, sky_render_setup, sky_render_program_uniforms
     );
 
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
-        blue_program, sky_render_setup, sky_render_program_uniforms
+        blue_program, sky_render_setup, no_uniforms
     );
-
-    /*
-            do {
-                FrameBufferHandler::instance().bind_fbo(0);
-
-                sky_renderer->render(window_width, window_height, 0);
-
-                // Swap buffers
-                glfwSwapBuffers(window);
-                glfwPollEvents();
-
-            } // Check if the ESC key was pressed or the window was closed
-            while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-                   && glfwWindowShouldClose(window) == 0);
-
-            // Cleanup VBO and shader
-            glDeleteVertexArrays(1, &VertexArrayID);
-
-            glfwDestroyWindow(window);
-
-            // Close OpenGL window and terminate GLFW
-            glfwTerminate();
-
-            return 0;*/
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -89,7 +96,6 @@ revised_gui_test() {
     vertices_3.push_back(glm::vec3(-1, 1, 0));
     vertices_3.push_back(glm::vec3(1, -1, 0));
     vertices_3.push_back(glm::vec3(1, 1, 0));
-
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
@@ -131,11 +137,11 @@ revised_gui_test() {
 
     gui::data_structures::ArrayBuffer VBO3(vertices_2);
 
-    gui::data_structures::ArrayBuffer VBO4(vertices_3);
-
+    // gui::data_structures::ArrayBuffer VBO4(vertices_3);
 
     auto screen_data = std::make_shared<gui::data_structures::ScreenData>();
     sky_renderer->data.push_back(screen_data);
+    sky_renderer2->data.push_back(screen_data);
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify
     // this VAO, but this rarely happens. Modifying other VAOs requires a call to
@@ -152,50 +158,23 @@ revised_gui_test() {
     // -----------
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
            && glfwWindowShouldClose(window) == 0) {
+
+
+        lighting_environment->update();
+
         // render
         // ------
         glClear(GL_COLOR_BUFFER_BIT);
+        
+        VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
         sky_renderer->render(window_width, window_height, 0);
 
-        /*
-
-        glViewport(0, 0, window_width, window_height);
-
-        sky_renderer->use_program();
-//        glUseProgram(blue_program.get_program_ID());
-
-        screen_data->bind();
-
-        // Draw the triangles !
-        glDrawArrays(
-            GL_TRIANGLE_STRIP,       // mode
-            0,                       // start
-            screen_data->get_num_vertices() // number of vertices
-
-        );
-
-        screen_data->release();
-
-        */
-
-/*
-
-        VBO4.bind(0, 0);
-
-        // draw our first triangle
-        glUseProgram(blue_program.get_program_ID());
-        VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
-        // seeing as we only have a single VAO there's no need to bind it every time,
-        // but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        // glBindVertexArray(0); // no need to unbind it every time
-
-*/
+        sky_renderer2->render(window_width, window_height, 0);
 
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // here
         glEnableVertexAttribArray(0);
 
         // draw our first triangle
@@ -204,34 +183,6 @@ revised_gui_test() {
         // seeing as we only have a single VAO there's no need to bind it every time,
         // but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        // glBindVertexArray(0); // no need to unbind it every time
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
-        // etc.)
-        // -------------------------------------------------------------------------------
-
-        /*
-
-                glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-           (void*)0); glEnableVertexAttribArray(0);
-
-                // draw our first triangle
-                glUseProgram(green_program.get_program_ID());
-                VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
-                // seeing as we only have a single VAO there's no need to bind it every
-           time,
-                // but we'll do so to keep things a bit more organized
-                glDrawArrays(GL_TRIANGLES, 0, 3);
-                // glBindVertexArray(0); // no need to unbind it every time
-
-                // glfw: swap buffers and poll IO events (keys pressed/released, mouse
-           moved
-                // etc.)
-                //
-           -------------------------------------------------------------------------------
-
-        */
 
         VBO3.bind(0, 0);
 

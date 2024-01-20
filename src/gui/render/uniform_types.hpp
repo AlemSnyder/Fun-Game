@@ -2,6 +2,7 @@
 
 #include "../../types.hpp"
 #include "../scene/controls.hpp"
+#include "logging.hpp"
 #include "data_structures/shadow_map.hpp"
 #include "graphics_shaders/uniform.hpp"
 
@@ -40,12 +41,18 @@ class LightDirection : public shader::Uniform {
     virtual ~LightDirection(){};
 
     virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         const glm::vec3& light_direction = lighting_->get_light_direction();
+
+        LOG_BACKTRACE(
+            logging::opengl_logger,
+            "Uniform {}, value: ({}, {}, {}), being initialized.", name_,
+            light_direction.x, light_direction.y, light_direction.z
+        );
 
         // set the light direction uniform
         glUniform3f(
-            uniform_ID_, light_direction.x, light_direction.y, light_direction.z
+            uniform_ID, light_direction.x, light_direction.y, light_direction.z
         );
     }
 };
@@ -61,11 +68,18 @@ class DiffuseLight : public shader::Uniform {
     virtual ~DiffuseLight(){};
 
     virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         const glm::vec3 diffuse_light_color = lighting_->get_diffuse_light();
 
+        LOG_BACKTRACE(
+            logging::opengl_logger,
+            "Uniform {}, value: ({}, {}, {}), being initialized.", name_,
+            diffuse_light_color.r, diffuse_light_color.g, diffuse_light_color.b
+        );
+
+//here
         glUniform3f(
-            uniform_ID_, diffuse_light_color.r, diffuse_light_color.g,
+            uniform_ID, diffuse_light_color.r, diffuse_light_color.g,
             diffuse_light_color.b
         );
     }
@@ -82,10 +96,17 @@ class SpectralLight : public shader::Uniform {
     virtual ~SpectralLight(){};
 
     inline virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         const glm::vec3 sunlight_color = lighting_->get_specular_light();
 
-        glUniform3f(uniform_ID_, sunlight_color.r, sunlight_color.g, sunlight_color.b);
+        LOG_BACKTRACE(
+            logging::opengl_logger,
+            "Uniform {}, value: ({}, {}, {}), being initialized.", name_,
+            sunlight_color.r, sunlight_color.g, sunlight_color.b
+        );
+
+// here
+        glUniform3f(uniform_ID, sunlight_color.r, sunlight_color.g, sunlight_color.b);
     }
 };
 
@@ -96,13 +117,17 @@ class MatrixViewProjection : public shader::Uniform {
     virtual ~MatrixViewProjection(){};
 
     inline virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         const glm::mat4 view_matrix = controls::get_view_matrix();
         const glm::mat4 projection_matrix = controls::get_projection_matrix();
 
         glm::mat4 MVP = projection_matrix * view_matrix;
 
-        glUniformMatrix4fv(uniform_ID_, 1, GL_FALSE, &MVP[0][0]);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", name_
+        );
+
+        glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &MVP[0][0]);
     }
 };
 
@@ -113,10 +138,12 @@ class ViewMatrix : public shader::Uniform {
     virtual ~ViewMatrix(){};
 
     inline virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         const glm::mat4 view_matrix = controls::get_view_matrix();
 
-        glUniformMatrix4fv(uniform_ID_, 1, GL_FALSE, &view_matrix[0][0]);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+
+        glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &view_matrix[0][0]);
     }
 };
 
@@ -131,7 +158,7 @@ class LightDepthProjection : public shader::Uniform {
     virtual ~LightDepthProjection() {}
 
     inline virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         const glm::mat4& depth_projection_matrix =
             shadow_map_->get_depth_projection_matrix();
         const glm::mat4& depth_view_matrix = shadow_map_->get_depth_view_matrix();
@@ -152,7 +179,9 @@ class LightDepthProjection : public shader::Uniform {
 
         glm::mat4 depth_bias_MVP = bias_matrix * depthMVP;
 
-        glUniformMatrix4fv(uniform_ID_, 1, GL_FALSE, &depth_bias_MVP[0][0]);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+
+        glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &depth_bias_MVP[0][0]);
     }
 };
 
@@ -161,12 +190,20 @@ class TextureUniform : public shader::Uniform {
     uint8_t texture_location_;
 
  public:
-    TextureUniform(std::string name, std::string texture_type, uint8_t texture_location) :
-        Uniform(name, texture_type), texture_location_(texture_location) {}
+    TextureUniform(
+        std::string name, std::string texture_type, uint8_t texture_location
+    ) :
+        Uniform(name, texture_type),
+        texture_location_(texture_location) {}
 
     inline virtual void
-    bind() {
-        glUniform1i(uniform_ID_, texture_location_);
+    bind(GLint uniform_ID) {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, value {} being initialized.", name_,
+            texture_location_
+        );
+
+        glUniform1i(uniform_ID, texture_location_);
     }
 };
 
@@ -177,7 +214,7 @@ class MatrixViewInverseProjection : public shader::Uniform {
     virtual ~MatrixViewInverseProjection() {}
 
     inline virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         // Compute the MVP matrix from keyboard and mouse input
         glm::mat4 projection_matrix = controls::get_projection_matrix();
         glm::mat4 view_matrix = controls::get_view_matrix();
@@ -185,7 +222,9 @@ class MatrixViewInverseProjection : public shader::Uniform {
 
         glm::mat4 sky_rotation = glm::inverse(MVP);
 
-        glUniformMatrix4fv(uniform_ID_, 1, GL_FALSE, &sky_rotation[0][0]);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+
+        glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &sky_rotation[0][0]);
     }
 };
 
@@ -200,7 +239,7 @@ class PixelProjection : public shader::Uniform {
     virtual ~PixelProjection() {}
 
     inline virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         // Compute the MVP matrix from keyboard and mouse input
         // clang-format off
         glm::mat4 pixel_window = {
@@ -210,10 +249,13 @@ class PixelProjection : public shader::Uniform {
             0, 0, 0, 1};
         // clang-format on
 
-        glUniformMatrix4fv(uniform_ID_, 1, GL_FALSE, &pixel_window[0][0]);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+
+        glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &pixel_window[0][0]);
     }
 
-    inline static void update(screen_size_t width, screen_size_t height) {
+    inline static void
+    update(screen_size_t width, screen_size_t height) {
         width_ = width;
         height_ = height;
     }
@@ -230,11 +272,13 @@ class StarRotationUniform : public shader::Uniform {
     virtual ~StarRotationUniform() {}
 
     inline virtual void
-    bind() {
+    bind(GLint uniform_ID) {
         // Compute the MVP matrix from keyboard and mouse input
         glm::mat4 star_rotation = rotation_->get_sky_rotation();
 
-        glUniformMatrix4fv(uniform_ID_, 1, GL_FALSE, &star_rotation[0][0]);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+
+        glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &star_rotation[0][0]);
     }
 };
 

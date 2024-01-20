@@ -7,7 +7,6 @@
 #include "../../handler.hpp"
 #include "../graphics_data/gpu_data.hpp"
 #include "gui_render_types.hpp"
-#include "opengl_program.hpp"
 #include "uniform.hpp"
 
 #include <algorithm>
@@ -51,10 +50,10 @@ log_uniforms(
 #endif
 }
 
-class ShaderProgram_Standard :
-    virtual public render_to::FrameBuffer,
-    virtual public OpenGLProgramExecuter {
+class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
  private:
+    Program& opengl_program_;
+
     const std::function<void()> setup_;
 
     Uniforms uniforms_;
@@ -68,9 +67,8 @@ class ShaderProgram_Standard :
         shader::Program& shader_program, const std::function<void()> setup_commands,
         Uniforms uniforms
     ) :
-        OpenGLProgramExecuter(shader_program),
+        opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-        attach_uniforms(uniforms_);
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
@@ -96,11 +94,17 @@ class ShaderProgram_Standard :
         // from the lower left corner to the upper right
         glViewport(0, 0, width, height);
 
-        use_program();
+        opengl_program_.use_program();
 
         setup_();
 
-        uniforms_.bind();
+        // uniforms_.bind();
+
+        for (auto uniform : uniforms_) {
+            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
+            if (uniform_id > 0)
+                uniform->bind(uniform_id);
+        }
 
         for (std::shared_ptr<data_structures::GPUData> mesh : data) {
             if (!mesh->do_render()) {
@@ -130,17 +134,12 @@ class ShaderProgram_Standard :
             mesh->release();
         }
     }
-
-    virtual void
-    reload_program() override {
-        attach_uniforms(uniforms_);
-    }
 };
 
-class ShaderProgram_Elements :
-    virtual public render_to::FrameBuffer,
-    virtual public OpenGLProgramExecuter {
+class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
  private:
+    Program& opengl_program_;
+
     const std::function<void()> setup_;
 
     Uniforms uniforms_;
@@ -153,9 +152,8 @@ class ShaderProgram_Elements :
         shader::Program& shader_program, const std::function<void()> setup_commands,
         Uniforms uniforms
     ) :
-        OpenGLProgramExecuter(shader_program),
+        opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-        attach_uniforms(uniforms_);
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
@@ -181,12 +179,16 @@ class ShaderProgram_Elements :
         // from the lower left corner to the upper right
         glViewport(0, 0, width, height);
 
-        use_program();
+        opengl_program_.use_program();
 
         setup_();
 
-        uniforms_.bind();
-
+        for (auto uniform : uniforms_) {
+            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
+            if (uniform_id > 0)
+                uniform->bind(uniform_id);
+        }
+        
         for (std::shared_ptr<data_structures::GPUDataElements> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
@@ -218,17 +220,12 @@ class ShaderProgram_Elements :
             mesh->release();
         }
     }
-
-    virtual void
-    reload_program() override {
-        attach_uniforms(uniforms_);
-    }
 };
 
-class ShaderProgram_Instanced :
-    virtual public render_to::FrameBuffer,
-    virtual public OpenGLProgramExecuter {
+class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
  private:
+    Program& opengl_program_;
+
     const std::function<void()> setup_;
 
     Uniforms uniforms_;
@@ -242,9 +239,8 @@ class ShaderProgram_Instanced :
         shader::Program& shader_program, const std::function<void()> setup_commands,
         Uniforms uniforms
     ) :
-        OpenGLProgramExecuter(shader_program),
+        opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-        attach_uniforms(uniforms_);
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
@@ -270,11 +266,15 @@ class ShaderProgram_Instanced :
         // from the lower left corner to the upper right
         glViewport(0, 0, width, height);
 
-        use_program();
+        opengl_program_.use_program();
 
         setup_();
 
-        uniforms_.bind();
+        for (auto uniform : uniforms_) {
+            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
+            if (uniform_id > 0)
+                uniform->bind(uniform_id);
+        }
 
         for (std::shared_ptr<data_structures::GPUDataInstanced> mesh : data) {
             if (!mesh->do_render()) {
@@ -295,17 +295,12 @@ class ShaderProgram_Instanced :
             mesh->release();
         }
     }
-
-    virtual void
-    reload_program() override {
-        attach_uniforms(uniforms_);
-    }
 };
 
-class ShaderProgram_ElementsInstanced :
-    virtual public render_to::FrameBuffer,
-    virtual public OpenGLProgramExecuter {
+class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
  private:
+    Program& opengl_program_;
+
     const std::function<void()> setup_;
 
     Uniforms uniforms_;
@@ -319,10 +314,11 @@ class ShaderProgram_ElementsInstanced :
         shader::Program& shader_program, const std::function<void()> setup_commands,
         Uniforms uniforms
     ) :
-        OpenGLProgramExecuter(shader_program),
+        opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-        attach_uniforms(uniforms_);
-        LOG_DEBUG(logging::opengl_logger, "Program ID: {}", get_program_ID());
+        LOG_DEBUG(
+            logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
+        );
         LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
     }
 
@@ -348,11 +344,15 @@ class ShaderProgram_ElementsInstanced :
         // from the lower left corner to the upper right
         glViewport(0, 0, width, height);
 
-        use_program();
+        opengl_program_.use_program();
 
         setup_();
 
-        uniforms_.bind();
+        for (auto uniform : uniforms_) {
+            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
+            if (uniform_id > 0)
+                uniform->bind(uniform_id);
+        }
 
         for (std::shared_ptr<data_structures::GPUDataElementsInstanced> mesh : data) {
             if (!mesh->do_render()) {
@@ -378,4 +378,5 @@ class ShaderProgram_ElementsInstanced :
 };
 
 } // namespace shader
+
 } // namespace gui

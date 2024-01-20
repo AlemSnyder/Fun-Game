@@ -15,6 +15,6 @@ out flat vec3 sunlight_direction_unit;
 void
 main() {
     sunlight_direction_unit = light_direction/length(light_direction);
+    EyeDirectionScreenSpace = pos.xy;
     gl_Position = vec4(pos, 1);
-    EyeDirectionScreenSpace = (pixel_projection * gl_Position).xy;
 }

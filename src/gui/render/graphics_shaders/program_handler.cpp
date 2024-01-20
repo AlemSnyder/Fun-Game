@@ -2,7 +2,6 @@
 
 #include "../../../logging.hpp"
 #include "gui_render_types.hpp"
-#include "opengl_program.hpp"
 
 #include <GL/glew.h>
 
@@ -35,12 +34,6 @@ File::get_file_content() {
         );
         status_ = FileStatus::FILE_NOT_FOUND;
         return {};
-    }
-}
-
-Program::~Program() {
-    for (OpenGLProgramExecuter* executer : program_executors_) {
-        executer->no_program();
     }
 }
 
@@ -153,6 +146,7 @@ Shader::reload() {
 void
 Program::reload() {
     found_uniforms_.clear();
+    uniforms_.clear();
 
     if (vertex_shader_.get_status() != ShaderStatus::OK) {
         // Not ok reload
@@ -219,6 +213,7 @@ Program::reload() {
     );
 
     status_ = ProgramStatus::OK;
+    attach_uniforms();
 
 detach_shader:
 
@@ -267,6 +262,18 @@ Program::get_status_string() const {
         default:
             return other_string;
     }
+}
+
+void
+Program::attach_uniforms() {
+
+    for (const auto& uniform_names : found_uniforms_){
+        const auto& name = uniform_names.first;
+        uniforms_[name] = new_uniform(name);
+    }
+//    for (auto& uniform : uniforms) {
+//        uniform->uniform_ID_ = get_uniform(uniform->get_name());
+//    }
 }
 
 void

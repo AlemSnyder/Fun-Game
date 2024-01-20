@@ -25,6 +25,7 @@
 
 #include "../../../types.hpp"
 #include "opengl_program_status.hpp"
+#include "uniform.hpp"
 
 #include <GL/glew.h>
 
@@ -194,6 +195,8 @@ class ProgramData {
 
     std::set<std::pair<std::string, std::string>> found_uniforms_;
 
+    // todo make this a type
+    std::map<std::string, GLint> uniforms_;
 
  public:
     inline ProgramData(Shader& vertex_shader, Shader& fragment_shader) :
@@ -223,13 +226,19 @@ class Program : public ProgramData {
 
     ProgramStatus status_;
 
-    std::set<OpenGLProgramExecuter*> program_executors_;
+    //std::set<OpenGLProgramExecuter*> program_executors_;
 
     /**
      * @brief An entire OpenGL program pipeline.
      *
      * @details Programs are used to render things in OpenGL.
      */
+
+    // get program status
+    [[nodiscard]] GLint inline new_uniform(std::string uniform_name) {
+        return glGetUniformLocation(get_program_ID(), uniform_name.c_str());
+    }
+
  public:
     inline Program(Shader& vertex_shader, Shader& fragment_shader) :
         ProgramData(vertex_shader, fragment_shader), program_ID_(0),
@@ -242,27 +251,33 @@ class Program : public ProgramData {
         reload();
     }
 
-    ~Program();
-
     void reload();
+
+    [[nodiscard]] GLint inline get_uniform(std::string uniform_name) const {
+        auto value = uniforms_.find(uniform_name);
+        if (value != uniforms_.end()){
+            return value->second;
+        }
+        return 0;
+    }
 
     /**
      * @brief Add OpenGLProgramExecuter so that when the program is updated
      * uniforms will also be updated.
      */
-    inline void
-    add_executor(OpenGLProgramExecuter* program_executor) {
-        program_executors_.insert(program_executor);
-    }
+    //inline void
+    //add_executor(OpenGLProgramExecuter* program_executor) {
+    //    program_executors_.insert(program_executor);
+    //}
 
     /**
      * @brief Remove OpenGLProgramExecuter usually when the executer is being
      * deleted.
      */
-    inline void
-    remove_executor(OpenGLProgramExecuter* program_executor) {
-        program_executors_.erase(program_executor);
-    }
+    //inline void
+    //remove_executor(OpenGLProgramExecuter* program_executor) {
+    //    program_executors_.erase(program_executor);
+    //}
 
     /**
      * @brief Return the status of the program.
@@ -297,6 +312,13 @@ class Program : public ProgramData {
     get_program_ID() const noexcept {
         return program_ID_;
     }
+
+    inline void
+    use_program() const {
+        glUseProgram(program_ID_);
+    }
+
+    void attach_uniforms();
 };
 
 /**

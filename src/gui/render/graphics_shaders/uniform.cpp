@@ -6,13 +6,6 @@ namespace gui {
 
 namespace shader {
 
-void
-Uniforms::bind() {
-    for (auto uniform : uniforms_) {
-        uniform->bind();
-    }
-}
-
 std::set<std::pair<std::string, std::string>>
 Uniforms::get_names() const {
     std::set<std::pair<std::string, std::string>> out;

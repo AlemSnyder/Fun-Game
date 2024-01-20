@@ -79,6 +79,7 @@ target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 target_include_directories(FunGame PRIVATE "vendor")
 target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
+target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
 # Set warning options

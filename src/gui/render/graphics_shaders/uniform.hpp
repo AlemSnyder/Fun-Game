@@ -24,8 +24,6 @@ class Uniform {
     const std::string name_;
     const std::string type_;
 
-    GLint uniform_ID_;
-
  public:
     inline virtual const std::string&
     get_name() const {
@@ -37,9 +35,9 @@ class Uniform {
         return type_;
     }
 
-    virtual void bind() = 0;
+    virtual void bind(GLint uniform_ID) = 0;
 
-    inline Uniform(std::string name, std::string type) : name_(name), type_(type), uniform_ID_(-1) {}
+    inline Uniform(std::string name, std::string type) : name_(name), type_(type) {}
 };
 
 class Uniforms {
@@ -50,8 +48,6 @@ class Uniforms {
 
  public:
     std::set<std::pair<std::string, std::string>> get_names() const;
-
-    void bind() ;
 
     Uniforms(std::vector<std::shared_ptr<Uniform>> uniforms) : uniforms_(uniforms) {}
 
