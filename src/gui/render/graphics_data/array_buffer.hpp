@@ -1,5 +1,7 @@
 #pragma once
 
+#include "logging.hpp"
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -38,7 +40,7 @@ class ArrayBuffer;
 // cursed
 class array_buffer_type {
  protected:
-    const uint8_t vec_size_ : 2; // 1,2,3 or 4 vec size
+    const uint8_t vec_size_ : 3; // 1,2,3 or 4 vec size
     const uint8_t type_size_;    // size of type float, int etc.
     const bool is_int_ : 1;      // should be interpreted as integer
     const GL_draw_type draw_type_;
@@ -46,10 +48,14 @@ class array_buffer_type {
 
  public:
     inline constexpr array_buffer_type(
-        int vec_size, int type_size, bool is_int, GL_draw_type draw_type
+        uint8_t vec_size, uint8_t type_size, bool is_int, GL_draw_type draw_type
     ) :
         vec_size_(vec_size),
-        type_size_(type_size), is_int_(is_int), draw_type_(draw_type) {};
+        type_size_(type_size),
+        is_int_(is_int),
+        draw_type_(draw_type) {
+            assert ( ( vec_size_ < 1 || vec_size > 4 ) && "Vector size not allowed");
+        };
 
     //inline array_buffer_type() : array_buffer_type(0,0,0,GL_draw_type::BYTE) {}
 
