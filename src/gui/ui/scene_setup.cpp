@@ -96,28 +96,13 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     scene.add_mid_ground_renderer(chunks_render_program);
 
-    // should check that this does what I want it to.
-    // auto chunk_renderer =
-    // std::make_shared<data_structures::NonInstancedIMeshRenderer>(
-    //    render_program, scene.get_lighting_environment()
-    //);
-
     for (const auto& chunk_mesh : terrain_mesh) {
         chunks_render_program->data.push_back(chunk_mesh);
     }
 
-    // auto chunk_shadow =
-    //     std::make_shared<data_structures::NonInstancedIMeshShadow>(shadow_program);
-
     for (const auto& chunk_mesh : terrain_mesh) {
         chunks_shadow_program->data.push_back(chunk_mesh);
     }
-
-    // Renders the Shadow depth map
-    // chunk_renderer->set_shadow_map(&scene.get_shadow_map());
-
-    // scene.add_mid_ground_renderer(chunk_renderer);
-    // scene.shadow_attach(chunk_shadow);
 
     shader::Program& sky_program = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "background" / "Sky.vert",
@@ -184,11 +169,6 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         stars_program, star_render_setup, star_render_program_uniforms
     );
 
-    // auto star_renderer = std::make_shared<render::StarRenderer>(
-    //     scene.get_lighting_environment(), scene.get_lighting_environment(),
-    //     stars_program
-    //);
-
     // sun
 
     shader::Uniforms sun_render_program_uniforms(
@@ -197,10 +177,6 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
              spectral_light_color_uniform}
         )
     );
-
-    // auto sun_renderer = std::make_shared<render::SunRenderer>(
-    //     scene.get_lighting_environment(), sun_program
-    //);
 
     std::function<void()> sun_render_setup = []() {
         // Draw over everything

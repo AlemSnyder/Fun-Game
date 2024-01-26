@@ -26,6 +26,7 @@
 #include "../../../types.hpp"
 #include "opengl_program_status.hpp"
 #include "uniform.hpp"
+#include "logging.hpp"
 
 #include <GL/glew.h>
 
@@ -170,13 +171,15 @@ class Shader : public ShaderData {
         return shader_ID_;
     }
 
-    inline auto uniform_begin() {
+    inline auto
+    uniform_begin() {
         return found_uniforms_.begin();
     }
-    inline auto uniform_end() {
+
+    inline auto
+    uniform_end() {
         return found_uniforms_.end();
     }
-
 };
 
 /**
@@ -226,8 +229,6 @@ class Program : public ProgramData {
 
     ProgramStatus status_;
 
-    //std::set<OpenGLProgramExecuter*> program_executors_;
-
     /**
      * @brief An entire OpenGL program pipeline.
      *
@@ -236,7 +237,16 @@ class Program : public ProgramData {
 
     // get program status
     [[nodiscard]] GLint inline new_uniform(std::string uniform_name) {
-        return glGetUniformLocation(get_program_ID(), uniform_name.c_str());
+        GLint out = glGetUniformLocation(program_ID_, uniform_name.c_str());
+        if (out == -1) {
+            LOG_WARNING(
+                logging::opengl_logger,
+                "Uniform Error. Uniform \"{}\" not found in program.",
+                uniform_name.c_str()
+            );
+        }
+        return out;
+        // if this returns -1 then the program ID may not exist or could be unused.
     }
 
  public:
@@ -255,29 +265,12 @@ class Program : public ProgramData {
 
     [[nodiscard]] GLint inline get_uniform(std::string uniform_name) const {
         auto value = uniforms_.find(uniform_name);
-        if (value != uniforms_.end()){
+        if (value != uniforms_.end()) {
             return value->second;
         }
         return 0;
     }
 
-    /**
-     * @brief Add OpenGLProgramExecuter so that when the program is updated
-     * uniforms will also be updated.
-     */
-    //inline void
-    //add_executor(OpenGLProgramExecuter* program_executor) {
-    //    program_executors_.insert(program_executor);
-    //}
-
-    /**
-     * @brief Remove OpenGLProgramExecuter usually when the executer is being
-     * deleted.
-     */
-    //inline void
-    //remove_executor(OpenGLProgramExecuter* program_executor) {
-    //    program_executors_.erase(program_executor);
-    //}
 
     /**
      * @brief Return the status of the program.

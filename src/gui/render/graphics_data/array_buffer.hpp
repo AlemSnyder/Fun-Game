@@ -54,7 +54,7 @@ class array_buffer_type {
         type_size_(type_size),
         is_int_(is_int),
         draw_type_(draw_type) {
-            assert ( ( vec_size_ < 1 || vec_size > 4 ) && "Vector size not allowed");
+            assert ( !( vec_size_ < 1 || vec_size > 4 ) && "Vector size not allowed");
         };
 
     //inline array_buffer_type() : array_buffer_type(0,0,0,GL_draw_type::BYTE) {}
@@ -152,6 +152,8 @@ class ArrayBuffer : public array_buffer_type {
 
     template <class T>
     inline void update(std::vector<T> data ) {update<T>(data, devisor_ ); }
+
+    inline void set_devisor(GLuint devisor) noexcept {devisor_ = devisor;}
 
     template <class T>
     inline ArrayBuffer(std::vector<T> data ) : ArrayBuffer(data, 0, buffer_type::ARRAY_BUFFER) {}

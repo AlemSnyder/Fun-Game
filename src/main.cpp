@@ -438,6 +438,8 @@ main(int argc, char** argv) {
         return image_test(cmdl);
     } else if (run_function == "RefactoredProgramTest") {
         return gui::revised_gui_test();
+    } else if (run_function == "StarsTest") {
+        return gui::stars_test();
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

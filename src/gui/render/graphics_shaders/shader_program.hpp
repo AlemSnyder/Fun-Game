@@ -102,7 +102,7 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
 
         for (auto uniform : uniforms_) {
             GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id > 0)
+            if (uniform_id != -1)
                 uniform->bind(uniform_id);
         }
 
@@ -185,7 +185,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
 
         for (auto uniform : uniforms_) {
             GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id > 0)
+            if (uniform_id != -1)
                 uniform->bind(uniform_id);
         }
         
@@ -272,7 +272,7 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
 
         for (auto uniform : uniforms_) {
             GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id > 0)
+            if (uniform_id != -1)
                 uniform->bind(uniform_id);
         }
 
@@ -350,7 +350,7 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
 
         for (auto uniform : uniforms_) {
             GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id > 0)
+            if (uniform_id != -1)
                 uniform->bind(uniform_id);
         }
 
