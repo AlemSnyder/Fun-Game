@@ -18,7 +18,7 @@ namespace data_structures {
 class ScreenData : public virtual GPUData {
  private:
     ArrayBuffer vertex_array_;
-//    ArrayBuffer element_array_;
+    //    ArrayBuffer element_array_;
     unsigned int num_vertices_;
 
  public:
@@ -56,17 +56,6 @@ class ScreenData : public virtual GPUData {
         return vertex_array_;
     }
 
-    /**
-     * @brief Get the element buffer id
-     *
-     * @deprecated this is 0,1,2,3 should probably be removed
-     *
-     * @return ArrayBuffer id of element buffer on gpu
-     */
-    //inline const ArrayBuffer
-    //get_element_buffer() const {
-    //    return element_array_;
-    //}
 
     /**
      * @brief Get the number of vertices
@@ -81,7 +70,7 @@ class ScreenData : public virtual GPUData {
     inline virtual void
     bind() const {
         vertex_array_.bind(0, 0);
-//        element_array_.bind(-1, -1);
+        //        element_array_.bind(-1, -1);
     };
 
     inline virtual void
@@ -94,10 +83,6 @@ class ScreenData : public virtual GPUData {
         return true;
     };
 
-    //inline virtual GL_draw_type
-    //get_element_type() const {
-    //    return element_array_.get_draw_type();
-    //};
 };
 
 } // namespace data_structures

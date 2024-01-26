@@ -188,7 +188,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
             if (uniform_id != -1)
                 uniform->bind(uniform_id);
         }
-        
+
         for (std::shared_ptr<data_structures::GPUDataElements> mesh : data) {
             if (!mesh->do_render()) {
                 continue;

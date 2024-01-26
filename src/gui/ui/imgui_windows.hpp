@@ -1,5 +1,3 @@
-//#include "../render/graphics_shaders/shader.hpp"
-
 #include "../render/graphics_shaders/program_handler.hpp"
 
 #include <imgui/imgui.h>

@@ -25,10 +25,6 @@
 #include "../render/data_structures/frame_buffer_multisample.hpp"
 #include "../render/data_structures/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
-//#include "../render/graphics_shaders/instanced_i_mesh_renderer.hpp"
-//#include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
-//#include "../render/graphics_shaders/quad_renderer_multisample.hpp"
-//#include "../render/graphics_shaders/sky.hpp"
 #include "helio.hpp"
 
 #include <GLFW/glfw3.h>

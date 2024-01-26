@@ -24,9 +24,9 @@
 #pragma once
 
 #include "../../../types.hpp"
+#include "logging.hpp"
 #include "opengl_program_status.hpp"
 #include "uniform.hpp"
-#include "logging.hpp"
 
 #include <GL/glew.h>
 
@@ -38,6 +38,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#define NO_UNIFORM_INT -1
 
 namespace gui {
 
@@ -223,22 +225,22 @@ class ProgramData {
     };
 };
 
+/**
+ * @brief An entire OpenGL program pipeline.
+ *
+ * @details Programs are used to render things in OpenGL.
+ */
 class Program : public ProgramData {
  private:
     GLuint program_ID_;
 
     ProgramStatus status_;
 
-    /**
-     * @brief An entire OpenGL program pipeline.
-     *
-     * @details Programs are used to render things in OpenGL.
-     */
-
-    // get program status
+    // get uniform
+    // may be -1 if no uniform exists
     [[nodiscard]] GLint inline new_uniform(std::string uniform_name) {
         GLint out = glGetUniformLocation(program_ID_, uniform_name.c_str());
-        if (out == -1) {
+        if (out == NO_UNIFORM_INT) {
             LOG_WARNING(
                 logging::opengl_logger,
                 "Uniform Error. Uniform \"{}\" not found in program.",
@@ -268,9 +270,8 @@ class Program : public ProgramData {
         if (value != uniforms_.end()) {
             return value->second;
         }
-        return 0;
+        return NO_UNIFORM_INT;
     }
-
 
     /**
      * @brief Return the status of the program.

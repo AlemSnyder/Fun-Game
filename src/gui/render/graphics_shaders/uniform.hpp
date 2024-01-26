@@ -4,9 +4,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
-#include <set>
 #include <utility>
+#include <vector>
 
 namespace gui {
 

@@ -25,7 +25,8 @@ StarShape::StarShape() :
     // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
 }
 
-star_data StarData::read_data_from_file(std::filesystem::path path) {
+star_data
+StarData::read_data_from_file(std::filesystem::path path) {
     Json::Value stars_json;
     auto stars_file = files::open_data_file(path);
     if (stars_file.has_value())
@@ -54,7 +55,6 @@ star_data StarData::read_data_from_file(std::filesystem::path path) {
     }
 
     return {stars_positions, star_age};
-
 }
 
 } // namespace data_structures

@@ -6,8 +6,6 @@
 #include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-//#include "../render/graphics_shaders/quad_renderer.hpp"
-//#include "../render/graphics_shaders/shader.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
@@ -53,9 +51,7 @@ opengl_entry(World& world) {
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
 
-//    render::QuadRenderer QR(quad_program); TODO
-
-
+    //    render::QuadRenderer QR(quad_program); TODO
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -73,7 +69,7 @@ opengl_entry(World& world) {
         main_scene.copy_to_window(window_width, window_height);
 
         if (controls::show_shadow_map(window)) {
-      //      QR.render(512, 512, main_scene.get_depth_texture(), 0);
+            //      QR.render(512, 512, main_scene.get_depth_texture(), 0);
         }
 
         // Swap buffers

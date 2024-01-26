@@ -29,11 +29,8 @@
 
 namespace gui {
 
-int
-revised_gui_test();
+int revised_gui_test();
 
-int
-stars_test();
-
+int stars_test();
 
 } // namespace gui

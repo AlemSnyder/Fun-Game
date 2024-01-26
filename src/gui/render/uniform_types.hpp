@@ -2,9 +2,9 @@
 
 #include "../../types.hpp"
 #include "../scene/controls.hpp"
-#include "logging.hpp"
 #include "data_structures/shadow_map.hpp"
 #include "graphics_shaders/uniform.hpp"
+#include "logging.hpp"
 
 #include <glm/glm.hpp>
 
@@ -77,7 +77,6 @@ class DiffuseLight : public shader::Uniform {
             diffuse_light_color.r, diffuse_light_color.g, diffuse_light_color.b
         );
 
-//here
         glUniform3f(
             uniform_ID, diffuse_light_color.r, diffuse_light_color.g,
             diffuse_light_color.b
@@ -105,7 +104,7 @@ class SpectralLight : public shader::Uniform {
             sunlight_color.r, sunlight_color.g, sunlight_color.b
         );
 
-// here
+        // here
         glUniform3f(uniform_ID, sunlight_color.r, sunlight_color.g, sunlight_color.b);
     }
 };
@@ -123,9 +122,7 @@ class MatrixViewProjection : public shader::Uniform {
 
         glm::mat4 MVP = projection_matrix * view_matrix;
 
-        LOG_BACKTRACE(
-            logging::opengl_logger, "Uniform {}, being initialized.", name_
-        );
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &MVP[0][0]);
     }
