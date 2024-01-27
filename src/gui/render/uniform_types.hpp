@@ -163,6 +163,31 @@ class LightDepthProjection : public shader::Uniform {
         // matrix to calculate the length of a light ray in model space
         glm::mat4 depthMVP = depth_projection_matrix * depth_view_matrix;
 
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+
+        glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &depthMVP[0][0]);
+    }
+};
+
+class LightDepthTextureProjection : public shader::Uniform {
+ private:
+    const data_structures::ShadowMap* shadow_map_;
+
+ public:
+    LightDepthTextureProjection(const data_structures::ShadowMap* shadow_map) :
+        Uniform("depth_texture_projection", "mat4"), shadow_map_(shadow_map) {}
+
+    virtual ~LightDepthTextureProjection() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) {
+        const glm::mat4& depth_projection_matrix =
+            shadow_map_->get_depth_projection_matrix();
+        const glm::mat4& depth_view_matrix = shadow_map_->get_depth_view_matrix();
+
+        // matrix to calculate the length of a light ray in model space
+        glm::mat4 depthMVP = depth_projection_matrix * depth_view_matrix;
+
         // Shadow bias matrix of-sets the shadows
         // converts -1,1 to 0,1 to go from opengl render region to texture
         // clang-format off

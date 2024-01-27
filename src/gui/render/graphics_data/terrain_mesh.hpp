@@ -21,6 +21,7 @@
  *
  */
 
+#include "../data_structures/shadow_map.hpp"
 #include "non_instanced_i_mesh.hpp"
 
 namespace gui {
@@ -34,6 +35,9 @@ namespace data_structures {
  * for all materials in the terrain.
  */
 class TerrainMesh : public virtual NonInstancedIMeshGPU {
+ private:
+    GLuint shadow_texture_;
+
  public:
     inline TerrainMesh(){};
 
@@ -45,6 +49,18 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     inline void
     set_color_texture(GLuint color_texture_id) noexcept {
         color_texture_ = color_texture_id;
+    }
+
+    inline void set_shadow_texture(GLuint shadow_texture){
+        shadow_texture_ = shadow_texture;
+    }
+
+    inline virtual void
+    bind() const override {
+        NonInstancedIMeshGPU::bind();
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, shadow_texture_);
     }
 };
 

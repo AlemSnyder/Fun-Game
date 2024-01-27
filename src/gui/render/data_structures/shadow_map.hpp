@@ -71,17 +71,21 @@ class ShadowMap {
      *
      * @return GLuint& reference to depth texture ID
      */
-    inline GLuint
+    [[nodiscard]] inline GLuint
     get_depth_texture() const {
         return depth_texture_id_;
     }
+
+    inline void bind(uint texture_index) const {
+        glActiveTexture(GL_TEXTURE0 + texture_index);
+        glBindTexture(GL_TEXTURE_2D, depth_texture_id_);}
 
     /**
      * @brief Get the frame buffer ID
      *
      * @return GLuint& reference to frame buffer ID
      */
-    inline GLuint&
+    [[nodiscard]] inline GLuint&
     get_frame_buffer_id() {
         return frame_buffer_id_;
     }
@@ -100,17 +104,17 @@ class ShadowMap {
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
-    const glm::vec3&
+    [[nodiscard]] inline const glm::vec3&
     get_light_direction() const {
         return light_direction_;
     }
 
-    const glm::mat4&
+    [[nodiscard]] inline const glm::mat4&
     get_depth_projection_matrix() const {
         return depth_projection_matrix_;
     }
 
-    const glm::mat4&
+    [[nodiscard]] inline const glm::mat4&
     get_depth_view_matrix() const {
         return depth_view_matrix_;
     }
@@ -120,7 +124,7 @@ class ShadowMap {
      *
      * @return screen_size_t width of shadow map in pixels
      */
-    inline screen_size_t
+    [[nodiscard]] inline screen_size_t
     get_shadow_width() const {
         return shadow_width_;
     }
@@ -130,7 +134,7 @@ class ShadowMap {
      *
      * @return screen_size_t height of shadow map in pixels
      */
-    inline screen_size_t
+    [[nodiscard]] inline screen_size_t
     get_shadow_height() const {
         return shadow_height_;
     }

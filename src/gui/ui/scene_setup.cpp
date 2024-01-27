@@ -48,6 +48,9 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     auto light_depth_projection_uniform =
         std::make_shared<render::LightDepthProjection>(&scene.get_shadow_map());
 
+    auto light_depth_texture_projection_uniform =
+        std::make_shared<render::LightDepthTextureProjection>(&scene.get_shadow_map());
+
     auto shadow_texture_uniform = std::make_shared<render::TextureUniform>(
         "shadow_texture", "sampler2DShadow", 1
     );
@@ -68,10 +71,14 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     shader::Uniforms chunks_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {matrix_view_projection_uniform, view_matrix_uniform,
-             light_depth_projection_uniform, shadow_texture_uniform,
+             light_depth_texture_projection_uniform, shadow_texture_uniform,
              material_color_texture_uniform, spectral_light_color_uniform,
              diffuse_light_color_uniform, light_direction_uniform}
         )
+    );
+
+    shader::Uniforms chunks_shadow_program_uniforms(
+        std::vector<std::shared_ptr<shader::Uniform>>({light_depth_projection_uniform})
     );
 
     std::function<void()> chunk_render_setup = []() {
@@ -89,7 +96,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     );
 
     auto chunks_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
-        shadow_program, chunk_render_setup, chunks_render_program_uniforms
+        shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
     );
 
     scene.shadow_attach(chunks_shadow_program);
@@ -97,6 +104,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     scene.add_mid_ground_renderer(chunks_render_program);
 
     for (const auto& chunk_mesh : terrain_mesh) {
+        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
         chunks_render_program->data.push_back(chunk_mesh);
     }
 
@@ -131,7 +139,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     shader::Uniforms sky_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
-            {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
+            {matrix_view_inverse_projection, light_direction_uniform,
              spectral_light_color_uniform}
         )
     );
