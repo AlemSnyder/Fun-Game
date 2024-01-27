@@ -25,7 +25,7 @@
 // reason it should be moved into gui/data_structures
 // Also no namespace terrain
 
-#include "../../../entity/mesh.hpp"
+#include "entity/mesh.hpp"
 #include "array_buffer.hpp"
 #include "gpu_data.hpp"
 

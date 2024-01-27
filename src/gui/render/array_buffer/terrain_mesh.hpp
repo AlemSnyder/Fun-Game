@@ -21,7 +21,7 @@
  *
  */
 
-#include "../data_structures/shadow_map.hpp"
+//#include "shadow_map.hpp"
 #include "non_instanced_i_mesh.hpp"
 
 namespace gui {

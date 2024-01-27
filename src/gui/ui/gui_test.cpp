@@ -1,7 +1,30 @@
 #include "gui_test.hpp"
 
-#include "../render/data_structures/star_data.hpp"
+#include "../../entity/mesh.hpp"
+#include "../../logging.hpp"
+#include "../../world.hpp"
+#include "../gui_logging.hpp"
+#include "../handler.hpp"
+#include "../render/array_buffer/screen_data.hpp"
+#include "../render/array_buffer/star_data.hpp"
+#include "../render/graphics_shaders/program_handler.hpp"
+#include "../render/graphics_shaders/shader_program.hpp"
+#include "../render/uniform_types.hpp"
+#include "../scene/controls.hpp"
 #include "../scene/helio.hpp"
+#include "../scene/scene.hpp"
+#include "opengl_setup.hpp"
+
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
+#include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/imgui.h>
+#include <stdio.h>
+
+#include <functional>
+#include <memory>
 
 namespace gui {
 

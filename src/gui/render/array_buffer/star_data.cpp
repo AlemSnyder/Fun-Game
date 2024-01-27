@@ -1,8 +1,7 @@
 #include "star_data.hpp"
 
-#include "../../../entity/mesh.hpp"
-#include "../../../logging.hpp"
-#include "../../../types.hpp"
+#include "logging.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

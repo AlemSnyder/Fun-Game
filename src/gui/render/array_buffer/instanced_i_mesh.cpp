@@ -1,7 +1,7 @@
 #include "instanced_i_mesh.hpp"
 
-#include "../../../entity/mesh.hpp"
-#include "../../../types.hpp"
+#include "entity/mesh.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

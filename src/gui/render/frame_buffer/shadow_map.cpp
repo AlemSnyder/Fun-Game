@@ -1,6 +1,6 @@
 #include "shadow_map.hpp"
 
-#include "../../../logging.hpp"
+#include "logging.hpp"
 #include "../../handler.hpp"
 #include "../../scene/controls.hpp"
 

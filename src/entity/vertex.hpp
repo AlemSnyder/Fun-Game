@@ -1,3 +1,26 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file vertex.hpp
+ *
+ * @brief Defines Vertex Struct
+ *
+ * @ingroup ENTITY
+ *
+ */
+
+#pragma once
+
 #include "../types.hpp"
 #include "../util/hash_combine.hpp"
 
@@ -7,6 +30,13 @@
 
 namespace entity {
 
+/**
+ * @brief Position in mesh
+ * 
+ * @details Object used to store data of a vertex in a mesh. This class exists
+ * so that it can be hashed, and compared in a map. This way less vertices are
+ * sent to the gpu.
+*/
 struct Vertex {
     VoxelOffset position;
     glm::i8vec3 normal;

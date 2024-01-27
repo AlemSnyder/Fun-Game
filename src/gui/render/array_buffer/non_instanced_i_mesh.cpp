@@ -1,7 +1,5 @@
 #include "non_instanced_i_mesh.hpp"
 
-#include "../../../terrain/material.hpp"
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

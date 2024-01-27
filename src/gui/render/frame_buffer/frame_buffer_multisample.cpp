@@ -1,8 +1,8 @@
 
 #include "frame_buffer_multisample.hpp"
 
-#include "../../../logging.hpp"
-#include "../../../types.hpp"
+#include "logging.hpp"
+#include "types.hpp"
 #include "../../handler.hpp"
 
 namespace gui {

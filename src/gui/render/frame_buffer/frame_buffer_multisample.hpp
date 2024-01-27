@@ -17,13 +17,13 @@
  *
  * @brief Defines FrameBufferMultisample
  *
- * @ingroup GUI  DATA_STRUCTURES
+ * @ingroup GUI  RENDER  DATA_STRUCTURES
  *
  */
 
 #pragma once
 
-#include "../../../types.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -33,7 +33,7 @@ namespace gui {
 namespace data_structures {
 
 /**
- * @brief Handles Frame Buffer
+ * @brief Multisample Framebuffer object
  *
  * @details Creates and handles a GPU frame buffer. Creates color texture,
  * and depth texture.

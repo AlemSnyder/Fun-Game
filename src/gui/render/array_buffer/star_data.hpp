@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "../graphics_data/array_buffer.hpp"
-#include "../graphics_data/gpu_data.hpp"
+#include "array_buffer.hpp"
+#include "gpu_data.hpp"
 
 #include <json/json.h>
 

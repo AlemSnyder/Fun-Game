@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "../../../logging.hpp"
-#include "../../../types.hpp"
+#include "logging.hpp"
+#include "types.hpp"
 #include "../../handler.hpp"
-#include "../graphics_data/gpu_data.hpp"
+#include "../array_buffer/gpu_data.hpp"
 #include "gui_render_types.hpp"
 #include "uniform.hpp"
 

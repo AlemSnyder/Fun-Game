@@ -23,8 +23,7 @@
 
 #pragma once
 
-#include "../../../types.hpp"
-#include "../data_structures/shadow_map.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 

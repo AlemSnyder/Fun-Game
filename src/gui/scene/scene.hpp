@@ -22,8 +22,8 @@
  */
 #pragma once
 
-#include "../render/data_structures/frame_buffer_multisample.hpp"
-#include "../render/data_structures/shadow_map.hpp"
+#include "../render/frame_buffer/frame_buffer_multisample.hpp"
+#include "../render/frame_buffer/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
 #include "helio.hpp"
 

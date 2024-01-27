@@ -8,8 +8,8 @@
 // #include "../render/graphics_shaders/star.hpp"
 // #include "../render/graphics_shaders/sun.hpp"
 
-#include "../render/data_structures/screen_data.hpp"
-#include "../render/data_structures/star_data.hpp"
+#include "../render/array_buffer/screen_data.hpp"
+#include "../render/array_buffer/star_data.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/uniform_types.hpp"

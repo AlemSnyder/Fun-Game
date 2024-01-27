@@ -2,7 +2,7 @@
 
 #include "../../types.hpp"
 #include "../scene/controls.hpp"
-#include "data_structures/shadow_map.hpp"
+#include "frame_buffer/shadow_map.hpp"
 #include "graphics_shaders/uniform.hpp"
 #include "logging.hpp"
 
