@@ -17,7 +17,7 @@
  *
  * @brief Defines render types virtual classes
  *
- * @ingroup GUI  RENDER_TO
+ * @ingroup GUI  RENDER  GRAPHICS_SHADERS
  *
  */
 

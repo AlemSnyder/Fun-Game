@@ -11,22 +11,21 @@
  */
 
 /**
- * @file shader.hpp
+ * @file program_handler.hpp
  *
  * @author @AlemSnyder
  *
  * @brief Define ShaderHandler
  *
- * @ingroup GUI  SHADER
+ * @ingroup GUI  RENDER  GRAPHICS_SHADERS
  *
  */
 
 #pragma once
 
-#include "types.hpp"
 #include "logging.hpp"
 #include "opengl_program_status.hpp"
-#include "uniform.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 
@@ -42,8 +41,6 @@
 #define NO_UNIFORM_INT -1
 
 namespace gui {
-
-class OpenGLProgramExecuter;
 
 namespace shader {
 
@@ -252,19 +249,44 @@ class Program : public ProgramData {
     }
 
  public:
+    /**
+     * @brief Crate a new Program object from a vertex and a fragment shader
+     * 
+     * @param vertex_shader Shader the vertex shader
+     * @param fragment_shader Shader the fragment shader
+     */
     inline Program(Shader& vertex_shader, Shader& fragment_shader) :
         ProgramData(vertex_shader, fragment_shader), program_ID_(0),
         status_(ProgramStatus::EMPTY) {
         reload();
     }
 
+    /**
+     * @brief Crate a Program copy constructor.
+     * 
+     * @details I'm not sure how save this is. Should probably be avoided.
+    */
     inline Program(ProgramData program_data) :
         ProgramData(program_data), program_ID_(0), status_(ProgramStatus::EMPTY) {
         reload();
     }
 
+    /**
+     * @brief Reload the program.
+     * 
+     * @details Re-compiles the program. Will also recompile vertex and
+     * fragment shaders if they previously failed. Remember to read the log
+     * out put as it will tell you what went wrong.
+    */
     void reload();
 
+    /**
+     * @brief Get uniform by its name.
+     * 
+     * @param uniform_name string name of uniform
+     * 
+     * @return GLint uniform id
+    */
     [[nodiscard]] GLint inline get_uniform(std::string uniform_name) const {
         auto value = uniforms_.find(uniform_name);
         if (value != uniforms_.end()) {
@@ -284,6 +306,12 @@ class Program : public ProgramData {
         return status_;
     }
 
+    /**
+     * @brief Get the set of detected uniforms
+     * 
+     * @return std::set<std::pair<std::string, std::string>> set of paris of
+     * uniform names and uniform types.
+    */
     [[nodiscard]] inline std::set<std::pair<std::string, std::string>>
     get_detected_uniforms() const noexcept {
         return found_uniforms_;
@@ -307,11 +335,17 @@ class Program : public ProgramData {
         return program_ID_;
     }
 
+    /**
+     * @brief Bind the current Opengl program to this one.
+    */
     inline void
     use_program() const {
         glUseProgram(program_ID_);
     }
 
+    /**
+     * @brief Send uniform data for this program.
+    */
     void attach_uniforms();
 };
 
@@ -331,12 +365,9 @@ std::string get_shader_string(GLuint gl_shader_type);
  */
 class ShaderHandler {
  protected:
-    // maybe these should be copies?
-    //    std::map<const std::filesystem::path, GLuint> shaders;
 
     std::set<File> files_;
 
-    // I should be tries for the cpp crimes
     std::map<const ShaderData, Shader> shaders_;
 
     std::map<const ProgramData, Program> programs_;
@@ -351,6 +382,11 @@ class ShaderHandler {
      */
     Shader& get_shader(const std::vector<File> source_files, GLuint gl_shader_type);
 
+    /**
+     * @brief Get all programs associated with this program handler
+     * 
+     * @details Maybe don't use this. Only used by IMGUI interface.
+    */
     [[nodiscard]] inline std::map<const ProgramData, Program>&
     get_programs() {
         return programs_;

@@ -1,12 +1,33 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
 
+/**
+ * @file shader_program.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines shader program classes
+ *
+ * @ingroup GUI  RENDER  GRAPHICS_SHADERS
+ *
+ */
 
 #pragma once
 
-#include "logging.hpp"
-#include "types.hpp"
 #include "../../handler.hpp"
 #include "../array_buffer/gpu_data.hpp"
 #include "gui_render_types.hpp"
+#include "logging.hpp"
+#include "types.hpp"
 #include "uniform.hpp"
 
 #include <algorithm>
@@ -71,10 +92,6 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
         setup_(setup_commands), uniforms_(uniforms) {
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
-
-    // template <data_structures::GPUdata_or_something T>
-    // void render(screen_size_t width, screen_size_t height, GLuint //framebuffer_ID)
-    // const;
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -156,10 +173,6 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
         setup_(setup_commands), uniforms_(uniforms) {
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
-
-    // template <data_structures::GPUdata_or_something T>
-    // void render(screen_size_t width, screen_size_t height, GLuint //framebuffer_ID)
-    // const;
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -244,10 +257,6 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
-    // template <data_structures::GPUdata_or_something T>
-    // void render(screen_size_t width, screen_size_t height, GLuint //framebuffer_ID)
-    // const;
-
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     ) {
@@ -321,10 +330,6 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
         );
         LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
     }
-
-    // template <data_structures::GPUdata_or_something T>
-    // void render(screen_size_t width, screen_size_t height, GLuint //framebuffer_ID)
-    // const;
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
