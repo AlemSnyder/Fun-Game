@@ -40,6 +40,9 @@ class StaticMesh : public virtual InstancedIMeshGPU {
     inline StaticMesh(
         const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
     ) :
+        // what is this abomination?
+        // TODO fix. This may be running twice I don't know.
+        NonInstancedIMeshGPU(mesh),
         InstancedIMeshGPU(mesh, model_transforms) {
         generate_color_texture(mesh);
     }
