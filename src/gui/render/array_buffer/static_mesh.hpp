@@ -38,7 +38,7 @@ namespace data_structures {
 class StaticMesh : public virtual InstancedIMeshGPU {
  public:
     inline StaticMesh(
-        const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
+        const entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     ) :
         // what is this abomination?
         // TODO fix. This may be running twice I don't know.

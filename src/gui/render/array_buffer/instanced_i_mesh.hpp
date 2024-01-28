@@ -59,7 +59,7 @@ class InstancedIMeshGPU :
     inline InstancedIMeshGPU& operator=(InstancedIMeshGPU&& other) = default;
 
     InstancedIMeshGPU(
-        const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
+        const entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     );
 
     inline void virtual bind() const override {
