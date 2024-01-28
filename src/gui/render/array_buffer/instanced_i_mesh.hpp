@@ -21,8 +21,8 @@
  *
  */
 
-#include "entity/mesh.hpp"
 #include "array_buffer.hpp"
+#include "entity/mesh.hpp"
 #include "gpu_data.hpp"
 #include "non_instanced_i_mesh.hpp"
 
@@ -44,7 +44,9 @@ namespace data_structures {
  * @details Handles instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
+class InstancedIMeshGPU :
+    public virtual NonInstancedIMeshGPU,
+    public virtual GPUDataElementsInstanced {
  private:
     ArrayBuffer transforms_array_;
     uint32_t num_models_;
@@ -75,7 +77,7 @@ class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
         return transforms_array_;
     }
 
-    [[nodiscard]] inline uint32_t virtual get_num_models() const noexcept {
+    [[nodiscard]] inline uint32_t virtual get_num_models() const noexcept override {
         return num_models_;
     }
 };

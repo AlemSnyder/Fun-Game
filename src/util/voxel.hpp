@@ -96,6 +96,17 @@ class VoxelObject : VoxelBase {
     }
 
     /**
+     * @brief Get the voxel color id
+     *
+     * @param VoxelOffset x, y, z position
+     * @return VoxelColorId
+     */
+    [[nodiscard]] inline VoxelColorId
+    get_voxel_color_id(const VoxelOffset& position) const {
+        return get_voxel_color_id(position.x, position.y, position.z);
+    }
+
+    /**
      * @brief Get the voxel color at given coordinate
      *
      * @param x coordinate

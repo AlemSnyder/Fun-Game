@@ -2,14 +2,9 @@
 
 #include "../render/graphics_shaders/program_handler.hpp"
 
-// #include "../../world.hpp"
-// #include "../render/graphics_shaders/non_instanced_i_mesh_shadow.hpp"
-// #include "../render/graphics_shaders/sky.hpp"
-// #include "../render/graphics_shaders/star.hpp"
-// #include "../render/graphics_shaders/sun.hpp"
-
 #include "../render/array_buffer/screen_data.hpp"
 #include "../render/array_buffer/star_data.hpp"
+#include "../render/array_buffer/static_mesh.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/uniform_types.hpp"
@@ -37,6 +32,16 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     );
     shader::Program& shadow_program = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.vert",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
+    );
+
+    shader::Program& entity_render_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "scene"
+            / "ShadowMappingInstanced.vert",
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
+    );
+    shader::Program& entity_shadow_program = shader_handler.load_program(
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTTInstanced.vert",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 
@@ -111,6 +116,44 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     for (const auto& chunk_mesh : terrain_mesh) {
         chunks_shadow_program->data.push_back(chunk_mesh);
     }
+
+    auto entity_render_program_execute =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            entity_render_program, chunk_render_setup, chunks_render_program_uniforms
+        );
+
+    auto entity_shadow_program_execute =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            entity_shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
+        );
+
+    scene.shadow_attach(entity_shadow_program_execute);
+
+    scene.add_mid_ground_renderer(entity_render_program_execute);
+
+    voxel_utility::VoxelObject default_trees_voxel(
+        files::get_data_path() / "base" / "models" / "DefaultTree.qb"
+    );
+
+    auto mesh_trees = entity::ambient_occlusion_mesher(default_trees_voxel);
+
+    std::vector<glm::ivec3> model_matrices;
+    // generate positions of trees
+    for (size_t x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
+        for (size_t y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
+            size_t z = world.get_terrain_main().get_Z_solid(x, y) + 1;
+            if (z != 1) { // if the position of the ground is not zero
+                glm::ivec3 model(x, y, z);
+                model_matrices.push_back(model);
+            }
+        }
+
+    // static because the mesh does not have moving parts
+    // this generates the buffer that holds the mesh data
+    auto gpu_trees_data =
+        std::make_shared<data_structures::StaticMesh>(mesh_trees, model_matrices);
+    entity_shadow_program_execute->data.push_back(gpu_trees_data);
+    entity_render_program_execute->data.push_back(gpu_trees_data);
 
     shader::Program& sky_program = shader_handler.load_program(
         files::get_resources_path() / "shaders" / "background" / "Sky.vert",
