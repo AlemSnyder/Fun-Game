@@ -4,7 +4,8 @@ namespace gui {
 
 namespace shader {
 void
-display_windows::display_data(std::map<const shader::ProgramData, shader::Program>& programs
+display_windows::display_data(
+    std::map<const shader::ProgramData, shader::Program>& programs
 ) {
     ImGui::Begin("Shader Programs");
 
@@ -49,6 +50,9 @@ display_windows::display_data(std::map<const shader::ProgramData, shader::Progra
             }
             ImGui::TableNextColumn();
             ImGui::Text(program.get_status_string().first.c_str());
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_ForTooltip)) {
+                ImGui::SetTooltip(program.get_status_string().second.c_str());
+            }
             ImGui::PopID();
         }
         ImGui::EndTable();
