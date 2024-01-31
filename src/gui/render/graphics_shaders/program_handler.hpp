@@ -338,6 +338,11 @@ class Program : public ProgramData {
         return program_ID_;
     }
 
+    [[nodiscard]] inline std::string
+    get_name() const noexcept {
+        return name_;
+    }
+
     /**
      * @brief Bind the current Opengl program to this one.
      */

@@ -43,7 +43,7 @@ display_windows::display_data(
             ImGui::TableNextColumn();
             ImGui::Text("%d", program.get_program_ID());
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("name");
+            ImGui::TextUnformatted(program.get_name().c_str());
             ImGui::TableNextColumn();
             if (ImGui::SmallButton("Reload")) {
                 program.reload();
