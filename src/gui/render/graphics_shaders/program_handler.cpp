@@ -1,7 +1,7 @@
 #include "program_handler.hpp"
 
-#include "logging.hpp"
 #include "gui_render_types.hpp"
+#include "logging.hpp"
 
 #include <GL/glew.h>
 
@@ -227,23 +227,28 @@ Program::get_status_string() const {
         "OK",
         "This program and its corresponding shaders have compiled successfully. If "
         "there is still some error check that Uniforms and Locations are set "
-        "correctly."};
+        "correctly."
+    };
 
     static std::pair<std::string, std::string> linking_failed_string = {
         "Linking Failed",
         "There is an error when connecting different shader types together. Check that "
-        "the inputs and output between shaders align."};
+        "the inputs and output between shaders align."
+    };
 
     static std::pair<std::string, std::string> invalid_shader_string = {
         "Shader Failed", "Error compiling constituent shader(s). Check the log file "
-                         "for more information."};
+                         "for more information."
+    };
 
     static std::pair<std::string, std::string> empty_program_string = {
-        "No Program; Reload", "Program has not been loaded. Click the reload button."};
+        "No Program; Reload", "Program has not been loaded. Click the reload button."
+    };
 
     static std::pair<std::string, std::string> other_string = {
         "This should not happen",
-        "This is a bug that should be reported to the developers."};
+        "This is a bug that should be reported to the developers."
+    };
 
     switch (status_) {
         case ProgramStatus::OK:
@@ -293,7 +298,7 @@ ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader
 
 Program&
 ShaderHandler::load_program(
-    const std::vector<std::filesystem::path> vertex_file_paths,
+    std::string name, const std::vector<std::filesystem::path> vertex_file_paths,
     const std::vector<std::filesystem::path> fragment_file_paths
 ) {
     logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
@@ -309,7 +314,7 @@ ShaderHandler::load_program(
     Shader& fragment_shader = get_shader(fragment_source_files_, GL_FRAGMENT_SHADER);
 
     // test if we already have the program
-    Program test_program(vertex_shader, fragment_shader);
+    ProgramData test_program(vertex_shader, fragment_shader);
     auto it = programs_.find(test_program);
 
     // already have the program
@@ -325,7 +330,8 @@ ShaderHandler::load_program(
     }
 
     // don't have the program
-    auto inserted_iterator = programs_.emplace(test_program, test_program);
+    auto inserted_iterator =
+        programs_.emplace(test_program, Program(name, test_program));
     return inserted_iterator.first->second;
 }
 

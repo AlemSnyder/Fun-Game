@@ -45,17 +45,17 @@ revised_gui_test() {
 
     shader::ShaderHandler shader_handler;
 
-    shader::Program& green_program = shader_handler.load_program(
+    shader::Program& green_program = shader_handler.load_program( "Green",
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Green.frag"
     );
 
-    shader::Program& blue_program = shader_handler.load_program(
+    shader::Program& blue_program = shader_handler.load_program( "Blue",
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Blue.frag"
     );
 
-    shader::Program& sky_program = shader_handler.load_program(
+    shader::Program& sky_program = shader_handler.load_program("Sky",
         files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
@@ -254,17 +254,17 @@ stars_test() {
 
     shader::ShaderHandler shader_handler;
 
-    shader::Program& blue_program = shader_handler.load_program(
+    shader::Program& blue_program = shader_handler.load_program("Blue",
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Blue.frag"
     );
 
-    shader::Program& sky_program = shader_handler.load_program(
+    shader::Program& sky_program = shader_handler.load_program("Sky",
         files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
-    shader::Program& stars_program = shader_handler.load_program(
+    shader::Program& stars_program = shader_handler.load_program("Stars",
         files::get_resources_path() / "shaders" / "background" / "Stars.vert",
         files::get_resources_path() / "shaders" / "background" / "Stars.frag"
     );

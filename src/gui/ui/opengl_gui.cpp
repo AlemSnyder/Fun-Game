@@ -46,7 +46,7 @@ opengl_entry(World& world) {
 
     shader::ShaderHandler shader_handler;
 
-    shader::Program quad_program = shader_handler.load_program(
+    shader::Program quad_program = shader_handler.load_program("Quad Renderer",
         files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );

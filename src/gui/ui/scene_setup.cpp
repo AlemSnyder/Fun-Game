@@ -1,13 +1,5 @@
 #include "scene_setup.hpp"
 
-#include "../render/graphics_shaders/program_handler.hpp"
-
-// #include "../../world.hpp"
-// #include "../render/graphics_shaders/non_instanced_i_mesh_shadow.hpp"
-// #include "../render/graphics_shaders/sky.hpp"
-// #include "../render/graphics_shaders/star.hpp"
-// #include "../render/graphics_shaders/sun.hpp"
-
 #include "../render/array_buffer/screen_data.hpp"
 #include "../render/array_buffer/star_data.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
@@ -31,11 +23,11 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     auto terrain_mesh = world.get_chunks_mesh();
 
-    shader::Program& render_program = shader_handler.load_program(
+    shader::Program& render_program = shader_handler.load_program("Render Chunks",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.vert",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
     );
-    shader::Program& shadow_program = shader_handler.load_program(
+    shader::Program& shadow_program = shader_handler.load_program("Shadow Chunks",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.vert",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
@@ -112,17 +104,17 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         chunks_shadow_program->data.push_back(chunk_mesh);
     }
 
-    shader::Program& sky_program = shader_handler.load_program(
+    shader::Program& sky_program = shader_handler.load_program("Sky",
         files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
-    shader::Program& stars_program = shader_handler.load_program(
+    shader::Program& stars_program = shader_handler.load_program("Stars",
         files::get_resources_path() / "shaders" / "background" / "Stars.vert",
         files::get_resources_path() / "shaders" / "background" / "Stars.frag"
     );
 
-    shader::Program& sun_program = shader_handler.load_program(
+    shader::Program& sun_program = shader_handler.load_program("Sun",
         files::get_resources_path() / "shaders" / "background" / "Sun.vert",
         files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
