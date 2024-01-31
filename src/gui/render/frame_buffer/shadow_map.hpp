@@ -31,7 +31,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace frame_buffer {
 
 /**
  * @brief Contains a shadow depth buffer that can be rendered to.
@@ -147,6 +147,6 @@ class ShadowMap {
     };
 };
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

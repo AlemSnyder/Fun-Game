@@ -17,7 +17,7 @@
  *
  * @brief Defines FrameBufferMultisample
  *
- * @ingroup GUI  RENDER  DATA_STRUCTURES
+ * @ingroup GUI  RENDER  array_buffer
  *
  */
 
@@ -30,7 +30,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace frame_buffer {
 
 /**
  * @brief Multisample Framebuffer object
@@ -133,6 +133,6 @@ class FrameBufferMultisample {
     }
 };
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

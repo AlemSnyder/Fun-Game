@@ -4,7 +4,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 bool
 array_buffer_type::operator==(const ArrayBuffer& other) const {
@@ -51,6 +51,6 @@ ArrayBuffer::bind(GLuint attribute, GLuint index) const {
     }
 }
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

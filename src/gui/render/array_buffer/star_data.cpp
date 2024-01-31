@@ -11,7 +11,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 StarShape::StarShape() :
     shape_buffer_(ArrayBuffer(std::vector<glm::vec2>({
@@ -56,6 +56,6 @@ StarData::read_data_from_file(std::filesystem::path path) {
     return {stars_positions, star_age};
 }
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

@@ -6,7 +6,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 ScreenData::ScreenData() :
     vertex_array_(ArrayBuffer(std::vector<glm::vec3>(
@@ -15,6 +15,6 @@ ScreenData::ScreenData() :
     ))),
     num_vertices_(4) {}
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

@@ -106,8 +106,8 @@ World::update_all_chunks_mesh() {
         chunks_mesh_.clear();
         chunks_mesh_.reserve(num_chunks);
         for (size_t i = 0; i < num_chunks; i++) {
-            chunks_mesh_.push_back(std::make_shared<gui::data_structures::TerrainMesh>(
-                gui::data_structures::TerrainMesh()
+            chunks_mesh_.push_back(std::make_shared<gui::array_buffer::TerrainMesh>(
+                gui::array_buffer::TerrainMesh()
             ));
         }
     }

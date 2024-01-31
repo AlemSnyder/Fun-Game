@@ -57,7 +57,7 @@ class World {
     terrain::Terrain terrain_main_;
 
     // TerrainMesh for each chunk in terrain
-    std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> chunks_mesh_;
+    std::vector<std::shared_ptr<gui::array_buffer::TerrainMesh>> chunks_mesh_;
     // chunks_mesh like attorneys general
 
     // Set of chunks that need to be updated on gpu.
@@ -237,6 +237,6 @@ class World {
     initialize_chunks_mesh_() {
         chunks_mesh_.resize(terrain_main_.get_chunks().size());
         for (auto& m : chunks_mesh_)
-            m = std::make_shared<gui::data_structures::TerrainMesh>();
+            m = std::make_shared<gui::array_buffer::TerrainMesh>();
     }
 };

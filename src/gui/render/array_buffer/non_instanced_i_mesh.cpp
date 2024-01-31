@@ -6,7 +6,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 void
 NonInstancedIMeshGPU::update(const entity::Mesh& mesh) {
@@ -37,6 +37,6 @@ NonInstancedIMeshGPU::release() const {
     glDisableVertexAttribArray(2);
 }
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

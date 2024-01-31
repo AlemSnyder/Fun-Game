@@ -7,7 +7,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace frame_buffer {
 
 FrameBufferMultisample::FrameBufferMultisample(
     screen_size_t width, screen_size_t height, uint32_t samples
@@ -59,6 +59,6 @@ FrameBufferMultisample::FrameBufferMultisample(
     }
 }
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

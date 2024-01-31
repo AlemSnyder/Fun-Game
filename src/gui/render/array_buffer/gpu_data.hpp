@@ -7,7 +7,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 class GPUData {
  public:
@@ -30,7 +30,7 @@ class GPUDataElements {
 
     virtual uint32_t get_num_vertices() const = 0;
 
-    virtual GL_draw_type get_element_type() const = 0;
+    virtual GPUDataType get_element_type() const = 0;
 };
 
 class GPUDataInstanced : virtual public GPUData {
@@ -43,6 +43,6 @@ class GPUDataElementsInstanced : virtual public GPUDataElements {
     virtual uint32_t get_num_models() const = 0;
 };
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

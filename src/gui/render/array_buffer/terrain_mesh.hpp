@@ -17,7 +17,7 @@
  *
  * @brief Defines TerrainMesh class
  *
- * @ingroup GUI  DATA_STRUCTURES
+ * @ingroup GUI  array_buffer
  *
  */
 
@@ -26,7 +26,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 /**
  * @brief Non-instanced mesh with color texture for terrain
@@ -64,6 +64,6 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     }
 };
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

@@ -45,18 +45,18 @@ revised_gui_test() {
 
     shader::ShaderHandler shader_handler;
 
-    shader::Program& green_program = shader_handler.load_program( "Green",
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
+    shader::Program& green_program = shader_handler.load_program(
+        "Green", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Green.frag"
     );
 
-    shader::Program& blue_program = shader_handler.load_program( "Blue",
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
+    shader::Program& blue_program = shader_handler.load_program(
+        "Blue", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Blue.frag"
     );
 
-    shader::Program& sky_program = shader_handler.load_program("Sky",
-        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+    shader::Program& sky_program = shader_handler.load_program(
+        "Sky", files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
@@ -159,11 +159,11 @@ revised_gui_test() {
     // unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    gui::data_structures::ArrayBuffer VBO3(vertices_2);
+    gui::array_buffer::ArrayBuffer VBO3(vertices_2);
 
-    // gui::data_structures::ArrayBuffer VBO4(vertices_3);
+    // gui::array_buffer::ArrayBuffer VBO4(vertices_3);
 
-    auto screen_data = std::make_shared<gui::data_structures::ScreenData>();
+    auto screen_data = std::make_shared<gui::array_buffer::ScreenData>();
     sky_renderer->data.push_back(screen_data);
     sky_renderer2->data.push_back(screen_data);
 
@@ -254,18 +254,18 @@ stars_test() {
 
     shader::ShaderHandler shader_handler;
 
-    shader::Program& blue_program = shader_handler.load_program("Blue",
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
+    shader::Program& blue_program = shader_handler.load_program(
+        "Blue", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Blue.frag"
     );
 
-    shader::Program& sky_program = shader_handler.load_program("Sky",
-        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+    shader::Program& sky_program = shader_handler.load_program(
+        "Sky", files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
-    shader::Program& stars_program = shader_handler.load_program("Stars",
-        files::get_resources_path() / "shaders" / "background" / "Stars.vert",
+    shader::Program& stars_program = shader_handler.load_program(
+        "Stars", files::get_resources_path() / "shaders" / "background" / "Stars.vert",
         files::get_resources_path() / "shaders" / "background" / "Stars.frag"
     );
 
@@ -337,13 +337,12 @@ stars_test() {
     glGenVertexArrays(1, &VertexArrayID);
     VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
-    // gui::data_structures::ArrayBuffer VBO4(vertices_3);
+    // gui::array_buffer::ArrayBuffer VBO4(vertices_3);
 
-    auto screen_data = std::make_shared<data_structures::ScreenData>();
+    auto screen_data = std::make_shared<array_buffer::ScreenData>();
 
-    auto star_data = std::make_shared<data_structures::StarData>(
-        files::get_data_path() / "stars.json"
-    );
+    auto star_data =
+        std::make_shared<array_buffer::StarData>(files::get_data_path() / "stars.json");
 
     blue_background->data.push_back(screen_data);
 

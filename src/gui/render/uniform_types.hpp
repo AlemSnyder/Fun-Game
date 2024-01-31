@@ -146,10 +146,10 @@ class ViewMatrix : public shader::Uniform {
 
 class LightDepthProjection : public shader::Uniform {
  private:
-    const data_structures::ShadowMap* shadow_map_;
+    const frame_buffer::ShadowMap* shadow_map_;
 
  public:
-    LightDepthProjection(const data_structures::ShadowMap* shadow_map) :
+    LightDepthProjection(const frame_buffer::ShadowMap* shadow_map) :
         Uniform("depth_MVP", "mat4"), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthProjection() {}
@@ -171,10 +171,10 @@ class LightDepthProjection : public shader::Uniform {
 
 class LightDepthTextureProjection : public shader::Uniform {
  private:
-    const data_structures::ShadowMap* shadow_map_;
+    const frame_buffer::ShadowMap* shadow_map_;
 
  public:
-    LightDepthTextureProjection(const data_structures::ShadowMap* shadow_map) :
+    LightDepthTextureProjection(const frame_buffer::ShadowMap* shadow_map) :
         Uniform("depth_texture_projection", "mat4"), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthTextureProjection() {}

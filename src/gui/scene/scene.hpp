@@ -38,9 +38,9 @@ namespace gui {
  */
 class Scene {
  private:
-    data_structures::FrameBufferMultisample frame_buffer_multisample_;
+    frame_buffer::FrameBufferMultisample frame_buffer_multisample_;
     std::shared_ptr<scene::Helio> environment_;
-    data_structures::ShadowMap shadow_map_;
+    frame_buffer::ShadowMap shadow_map_;
 
     // background
     //    render::SkyRenderer sky_renderer_;
@@ -107,7 +107,7 @@ class Scene {
      *
      * @return ShadowMap& shadow map used by this scene.
      */
-    const data_structures::ShadowMap&
+    const frame_buffer::ShadowMap&
     get_shadow_map() const {
         return shadow_map_;
     }

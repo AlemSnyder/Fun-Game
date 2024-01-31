@@ -17,7 +17,7 @@
  *
  * @brief Defines InstancedInt class
  *
- * @ingroup GUI  DATA_STRUCTURES
+ * @ingroup GUI  array_buffer
  *
  */
 
@@ -36,7 +36,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 /**
  * @brief Class to render instanced meshes
@@ -80,6 +80,6 @@ class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
     }
 };
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

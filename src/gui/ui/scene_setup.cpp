@@ -23,11 +23,13 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     auto terrain_mesh = world.get_chunks_mesh();
 
-    shader::Program& render_program = shader_handler.load_program("Render Chunks",
+    shader::Program& render_program = shader_handler.load_program(
+        "Render Chunks",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.vert",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
     );
-    shader::Program& shadow_program = shader_handler.load_program("Shadow Chunks",
+    shader::Program& shadow_program = shader_handler.load_program(
+        "Shadow Chunks",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.vert",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
@@ -104,18 +106,18 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         chunks_shadow_program->data.push_back(chunk_mesh);
     }
 
-    shader::Program& sky_program = shader_handler.load_program("Sky",
-        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+    shader::Program& sky_program = shader_handler.load_program(
+        "Sky", files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
-    shader::Program& stars_program = shader_handler.load_program("Stars",
-        files::get_resources_path() / "shaders" / "background" / "Stars.vert",
+    shader::Program& stars_program = shader_handler.load_program(
+        "Stars", files::get_resources_path() / "shaders" / "background" / "Stars.vert",
         files::get_resources_path() / "shaders" / "background" / "Stars.frag"
     );
 
-    shader::Program& sun_program = shader_handler.load_program("Sun",
-        files::get_resources_path() / "shaders" / "background" / "Sun.vert",
+    shader::Program& sun_program = shader_handler.load_program(
+        "Sun", files::get_resources_path() / "shaders" / "background" / "Sun.vert",
         files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
 
@@ -195,13 +197,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
     scene.add_background_ground_renderer(star_renderer);
     scene.add_background_ground_renderer(sun_renderer);
 
-    auto star_shape = std::make_shared<data_structures::StarShape>();
+    auto star_shape = std::make_shared<array_buffer::StarShape>();
 
-    auto star_data = std::make_shared<data_structures::StarData>(
-        files::get_data_path() / "stars.json"
-    );
+    auto star_data =
+        std::make_shared<array_buffer::StarData>(files::get_data_path() / "stars.json");
 
-    auto screen_data = std::make_shared<data_structures::ScreenData>();
+    auto screen_data = std::make_shared<array_buffer::ScreenData>();
 
     sky_renderer->data.push_back(screen_data);
     star_renderer->data.push_back(star_data);

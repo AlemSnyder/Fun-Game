@@ -11,7 +11,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 InstancedIMeshGPU::InstancedIMeshGPU(
     const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
@@ -23,6 +23,6 @@ InstancedIMeshGPU::InstancedIMeshGPU(
     // as color_texture_.
 }
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

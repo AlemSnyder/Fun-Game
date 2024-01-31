@@ -17,7 +17,7 @@
  *
  * @brief Defines StarData class
  *
- * @ingroup GUI  DATA_STRUCTURES
+ * @ingroup GUI  array_buffer
  *
  */
 
@@ -37,7 +37,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 class StarShape : public virtual GPUData {
  protected:
@@ -161,6 +161,6 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
     }
 };
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui

@@ -17,12 +17,12 @@
  *
  * @brief Defines IndividualInt class
  *
- * @ingroup GUI  DATA_STRUCTURES
+ * @ingroup GUI  array_buffer
  *
  */
 
 //! This is a "data" class. Its purpose is to send data to the gpu for that
-// reason it should be moved into gui/data_structures
+// reason it should be moved into gui/array_buffer
 // Also no namespace terrain
 
 #include "entity/mesh.hpp"
@@ -39,7 +39,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace array_buffer {
 
 /**
  * @brief Class to render non-instanced meshes
@@ -114,12 +114,12 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         return num_vertices_;
     }
 
-    [[nodiscard]] inline GL_draw_type virtual get_element_type(
+    [[nodiscard]] inline GPUDataType virtual get_element_type(
     ) const noexcept override {
         return element_array_.get_draw_type();
     }
 };
 
-} // namespace data_structures
+} // namespace array_buffer
 
 } // namespace gui
