@@ -2,7 +2,7 @@
 
 #include "../exceptions.hpp"
 #include "../logging.hpp"
-#include "../types.hpp"
+#include "types.hpp"
 #include "bits.hpp"
 
 #include <array>

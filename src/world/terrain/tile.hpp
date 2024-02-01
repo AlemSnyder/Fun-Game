@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "../types.hpp"
+#include "types.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
 

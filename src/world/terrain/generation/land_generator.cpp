@@ -13,8 +13,8 @@
 
 #include "land_generator.hpp"
 
-#include "../../logging.hpp"
-#include "../../types.hpp"
+#include "logging.hpp"
+#include "types.hpp"
 #include "../material.hpp"
 #include "tile_stamp.hpp"
 

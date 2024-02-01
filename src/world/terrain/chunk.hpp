@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "../util/voxel.hpp"
+#include "util/voxel.hpp"
 #include "path/node_group.hpp"
 
 #include <list>

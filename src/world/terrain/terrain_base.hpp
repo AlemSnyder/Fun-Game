@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include "../logging.hpp"
-#include "../types.hpp"
-#include "../util/voxel.hpp"
+#include "logging.hpp"
+#include "types.hpp"
+#include "util/voxel.hpp"
 #include "generation/biome.hpp"
 #include "generation/land_generator.hpp"
 #include "generation/map_tile.hpp"

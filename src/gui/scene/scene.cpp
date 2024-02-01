@@ -1,6 +1,6 @@
 #include "scene.hpp"
 
-#include "../../entity/mesh.hpp"
+#include "world/entity/mesh.hpp"
 #include "../handler.hpp"
 
 #include <GLFW/glfw3.h>

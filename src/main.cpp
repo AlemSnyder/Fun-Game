@@ -1,17 +1,17 @@
 #include "config.h"
-#include "entity/mesh.hpp"
+#include "world/entity/mesh.hpp"
 #include "gui/render/graphics_shaders/program_handler.hpp"
 #include "gui/scene/controls.hpp"
 #include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
-#include "terrain/generation/biome.hpp"
-#include "terrain/terrain.hpp"
+#include "world/terrain/generation/biome.hpp"
+#include "world/terrain/terrain.hpp"
 #include "util/files.hpp"
 #include "util/png_image.hpp"
 #include "util/voxel_io.hpp"
-#include "world.hpp"
+#include "world/world.hpp"
 
 #include <argh.h>
 #include <json/json.h>

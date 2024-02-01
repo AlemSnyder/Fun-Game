@@ -37,6 +37,8 @@ namespace data_structures {
  */
 class StaticMesh : public virtual InstancedIMeshGPU {
  public:
+     inline StaticMesh(const entity::Mesh& mesh) : StaticMesh(mesh, {}) {}
+
     inline StaticMesh(
         const entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     ) :

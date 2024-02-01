@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../../types.hpp"
+#include "types.hpp"
 #include "../material.hpp"
 #include "tile_stamp.hpp"
 

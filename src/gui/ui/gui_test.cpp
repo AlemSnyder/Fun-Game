@@ -1,8 +1,8 @@
 #include "gui_test.hpp"
 
-#include "../../entity/mesh.hpp"
-#include "../../logging.hpp"
-#include "../../world.hpp"
+#include "world/entity/mesh.hpp"
+#include "logging.hpp"
+#include "world/world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../render/array_buffer/screen_data.hpp"

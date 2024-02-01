@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "entity/mesh.hpp"
-#include "terrain/chunk.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/terrain/chunk.hpp"
 
 #include <BS_thread_pool.hpp>
 

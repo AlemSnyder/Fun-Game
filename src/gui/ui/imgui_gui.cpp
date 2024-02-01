@@ -7,12 +7,11 @@
 // Some slight modifications
 #include "imgui_gui.hpp"
 
-#include "../../entity/mesh.hpp"
-#include "../../logging.hpp"
-#include "../../world.hpp"
+#include "world/entity/mesh.hpp"
+#include "logging.hpp"
+#include "world/world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-// #include "../render/graphics_shaders/shader.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "imgui_style.hpp"

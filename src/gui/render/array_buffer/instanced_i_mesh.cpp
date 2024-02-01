@@ -1,6 +1,6 @@
 #include "instanced_i_mesh.hpp"
 
-#include "entity/mesh.hpp"
+#include "world/entity/mesh.hpp"
 #include "types.hpp"
 
 #include <GL/glew.h>

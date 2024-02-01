@@ -1,9 +1,9 @@
 #include "opengl_gui.hpp"
 
-#include "../../entity/mesh.hpp"
-#include "../../logging.hpp"
-#include "../../util/files.hpp"
-#include "../../world.hpp"
+#include "world/entity/mesh.hpp"
+#include "logging.hpp"
+#include "util/files.hpp"
+#include "world/world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"

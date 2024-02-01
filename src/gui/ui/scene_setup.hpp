@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "../../world.hpp"
+#include "world/world.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/scene.hpp"
 

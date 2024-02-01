@@ -20,7 +20,7 @@
  *
  */
 
-#include "../../util/files.hpp"
+#include "util/files.hpp"
 #include "land_generator.hpp"
 #include "map_tile.hpp"
 

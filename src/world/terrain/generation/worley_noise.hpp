@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../../types.hpp"
+#include "types.hpp"
 #include "noise.hpp"
 
 #include <cmath>

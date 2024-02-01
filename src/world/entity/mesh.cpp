@@ -1,7 +1,7 @@
 #include "mesh.hpp"
 
 #include "../terrain/material.hpp"
-#include "../types.hpp"
+#include "types.hpp"
 
 #include <map>
 #include <unordered_map>

@@ -22,7 +22,7 @@
  *
  */
 
-#include "../../types.hpp"
+#include "types.hpp"
 #include "../terrain.hpp"
 #include "unit_path.hpp"
 

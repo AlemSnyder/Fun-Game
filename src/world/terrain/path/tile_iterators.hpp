@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "../../types.hpp"
+#include "types.hpp"
 #include "unit_path.hpp"
 
 #include <cstdint>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../types.hpp"
-#include "../../util/png_image.hpp"
+#include "types.hpp"
+#include "util/png_image.hpp"
 #include "noise.hpp"
 
 #include <random>

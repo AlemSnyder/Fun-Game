@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "../logging.hpp"
-#include "../util/voxel.hpp"
-#include "../util/voxel_io.hpp"
+#include "logging.hpp"
+#include "util/voxel.hpp"
+#include "util/voxel_io.hpp"
 #include "chunk.hpp"
 #include "generation/biome.hpp"
 #include "generation/land_generator.hpp"

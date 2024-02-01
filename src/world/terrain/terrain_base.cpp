@@ -1,7 +1,7 @@
 #include "terrain_base.hpp"
 
-#include "../logging.hpp"
-#include "../types.hpp"
+#include "logging.hpp"
+#include "types.hpp"
 #include "generation/biome.hpp"
 #include "generation/noise.hpp"
 

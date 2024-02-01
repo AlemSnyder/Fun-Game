@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include "../types.hpp"
-#include "../util/hash_combine.hpp"
+#include "types.hpp"
+#include "util/hash_combine.hpp"
 
 #include <glm/glm.hpp>
 

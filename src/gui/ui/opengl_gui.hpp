@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "../../world.hpp"
+#include "world/world.hpp"
 
 namespace gui {
 

@@ -21,9 +21,9 @@
 #pragma once
 
 #include "../terrain/material.hpp"
-#include "../types.hpp"
-#include "../util/color.hpp"
-#include "../util/voxel.hpp"
+#include "types.hpp"
+#include "util/color.hpp"
+#include "util/voxel.hpp"
 #include "vertex.hpp"
 
 #include <glm/glm.hpp>

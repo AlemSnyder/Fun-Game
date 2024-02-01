@@ -1,6 +1,6 @@
 #include "biome.hpp"
 
-#include "../../logging.hpp"
+#include "logging.hpp"
 #include "noise.hpp"
 #include "worley_noise.hpp"
 

@@ -2,7 +2,7 @@
 #include "material.hpp"
 
 #include "../entity/mesh.hpp"
-#include "../logging.hpp"
+#include "logging.hpp"
 
 #include <GL/glew.h>
 
