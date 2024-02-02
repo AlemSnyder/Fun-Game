@@ -42,7 +42,7 @@ namespace gui {
 // Main code
 // returns exit status
 int
-imgui_entry(World& world) {
+imgui_entry(world::World& world) {
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
     screen_size_t shadow_map_size = 4096;

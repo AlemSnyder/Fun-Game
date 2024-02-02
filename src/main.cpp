@@ -56,7 +56,7 @@ save_terrain(
         Dim terrain_height = 128;
         auto macro_map = terrain::generation::Biome::single_tile_type_map(i);
         terrain::Terrain ter(
-            map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
+            map_size, map_size, world::World::macro_tile_size, terrain_height, 5, biome,
             macro_map
         );
 
@@ -124,7 +124,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    World world("base", size, size);
+    world::World world("base", size, size);
 
     std::string path_out = cmdl(2).str();
 
@@ -192,7 +192,7 @@ image_test(const argh::parser& cmdl) {
 
 int
 ChunkDataTest() {
-    World world("base", 6, 6);
+    world::World world("base", 6, 6);
 
     const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
 
@@ -257,7 +257,7 @@ save_test(const argh::parser& cmdl) {
     std::string path_out = cmdl(3).str();
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    World world("base", path_in, seed);
+    world::World world("base", path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -271,7 +271,7 @@ path_finder_test(const argh::parser& cmdl) {
     quill::Logger* logger = quill::get_logger();
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    World world("base", path_in, seed);
+    world::World world("base", path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -323,7 +323,7 @@ imgui_entry_main(const argh::parser& cmdl) {
     cmdl("size", 2) >> size;
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world("base", size, size, seed);
+    world::World world("base", size, size, seed);
 
     return gui::imgui_entry(world);
 }
@@ -334,7 +334,7 @@ StressTest(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", STRESS_TEST_SIZE) >> size;
-    World world("base", size, size, seed);
+    world::World world("base", size, size, seed);
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is a user parameter that
     // defaults to STRESS_TEST_SIZE.
@@ -349,7 +349,7 @@ opengl_entry(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
 
-    World world("base", path_in, seed);
+    world::World world("base", path_in, seed);
 
     return gui::opengl_entry(world);
 }

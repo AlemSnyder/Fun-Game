@@ -1,7 +1,7 @@
 #include "tile_object.hpp"
 
-namespace entity {
+namespace world {
 
+namespace entity {} // namespace entity
 
-
-} // namespace entity
+} // namespace world

@@ -1,5 +1,9 @@
 #include "model.hpp"
 
+#include <iterator>
+
+namespace world {
+
 namespace entity {
 
 ObjectData::ObjectData(Json::Value object_json) {
@@ -10,7 +14,7 @@ ObjectData::ObjectData(Json::Value object_json) {
 
         models.emplace_back(file_path);
 
-        for (const auto& model : models){
+        for (const auto& model : models) {
             model_meshes_.emplace_back(model);
         }
 
@@ -20,4 +24,27 @@ ObjectData::ObjectData(Json::Value object_json) {
     }
 }
 
+ModelController::add(Placement placement) {
+    auto iter = placements_.insert(placement);
+
+    // cpp crimes no more
+    uint offset = std::distance(iter, placements_.begin());
+
+    model_mesh_->update(offset, iter, placements_.end());
+}
+
+ModelController::remove(Placement placement) {
+    // why would they do this?
+    auto iter = placements_.erase(placements_.find(placement));
+    uint offset = std::distance(iter, placements_.begin());
+
+    // no conversion from position to ivec4
+    // need to do ivec all the way down
+    std::vector<glm::ivec4> data(iter, placements_.end());
+
+    model_mesh_->update(offset, data);
+}
+
 } // namespace entity
+
+} // namespace world

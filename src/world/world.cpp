@@ -35,6 +35,8 @@
 #include <mutex>
 #include <string>
 
+namespace world {
+
 const terrain::Material*
 World::get_material(MaterialId material_id) const {
     return &biome_.get_materials().at(material_id);
@@ -167,3 +169,5 @@ World::set_tile(Dim pos, const terrain::Material* mat, ColorId color_id) {
     else if (edge_case == terrain::Chunk::SIZE - 1)
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z + 1});
 }
+
+} // namespace world

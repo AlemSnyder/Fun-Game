@@ -11,6 +11,8 @@
 #include <set>
 #include <vector>
 
+namespace world {
+
 namespace entity {
 
 // Think of this class as rose bush
@@ -28,8 +30,6 @@ class ObjectData {
  public:
     ObjectData(Json::Value object_json);
 };
-
-
 
 // TODO move this to GPU
 // mostly position
@@ -59,3 +59,5 @@ class ModelController {
 };
 
 } // namespace entity
+
+} // namespace world

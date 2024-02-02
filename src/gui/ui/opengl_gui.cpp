@@ -23,7 +23,7 @@
 namespace gui {
 
 int
-opengl_entry(World& world) {
+opengl_entry(world::World& world) {
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
     screen_size_t shadow_map_size = 4096;

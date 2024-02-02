@@ -28,15 +28,17 @@
 
 #include <functional>
 
+namespace world {
+
 namespace entity {
 
 /**
  * @brief Position in mesh
- * 
+ *
  * @details Object used to store data of a vertex in a mesh. This class exists
  * so that it can be hashed, and compared in a map. This way less vertices are
  * sent to the gpu.
-*/
+ */
 struct Vertex {
     VoxelOffset position;
     glm::i8vec3 normal;
@@ -55,10 +57,12 @@ struct Vertex {
 
 } // namespace entity
 
+} // namespace world
+
 template <>
-struct std::hash<entity::Vertex> {
+struct std::hash<world::entity::Vertex> {
     size_t
-    operator()(const entity::Vertex& vertex) const {
+    operator()(const world::entity::Vertex& vertex) const {
         size_t result = 0;
 
         // Position

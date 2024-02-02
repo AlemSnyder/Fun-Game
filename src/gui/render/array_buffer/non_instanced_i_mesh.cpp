@@ -9,7 +9,7 @@ namespace gui {
 namespace data_structures {
 
 void
-NonInstancedIMeshGPU::update(const entity::Mesh& mesh) {
+NonInstancedIMeshGPU::update(const world::entity::Mesh& mesh) {
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
 

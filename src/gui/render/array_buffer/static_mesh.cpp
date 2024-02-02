@@ -5,7 +5,7 @@ namespace gui {
 namespace data_structures {
 
 void
-StaticMesh::generate_color_texture(const entity::Mesh& mesh) {
+StaticMesh::generate_color_texture(const world::entity::Mesh& mesh) {
     // Generate a texture
     std::vector<ColorFloat> float_colors =
         color::convert_color_data(mesh.get_color_map());
@@ -29,6 +29,11 @@ StaticMesh::generate_color_texture(const entity::Mesh& mesh) {
         float_colors.data()
     );
     glGenerateMipmap(GL_TEXTURE_1D);
+}
+
+void
+StaticMesh::update_position(uint offset, std::vector<glm::vec4> data) {
+    transforms_array_.update(offset, data);
 }
 
 } // namespace data_structures

@@ -34,6 +34,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace world {
+
 namespace entity {
 
 /**
@@ -383,3 +385,5 @@ ambient_occlusion_mesher(T voxel_object) {
 }
 
 } // namespace entity
+
+} // namespace world

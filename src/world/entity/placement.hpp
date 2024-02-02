@@ -2,6 +2,8 @@
 
 #include "types.hpp"
 
+namespace world {
+
 namespace entity {
 
 struct Placement {
@@ -10,3 +12,5 @@ struct Placement {
 };
 
 } // namespace entity
+
+} // namespace world

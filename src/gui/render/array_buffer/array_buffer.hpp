@@ -136,11 +136,17 @@ class array_buffer_type {
 
 };
 
+
+// TODO turn this into a vector
+// try to get 50+% of methods
 class ArrayBuffer : public array_buffer_type {
  private:
     GLuint buffer_ID_;
 
     GLuint devisor_; // for instancing
+
+    size_t size;
+    size_t aloc_size;
 
     const buffer_type buffer_type_;
 
@@ -152,6 +158,10 @@ class ArrayBuffer : public array_buffer_type {
 
     template <class T>
     inline void update(std::vector<T> data ) {update<T>(data, devisor_ ); }
+
+
+    template <class T>
+    inline void update(size_t offset, std::vector<T> data);// {update<T>(data, devisor_ ); }
 
     inline void set_devisor(GLuint devisor) noexcept {devisor_ = devisor;}
 
@@ -191,12 +201,23 @@ void
 ArrayBuffer::update(std::vector<T> buffer_data, GLuint devisor) {
 
     devisor_ = devisor;
+    update(0, buffer_data);
+
+}
+
+// go do vector implementations
+
+template <class T>
+void
+ArrayBuffer::update(size_t offset, std::vector<T> buffer_data) {
 
     bool classes_are_equivelent = operator==(array_buffer_type::init(T()));
-
     assert(classes_are_equivelent && "Class must be the same");
 
-    glDeleteBuffers(1, &buffer_ID_);
+    if (aloc_size < offset + buffer_data.size()){
+        // reallocate
+
+            glDeleteBuffers(1, &buffer_ID_);
 
     glGenBuffers(1, &buffer_ID_);
     glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
@@ -205,6 +226,11 @@ ArrayBuffer::update(std::vector<T> buffer_data, GLuint devisor) {
         buffer_data.data(),
         GL_DYNAMIC_DRAW // TODO
     );
+    }
+    else {
+
+        glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
+        glBufferSubData(static_cast<GLenum>(buffer_type_), offset, buffer_data.size(), buffer_data.data() );
 
     /*glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
     glBufferData(
@@ -212,7 +238,9 @@ ArrayBuffer::update(std::vector<T> buffer_data, GLuint devisor) {
         buffer_data.data(),
         GL_DYNAMIC_DRAW
     );*/
+    }
 }
 
 } // namespace data_structures
+
 } // namespace gui

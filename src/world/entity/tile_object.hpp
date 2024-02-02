@@ -16,14 +16,14 @@
 #include <set>
 #include <vector>
 
+namespace world {
+
 namespace entity {
 
 // the actual object in the world
 class TileObject {
  private:
     //    const ObjectData& data_;
-
-    
 
     Placement placement_;
 
@@ -39,3 +39,5 @@ class TileObject {
 };
 
 } // namespace entity
+
+} // namespace world

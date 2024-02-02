@@ -35,6 +35,6 @@ namespace gui {
  *
  * @returns int exit status to be sent to main.
  */
-int opengl_entry(World& world);
+int opengl_entry(world::World& world);
 
 } // namespace gui

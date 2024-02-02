@@ -22,6 +22,7 @@
  */
 
 #include "instanced_i_mesh.hpp"
+#include "world/entity/placement.hpp"
 
 #pragma once
 
@@ -37,10 +38,10 @@ namespace data_structures {
  */
 class StaticMesh : public virtual InstancedIMeshGPU {
  public:
-     inline StaticMesh(const entity::Mesh& mesh) : StaticMesh(mesh, {}) {}
+    inline StaticMesh(const world::entity::Mesh& mesh) : StaticMesh(mesh, {}) {}
 
     inline StaticMesh(
-        const entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+        const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     ) :
         // what is this abomination?
         // TODO fix. This may be running twice I don't know.
@@ -49,8 +50,12 @@ class StaticMesh : public virtual InstancedIMeshGPU {
         generate_color_texture(mesh);
     }
 
+    void update_position(
+        uint offset, std::vector<glm::vec4> data
+    );
+
  protected:
-    void generate_color_texture(const entity::Mesh& mesh);
+    void generate_color_texture(const world::entity::Mesh& mesh);
 };
 
 } // namespace data_structures

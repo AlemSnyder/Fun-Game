@@ -29,6 +29,6 @@
 
 namespace gui {
 
-void setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world);
+void setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world);
 
 }

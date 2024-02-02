@@ -35,6 +35,8 @@
 #include <map>
 #include <vector>
 
+namespace world {
+
 // forward declaration of entity::Mesh
 namespace entity {
 class Mesh;
@@ -240,3 +242,5 @@ class World {
             m = std::make_shared<gui::data_structures::TerrainMesh>();
     }
 };
+
+} // namespace world

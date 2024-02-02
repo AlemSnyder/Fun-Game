@@ -13,7 +13,7 @@
 namespace gui {
 
 void
-setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
+setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) {
     // assign map from all color ids to each color
     // to package as a texture
 
@@ -133,7 +133,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
         files::get_data_path() / "base" / "models" / "DefaultTree.qb"
     );
 
-    auto mesh_trees = entity::ambient_occlusion_mesher(default_trees_voxel);
+    auto mesh_trees = world::entity::ambient_occlusion_mesher(default_trees_voxel);
 
     std::vector<glm::ivec4> model_matrices;
     // generate positions of trees

@@ -47,7 +47,7 @@ namespace data_structures {
 class InstancedIMeshGPU :
     public virtual NonInstancedIMeshGPU,
     public virtual GPUDataElementsInstanced {
- private:
+ protected:
     ArrayBuffer transforms_array_;
     uint32_t num_models_;
 
@@ -59,7 +59,7 @@ class InstancedIMeshGPU :
     inline InstancedIMeshGPU& operator=(InstancedIMeshGPU&& other) = default;
 
     InstancedIMeshGPU(
-        const entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+        const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     );
 
     inline void virtual bind() const override {

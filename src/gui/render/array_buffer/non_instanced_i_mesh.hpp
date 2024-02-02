@@ -64,9 +64,9 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
     NonInstancedIMeshGPU& operator=(const NonInstancedIMeshGPU& other) = delete;
     NonInstancedIMeshGPU& operator=(NonInstancedIMeshGPU&& other) = default;
 
-    inline NonInstancedIMeshGPU() : NonInstancedIMeshGPU(entity::Mesh()) {}
+    inline NonInstancedIMeshGPU() : NonInstancedIMeshGPU(world::entity::Mesh()) {}
 
-    explicit inline NonInstancedIMeshGPU(const entity::Mesh& mesh) :
+    explicit inline NonInstancedIMeshGPU(const world::entity::Mesh& mesh) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
         normal_array_(mesh.get_indexed_normals()),
@@ -74,7 +74,7 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         num_vertices_(mesh.get_indices().size()),
         do_render_(mesh.get_indices().size()) {}
 
-    virtual void update(const entity::Mesh& mesh);
+    virtual void update(const world::entity::Mesh& mesh);
 
     virtual void bind() const;
 

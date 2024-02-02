@@ -6,6 +6,8 @@
 #include <map>
 #include <unordered_map>
 
+namespace world {
+
 namespace entity {
 
 void
@@ -25,3 +27,5 @@ Mesh::change_color_indexing(
 }
 
 } // namespace entity
+
+} // namespace world
