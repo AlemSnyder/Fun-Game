@@ -110,7 +110,7 @@ class File {
  */
 class ShaderData {
  protected:
-    const std::vector<File> files_;
+    std::vector<File> files_;
     GLuint shader_type_;
 
  public:

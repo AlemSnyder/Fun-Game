@@ -9,8 +9,6 @@
 
 #include <vector>
 
-#pragma once
-
 namespace gui {
 
 namespace array_buffer {
@@ -18,26 +16,16 @@ namespace array_buffer {
 class ScreenData : public virtual GPUData {
  private:
     ArrayBuffer vertex_array_;
-    //    ArrayBuffer element_array_;
     unsigned int num_vertices_;
 
  public:
     /**
-     * @brief Construct a new Screen Data object
-     *
-     * @warning You shouldn't do this. This will delete the buffer from the gpu
-     *
-     * @param obj
+     * @brief Deleted copy constructor
      */
     ScreenData(const ScreenData& obj) = delete;
 
     /**
-     * @brief The copy operator
-     *
-     * @warning You shouldn't do this. This will delete the buffer from the gpu
-     *
-     * @param obj
-     * @return ScreenData&
+     * @brief Deleted copy operator
      */
     ScreenData& operator=(const ScreenData& obj) = delete;
     /**
@@ -70,7 +58,6 @@ class ScreenData : public virtual GPUData {
     inline virtual void
     bind() const {
         vertex_array_.bind(0, 0);
-        //        element_array_.bind(-1, -1);
     };
 
     inline virtual void

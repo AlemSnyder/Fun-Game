@@ -18,10 +18,9 @@ VertexBufferHandler::bind_vertex_buffer(GLuint new_vertex_buffer) {
     if (new_vertex_buffer == vertex_buffer) {
         // already bound
         return;
-    } else {
-        vertex_buffer = new_vertex_buffer;
-        glBindVertexArray(vertex_buffer);
     }
+    vertex_buffer = new_vertex_buffer;
+    glBindVertexArray(vertex_buffer);
 }
 
 } // namespace gui

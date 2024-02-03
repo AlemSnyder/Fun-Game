@@ -43,7 +43,6 @@ class Scene {
     frame_buffer::ShadowMap shadow_map_;
 
     // background
-    //    render::SkyRenderer sky_renderer_;
     std::vector<std::shared_ptr<render_to::FrameBuffer>> background_frame_buffer_;
 
     // "mid" ground
@@ -52,6 +51,7 @@ class Scene {
     // foreground
     std::vector<std::shared_ptr<render_to::FrameBuffer>> foreground_frame_buffer_;
 
+    // shadow
     std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_;
 
     // other

@@ -20,14 +20,7 @@ namespace shader {
 std::optional<std::string>
 File::get_file_content() {
     std::ifstream shader_stream(file_, std::ios::in);
-    if (shader_stream.is_open()) {
-        std::stringstream sstr;
-        sstr << shader_stream.rdbuf();
-        std::string shader_code = sstr.str();
-        shader_stream.close();
-        status_ = FileStatus::OK;
-        return shader_code;
-    } else {
+    if (!shader_stream.is_open()) {
         LOG_ERROR(
             logging::opengl_logger, "Cannot open {}. Is this the right directory?",
             file_.string()
@@ -35,6 +28,12 @@ File::get_file_content() {
         status_ = FileStatus::FILE_NOT_FOUND;
         return {};
     }
+    std::stringstream sstr;
+    sstr << shader_stream.rdbuf();
+    std::string shader_code = sstr.str();
+    shader_stream.close();
+    status_ = FileStatus::OK;
+    return shader_code;
 }
 
 std::string
@@ -66,19 +65,19 @@ Shader::reload() {
     // Create the shader
     shader_ID_ = glCreateShader(shader_type_);
 
-    for (File file : files_) {
-        std::optional<std::string> file_read = file.get_file_content();
+    for (File& file : files_) {
+        std::optional<std::string> file_content = file.get_file_content();
 
-        if (file.get_status() != FileStatus::OK || !file_read) {
+        if (!file_content) {
             status_ = ShaderStatus::INVALID_FILE;
             LOG_ERROR(
                 logging::file_io_logger,
-                "Could not open {}. Check that the files exists.", file.get_file_path()
+                "Could not read {}. Check that the files exists.", file.get_file_path()
             );
             return;
         }
 
-        std::string file_text = file_read.value();
+        std::string file_text = file_content.value();
 
         source_string.push_back(file_text);
 
@@ -100,12 +99,6 @@ Shader::reload() {
             auto matched_name = *name_iter++;
 
             found_uniforms_.emplace(std::make_pair(matched_name, matched_type));
-
-            // LOG_DEBUG(
-            // logging::file_io_logger,
-            // "Uniform found with regex type = {}, name = {}.", matched_type.str(),
-            //    matched_name.str()
-            //);
         }
     }
 
@@ -115,7 +108,7 @@ Shader::reload() {
         source_char.push_back(source_string[i].c_str());
     }
 
-    GLint Result = GL_FALSE;
+    GLint result = GL_FALSE;
     int info_log_length;
 
     // Compile Vertex Shader
@@ -124,7 +117,7 @@ Shader::reload() {
     glCompileShader(shader_ID_);
 
     // Check Vertex Shader
-    glGetShaderiv(shader_ID_, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(shader_ID_, GL_COMPILE_STATUS, &result);
     glGetShaderiv(shader_ID_, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
         std::string shader_error_message(info_log_length + 1, '\0');

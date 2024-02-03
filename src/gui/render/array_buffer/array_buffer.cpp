@@ -11,10 +11,6 @@ array_buffer_type::operator==(const ArrayBuffer& other) const {
     return operator==(array_buffer_type(other));
 }
 
-ArrayBuffer::~ArrayBuffer() {
-    glDeleteBuffers(1, &buffer_ID_);
-}
-
 void
 ArrayBuffer::bind(GLuint attribute, GLuint index) const {
     if (buffer_type_ != buffer_type::ELEMENT_ARRAY_BUFFER)
@@ -43,7 +39,7 @@ ArrayBuffer::bind(GLuint attribute, GLuint index) const {
                 );
             }
 
-            glVertexAttribDivisor(index, devisor_);
+            glVertexAttribDivisor(index, divisor_);
             break;
 
         default:
