@@ -11,16 +11,6 @@ display_windows::display_data(
 
     if (ImGui::BeginTable("table_sorting", 4, 0, ImVec2(0.0f, 24 * 15), 0.0f)) {
         // Declare columns
-        // We use the "user_id" parameter of TableSetupColumn() to specify a user id
-        // that will be stored in the sort specifications. This is so our sort function
-        // can identify a column given our own identifier. We could also identify them
-        // based on their index! Demonstrate using a mixture of flags among available
-        // sort-related flags:
-        // - ImGuiTableColumnFlags_DefaultSort
-        // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending /
-        // ImGuiTableColumnFlags_NoSortDescending
-        // - ImGuiTableColumnFlags_PreferSortAscending /
-        // ImGuiTableColumnFlags_PreferSortDescending
         ImGui::TableSetupColumn("ID");
         ImGui::TableSetupColumn("Name");
         ImGui::TableSetupColumn("Action");
@@ -28,12 +18,6 @@ display_windows::display_data(
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
-        // Sort our data if sort specs have been changed!
-        // if (ImGuiTableSortSpecs* sort_specs = ImGui::TableGetSortSpecs())
-        //    if (sort_specs->SpecsDirty) {
-        //        MyItem::SortWithSortSpecs(sort_specs, items.Data, items.Size);
-        //        sort_specs->SpecsDirty = false;
-        //    }
 
         for (auto& program_pair : programs) {
             auto& program = program_pair.second;
