@@ -103,7 +103,6 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<std::shared_ptr<gpu_data::GPUData>> data;
 
-    //    template <gpu_data::GPUdata_or_something T>
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
@@ -149,16 +148,6 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
             }
 
             mesh->bind();
-
-            // test if T inherits from Instancing or not
-
-            // Draw the triangles !
-            // glDrawElements(
-            //    GL_TRIANGLES,             // mode
-            //    mesh->get_num_vertices(), // count
-            //    mesh->get_element_type(), // type
-            //    (void*)0                  // element array buffer offset
-            //);
 
             // Draw the triangles !
             glDrawArrays(
@@ -245,14 +234,6 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
                 (void*)0                           // element array buffer offset
             );
 
-            // Draw the triangles !
-            // glDrawArrays(
-            //    GL_TRIANGLE_STRIP,     // mode
-            //    0,                     // start
-            //    mesh->get_num_vertices // number of vertices
-
-            //            );
-
             mesh->release();
         }
     }
@@ -273,7 +254,6 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<std::shared_ptr<gpu_data::GPUDataInstanced>> data;
 
-    //    template <gpu_data::GPUdata_or_something T>
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
@@ -347,7 +327,6 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<std::shared_ptr<gpu_data::GPUDataElementsInstanced>> data;
 
-    //    template <gpu_data::GPUdata_or_something T>
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
