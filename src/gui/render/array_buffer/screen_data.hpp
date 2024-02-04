@@ -3,11 +3,7 @@
 #include "array_buffer.hpp"
 #include "gpu_data.hpp"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
-#include <vector>
 
 namespace gui {
 

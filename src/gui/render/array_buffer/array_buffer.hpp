@@ -106,21 +106,18 @@ struct GPUArrayType {
         }
     }
 
-    template <std::floating_point T> // float/ double
+    // std::same_as<float> is because there is a compiler bug in gcc
+    // should be fixed in a later version of gcc tm
+    template <std::same_as<float> T> // float
     constexpr inline static GPUDataType
     presume_type() {
-        switch (sizeof(T)) {
-            case sizeof(glm::float32):
+        return GPUDataType::FLOAT;
+    }
 
-                return GPUDataType::FLOAT;
-
-            case sizeof(glm::float64):
-                return GPUDataType::DOUBLE;
-
-            default:
-                assert(false && "Invalid type.");
-                break;
-        }
+    template <std::same_as<double> T> // double
+    constexpr inline static GPUDataType
+    presume_type() {
+        return GPUDataType::DOUBLE;
     }
 
     template <std::integral T>
@@ -174,34 +171,52 @@ class ArrayBuffer {
     GLuint divisor_;   // For instancing usually 0, 1
 
  public:
- /**
-  * @brief Default constructor
- */
+    /**
+     * @brief Default constructor
+     */
     inline ArrayBuffer() : divisor_(0) {}
 
     /**
      * @brief Construct ArrayBuffer with data
-     * 
+     *
      * @param std::vector<T>& data data to send to GPU
-    */
-    inline ArrayBuffer(const std::vector<T>& data) : ArrayBuffer(data, 0) {}
+     */
+    inline explicit ArrayBuffer(const std::vector<T>& data) : ArrayBuffer(data, 0) {}
 
     /**
      * @brief Construct ArrayBuffer with data and divisor
-     * 
+     *
      * @param std::vector<T>& data data to send to GPU
      * @param GLuint divisor go look up instancing
-    */
-    inline ArrayBuffer(const std::vector<T>& data, GLuint divisor) {
+     */
+    inline explicit ArrayBuffer(const std::vector<T>& data, GLuint divisor) {
         update(data, divisor);
     };
 
     /**
-     * @brief Update ArrayBuffer with data and divisor
-     * 
+     * @brief Construct ArrayBuffer with data and divisor
+     *
      * @param std::vector<T>& data data to send to GPU
      * @param GLuint divisor go look up instancing
-    */
+     */
+    inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
+        divisor_(divisor) {
+        update_data(data.begin(), data.size());
+    }
+
+    /**
+     * @brief Construct ArrayBuffer with data
+     *
+     * @param std::vector<T>& data data to send to GPU
+     */
+    inline ArrayBuffer(std::initializer_list<T> data) : ArrayBuffer(data, 0) {}
+
+    /**
+     * @brief Update ArrayBuffer with data and divisor
+     *
+     * @param std::vector<T>& data data to send to GPU
+     * @param GLuint divisor go look up instancing
+     */
     inline void
     update(const std::vector<T>& data, GLuint divisor) {
         divisor_ = divisor;
@@ -210,16 +225,19 @@ class ArrayBuffer {
 
     /**
      * @brief Update ArrayBuffer with data
-     * 
+     *
      * @param std::vector<T>& data data to send to GPU
-    */
-    void update(const std::vector<T>& data);
+     */
+    inline void
+    update(const std::vector<T>& data) {
+        update_data(data.data(), data.size());
+    }
 
     /**
      * @brief Get the divisor
-     * 
+     *
      * @return GLuint& divisor_
-    */
+     */
     [[nodiscard]] inline GLuint&
     divisor() noexcept {
         return divisor_;
@@ -229,17 +247,17 @@ class ArrayBuffer {
 
     /**
      * @brief Bind to the given attribute
-     * 
+     *
      * @param GLuint attribute the location = # in programs
      * @param GLuint index I have no idea what this does.
-    */
+     */
     void bind(GLuint attribute, GLuint index) const;
 
     /**
      * @brief Bind to the given attribute
-     * 
+     *
      * @param GLuint attribute the location = # in programs
-    */
+     */
     inline void
     bind(GLuint attribute) const {
         bind(attribute, attribute);
@@ -268,11 +286,19 @@ class ArrayBuffer {
         constexpr int type_size = get_array_type().type_size_;
         return type_size;
     }
+
+ private:
+    /**
+     * @brief Update ArrayBuffer with data
+     *
+     * @param std::vector<T>& data data to send to GPU
+     */
+    void update_data(const T* data_begin, size_t size);
 };
 
 template <class T, BindingTarget buffer>
 void
-ArrayBuffer<T, buffer>::update(const std::vector<T>& buffer_data) {
+ArrayBuffer<T, buffer>::update_data(const T* data_begin, size_t size) {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
     glDeleteBuffers(1, &buffer_ID_);
@@ -280,9 +306,8 @@ ArrayBuffer<T, buffer>::update(const std::vector<T>& buffer_data) {
     glGenBuffers(1, &buffer_ID_);
     glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
     glBufferData(
-        static_cast<GLenum>(buffer),
-        buffer_data.size() * data_type.type_size_ * data_type.vec_size_,
-        buffer_data.data(),
+        static_cast<GLenum>(buffer), size * data_type.type_size_ * data_type.vec_size_,
+        data_begin,
         GL_DYNAMIC_DRAW // TODO
     );
 }

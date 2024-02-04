@@ -364,7 +364,7 @@ class Program : public ProgramData {
  *
  * @returns std::string string name of shader type
  */
-std::string get_shader_string(GLuint gl_shader_type);
+[[nodiscard]] constexpr std::string get_shader_string(GLuint gl_shader_type);
 
 /**
  * @brief Loads and saves shader programs

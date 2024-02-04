@@ -20,7 +20,7 @@ namespace shader {
 std::optional<std::string>
 File::get_file_content() {
     std::ifstream shader_stream(file_, std::ios::in);
-    if (!shader_stream.is_open()) {
+    if (!shader_stream.is_open()) [[unlikely]]{
         LOG_ERROR(
             logging::opengl_logger, "Cannot open {}. Is this the right directory?",
             file_.string()
@@ -36,7 +36,7 @@ File::get_file_content() {
     return shader_code;
 }
 
-std::string
+constexpr std::string
 get_shader_string(GLuint gl_shader_type) {
     switch (gl_shader_type) {
         case GL_VERTEX_SHADER:
@@ -68,7 +68,7 @@ Shader::reload() {
     for (File& file : files_) {
         std::optional<std::string> file_content = file.get_file_content();
 
-        if (!file_content) {
+        if (!file_content) [[unlikely]] {
             status_ = ShaderStatus::INVALID_FILE;
             LOG_ERROR(
                 logging::file_io_logger,
@@ -141,7 +141,7 @@ Program::reload() {
     found_uniforms_.clear();
     uniforms_.clear();
 
-    if (vertex_shader_.get_status() != ShaderStatus::OK) {
+    if (vertex_shader_.get_status() != ShaderStatus::OK) [[unlikely]]{
         // Not ok reload
         vertex_shader_.reload();
         // second fail
@@ -151,7 +151,7 @@ Program::reload() {
             return;
         }
     }
-    if (fragment_shader_.get_status() != ShaderStatus::OK) {
+    if (fragment_shader_.get_status() != ShaderStatus::OK) [[unlikely]]{
         // Not ok reload
         fragment_shader_.reload();
         // second fail
@@ -175,9 +175,6 @@ Program::reload() {
     GLint Result = GL_FALSE;
     int info_log_length;
 
-    // Link the program
-    // LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
-
     program_ID_ = glCreateProgram();
     glAttachShader(program_ID_, vertex_shader_id);
     glAttachShader(program_ID_, fragment_shader_id);
@@ -186,7 +183,7 @@ Program::reload() {
     // Check the program
     glGetProgramiv(program_ID_, GL_LINK_STATUS, &Result);
     glGetProgramiv(program_ID_, GL_INFO_LOG_LENGTH, &info_log_length);
-    if (info_log_length > 0) {
+    if (info_log_length > 0) [[unlikely]] {
         std::string program_error_message(info_log_length + 1, '\0');
         glGetProgramInfoLog(
             program_ID_, info_log_length, nullptr, program_error_message.data()

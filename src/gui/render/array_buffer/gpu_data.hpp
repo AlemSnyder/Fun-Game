@@ -9,6 +9,26 @@ namespace gui {
 
 namespace array_buffer {
 
+/* clang-format off
+A graphic of the four GPU Data types. This was along more useful in my mind.
+
+              +-----------------+--------------------------+
+              | No Instancing   | Instancing               |
++-------------+-----------------+--------------------------+
+| No Elements | GPUData         | GPUDataInstanced         |
++-------------+-----------------+--------------------------+
+| Elements    | GPUDataElements | GPUDataElementsInstanced |
++-------------+-----------------+--------------------------+
+
+If something is rendered with elements then rending it without elements will not
+work. Like it doesn't even make sense. The order of the vertices will just be
+wrong. It would probably be best if the compiler stoped you.
+
+If something that is instanced is rendered without instancing only one item
+will be rendered. That's not grate, but its better than with elements.
+
+clang-format on*/
+
 class GPUData {
  public:
     virtual void bind() const = 0;
