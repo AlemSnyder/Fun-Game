@@ -25,8 +25,8 @@
 // reason it should be moved into gui/array_buffer
 // Also no namespace terrain
 
-#include "entity/mesh.hpp"
 #include "array_buffer.hpp"
+#include "entity/mesh.hpp"
 #include "gpu_data.hpp"
 
 #include <GL/glew.h>
@@ -49,10 +49,10 @@ namespace array_buffer {
  */
 class NonInstancedIMeshGPU : virtual public GPUDataElements {
  protected:
-    ArrayBuffer vertex_array_;
-    ArrayBuffer color_array_;
-    ArrayBuffer normal_array_;
-    ArrayBuffer element_array_;
+    ArrayBuffer<glm::ivec3> vertex_array_;
+    ArrayBuffer<uint16_t> color_array_;
+    ArrayBuffer<glm::i8vec3> normal_array_;
+    ArrayBuffer<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
     GLuint color_texture_;
     uint32_t num_vertices_;
     bool do_render_;
@@ -69,8 +69,7 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
     explicit inline NonInstancedIMeshGPU(const entity::Mesh& mesh) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
-        normal_array_(mesh.get_indexed_normals()),
-        element_array_(mesh.get_indices(), 0, buffer_type::ELEMENT_ARRAY_BUFFER),
+        normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),
         num_vertices_(mesh.get_indices().size()),
         do_render_(mesh.get_indices().size()) {}
 
@@ -84,22 +83,22 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         return do_render_;
     }
 
-    [[nodiscard]] inline const ArrayBuffer
+    [[nodiscard]] inline const auto&
     get_color_buffer() const noexcept {
         return color_array_;
     }
 
-    [[nodiscard]] inline const ArrayBuffer
+    [[nodiscard]] inline const auto&
     get_element_buffer() const noexcept {
         return element_array_;
     }
 
-    [[nodiscard]] inline const ArrayBuffer
+    [[nodiscard]] inline const auto&
     get_normal_buffer() const noexcept {
         return normal_array_;
     }
 
-    [[nodiscard]] inline const ArrayBuffer
+    [[nodiscard]] inline const auto&
     get_vertex_buffer() const noexcept {
         return vertex_array_;
     }
@@ -109,14 +108,13 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         return color_texture_;
     }
 
-    [[nodiscard]] inline uint32_t virtual
-    get_num_vertices() const noexcept override {
+    [[nodiscard]] inline uint32_t virtual get_num_vertices() const noexcept override {
         return num_vertices_;
     }
 
     [[nodiscard]] inline GPUDataType virtual get_element_type(
     ) const noexcept override {
-        return element_array_.get_draw_type();
+        return element_array_.get_opengl_numeric_type();
     }
 };
 

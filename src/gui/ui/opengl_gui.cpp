@@ -46,12 +46,10 @@ opengl_entry(World& world) {
 
     shader::ShaderHandler shader_handler;
 
-    shader::Program quad_program = shader_handler.load_program("Quad Renderer",
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
+    shader::Program quad_program = shader_handler.load_program(
+        "Quad Renderer", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "SimpleTexture.frag"
     );
-
-    //    render::QuadRenderer QR(quad_program); TODO
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -67,10 +65,6 @@ opengl_entry(World& world) {
         main_scene.update(window_width, window_width);
 
         main_scene.copy_to_window(window_width, window_height);
-
-        if (controls::show_shadow_map(window)) {
-            //      QR.render(512, 512, main_scene.get_depth_texture(), 0);
-        }
 
         // Swap buffers
         glfwSwapBuffers(window);

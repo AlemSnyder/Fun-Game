@@ -54,7 +54,7 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
         shadow_texture_ = shadow_texture;
     }
 
-    inline virtual void
+    inline void
     bind() const override {
         NonInstancedIMeshGPU::bind();
 

@@ -19,6 +19,15 @@
  *
  * @ingroup GUI  RENDER  GRAPHICS_SHADERS
  *
+ * To any future reader: I hate how this is written. There is duplication
+ * because of language constrains. If you can find a way to fix this that would
+ * be quite beneficial.
+ * 
+ * This file defines four classes. They are nearly identical, but they hade
+ * different render methods. They cannot be templated because they are 
+ * render_to::FrameBuffer interfaces. GCC doesn't allow virtual templates
+ * because the compiler needs to know "soon" how many classes are of a certain
+ * virtual type.
  */
 
 #pragma once
@@ -40,12 +49,20 @@ namespace gui {
 
 namespace shader {
 
+/**
+ * @brief Logs needed and unneeded uniforms.
+ * 
+ * @param std::set<std::pair<std::string,std::string>> want_uniforms
+ * @param std::set<std::pair<std::string,std::string>> has_uniforms
+*/
 inline void
 log_uniforms(
     std::set<std::pair<std::string, std::string>> want_uniforms,
     std::set<std::pair<std::string, std::string>> has_uniforms
 ) {
 #if DEBUG()
+
+    // Literally just a set compare.
 
     std::set<std::pair<std::string, std::string>> uniforms_needed;
     std::set<std::pair<std::string, std::string>> uniforms_not_needed;
@@ -71,13 +88,16 @@ log_uniforms(
 #endif
 }
 
+/**
+ * @brief No elements No instancing
+*/
 class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -86,7 +106,7 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
     //    template <array_buffer::GPUdata_or_something T>
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
@@ -153,13 +173,16 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
     }
 };
 
+/**
+ * @brief Yes elements No instancing
+*/
 class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -167,7 +190,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
 
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
@@ -235,13 +258,16 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
     }
 };
 
+/**
+ * @brief No elements Yes instancing
+*/
 class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -250,7 +276,7 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
     //    template <array_buffer::GPUdata_or_something T>
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
@@ -306,13 +332,16 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
     }
 };
 
+/**
+ * @brief Yes elements Yes instancing
+*/
 class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -321,7 +350,7 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
     //    template <array_buffer::GPUdata_or_something T>
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {

@@ -13,9 +13,12 @@ namespace gui {
 
 namespace array_buffer {
 
-// enum draw type
+// TODO enum draw type
 // static draw dynamic draw etc
 
+/**
+ * @brief Data type of buffer
+ */
 enum class GPUDataType : GLenum {
 
     // clang-format off
@@ -31,35 +34,48 @@ enum class GPUDataType : GLenum {
     // clang-format on
 };
 
-enum class buffer_type : GLenum {
+/**
+ * @brief Targe. Designates how the buffer is used.
+ */
+enum class BindingTarget : GLenum {
     ARRAY_BUFFER = GL_ARRAY_BUFFER,
     ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
 };
 
-class ArrayBuffer;
+/**
+ * @brief Determines how a data type should be interpreted on the GPU.
+ *
+ * @details The entire thing works by template deduction and magic.
+ */
+struct GPUArrayType {
+    const uint8_t vec_size_;      // 1,2,3 or 4 vec size
+    const uint8_t type_size_;     // size of type float, int etc.
+    const bool is_int_;           // should be interpreted as integer
+    const GPUDataType draw_type_; // type of smallest unit of memory
 
-// cursed
-class array_buffer_type {
- protected:
-    const uint8_t vec_size_;  // 1,2,3 or 4 vec size
-    const uint8_t type_size_; // size of type float, int etc.
-    const bool is_int_;       // should be interpreted as integer
-    const GPUDataType draw_type_;
-
- public:
-    inline constexpr array_buffer_type(
+    inline constexpr GPUArrayType(
         uint8_t vec_size, uint8_t type_size, bool is_int, GPUDataType draw_type
     ) :
         vec_size_(vec_size),
         type_size_(type_size), is_int_(is_int), draw_type_(draw_type) {
-        assert(!(vec_size_ < 1 || vec_size > 4) && "Vector size not allowed");
-    };
+        assert((1 <= vec_size_ && vec_size_ <= 4) && "Vector size not allowed");
+    }
 
-    // inline array_buffer_type() : array_buffer_type(0,0,0,GPUDataType::BYTE) {}
+    template <std::integral T>
+    inline constexpr GPUArrayType() :
+        GPUArrayType(1, sizeof(T), true, presume_type<T>()) {}
 
-    inline constexpr GPUDataType
-    get_draw_type() const {
-        return draw_type_;
+    template <std::floating_point T>
+    inline constexpr GPUArrayType() :
+        GPUArrayType(1, sizeof(T), false, presume_type<T>()) {}
+
+    template <int i, class T, glm::qualifier Q>
+    constexpr GPUArrayType() :
+        GPUArrayType(i, sizeof(T), std::is_integral_v<T>, presume_type<T>()) {}
+
+    template <class T>
+    constexpr GPUArrayType() : GPUArrayType(0, 0, 0, GPUDataType::BYTE) {
+        assert(false && "Invalid type.");
     }
 
     template <std::integral T>
@@ -90,7 +106,7 @@ class array_buffer_type {
         }
     }
 
-    template <typename T> // float/ double
+    template <std::floating_point T> // float/ double
     constexpr inline static GPUDataType
     presume_type() {
         switch (sizeof(T)) {
@@ -108,113 +124,201 @@ class array_buffer_type {
     }
 
     template <std::integral T>
-    inline constexpr static array_buffer_type
-    init([[maybe_unused]] T i) {
-        return array_buffer_type(1, sizeof(T), true, presume_type<T>());
+    inline constexpr static GPUArrayType
+    create_([[maybe_unused]] T i = 0) {
+        return GPUArrayType(1, sizeof(T), true, presume_type<T>());
     }
 
     template <std::floating_point T>
-    inline constexpr static array_buffer_type
-    init([[maybe_unused]] T i) {
-        return array_buffer_type(1, sizeof(T), false, presume_type<T>());
+    inline constexpr static GPUArrayType
+    create_([[maybe_unused]] T i = 0) {
+        return GPUArrayType(1, sizeof(T), false, presume_type<T>());
     }
 
     template <int i, class T, glm::qualifier Q>
-    constexpr static array_buffer_type
-    init([[maybe_unused]] glm::vec<i, T, Q> V) {
-        return array_buffer_type(
-            i, sizeof(T), std::is_integral_v<T>, presume_type<T>()
-        );
+    constexpr static GPUArrayType
+    create_([[maybe_unused]] glm::vec<i, T, Q> V = 0) {
+        return GPUArrayType(i, sizeof(T), std::is_integral_v<T>, presume_type<T>());
+    }
+
+    // glm matricies
+    template <int i, int j, class T, glm::qualifier Q>
+    constexpr static GPUArrayType
+    create_([[maybe_unused]] glm::mat<i, j, T, Q> V = 0) {
+        return GPUArrayType(i * j, sizeof(T), std::is_integral_v<T>, presume_type<T>());
     }
 
     template <class T>
-    constexpr static array_buffer_type
-    init([[maybe_unused]] T t) {
+    constexpr static GPUArrayType
+    create_([[maybe_unused]] T t) {
         assert(false && "Invalid type.");
-        return array_buffer_type(0, 0, 0, GPUDataType::BYTE);
+        return GPUArrayType(0, 0, 0, GPUDataType::BYTE);
     }
 
-    bool operator==(const array_buffer_type& other) const = default;
+    template <class T>
+    constexpr static GPUArrayType
+    create() {
+        return create_(T());
+    }
 
-    bool operator==(const ArrayBuffer& other) const;
+    bool operator==(const GPUArrayType& other) const = default;
 };
 
-class ArrayBuffer : public array_buffer_type {
+/**
+ * @brief Generates a vector like object to store data on GPU.
+ */
+template <class T, BindingTarget buffer = BindingTarget::ARRAY_BUFFER>
+class ArrayBuffer {
  private:
-    GLuint buffer_ID_;
-
-    GLuint divisor_; // for instancing
-
-    const buffer_type buffer_type_;
+    GLuint buffer_ID_; // For binding
+    GLuint divisor_;   // For instancing usually 0, 1
 
  public:
-    template <class T>
-    void update(std::vector<T> data, GLuint divisor);
+ /**
+  * @brief Default constructor
+ */
+    inline ArrayBuffer() : divisor_(0) {}
 
-    template <class T>
-    inline void
-    update(std::vector<T> data) {
-        update<T>(data, divisor_);
-    }
+    /**
+     * @brief Construct ArrayBuffer with data
+     * 
+     * @param std::vector<T>& data data to send to GPU
+    */
+    inline ArrayBuffer(const std::vector<T>& data) : ArrayBuffer(data, 0) {}
 
+    /**
+     * @brief Construct ArrayBuffer with data and divisor
+     * 
+     * @param std::vector<T>& data data to send to GPU
+     * @param GLuint divisor go look up instancing
+    */
+    inline ArrayBuffer(const std::vector<T>& data, GLuint divisor) {
+        update(data, divisor);
+    };
+
+    /**
+     * @brief Update ArrayBuffer with data and divisor
+     * 
+     * @param std::vector<T>& data data to send to GPU
+     * @param GLuint divisor go look up instancing
+    */
     inline void
-    set_divisor(GLuint divisor) noexcept {
+    update(const std::vector<T>& data, GLuint divisor) {
         divisor_ = divisor;
+        update(data);
+    };
+
+    /**
+     * @brief Update ArrayBuffer with data
+     * 
+     * @param std::vector<T>& data data to send to GPU
+    */
+    void update(const std::vector<T>& data);
+
+    /**
+     * @brief Get the divisor
+     * 
+     * @return GLuint& divisor_
+    */
+    [[nodiscard]] inline GLuint&
+    divisor() noexcept {
+        return divisor_;
     }
 
-    template <class T>
-    inline ArrayBuffer(std::vector<T> data) :
-        ArrayBuffer(data, 0, buffer_type::ARRAY_BUFFER) {}
+    ~ArrayBuffer() { glDeleteBuffers(1, &buffer_ID_); }
 
-    template <class T>
-    ArrayBuffer(std::vector<T> data, GLuint divisor, buffer_type bt);
-
-    template <class T>
-    inline ArrayBuffer() :
-        array_buffer_type(array_buffer_type::presume_type<T>()), buffer_ID_(0),
-        divisor_(0), buffer_type_(buffer_type::ARRAY_BUFFER) {}
-
-    ~ArrayBuffer() { glDeleteBuffers(1, &buffer_ID_); };
-
+    /**
+     * @brief Bind to the given attribute
+     * 
+     * @param GLuint attribute the location = # in programs
+     * @param GLuint index I have no idea what this does.
+    */
     void bind(GLuint attribute, GLuint index) const;
 
+    /**
+     * @brief Bind to the given attribute
+     * 
+     * @param GLuint attribute the location = # in programs
+    */
     inline void
     bind(GLuint attribute) const {
         bind(attribute, attribute);
     };
+
+    [[nodiscard]] inline constexpr static GPUArrayType
+    get_array_type() {
+        constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+        return data_type;
+    }
+
+    [[nodiscard]] inline constexpr static GPUDataType
+    get_opengl_numeric_type() {
+        constexpr GPUDataType draw_type = get_array_type().draw_type_;
+        return draw_type;
+    }
+
+    [[nodiscard]] inline constexpr static int
+    get_vec_size() {
+        constexpr int vec_size = get_array_type().vec_size_;
+        return vec_size;
+    }
+
+    [[nodiscard]] inline constexpr static int
+    get_type_size() {
+        constexpr int type_size = get_array_type().type_size_;
+        return type_size;
+    }
 };
 
-template <class T>
-ArrayBuffer::ArrayBuffer(std::vector<T> buffer_data, GLuint divisor, buffer_type bt) :
-    array_buffer_type(array_buffer_type::init(T())), divisor_(divisor),
-    buffer_type_(bt) {
+template <class T, BindingTarget buffer>
+void
+ArrayBuffer<T, buffer>::update(const std::vector<T>& buffer_data) {
+    constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+
+    glDeleteBuffers(1, &buffer_ID_);
+
     glGenBuffers(1, &buffer_ID_);
-    glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
+    glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
     glBufferData(
-        static_cast<GLenum>(buffer_type_), buffer_data.size() * type_size_ * vec_size_,
+        static_cast<GLenum>(buffer),
+        buffer_data.size() * data_type.type_size_ * data_type.vec_size_,
         buffer_data.data(),
         GL_DYNAMIC_DRAW // TODO
     );
 }
 
-template <class T>
+template <class T, BindingTarget buffer>
 void
-ArrayBuffer::update(std::vector<T> buffer_data, GLuint divisor) {
-    divisor_ = divisor;
+ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
+    constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
-    bool classes_are_equivelent = operator==(array_buffer_type::init(T()));
+    if constexpr (buffer != BindingTarget::ELEMENT_ARRAY_BUFFER)
+        glEnableVertexAttribArray(index);
 
-    assert(classes_are_equivelent && "Class must be the same");
+    glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
 
-    glDeleteBuffers(1, &buffer_ID_);
+    if constexpr (buffer == BindingTarget::ARRAY_BUFFER) {
+        if constexpr (data_type.is_int_) {
+            glVertexAttribIPointer(
+                attribute,                                  // attribute
+                data_type.vec_size_,                        // size
+                static_cast<GLenum>(data_type.draw_type_),  // type
+                data_type.vec_size_ * data_type.type_size_, // stride
+                (void*)0                                    // array buffer offset
+            );
+        } else {
+            glVertexAttribPointer(
+                attribute,                                  // attribute
+                data_type.vec_size_,                        // size
+                GL_FLOAT,                                   // type
+                false,                                      // normalize
+                data_type.vec_size_ * data_type.type_size_, // stride
+                (void*)0                                    // array buffer offset
+            );
+        }
 
-    glGenBuffers(1, &buffer_ID_);
-    glBindBuffer(static_cast<GLenum>(buffer_type_), buffer_ID_);
-    glBufferData(
-        static_cast<GLenum>(buffer_type_), buffer_data.size() * type_size_ * vec_size_,
-        buffer_data.data(),
-        GL_DYNAMIC_DRAW // TODO
-    );
+        glVertexAttribDivisor(index, divisor_);
+    }
 }
 
 } // namespace array_buffer

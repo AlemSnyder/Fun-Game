@@ -46,7 +46,7 @@ namespace array_buffer {
  */
 class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
  private:
-    ArrayBuffer transforms_array_;
+    ArrayBuffer<glm::ivec3> transforms_array_;
     uint32_t num_models_;
 
  public:
@@ -70,7 +70,7 @@ class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
         glDisableVertexAttribArray(3);
     }
 
-    [[nodiscard]] inline const ArrayBuffer&
+    [[nodiscard]] inline const ArrayBuffer<glm::ivec3>&
     get_model_transforms() const noexcept {
         return transforms_array_;
     }

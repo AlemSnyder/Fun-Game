@@ -15,7 +15,7 @@ namespace array_buffer {
 
 class ScreenData : public virtual GPUData {
  private:
-    ArrayBuffer vertex_array_;
+    ArrayBuffer<glm::vec3> vertex_array_;
     unsigned int num_vertices_;
 
  public:
@@ -39,7 +39,7 @@ class ScreenData : public virtual GPUData {
      *
      * @return ArrayBuffer id of vertex buffer on gpu
      */
-    inline const ArrayBuffer
+    inline const ArrayBuffer<glm::vec3>&
     get_vertex_buffer() const {
         return vertex_array_;
     }

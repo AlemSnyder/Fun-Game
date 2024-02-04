@@ -138,6 +138,12 @@ class ShadowMap {
         return shadow_height_;
     }
 
+    /**
+     * @brief Update the shadow map
+     * 
+     * @details Changes the shadow map depth matrix. This allows the shadow map
+     * to move with the camera.
+    */
     void update();
 
     void

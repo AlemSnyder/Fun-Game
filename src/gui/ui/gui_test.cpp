@@ -83,14 +83,14 @@ revised_gui_test() {
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(lighting_environment);
 
-    shader::Uniforms sky_render_program_uniforms(
+    shader::UniformsVector sky_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
              spectral_light_color_uniform}
         )
     );
 
-    shader::Uniforms no_uniforms({});
+    shader::UniformsVector no_uniforms({});
 
     auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -298,14 +298,14 @@ stars_test() {
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(lighting_environment);
 
-    shader::Uniforms sky_render_program_uniforms(
+    shader::UniformsVector sky_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
              spectral_light_color_uniform}
         )
     );
 
-    shader::Uniforms no_uniforms({});
+    shader::UniformsVector no_uniforms({});
 
     auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -315,7 +315,7 @@ stars_test() {
         blue_program, sky_render_setup, no_uniforms
     );
 
-    shader::Uniforms star_render_program_uniforms(
+    shader::UniformsVector star_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {matrix_view_projection_uniform, pixel_projection, star_rotation_uniform,
              light_direction_uniform}
