@@ -50,6 +50,9 @@ display_windows::display_data(
             }
             ImGui::TableNextColumn();
             ImGui::Text(program.get_status_string().first.c_str());
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_ForTooltip)) {
+                ImGui::SetTooltip(program.get_status_string().second.c_str());
+            }
             ImGui::PopID();
         }
         ImGui::EndTable();
