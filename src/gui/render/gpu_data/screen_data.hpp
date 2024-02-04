@@ -7,7 +7,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 class ScreenData : public virtual GPUData {
  private:
@@ -68,6 +68,6 @@ class ScreenData : public virtual GPUData {
 
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

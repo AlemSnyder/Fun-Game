@@ -36,7 +36,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 /**
  * @brief Class to render instanced meshes
@@ -80,6 +80,6 @@ class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
     }
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

@@ -37,7 +37,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 class StarShape : public virtual GPUData {
  protected:
@@ -89,8 +89,8 @@ struct star_data {
 class StarData : public StarShape, public virtual GPUDataInstanced {
  private:
     ArrayBuffer<glm::vec4> star_positions_; // id of vertex buffer for star positions
-    ArrayBuffer<GLfloat> age_buffer_;     // id of vertex buffer for star age
-    size_t num_stars_;           // number of stars to draw
+    ArrayBuffer<GLfloat> age_buffer_;       // id of vertex buffer for star age
+    size_t num_stars_;                      // number of stars to draw
 
  public:
     /**
@@ -106,8 +106,7 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
     static star_data read_data_from_file(std::filesystem::path path);
 
     inline StarData(const star_data data) :
-        star_positions_(data.star_position, 1),
-        age_buffer_(data.star_age, 1),
+        star_positions_(data.star_position, 1), age_buffer_(data.star_age, 1),
         num_stars_(data.star_age.size()) {}
 
     StarData(std::filesystem::path path) : StarData(read_data_from_file(path)) {}
@@ -152,6 +151,6 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
     }
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

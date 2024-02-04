@@ -27,7 +27,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 /**
  * @brief Instanced mesh with color texture generator for models
@@ -48,6 +48,6 @@ class StaticMesh : public virtual InstancedIMeshGPU {
     void generate_color_texture(const entity::Mesh& mesh);
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

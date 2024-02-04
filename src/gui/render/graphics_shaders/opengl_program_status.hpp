@@ -30,22 +30,22 @@ namespace gui {
 namespace shader {
 
 enum class FileStatus : uint8_t {
-    EMPTY = 0,
-    OK,
+    OK = 0,
+    EMPTY,
     FILE_NOT_FOUND,
     FILE_IO_ERROR,
 };
 
 enum class ShaderStatus : uint8_t {
-    EMPTY = 0,
-    OK,
+    OK = 0,
+    EMPTY,
     INVALID_FILE,
     COMPILATION_ERROR,
 };
 
 enum class ProgramStatus : uint8_t {
-    EMPTY = 0,
-    OK,
+    OK = 0,
+    EMPTY,
     LINKING_FAILED,
     INVALID_SHADER,
 };

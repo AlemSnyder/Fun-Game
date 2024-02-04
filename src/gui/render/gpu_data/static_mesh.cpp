@@ -2,7 +2,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 void
 StaticMesh::generate_color_texture(const entity::Mesh& mesh) {
@@ -31,6 +31,6 @@ StaticMesh::generate_color_texture(const entity::Mesh& mesh) {
     glGenerateMipmap(GL_TEXTURE_1D);
 }
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

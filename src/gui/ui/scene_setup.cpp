@@ -1,7 +1,7 @@
 #include "scene_setup.hpp"
 
-#include "../render/array_buffer/screen_data.hpp"
-#include "../render/array_buffer/star_data.hpp"
+#include "../render/gpu_data/screen_data.hpp"
+#include "../render/gpu_data/star_data.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/uniform_types.hpp"
@@ -27,12 +27,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, World& world) {
 
     auto terrain_mesh = world.get_chunks_mesh();
 
-    auto star_shape = std::make_shared<array_buffer::StarShape>();
+    auto star_shape = std::make_shared<gpu_data::StarShape>();
 
     auto star_data =
-        std::make_shared<array_buffer::StarData>(files::get_data_path() / "stars.json");
+        std::make_shared<gpu_data::StarData>(files::get_data_path() / "stars.json");
 
-    auto screen_data = std::make_shared<array_buffer::ScreenData>();
+    auto screen_data = std::make_shared<gpu_data::ScreenData>();
 
     // Load programs from files
     // clang-format off

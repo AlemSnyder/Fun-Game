@@ -25,7 +25,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 /**
  * @brief Non-instanced mesh with color texture for terrain
@@ -63,6 +63,6 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     }
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

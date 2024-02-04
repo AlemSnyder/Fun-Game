@@ -11,7 +11,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 // TODO enum draw type
 // static draw dynamic draw etc
@@ -48,17 +48,17 @@ enum class BindingTarget : GLenum {
  * @details The entire thing works by template deduction and magic.
  */
 struct GPUArrayType {
-    const uint8_t vec_size_;      // 1,2,3 or 4 vec size
-    const uint8_t type_size_;     // size of type float, int etc.
-    const bool is_int_;           // should be interpreted as integer
-    const GPUDataType draw_type_; // type of smallest unit of memory
+    const uint8_t vec_size;      // 1,2,3 or 4 vec size
+    const uint8_t type_size;     // size of type float, int etc.
+    const bool is_int;           // should be interpreted as integer
+    const GPUDataType draw_type; // type of smallest unit of memory
 
     inline constexpr GPUArrayType(
         uint8_t vec_size, uint8_t type_size, bool is_int, GPUDataType draw_type
     ) :
-        vec_size_(vec_size),
-        type_size_(type_size), is_int_(is_int), draw_type_(draw_type) {
-        assert((1 <= vec_size_ && vec_size_ <= 4) && "Vector size not allowed");
+        vec_size(vec_size),
+        type_size(type_size), is_int(is_int), draw_type(draw_type) {
+        assert((1 <= vec_size && vec_size <= 4) && "Vector size not allowed");
     }
 
     template <std::integral T>
@@ -122,32 +122,32 @@ struct GPUArrayType {
 
     template <std::integral T>
     inline constexpr static GPUArrayType
-    create_([[maybe_unused]] T i = 0) {
+    create_from_object([[maybe_unused]] T i = 0) {
         return GPUArrayType(1, sizeof(T), true, presume_type<T>());
     }
 
     template <std::floating_point T>
     inline constexpr static GPUArrayType
-    create_([[maybe_unused]] T i = 0) {
+    create_from_object([[maybe_unused]] T i = 0) {
         return GPUArrayType(1, sizeof(T), false, presume_type<T>());
     }
 
     template <int i, class T, glm::qualifier Q>
     constexpr static GPUArrayType
-    create_([[maybe_unused]] glm::vec<i, T, Q> V = 0) {
+    create_from_object([[maybe_unused]] glm::vec<i, T, Q> V = 0) {
         return GPUArrayType(i, sizeof(T), std::is_integral_v<T>, presume_type<T>());
     }
 
     // glm matricies
     template <int i, int j, class T, glm::qualifier Q>
     constexpr static GPUArrayType
-    create_([[maybe_unused]] glm::mat<i, j, T, Q> V = 0) {
+    create_from_object([[maybe_unused]] glm::mat<i, j, T, Q> V = 0) {
         return GPUArrayType(i * j, sizeof(T), std::is_integral_v<T>, presume_type<T>());
     }
 
     template <class T>
     constexpr static GPUArrayType
-    create_([[maybe_unused]] T t) {
+    create_from_object([[maybe_unused]] T t) {
         assert(false && "Invalid type.");
         return GPUArrayType(0, 0, 0, GPUDataType::BYTE);
     }
@@ -155,7 +155,7 @@ struct GPUArrayType {
     template <class T>
     constexpr static GPUArrayType
     create() {
-        return create_(T());
+        return create_from_object(T());
     }
 
     bool operator==(const GPUArrayType& other) const = default;
@@ -201,7 +201,7 @@ class ArrayBuffer {
      */
     inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
         divisor_(divisor) {
-        update_data(data.begin(), data.size());
+        update_(data.begin(), data.size());
     }
 
     /**
@@ -230,7 +230,7 @@ class ArrayBuffer {
      */
     inline void
     update(const std::vector<T>& data) {
-        update_data(data.data(), data.size());
+        update_(data.data(), data.size());
     }
 
     /**
@@ -271,19 +271,19 @@ class ArrayBuffer {
 
     [[nodiscard]] inline constexpr static GPUDataType
     get_opengl_numeric_type() {
-        constexpr GPUDataType draw_type = get_array_type().draw_type_;
+        constexpr GPUDataType draw_type = get_array_type().draw_type;
         return draw_type;
     }
 
     [[nodiscard]] inline constexpr static int
     get_vec_size() {
-        constexpr int vec_size = get_array_type().vec_size_;
+        constexpr int vec_size = get_array_type().vec_size;
         return vec_size;
     }
 
     [[nodiscard]] inline constexpr static int
     get_type_size() {
-        constexpr int type_size = get_array_type().type_size_;
+        constexpr int type_size = get_array_type().type_size;
         return type_size;
     }
 
@@ -293,12 +293,12 @@ class ArrayBuffer {
      *
      * @param std::vector<T>& data data to send to GPU
      */
-    void update_data(const T* data_begin, size_t size);
+    void update_(const T* data_begin, size_t size);
 };
 
 template <class T, BindingTarget buffer>
 void
-ArrayBuffer<T, buffer>::update_data(const T* data_begin, size_t size) {
+ArrayBuffer<T, buffer>::update_(const T* data_begin, size_t size) {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
     glDeleteBuffers(1, &buffer_ID_);
@@ -306,7 +306,7 @@ ArrayBuffer<T, buffer>::update_data(const T* data_begin, size_t size) {
     glGenBuffers(1, &buffer_ID_);
     glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
     glBufferData(
-        static_cast<GLenum>(buffer), size * data_type.type_size_ * data_type.vec_size_,
+        static_cast<GLenum>(buffer), size * data_type.type_size * data_type.vec_size,
         data_begin,
         GL_DYNAMIC_DRAW // TODO
     );
@@ -323,22 +323,22 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
     glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
 
     if constexpr (buffer == BindingTarget::ARRAY_BUFFER) {
-        if constexpr (data_type.is_int_) {
+        if constexpr (data_type.is_int) {
             glVertexAttribIPointer(
-                attribute,                                  // attribute
-                data_type.vec_size_,                        // size
-                static_cast<GLenum>(data_type.draw_type_),  // type
-                data_type.vec_size_ * data_type.type_size_, // stride
-                (void*)0                                    // array buffer offset
+                attribute,                                // attribute
+                data_type.vec_size,                       // size
+                static_cast<GLenum>(data_type.draw_type), // type
+                data_type.vec_size * data_type.type_size, // stride
+                (void*)0                                  // array buffer offset
             );
         } else {
             glVertexAttribPointer(
-                attribute,                                  // attribute
-                data_type.vec_size_,                        // size
-                GL_FLOAT,                                   // type
-                false,                                      // normalize
-                data_type.vec_size_ * data_type.type_size_, // stride
-                (void*)0                                    // array buffer offset
+                attribute,                                // attribute
+                data_type.vec_size,                       // size
+                GL_FLOAT,                                 // type
+                false,                                    // normalize
+                data_type.vec_size * data_type.type_size, // stride
+                (void*)0                                  // array buffer offset
             );
         }
 
@@ -346,6 +346,6 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
     }
 }
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

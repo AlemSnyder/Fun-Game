@@ -14,7 +14,7 @@
 
 namespace gui {
 
-namespace frame_buffer {
+namespace gpu_data {
 
 ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
     shadow_width_ = w;
@@ -129,6 +129,6 @@ ShadowMap::update() {
         glm::ortho(x_min, x_max, y_min, y_max, -z_max - 100.0, -z_min);
 }
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

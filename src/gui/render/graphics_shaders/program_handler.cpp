@@ -31,7 +31,6 @@ File::get_file_content() {
     std::stringstream sstr;
     sstr << shader_stream.rdbuf();
     std::string shader_code = sstr.str();
-    shader_stream.close();
     status_ = FileStatus::OK;
     return shader_code;
 }

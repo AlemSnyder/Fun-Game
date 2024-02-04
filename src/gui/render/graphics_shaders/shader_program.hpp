@@ -33,7 +33,7 @@
 #pragma once
 
 #include "../../handler.hpp"
-#include "../array_buffer/gpu_data.hpp"
+#include "../gpu_data/gpu_data.hpp"
 #include "gui_render_types.hpp"
 #include "logging.hpp"
 #include "types.hpp"
@@ -101,9 +101,9 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<array_buffer::GPUData>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUData>> data;
 
-    //    template <array_buffer::GPUdata_or_something T>
+    //    template <gpu_data::GPUdata_or_something T>
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
@@ -143,7 +143,7 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<array_buffer::GPUData> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUData> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -186,7 +186,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<array_buffer::GPUDataElements>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUDataElements>> data;
 
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands,
@@ -225,7 +225,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<array_buffer::GPUDataElements> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUDataElements> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -271,9 +271,9 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<array_buffer::GPUDataInstanced>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUDataInstanced>> data;
 
-    //    template <array_buffer::GPUdata_or_something T>
+    //    template <gpu_data::GPUdata_or_something T>
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
@@ -311,7 +311,7 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<array_buffer::GPUDataInstanced> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUDataInstanced> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -345,9 +345,9 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<array_buffer::GPUDataElementsInstanced>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUDataElementsInstanced>> data;
 
-    //    template <array_buffer::GPUdata_or_something T>
+    //    template <gpu_data::GPUdata_or_something T>
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
@@ -388,7 +388,7 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<array_buffer::GPUDataElementsInstanced> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUDataElementsInstanced> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }

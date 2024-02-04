@@ -5,8 +5,8 @@
 #include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/array_buffer/screen_data.hpp"
-#include "../render/array_buffer/star_data.hpp"
+#include "../render/gpu_data/screen_data.hpp"
+#include "../render/gpu_data/star_data.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/uniform_types.hpp"
@@ -159,11 +159,11 @@ revised_gui_test() {
     // unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    gui::array_buffer::ArrayBuffer VBO3(vertices_2);
+    gui::gpu_data::ArrayBuffer VBO3(vertices_2);
 
-    // gui::array_buffer::ArrayBuffer VBO4(vertices_3);
+    // gui::gpu_data::ArrayBuffer VBO4(vertices_3);
 
-    auto screen_data = std::make_shared<gui::array_buffer::ScreenData>();
+    auto screen_data = std::make_shared<gui::gpu_data::ScreenData>();
     sky_renderer->data.push_back(screen_data);
     sky_renderer2->data.push_back(screen_data);
 
@@ -337,12 +337,12 @@ stars_test() {
     glGenVertexArrays(1, &VertexArrayID);
     VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
-    // gui::array_buffer::ArrayBuffer VBO4(vertices_3);
+    // gui::gpu_data::ArrayBuffer VBO4(vertices_3);
 
-    auto screen_data = std::make_shared<array_buffer::ScreenData>();
+    auto screen_data = std::make_shared<gpu_data::ScreenData>();
 
     auto star_data =
-        std::make_shared<array_buffer::StarData>(files::get_data_path() / "stars.json");
+        std::make_shared<gpu_data::StarData>(files::get_data_path() / "stars.json");
 
     blue_background->data.push_back(screen_data);
 

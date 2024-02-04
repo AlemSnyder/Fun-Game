@@ -30,7 +30,7 @@
 
 namespace gui {
 
-namespace frame_buffer {
+namespace gpu_data {
 
 /**
  * @brief Multisample Framebuffer object
@@ -133,6 +133,6 @@ class FrameBufferMultisample {
     }
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

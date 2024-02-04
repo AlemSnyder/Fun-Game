@@ -39,7 +39,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 /**
  * @brief Class to render non-instanced meshes
@@ -108,16 +108,16 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         return color_texture_;
     }
 
-    [[nodiscard]] inline uint32_t virtual get_num_vertices() const noexcept override {
+    [[nodiscard]] inline uint32_t get_num_vertices() const noexcept override {
         return num_vertices_;
     }
 
-    [[nodiscard]] inline GPUDataType virtual get_element_type(
+    [[nodiscard]] inline GPUDataType get_element_type(
     ) const noexcept override {
         return element_array_.get_opengl_numeric_type();
     }
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui

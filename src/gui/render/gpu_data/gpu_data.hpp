@@ -7,7 +7,7 @@
 
 namespace gui {
 
-namespace array_buffer {
+namespace gpu_data {
 
 /* clang-format off
 A graphic of the four GPU Data types. This was along more useful in my mind.
@@ -63,6 +63,6 @@ class GPUDataElementsInstanced : virtual public GPUDataElements {
     virtual uint32_t get_num_models() const = 0;
 };
 
-} // namespace array_buffer
+} // namespace gpu_data
 
 } // namespace gui
