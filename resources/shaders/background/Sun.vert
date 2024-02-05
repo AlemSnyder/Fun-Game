@@ -8,7 +8,6 @@ uniform mat4 pixel_projection;
 uniform vec3 light_direction;
 
 float sun_size = 100;
-//out vec3 color_in;
 
 void
 main() {
@@ -21,14 +20,4 @@ main() {
 
     gl_Position = position;
 
-/*
-    float height = dot(sun_position, vec3(0,0,1) );
-    float color_changer = sin( ( height * .7 + .3 ) * 3.141592 );
-
-    float red = .6 + .4 * color_changer;
-    float green = .5 + .4 * color_changer;
-    float blue = .4 + .3 * color_changer;
-
-    color_in = vec3(red, green, blue);
-*/
 }

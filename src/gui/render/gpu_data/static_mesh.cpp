@@ -2,7 +2,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 void
 StaticMesh::generate_color_texture(const world::entity::Mesh& mesh) {
@@ -32,10 +32,10 @@ StaticMesh::generate_color_texture(const world::entity::Mesh& mesh) {
 }
 
 void
-StaticMesh::update_position(uint offset, std::vector<glm::vec4> data) {
-    transforms_array_.update(offset, data);
+StaticMesh::update_position(uint offset, std::vector<glm::ivec4> data) {
+    transforms_array_.update(data, offset);
 }
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

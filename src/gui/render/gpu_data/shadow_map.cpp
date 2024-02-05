@@ -14,7 +14,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
     shadow_width_ = w;
@@ -69,14 +69,17 @@ ShadowMap::update() {
     glm::mat4 projection_matrix = controls::get_projection_matrix();
     glm::mat4 inverse_view_projection = glm::inverse(projection_matrix * view_matrix);
 
+    // world space positions of back corners of view field.
     std::vector<glm::vec4> shadow_range_corners;
+    // Average position of four corners
     glm::vec4 center(0, 0, 0, 0);
 
     for (int x = -1; x < 2; x += 2) {
         for (int y = -1; y < 2; y += 2) {
             for (int z = -1; z < 2; z += 2) {
+                // corner in camera space
                 glm::vec4 corner = {x, y, z, 1}; // w = 1
-
+                // direction in world space
                 glm::vec4 direction = inverse_view_projection * corner;
                 direction = direction / direction.w;
                 shadow_range_corners.emplace_back(direction);
@@ -88,6 +91,7 @@ ShadowMap::update() {
     center = center / center.w;
     glm::vec3 center3 = center;
 
+    // update depth view matrix
     depth_view_matrix_ =
         glm::lookAt(light_direction_ + center3, center3, glm::vec3(0, 1, 0));
 
@@ -95,6 +99,7 @@ ShadowMap::update() {
         shadow_range_corners[i] = depth_view_matrix_ * shadow_range_corners[i];
     }
 
+    // try to generate a prism that covers the entire field of wiew.
     double x_max, x_min = shadow_range_corners[0].x;
     double y_max, y_min = shadow_range_corners[0].y;
     double z_max, z_min = shadow_range_corners[0].z;
@@ -124,6 +129,6 @@ ShadowMap::update() {
         glm::ortho(x_min, x_max, y_min, y_max, -z_max - 100.0, -z_min);
 }
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

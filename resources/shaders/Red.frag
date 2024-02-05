@@ -7,7 +7,7 @@ layout(location = 0) out vec3 color;
 
 void
 main(){
-    // only green
+    // some sort of red
     color = vec3(0.9, 0.2, 0.3);
 
 }

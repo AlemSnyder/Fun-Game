@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../scene/controls.hpp"
-#include "frame_buffer/shadow_map.hpp"
+#include "gpu_data/shadow_map.hpp"
 #include "graphics_shaders/uniform.hpp"
 #include "logging.hpp"
 #include "types.hpp"
@@ -146,10 +146,10 @@ class ViewMatrix : public shader::Uniform {
 
 class LightDepthProjection : public shader::Uniform {
  private:
-    const data_structures::ShadowMap* shadow_map_;
+    const gpu_data::ShadowMap* shadow_map_;
 
  public:
-    LightDepthProjection(const data_structures::ShadowMap* shadow_map) :
+    LightDepthProjection(const gpu_data::ShadowMap* shadow_map) :
         Uniform("depth_MVP", "mat4"), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthProjection() {}
@@ -171,10 +171,10 @@ class LightDepthProjection : public shader::Uniform {
 
 class LightDepthTextureProjection : public shader::Uniform {
  private:
-    const data_structures::ShadowMap* shadow_map_;
+    const gpu_data::ShadowMap* shadow_map_;
 
  public:
-    LightDepthTextureProjection(const data_structures::ShadowMap* shadow_map) :
+    LightDepthTextureProjection(const gpu_data::ShadowMap* shadow_map) :
         Uniform("depth_texture_projection", "mat4"), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthTextureProjection() {}

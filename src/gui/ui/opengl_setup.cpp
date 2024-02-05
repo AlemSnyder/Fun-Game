@@ -72,8 +72,10 @@ setup_opengl_logging() {
             glfwTerminate();
             return -1;
         }
-    } else
+    } else {
         LOG_WARNING(logging::opengl_logger, "Will not log OpenGL.");
+        return 1;
+    }
     return 0;
 }
 

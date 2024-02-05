@@ -35,10 +35,10 @@ namespace gui {
 
 namespace shader {
 
-class Uniforms;
+class UniformsVector;
 
 class Uniform {
-    friend Uniforms;
+    friend UniformsVector;
 
  protected:
     const std::string name_;
@@ -60,14 +60,14 @@ class Uniform {
     inline Uniform(std::string name, std::string type) : name_(name), type_(type) {}
 };
 
-class Uniforms {
+class UniformsVector {
  private:
     std::vector<std::shared_ptr<Uniform>> uniforms_;
 
  public:
     std::set<std::pair<std::string, std::string>> get_names() const;
 
-    Uniforms(std::vector<std::shared_ptr<Uniform>> uniforms) : uniforms_(uniforms) {}
+    UniformsVector(std::vector<std::shared_ptr<Uniform>> uniforms) : uniforms_(uniforms) {}
 
     auto
     begin() {

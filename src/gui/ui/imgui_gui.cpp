@@ -109,8 +109,10 @@ imgui_entry(world::World& world) {
         glfwPollEvents();
 
         if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
+#if !DEBUG()
             // Disable the mouse so it doesn't appear while playing
-            // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#endif
 
             // Process inputs
             controls::computeMatricesFromInputs(window);

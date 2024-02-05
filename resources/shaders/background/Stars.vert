@@ -23,18 +23,13 @@ main() {
     float sun_height = dot(light_direction, vec3(0,0,1))
         / length(light_direction);
 
-    if (cos_angle + 3*sun_height > 0){
-        gl_Position = vec4(0,0,-2,1);
-    }
-    else{
-        vec4 star_center_camera_space = MVP * star_rotation * vec4(pos.xyz, 0);
-        vec4 position = star_center_camera_space
+    vec4 star_center_camera_space = MVP * star_rotation * vec4(pos.xyz, 0);
+    vec4 position = star_center_camera_space
                         / abs(star_center_camera_space.w)
                         + pixel_projection * vec4(star_corner * pos.w, 0, 0);
 
-        // I have no idea why I have to do this.
-        position.z = star_center_camera_space.z/3;
+    position.z = star_center_camera_space.z/3;
+    bool behind = cos_angle + 3*sun_height > 0;
 
-        gl_Position = position;
-    }
+    gl_Position = behind ? vec4(0,0,-2,1) : position;
 }

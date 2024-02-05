@@ -11,15 +11,15 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 StarShape::StarShape() :
-    shape_buffer_(ArrayBuffer(std::vector<glm::vec2>({
+    shape_buffer_({
         {0,  1 },
         {1,  0 },
         {-1, 0 },
         {0,  -1}
-}))) {
+}) {
     // four point making a diamond centered at 0,0
     // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
 }
@@ -56,6 +56,6 @@ StarData::read_data_from_file(std::filesystem::path path) {
     return {stars_positions, star_age};
 }
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

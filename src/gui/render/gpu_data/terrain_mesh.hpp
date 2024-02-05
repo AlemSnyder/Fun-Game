@@ -17,16 +17,15 @@
  *
  * @brief Defines TerrainMesh class
  *
- * @ingroup GUI  DATA_STRUCTURES
+ * @ingroup GUI  array_buffer
  *
  */
 
-//#include "shadow_map.hpp"
 #include "non_instanced_i_mesh.hpp"
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 /**
  * @brief Non-instanced mesh with color texture for terrain
@@ -55,7 +54,7 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
         shadow_texture_ = shadow_texture;
     }
 
-    inline virtual void
+    inline void
     bind() const override {
         NonInstancedIMeshGPU::bind();
 
@@ -64,6 +63,6 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     }
 };
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

@@ -1,7 +1,7 @@
 #include "program_handler.hpp"
 
-#include "logging.hpp"
 #include "gui_render_types.hpp"
+#include "logging.hpp"
 
 #include <GL/glew.h>
 
@@ -20,14 +20,7 @@ namespace shader {
 std::optional<std::string>
 File::get_file_content() {
     std::ifstream shader_stream(file_, std::ios::in);
-    if (shader_stream.is_open()) {
-        std::stringstream sstr;
-        sstr << shader_stream.rdbuf();
-        std::string shader_code = sstr.str();
-        shader_stream.close();
-        status_ = FileStatus::OK;
-        return shader_code;
-    } else {
+    if (!shader_stream.is_open()) [[unlikely]]{
         LOG_ERROR(
             logging::opengl_logger, "Cannot open {}. Is this the right directory?",
             file_.string()
@@ -35,9 +28,14 @@ File::get_file_content() {
         status_ = FileStatus::FILE_NOT_FOUND;
         return {};
     }
+    std::stringstream sstr;
+    sstr << shader_stream.rdbuf();
+    std::string shader_code = sstr.str();
+    status_ = FileStatus::OK;
+    return shader_code;
 }
 
-std::string
+constexpr std::string
 get_shader_string(GLuint gl_shader_type) {
     switch (gl_shader_type) {
         case GL_VERTEX_SHADER:
@@ -66,19 +64,19 @@ Shader::reload() {
     // Create the shader
     shader_ID_ = glCreateShader(shader_type_);
 
-    for (File file : files_) {
-        std::optional<std::string> file_read = file.get_file_content();
+    for (File& file : files_) {
+        std::optional<std::string> file_content = file.get_file_content();
 
-        if (file.get_status() != FileStatus::OK || !file_read) {
+        if (!file_content) [[unlikely]] {
             status_ = ShaderStatus::INVALID_FILE;
             LOG_ERROR(
                 logging::file_io_logger,
-                "Could not open {}. Check that the files exists.", file.get_file_path()
+                "Could not read {}. Check that the files exists.", file.get_file_path()
             );
             return;
         }
 
-        std::string file_text = file_read.value();
+        std::string file_text = file_content.value();
 
         source_string.push_back(file_text);
 
@@ -100,12 +98,6 @@ Shader::reload() {
             auto matched_name = *name_iter++;
 
             found_uniforms_.emplace(std::make_pair(matched_name, matched_type));
-
-            // LOG_DEBUG(
-            // logging::file_io_logger,
-            // "Uniform found with regex type = {}, name = {}.", matched_type.str(),
-            //    matched_name.str()
-            //);
         }
     }
 
@@ -115,7 +107,7 @@ Shader::reload() {
         source_char.push_back(source_string[i].c_str());
     }
 
-    GLint Result = GL_FALSE;
+    GLint result = GL_FALSE;
     int info_log_length;
 
     // Compile Vertex Shader
@@ -124,7 +116,7 @@ Shader::reload() {
     glCompileShader(shader_ID_);
 
     // Check Vertex Shader
-    glGetShaderiv(shader_ID_, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(shader_ID_, GL_COMPILE_STATUS, &result);
     glGetShaderiv(shader_ID_, GL_INFO_LOG_LENGTH, &info_log_length);
     if (info_log_length > 0) {
         std::string shader_error_message(info_log_length + 1, '\0');
@@ -148,7 +140,7 @@ Program::reload() {
     found_uniforms_.clear();
     uniforms_.clear();
 
-    if (vertex_shader_.get_status() != ShaderStatus::OK) {
+    if (vertex_shader_.get_status() != ShaderStatus::OK) [[unlikely]]{
         // Not ok reload
         vertex_shader_.reload();
         // second fail
@@ -158,7 +150,7 @@ Program::reload() {
             return;
         }
     }
-    if (fragment_shader_.get_status() != ShaderStatus::OK) {
+    if (fragment_shader_.get_status() != ShaderStatus::OK) [[unlikely]]{
         // Not ok reload
         fragment_shader_.reload();
         // second fail
@@ -182,9 +174,6 @@ Program::reload() {
     GLint Result = GL_FALSE;
     int info_log_length;
 
-    // Link the program
-    // LOG_BACKTRACE(logging::opengl_logger, "Linking shader program");
-
     program_ID_ = glCreateProgram();
     glAttachShader(program_ID_, vertex_shader_id);
     glAttachShader(program_ID_, fragment_shader_id);
@@ -193,7 +182,7 @@ Program::reload() {
     // Check the program
     glGetProgramiv(program_ID_, GL_LINK_STATUS, &Result);
     glGetProgramiv(program_ID_, GL_INFO_LOG_LENGTH, &info_log_length);
-    if (info_log_length > 0) {
+    if (info_log_length > 0) [[unlikely]] {
         std::string program_error_message(info_log_length + 1, '\0');
         glGetProgramInfoLog(
             program_ID_, info_log_length, nullptr, program_error_message.data()
@@ -227,23 +216,28 @@ Program::get_status_string() const {
         "OK",
         "This program and its corresponding shaders have compiled successfully. If "
         "there is still some error check that Uniforms and Locations are set "
-        "correctly."};
+        "correctly."
+    };
 
     static std::pair<std::string, std::string> linking_failed_string = {
         "Linking Failed",
         "There is an error when connecting different shader types together. Check that "
-        "the inputs and output between shaders align."};
+        "the inputs and output between shaders align."
+    };
 
     static std::pair<std::string, std::string> invalid_shader_string = {
         "Shader Failed", "Error compiling constituent shader(s). Check the log file "
-                         "for more information."};
+                         "for more information."
+    };
 
     static std::pair<std::string, std::string> empty_program_string = {
-        "No Program; Reload", "Program has not been loaded. Click the reload button."};
+        "No Program; Reload", "Program has not been loaded. Click the reload button."
+    };
 
     static std::pair<std::string, std::string> other_string = {
         "This should not happen",
-        "This is a bug that should be reported to the developers."};
+        "This is a bug that should be reported to the developers."
+    };
 
     switch (status_) {
         case ProgramStatus::OK:
@@ -293,7 +287,7 @@ ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader
 
 Program&
 ShaderHandler::load_program(
-    const std::vector<std::filesystem::path> vertex_file_paths,
+    std::string name, const std::vector<std::filesystem::path> vertex_file_paths,
     const std::vector<std::filesystem::path> fragment_file_paths
 ) {
     logging::opengl_logger->init_backtrace(4, quill::LogLevel::Error);
@@ -309,7 +303,7 @@ ShaderHandler::load_program(
     Shader& fragment_shader = get_shader(fragment_source_files_, GL_FRAGMENT_SHADER);
 
     // test if we already have the program
-    Program test_program(vertex_shader, fragment_shader);
+    ProgramData test_program(vertex_shader, fragment_shader);
     auto it = programs_.find(test_program);
 
     // already have the program
@@ -325,7 +319,8 @@ ShaderHandler::load_program(
     }
 
     // don't have the program
-    auto inserted_iterator = programs_.emplace(test_program, test_program);
+    auto inserted_iterator =
+        programs_.emplace(test_program, Program(name, test_program));
     return inserted_iterator.first->second;
 }
 

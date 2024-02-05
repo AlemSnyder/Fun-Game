@@ -6,10 +6,12 @@ namespace world {
 
 namespace entity {
 
-struct Placement {
+using Placement = glm::ivec4;
+
+/*struct Placement {
     TerrainOffset3 position;
     uint8_t rotation;
-};
+};*/
 
 } // namespace entity
 

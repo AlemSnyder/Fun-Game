@@ -31,7 +31,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 /**
  * @brief Contains a shadow depth buffer that can be rendered to.
@@ -138,6 +138,12 @@ class ShadowMap {
         return shadow_height_;
     }
 
+    /**
+     * @brief Update the shadow map
+     * 
+     * @details Changes the shadow map depth matrix. This allows the shadow map
+     * to move with the camera.
+    */
     void update();
 
     void
@@ -147,6 +153,6 @@ class ShadowMap {
     };
 };
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

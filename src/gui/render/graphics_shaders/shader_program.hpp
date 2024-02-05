@@ -19,12 +19,21 @@
  *
  * @ingroup GUI  RENDER  GRAPHICS_SHADERS
  *
+ * To any future reader: I hate how this is written. There is duplication
+ * because of language constrains. If you can find a way to fix this that would
+ * be quite beneficial.
+ * 
+ * This file defines four classes. They are nearly identical, but they hade
+ * different render methods. They cannot be templated because they are 
+ * render_to::FrameBuffer interfaces. GCC doesn't allow virtual templates
+ * because the compiler needs to know "soon" how many classes are of a certain
+ * virtual type.
  */
 
 #pragma once
 
 #include "../../handler.hpp"
-#include "../array_buffer/gpu_data.hpp"
+#include "../gpu_data/gpu_data.hpp"
 #include "gui_render_types.hpp"
 #include "logging.hpp"
 #include "types.hpp"
@@ -40,12 +49,20 @@ namespace gui {
 
 namespace shader {
 
+/**
+ * @brief Logs needed and unneeded uniforms.
+ * 
+ * @param std::set<std::pair<std::string,std::string>> want_uniforms
+ * @param std::set<std::pair<std::string,std::string>> has_uniforms
+*/
 inline void
 log_uniforms(
     std::set<std::pair<std::string, std::string>> want_uniforms,
     std::set<std::pair<std::string, std::string>> has_uniforms
 ) {
 #if DEBUG()
+
+    // Literally just a set compare.
 
     std::set<std::pair<std::string, std::string>> uniforms_needed;
     std::set<std::pair<std::string, std::string>> uniforms_not_needed;
@@ -71,22 +88,24 @@ log_uniforms(
 #endif
 }
 
+/**
+ * @brief No elements No instancing
+*/
 class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<data_structures::GPUData>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUData>> data;
 
-    //    template <data_structures::GPUdata_or_something T>
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
@@ -123,22 +142,12 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<data_structures::GPUData> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUData> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
 
             mesh->bind();
-
-            // test if T inherits from Instancing or not
-
-            // Draw the triangles !
-            // glDrawElements(
-            //    GL_TRIANGLES,             // mode
-            //    mesh->get_num_vertices(), // count
-            //    mesh->get_element_type(), // type
-            //    (void*)0                  // element array buffer offset
-            //);
 
             // Draw the triangles !
             glDrawArrays(
@@ -153,21 +162,24 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
     }
 };
 
+/**
+ * @brief Yes elements No instancing
+*/
 class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<data_structures::GPUDataElements>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUDataElements>> data;
 
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
@@ -202,7 +214,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<data_structures::GPUDataElements> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUDataElements> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -222,35 +234,29 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
                 (void*)0                           // element array buffer offset
             );
 
-            // Draw the triangles !
-            // glDrawArrays(
-            //    GL_TRIANGLE_STRIP,     // mode
-            //    0,                     // start
-            //    mesh->get_num_vertices // number of vertices
-
-            //            );
-
             mesh->release();
         }
     }
 };
 
+/**
+ * @brief No elements Yes instancing
+*/
 class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<data_structures::GPUDataInstanced>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUDataInstanced>> data;
 
-    //    template <data_structures::GPUdata_or_something T>
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
@@ -285,7 +291,7 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<data_structures::GPUDataInstanced> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUDataInstanced> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -306,22 +312,24 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
     }
 };
 
+/**
+ * @brief Yes elements Yes instancing
+*/
 class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
 
-    Uniforms uniforms_;
+    UniformsVector uniforms_;
 
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<data_structures::GPUDataElementsInstanced>> data;
+    std::vector<std::shared_ptr<gpu_data::GPUDataElementsInstanced>> data;
 
-    //    template <data_structures::GPUdata_or_something T>
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
-        Uniforms uniforms
+        UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
@@ -359,7 +367,7 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
                 uniform->bind(uniform_id);
         }
 
-        for (std::shared_ptr<data_structures::GPUDataElementsInstanced> mesh : data) {
+        for (std::shared_ptr<gpu_data::GPUDataElementsInstanced> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }

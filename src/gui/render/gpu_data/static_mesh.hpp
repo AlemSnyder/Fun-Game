@@ -28,7 +28,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 /**
  * @brief Instanced mesh with color texture generator for models
@@ -51,13 +51,13 @@ class StaticMesh : public virtual InstancedIMeshGPU {
     }
 
     void update_position(
-        uint offset, std::vector<glm::vec4> data
+        uint offset, std::vector<glm::ivec4> data
     );
 
  protected:
     void generate_color_texture(const world::entity::Mesh& mesh);
 };
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

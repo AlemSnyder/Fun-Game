@@ -36,30 +36,5 @@ main(){
 
     float cos_diffraction_angle = dot(world_space_direction.xyz, sunlight_direction_unit)/ (length(world_space_direction.xyz));
 
-    color = 2 * length(direct_light_color) * color_intensities * (.5 + (pow(cos_diffraction_angle, 2.0) - 0.5) * convolution);
-
-/*
-    float thickness;
-
-    if (run < .001){
-        thickness = d;
-    }
-    else{
-        float slope_above_horizon = world_space_direction.z / run;
-
-        thickness = atmosphere_thickness( slope_above_horizon );
-    }
-
-
-
-    float red_ratio = thickness * 1.07 * exp(- thickness * 1.07/diffusion);
-    float green_ratio = thickness * 1.25 * exp(- thickness * 1.25/diffusion);
-    float blue_ratio = thickness * 1.46 * exp(- thickness * 1.46/diffusion);
-
-    vec3 color_ratio = vec3(red_ratio, green_ratio, blue_ratio);
-
-    color = color_ratio * direct_light_color
-            * (1 + 0.2 * pow(cos_diffraction_angle, 2.0));
-*/
+    color = 2 * length(direct_light_color) * color_intensities * (0.5 + (pow(cos_diffraction_angle, 2.0) - 0.5) * convolution);
 }
-

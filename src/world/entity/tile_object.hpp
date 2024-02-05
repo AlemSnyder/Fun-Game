@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "gui/render/array_buffer/array_buffer.hpp"
-#include "gui/render/array_buffer/static_mesh.hpp"
+#include "gui/render/gpu_data/array_buffer.hpp"
+#include "gui/render/gpu_data/static_mesh.hpp"
 #include "json/json.h"
 #include "model.hpp"
 #include "placement.hpp"
@@ -32,7 +32,7 @@ class TileObject {
  public:
     inline TileObject(ModelController& controller, Placement placement) :
         placement_(placement), controller_(controller) {
-        controller_.add(placement_);
+        controller_.insert(placement_);
     }
 
     ~TileObject() { controller_.remove(placement_); }

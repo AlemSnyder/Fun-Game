@@ -24,16 +24,16 @@ ObjectData::ObjectData(Json::Value object_json) {
     }
 }
 
-ModelController::add(Placement placement) {
+void ModelController::insert(Placement placement) {
     auto iter = placements_.insert(placement);
 
     // cpp crimes no more
-    uint offset = std::distance(iter, placements_.begin());
+    uint offset = std::distance(iter.first, placements_.begin());
 
-    model_mesh_->update(offset, iter, placements_.end());
+    model_mesh_->update_position(offset, iter.first, placements_.end());
 }
 
-ModelController::remove(Placement placement) {
+ void ModelController::remove(Placement placement) {
     // why would they do this?
     auto iter = placements_.erase(placements_.find(placement));
     uint offset = std::distance(iter, placements_.begin());
@@ -42,7 +42,7 @@ ModelController::remove(Placement placement) {
     // need to do ivec all the way down
     std::vector<glm::ivec4> data(iter, placements_.end());
 
-    model_mesh_->update(offset, data);
+    model_mesh_->update_position(offset, data);
 }
 
 } // namespace entity

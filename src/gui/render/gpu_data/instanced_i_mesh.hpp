@@ -17,7 +17,7 @@
  *
  * @brief Defines InstancedInt class
  *
- * @ingroup GUI  DATA_STRUCTURES
+ * @ingroup GUI  array_buffer
  *
  */
 
@@ -36,7 +36,7 @@
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 /**
  * @brief Class to render instanced meshes
@@ -48,7 +48,7 @@ class InstancedIMeshGPU :
     public virtual NonInstancedIMeshGPU,
     public virtual GPUDataElementsInstanced {
  protected:
-    ArrayBuffer transforms_array_;
+    ArrayBuffer<glm::ivec4> transforms_array_;
     uint32_t num_models_;
 
  public:
@@ -72,7 +72,7 @@ class InstancedIMeshGPU :
         glDisableVertexAttribArray(3);
     }
 
-    [[nodiscard]] inline const ArrayBuffer&
+    [[nodiscard]] inline const ArrayBuffer<glm::ivec4>&
     get_model_transforms() const noexcept {
         return transforms_array_;
     }
@@ -82,6 +82,6 @@ class InstancedIMeshGPU :
     }
 };
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

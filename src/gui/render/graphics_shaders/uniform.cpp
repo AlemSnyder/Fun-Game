@@ -7,7 +7,7 @@ namespace gui {
 namespace shader {
 
 std::set<std::pair<std::string, std::string>>
-Uniforms::get_names() const {
+UniformsVector::get_names() const {
     std::set<std::pair<std::string, std::string>> out;
 
     for (auto uniform : uniforms_) {

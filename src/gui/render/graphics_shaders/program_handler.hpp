@@ -110,7 +110,7 @@ class File {
  */
 class ShaderData {
  protected:
-    const std::vector<File> files_;
+    std::vector<File> files_;
     GLuint shader_type_;
 
  public:
@@ -233,6 +233,8 @@ class Program : public ProgramData {
 
     ProgramStatus status_;
 
+    std::string name_;
+
     // get uniform
     // may be -1 if no uniform exists
     [[nodiscard]] GLint inline new_uniform(std::string uniform_name) {
@@ -251,42 +253,43 @@ class Program : public ProgramData {
  public:
     /**
      * @brief Crate a new Program object from a vertex and a fragment shader
-     * 
+     *
      * @param vertex_shader Shader the vertex shader
      * @param fragment_shader Shader the fragment shader
      */
-    inline Program(Shader& vertex_shader, Shader& fragment_shader) :
+    inline Program(std::string name, Shader& vertex_shader, Shader& fragment_shader) :
         ProgramData(vertex_shader, fragment_shader), program_ID_(0),
-        status_(ProgramStatus::EMPTY) {
+        status_(ProgramStatus::EMPTY), name_(name) {
         reload();
     }
 
     /**
      * @brief Crate a Program copy constructor.
-     * 
+     *
      * @details I'm not sure how save this is. Should probably be avoided.
-    */
-    inline Program(ProgramData program_data) :
-        ProgramData(program_data), program_ID_(0), status_(ProgramStatus::EMPTY) {
+     */
+    inline Program(std::string name, ProgramData program_data) :
+        ProgramData(program_data), program_ID_(0), status_(ProgramStatus::EMPTY),
+        name_(name) {
         reload();
     }
 
     /**
      * @brief Reload the program.
-     * 
+     *
      * @details Re-compiles the program. Will also recompile vertex and
      * fragment shaders if they previously failed. Remember to read the log
      * out put as it will tell you what went wrong.
-    */
+     */
     void reload();
 
     /**
      * @brief Get uniform by its name.
-     * 
+     *
      * @param uniform_name string name of uniform
-     * 
+     *
      * @return GLint uniform id
-    */
+     */
     [[nodiscard]] GLint inline get_uniform(std::string uniform_name) const {
         auto value = uniforms_.find(uniform_name);
         if (value != uniforms_.end()) {
@@ -308,10 +311,10 @@ class Program : public ProgramData {
 
     /**
      * @brief Get the set of detected uniforms
-     * 
+     *
      * @return std::set<std::pair<std::string, std::string>> set of paris of
      * uniform names and uniform types.
-    */
+     */
     [[nodiscard]] inline std::set<std::pair<std::string, std::string>>
     get_detected_uniforms() const noexcept {
         return found_uniforms_;
@@ -335,9 +338,14 @@ class Program : public ProgramData {
         return program_ID_;
     }
 
+    [[nodiscard]] inline std::string
+    get_name() const noexcept {
+        return name_;
+    }
+
     /**
      * @brief Bind the current Opengl program to this one.
-    */
+     */
     inline void
     use_program() const {
         glUseProgram(program_ID_);
@@ -345,7 +353,7 @@ class Program : public ProgramData {
 
     /**
      * @brief Send uniform data for this program.
-    */
+     */
     void attach_uniforms();
 };
 
@@ -356,7 +364,7 @@ class Program : public ProgramData {
  *
  * @returns std::string string name of shader type
  */
-std::string get_shader_string(GLuint gl_shader_type);
+[[nodiscard]] constexpr std::string get_shader_string(GLuint gl_shader_type);
 
 /**
  * @brief Loads and saves shader programs
@@ -365,7 +373,6 @@ std::string get_shader_string(GLuint gl_shader_type);
  */
 class ShaderHandler {
  protected:
-
     std::set<File> files_;
 
     std::map<const ShaderData, Shader> shaders_;
@@ -384,9 +391,9 @@ class ShaderHandler {
 
     /**
      * @brief Get all programs associated with this program handler
-     * 
+     *
      * @details Maybe don't use this. Only used by IMGUI interface.
-    */
+     */
     [[nodiscard]] inline std::map<const ProgramData, Program>&
     get_programs() {
         return programs_;
@@ -399,7 +406,7 @@ class ShaderHandler {
      * types of shaders.
      */
     Program& load_program(
-        const std::vector<std::filesystem::path> vertex_file_path,
+        std::string name, const std::vector<std::filesystem::path> vertex_file_path,
         const std::vector<std::filesystem::path> fragment_file_path
     );
 
@@ -407,11 +414,11 @@ class ShaderHandler {
      * @brief Load program from files. In this case only one file.
      */
     [[nodiscard]] inline Program&
-    load_program(
+    load_program( std::string name,
         const std::filesystem::path vertex_file_path,
         const std::filesystem::path fragment_file_path
     ) {
-        return load_program(std::vector({vertex_file_path}), {fragment_file_path});
+        return load_program(name, std::vector({vertex_file_path}), {fragment_file_path});
     };
 
     /**

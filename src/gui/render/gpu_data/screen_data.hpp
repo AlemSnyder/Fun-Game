@@ -3,41 +3,25 @@
 #include "array_buffer.hpp"
 #include "gpu_data.hpp"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
-#include <vector>
-
-#pragma once
 
 namespace gui {
 
-namespace data_structures {
+namespace gpu_data {
 
 class ScreenData : public virtual GPUData {
  private:
-    ArrayBuffer vertex_array_;
-    //    ArrayBuffer element_array_;
+    ArrayBuffer<glm::vec3> vertex_array_;
     unsigned int num_vertices_;
 
  public:
     /**
-     * @brief Construct a new Screen Data object
-     *
-     * @warning You shouldn't do this. This will delete the buffer from the gpu
-     *
-     * @param obj
+     * @brief Deleted copy constructor
      */
     ScreenData(const ScreenData& obj) = delete;
 
     /**
-     * @brief The copy operator
-     *
-     * @warning You shouldn't do this. This will delete the buffer from the gpu
-     *
-     * @param obj
-     * @return ScreenData&
+     * @brief Deleted copy operator
      */
     ScreenData& operator=(const ScreenData& obj) = delete;
     /**
@@ -51,7 +35,7 @@ class ScreenData : public virtual GPUData {
      *
      * @return ArrayBuffer id of vertex buffer on gpu
      */
-    inline const ArrayBuffer
+    inline const ArrayBuffer<glm::vec3>&
     get_vertex_buffer() const {
         return vertex_array_;
     }
@@ -70,7 +54,6 @@ class ScreenData : public virtual GPUData {
     inline virtual void
     bind() const {
         vertex_array_.bind(0, 0);
-        //        element_array_.bind(-1, -1);
     };
 
     inline virtual void
@@ -85,6 +68,6 @@ class ScreenData : public virtual GPUData {
 
 };
 
-} // namespace data_structures
+} // namespace gpu_data
 
 } // namespace gui

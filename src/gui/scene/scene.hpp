@@ -22,8 +22,8 @@
  */
 #pragma once
 
-#include "../render/frame_buffer/frame_buffer_multisample.hpp"
-#include "../render/frame_buffer/shadow_map.hpp"
+#include "../render/gpu_data/frame_buffer_multisample.hpp"
+#include "../render/gpu_data/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
 #include "helio.hpp"
 
@@ -38,12 +38,11 @@ namespace gui {
  */
 class Scene {
  private:
-    data_structures::FrameBufferMultisample frame_buffer_multisample_;
+    gpu_data::FrameBufferMultisample frame_buffer_multisample_;
     std::shared_ptr<scene::Helio> environment_;
-    data_structures::ShadowMap shadow_map_;
+    gpu_data::ShadowMap shadow_map_;
 
     // background
-    //    render::SkyRenderer sky_renderer_;
     std::vector<std::shared_ptr<render_to::FrameBuffer>> background_frame_buffer_;
 
     // "mid" ground
@@ -52,6 +51,7 @@ class Scene {
     // foreground
     std::vector<std::shared_ptr<render_to::FrameBuffer>> foreground_frame_buffer_;
 
+    // shadow
     std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_;
 
     // other
@@ -107,7 +107,7 @@ class Scene {
      *
      * @return ShadowMap& shadow map used by this scene.
      */
-    const data_structures::ShadowMap&
+    const gpu_data::ShadowMap&
     get_shadow_map() const {
         return shadow_map_;
     }

@@ -5,8 +5,8 @@
 #include "world/world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/array_buffer/screen_data.hpp"
-#include "../render/array_buffer/star_data.hpp"
+#include "../render/gpu_data/screen_data.hpp"
+#include "../render/gpu_data/star_data.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/uniform_types.hpp"
@@ -46,17 +46,17 @@ revised_gui_test() {
     shader::ShaderHandler shader_handler;
 
     shader::Program& green_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
+        "Green", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Green.frag"
     );
 
     shader::Program& blue_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
+        "Blue", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Blue.frag"
     );
 
     shader::Program& sky_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+        "Sky", files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
@@ -83,14 +83,14 @@ revised_gui_test() {
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(lighting_environment);
 
-    shader::Uniforms sky_render_program_uniforms(
+    shader::UniformsVector sky_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
              spectral_light_color_uniform}
         )
     );
 
-    shader::Uniforms no_uniforms({});
+    shader::UniformsVector no_uniforms({});
 
     auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -159,11 +159,11 @@ revised_gui_test() {
     // unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    gui::data_structures::ArrayBuffer VBO3(vertices_2);
+    gui::gpu_data::ArrayBuffer VBO3(vertices_2);
 
-    // gui::data_structures::ArrayBuffer VBO4(vertices_3);
+    // gui::gpu_data::ArrayBuffer VBO4(vertices_3);
 
-    auto screen_data = std::make_shared<gui::data_structures::ScreenData>();
+    auto screen_data = std::make_shared<gui::gpu_data::ScreenData>();
     sky_renderer->data.push_back(screen_data);
     sky_renderer2->data.push_back(screen_data);
 
@@ -255,17 +255,17 @@ stars_test() {
     shader::ShaderHandler shader_handler;
 
     shader::Program& blue_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "Passthrough.vert",
+        "Blue", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "Blue.frag"
     );
 
     shader::Program& sky_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "background" / "Sky.vert",
+        "Sky", files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
     shader::Program& stars_program = shader_handler.load_program(
-        files::get_resources_path() / "shaders" / "background" / "Stars.vert",
+        "Stars", files::get_resources_path() / "shaders" / "background" / "Stars.vert",
         files::get_resources_path() / "shaders" / "background" / "Stars.frag"
     );
 
@@ -298,14 +298,14 @@ stars_test() {
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(lighting_environment);
 
-    shader::Uniforms sky_render_program_uniforms(
+    shader::UniformsVector sky_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
              spectral_light_color_uniform}
         )
     );
 
-    shader::Uniforms no_uniforms({});
+    shader::UniformsVector no_uniforms({});
 
     auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -315,7 +315,7 @@ stars_test() {
         blue_program, sky_render_setup, no_uniforms
     );
 
-    shader::Uniforms star_render_program_uniforms(
+    shader::UniformsVector star_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {matrix_view_projection_uniform, pixel_projection, star_rotation_uniform,
              light_direction_uniform}
@@ -337,13 +337,12 @@ stars_test() {
     glGenVertexArrays(1, &VertexArrayID);
     VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
-    // gui::data_structures::ArrayBuffer VBO4(vertices_3);
+    // gui::gpu_data::ArrayBuffer VBO4(vertices_3);
 
-    auto screen_data = std::make_shared<data_structures::ScreenData>();
+    auto screen_data = std::make_shared<gpu_data::ScreenData>();
 
-    auto star_data = std::make_shared<data_structures::StarData>(
-        files::get_data_path() / "stars.json"
-    );
+    auto star_data =
+        std::make_shared<gpu_data::StarData>(files::get_data_path() / "stars.json");
 
     blue_background->data.push_back(screen_data);
 
