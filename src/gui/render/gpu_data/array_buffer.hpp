@@ -42,12 +42,15 @@ enum class BindingTarget : GLenum {
     ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
 };
 
+namespace {
+
 /**
  * @brief Determines how a data type should be interpreted on the GPU.
  *
  * @details The entire thing works by template deduction and magic.
  */
-struct GPUArrayType {
+class GPUArrayType {
+ public:
     const uint8_t vec_size;      // 1,2,3 or 4 vec size
     const uint8_t type_size;     // size of type float, int etc.
     const bool is_int;           // should be interpreted as integer
@@ -157,9 +160,9 @@ struct GPUArrayType {
     create() {
         return create_from_object(T());
     }
-
-    bool operator==(const GPUArrayType& other) const = default;
 };
+
+}
 
 /**
  * @brief Generates a vector like object to store data on GPU.
