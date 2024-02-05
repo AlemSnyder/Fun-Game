@@ -23,9 +23,9 @@
 
 #pragma once
 
+#include "../gl_enums.hpp"
 #include "logging.hpp"
 #include "opengl_program_status.hpp"
-#include "../gl_enums.hpp"
 #include "types.hpp"
 
 #include <GL/glew.h>
@@ -374,9 +374,8 @@ get_shader_string(gpu_data::ShaderType gl_shader_type) {
             return "fragment";
         case gpu_data::ShaderType::GEOMETRY_SHADER:
             return "geometry";
-
         default:
-            return "NOT A VALID SHADER TYPE";
+            abort();
     }
 }
 
@@ -401,7 +400,9 @@ class ShaderHandler {
      * @details Returns a shader program either from cache or by loading one
      * on success, or 0 on failure.
      */
-    Shader& get_shader(const std::vector<File> source_files, gpu_data::ShaderType gl_shader_type);
+    Shader& get_shader(
+        const std::vector<File> source_files, gpu_data::ShaderType gl_shader_type
+    );
 
     /**
      * @brief Get all programs associated with this program handler
