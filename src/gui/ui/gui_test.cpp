@@ -161,8 +161,6 @@ revised_gui_test() {
 
     gui::gpu_data::ArrayBuffer VBO3(vertices_2);
 
-    // gui::gpu_data::ArrayBuffer VBO4(vertices_3);
-
     auto screen_data = std::make_shared<gui::gpu_data::ScreenData>();
     sky_renderer->data.push_back(screen_data);
     sky_renderer2->data.push_back(screen_data);
@@ -336,8 +334,6 @@ stars_test() {
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
-
-    // gui::gpu_data::ArrayBuffer VBO4(vertices_3);
 
     auto screen_data = std::make_shared<gpu_data::ScreenData>();
 
