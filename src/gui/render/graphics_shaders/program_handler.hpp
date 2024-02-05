@@ -25,6 +25,7 @@
 
 #include "logging.hpp"
 #include "opengl_program_status.hpp"
+#include "../gl_enums.hpp"
 #include "types.hpp"
 
 #include <GL/glew.h>
@@ -111,10 +112,10 @@ class File {
 class ShaderData {
  protected:
     std::vector<File> files_;
-    GLuint shader_type_;
+    gpu_data::ShaderType shader_type_;
 
  public:
-    inline ShaderData(const std::vector<File> files, GLuint shader_type) :
+    inline ShaderData(const std::vector<File> files, gpu_data::ShaderType shader_type) :
         files_(files), shader_type_(shader_type) {}
 
     [[nodiscard]] inline std::strong_ordering
@@ -142,7 +143,7 @@ class Shader : public ShaderData {
     std::set<std::pair<std::string, std::string>> found_uniforms_;
 
  public:
-    inline Shader(const std::vector<File> files, GLuint shader_type) :
+    inline Shader(const std::vector<File> files, gpu_data::ShaderType shader_type) :
         ShaderData(files, shader_type), shader_ID_(0), status_(ShaderStatus::EMPTY) {
         reload();
     }
@@ -358,13 +359,26 @@ class Program : public ProgramData {
 };
 
 /**
- * @brief Converts GLuint shader type to human readable string for logging.
+ * @brief Converts ShaderType shader type to human readable string for logging.
  *
  * @details Returns a human readable string for each opengl shader type.
  *
  * @returns std::string string name of shader type
  */
-[[nodiscard]] constexpr std::string get_shader_string(GLuint gl_shader_type);
+[[nodiscard]] inline static std::string
+get_shader_string(gpu_data::ShaderType gl_shader_type) {
+    switch (gl_shader_type) {
+        case gpu_data::ShaderType::VERTEX_SHADER:
+            return "vertex";
+        case gpu_data::ShaderType::FRAGMENT_SHADER:
+            return "fragment";
+        case gpu_data::ShaderType::GEOMETRY_SHADER:
+            return "geometry";
+
+        default:
+            return "NOT A VALID SHADER TYPE";
+    }
+}
 
 /**
  * @brief Loads and saves shader programs
@@ -387,7 +401,7 @@ class ShaderHandler {
      * @details Returns a shader program either from cache or by loading one
      * on success, or 0 on failure.
      */
-    Shader& get_shader(const std::vector<File> source_files, GLuint gl_shader_type);
+    Shader& get_shader(const std::vector<File> source_files, gpu_data::ShaderType gl_shader_type);
 
     /**
      * @brief Get all programs associated with this program handler
@@ -414,11 +428,13 @@ class ShaderHandler {
      * @brief Load program from files. In this case only one file.
      */
     [[nodiscard]] inline Program&
-    load_program( std::string name,
-        const std::filesystem::path vertex_file_path,
+    load_program(
+        std::string name, const std::filesystem::path vertex_file_path,
         const std::filesystem::path fragment_file_path
     ) {
-        return load_program(name, std::vector({vertex_file_path}), {fragment_file_path});
+        return load_program(
+            name, std::vector({vertex_file_path}), {fragment_file_path}
+        );
     };
 
     /**

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../gl_enums.hpp"
 #include "logging.hpp"
 
 #include <GL/glew.h>
@@ -12,35 +13,6 @@
 namespace gui {
 
 namespace gpu_data {
-
-// TODO enum draw type
-// static draw dynamic draw etc
-
-/**
- * @brief Data type of buffer
- */
-enum class GPUDataType : GLenum {
-
-    // clang-format off
-    BYTE            = GL_BYTE,
-    UNSIGNED_BYTE   = GL_UNSIGNED_BYTE,
-    SHORT           = GL_SHORT,
-    UNSIGNED_SHORT  = GL_UNSIGNED_SHORT,
-    INT             = GL_INT,
-    UNSIGNED_INT    = GL_UNSIGNED_INT,
-
-    FLOAT           = GL_FLOAT,
-    DOUBLE          = GL_DOUBLE,
-    // clang-format on
-};
-
-/**
- * @brief Targe. Designates how the buffer is used.
- */
-enum class BindingTarget : GLenum {
-    ARRAY_BUFFER = GL_ARRAY_BUFFER,
-    ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
-};
 
 namespace {
 
@@ -162,7 +134,7 @@ class GPUArrayType {
     }
 };
 
-}
+} // namespace
 
 /**
  * @brief Generates a vector like object to store data on GPU.
