@@ -18,7 +18,7 @@
  * @brief Defines Terrain class
  *
  * @ingroup Terrain
- *
+ *_
  */
 
 #pragma once
@@ -44,7 +44,7 @@
 #include <array>
 #include <cstdint>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <optional>
 #include <set>
 #include <string>
@@ -99,7 +99,7 @@ class Terrain : public TerrainBase {
 
  private:
     std::vector<Chunk> chunks_;
-    std::map<int, NodeGroup*> tile_to_group_;
+    std::unordered_map<int, NodeGroup*> tile_to_group_;
     // seed for randomness
     int seed;
 
