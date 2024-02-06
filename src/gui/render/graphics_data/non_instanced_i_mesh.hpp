@@ -113,7 +113,7 @@ class NonInstancedIMeshGPU {
 
 template <class T>
 concept NonInstancedIMeshGPUDataType =
-    std::is_base_of<gui::data_structures::NonInstancedIMeshGPU, T>::value;
+    std::is_base_of<NonInstancedIMeshGPU, T>::value;
 
 } // namespace data_structures
 

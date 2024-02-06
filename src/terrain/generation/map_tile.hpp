@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../../types.hpp"
+#include "../../util/png_image.hpp"
 #include "noise.hpp"
 
-#include <mutex>
 #include <random>
+#include <vector>
 
 namespace terrain {
 
@@ -50,6 +51,62 @@ class MapTile {
     [[nodiscard]] inline std::default_random_engine&
     get_rand_engine() {
         return rand_engine_;
+    }
+};
+
+class TerrainMacroMap {
+ private:
+    MacroDim width_;
+    MacroDim height_;
+
+    std::vector<MapTile> terrain_map_;
+
+ public:
+    inline TerrainMacroMap() : width_(0), height_(0){};
+
+    inline TerrainMacroMap(
+        std::vector<MapTile> terrain_map, size_t width, size_t height
+    ) :
+        width_(width),
+        height_(height), terrain_map_(terrain_map) {
+        assert(terrain_map_.size() == width_ * height_);
+    };
+
+    const MapTile&
+    get_tile(size_t i, size_t j) const {
+        assert(i < width_ && j < height_);
+        return terrain_map_[height_ * j + i];
+    }
+
+    // MapTile_t
+    png_byte
+    get_color(size_t i, size_t j) const {
+        return get_tile(i, j).get_tile_type();
+    }
+
+    const auto
+    begin() const {
+        return terrain_map_.begin();
+    }
+
+    const auto
+    end() const {
+        return terrain_map_.end();
+    }
+
+    const std::vector<MapTile>&
+    data() const {
+        return terrain_map_;
+    }
+
+    MacroDim
+    get_width() const {
+        return width_;
+    }
+
+    MacroDim
+    get_height() const {
+        return height_;
     }
 };
 

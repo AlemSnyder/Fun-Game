@@ -49,19 +49,18 @@ opengl_entry(World& world) {
 
     ShaderHandler shader_handler = ShaderHandler();
 
-    Scene main_scene(window_width, window_height, shadow_map_size);
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+    Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, world);
 
     do {
         controls::computeMatricesFromInputs(window);
         glfwGetWindowSize(window, &window_width, &window_height);
-        main_scene.update(window_width, window_width);
+        main_scene.update(window_width, window_height);
 
-        // bind the the screen
-        FrameBufferHandler::instance().bind_fbo(0); // clear the screen
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // render to the screen
-        QR.render(window_width, window_height, main_scene.get_scene(), 0);
+        main_scene.copy_to_window(window_width, window_height);
 
         if (controls::show_shadow_map(window)) {
             QR.render(512, 512, main_scene.get_depth_texture(), 0);

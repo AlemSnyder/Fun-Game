@@ -76,16 +76,6 @@ class Scene {
         quad_renderer_multisample_() {}
 
     /**
-     * @brief Get scene frame buffer multisample id
-     *
-     * @return GLuint frame buffer multisample id
-     */
-    inline GLuint
-    get_scene() {
-        return frame_buffer_multisample_.get_single_sample_texture();
-    }
-
-    /**
      * @brief Get scene shadow mat depth texture id
      *
      * @return GLuint shadow mat depth texture id
@@ -177,6 +167,22 @@ class Scene {
     inline void
     set_shadow_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
         shadow_map_.set_depth_projection_matrix(depth_projection_matrix);
+    }
+
+    /**
+     * @brief Copy the framebuffer to the screen.
+     * 
+     * @details Only a screen-sized portion of this framebuffer is rendered to.
+     * In this call that portion is rendered to the screen.
+    */
+    inline void
+    copy_to_window(screen_size_t width, screen_size_t height) {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, get_frame_buffer_id());
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // window framebuffer
+        glBlitFramebuffer(
+            0, 0, width, height, 0, 0, width, height, // region of framebuffer
+            GL_COLOR_BUFFER_BIT, GL_NEAREST // copy the color
+        );
     }
 };
 
