@@ -141,10 +141,10 @@ class Chunk : public voxel_utility::VoxelBase {
     }
 
  private:
-    void delNodeGroup(NodeGroup& NG);
-    void mergeNodeGroup(NodeGroup& g1, NodeGroup& g2);
-    bool contains_nodeGroup(NodeGroup*);
-    void R_merge(NodeGroup& g1, std::set<NodeGroup*>& to_merge);
+    void delete_node_group_(NodeGroup& NG);
+    void merge_node_group_(NodeGroup& g1, NodeGroup& g2);
+    bool contains_node_group_(NodeGroup*);
+    void merge(NodeGroup& g1, std::set<NodeGroup*> to_merge);
 };
 
 /**

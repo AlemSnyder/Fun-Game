@@ -40,35 +40,32 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
         // to merge = get_adjacent_map()
         std::set<NodeGroup*> to_merge;
         for (std::pair<NodeGroup* const, UnitPath> other : (it)->get_adjacent_map()) {
-            if (contains_nodeGroup(other.first)) {
+            if (contains_node_group_(other.first)) {
                 to_merge.insert(other.first);
             }
         }
-        R_merge((*it), to_merge);
-        ter_->add_node_group( &(*it) );
+        merge((*it), std::move(to_merge));
+        ter_->add_node_group(&(*it));
         it++;
     }
 }
 
 void
-Chunk::R_merge(NodeGroup& G1, std::set<NodeGroup*>& to_merge) {
+Chunk::merge(NodeGroup& G1, std::set<NodeGroup*> to_merge) {
     if (to_merge.size() == 0) {
         return;
     }
-    //std::set<NodeGroup*> new_merge;
     while (to_merge.size() > 0) {
         auto G2 = to_merge.begin();
         std::map<NodeGroup*, UnitPath> to_add = G1.merge_groups(**(G2));
-        delNodeGroup(**G2);
-        //new_merge.erase(*G2);
+        delete_node_group_(**G2);
         for (std::pair<NodeGroup* const, UnitPath> NG : to_add) {
-            if (contains_nodeGroup(NG.first) && &G1 != NG.first) {
+            if (contains_node_group_(NG.first) && &G1 != NG.first) {
                 to_merge.insert(NG.first);
             }
         }
         to_merge.erase(G2);
     }
-    //R_merge(G1, new_merge);
 }
 
 void
@@ -80,7 +77,7 @@ Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const {
 }
 
 void
-Chunk::delNodeGroup(NodeGroup& NG) {
+Chunk::delete_node_group_(NodeGroup& NG) {
     // remove form ter. tile to group map
     ter_->remove_node_group(&NG);
     for (std::pair<NodeGroup* const, UnitPath>& adjacent : NG.get_adjacent_map()) {
@@ -90,15 +87,14 @@ Chunk::delNodeGroup(NodeGroup& NG) {
 }
 
 void
-Chunk::mergeNodeGroup(NodeGroup& G1, NodeGroup& G2) {
+Chunk::merge_node_group_(NodeGroup& G1, NodeGroup& G2) {
     G1.merge_groups(G2);
-    delNodeGroup(G2);
-    // return out;
+    delete_node_group_(G2);
     ter_->add_node_group(&G1);
 }
 
 inline bool
-Chunk::contains_nodeGroup(NodeGroup* NG) {
+Chunk::contains_node_group_(NodeGroup* NG) {
     return (
         NG->get_center_x() >= SIZE * Cx_ && NG->get_center_x() < SIZE * (1 + Cx_)
         && NG->get_center_y() >= SIZE * Cy_ && NG->get_center_y() < SIZE * (1 + Cy_)
@@ -151,7 +147,7 @@ ChunkData::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
     }
 
     // stand vector position from 3D space
-    // That's not true. +1 because (-1,-1,-1) is in the zero vector position
+    // +1 because (-1,-1,-1) is in the zero vector position
     size_t position = ((x + 1) * (SIZE * SIZE)) + ((y + 1) * SIZE) + z + 1;
     return data_[position];
 }
