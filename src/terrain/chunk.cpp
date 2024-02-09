@@ -44,14 +44,14 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
                 to_merge.insert(other.first);
             }
         }
-        merge((*it), std::move(to_merge));
+        merge_((*it), std::move(to_merge));
         ter_->add_node_group(&(*it));
         it++;
     }
 }
 
 void
-Chunk::merge(NodeGroup& G1, std::set<NodeGroup*> to_merge) {
+Chunk::merge_(NodeGroup& G1, std::set<NodeGroup*> to_merge) {
     if (to_merge.size() == 0) {
         return;
     }
