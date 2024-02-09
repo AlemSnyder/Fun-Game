@@ -99,7 +99,7 @@ class Terrain : public TerrainBase {
 
  private:
     std::vector<Chunk> chunks_;
-    std::unordered_map<int, NodeGroup*> tile_to_group_;
+    std::unordered_map<TileIndex, NodeGroup*> tile_to_group_;
     // seed for randomness
     int seed;
 
