@@ -250,15 +250,15 @@ class ArrayBuffer {
         return draw_type;
     }
 
-    [[nodiscard]] inline constexpr static int
+    [[nodiscard]] inline constexpr static uint8_t
     get_vec_size() {
-        constexpr int vec_size = get_array_type().vec_size;
+        constexpr uint8_t vec_size = get_array_type().vec_size;
         return vec_size;
     }
 
-    [[nodiscard]] inline constexpr static int
+    [[nodiscard]] inline constexpr static uint8_t
     get_type_size() {
-        constexpr int type_size = get_array_type().type_size;
+        constexpr uint8_t type_size = get_array_type().type_size;
         return type_size;
     }
 
