@@ -6,7 +6,7 @@
 -- Anyway, do something like this and it should work as long as there are
 -- correctly defined tile types and tile macros.
 
-spacing = 4
+spacing = .8
 
 function map(number)
     result = {}
@@ -14,12 +14,12 @@ function map(number)
     result.y = number
     result["map"] = {}
 
-    noise = FractalNoise:new(8, 0.8, 3)
+    noise = FractalNoise:new(4, 0.6, 3)
 
     for x = 0, number-1 do
         for y = 0, number-1 do
             -- sample noise and set a value
-            height = 2 * noise:sample(x * spacing, y * spacing)
+            height = 16 * noise:sample(x * spacing, y * spacing)
             -- each value must be integers. math.floor changes doubles to ints
             height_map_value = math.floor( height )
             -- This biome only defines tile types between 0, and 6
@@ -29,7 +29,7 @@ function map(number)
                 height_map_value = 0
             end
             -- assign tile type to index in map
-            result["map"][x * number + y] = height_map_value
+            result["map"][x * number + y] = height_map_value * 8
         end
     end
     return result

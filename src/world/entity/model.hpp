@@ -8,7 +8,7 @@
 #include "types.hpp"
 #include "util/voxel.hpp"
 
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 namespace world {
@@ -37,7 +37,7 @@ class ObjectData {
 class ModelController {
  private:
     // vector of placements
-    std::set<Placement> placements_;
+    std::unordered_set<Placement> placements_;
 
     // multiple array buffers
 
