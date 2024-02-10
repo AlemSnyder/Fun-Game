@@ -44,10 +44,10 @@
 #include <array>
 #include <cstdint>
 #include <functional>
-#include <map>
 #include <optional>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace terrain {
@@ -99,7 +99,7 @@ class Terrain : public TerrainBase {
 
  private:
     std::vector<Chunk> chunks_;
-    std::map<int, NodeGroup*> tile_to_group_;
+    std::unordered_map<TileIndex, NodeGroup*> tile_to_group_;
     // seed for randomness
     int seed;
 
