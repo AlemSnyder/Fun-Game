@@ -18,7 +18,7 @@
  * @brief Defines Terrain class
  *
  * @ingroup Terrain
- *_
+ *
  */
 
 #pragma once
@@ -44,10 +44,10 @@
 #include <array>
 #include <cstdint>
 #include <functional>
-#include <unordered_map>
 #include <optional>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace terrain {
