@@ -15,7 +15,8 @@ ObjectData::ObjectData(Json::Value object_json) {
         models.emplace_back(file_path);
 
         for (const auto& model : models) {
-            model_meshes_.emplace_back(model);
+            auto mesh = ambient_occlusion_mesher(model);
+            model_meshes_.emplace_back(mesh);
         }
 
         // some how change because other things.
@@ -30,7 +31,7 @@ void ModelController::insert(Placement placement) {
     // cpp crimes no more
     uint offset = std::distance(iter.first, placements_.begin());
 
-    model_mesh_->update_position(offset, iter.first, placements_.end());
+    model_mesh_->update_position(offset, {iter.first, placements_.end()});
 }
 
  void ModelController::remove(Placement placement) {

@@ -37,7 +37,7 @@ class ObjectData {
 class ModelController {
  private:
     // vector of placements
-    std::unordered_set<Placement> placements_;
+    std::unordered_set<Placement, PlacementOrder> placements_;
 
     // multiple array buffers
 
