@@ -24,6 +24,7 @@
             "includePath": [
                 "${workspaceFolder}/build",
                 "${workspaceFolder}/**",
+                "${fileWorkspaceFolder}/src",
                 "${workspaceFolder}/vendor/quill/quill/include"
             ],
             "defines": [

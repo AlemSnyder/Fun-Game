@@ -14,8 +14,8 @@
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
-#include "../shader.hpp"
 #include "imgui_style.hpp"
+#include "imgui_windows.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 
@@ -59,7 +59,7 @@ imgui_entry(World& world) {
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -78,13 +78,19 @@ imgui_entry(World& world) {
 
     // Our state
     bool show_another_window = false;
+    bool show_scene_data = false;
+    bool manual_light_direction = false;
+    float input_light_direction[3];
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    shader::ShaderHandler shader_handler;
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, world);
+    setup(main_scene, shader_handler, world);
 
     glm::vec3 position;
 
@@ -102,11 +108,31 @@ imgui_entry(World& world) {
         // your application based on those two flags.
         glfwPollEvents();
 
-        if (!io.WantCaptureKeyboard) {
+        if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
+#if !DEBUG()
+            // Disable the mouse so it doesn't appear while playing
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#endif
+
+            // Process inputs
             controls::computeMatricesFromInputs(window);
+        } else {
+            // Show the mouse for use with IMGUI
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
         glfwGetWindowSize(window, &window_width, &window_height);
+
+        if (manual_light_direction) {
+            glm::vec3 input_light_direction_v3(
+                input_light_direction[0], input_light_direction[1],
+                input_light_direction[2]
+            );
+            main_scene.manual_update_light_direction(input_light_direction_v3);
+        } else {
+            main_scene.update_light_direction();
+        }
+
         main_scene.update(window_width, window_height);
 
         position = controls::get_position_vector();
@@ -118,6 +144,8 @@ imgui_entry(World& world) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
@@ -131,6 +159,7 @@ imgui_entry(World& world) {
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Another Window", &show_another_window);
+            ImGui::Checkbox("Show Scene Data", &show_scene_data);
 
             ImGui::SliderFloat(
                 "float", &f, 0.0f, 1.0f
@@ -165,6 +194,37 @@ imgui_entry(World& world) {
                 show_another_window = false;
             ImGui::End();
         }
+
+        if (show_scene_data) {
+            glm::vec3 light_direction = main_scene.get_light_direction();
+            ImGui::Begin("Scene Data", &show_scene_data);
+
+            ImGui::Text(
+                "light_direction <%.3f, %.3f, %.3f>", light_direction.x,
+                light_direction.y, light_direction.z
+            );
+
+            const std::shared_ptr<scene::Helio> cycle =
+                main_scene.get_lighting_environment();
+
+            ImGui::Text("Sun angle %.3f", cycle->sun_angle);
+            ImGui::Text("Earth angle %.3f", cycle->earth_angle);
+            ImGui::Text("Total angle %.3f", cycle->total_angle);
+
+            glm::vec3 color = cycle->get_specular_light();
+
+            ImGui::TextColored({color.r, color.g, color.b, 1}, "##");
+
+            ImGui::Checkbox("Manually set light direction", &manual_light_direction);
+
+            if (manual_light_direction) {
+                ImGui::DragFloat3("Light Direction", input_light_direction);
+            }
+
+            ImGui::End();
+        }
+
+        shader::display_windows::display_data(shader_handler.get_programs());
 
         {
             ImGui::Begin("OpenGL Texture Text");

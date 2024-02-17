@@ -21,34 +21,45 @@
  *
  */
 
-// TODO add vertex buffer
-
 #pragma once
 
 #include <GL/glew.h>
 
 namespace gui {
 
+class BinderBase {
+ protected:
+    // Private CTOR as this is a singleton
+    BinderBase() {}
+
+ public:
+    // Delete all CTORs and CTOR-like operators
+    BinderBase(BinderBase&&) = delete;
+    BinderBase(BinderBase const&) = delete;
+
+    void operator=(BinderBase&&) = delete;
+    void operator=(BinderBase const&) = delete;
+};
+
 /**
  * @brief Handles frame buffer on gpu
  *
  * @details Binds frame buffer, and guaranties that bound buffers are not bound
- * again
+ * again.
  */
-class FrameBufferHandler {
+class FrameBufferHandler : public BinderBase {
  private:
     GLuint fbo_id;
 
-    // Private CTOR as this is a singleton
     FrameBufferHandler() : fbo_id(0) {}
 
  public:
-    // Delete all CTORs and CTOR-like operators
-    FrameBufferHandler(FrameBufferHandler&&) = delete;
-    FrameBufferHandler(FrameBufferHandler const&) = delete;
+    inline GLuint
+    get_current_fbo() {
+        return fbo_id;
+    };
 
-    void operator=(FrameBufferHandler&&) = delete;
-    void operator=(FrameBufferHandler const&) = delete;
+    void bind_fbo(GLuint new_fbo_id);
 
     // Instance accessor
     static inline FrameBufferHandler&
@@ -56,13 +67,39 @@ class FrameBufferHandler {
         static FrameBufferHandler obj;
         return obj;
     }
+};
 
+/**
+ * @brief Handles vertex buffer on gpu
+ *
+ * @details Binds vertex buffer, and guaranties that bound buffers are not bound
+ * again.
+ */
+class VertexBufferHandler : public BinderBase {
+ private:
+    GLuint vertex_buffer;
+
+    VertexBufferHandler() : vertex_buffer(0) {}
+
+ public:
     inline GLuint
-    get_current_fbo() {
-        return fbo_id;
+    get_current_vertex_buffer() {
+        return vertex_buffer;
     };
 
-    void bind_fbo(GLuint new_fbo_id);
+    void bind_vertex_buffer(GLuint new_vertex_buffer);
+
+    inline void
+    unbind_vertex_buffer() {
+        bind_vertex_buffer(0);
+    }
+
+    // Instance accessor
+    static inline VertexBufferHandler&
+    instance() {
+        static VertexBufferHandler obj;
+        return obj;
+    }
 };
 
 } // namespace gui

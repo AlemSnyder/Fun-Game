@@ -20,18 +20,14 @@
  * @ingroup GUI
  *
  */
+#pragma once
 
-#include "../render/data_structures/frame_buffer_multisample.hpp"
-#include "../render/data_structures/shadow_map.hpp"
+#include "../render/gpu_data/frame_buffer_multisample.hpp"
+#include "../render/gpu_data/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
-#include "../render/graphics_shaders/instanced_i_mesh_renderer.hpp"
-#include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
-#include "../render/graphics_shaders/quad_renderer_multisample.hpp"
-#include "../render/graphics_shaders/sky.hpp"
+#include "helio.hpp"
 
 #include <GLFW/glfw3.h>
-
-#pragma once
 
 #define SAMPLES 4
 
@@ -42,22 +38,23 @@ namespace gui {
  */
 class Scene {
  private:
-    data_structures::FrameBufferMultisample frame_buffer_multisample_;
-    data_structures::ShadowMap shadow_map_;
+    gpu_data::FrameBufferMultisample frame_buffer_multisample_;
+    std::shared_ptr<scene::Helio> environment_;
+    gpu_data::ShadowMap shadow_map_;
 
     // background
-    render::SkyRenderer sky_renderer_;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> background_frame_buffer_;
 
     // "mid" ground
     std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_frame_buffer_;
-    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>>
-        mid_ground_frame_buffer_multisample_;
-    std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
 
-    // foreground, maybe
+    // foreground
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> foreground_frame_buffer_;
+
+    // shadow
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_;
 
     // other
-    render::QuadRendererMultisample quad_renderer_multisample_;
 
  public:
     /**
@@ -72,8 +69,8 @@ class Scene {
         uint32_t shadow_map_width_height
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
-        shadow_map_(shadow_map_width_height, shadow_map_width_height), sky_renderer_(),
-        quad_renderer_multisample_() {}
+        environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)),
+        shadow_map_(shadow_map_width_height, shadow_map_width_height) {}
 
     /**
      * @brief Get scene shadow mat depth texture id
@@ -105,6 +102,21 @@ class Scene {
         return shadow_map_.get_shadow_height();
     }
 
+    /**
+     * @brief Get shadow map
+     *
+     * @return ShadowMap& shadow map used by this scene.
+     */
+    const gpu_data::ShadowMap&
+    get_shadow_map() const {
+        return shadow_map_;
+    }
+
+    /**
+     * @brief Get framebuffer id being rendered to.
+     *
+     * @return GLuint framebuffer id.
+     */
     inline GLuint
     get_frame_buffer_id() {
         return frame_buffer_multisample_.get_frame_buffer_id();
@@ -115,15 +127,13 @@ class Scene {
      */
     void update(screen_size_t width, screen_size_t height);
 
-    // model attach
-
     /**
      * @brief Attach shadow renderer.
      *
      * @param render object that can render to a shadow framebuffer.
      */
     inline void
-    shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
+    shadow_attach(const std::shared_ptr<render_to::FrameBuffer> shadow) {
         mid_ground_shadow_.push_back(shadow);
     }
 
@@ -133,20 +143,29 @@ class Scene {
      * @param render object that can render to a framebuffer.
      */
     inline void
-    frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render) {
+    add_background_ground_renderer(const std::shared_ptr<render_to::FrameBuffer> render
+    ) {
+        background_frame_buffer_.push_back(render);
+    }
+
+    /**
+     * @brief Attach renderer.
+     *
+     * @param render object that can render to a framebuffer.
+     */
+    inline void
+    add_mid_ground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render) {
         mid_ground_frame_buffer_.push_back(render);
     }
 
     /**
-     * @brief Attach multisample renderer.
+     * @brief Attach renderer.
      *
-     * @param render object that can render to a multisample framebuffer.
+     * @param render object that can render to a framebuffer.
      */
     inline void
-    frame_buffer_multisample_attach(
-        const std::shared_ptr<render_to::FrameBufferMultisample>& render
-    ) {
-        mid_ground_frame_buffer_multisample_.push_back(render);
+    add_foreground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render) {
+        foreground_frame_buffer_.push_back(render);
     }
 
     /**
@@ -160,6 +179,21 @@ class Scene {
     }
 
     /**
+     * @brief Get the light direction vector
+     *
+     * @return glm::vec3 the direction of the light.
+     */
+    inline glm::vec3
+    get_light_direction() {
+        return shadow_map_.get_light_direction();
+    }
+
+    inline const std::shared_ptr<scene::Helio>
+    get_lighting_environment() const {
+        return environment_;
+    }
+
+    /**
      * @brief Set the depth projection matrix
      *
      * @param depth_projection_matrix the projection matrix
@@ -170,18 +204,49 @@ class Scene {
     }
 
     /**
+     * @brief Update light using Heliocentric model.
+     *
+     * @details This function also updates the light color and intensity
+     * depending on the sun position.
+     */
+    inline void
+    update_light_direction() {
+        environment_->update();
+        glm::vec3 light_direction =
+            static_cast<float>(120.0) * environment_->get_light_direction();
+
+        set_shadow_light_direction(light_direction);
+    }
+
+    /**
+     * @brief Update lighting with given light direction
+     *
+     * @details This function also updates the light color and intensity
+     * depending on the sun position.
+     */
+    inline void
+    manual_update_light_direction(glm::vec3 light_direction_in) {
+        glm::vec3 light_direction =
+            static_cast<float>(120.0) * glm::normalize(light_direction_in);
+
+        environment_->update_sunlight_color(light_direction);
+
+        set_shadow_light_direction(light_direction);
+    }
+
+    /*
      * @brief Copy the framebuffer to the screen.
-     * 
+     *
      * @details Only a screen-sized portion of this framebuffer is rendered to.
      * In this call that portion is rendered to the screen.
-    */
+     */
     inline void
     copy_to_window(screen_size_t width, screen_size_t height) {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, get_frame_buffer_id());
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // window framebuffer
         glBlitFramebuffer(
             0, 0, width, height, 0, 0, width, height, // region of framebuffer
-            GL_COLOR_BUFFER_BIT, GL_NEAREST // copy the color
+            GL_COLOR_BUFFER_BIT, GL_NEAREST           // copy the color
         );
     }
 };

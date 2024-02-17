@@ -29,7 +29,10 @@ log_result(write_result_t result, const std::filesystem::path& path) {
             return;
 
         default:
-            LOG_ERROR(logging::file_io_logger, "UNKNOWN PNG WRITE STATUS {}", static_cast<int>(result));
+            LOG_ERROR(
+                logging::file_io_logger, "UNKNOWN PNG WRITE STATUS {}",
+                static_cast<int>(result)
+            );
             return;
     }
 }
