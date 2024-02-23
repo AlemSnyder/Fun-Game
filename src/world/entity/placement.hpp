@@ -6,7 +6,27 @@ namespace world {
 
 namespace entity {
 
-using Placement = glm::ivec4;
+// using Placement = glm::ivec4;
+
+class Placement {
+ public:
+    Dim x;
+    Dim y;
+    Dim z;
+
+    uint8_t rotation;
+
+    uint8_t texture_id; // texture used the render object
+
+    [[nodiscard]] inline glm::ivec4
+    as_vec() const {
+        return glm::ivec4(x, y, z, rotation);
+    }
+
+    [[nodiscard]] inline bool operator==(const Placement& other) const {
+        return (x == other.x && y == other.y && z == other.z);
+    }
+};
 
 /*struct Placement {
     TerrainOffset3 position;

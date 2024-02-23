@@ -154,7 +154,6 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
                 GL_TRIANGLE_STRIP,       // mode
                 0,                       // start
                 mesh->get_num_vertices() // number of vertices
-
             );
 
             mesh->release();

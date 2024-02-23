@@ -20,12 +20,13 @@
  *
  */
 
-#include "util/files.hpp"
 #include "land_generator.hpp"
 #include "map_tile.hpp"
+#include "util/files.hpp"
 
 #include <sol/sol.hpp>
 
+#include <compare>
 #include <map>
 
 #pragma once
@@ -41,6 +42,27 @@ struct biome_json_data {
     Json::Value biome_data;
     // Json data that describes materials
     Json::Value materials_data;
+};
+
+// read from json
+struct Plant {
+    std::string name; // shortened name
+    // identification should look like path eg biome/trees/tree_type_1
+    std::string identification;
+    // The map that generates these plants eg Trees_1
+    std::string map_name;
+
+    [[nodiscard]] inline std::strong_ordering
+    operator<=>(const Plant& other) const {
+        std::strong_ordering ordering = name <=> other.name;
+        if (ordering != std::strong_ordering::equal)
+            return ordering;
+        ordering = identification <=> other.identification;
+        if (ordering != std::strong_ordering::equal)
+            return ordering;
+        ordering = map_name <=> other.map_name;
+        return ordering;
+    }
 };
 
 class GrassData {
@@ -105,6 +127,8 @@ class Biome {
     // materials that exist
     const std::map<MaterialId, const terrain::Material> materials_;
 
+    std::set<Plant> generate_plants_;
+
     GrassData grass_data_;
 
     // lua state that generates macro map
@@ -136,6 +160,16 @@ class Biome {
      * @return 2D map of map tiles
      */
     [[nodiscard]] const TerrainMacroMap get_map(MacroDim length) const;
+
+    /**
+     * @brief Get plant map
+     *
+     * @param length side length of square map
+     *
+     * @return 2D map of plant percentages
+     */
+    [[nodiscard]] const std::map<std::string, PlantMap> get_plant_map(MacroDim length
+    ) const;
 
     inline static TerrainMacroMap
     single_tile_type_map(MapTile_t type) {
@@ -220,6 +254,11 @@ class Biome {
         return materials_;
     }
 
+    [[nodiscard]] inline const std::set<Plant>&
+    get_generate_plants() const {
+        return generate_plants_;
+    }
+
     /**
      * @brief Get material pointer if it exists else null pointer
      *
@@ -261,6 +300,9 @@ class Biome {
 
     // read data to generate the add to top after affect
     void read_add_to_top_data_(const Json::Value& biome_data);
+
+    // read data to generate plants
+    void read_plants_data_(const Json::Value& plants_data);
 
     void
     init_lua_state_(const std::filesystem::path& lua_map_generator_file) {

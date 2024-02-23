@@ -8,6 +8,7 @@
 
 spacing = .8
 
+-- Terrain map
 function map(number)
     result = {}
     result.x = number
@@ -37,4 +38,25 @@ end
 
 
 
---return result
+-- Maps for trees and bushes
+-- name should be used in json file
+
+-- terrain_map should be a result from map
+function plants_map(terrain_map)
+    result = {}
+    result.x = terrain_map.x
+    result.y = terrain_map.y
+    result["Trees_1"] = {}
+
+    for x = 0, result.x - 1 do
+        for y = 0, result.y - 1 do
+            if (terrain_map["map"] == 1) then 
+                result["Trees_1"][x * result.y + y] = 1.0
+            else
+                result = 0.0
+            end
+        end
+    end
+    return result
+end
+

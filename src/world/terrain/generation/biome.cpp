@@ -64,6 +64,8 @@ Biome::Biome(const biome_json_data& biome_data, size_t seed) :
 
     read_add_to_top_data_(biome_data.biome_data["Biome"]["After_Effects"]);
 
+    read_plants_data_(biome_data.biome_data["Biome"]["Generate_Plants"]);
+
     init_lua_state_(lua_map_generator_file);
 }
 
@@ -238,6 +240,50 @@ Biome::get_map(MacroDim length) const {
     return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
+const std::map<std::string, PlantMap>
+Biome::get_plant_map(Dim length) const {
+    std::map<std::string, PlantMap> out;
+
+    sol::protected_function plant_map = lua_["plants_map"];
+
+    sol::table map = plant_map(length);
+
+    MacroDim x_map_tiles = map["x"];
+    MacroDim y_map_tiles = map["y"];
+    assert(
+        ((y_map_tiles == x_map_tiles) && (x_map_tiles == length))
+        && "Map tile input and out put must all match"
+    );
+
+    auto maps = sol::table(map["map"]);
+
+    //    for (const std::string& flora_type : flora_types) {
+
+    for (const auto& plant_sub_map : maps) {
+        std::vector<float> type_map;
+
+        sol::object flora_type = plant_sub_map.first;
+
+        type_map.reserve(x_map_tiles * y_map_tiles);
+
+        auto tile_map_map = maps[flora_type];
+        for (MacroDim x = 0; x < x_map_tiles; x++) {
+            for (MacroDim y = 0; y < y_map_tiles; y++) {
+                size_t map_index = x * y_map_tiles + y;
+                type_map.emplace_back(tile_map_map[map_index]);
+            }
+        }
+
+        std::string type_as_string = flora_type.as<std::string>();
+
+        out.emplace(std::make_pair<std::string, PlantMap>(
+            std::move(type_as_string), {type_map, x_map_tiles, y_map_tiles}
+        ));
+    }
+
+    return out;
+}
+
 void
 Biome::read_tile_macro_data_(const Json::Value& biome_data) {
     // for tile macro in data biome
@@ -273,6 +319,16 @@ void
 Biome::read_add_to_top_data_(const Json::Value& after_effects_data) {
     for (const Json::Value& add_data : after_effects_data["Add_To_Top"]) {
         add_to_top_generators_.emplace_back(add_data);
+    }
+}
+
+void
+Biome::read_plants_data_(const Json::Value& plants_data) {
+    for (const Json::Value& plant : plants_data) {
+        generate_plants_.emplace(
+            plant["name"].asString(), plant["identification"].asString(),
+            plant["map_name"].asString()
+        );
     }
 }
 

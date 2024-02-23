@@ -110,6 +110,62 @@ class TerrainMacroMap {
     }
 };
 
+class PlantMap {
+ private:
+    Dim width_;
+    Dim height_;
+
+    std::vector<float> terrain_map_;
+
+ public:
+    inline PlantMap() : width_(0), height_(0){};
+
+    inline PlantMap(
+        std::vector<float> terrain_map, Dim width, Dim height
+    ) :
+        width_(width),
+        height_(height), terrain_map_(terrain_map) {
+        assert(terrain_map_.size() == width_ * height_);
+    };
+
+    const float&
+    get_tile(Dim i, Dim j) const {
+        assert(i < width_ && j < height_);
+        return terrain_map_[height_ * j + i];
+    }
+
+    // float_t
+    png_byte
+    get_color(Dim i, Dim j) const {
+        return get_tile(i, j);
+    }
+
+    const auto
+    begin() const {
+        return terrain_map_.begin();
+    }
+
+    const auto
+    end() const {
+        return terrain_map_.end();
+    }
+
+    const std::vector<float>&
+    data() const {
+        return terrain_map_;
+    }
+
+    Dim
+    get_width() const {
+        return width_;
+    }
+
+    Dim
+    get_height() const {
+        return height_;
+    }
+};
+
 } // namespace generation
 
 } // namespace terrain

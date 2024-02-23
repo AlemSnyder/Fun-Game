@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "entity/tile_object.hpp"
 #include "gui/render/gpu_data/terrain_mesh.hpp"
 #include "terrain/generation/biome.hpp"
 #include "terrain/material.hpp"
@@ -72,6 +73,9 @@ class World {
     // Multiple threads are writing to this map concurrently so this is its
     // mutex
     std::mutex meshes_to_update_mutex_;
+
+    // entity
+    std::unordered_set<entity::TileObject, entity::TileObjectOrder> tile_entities_;
 
  public:
     /**

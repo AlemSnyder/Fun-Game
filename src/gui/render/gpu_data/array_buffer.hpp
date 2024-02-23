@@ -170,14 +170,14 @@ class ArrayBuffer {
     GLuint buffer_ID_; // For binding
     GLuint divisor_;   // For instancing usually 0, 1
 
-    size_t size;
-    size_t aloc_size;
+    size_t size = 0;
+    size_t aloc_size = 0;
 
  public:
     /**
      * @brief Default constructor
      */
-    inline ArrayBuffer() : divisor_(0) {}
+    inline ArrayBuffer() : divisor_(0), size(0), aloc_size(0) {}
 
     /**
      * @brief Construct ArrayBuffer with data
