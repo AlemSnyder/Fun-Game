@@ -31,6 +31,7 @@ StaticMesh::generate_color_texture(const world::entity::Mesh& mesh) {
     glGenerateMipmap(GL_TEXTURE_1D);
 }
 
+// TODO fix order
 void
 StaticMesh::update_position(uint offset, std::vector<glm::ivec4> data) {
     transforms_array_.update(data, offset);

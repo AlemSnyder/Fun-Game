@@ -246,19 +246,24 @@ Biome::get_plant_map(Dim length) const {
 
     sol::protected_function plant_map = lua_["plants_map"];
 
-    sol::table map = plant_map(length);
+    sol::protected_function map_function = lua_["map"];
+
+    sol::table macor_map = map_function(length);
+
+    sol::table map = plant_map(length, macor_map);
 
     MacroDim x_map_tiles = map["x"];
     MacroDim y_map_tiles = map["y"];
+
+    LOG_DEBUG(logging::lua_logger, "Input length: {}, (x, y) = ({}, {})", length, x_map_tiles, y_map_tiles);
+
+
     assert(
         ((y_map_tiles == x_map_tiles) && (x_map_tiles == length))
         && "Map tile input and out put must all match"
     );
 
     auto maps = sol::table(map["map"]);
-
-    //    for (const std::string& flora_type : flora_types) {
-
     for (const auto& plant_sub_map : maps) {
         std::vector<float> type_map;
 
@@ -266,11 +271,19 @@ Biome::get_plant_map(Dim length) const {
 
         type_map.reserve(x_map_tiles * y_map_tiles);
 
+        LOG_DEBUG(logging::lua_logger, "Key is {}", flora_type.as<std::string>());
+
         auto tile_map_map = maps[flora_type];
         for (MacroDim x = 0; x < x_map_tiles; x++) {
             for (MacroDim y = 0; y < y_map_tiles; y++) {
                 size_t map_index = x * y_map_tiles + y;
-                type_map.emplace_back(tile_map_map[map_index]);
+                auto value = tile_map_map[map_index];
+
+                if (value.is<float>()) {
+                    type_map.emplace_back(value.get<float>());
+                } else {
+                    LOG_ERROR(logging::lua_logger, "Value is not a float.");
+                }
             }
         }
 

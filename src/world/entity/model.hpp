@@ -2,6 +2,7 @@
 #pragma once
 
 #include "gui/render/gpu_data/array_buffer.hpp"
+#include "gui/render/gpu_data/gpu_data.hpp"
 #include "gui/render/gpu_data/static_mesh.hpp"
 #include "json/json.h"
 #include "placement.hpp"
@@ -47,11 +48,14 @@ class ObjectData {
 // TODO move this to GPU
 // mostly position
 // there is a model controller for each voxel object model
-class ModelController {
+class ModelController : virtual public gui::gpu_data::GPUDataElements {
  private:
     gui::gpu_data::StaticMesh model_mesh_;
 
-    std::vector<GLuint> model_textures_;
+    //std::vector<GLuint> model_textures_;
+
+    // each mesh has a different texture
+    gui::gpu_data::ArrayBuffer<uint8_t> model_textures_;
 
     // vector of placements PlacementOrder is the hash function
     std::unordered_set<Placement, PlacementOrder> placements_;
@@ -74,6 +78,31 @@ class ModelController {
 
     // can't
     ModelController(world::entity::Mesh model_mesh) : model_mesh_(model_mesh) {}
+
+    void
+    bind() const override {
+        model_mesh_.bind();
+    }
+
+    void
+    release() const override {
+        model_mesh_.release();
+    }
+
+    bool
+    do_render() const override {
+        return model_mesh_.do_render();
+    }
+
+    uint32_t
+    get_num_vertices() const override {
+        return model_mesh_.get_num_vertices();
+    }
+
+    gui::gpu_data::GPUDataType
+    get_element_type() const override {
+        return model_mesh_.get_element_type();
+    }
 };
 
 } // namespace entity

@@ -30,7 +30,7 @@ function map(number)
                 height_map_value = 0
             end
             -- assign tile type to index in map
-            result["map"][x * number + y] = height_map_value * 8
+            result["map"][x * number + y] = height_map_value
         end
     end
     return result
@@ -42,18 +42,37 @@ end
 -- name should be used in json file
 
 -- terrain_map should be a result from map
-function plants_map(terrain_map)
+function plants_map(length, terrain_map)
     result = {}
-    result.x = terrain_map.x
-    result.y = terrain_map.y
-    result["Trees_1"] = {}
+    result.x = length
+    result.y = length
+    result["map"] = {}
+    result["map"]["Trees_1"] = {}
+    result["map"]["Flower_1"] = {}
 
     for x = 0, result.x - 1 do
         for y = 0, result.y - 1 do
-            if (terrain_map["map"] == 1) then 
-                result["Trees_1"][x * result.y + y] = 1.0
+
+            height = terrain_map["map"][math.floor( x / 32 * result.y + y / 32)]
+
+            if (height == 1) then 
+                result["map"]["Trees_1"][ math.floor( x * result.y + y)] = 1.0
             else
-                result = 0.0
+                result["map"]["Trees_1"][ math.floor( x * result.y + y)] = 0.0
+            end
+        end
+    end
+
+    -- Flower_1
+    flower_noise = AlternativeWorleyNoise:new(32, 0.5, 32);
+
+    for x = 0, result.x - 1 do
+        for y = 0, result.y - 1 do
+            height = flower_noise:sample(x,y)
+            if (height > 0) then 
+                result["map"]["Flower_1"][ math.floor( x * result.y + y)] = 1.0
+            else
+                result["map"]["Flower_1"][ math.floor( x * result.y + y)] = 0.0
             end
         end
     end

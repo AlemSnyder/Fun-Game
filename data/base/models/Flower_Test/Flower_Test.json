@@ -1,0 +1,23 @@
+{
+    "name": "Flower Test",
+    "identification": "Flower_Test",
+    "models": [
+        {
+            "mesh": "./Flower_Test.qb",
+            "colors": [
+                {
+                    "type": "default"
+                },
+                {
+                    "type": "remapping",
+                    "map": {"663f23FF" : "663f22FF"}
+                }
+            ],
+            "globals":{
+                "ambient": 0.4,
+                "specular": 0.2,
+                "diffuse": 0.8
+            }
+        }
+    ]
+}

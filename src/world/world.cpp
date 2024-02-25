@@ -23,13 +23,13 @@
 #include "world.hpp"
 
 #include "entity/mesh.hpp"
+#include "entity/object_handler.hpp"
 #include "global_context.hpp"
 #include "logging.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
-#include "entity/object_handler.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -83,25 +83,38 @@ World::World(
     std::uniform_real_distribution uniform_distribution(0.0, 1.0);
     std::uniform_int_distribution rotation_distribution(0, 3);
 
+    for (const terrain::generation::Plant& plant : biome_.get_generate_plants()) {
+        LOG_DEBUG(logging::terrain_logger, "Plant map name: {}.", plant.map_name);
+
+        auto map = plant_maps[plant.map_name];
+
+        LOG_DEBUG(
+            logging::terrain_logger, "Map width: {}, height: {}", map.get_width(),
+            map.get_height()
+        );
+    }
+
     for (const auto& tile_position_pair : ordered_tiles) {
         glm::vec2 tile_position = tile_position_pair.second;
         for (const terrain::generation::Plant& plant : biome_.get_generate_plants()) {
-            auto map = plant_maps[plant.map_name];
-
             float chance = map.get_tile(tile_position.x, tile_position.y);
 
             if (uniform_distribution(rand_engine) < chance) {
                 uint rotation = rotation_distribution(rand_engine) % 4;
 
-                uint z_position = terrain_main_.get_Z_solid(tile_position.x, tile_position.y);
+                uint z_position =
+                    terrain_main_.get_Z_solid(tile_position.x, tile_position.y);
 
                 auto& object = object_handler.get_object(plant.identification);
 
-                // zero is for one of the models should be random number between 0, and num meshes
+                // zero is for one of the models should be random number between 0, and
+                // num meshes
                 entity::ModelController& model = object.get_model(0);
 
                 // position, then rotation, and texture
-                entity::Placement placement(tile_position.x, tile_position.y, z_position, rotation, 0);
+                entity::Placement placement(
+                    tile_position.x, tile_position.y, z_position, rotation, 0
+                );
 
                 tile_entities_.emplace(model, placement);
             }

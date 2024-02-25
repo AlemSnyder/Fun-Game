@@ -23,7 +23,7 @@ ObjectData::ObjectData(Json::Value object_json) {
         // if we want glow or color in the model
         // get to that eventually
         // read complex texture data from json
-        // basically map color to 
+        // basically map color to
         // color, diffuse, ambient, specular
         // in addition to that need to generate multiple textures.
     }
@@ -36,9 +36,11 @@ ModelController::insert(Placement placement) {
     // cpp crimes no more
     uint offset = std::distance(iter.first, placements_.begin());
 
+    std::vector<uint8_t> texture_data;
     std::vector<glm::ivec4> data;
-    for (auto iterator = iter.first; iterator != placements_.end(); iterator ++){
+    for (auto iterator = iter.first; iterator != placements_.end(); iterator++) {
         data.push_back((*iterator).as_vec());
+        texture_data.push_back((*iterator).texture_id);
     }
 
     model_mesh_.update_position(offset, data);
@@ -50,14 +52,17 @@ ModelController::remove(Placement placement) {
     auto iter = placements_.erase(placements_.find(placement));
     uint offset = std::distance(iter, placements_.begin());
 
+    std::vector<uint8_t> texture_data;
     // no conversion from position to ivec4
     // need to do ivec all the way down
     std::vector<glm::ivec4> data;
-    for (auto iterator = iter; iterator != placements_.end(); iterator ++){
+    for (auto iterator = iter; iterator != placements_.end(); iterator++) {
         data.push_back((*iterator).as_vec());
+        texture_data.push_back((*iterator).texture_id);
     }
 
     model_mesh_.update_position(offset, data);
+    model_textures_.update(texture_data, offset);
 }
 
 } // namespace entity

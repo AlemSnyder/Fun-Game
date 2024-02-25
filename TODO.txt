@@ -8,9 +8,10 @@ Terrain generation
         plants
 
 GUI
-    deal with rotation
-        add fourth int to position
-        add for loop into vertex shader that rotates the 
-
     sun
         maybe other plants
+
+    entities
+        load entities
+            biome
+            texture etc
