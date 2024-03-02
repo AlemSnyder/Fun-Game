@@ -1,5 +1,6 @@
 #pragma once
 
+#include "global_context.hpp"
 #include "logging.hpp"
 
 #include <GL/glew.h>
@@ -194,7 +195,10 @@ class ArrayBuffer {
      */
     inline explicit ArrayBuffer(const std::vector<T>& data, GLuint divisor) :
         divisor_(divisor) {
-        update_(data.data(), 0, data.size());
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, data]() {
+            this->update_(data.data(), 0, data.size());
+        });
     };
 
     /**
@@ -205,7 +209,10 @@ class ArrayBuffer {
      */
     inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
         divisor_(divisor) {
-        update_(data.begin(), 0, data.size());
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, data]() {
+            this->update_(data.begin(), 0, data.size());
+        });
     }
 
     /**
@@ -223,7 +230,10 @@ class ArrayBuffer {
      */
     inline void
     update(std::vector<T> data, GLuint offset) {
-        update_(data.data(), offset, data.size());
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, data, offset]() {
+            this->update_(data.data(), offset, data.size());
+        });
     };
 
     /**
@@ -233,7 +243,10 @@ class ArrayBuffer {
      */
     inline void
     update(std::vector<T> data) {
-        update_(data.data(), 0, data.size());
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, data]() {
+            this->update_(data.data(), 0, data.size());
+        });
     }
 
     //    inline void update(size_t offset, std::vector<T> data);
@@ -324,7 +337,6 @@ void
 ArrayBuffer<T, buffer>::update_(
     const T* data_begin, size_t offset, size_t add_data_size
 ) {
-
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
     if (aloc_size < offset + add_data_size) {
@@ -333,19 +345,16 @@ ArrayBuffer<T, buffer>::update_(
 
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
         glBufferData(
-            static_cast<GLenum>(buffer), aloc_size * data_type.type_size * data_type.vec_size,
-            nullptr, GL_DYNAMIC_DRAW
+            static_cast<GLenum>(buffer),
+            aloc_size * data_type.type_size * data_type.vec_size, nullptr,
+            GL_DYNAMIC_DRAW
         );
 
-        glBufferSubData(
-            static_cast<GLenum>(buffer), offset, add_data_size, data_begin
-        );
+        glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
 
     } else {
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
-        glBufferSubData(
-            static_cast<GLenum>(buffer), offset, add_data_size, data_begin
-        );
+        glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
     }
 }
 

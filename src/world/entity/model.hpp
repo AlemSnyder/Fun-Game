@@ -11,6 +11,7 @@
 
 #include <unordered_set>
 #include <vector>
+#include <filesystem>
 
 namespace world {
 
@@ -30,8 +31,11 @@ class ObjectData {
 
     // some size/off set center. Models must have the same size.
 
+    std::string name;
+    std::string identification;
+
  public:
-    ObjectData(Json::Value object_json);
+    ObjectData(const Json::Value& object_json, std::filesystem::path object_path);
 
     [[nodiscard]] inline ModelController&
     get_model(size_t mesh_id) {

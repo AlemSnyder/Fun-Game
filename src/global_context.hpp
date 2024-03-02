@@ -28,8 +28,10 @@
 
 #include <BS_thread_pool.hpp>
 
+#include <functional>
 #include <map>
 #include <mutex>
+#include <queue>
 #include <set>
 
 /**
@@ -41,6 +43,12 @@
 class GlobalContext {
  private:
     BS::thread_pool thread_pool_;
+
+    // opengl call backs must be run on main thread. Add them to this queue
+    // then run them on main thread.
+    std::queue<std::function<void()>> opengl_functions;
+
+    std::mutex opengl_queue_mutex;
 
     // Private CTOR as this is a singleton
     GlobalContext() {}
@@ -58,6 +66,15 @@ class GlobalContext {
     instance() {
         static GlobalContext obj;
         return obj;
+    }
+
+    /**
+     * @brief push task to opengl
+     */
+    void
+    push_opengl_task(std::function<void()> task) {
+        std::lock_guard<std::mutex> lock(opengl_queue_mutex);
+        return opengl_functions.push(task);
     }
 
     /**

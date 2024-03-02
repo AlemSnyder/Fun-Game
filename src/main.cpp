@@ -1,16 +1,17 @@
 #include "config.h"
-#include "world/entity/mesh.hpp"
 #include "gui/render/graphics_shaders/program_handler.hpp"
 #include "gui/scene/controls.hpp"
 #include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
-#include "world/terrain/generation/biome.hpp"
-#include "world/terrain/terrain.hpp"
 #include "util/files.hpp"
+#include "util/loading.hpp"
 #include "util/png_image.hpp"
 #include "util/voxel_io.hpp"
+#include "world/biome.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
 
 #include <argh.h>
@@ -48,7 +49,8 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
@@ -439,6 +441,9 @@ main(int argc, char** argv) {
         return gui::revised_gui_test();
     } else if (run_function == "StarsTest") {
         return gui::stars_test();
+    } else if (run_function == "LoadTest") {
+        util::load_manifest();
+        return 0;
     } else {
         std::cout << "No known command" << std::endl;
         return 0;

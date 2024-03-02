@@ -1,15 +1,16 @@
 #include "model.hpp"
 
 #include <iterator>
+#include <filesystem>
 
 namespace world {
 
 namespace entity {
 
-ObjectData::ObjectData(Json::Value object_json) {
-    for (Json::Value mesh_data : object_json) {
+ObjectData::ObjectData(const Json::Value& object_json, std::filesystem::path object_path) {
+    for (Json::Value mesh_data : object_json["models"]) {
         // each object may have multiple models
-        std::filesystem::path file_path(mesh_data["file_path"].asString());
+        std::filesystem::path file_path = object_path.remove_filename() / mesh_data["file_path"].asString();
 
         // generate a model from the given filepath
         voxel_utility::VoxelObject model(file_path);
@@ -17,6 +18,8 @@ ObjectData::ObjectData(Json::Value object_json) {
         // generate a mesh from the model
         auto mesh = ambient_occlusion_mesher(model);
         // load the mesh to the gpu
+        // this is bad
+        // TODO
         model_meshes_.emplace_back(mesh);
 
         // some how change because other things.

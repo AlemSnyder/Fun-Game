@@ -1,8 +1,10 @@
 #include "biome.hpp"
 
 #include "logging.hpp"
-#include "noise.hpp"
-#include "worley_noise.hpp"
+#include "terrain/generation/noise.hpp"
+#include "terrain/generation/worley_noise.hpp"
+#include "entity/object_handler.hpp"
+
 
 #include <json/json.h>
 
@@ -255,8 +257,10 @@ Biome::get_plant_map(Dim length) const {
     MacroDim x_map_tiles = map["x"];
     MacroDim y_map_tiles = map["y"];
 
-    LOG_DEBUG(logging::lua_logger, "Input length: {}, (x, y) = ({}, {})", length, x_map_tiles, y_map_tiles);
-
+    LOG_DEBUG(
+        logging::lua_logger, "Input length: {}, (x, y) = ({}, {})", length, x_map_tiles,
+        y_map_tiles
+    );
 
     assert(
         ((y_map_tiles == x_map_tiles) && (x_map_tiles == length))

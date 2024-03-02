@@ -41,6 +41,14 @@ get_resources_path() {
 }
 
 /**
+ * @brief Get the path to a resource file
+ */
+inline std::filesystem::path
+get_manifest_path() {
+    return get_data_path() / "manifest";
+}
+
+/**
  * @brief Open a resource file
  */
 inline std::optional<std::ifstream>

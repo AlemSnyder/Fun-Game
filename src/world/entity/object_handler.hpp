@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <map>
 #include <string>
+#include <mutex>
 
 namespace world {
 
@@ -13,6 +14,7 @@ class ObjectHandler {
     // Private CTOR as this is a singleton
     ObjectHandler() {}
 
+    std::mutex map_mutex_;
     std::map<std::string, ObjectData> ided_objects;
 
  public:

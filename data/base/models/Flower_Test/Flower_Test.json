@@ -3,7 +3,7 @@
     "identification": "Flower_Test",
     "models": [
         {
-            "mesh": "./Flower_Test.qb",
+            "file_path": "./Flower_Test.qb",
             "colors": [
                 {
                     "type": "default"

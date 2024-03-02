@@ -27,7 +27,7 @@
 #include "util/voxel.hpp"
 #include "util/voxel_io.hpp"
 #include "chunk.hpp"
-#include "generation/biome.hpp"
+#include "world/biome.hpp"
 #include "generation/land_generator.hpp"
 #include "generation/map_tile.hpp"
 #include "generation/noise.hpp"

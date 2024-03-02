@@ -2,7 +2,7 @@
 
 #include "logging.hpp"
 #include "types.hpp"
-#include "generation/biome.hpp"
+#include "world/biome.hpp"
 #include "generation/noise.hpp"
 
 // move add_to_top
