@@ -7,17 +7,17 @@
 // Some slight modifications
 #include "imgui_gui.hpp"
 
-#include "world/entity/mesh.hpp"
-#include "logging.hpp"
-#include "world/world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
+#include "logging.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/world.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -42,24 +42,12 @@ namespace gui {
 // Main code
 // returns exit status
 int
-imgui_entry(world::World& world) {
-    screen_size_t window_width = 1280;
-    screen_size_t window_height = 800;
+imgui_entry(world::World& world, GLFWwindow* window) {
+    screen_size_t window_width;
+    screen_size_t window_height;
     screen_size_t shadow_map_size = 4096;
 
-    std::optional<GLFWwindow*> opt_window = setup_opengl(window_width, window_height);
-    if (!opt_window) {
-        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
-        return 1;
-    }
-    GLFWwindow* window = opt_window.value();
-    setup_opengl_logging();
-
-    // send color texture to gpu
-
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
+    glfwGetWindowSize(window, &window_width, &window_height);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -88,7 +76,7 @@ imgui_entry(world::World& world) {
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
+    //VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, shader_handler, world);
 
@@ -264,7 +252,7 @@ imgui_entry(world::World& world) {
     }
 
     // Cleanup VBO and shader
-    glDeleteVertexArrays(1, &VertexArrayID);
+    //glDeleteVertexArrays(1, &VertexArrayID);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

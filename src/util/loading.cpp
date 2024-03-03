@@ -69,8 +69,6 @@ load_manifest() {
         );
     }
 
-    std::cout << manifest;
-
     if (!manifest.isObject()) {
         LOG_CRITICAL(logging::file_io_logger, "No Manifest files");
         return;
@@ -79,7 +77,7 @@ load_manifest() {
     world::entity::ObjectHandler& object_handler =
         world::entity::ObjectHandler::instance();
 
-    for (const Json::Value& entity_data : manifest["entity"]) {
+    for (const Json::Value& entity_data : manifest["entities"]) {
         std::filesystem::path entity_path =
             files::get_data_path() / entity_data["path"].asString();
 

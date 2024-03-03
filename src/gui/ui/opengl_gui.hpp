@@ -25,6 +25,9 @@
 
 #include "world/world.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 namespace gui {
 
 /**
@@ -35,6 +38,6 @@ namespace gui {
  *
  * @returns int exit status to be sent to main.
  */
-int opengl_entry(world::World& world);
+int opengl_entry(world::World& world, GLFWwindow* window);
 
 } // namespace gui

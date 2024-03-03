@@ -31,8 +31,8 @@ class ObjectData {
 
     // some size/off set center. Models must have the same size.
 
-    std::string name;
-    std::string identification;
+    std::string name_;
+    std::string identification_;
 
  public:
     ObjectData(const Json::Value& object_json, std::filesystem::path object_path);

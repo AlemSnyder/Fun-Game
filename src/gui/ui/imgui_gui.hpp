@@ -23,6 +23,9 @@
 
 #include "world/world.hpp"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 namespace gui {
 /**
  * @brief Runs the gui using imgui.
@@ -32,6 +35,6 @@ namespace gui {
  *
  * @returns int exit status to be sent to main.
  */
-int imgui_entry(world::World& world);
+int imgui_entry(world::World& world, GLFWwindow* window);
 
 } // namespace gui

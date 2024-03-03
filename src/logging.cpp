@@ -28,6 +28,7 @@ using cc = quill::ConsoleColours;
 
 LogLevel _LOG_LEVEL;
 
+quill::Logger* main_logger;     // for general logging
 quill::Logger* opengl_logger;   // for glfw, glew etc
 quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 quill::Logger* game_map_logger; // for terrain generation
@@ -125,7 +126,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     quill::configure(cfg);
 
     // Set backtrace and log level on the main logger
-    quill::Logger* main_logger = quill::get_logger();
+    main_logger = quill::get_logger();
     main_logger->init_backtrace(5, quill::LogLevel::Error);
 
     opengl_logger = get_logger("shaders");

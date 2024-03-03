@@ -1,6 +1,6 @@
 {
     "name": "Flower Test",
-    "identification": "Flower_Test",
+    "identification": "base/Flower_Test",
     "models": [
         {
             "file_path": "./Flower_Test.qb",
