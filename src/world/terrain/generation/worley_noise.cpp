@@ -18,7 +18,7 @@ WorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
     NoiseTileIndex x_tile = x / tile_size_;
     NoiseTileIndex y_tile = y / tile_size_;
 
-    NoiseTileIndex range = (point_radius_ / tile_size_ + 2) * 2;
+    NoiseTileIndex range = point_radius_ / tile_size_ + 1;
 
     auto worley_points = get_points_(x_tile, y_tile, range);
 
@@ -35,14 +35,11 @@ WorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
 std::set<WorleyPoint>
 WorleyNoise::get_points_(NoiseTileIndex xt, NoiseTileIndex yt, NoiseTileIndex range)
     const {
-    assert(range % 2 == 0 && "range must be even");
+    // assert(range % 2 == 0 && "range must be even");
     std::set<WorleyPoint> out;
-    for (NoiseTileIndex dx = 0; dx < range; dx++) {
-        for (NoiseTileIndex dy = 0; dy < range; dy++) {
-            // compute index of worley tile
-            NoiseTileIndex x_index = xt + dx - range / 2;
-            NoiseTileIndex y_index = yt + dy - range / 2;
-
+    // compute index of worley tile
+    for (NoiseTileIndex x_index = xt - range; x_index <= xt + range; x_index++) {
+        for (NoiseTileIndex y_index = yt - range; y_index <= yt + range; y_index++) {
             // determine where the worley point is in the tile
             NoisePosition x_position =
                 (get_double(0, x_index, y_index) + x_index - 0.5) * tile_size_;
@@ -63,7 +60,8 @@ AlternativeWorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
 
     // the range is determined by the ratio between
     // point_radius_, and tile_size_
-    NoiseTileIndex range = (point_radius_ / tile_size_ + 2) * 2;
+    // plus 2 I don't exactly know why, but it seems to work.
+    NoiseTileIndex range = point_radius_ / tile_size_ + 2;
 
     auto worley_points = get_points_(xt, yt, range);
 
