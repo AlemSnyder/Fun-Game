@@ -41,8 +41,17 @@ void
 ModelController::insert(Placement placement) {
     auto iter = placements_.insert(placement);
 
+    // if insertion fails
+    if (!iter.second) {
+        LOG_WARNING(
+            logging::opengl_logger, "Failed to insert placement. Don't know why this "
+                                    "would happen. Probably not enough memory."
+        );
+        return;
+    }
     // cpp crimes no more
-    uint offset = std::distance(iter.first, placements_.begin());
+    // I was wrong
+    uint offset = std::distance(placements_.begin(), iter.first);
 
     std::vector<uint8_t> texture_data;
     std::vector<glm::ivec4> data;
