@@ -35,6 +35,30 @@ enum class GPUDataType : GLenum {
     // clang-format on
 };
 
+constexpr std::string
+reper(const GPUDataType& data_type) {
+    switch (data_type) {
+        case GPUDataType::BYTE:
+            return "BYTE";
+        case GPUDataType::UNSIGNED_BYTE:
+            return "UNSIGNED_BYTE";
+        case GPUDataType::SHORT:
+            return "SHORT";
+        case GPUDataType::UNSIGNED_SHORT:
+            return "UNSIGNED_SHORT";
+        case GPUDataType::INT:
+            return "INT";
+        case GPUDataType::UNSIGNED_INT:
+            return "UNSIGNED_INT";
+        case GPUDataType::FLOAT:
+            return "FLOAT";
+        case GPUDataType::DOUBLE:
+            return "DOUBLE";
+        default:
+            abort();
+    }
+}
+
 /**
  * @brief Targe. Designates how the buffer is used.
  */
@@ -200,17 +224,20 @@ class ArrayBuffer {
         divisor_(divisor) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
+            LOG_BACKTRACE(
+                logging::opengl_logger, "buffer ID before generation: {}", buffer_ID_
+            );
             glGenBuffers(1, &buffer_ID_);
             this->update_(data.data(), 0, data.size());
         });
     };
 
     // copy constructor
-//    ArrayBuffer(const ArrayBuffer& other) = delete;
-//    ArrayBuffer(ArrayBuffer&& other) = delete;
+    //    ArrayBuffer(const ArrayBuffer& other) = delete;
+    //    ArrayBuffer(ArrayBuffer&& other) = delete;
     // copy operator
-//    ArrayBuffer& operator=(const ArrayBuffer& other) = delete;
-//    ArrayBuffer& operator=(ArrayBuffer&& other) = delete;
+    //    ArrayBuffer& operator=(const ArrayBuffer& other) = delete;
+    //    ArrayBuffer& operator=(ArrayBuffer&& other) = delete;
 
     /**
      * @brief Construct ArrayBuffer with data and divisor
@@ -335,6 +362,11 @@ ArrayBuffer<T, buffer>::update_(
 ) {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
+    LOG_BACKTRACE(
+        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        buffer_ID_, data_type.vec_size, reper(data_type.draw_type)
+    );
+
     if (aloc_size < offset + add_data_size) {
         // reallocate
         aloc_size = offset + add_data_size;
@@ -359,6 +391,11 @@ template <class T, BindingTarget buffer>
 void
 ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+
+    LOG_BACKTRACE(
+        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        buffer_ID_, data_type.vec_size, reper(data_type.draw_type)
+    );
 
     if constexpr (buffer != BindingTarget::ELEMENT_ARRAY_BUFFER)
         glEnableVertexAttribArray(index);
