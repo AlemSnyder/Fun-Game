@@ -50,9 +50,7 @@ class StaticMesh : public virtual InstancedIMeshGPU {
         generate_color_texture(mesh);
     }
 
-    void update_position(
-        uint offset, std::vector<glm::ivec4> data
-    );
+    void update_position(std::vector<glm::ivec4> data, uint offset);
 
  protected:
     void generate_color_texture(const world::entity::Mesh& mesh);

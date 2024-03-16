@@ -22,9 +22,9 @@
  */
 
 #include "array_buffer.hpp"
-#include "world/entity/mesh.hpp"
 #include "gpu_data.hpp"
 #include "non_instanced_i_mesh.hpp"
+#include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

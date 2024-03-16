@@ -1,7 +1,9 @@
 #include "scene.hpp"
+#include "logging.hpp"
 
-#include "world/entity/mesh.hpp"
 #include "../handler.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/entity/object_handler.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -12,6 +14,18 @@ namespace gui {
 
 void
 Scene::update(screen_size_t width, screen_size_t height) {
+    world::entity::ObjectHandler& object_handler =
+        world::entity::ObjectHandler::instance();
+
+    // send all data to gpu
+    object_handler.update();
+
+    GlobalContext& context = GlobalContext::instance();
+    // wait for all tasks that may queue to opengl calls
+    context.wait_for_tasks();
+    // run all opengl calls
+    context.run_opengl_queue();
+
     shadow_map_.update();
     environment_->update();
     render::PixelProjection::update(width, height);

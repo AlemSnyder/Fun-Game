@@ -25,9 +25,9 @@
 // reason it should be moved into gui/array_buffer
 // Also no namespace terrain
 
-#include "world/entity/mesh.hpp"
 #include "array_buffer.hpp"
 #include "gpu_data.hpp"
+#include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -64,7 +64,9 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
     NonInstancedIMeshGPU& operator=(const NonInstancedIMeshGPU& other) = delete;
     NonInstancedIMeshGPU& operator=(NonInstancedIMeshGPU&& other) = default;
 
-    inline NonInstancedIMeshGPU() : NonInstancedIMeshGPU(world::entity::Mesh()) {}
+    inline NonInstancedIMeshGPU() :
+        vertex_array_(), color_array_(), normal_array_(), element_array_(),
+        num_vertices_(), do_render_() {}
 
     explicit inline NonInstancedIMeshGPU(const world::entity::Mesh& mesh) :
         vertex_array_(mesh.get_indexed_vertices()),
@@ -108,12 +110,13 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         return color_texture_;
     }
 
-    [[nodiscard]] inline uint32_t get_num_vertices() const noexcept override {
+    [[nodiscard]] inline uint32_t
+    get_num_vertices() const noexcept override {
         return num_vertices_;
     }
 
-    [[nodiscard]] inline GPUDataType get_element_type(
-    ) const noexcept override {
+    [[nodiscard]] inline GPUDataType
+    get_element_type() const noexcept override {
         return element_array_.get_opengl_numeric_type();
     }
 };

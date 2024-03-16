@@ -33,7 +33,7 @@ StaticMesh::generate_color_texture(const world::entity::Mesh& mesh) {
 
 // TODO fix order
 void
-StaticMesh::update_position(uint offset, std::vector<glm::ivec4> data) {
+StaticMesh::update_position(std::vector<glm::ivec4> data, uint offset) {
     transforms_array_.update(data, offset);
 }
 

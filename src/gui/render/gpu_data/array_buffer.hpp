@@ -178,7 +178,10 @@ class ArrayBuffer {
     /**
      * @brief Default constructor
      */
-    inline ArrayBuffer() : divisor_(0), size(0), aloc_size(0) {}
+    inline ArrayBuffer() : divisor_(0), size(0), aloc_size(0) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this]() { glGenBuffers(1, &buffer_ID_); });
+    }
 
     /**
      * @brief Construct ArrayBuffer with data
@@ -197,9 +200,17 @@ class ArrayBuffer {
         divisor_(divisor) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
+            glGenBuffers(1, &buffer_ID_);
             this->update_(data.data(), 0, data.size());
         });
     };
+
+    // copy constructor
+//    ArrayBuffer(const ArrayBuffer& other) = delete;
+//    ArrayBuffer(ArrayBuffer&& other) = delete;
+    // copy operator
+//    ArrayBuffer& operator=(const ArrayBuffer& other) = delete;
+//    ArrayBuffer& operator=(ArrayBuffer&& other) = delete;
 
     /**
      * @brief Construct ArrayBuffer with data and divisor
@@ -211,6 +222,7 @@ class ArrayBuffer {
         divisor_(divisor) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
+            glGenBuffers(1, &buffer_ID_);
             this->update_(data.begin(), 0, data.size());
         });
     }
@@ -314,22 +326,6 @@ class ArrayBuffer {
     void update_(const T* data_begin, size_t offset, size_t add_data_size);
 };
 
-/*
-template <class T, BindingTarget buffer>
-void
-ArrayBuffer<T, buffer>::update_(const T* data_begin, size_t offset, size_t
-add_data_size) { constexpr GPUArrayType data_type = GPUArrayType::create<T>();
-
-    glDeleteBuffers(1, &buffer_ID_);
-
-    glGenBuffers(1, &buffer_ID_);
-    glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
-    glBufferData(
-        static_cast<GLenum>(buffer), add_data_size * data_type.type_size *
-data_type.vec_size, data_begin, GL_DYNAMIC_DRAW // TODO
-    );
-}
-*/
 // go do vector implementations
 
 template <class T, BindingTarget buffer>
@@ -352,6 +348,7 @@ ArrayBuffer<T, buffer>::update_(
 
         glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
 
+        // TODO add case to reduce size
     } else {
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
         glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);

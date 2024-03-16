@@ -2,8 +2,8 @@
 
 #include <filesystem>
 #include <map>
-#include <string>
 #include <mutex>
+#include <string>
 
 namespace world {
 
@@ -20,10 +20,10 @@ class ObjectHandler {
  public:
     // Delete all CTORs and CTOR-like operators
     ObjectHandler(ObjectHandler&&) = delete;
-    ObjectHandler(ObjectHandler const&) = delete;
+    ObjectHandler(ObjectHandler const&) = default;
 
-    void operator=(ObjectHandler&&) = delete;
-    void operator=(ObjectHandler const&) = delete;
+    ObjectHandler& operator=(ObjectHandler&&) = delete;
+    ObjectHandler& operator=(ObjectHandler const&) = default;
 
     // Instance accessor
     static inline ObjectHandler&
@@ -35,6 +35,11 @@ class ObjectHandler {
     void read_object(std::filesystem::path);
 
     ObjectData& get_object(const std::string&);
+
+    /**
+     * @brief Update all ObjectData. Should be run once per frame.
+     */
+    void update();
 };
 
 } // namespace entity

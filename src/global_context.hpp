@@ -68,6 +68,8 @@ class GlobalContext {
         return obj;
     }
 
+    void run_opengl_queue();
+
     /**
      * @brief push task to opengl
      */

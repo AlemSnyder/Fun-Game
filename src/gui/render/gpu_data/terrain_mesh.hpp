@@ -56,6 +56,7 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
 
     inline void
     bind() const override {
+        LOG_BACKTRACE(logging::opengl_logger, "Binding Terrain Mesh.");
         NonInstancedIMeshGPU::bind();
 
         glActiveTexture(GL_TEXTURE1);

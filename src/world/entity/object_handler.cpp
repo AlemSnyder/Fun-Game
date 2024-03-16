@@ -44,6 +44,12 @@ ObjectHandler::read_object(std::filesystem::path object_path) {
     );
 }
 
+void ObjectHandler::update() {
+    for (auto& [key, object] : ided_objects){
+        object.update();
+    }
+}
+
 } // namespace entity
 
 } // namespace world

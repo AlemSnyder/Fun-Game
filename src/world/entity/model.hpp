@@ -9,13 +9,15 @@
 #include "types.hpp"
 #include "util/voxel.hpp"
 
+#include <filesystem>
 #include <unordered_set>
 #include <vector>
-#include <filesystem>
 
 namespace world {
 
 namespace entity {
+
+constexpr size_t NO_UPDATE = -1;
 
 class ModelController;
 
@@ -47,6 +49,11 @@ class ObjectData {
     // copy operator
     inline ObjectData& operator=(const ObjectData& obj) = delete;
     inline ObjectData& operator=(ObjectData&& other) = default;
+
+    /**
+     * @brief Send all ModelController data to gpu. Should be run once per frame
+     */
+    void update();
 };
 
 // TODO move this to GPU
@@ -56,13 +63,15 @@ class ModelController : virtual public gui::gpu_data::GPUDataElements {
  private:
     gui::gpu_data::StaticMesh model_mesh_;
 
-    //std::vector<GLuint> model_textures_;
+    // std::vector<GLuint> model_textures_;
 
     // each mesh has a different texture
     gui::gpu_data::ArrayBuffer<uint8_t> model_textures_;
 
     // vector of placements PlacementOrder is the hash function
     std::unordered_set<Placement, PlacementOrder> placements_;
+
+    size_t offset_ = NO_UPDATE;
 
     // multiple array buffers
 
@@ -73,6 +82,11 @@ class ModelController : virtual public gui::gpu_data::GPUDataElements {
 
     // scale const int how much the model is scaled
 
+    inline void
+    reset_offset() {
+        offset_ = NO_UPDATE;
+    }
+
  public:
     // some way to generate an instanced Int mesh renderer, except with scale
 
@@ -80,7 +94,13 @@ class ModelController : virtual public gui::gpu_data::GPUDataElements {
 
     void remove(Placement placement);
 
-    // can't
+    /**
+     * @brief Send all placement data to gpu. Should only be run once per frame.
+     */
+    void update();
+
+    // TODO
+    // this is ill formed as model mesh cannot be copied
     ModelController(world::entity::Mesh model_mesh) : model_mesh_(model_mesh) {}
 
     void
