@@ -381,6 +381,8 @@ ArrayBuffer<T, buffer>::update_(
         glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
 
         // TODO add case to reduce size
+        // The problem is that the way this is setup doesn't allow that.
+        // there is not way to say where the new data end is. one should not 
     } else {
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
         glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);

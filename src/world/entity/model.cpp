@@ -23,8 +23,6 @@ ObjectData::ObjectData(
         // generate a mesh from the model
         auto mesh = ambient_occlusion_mesher(model);
         // load the mesh to the gpu
-        // this is bad
-        // TODO
         model_meshes_.emplace_back(mesh);
 
         // some how change because other things.
@@ -100,7 +98,7 @@ ModelController::update() {
         // queueing three things on main thread. will eventually be run in this order.
         model_mesh_.update_position(data, offset_);
         model_textures_.update(texture_data, offset_);
-        GlobalContext& context = GlobalContext::instance();
+        //GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { reset_offset(); });
     });
 }

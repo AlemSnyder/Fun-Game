@@ -99,9 +99,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElements {
      */
     void update();
 
-    // TODO
-    // this is ill formed as model mesh cannot be copied
-    ModelController(world::entity::Mesh model_mesh) : model_mesh_(model_mesh) {}
+    ModelController(const world::entity::Mesh& model_mesh) : model_mesh_(model_mesh) {}
 
     void
     bind() const override {
