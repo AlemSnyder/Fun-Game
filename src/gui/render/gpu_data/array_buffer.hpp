@@ -372,17 +372,21 @@ ArrayBuffer<T, buffer>::update_(
         aloc_size = offset + add_data_size;
 
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
+        // this should theoretically copy the existing data into a new buffer.
         glBufferData(
             static_cast<GLenum>(buffer),
             aloc_size * data_type.type_size * data_type.vec_size, nullptr,
             GL_DYNAMIC_DRAW
         );
 
-        glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
+        glBufferSubData(
+            static_cast<GLenum>(buffer), offset,
+            aloc_size * data_type.type_size * data_type.vec_size, data_begin
+        );
 
         // TODO add case to reduce size
         // The problem is that the way this is setup doesn't allow that.
-        // there is not way to say where the new data end is. one should not 
+        // there is not way to say where the new data end is. one should not
     } else {
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
         glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
