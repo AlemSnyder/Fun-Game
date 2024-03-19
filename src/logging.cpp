@@ -16,7 +16,7 @@ static const std::string LOGLINE_FORMAT =
     "- %(message)";
 #else
 static const std::string LOGLINE_FORMAT =
-    "%(ascii_time) [%(thread:<16):%(thread_name:<16)] [%(fileline:<18)] %(level_name) "
+    "%(ascii_time) [%(thread:<6):%(thread_name:<16)] [%(fileline:<24)] %(level_name:<8) "
     "[%(logger_name:<14)] - %(message)";
 
 #endif
