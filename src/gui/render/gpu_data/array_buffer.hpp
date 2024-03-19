@@ -245,14 +245,14 @@ class ArrayBuffer {
      * @param std::vector<T>& data data to send to GPU
      * @param GLuint divisor go look up instancing
      */
-    inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
+    /*inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
         divisor_(divisor) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
             glGenBuffers(1, &buffer_ID_);
             this->update_(data.begin(), 0, data.size());
         });
-    }
+    }*/
 
     /**
      * @brief Construct ArrayBuffer with data
