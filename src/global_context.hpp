@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "logging.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/terrain/chunk.hpp"
 
@@ -51,7 +52,10 @@ class GlobalContext {
     std::mutex opengl_queue_mutex;
 
     // Private CTOR as this is a singleton
-    GlobalContext() {}
+    GlobalContext() //:
+    // TODO update to thread pool 4.0
+    //        thread_pool_([] { quill::detail::set_thread_name("BS thread pool"); })
+    {}
 
  public:
     // Delete all CTORs and CTOR-like operators

@@ -176,10 +176,10 @@ image_test(const argh::parser& cmdl) {
         return result;
 
     } else {
-        std::string path_in = cmdl(2).str();
+        std::string path_in = cmdl(3).str();
         std::filesystem::path lua_file_path = files::get_root_path() / path_in;
 
-        std::string path_out = cmdl(3).str();
+        std::string path_out = cmdl(4).str();
         std::filesystem::path png_path = files::get_root_path() / path_out;
         size_t size;
         cmdl("size", 6) >> size;
@@ -420,6 +420,7 @@ main(int argc, char** argv) {
     } else if (start_type == "Start") {
         return graphics_main(cmdl);
     } else {
-        std::cout << "Old command line arguments don't work. Try adding \"Test\".";
+        std::cout << "Old command line arguments don't work. Try adding \"Test\"." << std::endl;
+        return 0;
     }
 }

@@ -117,7 +117,6 @@ World::World(
                     tile_position.x, tile_position.y, z_position, rotation, 0
                 );
 
-                // here segfault
                 tile_entities_.emplace(model, placement);
             }
         }

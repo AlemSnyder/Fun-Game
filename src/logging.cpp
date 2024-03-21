@@ -1,6 +1,7 @@
 #include "logging.hpp"
 
 #include "config.h"
+#include "global_context.hpp"
 #include "util/files.hpp"
 
 #include <quill/handlers/JsonFileHandler.h>
@@ -138,6 +139,9 @@ init(bool console, quill::LogLevel log_level, bool structured) {
 
     // Start the logging backend thread
     quill::start(/* with_signal_handler = */ true);
+
+    // to explicitly set thread name
+    //quill::detail::set_thread_name("MainThread");    
 
     LOG_INFO(main_logger, "Logging initialized!");
 }
