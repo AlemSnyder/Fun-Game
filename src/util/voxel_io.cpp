@@ -2,8 +2,8 @@
 
 #include "../exceptions.hpp"
 #include "../logging.hpp"
-#include "types.hpp"
 #include "bits.hpp"
+#include "types.hpp"
 
 #include <array>
 #include <bit>
@@ -24,7 +24,7 @@ from_qb(
     VoxelSize& size
 ) {
     path = std::filesystem::absolute(path);
-    LOG_INFO(logging::file_io_logger, "Reading voxels from {}.", path.string());
+    LOG_TRACE_L1(logging::file_io_logger, "Reading voxels from {}.", path.string());
 
     // Read the tiles from the path specified, and save
     std::ifstream file(path, std::ios::in | std::ios::binary);
@@ -61,12 +61,12 @@ from_qb(
     int8_t name_len;
     read_int(file, name_len);
 
-    LOG_DEBUG(logging::file_io_logger, "Voxel save name length: {}", name_len);
+    LOG_TRACE_L1(logging::file_io_logger, "Voxel save name length: {}", name_len);
 
     std::string name(name_len, '\0');
     file.read(name.data(), name_len);
 
-    LOG_INFO(logging::file_io_logger, "Voxel save name: {}", name);
+    LOG_TRACE_L1(logging::file_io_logger, "Voxel save name: {}", name);
 
     // Get voxel grid size
     uint32_t x_max, y_max, z_max;
@@ -78,9 +78,9 @@ from_qb(
     size = {x_max, y_max, z_max};
     data.resize(x_max * y_max * z_max);
 
-    LOG_DEBUG(
-        logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max
-    );
+    //LOG_DEBUG(
+    //    logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max
+    //);
 
     // Get voxel grid center
     int32_t x_center, y_center, z_center;
@@ -91,14 +91,18 @@ from_qb(
 
     center = {x_center, y_center, z_center};
 
-    LOG_DEBUG(
+    LOG_TRACE_L1(
         logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", x_center,
         y_center, z_center
     );
 
-    // Read the voxels themselves
-    LOG_DEBUG(logging::file_io_logger, "Reading voxels");
+    LOG_DEBUG(
+        logging::file_io_logger,
+        "Reading name {}; size: ({} x {} x {}); center: ({}, {}, {})",
+                 name, x_max, y_max, z_max, x_center, y_center, z_center
+    );
 
+    // Read the voxels themselves
     size_t voxels_read = 0;
     for (size_t x = 0; x < size.x; x++)
         for (size_t z = 0; z < size.z; z++)

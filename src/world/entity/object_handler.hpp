@@ -36,6 +36,11 @@ class ObjectHandler {
 
     ObjectData& get_object(const std::string&);
 
+    [[nodiscard]] inline std::map<std::string, ObjectData>& get_objects() {
+        return ided_objects;
+    };
+
+
     /**
      * @brief Update all ObjectData. Should be run once per frame.
      */

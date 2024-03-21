@@ -44,6 +44,21 @@ class ObjectData {
         return model_meshes_[mesh_id];
     }
 
+    [[nodiscard]] inline size_t
+    num_models() const {
+        return model_meshes_.size();
+    }
+
+    [[nodiscard]] inline auto
+    begin() {
+        return model_meshes_.begin();
+    }
+
+    [[nodiscard]] inline auto
+    end() {
+        return model_meshes_.end();
+    }
+
     inline ObjectData(const ObjectData& obj) = delete;
     inline ObjectData(ObjectData&& other) = default;
     // copy operator
@@ -59,7 +74,8 @@ class ObjectData {
 // TODO move this to GPU
 // mostly position
 // there is a model controller for each voxel object model
-class ModelController : virtual public gui::gpu_data::GPUDataElements {
+// TODO generate_color_texture from static mesh
+class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
  private:
     gui::gpu_data::StaticMesh model_mesh_;
 
@@ -101,29 +117,34 @@ class ModelController : virtual public gui::gpu_data::GPUDataElements {
 
     ModelController(const world::entity::Mesh& model_mesh) : model_mesh_(model_mesh) {}
 
-    void
+    inline void
     bind() const override {
         model_mesh_.bind();
     }
 
-    void
+    inline void
     release() const override {
         model_mesh_.release();
     }
 
-    bool
+    [[nodiscard]] inline bool
     do_render() const override {
         return model_mesh_.do_render();
     }
 
-    uint32_t
+    [[nodiscard]] inline uint32_t
     get_num_vertices() const override {
         return model_mesh_.get_num_vertices();
     }
 
-    gui::gpu_data::GPUDataType
+    [[nodiscard]] inline gui::gpu_data::GPUDataType
     get_element_type() const override {
         return model_mesh_.get_element_type();
+    }
+
+    [[nodiscard]] inline uint32_t
+    get_num_models() const override {
+        return placements_.size();
     }
 };
 

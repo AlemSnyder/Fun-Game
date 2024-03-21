@@ -6,6 +6,7 @@
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/uniform_types.hpp"
+#include "world/entity/object_handler.hpp"
 
 #include <functional>
 #include <memory>
@@ -21,7 +22,6 @@ void
 setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) {
     // assign map from all color ids to each color
     // to package as a texture
-
     terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
     // send color texture to gpu
     terrain::TerrainColorMapping::assign_color_texture();
@@ -49,6 +49,9 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.vert",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
+
+    // TODO need to write another program like this
+    // needs to have sub block spacing
 
     shader::Program& entity_render_program = shader_handler.load_program(
         "Instanced Render",
@@ -249,6 +252,21 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     entity_shadow_program_execute->data.push_back(gpu_trees_data);
     entity_render_program_execute->data.push_back(gpu_trees_data);
 
+    // attach the world objects to the render program
+    world::entity::ObjectHandler& object_handler =
+        world::entity::ObjectHandler::instance();
+    for (auto& [id, object] : object_handler.get_objects()) {
+        for (auto& mesh : object) {
+            
+            // I'm so sorry for what I have done.
+            auto mesh_ptr = std::shared_ptr<world::entity::ModelController>(
+                &mesh, [](world::entity::ModelController*) {}
+            );
+
+            entity_shadow_program_execute->data.push_back(mesh_ptr);
+            entity_render_program_execute->data.push_back(mesh_ptr);
+        }
+    }
 
     // attach program to scene
     scene.shadow_attach(chunks_shadow_program);
