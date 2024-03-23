@@ -24,8 +24,8 @@ class Texture1D {
     }
 
     inline void
-    bind(GLuint target) const {
-        glActiveTexture(target);
+    bind(GLuint texture_index) const {
+        glActiveTexture(GL_TEXTURE0 + texture_index);
         glBindTexture(GL_TEXTURE_1D, texture_ID_);
     }
 

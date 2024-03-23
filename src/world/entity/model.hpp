@@ -104,8 +104,12 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
 
     void remove(Placement placement);
 
-    void add_texture(std::vector<ColorFloat> color_texture_data){
-        model_textures_.emplace_back(color_texture_data);
+    void
+    add_texture(std::vector<ColorFloat> color_texture_data) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, color_texture_data]() {
+            model_textures_.emplace_back(color_texture_data);
+        });
     }
 
     /**
@@ -113,20 +117,15 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
      */
     void update();
 
-    ModelController(const world::entity::Mesh& model_mesh) : model_mesh_(model_mesh, {}) {}
+    ModelController(const world::entity::Mesh& model_mesh) :
+        model_mesh_(model_mesh, {}) {}
 
     inline void
     bind() const override {
         model_mesh_.bind();
         texture_id_.bind(4);
         // TODO change to 2D texture
-        // THIS IS BAD
-        //for (GLuint texture_index = 0; texture_index < model_textures_.size(); texture_index++){
-        //    model_textures_[texture_index].bind(texture_index + GL_TEXTURE0);
-        //}
-
         model_textures_[0].bind(0);
-
     }
 
     inline void
