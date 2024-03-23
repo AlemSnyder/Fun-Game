@@ -104,7 +104,7 @@ World::World(
                 uint rotation = rotation_distribution(rand_engine) % 4;
 
                 uint z_position =
-                    terrain_main_.get_Z_solid(tile_position.x, tile_position.y);
+                    terrain_main_.get_Z_solid(tile_position.x, tile_position.y) + 1;
 
                 auto& object = object_handler.get_object(plant.identification);
 

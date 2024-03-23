@@ -53,6 +53,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     // TODO need to write another program like this
     // needs to have sub block spacing
 
+    shader::Program& tile_entity_render_program = shader_handler.load_program(
+        "Tile Entity Render",
+        files::get_resources_path() / "shaders" / "scene" / "TileEntity.vert",
+        files::get_resources_path() / "shaders" / "scene" / "TileEntity.frag"
+    );
+
     shader::Program& entity_render_program = shader_handler.load_program(
         "Instanced Render",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMappingInstanced.vert",
@@ -185,6 +191,22 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
     );
 
+    auto entity_render_program_execute =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            entity_render_program, chunk_render_setup, chunks_render_program_uniforms
+        );
+
+    auto entity_shadow_program_execute =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            entity_shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
+        );
+
+    auto tile_entity_render_pipeline =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            tile_entity_render_program, chunk_render_setup,
+            chunks_render_program_uniforms
+        );
+
     // sky
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -213,20 +235,6 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunks_shadow_program->data.push_back(chunk_mesh);
     }
-
-    auto entity_render_program_execute =
-        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
-            entity_render_program, chunk_render_setup, chunks_render_program_uniforms
-        );
-
-    auto entity_shadow_program_execute =
-        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
-            entity_shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
-        );
-
-    scene.shadow_attach(entity_shadow_program_execute);
-
-    scene.add_mid_ground_renderer(entity_render_program_execute);
 
     voxel_utility::VoxelObject default_trees_voxel(
         files::get_data_path() / "base" / "models" / "DefaultTree.qb"
@@ -257,20 +265,23 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         world::entity::ObjectHandler::instance();
     for (auto& [id, object] : object_handler.get_objects()) {
         for (auto& mesh : object) {
-            
             // I'm so sorry for what I have done.
             auto mesh_ptr = std::shared_ptr<world::entity::ModelController>(
                 &mesh, [](world::entity::ModelController*) {}
             );
 
-            entity_shadow_program_execute->data.push_back(mesh_ptr);
-            entity_render_program_execute->data.push_back(mesh_ptr);
+            // entity_shadow_program_execute->data.push_back(mesh_ptr);
+            tile_entity_render_pipeline->data.push_back(mesh_ptr);
         }
     }
 
     // attach program to scene
     scene.shadow_attach(chunks_shadow_program);
+    scene.shadow_attach(entity_shadow_program_execute);
+
     scene.add_mid_ground_renderer(chunks_render_program);
+    scene.add_mid_ground_renderer(entity_render_program_execute);
+    scene.add_mid_ground_renderer(tile_entity_render_pipeline);
 
     scene.add_background_ground_renderer(sky_renderer);
     scene.add_background_ground_renderer(star_renderer);

@@ -56,7 +56,7 @@ function plants_map(length, terrain_map)
             height = terrain_map["map"][math.floor( x / 32 * result.y + y / 32)]
 
             if (height == 1) then 
-                result["map"]["Trees_1"][ math.floor( x * result.y + y)] = 1.0
+                result["map"]["Trees_1"][ math.floor( x * result.y + y)] = 0.10
             else
                 result["map"]["Trees_1"][ math.floor( x * result.y + y)] = 0.0
             end
@@ -70,7 +70,7 @@ function plants_map(length, terrain_map)
         for y = 0, result.y - 1 do
             height = flower_noise:sample(x,y)
             if (height > 0) then 
-                result["map"]["Flower_1"][ math.floor( x * result.y + y)] = 1.0
+                result["map"]["Flower_1"][ math.floor( x * result.y + y)] = 0.10
             else
                 result["map"]["Flower_1"][ math.floor( x * result.y + y)] = 0.0
             end
