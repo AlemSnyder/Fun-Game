@@ -74,15 +74,14 @@ class ObjectData {
 // TODO move this to GPU
 // mostly position
 // there is a model controller for each voxel object model
-// TODO generate_color_texture from static mesh
 class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
  private:
-    gui::gpu_data::StaticMesh model_mesh_;
+    gui::gpu_data::InstancedIMeshGPU model_mesh_;
 
-    // std::vector<GLuint> model_textures_;
+    std::vector<gui::gpu_data::Texture1D> model_textures_;
 
     // each mesh has a different texture
-    gui::gpu_data::ArrayBuffer<uint8_t> model_textures_;
+    gui::gpu_data::ArrayBuffer<uint8_t> texture_id_;
 
     // vector of placements PlacementOrder is the hash function
     std::unordered_set<Placement, PlacementOrder> placements_;
@@ -90,11 +89,6 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     size_t offset_ = NO_UPDATE;
 
     // multiple array buffers
-
-    // ObjectData object_data_;
-
-    // array buffer generated from the model
-    // and one from the transforms
 
     // scale const int how much the model is scaled
 
@@ -110,16 +104,29 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
 
     void remove(Placement placement);
 
+    void add_texture(std::vector<ColorFloat> color_texture_data){
+        model_textures_.emplace_back(color_texture_data);
+    }
+
     /**
      * @brief Send all placement data to gpu. Should only be run once per frame.
      */
     void update();
 
-    ModelController(const world::entity::Mesh& model_mesh) : model_mesh_(model_mesh) {}
+    ModelController(const world::entity::Mesh& model_mesh) : model_mesh_(model_mesh, {}) {}
 
     inline void
     bind() const override {
         model_mesh_.bind();
+        texture_id_.bind(4);
+        // TODO change to 2D texture
+        // THIS IS BAD
+        //for (GLuint texture_index = 0; texture_index < model_textures_.size(); texture_index++){
+        //    model_textures_[texture_index].bind(texture_index + GL_TEXTURE0);
+        //}
+
+        model_textures_[0].bind(0);
+
     }
 
     inline void

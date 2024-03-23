@@ -37,6 +37,9 @@ namespace gpu_data {
  * each mesh.
  */
 class StaticMesh : public virtual InstancedIMeshGPU {
+    protected:
+    Texture1D color_texture_;
+
  public:
     inline StaticMesh(const world::entity::Mesh& mesh) : StaticMesh(mesh, {}) {}
 
@@ -46,14 +49,14 @@ class StaticMesh : public virtual InstancedIMeshGPU {
         // what is this abomination?
         // TODO fix. This may be running twice I don't know.
         NonInstancedIMeshGPU(mesh),
-        InstancedIMeshGPU(mesh, model_transforms) {
-        generate_color_texture(mesh);
+        InstancedIMeshGPU(mesh, model_transforms) {}
+
+    inline void
+    bind() const override {
+        InstancedIMeshGPU::bind();
+        color_texture_.bind(0);
     }
 
-    void update_position(std::vector<glm::ivec4> data, uint offset);
-
- protected:
-    void generate_color_texture(const world::entity::Mesh& mesh);
 };
 
 } // namespace gpu_data

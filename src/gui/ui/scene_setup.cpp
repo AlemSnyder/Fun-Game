@@ -24,7 +24,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     // to package as a texture
     terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
     // send color texture to gpu
-    terrain::TerrainColorMapping::assign_color_texture();
+    // terrain::TerrainColorMapping::assign_color_texture();
     // parallel program to generate a mesh for each chunk
     world.update_all_chunks_mesh();
 

@@ -23,7 +23,9 @@
 
 #pragma once
 
+#include "gui/render/gpu_data/texture.hpp"
 #include "types.hpp"
+#include "util/color.hpp"
 
 #include <cstdint>
 #include <map>
@@ -31,9 +33,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-// not including all of glew
-using GLuint_p = unsigned int;
 
 namespace terrain {
 
@@ -77,30 +76,50 @@ class TerrainColorMapping {
     // color -> index
     static std::unordered_map<ColorInt, MatColorId> colors_inverse_map;
     // texture id saved on gpu.
-    static GLuint_p color_texture_;
+    gui::gpu_data::Texture1D color_texture_;
+
+    TerrainColorMapping() : color_texture_(color::convert_color_data(color_ids_map)) {}
 
  public:
+    // Delete all CTORs and CTOR-like operators
+    TerrainColorMapping(TerrainColorMapping&&) = delete;
+    TerrainColorMapping(TerrainColorMapping const&) = delete;
+
+    void operator=(TerrainColorMapping&&) = delete;
+    void operator=(TerrainColorMapping const&) = delete;
+
+    // Instance accessor
+    [[nodiscard]] static inline TerrainColorMapping&
+    instance() {
+        assert(color_ids_map.size() > 0 && "must initialize first.");
+        static TerrainColorMapping obj;
+        return obj;
+    }
+
     static void
     assign_color_mapping(const std::map<MaterialId, const Material>& materials);
-    // may discard
-    static GLuint_p assign_color_texture();
 
-    inline static std::vector<ColorInt>&
+    // may discard
+    // static GLuint_p assign_color_texture();
+
+    [[nodiscard]] inline static std::vector<ColorInt>&
     get_color_ids_map() {
         return color_ids_map;
     }
 
-    inline static std::unordered_map<ColorInt, MatColorId>
+    [[nodiscard]] inline static std::unordered_map<ColorInt, MatColorId>
     get_colors_inverse_map() {
         return colors_inverse_map;
     }
 
-    inline static GLuint_p
+    [[nodiscard]] inline static gui::gpu_data::Texture1D&
     get_color_texture() {
-        return color_texture_;
+        TerrainColorMapping& obj = instance();
+
+        return obj.color_texture_;
     };
 
-    inline static size_t
+    [[nodiscard]] inline static size_t
     get_num_colors() {
         return color_ids_map.size();
     }

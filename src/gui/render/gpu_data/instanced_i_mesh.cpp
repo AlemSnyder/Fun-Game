@@ -18,9 +18,14 @@ InstancedIMeshGPU::InstancedIMeshGPU(
 ) :
     NonInstancedIMeshGPU(mesh),
     transforms_array_(model_transforms, 1) {
-    // InstancedInt does not create a color texture. One must inherit from this
+    // InstancedInt does not have a color texture. One must inherit from this
     // class and define a method that creates a color texture, and sets its id
     // as color_texture_.
+}
+
+void
+InstancedIMeshGPU::update_transforms_array(std::vector<glm::ivec4> data, uint offset) {
+    transforms_array_.update(data, offset);
 }
 
 } // namespace gpu_data

@@ -22,12 +22,12 @@ NonInstancedIMeshGPU::update(const world::entity::Mesh& mesh) {
 void
 NonInstancedIMeshGPU::bind() const {
     vertex_array_.bind(0, 0);
-    element_array_.bind(-1, -1);
+    element_array_.bind(-1, -1); // why not have a bind with no parameters that asserts
+                                 // that the array is the elements array?
     color_array_.bind(1, 1);
     normal_array_.bind(2, 2);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_1D, color_texture_);
+    //color_texture_.bind(0);
 }
 
 void

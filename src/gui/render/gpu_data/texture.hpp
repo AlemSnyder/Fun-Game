@@ -18,7 +18,18 @@ class Texture1D {
     GLuint texture_ID_;
 
  public:
-    Texture1D(std::vector<ColorFloat> color_data) {
+    inline Texture1D() {
+        // create one texture and save the id to color_texture_
+        glGenTextures(1, &texture_ID_);
+    }
+
+    inline void
+    bind(GLuint target) const {
+        glActiveTexture(target);
+        glBindTexture(GL_TEXTURE_1D, texture_ID_);
+    }
+
+    inline Texture1D(const std::vector<ColorFloat>& color_data) {
         // create one texture and save the id to color_texture_
         glGenTextures(1, &texture_ID_);
         // bind to color_texture_
@@ -40,7 +51,12 @@ class Texture1D {
         glGenerateMipmap(GL_TEXTURE_1D);
     }
 
-    ~Texture1D() { glDeleteTextures(1, &texture_ID_); }
+    inline ~Texture1D() { glDeleteTextures(1, &texture_ID_); }
+
+    [[nodiscard]] inline GLuint
+    value() const {
+        return texture_ID_;
+    }
 };
 
 /*
@@ -68,8 +84,8 @@ class Texture2D {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // load and generate the texture
         glTexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGBA32F, color_data.size(), height, 0, GL_RGBA, GL_FLOAT,
-            color_data.data()
+            GL_TEXTURE_2D, 0, GL_RGBA32F, color_data.size(), height, 0, GL_RGBA,
+GL_FLOAT, color_data.data()
         );
         glGenerateMipmap(GL_TEXTURE_2D);
     }

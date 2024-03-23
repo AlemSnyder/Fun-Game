@@ -3,8 +3,7 @@
 
 #include "../entity/mesh.hpp"
 #include "logging.hpp"
-
-#include <GL/glew.h>
+#include "gui/render/gpu_data/texture.hpp"
 
 namespace terrain {
 
@@ -13,7 +12,7 @@ std::vector<ColorInt> TerrainColorMapping::color_ids_map;
 // 8 bit color to color id
 std::unordered_map<ColorInt, MatColorId> TerrainColorMapping::colors_inverse_map;
 // id of the color texture sent to opengl
-GLuint_p TerrainColorMapping::color_texture_;
+//GLuint_p TerrainColorMapping::color_texture_;
 
 void
 TerrainColorMapping::assign_color_mapping(
@@ -60,32 +59,6 @@ TerrainColorMapping::assign_color_mapping(
             }
         }
     }
-}
-
-GLuint_p
-TerrainColorMapping::assign_color_texture() {
-    glDeleteTextures(1, &color_texture_);
-
-    // Generate a texture
-    std::vector<ColorFloat> float_colors = color::convert_color_data(color_ids_map);
-
-    // Generate a texture
-    glGenTextures(1, &color_texture_);
-    glBindTexture(GL_TEXTURE_1D, color_texture_);
-    // set the texture wrapping/filtering options (on the currently bound texture
-    // object)
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load and generate the texture
-    glTexImage1D(
-        GL_TEXTURE_1D, 0, GL_RGBA32F, float_colors.size(), 0, GL_RGBA, GL_FLOAT,
-        float_colors.data()
-    );
-    glGenerateMipmap(GL_TEXTURE_1D);
-
-    return color_texture_;
 }
 
 } // namespace terrain

@@ -25,6 +25,8 @@ ObjectData::ObjectData(
         // load the mesh to the gpu
         model_meshes_.emplace_back(mesh);
 
+        model_meshes_.back().add_texture(color::convert_color_data(mesh.get_color_map()));
+
         // some how change because other things.
         // if we want glow or color in the model
         // get to that eventually
@@ -96,8 +98,8 @@ ModelController::update() {
         }
 
         // queueing three things on main thread. will eventually be run in this order.
-        model_mesh_.update_position(data, offset_);
-        model_textures_.update(texture_data, offset_);
+        model_mesh_.update_transforms_array(data, offset_);
+        texture_id_.update(texture_data, offset_);
         //GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { reset_offset(); });
     });

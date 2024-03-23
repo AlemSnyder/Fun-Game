@@ -28,24 +28,33 @@ ObjectHandler::read_object(std::filesystem::path object_path) {
         return;
     }
 
-    //ObjectData object_data(object_json, object_path);
+    // ObjectData object_data(object_json, object_path);
 
     // voxel_utility::VoxelObject voxel_object(path);
     // entity::Mesh mesh = world::entity::ambient_occlusion_mesher(voxel_object);
 
     std::lock_guard<std::mutex> lock(this->map_mutex_);
 
-    // TODO check identification
+    // check identification
+    std::string identification = object_json["identification"].asString();
+    if (ided_objects.find(identification) != ided_objects.end()) {
+        LOG_WARNING(
+            logging::file_io_logger, "Duplicate Identification \"{}\" found.",
+            identification
+        );
+        return;
+    }
 
     ided_objects.emplace(
         std::piecewise_construct,
-        std::forward_as_tuple(object_json["identification"].asString()),
+        std::forward_as_tuple(std::move(identification)),
         std::forward_as_tuple(object_json, object_path)
     );
 }
 
-void ObjectHandler::update() {
-    for (auto& [key, object] : ided_objects){
+void
+ObjectHandler::update() {
+    for (auto& [key, object] : ided_objects) {
         object.update();
     }
 }

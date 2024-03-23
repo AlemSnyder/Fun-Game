@@ -22,6 +22,7 @@
  */
 
 #include "non_instanced_i_mesh.hpp"
+#include "world/terrain/material.hpp"
 
 namespace gui {
 
@@ -37,20 +38,26 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
  private:
     GLuint shadow_texture_;
 
- public:
-    inline TerrainMesh(){};
+    Texture1D& color_texture_;
 
-    inline TerrainMesh(const world::entity::Mesh& mesh, GLuint color_texture_id) :
-        NonInstancedIMeshGPU(mesh) {
-        set_color_texture(color_texture_id);
-    }
+ public:
+    inline TerrainMesh() :
+        color_texture_(terrain::TerrainColorMapping::get_color_texture()){};
+
+    inline TerrainMesh(Texture1D& color_texture_id) :
+        color_texture_(color_texture_id){};
+
+
+    inline TerrainMesh(const world::entity::Mesh& mesh, Texture1D& color_texture_id) :
+        NonInstancedIMeshGPU(mesh), color_texture_(color_texture_id) {}
 
     inline void
-    set_color_texture(GLuint color_texture_id) noexcept {
+    set_color_texture(Texture1D& color_texture_id) noexcept {
         color_texture_ = color_texture_id;
     }
 
-    inline void set_shadow_texture(GLuint shadow_texture){
+    inline void
+    set_shadow_texture(GLuint shadow_texture) {
         shadow_texture_ = shadow_texture;
     }
 
@@ -58,7 +65,7 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     bind() const override {
         LOG_BACKTRACE(logging::opengl_logger, "Binding Terrain Mesh.");
         NonInstancedIMeshGPU::bind();
-
+        color_texture_.bind(0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, shadow_texture_);
     }
