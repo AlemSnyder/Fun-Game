@@ -22,9 +22,9 @@
  * To any future reader: I hate how this is written. There is duplication
  * because of language constrains. If you can find a way to fix this that would
  * be quite beneficial.
- * 
+ *
  * This file defines four classes. They are nearly identical, but they hade
- * different render methods. They cannot be templated because they are 
+ * different render methods. They cannot be templated because they are
  * render_to::FrameBuffer interfaces. GCC doesn't allow virtual templates
  * because the compiler needs to know "soon" how many classes are of a certain
  * virtual type.
@@ -51,10 +51,10 @@ namespace shader {
 
 /**
  * @brief Logs needed and unneeded uniforms.
- * 
+ *
  * @param std::set<std::pair<std::string,std::string>> want_uniforms
  * @param std::set<std::pair<std::string,std::string>> has_uniforms
-*/
+ */
 inline void
 log_uniforms(
     std::set<std::pair<std::string, std::string>> want_uniforms,
@@ -90,7 +90,7 @@ log_uniforms(
 
 /**
  * @brief No elements No instancing
-*/
+ */
 class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
@@ -163,7 +163,7 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
 
 /**
  * @brief Yes elements No instancing
-*/
+ */
 class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
@@ -240,7 +240,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
 
 /**
  * @brief No elements Yes instancing
-*/
+ */
 class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
@@ -313,7 +313,7 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
 
 /**
  * @brief Yes elements Yes instancing
-*/
+ */
 class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
  private:
     Program& opengl_program_;
@@ -332,10 +332,7 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-        LOG_DEBUG(
-            logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
-        );
-        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
+        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
     inline void virtual render(

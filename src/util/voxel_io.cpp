@@ -24,7 +24,7 @@ from_qb(
     VoxelSize& size
 ) {
     path = std::filesystem::absolute(path);
-    LOG_TRACE_L1(logging::file_io_logger, "Reading voxels from {}.", path.string());
+    LOG_BACKTRACE(logging::file_io_logger, "Reading voxels from {}.", path.string());
 
     // Read the tiles from the path specified, and save
     std::ifstream file(path, std::ios::in | std::ios::binary);
@@ -40,7 +40,7 @@ from_qb(
     uint32_t void_; // void int used to read 32 bites without saving it.
     uint32_t compression;
 
-    LOG_TRACE_L1(logging::file_io_logger, "Reading file header");
+    LOG_BACKTRACE(logging::file_io_logger, "Reading file header");
 
     //  none of these are used
     read_int(file, void_);       // version
@@ -56,17 +56,17 @@ from_qb(
     }
 
     // Read file name
-    LOG_TRACE_L1(logging::file_io_logger, "Reading voxel save name");
+    LOG_BACKTRACE(logging::file_io_logger, "Reading voxel save name");
 
     int8_t name_len;
     read_int(file, name_len);
 
-    LOG_TRACE_L1(logging::file_io_logger, "Voxel save name length: {}", name_len);
+    LOG_BACKTRACE(logging::file_io_logger, "Voxel save name length: {}", name_len);
 
     std::string name(name_len, '\0');
     file.read(name.data(), name_len);
 
-    LOG_TRACE_L1(logging::file_io_logger, "Voxel save name: {}", name);
+    LOG_BACKTRACE(logging::file_io_logger, "Voxel save name: {}", name);
 
     // Get voxel grid size
     uint32_t x_max, y_max, z_max;
@@ -91,7 +91,7 @@ from_qb(
 
     center = {x_center, y_center, z_center};
 
-    LOG_TRACE_L1(
+    LOG_BACKTRACE(
         logging::file_io_logger, "Voxel grid center: ({X}, {Y}, {Z})", x_center,
         y_center, z_center
     );

@@ -20,7 +20,7 @@ namespace shader {
 std::optional<std::string>
 File::get_file_content() {
     std::ifstream shader_stream(file_, std::ios::in);
-    if (!shader_stream.is_open()) [[unlikely]]{
+    if (!shader_stream.is_open()) [[unlikely]] {
         LOG_ERROR(
             logging::opengl_logger, "Cannot open {}. Is this the right directory?",
             file_.string()
@@ -140,7 +140,7 @@ Program::reload() {
     found_uniforms_.clear();
     uniforms_.clear();
 
-    if (vertex_shader_.get_status() != ShaderStatus::OK) [[unlikely]]{
+    if (vertex_shader_.get_status() != ShaderStatus::OK) [[unlikely]] {
         // Not ok reload
         vertex_shader_.reload();
         // second fail
@@ -150,7 +150,7 @@ Program::reload() {
             return;
         }
     }
-    if (fragment_shader_.get_status() != ShaderStatus::OK) [[unlikely]]{
+    if (fragment_shader_.get_status() != ShaderStatus::OK) [[unlikely]] {
         // Not ok reload
         fragment_shader_.reload();
         // second fail
@@ -197,8 +197,8 @@ Program::reload() {
     }
 
     LOG_INFO(
-        logging::opengl_logger, "Shader compiled successfully with program ID {}",
-        program_ID_
+        logging::opengl_logger, "Shader {} compiled successfully with program ID {}",
+        name_, program_ID_
     );
 
     status_ = ProgramStatus::OK;
