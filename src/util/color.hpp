@@ -50,4 +50,6 @@ convert_color_data(const std::vector<ColorInt>& color_map) {
     return float_colors;
 }
 
+constexpr ColorFloat black({0,0,0,1});
+
 } // namespace color

@@ -5,7 +5,7 @@ layout(location = 0) in ivec3 vertexPosition_modelspace;
 layout(location = 1) in uint vertex_color_id;
 layout(location = 2) in ivec3 vertexNormal_modelspace;
 layout(location = 3) in ivec4 model_matrix_transform;
-//layout(location = 4) in uint model_texture_id;
+layout(location = 4) in uint model_texture_id;
 // Output data ; will be interpolated for each fragment.
 out uint Vertex_color_id;
 out vec3 Position_worldspace;
@@ -13,7 +13,7 @@ out vec3 Normal_cameraspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
 out vec4 ShadowCoord;
-//out uint ModelTextureID;
+flat out uint ModelTextureID;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
@@ -30,13 +30,13 @@ mat4 rotate = mat4(vec4(0,-1,0,0),vec4(1,0,0,0),vec4(0,0,1,0),vec4(0,0,0,0));
 void
 main() {
 
-//    ModelTextureID = model_texture_id;
+    ModelTextureID = model_texture_id;
 
     mat4 rotation = mat4(1);
-
-    for (int r = 0; r < model_matrix_transform.w; r++){
-        rotation = rotation * rotate;
-    }
+    // TODO optimize
+//    for (int r = 0; r < model_matrix_transform.w; r++){
+//        rotation = rotation * rotate;
+//    }
 
     vec4 vertexPosition_modelspace_rotated = rotation * vec4(vertexPosition_modelspace / float(scalr_divisor) - vec3(.5,.5,0), 0) + vec4(.5,.5,0,0);
 

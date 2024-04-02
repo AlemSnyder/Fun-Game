@@ -12,27 +12,6 @@
 
 namespace util {
 
-// sus code from stackoverflow https://stackoverflow.com/a/23860017
-// it is probably good enough, but will probably want to change this
-/*
-// Recursively copy the values of b into a. Both a and b must be objects.
-void
-update_json(Json::Value& a, Json::Value& b) {
-    if (!a.isObject() || !b.isObject())
-        return;
-
-    for (const auto& key : b.getMemberNames()) {
-        if (a[key].isObject()) {
-            update_json(a[key], b[key]);
-        } else {
-            a[key] = b[key];
-        }
-    }
-}
-
-// end sus code
-// ya it doesn't work
-*/
 void
 load_manifest() {
     auto manifest_folder = files::get_manifest_path();

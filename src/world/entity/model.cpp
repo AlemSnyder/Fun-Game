@@ -23,9 +23,11 @@ ObjectData::ObjectData(
         // generate a mesh from the model
         auto mesh = ambient_occlusion_mesher(model);
         // load the mesh to the gpu
-        model_meshes_.emplace_back(mesh);
-
-        model_meshes_.back().add_texture(color::convert_color_data(mesh.get_color_map()));
+        model_meshes_.emplace_back(
+            mesh, std::vector<std::vector<ColorFloat>>(
+                      {color::convert_color_data(mesh.get_color_map())}
+                  )
+        );
 
         // some how change because other things.
         // if we want glow or color in the model
@@ -100,7 +102,6 @@ ModelController::update() {
         // queueing three things on main thread. will eventually be run in this order.
         model_mesh_.update_transforms_array(data, offset_);
         texture_id_.update(texture_data, offset_);
-        //GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { reset_offset(); });
     });
 }

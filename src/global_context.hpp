@@ -24,8 +24,6 @@
 #pragma once
 
 #include "logging.hpp"
-#include "world/entity/mesh.hpp"
-#include "world/terrain/chunk.hpp"
 
 #include <BS_thread_pool.hpp>
 

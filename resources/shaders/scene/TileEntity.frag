@@ -1,20 +1,20 @@
 #version 450 core
 
-flat in uint Vertex_color_id;
+flat in uint Vertex_color_id; // color id of vertex/face
+flat in uint ModelTextureID;  // texture row id for entire model
 // Interpolated values from the vertex shaders
 in vec3 Position_worldspace;
 in vec3 Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
 in vec4 ShadowCoord;
-flat in uint ModelTextureID;
 
 // Ouput data
 layout(location = 0) out vec3 color;
 
 // Values that stay constant for the whole mesh.
 uniform sampler2DShadow shadow_texture;
-uniform sampler1D material_color_texture;
+uniform sampler2D material_color_texture;
 uniform vec3 direct_light_color;
 uniform vec3 diffuse_light_color;
 
@@ -40,7 +40,9 @@ random(vec3 seed, int i) {
 void
 main() {
 
-    vec3 Vertex_color = vec3(texelFetch(material_color_texture, int(Vertex_color_id), 0).rgb);
+    ivec2 texture_quardinate = ivec2(Vertex_color_id, ModelTextureID);
+
+    vec3 Vertex_color = texelFetch(material_color_texture, texture_quardinate, 0).rgb;
 
     // Material properties
     vec3 MaterialDiffuseColor = Vertex_color * 0.6;

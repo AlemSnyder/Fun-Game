@@ -78,7 +78,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
  private:
     gui::gpu_data::InstancedIMeshGPU model_mesh_;
 
-    std::vector<gui::gpu_data::Texture1D> model_textures_;
+    gui::gpu_data::Texture2D model_textures_;
 
     // each mesh has a different texture
     gui::gpu_data::ArrayBuffer<uint8_t> texture_id_;
@@ -104,28 +104,23 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
 
     void remove(Placement placement);
 
-    void
-    add_texture(std::vector<ColorFloat> color_texture_data) {
-        GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this, color_texture_data]() {
-            model_textures_.emplace_back(color_texture_data);
-        });
-    }
-
     /**
      * @brief Send all placement data to gpu. Should only be run once per frame.
      */
     void update();
 
-    ModelController(const world::entity::Mesh& model_mesh) :
-        model_mesh_(model_mesh, {}) {}
+    ModelController(
+        const world::entity::Mesh& model_mesh,
+        const std::vector<std::vector<ColorFloat>>& vector_data
+    ) :
+        model_mesh_(model_mesh, {}),
+        model_textures_(vector_data) {}
 
     inline void
     bind() const override {
         model_mesh_.bind();
         texture_id_.bind(4);
-        // TODO change to 2D texture
-        model_textures_[0].bind(0);
+        model_textures_.bind(0);
     }
 
     inline void
