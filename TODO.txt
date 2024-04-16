@@ -3,21 +3,16 @@ Terrain generation
         rivers
     Mountain ranges
     WFC
-        mines/caves
-        towns
-        plants
+        mines/caves 
+        towns       probably not
+        plants      probably not
 
 GUI
-    sun
+    in sky
         maybe other plants
 
     entities
         load entities
-            biome
-            texture etc
+            multiple texture
 
-        load order
-            manifest
-                
-            biome
 
