@@ -1,6 +1,12 @@
 #include "imgui_windows.hpp"
 
+#include <numbers>
+
 #include <glm/gtc/type_ptr.hpp>
+
+namespace {
+    constexpr float radtodeg = std::numbers::pi / 180;
+}
 
 namespace gui {
 
@@ -53,8 +59,19 @@ display_windows::display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
     bool& manual_light_direction = helio->control_lighting();
     ImGui::Checkbox("Manually set light direction", &manual_light_direction);
 
+    static float theta_phi[2];
+
+
     if (manual_light_direction) {
-        ImGui::DragFloat3("Light Direction", glm::value_ptr(helio->control_light_direction()));
+        ImGui::DragFloat2("Light Direction", theta_phi);
+
+        
+
+        helio->control_light_direction() = glm::vec3(
+            cos(theta_phi[0] * radtodeg) * sin(theta_phi[1] * radtodeg),
+            cos(theta_phi[0] * radtodeg) * cos(theta_phi[1] * radtodeg), sin(theta_phi[0] * radtodeg)
+        );
+
     } else {
         ImGui::Text("Sun angle %.3f", helio->sun_angle);
         ImGui::Text("Earth angle %.3f", helio->earth_angle);

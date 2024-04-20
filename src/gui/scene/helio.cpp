@@ -57,8 +57,6 @@ Helio::update() {
         light_direction_ = glm::normalize(
             glm::vec3(light_direction_v4.x, light_direction_v4.y, light_direction_v4.z)
         );
-    } else {
-        light_direction_ = glm::normalize(light_direction_);
     }
 
     update_sunlight_color(light_direction_);
