@@ -9,7 +9,7 @@ namespace gui {
 
 namespace display_windows {
 
-void display_data(std::map<const shader::ProgramData, shader::Program>& programs);
+void display_data(std::map<const shader::ProgramData, shader::Program>& programs, bool& show);
 
 void display_data(std::shared_ptr<scene::Helio> helio, bool& show);
 

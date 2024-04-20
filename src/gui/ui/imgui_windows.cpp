@@ -12,9 +12,9 @@ namespace gui {
 
 void
 display_windows::display_data(
-    std::map<const shader::ProgramData, shader::Program>& programs
+    std::map<const shader::ProgramData, shader::Program>& programs, bool& show
 ) {
-    ImGui::Begin("Shader Programs");
+    ImGui::Begin("Shader Programs", &show);
 
     if (ImGui::BeginTable("table_sorting", 4, 0, ImVec2(0.0f, 24 * 15), 0.0f)) {
         // Declare columns
