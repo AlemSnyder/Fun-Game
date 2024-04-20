@@ -18,6 +18,7 @@
 #include "scene_setup.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/world.hpp"
+#include "world/entity/object_handler.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -69,6 +70,7 @@ imgui_entry(world::World& world, GLFWwindow* window) {
     bool show_light_controls = false;
     bool show_shadow_map = false;
     bool show_programs_window = false;
+    bool show_entity_window = false;
 
     shader::ShaderHandler shader_handler;
 
@@ -142,6 +144,7 @@ imgui_entry(world::World& world, GLFWwindow* window) {
             ImGui::Checkbox("Show Light Controls", &show_light_controls);
             ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
             ImGui::Checkbox("Show Programs", &show_programs_window);
+            ImGui::Checkbox("Show Entities", &show_entity_window);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
@@ -159,8 +162,6 @@ imgui_entry(world::World& world, GLFWwindow* window) {
             ImGui::Text(
                 "position <%.3f, %.3f, %.3f>", position.x, position.y, position.z
             );
-            if (ImGui::Button("Close Me"))
-                show_position_window = false;
             ImGui::End();
         }
 
@@ -173,6 +174,12 @@ imgui_entry(world::World& world, GLFWwindow* window) {
         if (show_programs_window) {
             display_windows::display_data(
                 shader_handler.get_programs(), show_programs_window
+            );
+        }
+
+        if (show_entity_window) {
+            display_windows::display_data(
+                world::entity::ObjectHandler::instance(), show_entity_window
             );
         }
 

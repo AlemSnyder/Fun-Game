@@ -39,6 +39,16 @@ class ObjectData {
  public:
     ObjectData(const Json::Value& object_json, std::filesystem::path object_path);
 
+    [[nodiscard]] inline const std::string&
+    get_name() const {
+        return name_;
+    }
+
+    [[nodiscard]] inline const std::string&
+    get_identification() const {
+        return identification_;
+    }
+
     [[nodiscard]] inline ModelController&
     get_model(size_t mesh_id) {
         return model_meshes_[mesh_id];
