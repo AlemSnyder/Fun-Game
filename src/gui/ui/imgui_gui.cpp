@@ -66,15 +66,15 @@ imgui_entry(world::World& world, GLFWwindow* window) {
 
     // Our state
     bool show_another_window = false;
-    bool show_scene_data = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    bool show_light_controls = false;
+    bool show_shadow_map = false;
 
     shader::ShaderHandler shader_handler;
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-    //VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
+    // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, shader_handler, world);
 
@@ -128,29 +128,18 @@ imgui_entry(world::World& world, GLFWwindow* window) {
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
         {
-            static float f = 0.0f;
-            static int counter = 0;
-
             ImGui::Begin("Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
+
+            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                ImGui::SetWindowFocus();
+            }
 
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Another Window", &show_another_window);
-            ImGui::Checkbox("Show Scene Data", &show_scene_data);
-
-            ImGui::SliderFloat(
-                "float", &f, 0.0f, 1.0f
-            ); // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3(
-                "clear color", (float*)&clear_color
-            ); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button")) // Buttons return true when clicked (most
-                                         // widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+            ImGui::Checkbox("Show Light Controls", &show_light_controls);
+            ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
@@ -173,27 +162,23 @@ imgui_entry(world::World& world, GLFWwindow* window) {
             ImGui::End();
         }
 
-        if (show_scene_data) {
-            display_windows::display_data(main_scene.get_lighting_environment(), show_scene_data);
+        if (show_light_controls) {
+            display_windows::display_data(
+                main_scene.get_lighting_environment(), show_light_controls
+            );
         }
 
         display_windows::display_data(shader_handler.get_programs());
 
-        {
-            ImGui::Begin("OpenGL Texture Text");
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                ImGui::SetWindowFocus();
-            }
-            ImGui::Text("pointer MS = %i", main_scene.get_frame_buffer_id());
-            ImGui::Text(
-                "size = %d x %d", static_cast<int>(window_width),
-                static_cast<int>(window_height)
-            );
-            ImGui::End();
+        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+            show_shadow_map = true;
         }
 
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-            ImGui::Begin("Shadow Depth Texture");
+        if (show_shadow_map) {
+            ImGui::Begin("Shadow Depth Texture", &show_shadow_map);
+            if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+                ImGui::SetWindowFocus();
+            }
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
                 ImVec2(
@@ -217,7 +202,7 @@ imgui_entry(world::World& world, GLFWwindow* window) {
     }
 
     // Cleanup VBO and shader
-    //glDeleteVertexArrays(1, &VertexArrayID);
+    // glDeleteVertexArrays(1, &VertexArrayID);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
