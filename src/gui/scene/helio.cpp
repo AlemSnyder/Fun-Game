@@ -45,17 +45,21 @@ Helio::update() {
 
     sky_rotation_ = glm::inverse(rotation);
 
-    glm::vec4 light_direction_solar_system(
-        glm::cos(sun_angle), glm::sin(sun_angle), 0, 1
-    );
+    if (!manual_light_direction_) {
+        glm::vec4 light_direction_solar_system(
+            glm::cos(sun_angle), glm::sin(sun_angle), 0, 1
+        );
 
-    // fancy linear algebra
-    glm::vec4 light_direction_v4 =
-        glm::transpose(rotation) * light_direction_solar_system;
+        // fancy linear algebra
+        glm::vec4 light_direction_v4 =
+            glm::transpose(rotation) * light_direction_solar_system;
 
-    light_direction_ = glm::normalize(
-        glm::vec3(light_direction_v4.x, light_direction_v4.y, light_direction_v4.z)
-    );
+        light_direction_ = glm::normalize(
+            glm::vec3(light_direction_v4.x, light_direction_v4.y, light_direction_v4.z)
+        );
+    } else {
+        light_direction_ = glm::normalize(light_direction_);
+    }
 
     update_sunlight_color(light_direction_);
 }

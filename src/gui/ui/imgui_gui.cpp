@@ -184,35 +184,10 @@ imgui_entry(world::World& world, GLFWwindow* window) {
         }
 
         if (show_scene_data) {
-            glm::vec3 light_direction = main_scene.get_light_direction();
-            ImGui::Begin("Scene Data", &show_scene_data);
-
-            ImGui::Text(
-                "light_direction <%.3f, %.3f, %.3f>", light_direction.x,
-                light_direction.y, light_direction.z
-            );
-
-            const std::shared_ptr<scene::Helio> cycle =
-                main_scene.get_lighting_environment();
-
-            ImGui::Text("Sun angle %.3f", cycle->sun_angle);
-            ImGui::Text("Earth angle %.3f", cycle->earth_angle);
-            ImGui::Text("Total angle %.3f", cycle->total_angle);
-
-            glm::vec3 color = cycle->get_specular_light();
-
-            ImGui::TextColored({color.r, color.g, color.b, 1}, "##");
-
-            ImGui::Checkbox("Manually set light direction", &manual_light_direction);
-
-            if (manual_light_direction) {
-                ImGui::DragFloat3("Light Direction", input_light_direction);
-            }
-
-            ImGui::End();
+            display_windows::display_data(main_scene.get_lighting_environment(), show_scene_data);
         }
 
-        shader::display_windows::display_data(shader_handler.get_programs());
+        display_windows::display_data(shader_handler.get_programs());
 
         {
             ImGui::Begin("OpenGL Texture Text");

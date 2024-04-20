@@ -1,17 +1,18 @@
 #include "../render/graphics_shaders/program_handler.hpp"
+#include "../scene/helio.hpp"
+
 
 #include <imgui/imgui.h>
+#include <memory>
 
 namespace gui {
-
-namespace shader {
 
 namespace display_windows {
 
 void display_data(std::map<const shader::ProgramData, shader::Program>& programs);
 
-}
+void display_data(std::shared_ptr<scene::Helio> helio, bool& show);
 
-} // namespace shader
+}
 
 } // namespace gui
