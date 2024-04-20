@@ -67,8 +67,6 @@ imgui_entry(world::World& world, GLFWwindow* window) {
     // Our state
     bool show_another_window = false;
     bool show_scene_data = false;
-    bool manual_light_direction = false;
-    float input_light_direction[3];
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     shader::ShaderHandler shader_handler;
@@ -111,15 +109,7 @@ imgui_entry(world::World& world, GLFWwindow* window) {
 
         glfwGetWindowSize(window, &window_width, &window_height);
 
-        if (manual_light_direction) {
-            glm::vec3 input_light_direction_v3(
-                input_light_direction[0], input_light_direction[1],
-                input_light_direction[2]
-            );
-            main_scene.manual_update_light_direction(input_light_direction_v3);
-        } else {
-            main_scene.update_light_direction();
-        }
+        main_scene.update_light_direction();
 
         main_scene.update(window_width, window_height);
 
