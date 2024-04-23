@@ -17,8 +17,8 @@
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 #include "world/entity/mesh.hpp"
-#include "world/world.hpp"
 #include "world/entity/object_handler.hpp"
+#include "world/world.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -193,7 +193,26 @@ imgui_entry(world::World& world, GLFWwindow* window) {
                 ImGui::SetWindowFocus();
             }
             ImGui::Image(
-                reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
+                reinterpret_cast<ImTextureID>(main_scene.get_shadow_map_front_texture()
+                ),
+                ImVec2(
+                    main_scene.get_shadow_width() / 8,
+                    main_scene.get_shadow_height() / 8
+                ),
+                ImVec2(0, 1), ImVec2(1, 0)
+            );
+
+            ImGui::Image(
+                reinterpret_cast<ImTextureID>(main_scene.get_shadow_map_back_texture()),
+                ImVec2(
+                    main_scene.get_shadow_width() / 8,
+                    main_scene.get_shadow_height() / 8
+                ),
+                ImVec2(0, 1), ImVec2(1, 0)
+            );
+
+            ImGui::Image(
+                reinterpret_cast<ImTextureID>(main_scene.get_shadow_map_final_texture()),
                 ImVec2(
                     main_scene.get_shadow_width() / 8,
                     main_scene.get_shadow_height() / 8

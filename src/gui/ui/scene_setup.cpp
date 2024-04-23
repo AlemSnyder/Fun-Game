@@ -87,6 +87,13 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         files::get_resources_path() / "shaders" / "background" / "Sun.vert",
         files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
+
+    // Program to render final shadow quadrate.
+    shader::Program& shadow_mid_program = shader_handler.load_program(
+        "Shadow middle",
+        files::get_resources_path() / "shaders" / "util" / "screen.vert",
+        files::get_resources_path() / "shaders" / "util" / "average.frag"
+    );
     // clang-format on
 
     // These are uniforms
@@ -107,6 +114,14 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     auto material_color_texture_uniform = std::make_shared<render::TextureUniform>(
         "material_color_texture", "sampler1D", 0
+    );
+
+    auto shadow_texture_back_uniform = std::make_shared<render::TextureUniform>(
+        "shadow_texture_back", "sampler2DShadow", 0
+    );
+
+    auto shadow_texture_front_uniform = std::make_shared<render::TextureUniform>(
+        "shadow_texture_front", "sampler2DShadow", 1
     );
 
     auto spectral_light_color_uniform =
@@ -161,11 +176,28 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         )
     );
 
+    shader::UniformsVector shadow_texture_uniforms(
+        std::vector<std::shared_ptr<shader::Uniform>>(
+            {shadow_texture_back_uniform, shadow_texture_front_uniform}
+        )
+    );
+
     // program setup functions
     std::function<void()> chunk_render_setup = []() {
         // Cull back-facing triangles -> draw only front-facing triangles
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
+        // Enable the depth test, and enable drawing to the depth texture
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glDepthMask(GL_TRUE);
+    };
+
+    // program setup functions
+    std::function<void()> chunk_render_setup_back = []() {
+        // Cull back-facing triangles -> draw only front-facing triangles
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
         // Enable the depth test, and enable drawing to the depth texture
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
@@ -187,8 +219,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     );
 
     // chunks shadow
-    auto chunks_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
+    auto chunks_front_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
         shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
+    );
+
+    auto chunks_back_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
+        shadow_program, chunk_render_setup_back, chunks_shadow_program_uniforms
     );
 
     auto entity_render_program_execute =
@@ -196,15 +232,27 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             entity_render_program, chunk_render_setup, chunks_render_program_uniforms
         );
 
-    auto entity_shadow_program_execute =
+    auto entity_shadow_front_program_execute =
         std::make_shared<shader::ShaderProgram_ElementsInstanced>(
             entity_shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
+        );
+
+    auto entity_shadow_back_program_pipeline =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            entity_shadow_program, chunk_render_setup_back,
+            chunks_shadow_program_uniforms
         );
 
     auto tile_entity_render_pipeline =
         std::make_shared<shader::ShaderProgram_ElementsInstanced>(
             tile_entity_render_program, chunk_render_setup,
             chunks_render_program_uniforms
+        );
+
+    // shadow map
+    auto shadow_map_avg_pipeline =
+        std::make_shared<shader::ShaderProgram_Standard>(
+            shadow_mid_program, sky_render_setup, shadow_texture_uniforms
         );
 
     // sky
@@ -228,12 +276,14 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     sun_renderer->data.push_back(star_shape);
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
+        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_front_texture()
+        ); // TODO change to final
         chunks_render_program->data.push_back(chunk_mesh);
     }
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunks_shadow_program->data.push_back(chunk_mesh);
+        chunks_front_shadow_program->data.push_back(chunk_mesh);
+        chunks_back_shadow_program->data.push_back(chunk_mesh);
     }
 
     voxel_utility::VoxelObject default_trees_voxel(
@@ -255,10 +305,10 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     // static because the mesh does not have moving parts
     // this generates the buffer that holds the mesh data
-    auto gpu_trees_data =
-        std::make_shared<gpu_data::StaticMesh>(mesh_trees, model_matrices);
-    entity_shadow_program_execute->data.push_back(gpu_trees_data);
-    entity_render_program_execute->data.push_back(gpu_trees_data);
+    // auto gpu_trees_data =
+    //    std::make_shared<gpu_data::StaticMesh>(mesh_trees, model_matrices);
+    // entity_shadow_program_execute->data.push_back(gpu_trees_data);
+    // entity_render_program_execute->data.push_back(gpu_trees_data);
 
     // attach the world objects to the render program
     world::entity::ObjectHandler& object_handler =
@@ -275,12 +325,17 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         }
     }
 
+    shadow_map_avg_pipeline->data.push_back(screen_data);
+
     // attach program to scene
-    scene.shadow_attach(chunks_shadow_program);
-    scene.shadow_attach(entity_shadow_program_execute);
+    scene.shadow_attach(chunks_front_shadow_program, chunks_back_shadow_program);
+    //    scene.shadow_attach(entity_shadow_program_execute,
+    //    entity_shadow_program_execute);
+
+    scene.shadow_average_shader(shadow_map_avg_pipeline);
 
     scene.add_mid_ground_renderer(chunks_render_program);
-    scene.add_mid_ground_renderer(entity_render_program_execute);
+//    scene.add_mid_ground_renderer(entity_render_program_execute);
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
 
     scene.add_background_ground_renderer(sky_renderer);

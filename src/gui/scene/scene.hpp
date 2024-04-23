@@ -52,9 +52,11 @@ class Scene {
     std::vector<std::shared_ptr<render_to::FrameBuffer>> foreground_frame_buffer_;
 
     // shadow
-    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_front_face_;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_back_face_;
 
     // other
+    std::shared_ptr<render_to::FrameBuffer> shadow_average_;
 
  public:
     /**
@@ -78,8 +80,28 @@ class Scene {
      * @return GLuint shadow mat depth texture id
      */
     inline GLuint
-    get_depth_texture() {
-        return shadow_map_.get_depth_texture();
+    get_shadow_map_front_texture() {
+        return shadow_map_.get_back_texture();
+    }
+
+    /**
+     * @brief Get scene shadow mat depth texture id
+     *
+     * @return GLuint shadow mat depth texture id
+     */
+    inline GLuint
+    get_shadow_map_back_texture() {
+        return shadow_map_.get_front_texture();
+    }
+
+    /**
+     * @brief Get scene shadow mat depth texture id
+     *
+     * @return GLuint shadow mat depth texture id
+     */
+    inline GLuint
+    get_shadow_map_final_texture() {
+        return shadow_map_.get_final_texture();
     }
 
     /**
@@ -133,8 +155,12 @@ class Scene {
      * @param render object that can render to a shadow framebuffer.
      */
     inline void
-    shadow_attach(const std::shared_ptr<render_to::FrameBuffer> shadow) {
-        mid_ground_shadow_.push_back(shadow);
+    shadow_attach(
+        const std::shared_ptr<render_to::FrameBuffer> shadow_front,
+        const std::shared_ptr<render_to::FrameBuffer> shadow_back
+    ) {
+        mid_ground_shadow_front_face_.push_back(shadow_front);
+        mid_ground_shadow_back_face_.push_back(shadow_back);
     }
 
     /**
@@ -248,6 +274,10 @@ class Scene {
             0, 0, width, height, 0, 0, width, height, // region of framebuffer
             GL_COLOR_BUFFER_BIT, GL_NEAREST           // copy the color
         );
+    }
+
+    inline void shadow_average_shader(std::shared_ptr<render_to::FrameBuffer> render_pipeline) {
+        shadow_average_ = render_pipeline;
     }
 };
 

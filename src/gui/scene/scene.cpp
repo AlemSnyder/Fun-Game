@@ -1,7 +1,7 @@
 #include "scene.hpp"
-#include "logging.hpp"
 
 #include "../handler.hpp"
+#include "logging.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/entity/object_handler.hpp"
 
@@ -30,15 +30,36 @@ Scene::update(screen_size_t width, screen_size_t height) {
     environment_->update();
     render::PixelProjection::update(width, height);
 
-    FrameBufferHandler::instance().bind_fbo(shadow_map_.get_frame_buffer_id());
+    FrameBufferHandler::instance().bind_fbo(shadow_map_.get_front_face_framebuffer_id()
+    );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (const auto& shadow : mid_ground_shadow_) {
+    for (const auto& shadow : mid_ground_shadow_front_face_) {
         shadow->render(
             shadow_map_.get_shadow_width(), shadow_map_.get_shadow_height(),
-            shadow_map_.get_frame_buffer_id()
+            shadow_map_.get_front_face_framebuffer_id()
         );
     }
+
+    // second rendering pass
+    // shadow->render(shado)
+    FrameBufferHandler::instance().bind_fbo(shadow_map_.get_back_face_framebuffer_id());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    for (const auto& shadow : mid_ground_shadow_back_face_) {
+        shadow->render(
+            shadow_map_.get_shadow_width(), shadow_map_.get_shadow_height(),
+            shadow_map_.get_back_face_framebuffer_id()
+        );
+    }
+
+    FrameBufferHandler::instance().bind_fbo(shadow_map_.get_final_framebuffer_id());
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    shadow_average_->render(
+        shadow_map_.get_shadow_width(), shadow_map_.get_shadow_height(),
+        shadow_map_.get_final_framebuffer_id()
+    );
 
     FrameBufferHandler::instance().bind_fbo(
         frame_buffer_multisample_.get_frame_buffer_id()

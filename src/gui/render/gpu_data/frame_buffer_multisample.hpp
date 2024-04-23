@@ -66,7 +66,7 @@ class FrameBufferMultisample {
      */
     FrameBufferMultisample(screen_size_t width, screen_size_t height, uint32_t samples);
 
-    ~FrameBufferMultisample() {
+    inline ~FrameBufferMultisample() {
         glDeleteRenderbuffers(1, &depth_buffer);
         glDeleteTextures(1, &render_texture);
         glDeleteFramebuffers(1, &frame_buffer);
