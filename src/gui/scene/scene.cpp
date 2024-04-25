@@ -30,8 +30,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     environment_->update();
     render::PixelProjection::update(width, height);
 
-    FrameBufferHandler::instance().bind_fbo(shadow_map_.get_front_face_framebuffer_id()
-    );
+    FrameBufferHandler::instance().bind_fbo(shadow_map_.get_front_face_framebuffer_id());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto& shadow : mid_ground_shadow_front_face_) {
@@ -42,7 +41,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     }
 
     // second rendering pass
-    // shadow->render(shado)
+    // shadow->render(shadow)
     FrameBufferHandler::instance().bind_fbo(shadow_map_.get_back_face_framebuffer_id());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -54,7 +53,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     }
 
     FrameBufferHandler::instance().bind_fbo(shadow_map_.get_final_framebuffer_id());
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shadow_average_->render(
         shadow_map_.get_shadow_width(), shadow_map_.get_shadow_height(),

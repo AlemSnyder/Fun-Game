@@ -69,7 +69,7 @@ main() {
 
         vec3 texture_map_position = vec3(
             ShadowCoord.xy + poissonDisk[index] / (10000.0),
-            (ShadowCoord.z - bias) / ShadowCoord.w
+            (ShadowCoord.z) / ShadowCoord.w
         );
 
         visibility -= 0.3 * (1.0 - texture( shadow_texture, texture_map_position ));

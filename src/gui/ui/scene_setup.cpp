@@ -1,6 +1,7 @@
 #include "scene_setup.hpp"
 
 #include "../render/gpu_data/screen_data.hpp"
+#include "../render/gpu_data/shadow_calculation_data.hpp"
 #include "../render/gpu_data/star_data.hpp"
 #include "../render/gpu_data/static_mesh.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
@@ -276,8 +277,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     sun_renderer->data.push_back(star_shape);
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_front_texture()
-        ); // TODO change to final
+        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_back_texture());
         chunks_render_program->data.push_back(chunk_mesh);
     }
 
@@ -325,7 +325,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         }
     }
 
-    shadow_map_avg_pipeline->data.push_back(screen_data);
+    auto shadow_calculation_data = std::make_shared<gpu_data::ShadowCalculationData>(
+        scene.get_shadow_map().get_back_texture(),
+        scene.get_shadow_map().get_front_texture()
+    );
+
+    shadow_map_avg_pipeline->data.push_back(shadow_calculation_data);
 
     // attach program to scene
     scene.shadow_attach(chunks_front_shadow_program, chunks_back_shadow_program);
@@ -335,7 +340,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     scene.shadow_average_shader(shadow_map_avg_pipeline);
 
     scene.add_mid_ground_renderer(chunks_render_program);
-//    scene.add_mid_ground_renderer(entity_render_program_execute);
+    //    scene.add_mid_ground_renderer(entity_render_program_execute);
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
 
     scene.add_background_ground_renderer(sky_renderer);

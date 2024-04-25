@@ -61,9 +61,6 @@ main() {
 
     float visibility = 1.0;
 
-    // TODO Fixed bias
-    float bias = 0.005 * cosTheta;
-
     // Sample the shadow map 4 times
     for (int i = 0; i < 4; i++) {
         int index = i;
@@ -72,7 +69,7 @@ main() {
 
         vec3 texture_map_position = vec3(
             ShadowCoord.xy + poissonDisk[index] / (10000.0),
-            (ShadowCoord.z - bias) / ShadowCoord.w
+            (ShadowCoord.z) / ShadowCoord.w
         );
 
         visibility -= 0.3 * (1.0 - texture( shadow_texture, texture_map_position ));
