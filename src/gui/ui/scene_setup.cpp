@@ -277,7 +277,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     sun_renderer->data.push_back(star_shape);
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_back_texture());
+        chunk_mesh->set_shadow_texture(scene.get_shadow_map_final_texture());
         chunks_render_program->data.push_back(chunk_mesh);
     }
 
