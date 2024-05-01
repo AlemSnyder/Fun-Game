@@ -21,7 +21,7 @@ FrameBufferShadowMap::FrameBufferShadowMap(screen_size_t width, screen_size_t he
     glBindTexture(GL_TEXTURE_2D, depth_texture_);
     glTexImage2D(
         GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, width_, height_, 0,
-        GL_DEPTH_COMPONENT, GL_FLOAT, 0
+        GL_DEPTH_COMPONENT, GL_FLOAT, nullptr
     );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

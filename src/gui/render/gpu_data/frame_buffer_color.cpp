@@ -30,9 +30,7 @@ FrameBufferColor::FrameBufferColor(screen_size_t width, screen_size_t height) :
     );
 
     // connect the texture to the frame buffer
-    glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture_, 0
-    );
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, render_texture_, 0);
 
     GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
