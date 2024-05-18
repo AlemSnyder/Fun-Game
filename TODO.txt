@@ -6,6 +6,9 @@ Terrain generation
         mines/caves 
         towns       probably not
         plants      probably not
+    complete generation
+        correct random ordering
+        entity volumes
 
 GUI
     in sky

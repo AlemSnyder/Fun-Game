@@ -19,7 +19,7 @@ namespace gui {
 // without imgui load the same scene.
 // Its not in scene because I want to keep this out of the game engine part of
 // the code base.
-void
+std::shared_ptr<ui::UniformInterface>
 setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) {
     // assign map from all color ids to each color
     // to package as a texture
@@ -142,13 +142,20 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(scene.get_lighting_environment());
 
+    auto debug_uniforms_interface =
+        std::make_shared<ui::UniformInterface>(render::IntUniform("debug_int"));
+
+    auto shadow_map_debug_int =
+        std::shared_ptr<render::IntUniform>(&debug_uniforms_interface->shadow_debug_int
+        );
+
     // Uniforms as a vector
     shader::UniformsVector chunks_render_program_uniforms(
         std::vector<std::shared_ptr<shader::Uniform>>(
             {matrix_view_projection_uniform, view_matrix_uniform,
              light_depth_texture_projection_uniform, shadow_texture_uniform,
              material_color_texture_uniform, spectral_light_color_uniform,
-             diffuse_light_color_uniform, light_direction_uniform}
+             diffuse_light_color_uniform, light_direction_uniform, shadow_map_debug_int}
         )
     );
 
@@ -215,30 +222,31 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     // the programs
     // chunks
-    auto chunks_render_program = std::make_shared<shader::ShaderProgram_Elements>(
+    auto chunks_render_pipeline = std::make_shared<shader::ShaderProgram_Elements>(
         render_program, chunk_render_setup, chunks_render_program_uniforms
     );
 
     // chunks shadow
-    auto chunks_front_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
-        shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
-    );
+    auto chunks_front_shadow_pipeline =
+        std::make_shared<shader::ShaderProgram_Elements>(
+            shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
+        );
 
-    auto chunks_back_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
+    auto chunks_back_shadow_pipeline = std::make_shared<shader::ShaderProgram_Elements>(
         shadow_program, chunk_render_setup_back, chunks_shadow_program_uniforms
     );
 
-    auto entity_render_program_execute =
+    auto entity_render_pipeline =
         std::make_shared<shader::ShaderProgram_ElementsInstanced>(
             entity_render_program, chunk_render_setup, chunks_render_program_uniforms
         );
 
-    auto entity_shadow_front_program_execute =
+    auto entity_shadow_front_pipeline =
         std::make_shared<shader::ShaderProgram_ElementsInstanced>(
             entity_shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
         );
 
-    auto entity_shadow_back_program_pipeline =
+    auto entity_shadow_back_pipeline =
         std::make_shared<shader::ShaderProgram_ElementsInstanced>(
             entity_shadow_program, chunk_render_setup_back,
             chunks_shadow_program_uniforms
@@ -251,10 +259,9 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         );
 
     // shadow map
-    auto shadow_map_avg_pipeline =
-        std::make_shared<shader::ShaderProgram_Standard>(
-            shadow_mid_program, sky_render_setup, shadow_texture_uniforms
-        );
+    auto shadow_map_avg_pipeline = std::make_shared<shader::ShaderProgram_Standard>(
+        shadow_mid_program, sky_render_setup, shadow_texture_uniforms
+    );
 
     // sky
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
@@ -278,12 +285,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_mesh->set_shadow_texture(scene.get_shadow_map_final_texture());
-        chunks_render_program->data.push_back(chunk_mesh);
+        chunks_render_pipeline->data.push_back(chunk_mesh);
     }
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunks_front_shadow_program->data.push_back(chunk_mesh);
-        chunks_back_shadow_program->data.push_back(chunk_mesh);
+        chunks_front_shadow_pipeline->data.push_back(chunk_mesh);
+        chunks_back_shadow_pipeline->data.push_back(chunk_mesh);
     }
 
     voxel_utility::VoxelObject default_trees_voxel(
@@ -308,7 +315,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     // auto gpu_trees_data =
     //    std::make_shared<gpu_data::StaticMesh>(mesh_trees, model_matrices);
     // entity_shadow_program_execute->data.push_back(gpu_trees_data);
-    // entity_render_program_execute->data.push_back(gpu_trees_data);
+    // entity_render_pipeline->data.push_back(gpu_trees_data);
 
     // attach the world objects to the render program
     world::entity::ObjectHandler& object_handler =
@@ -333,19 +340,21 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     shadow_map_avg_pipeline->data.push_back(shadow_calculation_data);
 
     // attach program to scene
-    scene.shadow_attach(chunks_front_shadow_program, chunks_back_shadow_program);
+    scene.shadow_attach(chunks_front_shadow_pipeline, chunks_back_shadow_pipeline);
     //    scene.shadow_attach(entity_shadow_program_execute,
     //    entity_shadow_program_execute);
 
     scene.shadow_average_shader(shadow_map_avg_pipeline);
 
-    scene.add_mid_ground_renderer(chunks_render_program);
-    //    scene.add_mid_ground_renderer(entity_render_program_execute);
+    scene.add_mid_ground_renderer(chunks_render_pipeline);
+    //    scene.add_mid_ground_renderer(entity_render_pipeline);
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
 
     scene.add_background_ground_renderer(sky_renderer);
     scene.add_background_ground_renderer(star_renderer);
     scene.add_background_ground_renderer(sun_renderer);
+
+    return debug_uniforms_interface;
 }
 
 } // namespace gui

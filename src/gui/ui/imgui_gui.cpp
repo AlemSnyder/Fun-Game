@@ -79,7 +79,8 @@ imgui_entry(world::World& world, GLFWwindow* window) {
 
     // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, shader_handler, world);
+    std::shared_ptr<ui::UniformInterface> debug_uniforms =
+        setup(main_scene, shader_handler, world);
 
     glm::vec3 position;
 
@@ -167,7 +168,7 @@ imgui_entry(world::World& world, GLFWwindow* window) {
 
         if (show_light_controls) {
             display_windows::display_data(
-                main_scene.get_lighting_environment(), show_light_controls
+                main_scene.get_lighting_environment(), debug_uniforms, show_light_controls
             );
         }
 
@@ -212,7 +213,8 @@ imgui_entry(world::World& world, GLFWwindow* window) {
             );
 
             ImGui::Image(
-                reinterpret_cast<ImTextureID>(main_scene.get_shadow_map_final_texture()),
+                reinterpret_cast<ImTextureID>(main_scene.get_shadow_map_final_texture()
+                ),
                 ImVec2(
                     main_scene.get_shadow_width() / 8,
                     main_scene.get_shadow_height() / 8

@@ -13,7 +13,7 @@ in vec4 ShadowCoord;
 layout(location = 0) out vec3 color;
 
 // Values that stay constant for the whole mesh.
-uniform sampler2DShadow shadow_texture;
+uniform sampler2D shadow_texture;
 uniform sampler2D material_color_texture;
 uniform vec3 direct_light_color;
 uniform vec3 diffuse_light_color;
@@ -35,6 +35,11 @@ random(vec3 seed, int i) {
     vec4 seed4 = vec4(seed, i);
     float dot_product = dot(seed4, vec4(12.9898, 78.233, 45.164, 94.673));
     return fract(sin(dot_product) * 43758.5453);
+}
+
+float get_depth(sampler2D tex, vec3 position){
+    float depth = texture(tex, position.xy).x;
+    return (depth - position.z < 0) ? 0 : 1;
 }
 
 void
@@ -72,7 +77,7 @@ main() {
             (ShadowCoord.z) / ShadowCoord.w
         );
 
-        visibility -= 0.3 * (1.0 - texture( shadow_texture, texture_map_position ));
+        visibility -= 0.3 * (1.0 - get_depth( shadow_texture, texture_map_position ));
     }
 
     visibility = max(visibility, 0.0);

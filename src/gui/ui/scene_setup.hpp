@@ -26,9 +26,10 @@
 #include "world/world.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/scene.hpp"
+#include "imgui_uniform_interface.hpp"
 
 namespace gui {
 
-void setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world);
+std::shared_ptr<ui::UniformInterface> setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world);
 
 }

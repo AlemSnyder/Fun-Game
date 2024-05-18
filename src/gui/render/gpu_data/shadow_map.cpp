@@ -65,9 +65,12 @@ ShadowMap::update() {
     }
 
     // try to generate a prism that covers the entire field of wiew.
-    double x_max, x_min = shadow_range_corners[0].x;
-    double y_max, y_min = shadow_range_corners[0].y;
-    double z_max, z_min = shadow_range_corners[0].z;
+    double x_max = shadow_range_corners[0].x;
+    double x_min = shadow_range_corners[0].x;
+    double y_max = shadow_range_corners[0].y;
+    double y_min = shadow_range_corners[0].y;
+    double z_max = shadow_range_corners[0].z;
+    double z_min = shadow_range_corners[0].z;
 
     for (const glm::vec4& position : shadow_range_corners) {
         if (position.x > x_max) {

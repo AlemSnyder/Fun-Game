@@ -26,7 +26,7 @@ main() {
 
     vec3 vertexNormal_modelspace = vec3(vertexNormal_modelspace_int);
 
-    ShadowCoord = depth_texture_projection * vec4(vertexPosition_modelspace + vertexNormal_modelspace * .5, 1);
+    ShadowCoord = depth_texture_projection * vec4(vertexPosition_modelspace + 1 * vertexNormal_modelspace, 1);
 
     // Position of the vertex, in worldspace
     Position_worldspace = (vec4(vertexPosition_modelspace, 1)).xyz;

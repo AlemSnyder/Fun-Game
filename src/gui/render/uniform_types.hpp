@@ -214,9 +214,7 @@ class TextureUniform : public shader::Uniform {
  public:
     TextureUniform(
         std::string name, std::string texture_type, uint8_t texture_location
-    ) :
-        Uniform(name, texture_type),
-        texture_location_(texture_location) {}
+    ) : Uniform(name, texture_type), texture_location_(texture_location) {}
 
     inline virtual void
     bind(GLint uniform_ID) {
@@ -301,6 +299,30 @@ class StarRotationUniform : public shader::Uniform {
         LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &star_rotation[0][0]);
+    }
+};
+
+class IntUniform : public shader::Uniform {
+ private:
+    int value; // sorry imgui needs a int*
+
+ public:
+    IntUniform(std::string target) : Uniform(target, "uint"), value(0) {}
+
+    virtual ~IntUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} set to {}.", name_,
+            static_cast<int>(value)
+        );
+        glUniform1i(uniform_ID, value);
+    }
+
+    inline int&
+    get_value() {
+        return value;
     }
 };
 

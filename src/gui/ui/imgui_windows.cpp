@@ -1,6 +1,6 @@
 #include "imgui_windows.hpp"
-
 #include "world/entity/object_handler.hpp"
+#include "imgui_uniform_interface.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -55,7 +55,10 @@ display_data(
 }
 
 void
-display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
+display_data(
+    std::shared_ptr<scene::Helio> helio,
+    std::shared_ptr<ui::UniformInterface> debug_uniforms, bool& show
+) {
     glm::vec3 light_direction = helio->get_light_direction();
 
     ImGui::Begin("Scene Data", &show);
@@ -81,6 +84,8 @@ display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
     }
     glm::vec3 color = helio->get_specular_light();
 
+    ImGui::InputInt("Debug int", &debug_uniforms->shadow_debug_int.get_value());
+
     ImGui::TextColored({color.r, color.g, color.b, 1}, "■");
 
     ImGui::Text(
@@ -99,14 +104,15 @@ display_data(world::entity::ObjectHandler& object_handler, bool& show) {
         // Declare columns
         ImGui::TableSetupColumn("ID");
         ImGui::TableSetupColumn("Name");
-//        ImGui::TableSetupColumn("Action");
+        //        ImGui::TableSetupColumn("Action");
         ImGui::TableSetupColumn("Number of models");
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
         for (auto& [id, object] : object_handler.get_objects()) {
             // Display a data item
-            ImGui::PushID(std::hash<std::string>{}(id)); // maybe not grate to call hashes like this
+            ImGui::PushID(std::hash<std::string>{}(id)
+            ); // maybe not grate to call hashes like this
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::Text(id.c_str()); // ID
