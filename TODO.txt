@@ -15,4 +15,9 @@ GUI
         load entities
             multiple texture
 
+    make trees function like entities   # here
+        same shader etc
+    just use front face shadows
+    fix entity generation               # here
+
 

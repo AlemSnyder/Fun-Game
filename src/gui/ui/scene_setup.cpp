@@ -59,6 +59,13 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         files::get_resources_path() / "shaders" / "scene" / "TileEntity.frag"
     );
 
+    shader::Program& tile_entity_shadow_program = shader_handler.load_program(
+        "Tile Entity Render",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTTEntity.vert",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
+    );
+
+
     shader::Program& entity_render_program = shader_handler.load_program(
         "Instanced Render",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMappingInstanced.vert",
@@ -207,6 +214,11 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             chunks_render_program_uniforms
         );
 
+    auto tile_entity_shadow_pipeline = 
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            tile_entity_shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
+        );
+
     // sky
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -272,12 +284,14 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
             // entity_shadow_program_execute->data.push_back(mesh_ptr);
             tile_entity_render_pipeline->data.push_back(mesh_ptr);
+            tile_entity_shadow_pipeline->data.push_back(mesh_ptr);
         }
     }
 
     // attach program to scene
     scene.shadow_attach(chunks_shadow_program);
     scene.shadow_attach(entity_shadow_program_execute);
+    scene.shadow_attach(tile_entity_shadow_pipeline);
 
     scene.add_mid_ground_renderer(chunks_render_program);
     scene.add_mid_ground_renderer(entity_render_program_execute);
