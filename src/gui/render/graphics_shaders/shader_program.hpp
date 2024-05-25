@@ -109,6 +109,7 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
+            LOG_BACKTRACE(logging::opengl_logger, "Shader name {}.", shader_program.get_name());
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
