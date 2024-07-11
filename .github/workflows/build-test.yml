@@ -79,9 +79,8 @@ jobs:
 
           cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
           cmake --build .
-          ls
 
       - name: Test
         run: |
-          ls
+          cd build
           ninja test
