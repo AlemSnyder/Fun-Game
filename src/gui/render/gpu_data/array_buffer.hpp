@@ -176,7 +176,7 @@ class ArrayBuffer {
      */
     inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
         divisor_(divisor) {
-        update_(data.begin(), data.size());
+        pointer_update_(data.begin(), data.size());
     }
 
     /**
@@ -205,7 +205,7 @@ class ArrayBuffer {
      */
     inline void
     update(const std::vector<T>& data) {
-        update_(data.data(), data.size());
+        pointer_update_(data.data(), data.size());
     }
 
     /**
@@ -268,12 +268,12 @@ class ArrayBuffer {
      *
      * @param std::vector<T>& data data to send to GPU
      */
-    void update_(const T* data_begin, size_t size);
+    void pointer_update_(const T* data_begin, size_t size);
 };
 
 template <class T, BindingTarget buffer>
 void
-ArrayBuffer<T, buffer>::update_(const T* data_begin, size_t size) {
+ArrayBuffer<T, buffer>::pointer_update_(const T* data_begin, size_t size) {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
     glDeleteBuffers(1, &buffer_ID_);

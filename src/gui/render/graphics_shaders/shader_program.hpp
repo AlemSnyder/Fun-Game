@@ -23,7 +23,7 @@
  * because of language constrains. If you can find a way to fix this that would
  * be quite beneficial.
  *
- * This file defines four classes. They are nearly identical, but they hade
+ * This file defines four classes. They are nearly identical, but they have
  * different render methods. They cannot be templated because they are
  * render_to::FrameBuffer interfaces. GCC doesn't allow virtual templates
  * because the compiler needs to know "soon" how many classes are of a certain

@@ -84,14 +84,17 @@ Helio::update_sunlight_color(glm::vec3 light_direction) {
         float c = pow(earth_radius + atmosphere_height, 2) - pow(h, 2);
         float a = 1 + pow(slope, 2);
 
-        float length =
+        float light_transmittances_distance =
             (-2 * h * slope + pow(pow(2 * h * slope, 2) + 4 * a * c, .5)) / (2 * a);
 
-        length =
-            length * pow(1 + pow(slope, 2), .5) + atmosphere_height * i / test_points;
+        light_transmittances_distance =
+            light_transmittances_distance * pow(1 + pow(slope, 2), .5)
+            + atmosphere_height * i / test_points;
 
         glm::vec3 add_color(
-            ir * exp(-ar * length), ig * exp(-ag * length), ib * exp(-ab * length)
+            ir * exp(-ar * light_transmittances_distance),
+            ig * exp(-ag * light_transmittances_distance),
+            ib * exp(-ab * light_transmittances_distance)
         );
 
         sunlight_color_ += add_color;
