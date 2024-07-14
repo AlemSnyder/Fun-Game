@@ -1,9 +1,14 @@
 #pragma once
 
+#include <quill/Backend.h>
+#include <quill/Frontend.h>
+#include <quill/LogMacros.h>
+#include <quill/Logger.h>
+#include <quill/sinks/FileSink.h>
+
 #include "util/files.hpp"
 
 #include <config.h>
-#include <quill/Quill.h>
 
 #include <string>
 
@@ -17,6 +22,7 @@ static constexpr quill::LogLevel DEFAULT_LOG_LEVEL = quill::LogLevel::Info;
 
 extern quill::LogLevel _LOG_LEVEL;
 
+extern quill::Logger* main_logger;
 extern quill::Logger* opengl_logger;   // for glfw, glew etc
 extern quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 extern quill::Logger* game_map_logger; // for terrain generation
@@ -30,7 +36,9 @@ get_logger() {
 }
 
 inline quill::Logger*
-get_logger(std::string name) {
+get_logger(std::string name, std::shared_ptr<quill::Handler> handler = nullptr) {
+    // if handler is nullptr will default to file_handler because
+    // logging.cpp 142 `cfg.default_handlers.emplace_back(file_handler);`
     auto all_loggers = quill::get_all_loggers();
 
     // Search for the logger
@@ -41,7 +49,12 @@ get_logger(std::string name) {
         return logger_found->second;
 
     // Create a new logger
-    quill::Logger* logger = quill::create_logger(name);
+    quill::Logger* logger;
+    if (handler) {
+        logger = quill::create_or_get_logger(name, std::move(handler));
+    } else {
+        logger = quill::create_or_get_logger(name);
+    }
     logger->set_log_level(_LOG_LEVEL);
     logger->init_backtrace(5, quill::LogLevel::Error);
     return logger;

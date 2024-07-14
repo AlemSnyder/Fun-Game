@@ -48,7 +48,8 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
@@ -356,23 +357,25 @@ opengl_entry(const argh::parser& cmdl) {
 
 inline int
 LogTest() {
-    quill::Logger* logger = quill::get_logger();
-    logger->set_log_level(quill::LogLevel::TraceL3);
+    LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 1);
+    LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 2);
 
-    // enable a backtrace that will get flushed when we log CRITICAL
-    logger->init_backtrace(2, quill::LogLevel::Critical);
+    LOG_INFO(logging::terrain_logger, "Welcome to Quill!");
+    LOG_ERROR(logging::terrain_logger, "An error message. error code {}", 123);
+    LOG_WARNING(logging::terrain_logger, "A warning message.");
+    LOG_CRITICAL(logging::terrain_logger, "A critical error.");
+    LOG_DEBUG(logging::terrain_logger, "Debugging foo {}", 1234);
+    LOG_TRACE_L1(logging::terrain_logger, "{:>30}", "right aligned");
+    LOG_TRACE_L2(
+        logging::terrain_logger, "Positional arguments are {1} {0} ", "too", "supported"
+    );
+    LOG_TRACE_L3(logging::terrain_logger, "Support for floats {:03.2f}", 1.23456);
 
-    LOG_BACKTRACE(logger, "Backtrace log {}", 1);
-    LOG_BACKTRACE(logger, "Backtrace log {}", 2);
+    LOG_INFO(
+        logging::lua_logger, "Using Lua logger. The lua logger should not log the cpp "
+                             "file, but instead the lua file."
+    );
 
-    LOG_INFO(logger, "Welcome to Quill!");
-    LOG_ERROR(logger, "An error message. error code {}", 123);
-    LOG_WARNING(logger, "A warning message.");
-    LOG_CRITICAL(logger, "A critical error.");
-    LOG_DEBUG(logger, "Debugging foo {}", 1234);
-    LOG_TRACE_L1(logger, "{:>30}", "right aligned");
-    LOG_TRACE_L2(logger, "Positional arguments are {1} {0} ", "too", "supported");
-    LOG_TRACE_L3(logger, "Support for floats {:03.2f}", 1.23456);
     return 0;
 }
 

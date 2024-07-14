@@ -3,8 +3,12 @@
 #include "config.h"
 #include "util/files.hpp"
 
-#include <quill/handlers/JsonFileHandler.h>
-#include <quill/Quill.h>
+#include <quill/Backend.h>
+#include <quill/Frontend.h>
+#include <quill/Logger.h>
+#include <quill/LogMacros.h>
+#include <quill/sinks/ConsoleSink.h>
+#include <quill/sinks/RotatingFileSink.h>
 
 #include <filesystem>
 #include <string>
@@ -21,6 +25,18 @@ static const std::string LOGLINE_FORMAT =
 
 #endif
 
+#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__)                \
+    || defined(QUILL_NO_THREAD_NAME_SUPPORT)
+static const std::string LOGLINE_FORMAT_LUA =
+    "%(ascii_time) [%(thread:<6)] %(level_name) [%(logger_name:<14)] "
+    "- %(message)";
+#else
+static const std::string LOGLINE_FORMAT_LUA =
+    "%(ascii_time) [%(thread:<16):%(thread_name:<16)] %(level_name) "
+    "[%(logger_name:<14)] - %(message)";
+
+#endif
+
 namespace logging {
 
 using namespace quill;
@@ -33,7 +49,7 @@ quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 quill::Logger* game_map_logger; // for terrain generation
 quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 quill::Logger* file_io_logger;  // for file io
-quill::Logger* lua_logger;
+quill::Logger* lua_logger;      // for lua
 
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
@@ -46,10 +62,10 @@ init(bool console, quill::LogLevel log_level, bool structured) {
         std::filesystem::create_directory(log_dir());
 
     // Create our config object
-    quill::Config cfg;
+    //    quill::Config cfg;
 
     // Set main logger name
-    cfg.default_logger_name = "main";
+    //    cfg.default_logger_name = "main";
 
     // Initialize print handler
     if (console) {
@@ -72,14 +88,18 @@ init(bool console, quill::LogLevel log_level, bool structured) {
 
         colors.set_colour(LogLevel::Backtrace, cc::magenta);
 
-        auto stdout_handler = quill::stdout_handler("console", colors);
-        stdout_handler->set_pattern(
-            LOGLINE_FORMAT,
+        auto console_sink = quill::Frontend::create_or_get_sink<quill::ConsoleSink>(
+            "console", colors, LOGLINE_FORMAT,
             "%F %T.%Qms %z" // ISO 8601 but with space instead of T
         );
-        stdout_handler->set_log_level(log_level);
 
-        cfg.default_handlers.emplace_back(stdout_handler);
+        //stdout_handler->set_pattern(
+        //    LOGLINE_FORMAT,
+        //    "%F %T.%Qms %z" // ISO 8601 but with space instead of T
+        //);
+        //stdout_handler->set_log_level(log_level);
+
+        //cfg.default_handlers.emplace_back(stdout_handler);
     }
 
     // Initialize file handler
@@ -113,30 +133,52 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     }
 #endif
 
+    std::shared_ptr<quill::Handler> file_handler_lua =
+        quill::file_handler("." / LOG_FILE);
+
     file_handler->set_pattern(
         LOGLINE_FORMAT,
         "%FT%T.%Qms %z" // ISO 8601
     );
+
+    file_handler_lua->set_pattern(
+        LOGLINE_FORMAT,
+        "%FT%T.%Qms %z" // ISO 8601
+    );
+
     file_handler->set_log_level(log_level);
 
     cfg.default_handlers.emplace_back(file_handler);
 
-    // Send the config
-    quill::configure(cfg);
-
-    // Set backtrace and log level on the main logger
-    quill::Logger* main_logger = quill::get_logger();
-    main_logger->init_backtrace(5, quill::LogLevel::Error);
-
-    opengl_logger = get_logger("shaders");
-    terrain_logger = get_logger("terrain");
-    game_map_logger = get_logger("game_map");
-    voxel_logger = get_logger("voxel");
-    file_io_logger = get_logger("file_io");
-    lua_logger = get_logger("lua");
-
     // Start the logging backend thread
-    quill::start(/* with_signal_handler = */ true);
+    quill::Backend::start();
+
+    auto file_sink =
+        quill::Frontend::create_or_get_sink<quill::RotatingFileSink>(LOG_FILE, []() {
+            quill::RotatingFileSinkConfig cfg;
+            cfg.set_open_mode('w');
+            cfg.set_rotation_max_file_size(1024 * 1024 / 2); // 512 KB
+            cfg.set_max_backup_files(5);                     // 5 backups
+            cfg.set_overwrite_rolled_files(true);            // append
+            return cfg;
+        }());
+
+    main_logger =
+        quill::Frontend::create_or_get_logger("main", file_sink, LOGLINE_FORMAT);
+    opengl_logger =
+        quill::Frontend::create_or_get_logger("shaders", file_sink, LOGLINE_FORMAT);
+    terrain_logger =
+        quill::Frontend::create_or_get_logger("terrain", file_sink, LOGLINE_FORMAT);
+    game_map_logger =
+        quill::Frontend::create_or_get_logger("game_map", file_sink, LOGLINE_FORMAT);
+    voxel_logger =
+        quill::Frontend::create_or_get_logger("voxel", file_sink, LOGLINE_FORMAT);
+    file_io_logger =
+        quill::Frontend::create_or_get_logger("file_io", file_sink, LOGLINE_FORMAT);
+    lua_logger =
+        quill::Frontend::create_or_get_logger("lua", file_sink, LOGLINE_FORMAT_LUA);
+
+    main_logger->init_backtrace(5, quill::LogLevel::Error);
 
     LOG_INFO(main_logger, "Logging initialized!");
 }
