@@ -27,7 +27,7 @@ float initialFoV = 45.0f;
 float speed = 10.0f; // 3 units / second
 float mouseSpeed = 0.005f;
 
-}
+} // namespace
 
 namespace controls {
 
@@ -137,4 +137,4 @@ computeMatricesFromInputs(GLFWwindow* window) {
     lastTime = currentTime;
 }
 
-}
+} // namespace controls

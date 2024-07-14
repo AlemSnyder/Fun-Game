@@ -10,9 +10,6 @@ std::optional<GLFWwindow*>
 setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     glEnable(GL_MULTISAMPLE);
 
-    // initialize logging
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-
     // Initialise GLFW
     glewExperimental = true; // Needed for core profile
     if (!glfwInit()) {
@@ -33,10 +30,12 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
         GLFW_OPENGL_CORE_PROFILE
     ); // somehow turning on core profiling
 
+    // Tell GLFW we want logging
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(
-        window_width, window_height, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr
-    );
+    GLFWwindow* window =
+        glfwCreateWindow(window_width, window_height, "Fun-Game", nullptr, nullptr);
     if (window == nullptr)
         return nullptr;
     glfwMakeContextCurrent(window);
@@ -73,6 +72,9 @@ setup_opengl_logging() {
             glfwTerminate();
             return -1;
         }
+    } else {
+        LOG_WARNING(logging::opengl_logger, "Will not log OpenGL.");
+        return 1;
     }
     return 0;
 }

@@ -1,21 +1,21 @@
 // -*- lsst-c++ -*-
 /*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  */
+
 /**
  * @file mesh.hpp
  *
- * @brief Defines Mesh Struct
+ * @brief Defines Mesh Class
  *
- * @ingroup entity
+ * @ingroup ENTITY
  *
  */
 #pragma once
@@ -54,7 +54,9 @@ class Mesh {
         indexed_color_ids_(indexed_color_ids), indexed_normals_(indexed_normals),
         color_map_(color_map) {}
 
-    // friend World;
+    Mesh() :
+        size_({0, 0, 0}), center_({0, 0, 0}), indices_({}), indexed_vertices_({}),
+        indexed_color_ids_({}), indexed_normals_({}), color_map_({}) {}
 
  protected:
     // x, y, z length of the mesh

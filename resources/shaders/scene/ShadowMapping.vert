@@ -17,7 +17,7 @@ out vec4 ShadowCoord;
 uniform mat4 MVP;
 uniform mat4 view_matrix;
 uniform vec3 light_direction;
-uniform mat4 depth_MVP;
+uniform mat4 depth_texture_projection;
 
 void
 main() {
@@ -26,9 +26,9 @@ main() {
 
     vec3 vertexNormal_modelspace = vec3(vertexNormal_modelspace_int);
 
-    ShadowCoord = depth_MVP * vec4(vertexPosition_modelspace + vertexNormal_modelspace * .5, 1);
+    ShadowCoord = depth_texture_projection * vec4(vertexPosition_modelspace + vertexNormal_modelspace * .5, 1);
 
-    // Position of the vertex, in worldspace : M * position
+    // Position of the vertex, in worldspace
     Position_worldspace = (vec4(vertexPosition_modelspace, 1)).xyz;
 
     // Vector that goes from the vertex to the camera, in camera space.
@@ -41,9 +41,7 @@ main() {
 
     // Normal of the the vertex, in camera space
     Normal_cameraspace = (view_matrix * vec4(vertexNormal_modelspace, 0))
-                             .xyz; // Only correct if ModelMatrix does not scale the
-                                   // model ! Use its inverse transpose if not.
-
+                             .xyz;
     // UV of the vertex. No special space for this one.
     Vertex_color_id = vertex_color_id;
 }

@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "gui/render/graphics_data/terrain_mesh.hpp"
+#include "gui/render/gpu_data/terrain_mesh.hpp"
 #include "terrain/generation/biome.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
@@ -57,7 +57,7 @@ class World {
     terrain::Terrain terrain_main_;
 
     // TerrainMesh for each chunk in terrain
-    std::vector<std::shared_ptr<gui::data_structures::TerrainMesh>> chunks_mesh_;
+    std::vector<std::shared_ptr<gui::gpu_data::TerrainMesh>> chunks_mesh_;
     // chunks_mesh like attorneys general
 
     // Set of chunks that need to be updated on gpu.
@@ -237,6 +237,6 @@ class World {
     initialize_chunks_mesh_() {
         chunks_mesh_.resize(terrain_main_.get_chunks().size());
         for (auto& m : chunks_mesh_)
-            m = std::make_shared<gui::data_structures::TerrainMesh>();
+            m = std::make_shared<gui::gpu_data::TerrainMesh>();
     }
 };

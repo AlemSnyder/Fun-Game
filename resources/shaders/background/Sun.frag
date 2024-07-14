@@ -3,7 +3,7 @@
 // Input data
 //in vec3 color_in;
 
-uniform vec3 sunlight_color;
+uniform vec3 direct_light_color;
 
 // Ouput data
 layout(location = 0) out vec3 color;
@@ -11,5 +11,5 @@ layout(location = 0) out vec3 color;
 void
 main(){
 
-    color = sunlight_color*2;
+    color = direct_light_color*2;
 }

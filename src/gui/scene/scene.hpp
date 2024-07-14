@@ -20,19 +20,14 @@
  * @ingroup GUI
  *
  */
+#pragma once
 
-#include "../render/data_structures/frame_buffer_multisample.hpp"
-#include "../render/data_structures/shadow_map.hpp"
+#include "../render/gpu_data/frame_buffer_multisample.hpp"
+#include "../render/gpu_data/shadow_map.hpp"
 #include "../render/graphics_shaders/gui_render_types.hpp"
-#include "../render/graphics_shaders/instanced_i_mesh_renderer.hpp"
-#include "../render/graphics_shaders/non_instanced_i_mesh_renderer.hpp"
-#include "../render/graphics_shaders/quad_renderer_multisample.hpp"
-#include "../render/graphics_shaders/sky.hpp"
 #include "helio.hpp"
 
 #include <GLFW/glfw3.h>
-
-#pragma once
 
 #define SAMPLES 4
 
@@ -43,23 +38,23 @@ namespace gui {
  */
 class Scene {
  private:
-    data_structures::FrameBufferMultisample frame_buffer_multisample_;
+    gpu_data::FrameBufferMultisample frame_buffer_multisample_;
     std::shared_ptr<scene::Helio> environment_;
-    data_structures::ShadowMap shadow_map_;
+    gpu_data::ShadowMap shadow_map_;
 
     // background
-    render::SkyRenderer sky_renderer_;
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> background_frame_buffer_;
 
     // "mid" ground
     std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_frame_buffer_;
-    std::vector<std::shared_ptr<render_to::FrameBufferMultisample>>
-        mid_ground_frame_buffer_multisample_;
-    std::vector<std::shared_ptr<render_to::ShadowMap>> mid_ground_shadow_;
 
-    // foreground, maybe
+    // foreground
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> foreground_frame_buffer_;
+
+    // shadow
+    std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_;
 
     // other
-    render::QuadRendererMultisample quad_renderer_multisample_;
 
  public:
     /**
@@ -75,8 +70,7 @@ class Scene {
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
         environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)),
-        shadow_map_(shadow_map_width_height, shadow_map_width_height),
-        sky_renderer_(environment_, environment_), quad_renderer_multisample_() {}
+        shadow_map_(shadow_map_width_height, shadow_map_width_height) {}
 
     /**
      * @brief Get scene shadow mat depth texture id
@@ -113,7 +107,7 @@ class Scene {
      *
      * @return ShadowMap& shadow map used by this scene.
      */
-    const data_structures::ShadowMap&
+    const gpu_data::ShadowMap&
     get_shadow_map() const {
         return shadow_map_;
     }
@@ -139,8 +133,7 @@ class Scene {
      * @param render object that can render to a shadow framebuffer.
      */
     inline void
-    shadow_attach(const std::shared_ptr<render_to::ShadowMap>& shadow) {
-        shadow->set_shadow_map(&shadow_map_);
+    shadow_attach(const std::shared_ptr<render_to::FrameBuffer> shadow) {
         mid_ground_shadow_.push_back(shadow);
     }
 
@@ -150,20 +143,29 @@ class Scene {
      * @param render object that can render to a framebuffer.
      */
     inline void
-    frame_buffer_attach(const std::shared_ptr<render_to::FrameBuffer>& render) {
+    add_background_ground_renderer(const std::shared_ptr<render_to::FrameBuffer> render
+    ) {
+        background_frame_buffer_.push_back(render);
+    }
+
+    /**
+     * @brief Attach renderer.
+     *
+     * @param render object that can render to a framebuffer.
+     */
+    inline void
+    add_mid_ground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render) {
         mid_ground_frame_buffer_.push_back(render);
     }
 
     /**
-     * @brief Attach multisample renderer.
+     * @brief Attach renderer.
      *
-     * @param render object that can render to a multisample framebuffer.
+     * @param render object that can render to a framebuffer.
      */
     inline void
-    frame_buffer_multisample_attach(
-        const std::shared_ptr<render_to::FrameBufferMultisample>& render
-    ) {
-        mid_ground_frame_buffer_multisample_.push_back(render);
+    add_foreground_renderer(const std::shared_ptr<render_to::FrameBuffer>& render) {
+        foreground_frame_buffer_.push_back(render);
     }
 
     /**
@@ -237,14 +239,14 @@ class Scene {
      *
      * @details Only a screen-sized portion of this framebuffer is rendered to.
      * In this call that portion is rendered to the screen.
-    */
+     */
     inline void
     copy_to_window(screen_size_t width, screen_size_t height) {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, get_frame_buffer_id());
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // window framebuffer
         glBlitFramebuffer(
             0, 0, width, height, 0, 0, width, height, // region of framebuffer
-            GL_COLOR_BUFFER_BIT, GL_NEAREST // copy the color
+            GL_COLOR_BUFFER_BIT, GL_NEAREST           // copy the color
         );
     }
 };

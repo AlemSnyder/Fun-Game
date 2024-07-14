@@ -6,10 +6,9 @@
 #include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/graphics_shaders/quad_renderer.hpp"
+#include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
-#include "../shader.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 
@@ -43,17 +42,20 @@ opengl_entry(World& world) {
     // this. Can I make multiple vertex arrays? If so why should I?
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
-    render::QuadRenderer QR;
+    shader::ShaderHandler shader_handler;
 
-    ShaderHandler shader_handler = ShaderHandler();
+    shader::Program quad_program = shader_handler.load_program(
+        "Quad Renderer", files::get_resources_path() / "shaders" / "Passthrough.vert",
+        files::get_resources_path() / "shaders" / "overlay" / "SimpleTexture.frag"
+    );
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, world);
+    setup(main_scene, shader_handler, world);
 
     do {
         controls::computeMatricesFromInputs(window);
@@ -63,10 +65,6 @@ opengl_entry(World& world) {
         main_scene.update(window_width, window_width);
 
         main_scene.copy_to_window(window_width, window_height);
-
-        if (controls::show_shadow_map(window)) {
-            QR.render(512, 512, main_scene.get_depth_texture(), 0);
-        }
 
         // Swap buffers
         glfwSwapBuffers(window);

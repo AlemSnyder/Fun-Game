@@ -14,8 +14,8 @@
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
-#include "../shader.hpp"
 #include "imgui_style.hpp"
+#include "imgui_windows.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 
@@ -59,7 +59,7 @@ imgui_entry(World& world) {
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -83,11 +83,14 @@ imgui_entry(World& world) {
     float input_light_direction[3];
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    shader::ShaderHandler shader_handler;
+
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
+    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, world);
+    setup(main_scene, shader_handler, world);
 
     glm::vec3 position;
 
@@ -106,13 +109,14 @@ imgui_entry(World& world) {
         glfwPollEvents();
 
         if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
+#if !DEBUG()
             // Disable the mouse so it doesn't appear while playing
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#endif
 
             // Process inputs
             controls::computeMatricesFromInputs(window);
-        }
-        else {
+        } else {
             // Show the mouse for use with IMGUI
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
@@ -140,6 +144,8 @@ imgui_entry(World& world) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
@@ -217,6 +223,8 @@ imgui_entry(World& world) {
 
             ImGui::End();
         }
+
+        shader::display_windows::display_data(shader_handler.get_programs());
 
         {
             ImGui::Begin("OpenGL Texture Text");

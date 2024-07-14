@@ -17,17 +17,15 @@
  *
  * @brief Defines render types virtual classes
  *
- * @ingroup GUI  RENDER_TO
+ * @ingroup GUI  RENDER  GRAPHICS_SHADERS
  *
  */
 
 #pragma once
 
-#include "../../../types.hpp"
-#include "../data_structures/shadow_map.hpp"
-#include <memory>
+#include "types.hpp"
 
-#include <GLFW/glfw3.h>
+#include <GL/glew.h>
 
 namespace gui {
 
@@ -41,37 +39,8 @@ namespace render_to {
  */
 class FrameBuffer {
  public:
-    virtual void render_frame_buffer(
-        screen_size_t width, screen_size_t height, GLuint frame_buffer
-    ) const = 0;
-};
-
-/**
- * @brief Defines virtual classes for rendering to multisample frame buffer
- *
- * @details Class with render_frame_buffer method that renders to a multisample
- * frame buffer.
- */
-class FrameBufferMultisample {
- public:
-    virtual void render_frame_buffer_multisample(
-        screen_size_t width, screen_size_t height, GLuint frame_buffer
-    ) const = 0;
-};
-
-/**
- * @brief Defines virtual classes for rendering shadows
- *
- * @details Class with render_shadow_map method that renders to a shadow
- * map.
- */
-class ShadowMap {
- public:
-    virtual void render_shadow_map(
-        screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
-    ) const = 0;
-
-    virtual void set_shadow_map(const gui::data_structures::ShadowMap* shadow_map) = 0;
+    virtual void
+    render(screen_size_t width, screen_size_t height, GLuint frame_buffer) = 0;
 };
 
 // blume

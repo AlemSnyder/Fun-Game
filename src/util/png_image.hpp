@@ -4,10 +4,9 @@
 
 #include <png.h>
 
+#include <cstring>
 #include <filesystem>
 #include <new>
-
-#include <cstring>
 
 namespace image {
 
