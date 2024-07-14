@@ -58,7 +58,9 @@ opengl_entry(World& world) {
     do {
         controls::computeMatricesFromInputs(window);
         glfwGetWindowSize(window, &window_width, &window_height);
-        main_scene.update(window_width, window_height);
+
+        main_scene.update_light_direction();
+        main_scene.update(window_width, window_width);
 
         main_scene.copy_to_window(window_width, window_height);
 

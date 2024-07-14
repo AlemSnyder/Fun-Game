@@ -4,6 +4,7 @@
 #include "../handler.hpp"
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 namespace gui {
 
@@ -11,6 +12,9 @@ namespace gui {
 
 void
 Scene::update(screen_size_t width, screen_size_t height) {
+
+    shadow_map_.update();
+
     FrameBufferHandler::instance().bind_fbo(shadow_map_.get_frame_buffer_id());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

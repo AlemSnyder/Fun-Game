@@ -21,11 +21,13 @@
  *
  */
 
+#pragma once
+
 #include "../../../types.hpp"
+#include "../data_structures/shadow_map.hpp"
+#include <memory>
 
 #include <GLFW/glfw3.h>
-
-#pragma once
 
 namespace gui {
 
@@ -68,6 +70,8 @@ class ShadowMap {
     virtual void render_shadow_map(
         screen_size_t shadow_width_, screen_size_t shadow_height_, GLuint frame_buffer
     ) const = 0;
+
+    virtual void set_shadow_map(const gui::data_structures::ShadowMap* shadow_map) = 0;
 };
 
 // blume

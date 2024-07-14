@@ -77,7 +77,6 @@ build/*
 
 # this is a lot of qb files
 SavedTerrain/*
-terrain_output_data/*
 
 # This is for images produced by biome generation
 terrain_output_data/*
