@@ -24,8 +24,8 @@
 
 #include <imgui/imgui.h>
 #include <png.h>
-#include <quill/Quill.h>
-#include <stdint.h>
+//#include <quill/Quill.h>
+//#include <stdint.h>
 
 #include <cstdlib>
 #include <filesystem>
@@ -43,7 +43,7 @@ void
 save_terrain(
     Json::Value materials_json, Json::Value biome_data, std::string biome_name
 ) {
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::main_logger;
 
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
@@ -136,7 +136,7 @@ GenerateTerrain(const argh::parser& cmdl) {
 
 int
 MacroMap() {
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::main_logger;
 
     terrain::generation::Biome biome("base", 2);
 
@@ -217,7 +217,7 @@ ChunkDataTest() {
 
 int
 NoiseTest() {
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::main_logger;
 
     terrain::generation::FractalNoise noise(1, 1, 3);
 
@@ -269,7 +269,8 @@ int
 path_finder_test(const argh::parser& cmdl) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::main_logger;
+
     size_t seed;
     cmdl("seed", SEED) >> seed;
     World world("base", path_in, seed);
@@ -407,7 +408,7 @@ main(int argc, char** argv) {
     else
         logging::init(console_log);
 
-    quill::Logger* logger = logging::get_logger();
+    quill::Logger* logger = logging::main_logger;
 
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());

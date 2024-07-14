@@ -30,9 +30,10 @@ extern quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 extern quill::Logger* file_io_logger;  // for file io
 extern quill::Logger* lua_logger;      // for lua logging
 
+/*
 inline quill::Logger*
 get_logger() {
-    return quill::get_logger();
+    return quill::Frontend::get_logger();
 }
 
 inline quill::Logger*
@@ -51,14 +52,14 @@ get_logger(std::string name, std::shared_ptr<quill::Handler> handler = nullptr) 
     // Create a new logger
     quill::Logger* logger;
     if (handler) {
-        logger = quill::create_or_get_logger(name, std::move(handler));
+        logger = quill::Frontend::create_or_get_logger(name, std::move(handler));
     } else {
-        logger = quill::create_or_get_logger(name);
+        logger = quill::Frontend::create_or_get_logger(name);
     }
     logger->set_log_level(_LOG_LEVEL);
     logger->init_backtrace(5, quill::LogLevel::Error);
     return logger;
-}
+}*/
 
 inline void
 set_thread_name(std::string name) {

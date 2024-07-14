@@ -54,7 +54,7 @@ quill::Logger* lua_logger;      // for lua
 const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
 
 void
-init(bool console, quill::LogLevel log_level, bool structured) {
+init(bool console, quill::LogLevel log_level) {
     _LOG_LEVEL = log_level;
 
     // Create the logs directory
@@ -93,47 +93,46 @@ init(bool console, quill::LogLevel log_level, bool structured) {
             "%F %T.%Qms %z" // ISO 8601 but with space instead of T
         );
 
-        //stdout_handler->set_pattern(
-        //    LOGLINE_FORMAT,
-        //    "%F %T.%Qms %z" // ISO 8601 but with space instead of T
+        // stdout_handler->set_pattern(
+        //     LOGLINE_FORMAT,
+        //     "%F %T.%Qms %z" // ISO 8601 but with space instead of T
         //);
-        //stdout_handler->set_log_level(log_level);
+        // stdout_handler->set_log_level(log_level);
 
-        //cfg.default_handlers.emplace_back(stdout_handler);
+        // cfg.default_handlers.emplace_back(stdout_handler);
     }
 
-    // Initialize file handler
-    std::shared_ptr<quill::Handler> file_handler;
-#if DEBUG()
-    (void)structured; // Keep the compiler from complaining
+    // std::shared_ptr<quill::Handler> file_handler;
+    /*#if DEBUG()
+        (void)structured; // Keep the compiler from complaining
 
-    // Rotate through file handlers to save space
-    file_handler = quill::rotating_file_handler(LOG_FILE, []() {
-        quill::RotatingFileHandlerConfig cfg;
-        cfg.set_rotation_max_file_size(1024 * 1024 / 2); // 512 KB
-        cfg.set_max_backup_files(5);                     // 5 backups
-        cfg.set_overwrite_rolled_files(true);            // append
-        return cfg;
-    }());
-#else
-    if (structured) {
-        file_handler = quill::json_file_handler(LOG_FILE.string() + ".json", []() {
-            quill::JsonFileHandlerConfig cfg;
-            cfg.set_open_mode('w');
-            cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
+        // Rotate through file handlers to save space
+        file_handler = quill::rotating_file_handler(LOG_FILE, []() {
+            quill::RotatingFileHandlerConfig cfg;
+            cfg.set_rotation_max_file_size(1024 * 1024 / 2); // 512 KB
+            cfg.set_max_backup_files(5);                     // 5 backups
+            cfg.set_overwrite_rolled_files(true);            // append
             return cfg;
         }());
-    } else {
-        file_handler = quill::file_handler(LOG_FILE, []() {
-            quill::JsonFileHandlerConfig cfg;
-            cfg.set_open_mode('w');
-            cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
-            return cfg;
-        }());
-    }
-#endif
+    #else
+        if (structured) {
+            file_handler = quill::json_file_handler(LOG_FILE.string() + ".json", []() {
+                quill::JsonFileHandlerConfig cfg;
+                cfg.set_open_mode('w');
+                cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
+                return cfg;
+            }());
+        } else {
+            file_handler = quill::file_handler(LOG_FILE, []() {
+                quill::JsonFileHandlerConfig cfg;
+                cfg.set_open_mode('w');
+                cfg.set_append_to_filename(quill::FilenameAppend::StartDateTime);
+                return cfg;
+            }());
+        }
+    #endif*/
 
-    std::shared_ptr<quill::Handler> file_handler_lua =
+    /*std::shared_ptr<quill::Handler> file_handler_lua =
         quill::file_handler("." / LOG_FILE);
 
     file_handler->set_pattern(
@@ -144,15 +143,17 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     file_handler_lua->set_pattern(
         LOGLINE_FORMAT,
         "%FT%T.%Qms %z" // ISO 8601
-    );
+    );*/
 
-    file_handler->set_log_level(log_level);
+    // file_handler->set_log_level(log_level);
 
-    cfg.default_handlers.emplace_back(file_handler);
+    // cfg.default_handlers.emplace_back(file_handler);
 
     // Start the logging backend thread
     quill::Backend::start();
 
+// Initialize file sink
+#if DEBUG()
     auto file_sink =
         quill::Frontend::create_or_get_sink<quill::RotatingFileSink>(LOG_FILE, []() {
             quill::RotatingFileSinkConfig cfg;
@@ -162,6 +163,15 @@ init(bool console, quill::LogLevel log_level, bool structured) {
             cfg.set_overwrite_rolled_files(true);            // append
             return cfg;
         }());
+#else
+    auto file_sink =
+        quill::Frontend::create_or_get_sink<quill::FileSink>(LOG_FILE, []() {
+            quill::FileSinkConfig cfg;
+            cfg.set_open_mode('w');
+            return cfg;
+        }());
+
+#endif
 
     main_logger =
         quill::Frontend::create_or_get_logger("main", file_sink, LOGLINE_FORMAT);
