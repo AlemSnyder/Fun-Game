@@ -14,12 +14,12 @@ namespace gui {
 namespace gpu_data {
 
 StarShape::StarShape() :
-    shape_buffer_({
+    shape_buffer_{
         {0,  1 },
         {1,  0 },
         {-1, 0 },
         {0,  -1}
-}) {
+} {
     // four point making a diamond centered at 0,0
     // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
 }

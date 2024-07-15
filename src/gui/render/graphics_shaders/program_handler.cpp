@@ -35,21 +35,6 @@ File::get_file_content() {
     return shader_code;
 }
 
-constexpr std::string
-get_shader_string(GLuint gl_shader_type) {
-    switch (gl_shader_type) {
-        case GL_VERTEX_SHADER:
-            return "vertex";
-        case GL_FRAGMENT_SHADER:
-            return "fragment";
-        case GL_GEOMETRY_SHADER:
-            return "geometry";
-
-        default:
-            return "NOT A VALID SHADER TYPE";
-    }
-}
-
 void
 Shader::reload() {
     if (shader_ID_ != 0) {
@@ -62,7 +47,7 @@ Shader::reload() {
     std::string shader_type_string = get_shader_string(shader_type_);
 
     // Create the shader
-    shader_ID_ = glCreateShader(shader_type_);
+    shader_ID_ = glCreateShader(static_cast<GLenum>(shader_type_));
 
     for (File& file : files_) {
         std::optional<std::string> file_content = file.get_file_content();
@@ -272,7 +257,7 @@ ShaderHandler::clear() {
 
 // public
 Shader&
-ShaderHandler::get_shader(const std::vector<File> source_files, GLuint gl_shader_type) {
+ShaderHandler::get_shader(const std::vector<File> source_files, gpu_data::ShaderType gl_shader_type) {
     ShaderData shader_data(source_files, gl_shader_type);
     auto it = shaders_.find(shader_data);
     if (it == shaders_.end()) {
@@ -299,8 +284,8 @@ ShaderHandler::load_program(
         fragment_file_paths.begin(), fragment_file_paths.end()
     );
 
-    Shader& vertex_shader = get_shader(vertex_source_files_, GL_VERTEX_SHADER);
-    Shader& fragment_shader = get_shader(fragment_source_files_, GL_FRAGMENT_SHADER);
+    Shader& vertex_shader = get_shader(vertex_source_files_, gpu_data::ShaderType::VERTEX_SHADER);
+    Shader& fragment_shader = get_shader(fragment_source_files_, gpu_data::ShaderType::FRAGMENT_SHADER);
 
     // test if we already have the program
     ProgramData test_program(vertex_shader, fragment_shader);

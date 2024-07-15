@@ -18,7 +18,7 @@ file(GLOB SOURCES4 "vendor/*.c*")
 file(GLOB SOURCES6 "vendor/imgui/*.c*")
 file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
 file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
-add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES5} ${SOURCES6} ${SOURCES7} ${SOURCES8})
+add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # Set standard version
 set_property(TARGET FunGame PROPERTY CXX_STANDARD 20)
@@ -117,3 +117,11 @@ else()
 endif()
 
 configure_file(src/config.h.in config.h)
+
+enable_testing()
+
+add_test(NAME LuaTest COMMAND FunGame LuaTest)
+add_test(NAME NoiseTest COMMAND FunGame NoiseTest)
+add_test(NAME Logging COMMAND FunGame Logging)
+add_test(NAME ChunkDataTest COMMAND FunGame ChunkDataTest)
+

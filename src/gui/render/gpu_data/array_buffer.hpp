@@ -1,7 +1,8 @@
 #pragma once
 
-#include "global_context.hpp"
+#include "../gl_enums.hpp"
 #include "logging.hpp"
+#include "global_context.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -13,27 +14,6 @@
 namespace gui {
 
 namespace gpu_data {
-
-// TODO enum draw type
-// static draw dynamic draw etc
-
-/**
- * @brief Data type of buffer
- */
-enum class GPUDataType : GLenum {
-
-    // clang-format off
-    BYTE            = GL_BYTE,
-    UNSIGNED_BYTE   = GL_UNSIGNED_BYTE,
-    SHORT           = GL_SHORT,
-    UNSIGNED_SHORT  = GL_UNSIGNED_SHORT,
-    INT             = GL_INT,
-    UNSIGNED_INT    = GL_UNSIGNED_INT,
-
-    FLOAT           = GL_FLOAT,
-    DOUBLE          = GL_DOUBLE,
-    // clang-format on
-};
 
 constexpr std::string
 reper(const GPUDataType& data_type) {
@@ -60,19 +40,12 @@ reper(const GPUDataType& data_type) {
 }
 
 /**
- * @brief Targe. Designates how the buffer is used.
- */
-enum class BindingTarget : GLenum {
-    ARRAY_BUFFER = GL_ARRAY_BUFFER,
-    ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
-};
-
-/**
  * @brief Determines how a data type should be interpreted on the GPU.
  *
  * @details The entire thing works by template deduction and magic.
  */
-struct GPUArrayType {
+class GPUArrayType {
+ public:
     const uint8_t vec_size;      // 1,2,3 or 4 vec size
     const uint8_t type_size;     // size of type float, int etc.
     const bool is_int;           // should be interpreted as integer
@@ -80,9 +53,7 @@ struct GPUArrayType {
 
     inline constexpr GPUArrayType(
         uint8_t vec_size, uint8_t type_size, bool is_int, GPUDataType draw_type
-    ) :
-        vec_size(vec_size),
-        type_size(type_size), is_int(is_int), draw_type(draw_type) {
+    ) : vec_size(vec_size), type_size(type_size), is_int(is_int), draw_type(draw_type) {
         assert((1 <= vec_size && vec_size <= 4) && "Vector size not allowed");
     }
 
@@ -182,8 +153,6 @@ struct GPUArrayType {
     create() {
         return create_from_object(T());
     }
-
-    bool operator==(const GPUArrayType& other) const = default;
 };
 
 /**
@@ -228,7 +197,7 @@ class ArrayBuffer {
                 logging::opengl_logger, "buffer ID before generation: {}", buffer_ID_
             );
             glGenBuffers(1, &buffer_ID_);
-            this->update_(data.data(), 0, data.size());
+            this->pointer_update_(data.data(), 0, data.size());
         });
     };
 
@@ -245,14 +214,10 @@ class ArrayBuffer {
      * @param std::vector<T>& data data to send to GPU
      * @param GLuint divisor go look up instancing
      */
-    /*inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
+    inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
         divisor_(divisor) {
-        GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this, data]() {
-            glGenBuffers(1, &buffer_ID_);
-            this->update_(data.begin(), 0, data.size());
-        });
-    }*/
+        pointer_update_(data.begin(), 0, data.size());
+    }
 
     /**
      * @brief Construct ArrayBuffer with data
@@ -271,7 +236,7 @@ class ArrayBuffer {
     update(std::vector<T> data, GLuint offset) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data, offset]() {
-            this->update_(data.data(), offset, data.size());
+            this->pointer_update_(data.data(), offset, data.size());
         });
     };
 
@@ -281,11 +246,8 @@ class ArrayBuffer {
      * @param std::vector<T>& data data to send to GPU
      */
     inline void
-    update(std::vector<T> data) {
-        GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this, data]() {
-            this->update_(data.data(), 0, data.size());
-        });
+    update(const std::vector<T>& data) {
+        pointer_update_(data.data(), 0, data.size());
     }
 
     //    inline void update(size_t offset, std::vector<T> data);
@@ -332,15 +294,15 @@ class ArrayBuffer {
         return draw_type;
     }
 
-    [[nodiscard]] inline constexpr static int
+    [[nodiscard]] inline constexpr static uint8_t
     get_vec_size() {
-        constexpr int vec_size = get_array_type().vec_size;
+        constexpr uint8_t vec_size = get_array_type().vec_size;
         return vec_size;
     }
 
-    [[nodiscard]] inline constexpr static int
+    [[nodiscard]] inline constexpr static uint8_t
     get_type_size() {
-        constexpr int type_size = get_array_type().type_size;
+        constexpr uint8_t type_size = get_array_type().type_size;
         return type_size;
     }
 
@@ -350,14 +312,14 @@ class ArrayBuffer {
      *
      * @param std::vector<T>& data data to send to GPU
      */
-    void update_(const T* data_begin, size_t offset, size_t add_data_size);
+    void pointer_update_(const T* data_begin, size_t offset, size_t add_data_size);
 };
 
 // go do vector implementations
 
 template <class T, BindingTarget buffer>
 void
-ArrayBuffer<T, buffer>::update_(
+ArrayBuffer<T, buffer>::pointer_update_(
     const T* data_begin, size_t offset, size_t add_data_size
 ) {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
