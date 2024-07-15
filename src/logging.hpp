@@ -10,6 +10,7 @@
 #include <quill/std/Vector.h>
 #include <quill/std/Map.h>
 #include <quill/std/Pair.h>
+#include <quill/std/Set.h>
 
 #include "util/files.hpp"
 

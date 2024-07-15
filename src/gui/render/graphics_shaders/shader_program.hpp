@@ -109,10 +109,10 @@ class Render_Base {
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-        //LOG_DEBUG(
-        //    logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
-        //);
-        //LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
+        LOG_DEBUG(
+            logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
+        );
+        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
