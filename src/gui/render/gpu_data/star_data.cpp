@@ -32,7 +32,7 @@ StarData::read_data_from_file(std::filesystem::path path) {
         stars_file.value() >> stars_json;
     else {
         LOG_WARNING(
-            logging::file_io_logger, "Could not open sky data from file {}.", path.c_str()
+            logging::file_io_logger, "Could not open sky data from file {}.", path
         );
         return {};
     }

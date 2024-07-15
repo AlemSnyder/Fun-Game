@@ -79,10 +79,10 @@ log_uniforms(
     );
 
     if (uniforms_needed.size() > 0)
-        LOG_WARNING(logging::opengl_logger, "Needed uniforms");
+        LOG_WARNING(logging::opengl_logger, "Needed uniforms {}", uniforms_needed);
     if (uniforms_not_needed.size() > 0)
         LOG_DEBUG(
-            logging::opengl_logger, "Not needed uniforms"
+            logging::opengl_logger, "Not needed uniforms {}", uniforms_not_needed
         );
 
 #endif

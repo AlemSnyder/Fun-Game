@@ -56,7 +56,7 @@ Shader::reload() {
             status_ = ShaderStatus::INVALID_FILE;
             LOG_ERROR(
                 logging::file_io_logger,
-                "Could not read {}. Check that the files exists.", file.get_file_path().c_str()
+                "Could not read {}. Check that the files exists.", file.get_file_path()
             );
             return;
         }
