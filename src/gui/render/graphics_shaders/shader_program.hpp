@@ -79,10 +79,10 @@ log_uniforms(
     );
 
     if (uniforms_needed.size() > 0)
-        LOG_WARNING(logging::opengl_logger, "Needed uniforms {}", uniforms_needed);
+        LOG_WARNING(logging::opengl_logger, "Needed uniforms");
     if (uniforms_not_needed.size() > 0)
         LOG_DEBUG(
-            logging::opengl_logger, "Not needed uniforms {}", uniforms_not_needed
+            logging::opengl_logger, "Not needed uniforms"
         );
 
 #endif
@@ -109,10 +109,10 @@ class Render_Base {
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-        LOG_DEBUG(
-            logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
-        );
-        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
+        //LOG_DEBUG(
+        //    logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
+        //);
+        //LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 

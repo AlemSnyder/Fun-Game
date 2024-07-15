@@ -24,8 +24,6 @@
 
 #include <imgui/imgui.h>
 #include <png.h>
-//#include <quill/Quill.h>
-//#include <stdint.h>
 
 #include <cstdlib>
 #include <filesystem>
@@ -136,8 +134,6 @@ GenerateTerrain(const argh::parser& cmdl) {
 
 int
 MacroMap() {
-    quill::Logger* logger = logging::main_logger;
-
     terrain::generation::Biome biome("base", 2);
 
     // test terrain generation
@@ -148,7 +144,7 @@ MacroMap() {
         int_map.push_back(map_tile.get_tile_type());
     }
 
-    LOG_INFO(logger, "Map: {}", int_map);
+    LOG_INFO(logging::main_logger, "Map: {}", int_map);
 
     return 0;
 }
@@ -377,6 +373,11 @@ LogTest() {
                              "file, but instead the lua file."
     );
 
+    LOG_INFO(
+        logging::lua_logger,
+        "[{}.lua:{}] - This is what a lua log should look like.", "example_file", 37
+    );
+
     return 0;
 }
 
@@ -404,7 +405,7 @@ main(int argc, char** argv) {
     // TODO(nino): need a better arg parser, but allow -vvvv (for example)
     bool console_log = cmdl[{"-c", "--console"}];
     if (cmdl[{"-v", "--verbose"}])
-        logging::init(console_log, quill::LogLevel::TraceL3, false);
+        logging::init(console_log, quill::LogLevel::TraceL3);
     else
         logging::init(console_log);
 
