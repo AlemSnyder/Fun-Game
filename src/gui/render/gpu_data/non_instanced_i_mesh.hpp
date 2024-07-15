@@ -54,8 +54,6 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
     ArrayBuffer<uint16_t> color_array_;
     ArrayBuffer<glm::i8vec3> normal_array_;
     ArrayBuffer<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
-    // GLuint color_texture_;
-    //Texture1D color_texture_;
     uint32_t num_vertices_;
     bool do_render_;
 
@@ -75,15 +73,14 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         color_array_(mesh.get_indexed_color_ids()),
         normal_array_(mesh.get_indexed_normals()),
         element_array_(mesh.get_indices()),
-        //color_texture_(color::convert_color_data(mesh.get_color_map())),
         num_vertices_(mesh.get_indices().size()),
         do_render_(mesh.get_indices().size()) {}
 
     virtual void update(const world::entity::Mesh& mesh);
 
-    virtual void bind() const;
+    virtual void bind() const override;
 
-    virtual void release() const;
+    virtual void release() const override;
 
     [[nodiscard]] inline bool virtual do_render() const noexcept override {
         return do_render_;
@@ -108,11 +105,6 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
     get_vertex_buffer() const noexcept {
         return vertex_array_;
     }
-
-    //[[nodiscard]] inline GLuint
-    //get_color_texture() const noexcept {
-    //    return color_texture_.value();
-    //}
 
     [[nodiscard]] inline uint32_t
     get_num_vertices() const noexcept override {

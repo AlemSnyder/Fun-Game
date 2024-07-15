@@ -26,8 +26,6 @@ NonInstancedIMeshGPU::bind() const {
                                  // that the array is the elements array?
     color_array_.bind(1, 1);
     normal_array_.bind(2, 2);
-
-    //color_texture_.bind(0);
 }
 
 void
