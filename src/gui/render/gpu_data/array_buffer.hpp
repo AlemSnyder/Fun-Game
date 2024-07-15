@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../gl_enums.hpp"
+#include "../gl_enums.hpp"
 #include "logging.hpp"
 #include "global_context.hpp"
 
