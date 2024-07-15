@@ -39,25 +39,15 @@ class ObjectData {
  public:
     ObjectData(const Json::Value& object_json, std::filesystem::path object_path);
 
-    [[nodiscard]] inline ModelController&
-    get_model(size_t mesh_id) {
-        return model_meshes_[mesh_id];
-    }
+    [[nodiscard]] ModelController& get_model(size_t mesh_id);
 
-    [[nodiscard]] inline size_t
-    num_models() const {
-        return model_meshes_.size();
-    }
+    [[nodiscard]] size_t num_models() const noexcept;
 
-    [[nodiscard]] inline auto
-    begin() {
-        return model_meshes_.begin();
-    }
+    [[nodiscard]]
+    std::vector<world::entity::ModelController>::iterator begin() noexcept;
 
-    [[nodiscard]] inline auto
-    end() {
-        return model_meshes_.end();
-    }
+    [[nodiscard]]
+    std::vector<world::entity::ModelController>::iterator end() noexcept;
 
     inline ObjectData(const ObjectData& obj) = delete;
     inline ObjectData(ObjectData&& other) = default;
@@ -112,9 +102,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     ModelController(
         const world::entity::Mesh& model_mesh,
         const std::vector<std::vector<ColorFloat>>& vector_data
-    ) :
-        model_mesh_(model_mesh, {}),
-        model_textures_(vector_data) {}
+    ) : model_mesh_(model_mesh, {}), model_textures_(vector_data) {}
 
     inline void
     bind() const override {

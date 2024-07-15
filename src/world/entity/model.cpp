@@ -7,6 +7,26 @@ namespace world {
 
 namespace entity {
 
+    ModelController&
+    ObjectData::get_model(size_t mesh_id) {
+        return model_meshes_[mesh_id];
+    }
+
+    size_t
+    ObjectData::num_models() const noexcept {
+        return model_meshes_.size();
+    }
+
+    std::vector<world::entity::ModelController>::iterator
+    ObjectData::begin() noexcept {
+        return model_meshes_.begin();
+    }
+
+    std::vector<world::entity::ModelController>::iterator
+    ObjectData::end() noexcept{
+        return model_meshes_.end();
+    }
+
 ObjectData::ObjectData(
     const Json::Value& object_json, std::filesystem::path object_path
 ) :
