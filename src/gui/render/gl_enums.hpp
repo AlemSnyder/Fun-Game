@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -62,6 +64,30 @@ enum class ShaderType : GLenum {
     //    GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
     //    COMPUTE_SHADER = GL_COMPUTE_SHADER,
 };
+
+constexpr std::string
+reper(const GPUDataType& data_type) {
+    switch (data_type) {
+        case GPUDataType::BYTE:
+            return "BYTE";
+        case GPUDataType::UNSIGNED_BYTE:
+            return "UNSIGNED_BYTE";
+        case GPUDataType::SHORT:
+            return "SHORT";
+        case GPUDataType::UNSIGNED_SHORT:
+            return "UNSIGNED_SHORT";
+        case GPUDataType::INT:
+            return "INT";
+        case GPUDataType::UNSIGNED_INT:
+            return "UNSIGNED_INT";
+        case GPUDataType::FLOAT:
+            return "FLOAT";
+        case GPUDataType::DOUBLE:
+            return "DOUBLE";
+        default:
+            abort();
+    }
+}
 
 } // namespace gpu_data
 
