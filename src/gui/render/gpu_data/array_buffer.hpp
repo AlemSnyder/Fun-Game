@@ -1,9 +1,8 @@
 #pragma once
 
 #include "../gl_enums.hpp"
-#include "../gl_enums.hpp"
-#include "logging.hpp"
 #include "global_context.hpp"
+#include "logging.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -15,30 +14,6 @@
 namespace gui {
 
 namespace gpu_data {
-
-constexpr std::string
-reper(const GPUDataType& data_type) {
-    switch (data_type) {
-        case GPUDataType::BYTE:
-            return "BYTE";
-        case GPUDataType::UNSIGNED_BYTE:
-            return "UNSIGNED_BYTE";
-        case GPUDataType::SHORT:
-            return "SHORT";
-        case GPUDataType::UNSIGNED_SHORT:
-            return "UNSIGNED_SHORT";
-        case GPUDataType::INT:
-            return "INT";
-        case GPUDataType::UNSIGNED_INT:
-            return "UNSIGNED_INT";
-        case GPUDataType::FLOAT:
-            return "FLOAT";
-        case GPUDataType::DOUBLE:
-            return "DOUBLE";
-        default:
-            abort();
-    }
-}
 
 /**
  * @brief Determines how a data type should be interpreted on the GPU.
@@ -202,24 +177,6 @@ class ArrayBuffer {
         });
     };
 
-    // copy constructor
-    //    ArrayBuffer(const ArrayBuffer& other) = delete;
-    //    ArrayBuffer(ArrayBuffer&& other) = delete;
-    // copy operator
-    //    ArrayBuffer& operator=(const ArrayBuffer& other) = delete;
-    //    ArrayBuffer& operator=(ArrayBuffer&& other) = delete;
-
-    /**
-     * @brief Construct ArrayBuffer with data and divisor
-     *
-     * @param std::vector<T>& data data to send to GPU
-     * @param GLuint divisor go look up instancing
-     */
-    inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
-        divisor_(divisor) {
-        pointer_update_(data.begin(), 0, data.size());
-    }
-
     /**
      * @brief Construct ArrayBuffer with data
      *
@@ -248,10 +205,8 @@ class ArrayBuffer {
      */
     inline void
     update(const std::vector<T>& data) {
-        pointer_update_(data.data(), 0, data.size());
+        update(data.data(), 0);
     }
-
-    //    inline void update(size_t offset, std::vector<T> data);
 
     /**
      * @brief Get the divisor

@@ -421,6 +421,6 @@ main(int argc, char** argv) {
         return graphics_main(cmdl);
     } else {
         std::cout << "Old command line arguments don't work. Try adding \"Test\"." << std::endl;
-        return 0;
+        return 1;
     }
 }
