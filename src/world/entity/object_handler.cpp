@@ -46,8 +46,7 @@ ObjectHandler::read_object(std::filesystem::path object_path) {
     }
 
     ided_objects.emplace(
-        std::piecewise_construct,
-        std::forward_as_tuple(std::move(identification)),
+        std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
         std::forward_as_tuple(object_json, object_path)
     );
 }

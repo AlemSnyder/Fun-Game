@@ -1,10 +1,9 @@
 #include "biome.hpp"
 
+#include "entity/object_handler.hpp"
 #include "logging.hpp"
 #include "terrain/generation/noise.hpp"
 #include "terrain/generation/worley_noise.hpp"
-#include "entity/object_handler.hpp"
-
 
 #include <json/json.h>
 

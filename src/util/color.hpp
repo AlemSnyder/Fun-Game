@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.hpp"
 #include "bits.hpp"
+#include "types.hpp"
 
 #include <vector>
 
@@ -50,6 +50,6 @@ convert_color_data(const std::vector<ColorInt>& color_map) {
     return float_colors;
 }
 
-constexpr ColorFloat black({0,0,0,1});
+constexpr ColorFloat black({0, 0, 0, 1});
 
 } // namespace color

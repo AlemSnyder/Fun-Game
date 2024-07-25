@@ -15,6 +15,8 @@ namespace gui {
 
 namespace gpu_data {
 
+namespace {
+
 /**
  * @brief Determines how a data type should be interpreted on the GPU.
  *
@@ -29,7 +31,9 @@ class GPUArrayType {
 
     inline constexpr GPUArrayType(
         uint8_t vec_size, uint8_t type_size, bool is_int, GPUDataType draw_type
-    ) : vec_size(vec_size), type_size(type_size), is_int(is_int), draw_type(draw_type) {
+    ) :
+        vec_size(vec_size),
+        type_size(type_size), is_int(is_int), draw_type(draw_type) {
         assert((1 <= vec_size && vec_size <= 4) && "Vector size not allowed");
     }
 
@@ -130,6 +134,8 @@ class GPUArrayType {
         return create_from_object(T());
     }
 };
+
+} // namespace
 
 /**
  * @brief Generates a vector like object to store data on GPU.

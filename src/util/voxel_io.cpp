@@ -78,8 +78,9 @@ from_qb(
     size = {x_max, y_max, z_max};
     data.resize(x_max * y_max * z_max);
 
-    //LOG_DEBUG(
-    //    logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max, z_max
+    // LOG_DEBUG(
+    //     logging::file_io_logger, "Voxel grid size: {X} x {Y} x {Z}", x_max, y_max,
+    //     z_max
     //);
 
     // Get voxel grid center
@@ -98,8 +99,8 @@ from_qb(
 
     LOG_DEBUG(
         logging::file_io_logger,
-        "Reading name {}; size: ({} x {} x {}); center: ({}, {}, {})",
-                 name, x_max, y_max, z_max, x_center, y_center, z_center
+        "Reading name {}; size: ({} x {} x {}); center: ({}, {}, {})", name, x_max,
+        y_max, z_max, x_center, y_center, z_center
     );
 
     // Read the voxels themselves

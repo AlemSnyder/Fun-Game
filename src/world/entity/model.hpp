@@ -21,17 +21,17 @@ constexpr size_t NO_UPDATE = -1;
 
 class ModelController;
 
-// Think of this class as rose bush
-// there are multiple rose bush models
-// all model no positions
-// Own file
+/**
+ * @brief Data of Objects of the same type
+ *
+ * @details Think of this class as rose bush. There are multiple rose bush models, but
+ * they have the same size and drops.
+ */
 class ObjectData {
  private:
-    // std::vector<voxel_utility::VoxelObject> models_;
-
     std::vector<ModelController> model_meshes_;
 
-    // some size/off set center. Models must have the same size.
+    // some size/offset/center. Models must have the same size.
 
     std::string name_;
     std::string identification_;
@@ -43,11 +43,10 @@ class ObjectData {
 
     [[nodiscard]] size_t num_models() const noexcept;
 
-    [[nodiscard]]
-    std::vector<world::entity::ModelController>::iterator begin() noexcept;
+    [[nodiscard]] std::vector<world::entity::ModelController>::iterator
+    begin() noexcept;
 
-    [[nodiscard]]
-    std::vector<world::entity::ModelController>::iterator end() noexcept;
+    [[nodiscard]] std::vector<world::entity::ModelController>::iterator end() noexcept;
 
     inline ObjectData(const ObjectData& obj) = delete;
     inline ObjectData(ObjectData&& other) = default;
@@ -64,10 +63,18 @@ class ObjectData {
 // TODO move this to GPU
 // mostly position
 // there is a model controller for each voxel object model
+/**
+ * @brief Wrapper of data used by each model.
+ *
+ * @details Contains the mesh and color map for each model used. It also contains
+ * at set of the positions of each model.
+ */
 class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
  private:
+    // model mesh on gpu
     gui::gpu_data::InstancedIMeshGPU model_mesh_;
 
+    // texture map
     gui::gpu_data::Texture2D model_textures_;
 
     // each mesh has a different texture
@@ -76,12 +83,16 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     // vector of placements PlacementOrder is the hash function
     std::unordered_set<Placement, PlacementOrder> placements_;
 
+    // position of data to be written in next frame
     size_t offset_ = NO_UPDATE;
 
     // multiple array buffers
 
     // scale const int how much the model is scaled
 
+    /**
+     * @brief Reset the offset for the next frame
+     */
     inline void
     reset_offset() {
         offset_ = NO_UPDATE;
@@ -99,11 +110,22 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
      */
     void update();
 
+    /**
+     * @brief Construct new ModelController
+     *
+     * @param const world::entity::Mesh& Mesh data
+     * @param const std::vector<std::vector<ColorFloat>>& color map data
+     */
     ModelController(
         const world::entity::Mesh& model_mesh,
         const std::vector<std::vector<ColorFloat>>& vector_data
-    ) : model_mesh_(model_mesh, {}), model_textures_(vector_data) {}
+    ) :
+        model_mesh_(model_mesh, {}),
+        model_textures_(vector_data) {}
 
+    /**
+     * @brief Bind data for rendering
+     */
     inline void
     bind() const override {
         model_mesh_.bind();
@@ -111,26 +133,50 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
         model_textures_.bind(0);
     }
 
+    /**
+     * @brief Unbind data
+     */
     inline void
     release() const override {
         model_mesh_.release();
     }
 
+    /**
+     * @brief Should this model be rendered.
+     *
+     * @return True The model should be rendered.
+     * @return False The model should not be rendered.
+     */
     [[nodiscard]] inline bool
     do_render() const override {
         return model_mesh_.do_render();
     }
 
+    /**
+     * @brief Get the number of vertices in the mesh.
+     *
+     * @return uint32_t the number of vertices
+     */
     [[nodiscard]] inline uint32_t
     get_num_vertices() const override {
         return model_mesh_.get_num_vertices();
     }
 
+    /**
+     * @brief Get they data buffer type.
+     *
+     * @return gui::gpu_data::GPUDataType data buffer type
+     */
     [[nodiscard]] inline gui::gpu_data::GPUDataType
     get_element_type() const override {
         return model_mesh_.get_element_type();
     }
 
+    /**
+     * @brief Return the number of models.
+     *
+     * @return uint32_t the number of models
+     */
     [[nodiscard]] inline uint32_t
     get_num_models() const override {
         return placements_.size();

@@ -23,15 +23,12 @@
 
 #pragma once
 
-#include "logging.hpp"
-#include "util/voxel.hpp"
-#include "util/voxel_io.hpp"
 #include "chunk.hpp"
-#include "world/biome.hpp"
 #include "generation/land_generator.hpp"
 #include "generation/map_tile.hpp"
 #include "generation/noise.hpp"
 #include "generation/tile_stamp.hpp"
+#include "logging.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
 #include "path/node_group.hpp"
@@ -40,6 +37,9 @@
 #include "terrain_base.hpp"
 #include "terrain_helper.hpp"
 #include "tile.hpp"
+#include "util/voxel.hpp"
+#include "util/voxel_io.hpp"
+#include "world/biome.hpp"
 
 #include <array>
 #include <cstdint>

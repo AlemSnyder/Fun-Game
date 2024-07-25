@@ -1,7 +1,7 @@
 #include "scene.hpp"
-#include "logging.hpp"
 
 #include "../handler.hpp"
+#include "logging.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/entity/object_handler.hpp"
 

@@ -2,8 +2,8 @@
 
 #include "../exceptions.hpp"
 #include "../logging.hpp"
-#include "types.hpp"
 #include "bits.hpp"
+#include "types.hpp"
 #include "voxel.hpp"
 
 #include <array>

@@ -40,7 +40,8 @@ class Helio : public render::LightEnvironment, public render::StarRotation {
         earth_tilt_(earth_tilt), year_days_(year_days), day_seconds_(day_seconds),
         latitude_(latitude) {}
 
-    bool& control_lighting(){
+    bool&
+    control_lighting() {
         return manual_light_direction_;
     }
 

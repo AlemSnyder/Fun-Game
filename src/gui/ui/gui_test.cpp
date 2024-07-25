@@ -1,8 +1,5 @@
 #include "gui_test.hpp"
 
-#include "world/entity/mesh.hpp"
-#include "logging.hpp"
-#include "world/world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../render/gpu_data/screen_data.hpp"
@@ -13,7 +10,10 @@
 #include "../scene/controls.hpp"
 #include "../scene/helio.hpp"
 #include "../scene/scene.hpp"
+#include "logging.hpp"
 #include "opengl_setup.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/world.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

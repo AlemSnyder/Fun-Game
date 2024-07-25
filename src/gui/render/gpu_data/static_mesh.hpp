@@ -37,7 +37,7 @@ namespace gpu_data {
  * each mesh.
  */
 class StaticMesh : public virtual InstancedIMeshGPU {
-    protected:
+ protected:
     Texture1D color_texture_;
 
  public:
@@ -56,7 +56,6 @@ class StaticMesh : public virtual InstancedIMeshGPU {
         InstancedIMeshGPU::bind();
         color_texture_.bind(0);
     }
-
 };
 
 } // namespace gpu_data

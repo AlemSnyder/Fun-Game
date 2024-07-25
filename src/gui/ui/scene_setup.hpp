@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "world/world.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/scene.hpp"
+#include "world/world.hpp"
 
 namespace gui {
 

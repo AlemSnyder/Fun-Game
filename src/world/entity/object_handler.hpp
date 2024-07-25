@@ -9,6 +9,12 @@ namespace world {
 
 namespace entity {
 
+/**
+ * @brief Handles all objects
+ *
+ * @details Global set of objects for look up. All objects should be read from files
+ * using this handler so that any system can look up them later by the object id string.
+ */
 class ObjectHandler {
  protected:
     // Private CTOR as this is a singleton
@@ -36,10 +42,10 @@ class ObjectHandler {
 
     ObjectData& get_object(const std::string&);
 
-    [[nodiscard]] inline std::map<std::string, ObjectData>& get_objects() {
+    [[nodiscard]] inline std::map<std::string, ObjectData>&
+    get_objects() {
         return ided_objects;
     };
-
 
     /**
      * @brief Update all ObjectData. Should be run once per frame.

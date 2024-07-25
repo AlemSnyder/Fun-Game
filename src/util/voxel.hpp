@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.hpp"
 #include "glm/glm.hpp"
+#include "types.hpp"
 
 #include <array>
 #include <cstdint>

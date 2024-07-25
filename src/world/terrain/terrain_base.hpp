@@ -22,16 +22,16 @@
 
 #pragma once
 
-#include "logging.hpp"
-#include "types.hpp"
-#include "util/voxel.hpp"
-#include "world/biome.hpp"
 #include "generation/land_generator.hpp"
 #include "generation/map_tile.hpp"
 #include "generation/tile_stamp.hpp"
+#include "logging.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
 #include "tile.hpp"
+#include "types.hpp"
+#include "util/voxel.hpp"
+#include "world/biome.hpp"
 
 #include <json/json.h>
 

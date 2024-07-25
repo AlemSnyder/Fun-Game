@@ -24,8 +24,8 @@
 #pragma once
 
 #include "../../logging.hpp"
-#include "types.hpp"
 #include "../gui_logging.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

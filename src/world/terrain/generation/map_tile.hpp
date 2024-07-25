@@ -1,8 +1,8 @@
 #pragma once
 
+#include "noise.hpp"
 #include "types.hpp"
 #include "util/png_image.hpp"
-#include "noise.hpp"
 
 #include <random>
 #include <vector>
@@ -120,11 +120,8 @@ class PlantMap {
  public:
     inline PlantMap() : width_(0), height_(0){};
 
-    inline PlantMap(
-        std::vector<float> terrain_map, Dim width, Dim height
-    ) :
-        width_(width),
-        height_(height), terrain_map_(terrain_map) {
+    inline PlantMap(std::vector<float> terrain_map, Dim width, Dim height) :
+        width_(width), height_(height), terrain_map_(terrain_map) {
         assert(terrain_map_.size() == width_ * height_);
     };
 

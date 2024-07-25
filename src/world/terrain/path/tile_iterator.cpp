@@ -22,8 +22,8 @@
  *
  */
 
-#include "types.hpp"
 #include "../terrain.hpp"
+#include "types.hpp"
 #include "unit_path.hpp"
 
 #include <cstdint>

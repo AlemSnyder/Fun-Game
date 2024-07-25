@@ -1,11 +1,11 @@
 #include "imgui_windows.hpp"
 
-#include <numbers>
-
 #include <glm/gtc/type_ptr.hpp>
 
+#include <numbers>
+
 namespace {
-    constexpr float radtodeg = std::numbers::pi / 180;
+constexpr float radtodeg = std::numbers::pi / 180;
 }
 
 namespace gui {
@@ -61,15 +61,13 @@ display_windows::display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
 
     static float theta_phi[2];
 
-
     if (manual_light_direction) {
         ImGui::DragFloat2("Light Direction", theta_phi);
 
-        
-
         helio->control_light_direction() = glm::vec3(
             cos(theta_phi[0] * radtodeg) * sin(theta_phi[1] * radtodeg),
-            cos(theta_phi[0] * radtodeg) * cos(theta_phi[1] * radtodeg), sin(theta_phi[0] * radtodeg)
+            cos(theta_phi[0] * radtodeg) * cos(theta_phi[1] * radtodeg),
+            sin(theta_phi[0] * radtodeg)
         );
 
     } else {

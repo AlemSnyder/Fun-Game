@@ -22,9 +22,9 @@
 
 #pragma once
 
+#include "biome.hpp"
 #include "entity/tile_object.hpp"
 #include "gui/render/gpu_data/terrain_mesh.hpp"
-#include "biome.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "types.hpp"

@@ -6,8 +6,9 @@ namespace world {
 
 namespace entity {
 
-// using Placement = glm::ivec4;
-
+/**
+ * @brief Position and rotation of object.
+ */
 class Placement {
  public:
     Dim x;
@@ -23,16 +24,15 @@ class Placement {
         return glm::ivec4(x, y, z, rotation);
     }
 
-    [[nodiscard]] inline bool operator==(const Placement& other) const {
+    [[nodiscard]] inline bool
+    operator==(const Placement& other) const {
         return (x == other.x && y == other.y && z == other.z);
     }
 };
 
-/*struct Placement {
-    TerrainOffset3 position;
-    uint8_t rotation;
-};*/
-
+/**
+ * @brief Create has from position of object.
+ */
 struct PlacementOrder {
     size_t
     operator()(const Placement& pos) const noexcept {

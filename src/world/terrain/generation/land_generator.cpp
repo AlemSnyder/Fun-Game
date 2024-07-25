@@ -13,10 +13,10 @@
 
 #include "land_generator.hpp"
 
-#include "logging.hpp"
-#include "types.hpp"
 #include "../material.hpp"
+#include "logging.hpp"
 #include "tile_stamp.hpp"
+#include "types.hpp"
 
 #include <json/json.h>
 

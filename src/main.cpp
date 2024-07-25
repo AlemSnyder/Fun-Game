@@ -50,8 +50,7 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data
-    };
+        biome_name, materials_json, biome_data};
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
@@ -398,9 +397,6 @@ main(int argc, char** argv) {
 
     std::string start_type = cmdl(1).str();
 
-    // init logger
-    logging::set_thread_name("MainThread");
-
     // TODO(nino): need a better arg parser, but allow -vvvv (for example)
     bool console_log = cmdl[{"-c", "--console"}];
     if (cmdl[{"-v", "--verbose"}])
@@ -420,7 +416,8 @@ main(int argc, char** argv) {
     } else if (start_type == "Start") {
         return graphics_main(cmdl);
     } else {
-        std::cout << "Old command line arguments don't work. Try adding \"Test\"." << std::endl;
+        std::cout << "Old command line arguments don't work. Try adding \"Test\"."
+                  << std::endl;
         return 1;
     }
 }

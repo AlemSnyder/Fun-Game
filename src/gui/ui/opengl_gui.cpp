@@ -1,16 +1,16 @@
 #include "opengl_gui.hpp"
 
-#include "world/entity/mesh.hpp"
-#include "logging.hpp"
-#include "util/files.hpp"
-#include "world/world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
+#include "logging.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "util/files.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/world.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -29,14 +29,6 @@ opengl_entry(world::World& world, GLFWwindow* window) {
     screen_size_t shadow_map_size = 4096;
 
     glfwGetWindowSize(window, &window_width, &window_height);
-
-    // Vertex Arrays act like frame buffers.
-    // A vertex array exists to hold all vertex data. One is needed to send
-    // vertex data to the gpu. I don't know why one needs to create one like
-    // this. Can I make multiple vertex arrays? If so why should I?
-    //GLuint VertexArrayID;
-    //glGenVertexArrays(1, &VertexArrayID);
-    //VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
     shader::ShaderHandler shader_handler;
 
@@ -67,9 +59,6 @@ opengl_entry(world::World& world, GLFWwindow* window) {
     } // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
            && glfwWindowShouldClose(window) == 0);
-
-    // Cleanup VBO and shader
-    //glDeleteVertexArrays(1, &VertexArrayID);
 
     glfwDestroyWindow(window);
 

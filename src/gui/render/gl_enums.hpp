@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
-
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+
+#include <string>
 
 namespace gui {
 
@@ -65,6 +65,11 @@ enum class ShaderType : GLenum {
     //    COMPUTE_SHADER = GL_COMPUTE_SHADER,
 };
 
+/**
+ * @brief String representation of GPUDataType
+ *
+ * @param const GPUDataType& data type to represent
+ */
 constexpr std::string
 reper(const GPUDataType& data_type) {
     switch (data_type) {

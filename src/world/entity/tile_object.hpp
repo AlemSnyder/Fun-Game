@@ -41,7 +41,8 @@ class TileObject {
 
     ~TileObject() { controller_.remove(placement_); }
 
-    [[nodiscard]] inline bool operator==(const TileObject& other) const {
+    [[nodiscard]] inline bool
+    operator==(const TileObject& other) const {
         return placement_ == other.placement_;
     }
 };

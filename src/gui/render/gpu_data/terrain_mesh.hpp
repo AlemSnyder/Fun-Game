@@ -47,7 +47,6 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     inline TerrainMesh(Texture1D& color_texture_id) :
         color_texture_(color_texture_id){};
 
-
     inline TerrainMesh(const world::entity::Mesh& mesh, Texture1D& color_texture_id) :
         NonInstancedIMeshGPU(mesh), color_texture_(color_texture_id) {}
 

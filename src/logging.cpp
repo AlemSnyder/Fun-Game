@@ -17,7 +17,8 @@ static const std::string LOGLINE_FORMAT =
     "- %(message)";
 #else
 static const std::string LOGLINE_FORMAT =
-    "%(ascii_time) [%(thread:<6):%(thread_name:<16)] [%(fileline:<24)] %(level_name:<8) "
+    "%(ascii_time) [%(thread:<6):%(thread_name:<16)] [%(fileline:<24)] "
+    "%(level_name:<8) "
     "[%(logger_name:<14)] - %(message)";
 
 #endif
@@ -141,7 +142,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     quill::start(/* with_signal_handler = */ true);
 
     // to explicitly set thread name
-    //quill::detail::set_thread_name("MainThread");    
+    quill::detail::set_thread_name("MainThread");
 
     LOG_INFO(main_logger, "Logging initialized!");
 }

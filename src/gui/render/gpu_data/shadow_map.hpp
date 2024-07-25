@@ -75,9 +75,11 @@ class ShadowMap {
         return depth_texture_id_;
     }
 
-    inline void bind(uint texture_index) const {
+    inline void
+    bind(uint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
-        glBindTexture(GL_TEXTURE_2D, depth_texture_id_);}
+        glBindTexture(GL_TEXTURE_2D, depth_texture_id_);
+    }
 
     /**
      * @brief Get the frame buffer ID
@@ -140,10 +142,10 @@ class ShadowMap {
 
     /**
      * @brief Update the shadow map
-     * 
+     *
      * @details Changes the shadow map depth matrix. This allows the shadow map
      * to move with the camera.
-    */
+     */
     void update();
 
     void

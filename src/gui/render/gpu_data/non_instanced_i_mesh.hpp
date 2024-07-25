@@ -71,8 +71,7 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
     explicit inline NonInstancedIMeshGPU(const world::entity::Mesh& mesh) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
-        normal_array_(mesh.get_indexed_normals()),
-        element_array_(mesh.get_indices()),
+        normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),
         num_vertices_(mesh.get_indices().size()),
         do_render_(mesh.get_indices().size()) {}
 

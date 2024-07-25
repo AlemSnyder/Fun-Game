@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include "util/voxel.hpp"
 #include "path/node_group.hpp"
+#include "util/voxel.hpp"
 
 #include <list>
 #include <set>

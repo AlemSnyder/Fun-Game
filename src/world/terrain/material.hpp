@@ -96,11 +96,13 @@ class TerrainColorMapping {
         return obj;
     }
 
+    /**
+     * @brief Initializes data for color_ids_map and colors_inverse_map.
+     *
+     * @param const std::map<MaterialId, const Material>& materials materials map
+     */
     static void
     assign_color_mapping(const std::map<MaterialId, const Material>& materials);
-
-    // may discard
-    // static GLuint_p assign_color_texture();
 
     [[nodiscard]] inline static std::vector<ColorInt>&
     get_color_ids_map() {
@@ -125,17 +127,34 @@ class TerrainColorMapping {
     }
 };
 
+/**
+ * @brief A group of materials. Used to generate terrain.
+ *
+ * @details Can be used to determine if a material is of a cretin type.
+ */
 class MaterialGroup {
  private:
-    // Set of materials in the group. Any material and color no mater the color
-    // is in this group if the material is in the below set.
+    // Any material in the set is in the group no matter the color.
     std::set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
     // this group the material key must map to a set containing the given color.
     std::map<MaterialId, std::set<ColorId>> materials_with_color_requirement_;
 
  public:
+    /**
+     * @brief Construct new MaterialGroup object.
+     *
+     * @details Default constructor. Nothing will be in the group.
+     */
     MaterialGroup(){};
+
+    /**
+     * @brief Construct new MaterialGroup object.
+     *
+     * @param std::set<MaterialId> materials materials in group no matter the color
+     * @param std::map<MaterialId, std::set<ColorId>> materials_w_color materials in
+     * group when they have specific color
+     */
     MaterialGroup(
         std::set<MaterialId> materials,
         std::map<MaterialId, std::set<ColorId>> materials_w_color
@@ -143,6 +162,15 @@ class MaterialGroup {
         materials_no_color_requirement_(materials),
         materials_with_color_requirement_(materials_w_color){};
 
+    /**
+     * @brief Check if given material and color id are in the group.
+     *
+     * @param MaterialId material_id
+     * @param ColorId color_id
+     *
+     * @return True given material is in the group
+     * @return False material is not in the group
+     */
     [[nodiscard]] inline bool
     material_in(MaterialId material_id, ColorId color_id) const {
         if (material_in(material_id))
@@ -154,6 +182,14 @@ class MaterialGroup {
         return iter->second.contains(color_id);
     }
 
+    /**
+     * @brief Check if given material with arbitrary color id would be in the group.
+     *
+     * @param MaterialId material_id
+     *
+     * @return True given material is in the group
+     * @return False material is not in the group
+     */
     [[nodiscard]] inline bool
     material_in(MaterialId material_id) const {
         return materials_no_color_requirement_.contains(material_id);

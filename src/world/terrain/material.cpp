@@ -2,8 +2,8 @@
 #include "material.hpp"
 
 #include "../entity/mesh.hpp"
-#include "logging.hpp"
 #include "gui/render/gpu_data/texture.hpp"
+#include "logging.hpp"
 
 namespace terrain {
 
@@ -11,8 +11,9 @@ namespace terrain {
 std::vector<ColorInt> TerrainColorMapping::color_ids_map;
 // 8 bit color to color id
 std::unordered_map<ColorInt, MatColorId> TerrainColorMapping::colors_inverse_map;
+
 // id of the color texture sent to opengl
-//GLuint_p TerrainColorMapping::color_texture_;
+// GLuint_p TerrainColorMapping::color_texture_;
 
 void
 TerrainColorMapping::assign_color_mapping(

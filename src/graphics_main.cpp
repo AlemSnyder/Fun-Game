@@ -13,6 +13,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+// create structure to pass game start data either from command line or from gui
 /*
 struct Options {
     std::optional<std::string> biome;
@@ -54,9 +55,9 @@ graphics_main(const argh::parser& cmdl) {
     // Read manifest
     util::load_manifest();
 
-    // struct Options {} default options
-    // Options options;
-    // modify based on values
+    // generate options either from command line inputs
+    // or from gui
+    // struct Options
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
@@ -72,12 +73,11 @@ graphics_main(const argh::parser& cmdl) {
     if (imgui_debug) {
         return gui::imgui_entry(world, window);
     } else {
+        // if don't then strate to opengl
         return gui::opengl_entry(world, window);
     }
 
-    // if don't then strate to gui
-
-    // glDeleteVertexArrays(1, &VertexArrayID);
+    glDeleteVertexArrays(1, &VertexArrayID);
 
     return 0;
 }

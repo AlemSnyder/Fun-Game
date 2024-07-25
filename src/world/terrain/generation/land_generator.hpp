@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include "types.hpp"
 #include "../material.hpp"
 #include "tile_stamp.hpp"
+#include "types.hpp"
 
 #include <json/json.h>
 

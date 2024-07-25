@@ -64,7 +64,6 @@ class InstancedIMeshGPU :
 
     void update_transforms_array(std::vector<glm::ivec4> data, uint offset);
 
-
     inline void virtual bind() const override {
         NonInstancedIMeshGPU::bind();
         transforms_array_.bind(3, 3);

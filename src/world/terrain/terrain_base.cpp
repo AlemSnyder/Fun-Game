@@ -1,9 +1,9 @@
 #include "terrain_base.hpp"
 
+#include "generation/noise.hpp"
 #include "logging.hpp"
 #include "types.hpp"
 #include "world/biome.hpp"
-#include "generation/noise.hpp"
 
 // move add_to_top
 
