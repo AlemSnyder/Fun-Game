@@ -1,7 +1,3 @@
-// holds true false voxel
-
-// will need to make a data handler object so that json/lua can know how to find objects
-
 #pragma once
 
 #include "gui/render/gpu_data/array_buffer.hpp"
@@ -22,18 +18,30 @@ namespace entity {
 
 struct TileObjectOrder;
 
-// the actual object in the world
+/**
+ * @brief An object placed in the world.
+ * 
+ * @details Anything with a position and a model.
+ */
 class TileObject {
     friend TileObjectOrder;
 
  private:
     //    const ObjectData& data_;
 
+    // position and rotation
     Placement placement_;
 
+    // object model
     ModelController& controller_;
 
  public:
+    /**
+     * @brief Construct a new TileObject
+     * 
+     * @param ModelController& object model 
+     * @param Placement position and rotation of object
+     */
     inline TileObject(ModelController& controller, Placement placement) :
         placement_(placement), controller_(controller) {
         controller_.insert(placement_);
@@ -41,6 +49,11 @@ class TileObject {
 
     ~TileObject() { controller_.remove(placement_); }
 
+    /**
+     * @brief Equivalents operator
+     * 
+     * @details Used in sets. No two objects should be at the same position.
+     */
     [[nodiscard]] inline bool
     operator==(const TileObject& other) const {
         return placement_ == other.placement_;
