@@ -1,17 +1,19 @@
 #include "config.h"
-#include "entity/mesh.hpp"
+#include "graphics_main.hpp"
 #include "gui/render/graphics_shaders/program_handler.hpp"
 #include "gui/scene/controls.hpp"
 #include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
-#include "terrain/generation/biome.hpp"
-#include "terrain/terrain.hpp"
 #include "util/files.hpp"
+#include "util/loading.hpp"
 #include "util/png_image.hpp"
 #include "util/voxel_io.hpp"
-#include "world.hpp"
+#include "world/biome.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/terrain/terrain.hpp"
+#include "world/world.hpp"
 
 #include <argh.h>
 #include <json/json.h>
@@ -56,7 +58,7 @@ save_terrain(
         Dim terrain_height = 128;
         auto macro_map = terrain::generation::Biome::single_tile_type_map(i);
         terrain::Terrain ter(
-            map_size, map_size, World::macro_tile_size, terrain_height, 5, biome,
+            map_size, map_size, world::World::macro_tile_size, terrain_height, 5, biome,
             macro_map
         );
 
@@ -118,13 +120,14 @@ TerrainTypes(const argh::parser& cmdl) {
     return 0;
 }
 
+// reimplement
 int
 GenerateTerrain(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    World world("base", size, size);
+    world::World world("base", size, size);
 
     std::string path_out = cmdl(2).str();
 
@@ -134,10 +137,13 @@ GenerateTerrain(const argh::parser& cmdl) {
 }
 
 int
-MacroMap() {
+MacroMap(const argh::parser& cmdl) {
     quill::Logger* logger = quill::get_logger();
 
-    terrain::generation::Biome biome("base", 2);
+    std::string biome_name;
+    cmdl("biome-name", "base") >> biome_name;
+
+    terrain::generation::Biome biome(biome_name, 2);
 
     // test terrain generation
     auto map = biome.get_map(64);
@@ -169,10 +175,10 @@ image_test(const argh::parser& cmdl) {
         return result;
 
     } else {
-        std::string path_in = cmdl(2).str();
+        std::string path_in = cmdl(3).str();
         std::filesystem::path lua_file_path = files::get_root_path() / path_in;
 
-        std::string path_out = cmdl(3).str();
+        std::string path_out = cmdl(4).str();
         std::filesystem::path png_path = files::get_root_path() / path_out;
         size_t size;
         cmdl("size", 6) >> size;
@@ -190,9 +196,10 @@ image_test(const argh::parser& cmdl) {
     return 0;
 }
 
+// reimplement
 int
 ChunkDataTest() {
-    World world("base", 6, 6);
+    world::World world("base", 6, 6);
 
     const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
 
@@ -251,19 +258,21 @@ NoiseTest() {
     return 0;
 }
 
+// reimplement
 int
 save_test(const argh::parser& cmdl) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    World world("base", path_in, seed);
+    world::World world("base", path_in, seed);
 
     world.qb_save_debug(path_out);
 
     return 0;
 }
 
+// reimplement
 int
 path_finder_test(const argh::parser& cmdl) {
     std::string path_in = cmdl(2).str();
@@ -271,7 +280,7 @@ path_finder_test(const argh::parser& cmdl) {
     quill::Logger* logger = quill::get_logger();
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    World world("base", path_in, seed);
+    world::World world("base", path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -315,45 +324,6 @@ path_finder_test(const argh::parser& cmdl) {
     return 0;
 }
 
-int
-imgui_entry_main(const argh::parser& cmdl) {
-    size_t seed;
-    cmdl("seed", SEED) >> seed;
-    size_t size;
-    cmdl("size", 2) >> size;
-    // Create world object from material data, biome data, and the number of
-    // chunks in the x,y direction. Here the size is 2,2.
-    World world("base", size, size, seed);
-
-    return gui::imgui_entry(world);
-}
-
-int
-StressTest(const argh::parser& cmdl) {
-    size_t seed;
-    cmdl("seed", SEED) >> seed;
-    size_t size;
-    cmdl("size", STRESS_TEST_SIZE) >> size;
-    World world("base", size, size, seed);
-    // Create world object from material data, biome data, and the number of
-    // chunks in the x,y direction. Here the size is a user parameter that
-    // defaults to STRESS_TEST_SIZE.
-
-    return gui::opengl_entry(world);
-}
-
-int
-opengl_entry(const argh::parser& cmdl) {
-    std::string path_in = cmdl(2).str();
-
-    size_t seed;
-    cmdl("seed", SEED) >> seed;
-
-    World world("base", path_in, seed);
-
-    return gui::opengl_entry(world);
-}
-
 inline int
 LogTest() {
     quill::Logger* logger = quill::get_logger();
@@ -376,6 +346,35 @@ LogTest() {
     return 0;
 }
 
+// for tests. Probably should make a bash script to test each test
+inline int
+tests(const argh::parser& cmdl) {
+    std::string run_function = cmdl(2).str();
+
+    if (run_function == "TerrainTypes") {
+        return TerrainTypes(cmdl);
+    } else if (run_function == "GenerateTerrain") {
+        return GenerateTerrain(cmdl);
+    } else if (run_function == "MacroMap" || run_function == "LuaTest") {
+        return MacroMap(cmdl);
+    } else if (run_function == "NoiseTest") {
+        return NoiseTest();
+    } else if (run_function == "SaveTest") {
+        return save_test(cmdl);
+    } else if (run_function == "PathFinder") {
+        return path_finder_test(cmdl);
+    } else if (run_function == "Logging") {
+        return LogTest();
+    } else if (run_function == "ChunkDataTest") {
+        return ChunkDataTest();
+    } else if (run_function == "imageTest") {
+        return image_test(cmdl);
+    } else {
+        std::cout << "No known command" << std::endl;
+        return 1;
+    }
+}
+
 int
 main(int argc, char** argv) {
     // #lizard forgives the complexity
@@ -387,15 +386,16 @@ main(int argc, char** argv) {
         "-c", "--console"  // Enable console logging
     });
     cmdl.add_param("biome-name");
-    cmdl.add_param("materials");
+    //    cmdl.add_param("materials"); materials should be dictated by biome
+
+    cmdl.add_params({"--imgui", "-g"});
+    // int seed for generation
     cmdl.add_param("seed");
+    // int size of map
     cmdl.add_param("size");
     cmdl.parse(argc, argv, argh::parser::SINGLE_DASH_IS_MULTIFLAG);
 
-    std::string run_function = cmdl(1).str();
-
-    // init logger
-    logging::set_thread_name("MainThread");
+    std::string start_type = cmdl(1).str();
 
     // TODO(nino): need a better arg parser, but allow -vvvv (for example)
     bool console_log = cmdl[{"-c", "--console"}];
@@ -410,37 +410,14 @@ main(int argc, char** argv) {
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
     if (argc == 1) {
-        return 1;
-    } else if (run_function == "TerrainTypes") {
-        return TerrainTypes(cmdl);
-    } else if (run_function == "GenerateTerrain") {
-        return GenerateTerrain(cmdl);
-    } else if (run_function == "MacroMap" || run_function == "LuaTest") {
-        return MacroMap();
-    } else if (run_function == "NoiseTest") {
-        return NoiseTest();
-    } else if (run_function == "StressTest") {
-        return StressTest(cmdl);
-    } else if (run_function == "SaveTest") {
-        return save_test(cmdl);
-    } else if (run_function == "PathFinder") {
-        return path_finder_test(cmdl);
-    } else if (run_function == "UI-opengl") {
-        return opengl_entry(cmdl);
-    } else if (run_function == "Logging") {
-        return LogTest();
-    } else if (run_function == "UI-imgui") {
-        return imgui_entry_main(cmdl);
-    } else if (run_function == "ChunkDataTest") {
-        return ChunkDataTest();
-    } else if (run_function == "imageTest") {
-        return image_test(cmdl);
-    } else if (run_function == "RefactoredProgramTest") {
-        return gui::revised_gui_test();
-    } else if (run_function == "StarsTest") {
-        return gui::stars_test();
+        return graphics_main();
+    } else if (start_type == "Test") {
+        return tests(cmdl);
+    } else if (start_type == "Start") {
+        return graphics_main(cmdl);
     } else {
-        std::cout << "No known command" << std::endl;
-        return 0;
+        std::cout << "Old command line arguments don't work. Try adding \"Test\"."
+                  << std::endl;
+        return 1;
     }
 }

@@ -40,7 +40,6 @@ class ScreenData : public virtual GPUData {
         return vertex_array_;
     }
 
-
     /**
      * @brief Get the number of vertices
      *
@@ -65,7 +64,6 @@ class ScreenData : public virtual GPUData {
     do_render() const {
         return true;
     };
-
 };
 
 } // namespace gpu_data

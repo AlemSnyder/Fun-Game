@@ -1,7 +1,7 @@
 #include "instanced_i_mesh.hpp"
 
-#include "entity/mesh.hpp"
 #include "types.hpp"
+#include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,13 +14,18 @@ namespace gui {
 namespace gpu_data {
 
 InstancedIMeshGPU::InstancedIMeshGPU(
-    const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
+    const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
 ) :
     NonInstancedIMeshGPU(mesh),
     transforms_array_(model_transforms, 1) {
-    // InstancedInt does not create a color texture. One must inherit from this
+    // InstancedInt does not have a color texture. One must inherit from this
     // class and define a method that creates a color texture, and sets its id
     // as color_texture_.
+}
+
+void
+InstancedIMeshGPU::update_transforms_array(std::vector<glm::ivec4> data, uint offset) {
+    transforms_array_.update(data, offset);
 }
 
 } // namespace gpu_data

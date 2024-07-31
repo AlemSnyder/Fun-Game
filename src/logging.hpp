@@ -17,6 +17,7 @@ static constexpr quill::LogLevel DEFAULT_LOG_LEVEL = quill::LogLevel::Info;
 
 extern quill::LogLevel _LOG_LEVEL;
 
+extern quill::Logger* main_logger;     // for general logging
 extern quill::Logger* opengl_logger;   // for glfw, glew etc
 extern quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 extern quill::Logger* game_map_logger; // for terrain generation

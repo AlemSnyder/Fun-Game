@@ -7,17 +7,17 @@
 // Some slight modifications
 #include "imgui_gui.hpp"
 
-#include "../../entity/mesh.hpp"
-#include "../../logging.hpp"
-#include "../../world.hpp"
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
+#include "logging.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "world/entity/mesh.hpp"
+#include "world/world.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -42,24 +42,12 @@ namespace gui {
 // Main code
 // returns exit status
 int
-imgui_entry(World& world) {
-    screen_size_t window_width = 1280;
-    screen_size_t window_height = 800;
+imgui_entry(world::World& world, GLFWwindow* window) {
+    screen_size_t window_width;
+    screen_size_t window_height;
     screen_size_t shadow_map_size = 4096;
 
-    std::optional<GLFWwindow*> opt_window = setup_opengl(window_width, window_height);
-    if (!opt_window) {
-        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
-        return 1;
-    }
-    GLFWwindow* window = opt_window.value();
-    setup_opengl_logging();
-
-    // send color texture to gpu
-
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
+    glfwGetWindowSize(window, &window_width, &window_height);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -78,17 +66,15 @@ imgui_entry(World& world) {
 
     // Our state
     bool show_another_window = false;
-    bool show_scene_data = false;
-    bool manual_light_direction = false;
-    float input_light_direction[3];
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    bool show_light_controls = false;
+    bool show_shadow_map = false;
 
     shader::ShaderHandler shader_handler;
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-    VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
+    // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, shader_handler, world);
 
@@ -123,15 +109,7 @@ imgui_entry(World& world) {
 
         glfwGetWindowSize(window, &window_width, &window_height);
 
-        if (manual_light_direction) {
-            glm::vec3 input_light_direction_v3(
-                input_light_direction[0], input_light_direction[1],
-                input_light_direction[2]
-            );
-            main_scene.manual_update_light_direction(input_light_direction_v3);
-        } else {
-            main_scene.update_light_direction();
-        }
+        main_scene.update_light_direction();
 
         main_scene.update(window_width, window_height);
 
@@ -150,29 +128,18 @@ imgui_entry(World& world) {
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
         {
-            static float f = 0.0f;
-            static int counter = 0;
-
             ImGui::Begin("Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
+
+            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                ImGui::SetWindowFocus();
+            }
 
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Another Window", &show_another_window);
-            ImGui::Checkbox("Show Scene Data", &show_scene_data);
-
-            ImGui::SliderFloat(
-                "float", &f, 0.0f, 1.0f
-            ); // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3(
-                "clear color", (float*)&clear_color
-            ); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button")) // Buttons return true when clicked (most
-                                         // widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+            ImGui::Checkbox("Show Light Controls", &show_light_controls);
+            ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
@@ -195,52 +162,23 @@ imgui_entry(World& world) {
             ImGui::End();
         }
 
-        if (show_scene_data) {
-            glm::vec3 light_direction = main_scene.get_light_direction();
-            ImGui::Begin("Scene Data", &show_scene_data);
-
-            ImGui::Text(
-                "light_direction <%.3f, %.3f, %.3f>", light_direction.x,
-                light_direction.y, light_direction.z
+        if (show_light_controls) {
+            display_windows::display_data(
+                main_scene.get_lighting_environment(), show_light_controls
             );
-
-            const std::shared_ptr<scene::Helio> cycle =
-                main_scene.get_lighting_environment();
-
-            ImGui::Text("Sun angle %.3f", cycle->sun_angle);
-            ImGui::Text("Earth angle %.3f", cycle->earth_angle);
-            ImGui::Text("Total angle %.3f", cycle->total_angle);
-
-            glm::vec3 color = cycle->get_specular_light();
-
-            ImGui::TextColored({color.r, color.g, color.b, 1}, "##");
-
-            ImGui::Checkbox("Manually set light direction", &manual_light_direction);
-
-            if (manual_light_direction) {
-                ImGui::DragFloat3("Light Direction", input_light_direction);
-            }
-
-            ImGui::End();
         }
 
-        shader::display_windows::display_data(shader_handler.get_programs());
-
-        {
-            ImGui::Begin("OpenGL Texture Text");
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                ImGui::SetWindowFocus();
-            }
-            ImGui::Text("pointer MS = %i", main_scene.get_frame_buffer_id());
-            ImGui::Text(
-                "size = %d x %d", static_cast<int>(window_width),
-                static_cast<int>(window_height)
-            );
-            ImGui::End();
-        }
+        display_windows::display_data(shader_handler.get_programs());
 
         if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-            ImGui::Begin("Shadow Depth Texture");
+            show_shadow_map = true;
+        }
+
+        if (show_shadow_map) {
+            ImGui::Begin("Shadow Depth Texture", &show_shadow_map);
+            if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+                ImGui::SetWindowFocus();
+            }
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
                 ImVec2(
@@ -264,7 +202,7 @@ imgui_entry(World& world) {
     }
 
     // Cleanup VBO and shader
-    glDeleteVertexArrays(1, &VertexArrayID);
+    // glDeleteVertexArrays(1, &VertexArrayID);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

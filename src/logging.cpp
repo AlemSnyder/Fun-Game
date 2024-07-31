@@ -1,6 +1,7 @@
 #include "logging.hpp"
 
 #include "config.h"
+#include "global_context.hpp"
 #include "util/files.hpp"
 
 #include <quill/handlers/JsonFileHandler.h>
@@ -16,7 +17,8 @@ static const std::string LOGLINE_FORMAT =
     "- %(message)";
 #else
 static const std::string LOGLINE_FORMAT =
-    "%(ascii_time) [%(thread:<16):%(thread_name:<16)] [%(fileline:<18)] %(level_name) "
+    "%(ascii_time) [%(thread:<6):%(thread_name:<16)] [%(fileline:<24)] "
+    "%(level_name:<8) "
     "[%(logger_name:<14)] - %(message)";
 
 #endif
@@ -28,6 +30,7 @@ using cc = quill::ConsoleColours;
 
 LogLevel _LOG_LEVEL;
 
+quill::Logger* main_logger;     // for general logging
 quill::Logger* opengl_logger;   // for glfw, glew etc
 quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 quill::Logger* game_map_logger; // for terrain generation
@@ -125,7 +128,7 @@ init(bool console, quill::LogLevel log_level, bool structured) {
     quill::configure(cfg);
 
     // Set backtrace and log level on the main logger
-    quill::Logger* main_logger = quill::get_logger();
+    main_logger = quill::get_logger();
     main_logger->init_backtrace(5, quill::LogLevel::Error);
 
     opengl_logger = get_logger("shaders");
@@ -137,6 +140,9 @@ init(bool console, quill::LogLevel log_level, bool structured) {
 
     // Start the logging backend thread
     quill::start(/* with_signal_handler = */ true);
+
+    // to explicitly set thread name
+    quill::detail::set_thread_name("MainThread");
 
     LOG_INFO(main_logger, "Logging initialized!");
 }

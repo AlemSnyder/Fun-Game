@@ -23,13 +23,14 @@
 
 #pragma once
 
-#include "entity/mesh.hpp"
-#include "terrain/chunk.hpp"
+#include "logging.hpp"
 
 #include <BS_thread_pool.hpp>
 
+#include <functional>
 #include <map>
 #include <mutex>
+#include <queue>
 #include <set>
 
 /**
@@ -42,8 +43,17 @@ class GlobalContext {
  private:
     BS::thread_pool thread_pool_;
 
+    // opengl call backs must be run on main thread. Add them to this queue
+    // then run them on main thread.
+    std::queue<std::function<void()>> opengl_functions;
+
+    std::mutex opengl_queue_mutex;
+
     // Private CTOR as this is a singleton
-    GlobalContext() {}
+    GlobalContext() //:
+    // TODO update to thread pool 4.0
+    //        thread_pool_([] { quill::detail::set_thread_name("BS thread pool"); })
+    {}
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -58,6 +68,17 @@ class GlobalContext {
     instance() {
         static GlobalContext obj;
         return obj;
+    }
+
+    void run_opengl_queue();
+
+    /**
+     * @brief push task to opengl
+     */
+    void
+    push_opengl_task(std::function<void()> task) {
+        std::lock_guard<std::mutex> lock(opengl_queue_mutex);
+        return opengl_functions.push(task);
     }
 
     /**

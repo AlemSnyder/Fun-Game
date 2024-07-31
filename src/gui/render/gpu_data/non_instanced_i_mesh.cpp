@@ -9,7 +9,7 @@ namespace gui {
 namespace gpu_data {
 
 void
-NonInstancedIMeshGPU::update(const entity::Mesh& mesh) {
+NonInstancedIMeshGPU::update(const world::entity::Mesh& mesh) {
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
 
@@ -22,12 +22,10 @@ NonInstancedIMeshGPU::update(const entity::Mesh& mesh) {
 void
 NonInstancedIMeshGPU::bind() const {
     vertex_array_.bind(0, 0);
-    element_array_.bind(-1, -1);
+    element_array_.bind(-1, -1); // why not have a bind with no parameters that asserts
+                                 // that the array is the elements array?
     color_array_.bind(1, 1);
     normal_array_.bind(2, 2);
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_1D, color_texture_);
 }
 
 void

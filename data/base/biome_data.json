@@ -1002,6 +1002,13 @@
                     ]
                 }
             ]
-        }
+        },
+        "Generate_Plants": [
+            {
+                "name": "Flower_Test",
+                "identification": "base/Flower_Test",
+                "map_name": "Flower_1"
+            }
+        ]
     }
 }

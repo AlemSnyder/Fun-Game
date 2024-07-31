@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../types.hpp"
 #include "glm/glm.hpp"
+#include "types.hpp"
 
 #include <array>
 #include <cstdint>
@@ -93,6 +93,17 @@ class VoxelObject : VoxelBase {
             return data_[get_position(x, y, z)];
         }
         return 0;
+    }
+
+    /**
+     * @brief Get the voxel color id
+     *
+     * @param VoxelOffset x, y, z position
+     * @return VoxelColorId
+     */
+    [[nodiscard]] inline VoxelColorId
+    get_voxel_color_id(const VoxelOffset& position) const {
+        return get_voxel_color_id(position.x, position.y, position.z);
     }
 
     /**
