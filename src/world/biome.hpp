@@ -34,6 +34,9 @@
 namespace terrain {
 
 namespace generation {
+/**
+ * @brief Contains Json data from a biome file.
+ */
 
 struct biome_json_data {
     // Name of biome. Used both for file name and display name
@@ -44,6 +47,9 @@ struct biome_json_data {
     Json::Value materials_data;
 };
 
+/**
+ * @brief Plant identification for biome generation.
+ */
 // read from json
 struct Plant {
     std::string name; // shortened name
@@ -65,6 +71,9 @@ struct Plant {
     }
 };
 
+/**
+ * @brief Contains 
+ */
 class GrassData {
  private:
     // vector that determines grass color from edge distance

@@ -18,7 +18,7 @@ load_manifest() {
 
     Json::Value manifest;
     /*for (const auto& manifest_folder_entry :
-         std::filesystem::directory_iterator(manifest_folder)) {
+        std::filesystem::directory_iterator(manifest_folder)) {
         Json::Value mod_manifest;
 
         std::filesystem::path manifest_file = manifest_folder_entry;
