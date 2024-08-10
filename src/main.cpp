@@ -327,10 +327,6 @@ path_finder_test(const argh::parser& cmdl) {
 inline int
 LogTest() {
     quill::Logger* logger = quill::get_logger();
-    logger->set_log_level(quill::LogLevel::TraceL3);
-
-    // enable a backtrace that will get flushed when we log CRITICAL
-    logger->init_backtrace(2, quill::LogLevel::Critical);
 
     LOG_BACKTRACE(logger, "Backtrace log {}", 1);
     LOG_BACKTRACE(logger, "Backtrace log {}", 2);

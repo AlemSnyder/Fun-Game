@@ -104,16 +104,32 @@ class TerrainColorMapping {
     static void
     assign_color_mapping(const std::map<MaterialId, const Material>& materials);
 
+    /**
+     * @brief Return vector that maps terrain color id to color
+     * 
+     * @return std::vector<ColorInt> vector of colors than can be
+     * indexed with terrain color ids
+     */
     [[nodiscard]] inline static std::vector<ColorInt>&
     get_color_ids_map() {
         return color_ids_map;
     }
 
-    [[nodiscard]] inline static std::unordered_map<ColorInt, MatColorId>
+    /**
+     * @brief Return a map that converts material color id to a color
+     * 
+     * @return `const std::unordered_map<ColorInt, MatColorId>&` map
+     */
+    [[nodiscard]] inline static const std::unordered_map<ColorInt, MatColorId>&
     get_colors_inverse_map() {
         return colors_inverse_map;
     }
 
+    /**
+     * @brief Get the Opengl texture of the colors
+     * 
+     * @return `gui::gpu_data::Texture1D&` 1D color map on gpu
+     */
     [[nodiscard]] inline static gui::gpu_data::Texture1D&
     get_color_texture() {
         TerrainColorMapping& obj = instance();
@@ -121,6 +137,11 @@ class TerrainColorMapping {
         return obj.color_texture_;
     };
 
+    /**
+     * @brief Get the number of colors
+     * 
+     * @return `size_t` the number of colors
+     */
     [[nodiscard]] inline static size_t
     get_num_colors() {
         return color_ids_map.size();
