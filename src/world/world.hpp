@@ -210,29 +210,32 @@ class World {
     void update_all_chunks_mesh();
 
     // set a region to given material, and color
+    /**
+     * @brief Set a tile to have a material and color
+     * 
+     * @param Dim pos tile position
+     * @param terrain::Material* material to change to
+     * @param ColorId color id to change to
+     */
     void set_tile(Dim pos, const terrain::Material* mat, ColorId color_id);
 
-    // set a region to given material, and color
-    // void set_tiles();
-
-    void stamp_tile_region(
-        TerrainOffset x_start, TerrainOffset y_start, TerrainOffset z_start,
-        TerrainOffset x_end, TerrainOffset y_end, TerrainOffset z_end,
-        const terrain::Material* mat, std::set<std::pair<int, int>> elements_can_stamp,
-        ColorId color_id
-    );
-
-    void stamp_tile_region(
-        TerrainOffset x_start, TerrainOffset y_start, TerrainOffset z_start,
-        TerrainOffset x_end, TerrainOffset y_end, TerrainOffset z_end,
-        const terrain::Material* mat, ColorId color_id
-    );
-
+    /**
+     * @brief Save terrain with debug information
+     * 
+     * @details Adds the chunk navigation regions
+     * 
+     * @param std::string& path to save file to
+     */
     inline void
     qb_save_debug(const std::string& path) {
         terrain_main_.qb_save_debug(path);
     }
 
+    /**
+     * @brief Save terrain
+     * 
+     * @param std::string& path to save file to
+     */
     inline void
     qb_save(const std::string& path) const {
         terrain_main_.qb_save(path);

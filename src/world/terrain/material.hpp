@@ -134,7 +134,7 @@ class TerrainColorMapping {
  */
 class MaterialGroup {
  private:
-    // Any material in the set is in the group no matter the color.
+    // Any material in this set is in the group no matter the color.
     std::set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
     // this group the material key must map to a set containing the given color.

@@ -77,12 +77,14 @@ World::World(
     }
 
     // This next part can be done in parallel.
+    // maybe generating each plant position, orientation, and model
     entity::ObjectHandler& object_handler = entity::ObjectHandler::instance();
 
     std::default_random_engine rand_engine(seed + 1);
     std::uniform_real_distribution uniform_distribution(0.0, 1.0);
     std::uniform_int_distribution rotation_distribution(0, 3);
 
+    // just debug
     for (const terrain::generation::Plant& plant : biome_.get_generate_plants()) {
         auto map = plant_maps[plant.map_name];
         LOG_DEBUG(logging::terrain_logger, "Plant map name: {}.", plant.map_name);

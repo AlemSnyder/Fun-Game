@@ -16,8 +16,10 @@ ObjectHandler::get_object(const std::string& id) {
 
 void
 ObjectHandler::read_object(std::filesystem::path object_path) {
+    // json to read data into
     Json::Value object_json;
 
+    // read contents from path
     auto contents = files::open_data_file(object_path);
     if (contents.has_value()) {
         contents.value() >> object_json;
@@ -27,11 +29,6 @@ ObjectHandler::read_object(std::filesystem::path object_path) {
         );
         return;
     }
-
-    // ObjectData object_data(object_json, object_path);
-
-    // voxel_utility::VoxelObject voxel_object(path);
-    // entity::Mesh mesh = world::entity::ambient_occlusion_mesher(voxel_object);
 
     std::lock_guard<std::mutex> lock(this->map_mutex_);
 
@@ -45,6 +42,9 @@ ObjectHandler::read_object(std::filesystem::path object_path) {
         return;
     }
 
+    // when objects are initalized data is sent to the gpu.
+    // we want to run the mesher async, but need to send the data to the gpu
+    // on the main thread
     ided_objects.emplace(
         std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
         std::forward_as_tuple(object_json, object_path)

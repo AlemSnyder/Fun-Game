@@ -12,9 +12,6 @@ std::vector<ColorInt> TerrainColorMapping::color_ids_map;
 // 8 bit color to color id
 std::unordered_map<ColorInt, MatColorId> TerrainColorMapping::colors_inverse_map;
 
-// id of the color texture sent to opengl
-// GLuint_p TerrainColorMapping::color_texture_;
-
 void
 TerrainColorMapping::assign_color_mapping(
     const std::map<MaterialId, const Material>& materials

@@ -72,7 +72,7 @@ struct Plant {
 };
 
 /**
- * @brief Contains 
+ * @brief Contains grass colors and pattern for a biome.
  */
 class GrassData {
  private:
@@ -122,6 +122,9 @@ class GrassData {
     }
 };
 
+/**
+ * @brief Generates terrain and plants map
+ */
 class Biome {
  private:
     //  vector of const data for creating land generators for every tile

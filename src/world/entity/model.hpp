@@ -37,15 +37,42 @@ class ObjectData {
     std::string identification_;
 
  public:
-    ObjectData(const Json::Value& object_json, std::filesystem::path object_path);
+    /**
+     * @brief Construct a new ObjectData object
+     * 
+     * @details Generates a Object from the json parameters and the path to a voxel
+     * object.
+     * 
+     * @param Json::Value& JSON that describes the object
+     * @param std::filesystem::path path to folder containing voxel
+     */
+    ObjectData(const Json::Value& object_json, std::filesystem::path model_path);
 
+    /**
+     * @brief Get a model for this object by id.
+     * 
+     * @param size_t model mesh id
+     * 
+     * @return ModelController model.
+     */
     [[nodiscard]] ModelController& get_model(size_t mesh_id);
 
+    /**
+     * @brief Get the number of models that can represent this object.
+     * 
+     * @return size_t the number of models
+     */
     [[nodiscard]] size_t num_models() const noexcept;
 
+    /**
+     * @brief Iterator to first model
+     */
     [[nodiscard]] std::vector<world::entity::ModelController>::iterator
     begin() noexcept;
 
+    /**
+     * @brief Iterator past last element
+     */
     [[nodiscard]] std::vector<world::entity::ModelController>::iterator end() noexcept;
 
     inline ObjectData(const ObjectData& obj) = delete;
