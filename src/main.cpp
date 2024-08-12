@@ -50,7 +50,8 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
@@ -142,11 +143,15 @@ MacroMap(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", "base") >> biome_name;
+    size_t seed;
+    cmdl("seed", SEED) >> seed;
+    size_t size;
+    cmdl("size", 64) >> size;
 
-    terrain::generation::Biome biome(biome_name, 2);
+    terrain::generation::Biome biome(biome_name, seed);
 
     // test terrain generation
-    auto map = biome.get_map(64);
+    auto map = biome.get_map(size);
 
     std::vector<TileMacro_t> int_map;
     for (const auto& map_tile : map) {
@@ -185,6 +190,11 @@ image_test(const argh::parser& cmdl) {
 
         terrain::generation::TerrainMacroMap map =
             terrain::generation::Biome::map_generation_test(lua_file_path, size);
+
+        if (!(map.get_height() == size)) {
+            LOG_ERROR(logging::game_map_logger, "Error generating map.");
+            return 1;
+        }
 
         image::write_result_t result = image::write_image(map, png_path);
 

@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace terrain {
 
@@ -195,11 +196,40 @@ Biome::map_generation_test(
         return {};
     }
 
-    sol::table map = map_function(size);
+    auto function_output = map_function(size);
+
+    if (!function_output.valid()) {
+        LOG_ERROR(logging::lua_logger, "Function result not valid.");
+        return {};
+    }
+
+    if (!(function_output.get_type() == sol::type::table)) {
+        LOG_ERROR(logging::lua_logger, "Function output must be a table.");
+        return {};
+    }
+
+    sol::table map = function_output;
 
     auto tile_map_map = map["map"];
-    MacroDim x_map_tiles = map["x"]; // should be 16
-    MacroDim y_map_tiles = map["y"];
+    if (!(tile_map_map.get_type() == sol::type::table)) {
+        LOG_ERROR(logging::lua_logger, "Invalid map");
+        return {};
+    }
+
+    auto table_x_value = map["x"];
+    if (!(table_x_value.get_type() == sol::type::number)) {
+        LOG_ERROR(logging::lua_logger, "Invalid x value");
+        return {};
+    }
+    MacroDim x_map_tiles = table_x_value;
+
+    auto table_y_value = map["y"];
+    if (!(table_y_value.get_type() == sol::type::number)) {
+        LOG_ERROR(logging::lua_logger, "Invalid y value");
+        return {};
+    }
+    MacroDim y_map_tiles = table_y_value;
+
     assert(
         ((y_map_tiles == x_map_tiles) && (x_map_tiles == size))
         && "Map tile input and out put must all match"
@@ -208,7 +238,8 @@ Biome::map_generation_test(
     for (MacroDim x = 0; x < x_map_tiles; x++) {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             size_t map_index = x * y_map_tiles + y;
-            out.emplace_back(tile_map_map[map_index], 0, x, y);
+            int value = tile_map_map[map_index].get_or<int, int>(0);
+            out.emplace_back(value, 0, x, y);
         }
     }
 
@@ -224,7 +255,7 @@ Biome::get_map(MacroDim length) const {
     sol::table map = map_function(length);
 
     auto tile_map_map = map["map"];
-    MacroDim x_map_tiles = map["x"]; // should be 16
+    MacroDim x_map_tiles = map["x"];
     MacroDim y_map_tiles = map["y"];
     assert(
         ((y_map_tiles == x_map_tiles) && (x_map_tiles == length))

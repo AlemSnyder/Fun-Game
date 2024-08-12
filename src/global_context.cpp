@@ -4,7 +4,7 @@
 
 void
 GlobalContext::run_opengl_queue() {
-    if (opengl_functions.size() > 0) {
+    if (opengl_functions.size() > 0) [[unlikely]] {
         LOG_DEBUG(
             logging::opengl_logger, "Running {} functions from opengl function pool.",
             opengl_functions.size()
