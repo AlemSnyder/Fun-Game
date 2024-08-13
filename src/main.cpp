@@ -48,7 +48,8 @@ save_terrain(
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
     terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
+        biome_name, materials_json, biome_data
+    };
     for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
         terrain::generation::Biome biome(biome_file_data, 5);
 
@@ -346,6 +347,12 @@ LogTest() {
     );
     LOG_TRACE_L3(logging::terrain_logger, "Support for floats {:03.2f}", 1.23456);
 
+    GlobalContext& context = GlobalContext::instance();
+
+    std::future<void> future = context.submit_task([]() {
+        LOG_INFO(logging::main_logger, "Log from backend thread");
+    });
+
     LOG_INFO(
         logging::lua_logger, "Using Lua logger. The lua logger should not log the cpp "
                              "file, but instead the lua file."
@@ -355,6 +362,8 @@ LogTest() {
         logging::lua_logger, "[{}.lua:{}] - This is what a lua log should look like.",
         "example_file", 37
     );
+
+    future.wait();
 
     return 0;
 }
