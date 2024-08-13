@@ -171,7 +171,11 @@ class Biome {
      *
      * @return 2D map of map tiles
      */
-    [[nodiscard]] const TerrainMacroMap get_map(MacroDim length) const;
+    [[nodiscard]] static TerrainMacroMap get_map(const sol::state& lua, MacroDim length);
+
+    [[nodiscard]] inline TerrainMacroMap get_map(MacroDim length) const {
+        return get_map(lua_, length);
+    }
 
     /**
      * @brief Get plant map

@@ -8,7 +8,6 @@
 #include <json/json.h>
 
 #include <quill/Quill.h>
-#include <sol/sol.hpp>
 
 #include <filesystem>
 #include <map>
@@ -187,6 +186,11 @@ Biome::map_generation_test(
 
     Biome::init_lua_state(lua, lua_map_generator_file);
 
+    return get_map(std::move(lua), size);
+}
+
+TerrainMacroMap
+Biome::get_map(const sol::state& lua, MacroDim size) {
     std::vector<MapTile> out;
 
     sol::protected_function map_function = lua["map"];
@@ -240,32 +244,6 @@ Biome::map_generation_test(
             size_t map_index = x * y_map_tiles + y;
             int value = tile_map_map[map_index].get_or<int, int>(0);
             out.emplace_back(value, 0, x, y);
-        }
-    }
-
-    return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
-}
-
-const TerrainMacroMap
-Biome::get_map(MacroDim length) const {
-    std::vector<MapTile> out;
-
-    sol::protected_function map_function = lua_["map"];
-
-    sol::table map = map_function(length);
-
-    auto tile_map_map = map["map"];
-    MacroDim x_map_tiles = map["x"];
-    MacroDim y_map_tiles = map["y"];
-    assert(
-        ((y_map_tiles == x_map_tiles) && (x_map_tiles == length))
-        && "Map tile input and out put must all match"
-    );
-    out.reserve(x_map_tiles * y_map_tiles);
-    for (MacroDim x = 0; x < x_map_tiles; x++) {
-        for (MacroDim y = 0; y < y_map_tiles; y++) {
-            size_t map_index = x * y_map_tiles + y;
-            out.emplace_back(tile_map_map[map_index], seed_, x, y);
         }
     }
 
