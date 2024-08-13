@@ -64,11 +64,11 @@ load_manifest() {
 
             // Will check if path exists
             GlobalContext& context = GlobalContext::instance();
-            auto future = context.submit(
-                [&object_handler](std::filesystem::path path) {
-                    object_handler.read_object(path);
-                },
-                std::move(entity_path)
+            auto future = context.submit_task(
+                [&object_handler, entity_path]() {
+                    object_handler.read_object(entity_path);
+                }
+                
             );
         }
     }
