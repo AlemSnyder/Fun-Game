@@ -288,7 +288,7 @@ ArrayBuffer<T, buffer>::pointer_update_(
 
     LOG_BACKTRACE(
         logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
-        buffer_ID_, data_type.vec_size, reper(data_type.draw_type)
+        buffer_ID_, data_type.vec_size, to_string(data_type.draw_type)
     );
 
     if (aloc_size < offset + add_data_size) {
@@ -324,7 +324,7 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
 
     LOG_BACKTRACE(
         logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
-        buffer_ID_, data_type.vec_size, reper(data_type.draw_type)
+        buffer_ID_, data_type.vec_size, to_string(data_type.draw_type)
     );
 
     if constexpr (buffer != BindingTarget::ELEMENT_ARRAY_BUFFER)

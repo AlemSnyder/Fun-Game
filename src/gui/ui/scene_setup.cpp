@@ -266,6 +266,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     for (auto& [id, object] : object_handler.get_objects()) {
         for (auto& mesh : object) {
             // I'm so sorry for what I have done.
+            // create a shared pointer with a custom deconstructor {} (nothing).
             auto mesh_ptr = std::shared_ptr<world::entity::ModelController>(
                 &mesh, [](world::entity::ModelController*) {}
             );

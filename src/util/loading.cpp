@@ -21,7 +21,6 @@ load_manifest() {
 
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
-        
         Json::Value manifest;
 
         // path to manifest file
@@ -36,7 +35,7 @@ load_manifest() {
             builder["collectComments"] = false;
 
             Json::String errs;
-            if (!Json::parseFromStream(builder, contents.value(), &manifest, &errs)){
+            if (!Json::parseFromStream(builder, contents.value(), &manifest, &errs)) {
                 LOG_WARNING(logging::file_io_logger, "{}", errs.c_str());
                 continue;
             }

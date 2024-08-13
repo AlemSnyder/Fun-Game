@@ -67,7 +67,7 @@ class MapTile {
         x_(x), y_(y), tile_type_(tile_type),
         rand_engine_(
             Noise::get_double((seed ^ tile_type) % RANDOM_NUMBER, x, y) * INT32_MAX
-        ) {};
+        ){};
 
     /**
      * @brief Get the x coordinate
@@ -128,7 +128,7 @@ class TerrainMacroMap {
      *
      * @details default constructor
      */
-    inline TerrainMacroMap() : width_(0), height_(0) {};
+    inline TerrainMacroMap() : width_(0), height_(0){};
 
     /**
      * @brief Create a new TerrainMacroMap
@@ -139,7 +139,9 @@ class TerrainMacroMap {
      */
     inline TerrainMacroMap(
         std::vector<MapTile> terrain_map, size_t width, size_t height
-    ) : width_(width), height_(height), terrain_map_(terrain_map) {
+    ) :
+        width_(width),
+        height_(height), terrain_map_(terrain_map) {
         assert(terrain_map_.size() == width_ * height_);
     };
 
@@ -233,7 +235,7 @@ class PlantMap {
      *
      * @details Default constructor
      */
-    inline PlantMap() : width_(0), height_(0) {};
+    inline PlantMap() : width_(0), height_(0){};
 
     /**
      * @brief Construct a new PlantMap object
@@ -249,10 +251,10 @@ class PlantMap {
 
     /**
      * @brief Get plant probability at given position
-     * 
+     *
      * @param Dim i column
      * @param Dim j row
-     * 
+     *
      * @return `float` probability of generating a plant at the given position.
      */
     [[nodiscard]] float
@@ -263,10 +265,10 @@ class PlantMap {
 
     /**
      * @brief Get plant probability at given position
-     * 
+     *
      * @param Dim i column
      * @param Dim j row
-     * 
+     *
      * @return `png_byte` pixel representation of probability
      */
     [[nodiscard]] png_byte
@@ -276,10 +278,10 @@ class PlantMap {
 
     /**
      * @brief Get plant probability at given position
-     * 
+     *
      * @param Dim i column
      * @param Dim j row
-     * 
+     *
      * @return iterator to first element in map data
      */
     [[nodiscard]] const auto
@@ -289,10 +291,10 @@ class PlantMap {
 
     /**
      * @brief Get plant probability at given position
-     * 
+     *
      * @param Dim i column
      * @param Dim j row
-     * 
+     *
      * @return iterator past end of map
      */
     [[nodiscard]] const auto
@@ -302,10 +304,10 @@ class PlantMap {
 
     /**
      * @brief Get plant probability at given position
-     * 
+     *
      * @param Dim i column
      * @param Dim j row
-     * 
+     *
      * @return `const std::vector<float>&` map data
      */
     [[nodiscard]] const std::vector<float>&
@@ -315,7 +317,7 @@ class PlantMap {
 
     /**
      * @brief Get map width
-     * 
+     *
      * @return Dim width
      */
     [[nodiscard]] Dim
@@ -325,7 +327,7 @@ class PlantMap {
 
     /**
      * @brief Get map height
-     * 
+     *
      * @return Dim height
      */
     [[nodiscard]] Dim

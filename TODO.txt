@@ -9,7 +9,7 @@ Terrain generation
 
 GUI
     in sky
-        maybe other plants
+        maybe other planets
 
     entities
         load entities

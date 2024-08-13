@@ -70,8 +70,8 @@ enum class ShaderType : GLenum {
  *
  * @param const GPUDataType& data type to represent
  */
-constexpr std::string
-reper(const GPUDataType& data_type) {
+constexpr inline std::string
+to_string(const GPUDataType& data_type) {
     switch (data_type) {
         case GPUDataType::BYTE:
             return "BYTE";

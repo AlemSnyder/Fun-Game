@@ -17,7 +17,8 @@
 #if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__)                \
     || defined(QUILL_NO_THREAD_NAME_SUPPORT)
 static const std::string LOGLINE_FORMAT =
-    "%(time) [%(thread_id:>6)] %(log_level:<10) [%(logger:<10)] [%(short_source_location:<18)] "
+    "%(time) [%(thread_id:>6)] %(log_level:<10) [%(logger:<10)] "
+    "[%(short_source_location:<18)] "
     "- %(message)";
 #else
 static const std::string LOGLINE_FORMAT =
@@ -84,8 +85,8 @@ init(bool console, quill::LogLevel log_level) {
 
         colors.set_colour(LogLevel::Backtrace, cc::magenta);
 
-        auto console_sink = quill::Frontend::create_or_get_sink<quill::ConsoleSink>(
-            "console", colors );
+        auto console_sink =
+            quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console", colors);
     }
 
     // Start the logging backend thread

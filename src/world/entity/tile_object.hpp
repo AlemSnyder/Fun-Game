@@ -20,7 +20,7 @@ struct TileObjectOrder;
 
 /**
  * @brief An object placed in the world.
- * 
+ *
  * @details Anything with a position and a model.
  */
 class TileObject {
@@ -38,8 +38,8 @@ class TileObject {
  public:
     /**
      * @brief Construct a new TileObject
-     * 
-     * @param ModelController& object model 
+     *
+     * @param ModelController& object model
      * @param Placement position and rotation of object
      */
     inline TileObject(ModelController& controller, Placement placement) :
@@ -51,7 +51,7 @@ class TileObject {
 
     /**
      * @brief Equivalents operator
-     * 
+     *
      * @details Used in sets. No two objects should be at the same position.
      */
     [[nodiscard]] inline bool

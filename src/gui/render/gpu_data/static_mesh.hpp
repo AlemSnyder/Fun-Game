@@ -46,9 +46,6 @@ class StaticMesh : public virtual InstancedIMeshGPU {
     inline StaticMesh(
         const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     ) :
-        // what is this abomination?
-        // TODO fix. This may be running twice I don't know.
-        NonInstancedIMeshGPU(mesh),
         InstancedIMeshGPU(mesh, model_transforms) {}
 
     inline void

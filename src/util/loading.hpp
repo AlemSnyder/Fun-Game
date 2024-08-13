@@ -20,7 +20,6 @@
  *
  */
 
-
 // Everything that needs to be loaded from files
 
 namespace util {

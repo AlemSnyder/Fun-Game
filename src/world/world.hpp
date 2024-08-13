@@ -212,7 +212,7 @@ class World {
     // set a region to given material, and color
     /**
      * @brief Set a tile to have a material and color
-     * 
+     *
      * @param Dim pos tile position
      * @param terrain::Material* material to change to
      * @param ColorId color id to change to
@@ -221,9 +221,9 @@ class World {
 
     /**
      * @brief Save terrain with debug information
-     * 
+     *
      * @details Adds the chunk navigation regions
-     * 
+     *
      * @param std::string& path to save file to
      */
     inline void
@@ -233,7 +233,7 @@ class World {
 
     /**
      * @brief Save terrain
-     * 
+     *
      * @param std::string& path to save file to
      */
     inline void

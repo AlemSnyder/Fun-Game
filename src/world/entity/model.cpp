@@ -113,7 +113,8 @@ ModelController::update() {
         // need to do ivec all the way down
         std::vector<glm::ivec4> data;
         auto iterator = placements_.begin();
-        for (size_t x = 0; x < offset_; x++, iterator++) {} // cpp crimes
+        assert(offset_ < placements_.size() && "Something Something This will break");
+        std::advance(iterator, offset_);
 
         for (; iterator != placements_.end(); iterator++) {
             data.push_back((*iterator).as_vec());
