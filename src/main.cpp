@@ -137,8 +137,6 @@ GenerateTerrain(const argh::parser& cmdl) {
 
 int
 MacroMap(const argh::parser& cmdl) {
-    quill::Logger* logger = quill::get_logger();
-
     std::string biome_name;
     cmdl("biome-name", "base") >> biome_name;
     size_t seed;
@@ -355,8 +353,8 @@ LogTest() {
     );
 
     LOG_INFO(
-        logging::lua_logger,
-        "[{}.lua:{}] - This is what a lua log should look like.", "example_file", 37
+        logging::lua_logger, "[{}.lua:{}] - This is what a lua log should look like.",
+        "example_file", 37
     );
 
     return 0;
