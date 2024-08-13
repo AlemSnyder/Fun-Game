@@ -48,4 +48,14 @@ open_resource_file(std::filesystem::path path) {
     return open_file(get_resources_path() / path);
 }
 
+inline std::filesystem::path
+get_argument_path(std::filesystem::path path) {
+    if (path.is_absolute()){
+        return path;
+    }
+    else {
+        return std::filesystem::current_path() / path;
+    }
+}
+
 } // namespace files
