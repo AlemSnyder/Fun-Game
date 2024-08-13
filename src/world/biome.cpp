@@ -7,8 +7,6 @@
 
 #include <json/json.h>
 
-#include <quill/Quill.h>
-
 #include <filesystem>
 #include <map>
 #include <string>

@@ -1,9 +1,20 @@
 #pragma once
 
+#include <quill/Backend.h>
+#include <quill/Frontend.h>
+#include <quill/LogMacros.h>
+#include <quill/Logger.h>
+#include <quill/sinks/FileSink.h>
+
+#include <quill/std/FilesystemPath.h>
+#include <quill/std/Vector.h>
+#include <quill/std/Map.h>
+#include <quill/std/Pair.h>
+#include <quill/std/Set.h>
+
 #include "util/files.hpp"
 
 #include <config.h>
-#include <quill/Quill.h>
 
 #include <string>
 
@@ -25,29 +36,6 @@ extern quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 extern quill::Logger* file_io_logger;  // for file io
 extern quill::Logger* lua_logger;      // for lua logging
 
-inline quill::Logger*
-get_logger() {
-    return quill::get_logger();
-}
-
-inline quill::Logger*
-get_logger(std::string name) {
-    auto all_loggers = quill::get_all_loggers();
-
-    // Search for the logger
-    auto logger_found = all_loggers.find(name);
-
-    // Found it, return it
-    if (logger_found != all_loggers.end())
-        return logger_found->second;
-
-    // Create a new logger
-    quill::Logger* logger = quill::create_logger(name);
-    logger->set_log_level(_LOG_LEVEL);
-    logger->init_backtrace(5, quill::LogLevel::Error);
-    return logger;
-}
-
 inline void
 set_thread_name(std::string name) {
     quill::detail::set_thread_name(name.c_str());
@@ -59,8 +47,6 @@ log_dir() noexcept {
 }
 
 void init(
-    bool console = true, quill::LogLevel log_level = DEFAULT_LOG_LEVEL,
-    bool structured = false
-);
+    bool console = true, quill::LogLevel log_level = DEFAULT_LOG_LEVEL);
 
 } // namespace logging
