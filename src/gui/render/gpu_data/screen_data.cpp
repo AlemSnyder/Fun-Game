@@ -10,12 +10,12 @@ namespace gpu_data {
 
 ScreenData::ScreenData() :
     // clang-format off
-    vertex_array_(
-        {glm::vec3(-1, -1, 0),
-         glm::vec3(-1, 1, 0),
-         glm::vec3(1, -1, 0),
-         glm::vec3(1, 1, 0)}
-    ),
+    vertex_array_{
+        glm::vec3(-1, -1, 0),
+        glm::vec3(-1, 1, 0),
+        glm::vec3(1, -1, 0),
+        glm::vec3(1, 1, 0)
+    },
     // clang-format on
     num_vertices_(4) {}
 

@@ -8,7 +8,6 @@
 
 #include <json/json.h>
 
-#include <quill/Quill.h>
 #include <sol/sol.hpp>
 
 #include <filesystem>

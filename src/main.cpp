@@ -26,8 +26,6 @@
 
 #include <imgui/imgui.h>
 #include <png.h>
-#include <quill/Quill.h>
-#include <stdint.h>
 
 #include <cstdlib>
 #include <filesystem>
@@ -45,7 +43,7 @@ void
 save_terrain(
     Json::Value materials_json, Json::Value biome_data, std::string biome_name
 ) {
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::main_logger;
 
     LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
 
@@ -139,12 +137,12 @@ GenerateTerrain(const argh::parser& cmdl) {
 
 int
 MacroMap(const argh::parser& cmdl) {
-    quill::Logger* logger = quill::get_logger();
-
     std::string biome_name;
     cmdl("biome-name", "base") >> biome_name;
+    size_t seed;
+    cmdl("seed", SEED) >> seed;
 
-    terrain::generation::Biome biome(biome_name, 2);
+    terrain::generation::Biome biome(biome_name, seed);
 
     // test terrain generation
     auto map = biome.get_map(64);
@@ -154,7 +152,7 @@ MacroMap(const argh::parser& cmdl) {
         int_map.push_back(map_tile.get_tile_type());
     }
 
-    LOG_INFO(logger, "Map: {}", int_map);
+    LOG_INFO(logging::main_logger, "Map: {}", int_map);
 
     return 0;
 }
@@ -224,7 +222,7 @@ ChunkDataTest() {
 
 int
 NoiseTest() {
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::main_logger;
 
     terrain::generation::FractalNoise noise(1, 1, 3);
 
@@ -278,7 +276,8 @@ int
 path_finder_test(const argh::parser& cmdl) {
     std::string path_in = cmdl(2).str();
     std::string path_out = cmdl(3).str();
-    quill::Logger* logger = quill::get_logger();
+    quill::Logger* logger = logging::main_logger;
+
     size_t seed;
     cmdl("seed", SEED) >> seed;
     world::World world("base", path_in, seed);
@@ -327,23 +326,30 @@ path_finder_test(const argh::parser& cmdl) {
 
 inline int
 LogTest() {
-    quill::Logger* logger = quill::get_logger();
-    logger->set_log_level(quill::LogLevel::TraceL3);
+    LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 1);
+    LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 2);
 
-    // enable a backtrace that will get flushed when we log CRITICAL
-    logger->init_backtrace(2, quill::LogLevel::Critical);
+    LOG_INFO(logging::terrain_logger, "Welcome to Quill!");
+    LOG_ERROR(logging::terrain_logger, "An error message. error code {}", 123);
+    LOG_WARNING(logging::terrain_logger, "A warning message.");
+    LOG_CRITICAL(logging::terrain_logger, "A critical error.");
+    LOG_DEBUG(logging::terrain_logger, "Debugging foo {}", 1234);
+    LOG_TRACE_L1(logging::terrain_logger, "{:>30}", "right aligned");
+    LOG_TRACE_L2(
+        logging::terrain_logger, "Positional arguments are {1} {0} ", "too", "supported"
+    );
+    LOG_TRACE_L3(logging::terrain_logger, "Support for floats {:03.2f}", 1.23456);
 
-    LOG_BACKTRACE(logger, "Backtrace log {}", 1);
-    LOG_BACKTRACE(logger, "Backtrace log {}", 2);
+    LOG_INFO(
+        logging::lua_logger, "Using Lua logger. The lua logger should not log the cpp "
+                             "file, but instead the lua file."
+    );
 
-    LOG_INFO(logger, "Welcome to Quill!");
-    LOG_ERROR(logger, "An error message. error code {}", 123);
-    LOG_WARNING(logger, "A warning message.");
-    LOG_CRITICAL(logger, "A critical error.");
-    LOG_DEBUG(logger, "Debugging foo {}", 1234);
-    LOG_TRACE_L1(logger, "{:>30}", "right aligned");
-    LOG_TRACE_L2(logger, "Positional arguments are {1} {0} ", "too", "supported");
-    LOG_TRACE_L3(logger, "Support for floats {:03.2f}", 1.23456);
+    LOG_INFO(
+        logging::lua_logger,
+        "[{}.lua:{}] - This is what a lua log should look like.", "example_file", 37
+    );
+
     return 0;
 }
 
@@ -404,11 +410,11 @@ main(int argc, char** argv) {
     // TODO(nino): need a better arg parser, but allow -vvvv (for example)
     bool console_log = cmdl[{"-c", "--console"}];
     if (cmdl[{"-v", "--verbose"}])
-        logging::init(console_log, quill::LogLevel::TraceL3, false);
+        logging::init(console_log, quill::LogLevel::TraceL3);
     else
         logging::init(console_log);
 
-    quill::Logger* logger = logging::get_logger();
+    quill::Logger* logger = logging::main_logger;
 
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
@@ -421,6 +427,6 @@ main(int argc, char** argv) {
         return graphics_main(cmdl);
     } else {
         std::cout << "Old command line arguments don't work. Try adding \"Test\"." << std::endl;
-        return 0;
+        return 1;
     }
 }

@@ -23,7 +23,7 @@
  * because of language constrains. If you can find a way to fix this that would
  * be quite beneficial.
  *
- * This file defines four classes. They are nearly identical, but they hade
+ * This file defines four classes. They are nearly identical, but they have
  * different render methods. They cannot be templated because they are
  * render_to::FrameBuffer interfaces. GCC doesn't allow virtual templates
  * because the compiler needs to know "soon" how many classes are of a certain
@@ -89,10 +89,13 @@ log_uniforms(
 }
 
 /**
- * @brief No elements No instancing
+ * @brief Base for render programs
+ *
+ * @warning don't use this or cast to this. It is used to reduce the number of lines in
+ * the file by 40.
  */
-class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
- private:
+class Render_Base {
+ protected:
     Program& opengl_program_;
 
     const std::function<void()> setup_;
@@ -100,30 +103,22 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
     UniformsVector uniforms_;
 
  public:
-    // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUData>> data;
-
-    inline ShaderProgram_Standard(
+    inline Render_Base(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
     ) :
         opengl_program_(shader_program),
         setup_(setup_commands), uniforms_(uniforms) {
-            LOG_BACKTRACE(logging::opengl_logger, "Shader name {}.", shader_program.get_name());
+        LOG_DEBUG(
+            logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
+        );
+        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     ) {
-#if DEBUG()
-        static bool has_logged = false;
-        if (data.size() == 0 && !has_logged) {
-            LOG_WARNING(logging::opengl_logger, "Nothing to be rendered.");
-            has_logged = true;
-        }
-#endif
-
         // Render to the screen
         gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
 
@@ -142,6 +137,37 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
             if (uniform_id != -1)
                 uniform->bind(uniform_id);
         }
+    }
+};
+
+/**
+ * @brief No elements No instancing
+ */
+class ShaderProgram_Standard :
+    public Render_Base,
+    virtual public render_to::FrameBuffer {
+ public:
+    // Ya I know this looks bad, but data_ is basically a parameter
+    std::vector<std::shared_ptr<gpu_data::GPUData>> data;
+
+    inline ShaderProgram_Standard(
+        shader::Program& shader_program, const std::function<void()> setup_commands,
+        UniformsVector uniforms
+    ) :
+        Render_Base(shader_program, setup_commands, uniforms) {}
+
+    inline void virtual render(
+        screen_size_t width, screen_size_t height, GLuint framebuffer_ID
+    ) {
+#if DEBUG()
+        static bool has_logged = false;
+        if (data.size() == 0 && !has_logged) {
+            LOG_WARNING(logging::opengl_logger, "Nothing to be rendered.");
+            has_logged = true;
+        }
+#endif
+
+        Render_Base::render(width, height, framebuffer_ID);
 
         for (std::shared_ptr<gpu_data::GPUData> mesh : data) {
             if (!mesh->do_render()) {
@@ -165,14 +191,9 @@ class ShaderProgram_Standard : virtual public render_to::FrameBuffer {
 /**
  * @brief Yes elements No instancing
  */
-class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
- private:
-    Program& opengl_program_;
-
-    const std::function<void()> setup_;
-
-    UniformsVector uniforms_;
-
+class ShaderProgram_Elements :
+    public Render_Base,
+    virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<std::shared_ptr<gpu_data::GPUDataElements>> data;
@@ -181,10 +202,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
     ) :
-        opengl_program_(shader_program),
-        setup_(setup_commands), uniforms_(uniforms) {
-        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
-    }
+        Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -197,22 +215,7 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
         }
 #endif
 
-        // Render to the screen
-        gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
-
-        // Render on the whole framebuffer, complete
-        // from the lower left corner to the upper right
-        glViewport(0, 0, width, height);
-
-        opengl_program_.use_program();
-
-        setup_();
-
-        for (auto uniform : uniforms_) {
-            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id != -1)
-                uniform->bind(uniform_id);
-        }
+        Render_Base::render(width, height, framebuffer_ID);
 
         for (std::shared_ptr<gpu_data::GPUDataElements> mesh : data) {
             if (!mesh->do_render()) {
@@ -242,14 +245,9 @@ class ShaderProgram_Elements : virtual public render_to::FrameBuffer {
 /**
  * @brief No elements Yes instancing
  */
-class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
- private:
-    Program& opengl_program_;
-
-    const std::function<void()> setup_;
-
-    UniformsVector uniforms_;
-
+class ShaderProgram_Instanced :
+    public Render_Base,
+    virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<std::shared_ptr<gpu_data::GPUDataInstanced>> data;
@@ -258,10 +256,7 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
     ) :
-        opengl_program_(shader_program),
-        setup_(setup_commands), uniforms_(uniforms) {
-        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
-    }
+        Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -274,22 +269,7 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
         }
 #endif
 
-        // Render to the screen
-        gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
-
-        // Render on the whole framebuffer, complete
-        // from the lower left corner to the upper right
-        glViewport(0, 0, width, height);
-
-        opengl_program_.use_program();
-
-        setup_();
-
-        for (auto uniform : uniforms_) {
-            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id != -1)
-                uniform->bind(uniform_id);
-        }
+        Render_Base::render(width, height, framebuffer_ID);
 
         for (std::shared_ptr<gpu_data::GPUDataInstanced> mesh : data) {
             if (!mesh->do_render()) {
@@ -315,14 +295,9 @@ class ShaderProgram_Instanced : virtual public render_to::FrameBuffer {
 /**
  * @brief Yes elements Yes instancing
  */
-class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
- private:
-    Program& opengl_program_;
-
-    const std::function<void()> setup_;
-
-    UniformsVector uniforms_;
-
+class ShaderProgram_ElementsInstanced :
+    public Render_Base,
+    virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<std::shared_ptr<gpu_data::GPUDataElementsInstanced>> data;
@@ -331,10 +306,7 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
     ) :
-        opengl_program_(shader_program),
-        setup_(setup_commands), uniforms_(uniforms) {
-        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
-    }
+        Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -347,22 +319,7 @@ class ShaderProgram_ElementsInstanced : virtual public render_to::FrameBuffer {
         }
 #endif
 
-        // Render to the screen
-        gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
-
-        // Render on the whole framebuffer, complete
-        // from the lower left corner to the upper right
-        glViewport(0, 0, width, height);
-
-        opengl_program_.use_program();
-
-        setup_();
-
-        for (auto uniform : uniforms_) {
-            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id != -1)
-                uniform->bind(uniform_id);
-        }
+        Render_Base::render(width, height, framebuffer_ID);
 
         for (std::shared_ptr<gpu_data::GPUDataElementsInstanced> mesh : data) {
             if (!mesh->do_render()) {
