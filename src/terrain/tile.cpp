@@ -24,7 +24,7 @@ Tile::set_material(const terrain::Material* const material, ColorId color_id_) {
 // Set the `mat_id_` to `material->element_id` and update `solid` and `color_id`.
 void
 Tile::set_material(const terrain::Material* const material) {
-    mat_id_ = material->element_id;
+    mat_id_ = material->material_id;
     if (mat_id_ == DIRT_ID) { // being set to dirt
         color_id_ = (z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
     } else {

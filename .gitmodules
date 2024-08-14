@@ -10,3 +10,6 @@
 [submodule "vendor/thread-pool"]
 	path = vendor/thread-pool
 	url = https://github.com/bshoshany/thread-pool
+[submodule "vendor/glaze"]
+	path = vendor/glaze
+	url = https://github.com/stephenberry/glaze.git

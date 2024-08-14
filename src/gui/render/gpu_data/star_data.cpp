@@ -26,11 +26,20 @@ StarShape::StarShape() :
 
 star_data
 StarData::read_data_from_file(std::filesystem::path path) {
-    Json::Value stars_json;
-    auto stars_file = files::open_data_file(path);
-    if (stars_file.has_value())
-        stars_file.value() >> stars_json;
-    else {
+    auto night_sky_file = files::open_data_file(path);
+
+    night_data_t night_data{};
+    if (night_sky_file.has_value()) {
+        std::string content(
+            (std::istreambuf_iterator<char>(night_sky_file.value())),
+            std::istreambuf_iterator<char>()
+        );
+        auto ec = glz::read_json(night_data, content);
+        if (ec) {
+            LOG_ERROR(logging::file_io_logger, "{}", glz::format_error(ec, content));
+            return {};
+        }
+    } else {
         LOG_WARNING(
             logging::file_io_logger, "Could not open sky data from file {}.", path
         );
@@ -40,17 +49,17 @@ StarData::read_data_from_file(std::filesystem::path path) {
     std::vector<glm::vec4> stars_positions;
     std::vector<GLfloat> star_age;
 
-    for (const Json::Value& star : stars_json["stars"]["data"]) {
-        float phi = glm::radians(star["phi"].asFloat());
-        float theta = glm::radians(star["theta"].asFloat());
+    for (const auto& star : night_data.stars) {
+        float phi = glm::radians(star.phi);
+        float theta = glm::radians(star.theta);
 
         glm::vec4 star_position(
             glm::cos(theta) * glm::sin(phi), glm::sin(theta) * glm::sin(phi),
-            glm::cos(phi), star["brightness"].asFloat()
+            glm::cos(phi), star.brightness
         );
         stars_positions.push_back(star_position);
 
-        star_age.push_back(star["age"].asFloat());
+        star_age.push_back(star.age);
     }
 
     return {stars_positions, star_age};

@@ -28,8 +28,6 @@
 #include "terrain/terrain.hpp"
 #include "types.hpp"
 
-#include <json/json.h>
-
 #include <glm/glm.hpp>
 
 #include <map>
@@ -145,15 +143,6 @@ class World {
      * @return const Material* corresponding material
      */
     const terrain::Material* get_material(MaterialId material_id) const;
-
-    /**
-     * @brief Get the grass gradient data
-     *
-     * @param material_json data to load from
-     *
-     * @return std::vector<int> width of each grass color
-     */
-    std::vector<int> get_grass_grad_data(const Json::Value& material_json);
 
     // Updating chunks works by changing a tile in terrain. This marks the
     // chunk's mesh for update, and surrounding chunks is applicable.

@@ -4,8 +4,7 @@
 #include "noise.hpp"
 #include "worley_noise.hpp"
 
-#include <json/json.h>
-
+#include <glaze/glaze.hpp>
 #include <sol/sol.hpp>
 
 #include <filesystem>
@@ -17,19 +16,18 @@ namespace terrain {
 
 namespace generation {
 
-GrassData::GrassData(const Json::Value& json_grass_data) {
-    ColorId grass_mid_color_id = json_grass_data["midpoint"].asInt();
+GrassData::GrassData(const grass_data_t& grass_data) {
+    ColorId grass_mid_color_id = grass_data.midpoint;
 
     // Should be much lower than a Dim
     std::vector<Dim> grass_grad_data;
-    for (const Json::Value& grass_level : json_grass_data["levels"]) {
-        Dim level_length = grass_level.asInt();
-        if (level_length > 16) {
+    for (Dim layer_length : grass_data.levels) {
+        if (layer_length > 16) {
             LOG_WARNING(
-                logging::terrain_logger, "Quite long grass length {}", level_length
+                logging::terrain_logger, "Quite long grass length {}", layer_length
             );
         }
-        grass_grad_data.push_back(level_length);
+        grass_grad_data.push_back(layer_length);
     }
 
     if (grass_mid_color_id >= grass_grad_data.size()) {
@@ -48,20 +46,28 @@ GrassData::GrassData(const Json::Value& json_grass_data) {
     grass_grad_length_ = grass_colors_.size();
 }
 
+GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
+    GrassData(grass_data.value_or(grass_data_t())) {
+    if (!grass_data.has_value()) {
+        LOG_WARNING(logging::terrain_logger, "Grass Data Empty");
+    }
+}
+
 Biome::Biome(const biome_json_data& biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
-    grass_data_(biome_data.materials_data["Dirt"]["Gradient"]), seed_(seed) {
+    grass_data_(biome_data.materials_data.data.at("Dirt").gradient),
+    seed_(seed) { // TODO
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
 
     std::filesystem::path lua_map_generator_file =
-        biome_json_path / biome_data.biome_data["map_generator"].asString();
+        biome_json_path / biome_data.biome_data.map_generator_path;
 
-    read_tile_macro_data_(biome_data.biome_data["Biome"]);
+    read_tile_macro_data_(biome_data.biome_data.tile_macros);
 
-    read_map_tile_data_(biome_data.biome_data["Biome"]);
+    read_map_tile_data_(biome_data.biome_data.tile_data);
 
-    read_add_to_top_data_(biome_data.biome_data["Biome"]["After_Effects"]);
+    read_add_to_top_data_(biome_data.biome_data.layer_effects);
 
     init_lua_state_(lua_map_generator_file);
 }
@@ -238,22 +244,21 @@ Biome::get_map(MacroDim length) const {
 }
 
 void
-Biome::read_tile_macro_data_(const Json::Value& biome_data) {
+Biome::read_tile_macro_data_(const std::vector<tile_macros_t>& tile_macros) {
     // for tile macro in data biome
-    for (const Json::Value& tile_macro : biome_data["Tile_Macros"]) {
+    for (const tile_macros_t& tile_macro : tile_macros) {
         // create a land generator for each tile macro
-        generation::LandGenerator gen(tile_macro["Land_Data"]);
+        generation::LandGenerator gen(tile_macro.generation_data);
         land_generators_.push_back(gen);
     }
 }
 
 void
-Biome::read_map_tile_data_(const Json::Value& biome_data) {
+Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
     // add tile macro to tiles
-    for (const Json::Value& tile_type : biome_data["Tile_Data"]) {
+    for (const tile_data_t& tile_type : biome_data) {
         std::vector<TileMacro_t> tile_macros;
-        for (const Json::Value& tile_macro_id : tile_type["Land_From"]) {
-            TileMacro_t tile_macro = tile_macro_id.asInt();
+        for (TileMacro_t tile_macro : tile_type.used_tile_macros) {
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
                     logging::terrain_logger,
@@ -262,41 +267,41 @@ Biome::read_map_tile_data_(const Json::Value& biome_data) {
                 );
                 continue;
             }
-            tile_macros.push_back(tile_macro_id.asInt());
+            tile_macros.push_back(tile_macro);
         }
         macro_tile_types_.push_back(std::move(tile_macros));
     }
 }
 
 void
-Biome::read_add_to_top_data_(const Json::Value& after_effects_data) {
-    for (const Json::Value& add_data : after_effects_data["Add_To_Top"]) {
+Biome::read_add_to_top_data_(const std::vector<layer_effects_t>& after_effects_data) {
+    for (const layer_effects_t& add_data : after_effects_data) {
         add_to_top_generators_.emplace_back(add_data);
     }
 }
 
 std::map<MaterialId, const terrain::Material>
-Biome::init_materials_(const Json::Value& material_data) {
+Biome::init_materials_(const all_materials_t& material_data) {
     std::map<MaterialId, const terrain::Material> out;
-    for (const auto& key : material_data.getMemberNames()) {
+    for (const auto& key : material_data.data) {
         std::vector<std::pair<const std::string, ColorInt>> color_vector;
 
-        const Json::Value material = material_data[key];
-        std::string name = key;
-        for (const Json::Value& json_color : material["colors"]) {
-            const std::string color_name = json_color["name"].asString();
-            ColorInt color_value = std::stoll(json_color["hex"].asString(), 0, 16);
+        const auto& material = key.second;
+        std::string material_name = key.first.data();
+        for (const auto& color : material.color) {
+            const std::string color_name = color.color_name;
+            ColorInt color_value = color.hex_color;
             color_vector.push_back(std::make_pair(std::move(color_name), color_value));
         }
 
         terrain::Material mat{
-            color_vector,                                    // color
-            static_cast<float>(material["speed"].asFloat()), // speed_multiplier
-            material["solid"].asBool(),                      // solid
-            static_cast<MaterialId>(material["id"].asInt()), // element_id
-            name                                             // name
+            std::move(color_vector),   // color
+            material.speed_multiplier, // speed_multiplier
+            material.solid,            // solid
+            material.material_id,      // element_id
+            std::move(material_name)   // material_name
         };
-        out.insert(std::make_pair(mat.element_id, std::move(mat)));
+        out.insert(std::make_pair(mat.material_id, std::move(mat)));
     }
     return out;
 }
@@ -320,18 +325,46 @@ Biome::get_colors_inverse_map() const {
 biome_json_data
 Biome::get_json_data_(const std::string& biome_name) {
     std::filesystem::path biome_json_path = files::get_data_path() / biome_name;
-
-    Json::Value biome_data;
     auto biome_file = files::open_data_file(biome_json_path / "biome_data.json");
-    if (biome_file.has_value())
-        biome_file.value() >> biome_data;
 
-    Json::Value materials_data;
+    glz::context ctx{};
+
+    biome_data_t biome_data{};
+    if (biome_file.has_value()) {
+        std::string content(
+            (std::istreambuf_iterator<char>(biome_file.value())),
+            std::istreambuf_iterator<char>()
+        );
+        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
+            biome_data, content, ctx
+        );
+        if (ec) {
+            LOG_ERROR(logging::file_io_logger, "{}", glz::format_error(ec, content));
+            return {};
+        }
+    } else {
+        return {};
+    }
     auto materials_file = files::open_data_file(biome_json_path / "materials.json");
-    if (materials_file.has_value())
-        materials_file.value() >> materials_data;
 
-    return {biome_name, std::move(biome_data), std::move(materials_data)};
+    all_materials_t materials_data;
+    if (materials_file.has_value()) {
+        std::string content(
+            (std::istreambuf_iterator<char>(materials_file.value())),
+            std::istreambuf_iterator<char>()
+        );
+        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
+            materials_data, content, ctx
+        );
+        if (ec) {
+            LOG_ERROR(logging::file_io_logger, "{}", glz::format_error(ec, content));
+            return {};
+        }
+
+        return {biome_name, std::move(biome_data), std::move(materials_data)};
+    } else {
+        return {};
+    }
 }
 
 } // namespace generation

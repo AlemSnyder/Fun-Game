@@ -15,8 +15,6 @@
 #include "terrain_helper.hpp"
 #include "tile.hpp"
 
-#include <json/json.h>
-
 #include <cstdint>
 #include <cstring>
 #include <fstream>
@@ -148,7 +146,7 @@ Terrain::can_stand(const Tile tile, TerrainOffset dz, TerrainOffset dxy) const {
 bool
 Terrain::paint(Tile* tile, const Material* mat, ColorId color_id) {
     // sets color_id if the material is the same.
-    if (tile->get_material_id() == mat->element_id) {
+    if (tile->get_material_id() == mat->material_id) {
         tile->set_color_id(color_id, mat);
         return true;
     }

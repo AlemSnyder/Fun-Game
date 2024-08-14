@@ -49,4 +49,6 @@ log_dir() noexcept {
 void init(
     bool console = true, quill::LogLevel log_level = DEFAULT_LOG_LEVEL);
 
+// TODO Quill will not log \n character. Maybe figure this out
+
 } // namespace logging

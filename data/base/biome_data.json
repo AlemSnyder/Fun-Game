@@ -1,1007 +1,837 @@
 {
-    "map_generator": "biome_map.lua",
-    "Example": {
-        "Land_Data": [
-            {
-                "Type": "Positions",
-                "Material_id": 1,
-                "Can_Overwrite": [
-                    0
-                ],
-                "Size": 4,
-                "DS": 2,
-                "Height": 16,
-                "DH": 4,
-                "Positions": [
-                    [
-                        2,
-                        4
+    "map_generator_path": "biome_map.lua",
+    "image_path": "path/to/image",
+    "description": "This is a test biome",
+    "name": "Base",
+    "tile_macros": [
+        {
+            "generation_data": [
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 6,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        },
+                        {
+                            "material": 2,
+                            "color": 2
+                        },
+                        {
+                            "material": 2,
+                            "color": 3
+                        },
+                        {
+                            "material": 2,
+                            "color": 4
+                        },
+                        {
+                            "material": 2,
+                            "color": 5
+                        }
                     ],
-                    [
-                        5,
-                        6
-                    ]
-                ]
-            },
-            {
-                "Type": "Radius",
-                "Material_id": 1,
-                "Can_Overwrite": [
-                    0
-                ],
-                "Size": 4,
-                "DS": 2,
-                "Height": 16,
-                "DH": 4,
-                "DC": 2,
-                "Radius": {
-                    "radius": 16,
-                    "number": 8
-                }
-            },
-            {
-                "Type": "Grid",
-                "Material_id": 1,
-                "Can_Overwrite": [
-                    0
-                ],
-                "Size": 16,
-                "DS": 1,
-                "Height": 16,
-                "DH": 4,
-                "Grid": {
-                    "radius": 16,
+                    "size": 28,
+                    "DS": 10,
+                    "height": 8,
+                    "DH": 2,
                     "DC": 0,
-                    "number": 2
-                }
-            }
-        ]
-    },
-    "Biome": {
-        "Image": "path/to/image",
-        "Description": "This is a test biome",
-        "Terrain_Data": {
-            "BackGround": 1,
-            "NumOctaves": 8,
-            "Range": 2,
-            "Spacing": 4,
-            "Persistance": 0.8,
-            "Lines": [
-                {
-                    "number": 2,
-                    "length": 4,
-                    "segments": 3,
-                    "DN": 1,
-                    "DL": 2,
-                    "DS": 2,
-                    "max_angle": 30,
-                    "width": [
-                        [
-                            1,
-                            1
-                        ],
-                        [
-                            2,
-                            2
-                        ],
-                        [
-                            3,
-                            3
-                        ],
-                        [
-                            6,
-                            5
-                        ]
-                    ],
-                    "points": [
-                        {
-                            "id": 0,
-                            "set_if_lower": false,
-                            "number": 2,
-                            "offset": 2,
-                            "DN": 1,
-                            "DO": 2
-                        }
-                    ],
-                    "lines": [
-                        {
-                            "id": 1,
-                            "set_if_lower": false,
-                            "number": 2,
-                            "DN": 3
-                        }
-                    ]
-                },
-                {
-                    "number": 0,
-                    "length": 3,
-                    "segments": 2,
-                    "DN": 1,
-                    "DL": 2,
-                    "DS": 2,
-                    "max_angle": 40,
-                    "width": [
-                        [
-                            2,
-                            3
-                        ],
-                        [
-                            4,
-                            5
-                        ]
-                    ],
-                    "points": [],
-                    "lines": []
-                }
-            ],
-            "Points": [
-                {
-                    "number": 8,
-                    "DN": 4,
-                    "width": [
-                        [
-                            1,
-                            2
-                        ],
-                        [
-                            2,
-                            3
-                        ],
-                        [
-                            3,
-                            5
-                        ]
-                    ]
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
                 }
             ]
         },
-        "Tile_Macros": [
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Grid",
-                        "Material_id": 2,
-                        "Color_id": 6,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            },
-                            {
-                                "E": 2,
-                                "C": 2
-                            },
-                            {
-                                "E": 2,
-                                "C": 3
-                            },
-                            {
-                                "E": 2,
-                                "C": 4
-                            },
-                            {
-                                "E": 2,
-                                "C": 5
-                            }
-                        ],
-                        "Size": 28,
-                        "DS": 10,
-                        "Height": 8,
-                        "DH": 2,
-                        "DC": 0,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 2
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 5,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            },
-                            {
-                                "E": 2,
-                                "C": 2
-                            },
-                            {
-                                "E": 2,
-                                "C": 3
-                            },
-                            {
-                                "E": 2,
-                                "C": 4
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 8,
-                        "DH": 6,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 16,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 2,
-                        "Color_id": 5,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            },
-                            {
-                                "E": 2,
-                                "C": 2
-                            },
-                            {
-                                "E": 2,
-                                "C": 3
-                            },
-                            {
-                                "E": 2,
-                                "C": 4
-                            }
-                        ],
-                        "Size": 19,
-                        "DS": 2,
-                        "Height": 16,
-                        "DH": 3,
-                        "DC": 0,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 2
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 4,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            },
-                            {
-                                "E": 2,
-                                "C": 2
-                            },
-                            {
-                                "E": 2,
-                                "C": 3
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 20,
-                        "DH": 6,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 16,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 2,
-                        "Color_id": 4,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            },
-                            {
-                                "E": 2,
-                                "C": 2
-                            },
-                            {
-                                "E": 2,
-                                "C": 3
-                            }
-                        ],
-                        "Size": 19,
-                        "DS": 2,
-                        "Height": 28,
-                        "DH": 3,
-                        "DC": 0,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 2
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 3,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            },
-                            {
-                                "E": 2,
-                                "C": 2
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 6,
-                        "Height": 36,
-                        "DH": 8,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 16,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 2,
-                        "Color_id": 3,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            },
-                            {
-                                "E": 2,
-                                "C": 2
-                            }
-                        ],
-                        "Size": 22,
-                        "DS": 6,
-                        "Height": 42,
-                        "DH": 3,
-                        "DC": 0,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 2
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 2,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            }
-                        ],
-                        "Size": 18,
-                        "DS": 8,
-                        "Height": 52,
-                        "DH": 4,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 24,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 2,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 62,
-                        "DH": 4,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 20,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 2,
-                        "Color_id": 2,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            }
-                        ],
-                        "Size": 19,
-                        "DS": 2,
-                        "Height": 67,
-                        "DH": 3,
-                        "DC": 1,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 4
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 2,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            },
-                            {
-                                "E": 2,
-                                "C": 1
-                            }
-                        ],
-                        "Size": 18,
-                        "DS": 4,
-                        "Height": 65,
-                        "DH": 4,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 18,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 1,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 17,
-                        "DS": 4,
-                        "Height": 80,
-                        "DH": 14,
-                        "Radius": {
-                            "radius": 16,
-                            "DC": 4,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 2,
-                        "Color_id": 1,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 15,
-                        "DS": 3,
-                        "Height": 92,
-                        "DH": 5,
-                        "DC": 1,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 4
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 1,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            },
-                            {
-                                "E": 1,
-                                "C": true
-                            },
-                            {
-                                "E": 2,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 14,
-                        "DS": 6,
-                        "Height": 60,
-                        "DH": 4,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 24,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 68,
-                        "DH": 10,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 16,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Radius",
-                        "Material_id": 2,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 74,
-                        "DH": 8,
-                        "DC": 4,
-                        "Radius": {
-                            "radius": 12,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 2,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 2,
-                        "Height": 90,
-                        "DH": 3,
-                        "DC": 2,
-                        "Grid": {
-                            "radius": 8,
-                            "number": 2
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 1,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 28,
-                        "DH": 6,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 16,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 1,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 19,
-                        "DS": 2,
-                        "Height": 34,
-                        "DH": 0,
-                        "DC": 0,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 2
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 1,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 40,
-                        "DH": 6,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 16,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 1,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 19,
-                        "DS": 2,
-                        "Height": 46,
-                        "DH": 0,
-                        "DC": 0,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 2
-                        }
-                    }
-                ]
-            },
-            {
-                "Land_Data": [
-                    {
-                        "Type": "Radius",
-                        "Material_id": 1,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 12,
-                        "DS": 4,
-                        "Height": 52,
-                        "DH": 6,
-                        "DC": 2,
-                        "Radius": {
-                            "radius": 16,
-                            "number": 16
-                        }
-                    },
-                    {
-                        "Type": "Grid",
-                        "Material_id": 1,
-                        "Color_id": 0,
-                        "Can_Overwrite": [
-                            {
-                                "E": 0,
-                                "C": 0
-                            }
-                        ],
-                        "Size": 19,
-                        "DS": 2,
-                        "Height": 58,
-                        "DH": 0,
-                        "DC": 0,
-                        "Grid": {
-                            "radius": 16,
-                            "number": 2
-                        }
-                    }
-                ]
-            }
-        ],
-        "Tile_Data": [
-            {
-                "Land_From": [
-                    0
-                ],
-                "Plant_Data": "plant data should go here"
-            },
-            {
-                "Land_From": [
-                    0,
-                    1,
-                    7
-                ],
-                "Plant_Data": "plant data should go here"
-            },
-            {
-                "Land_From": [
-                    0,
-                    1,
-                    2,
-                    8
-                ],
-                "Plant_Data": "plant data should go here"
-            },
-            {
-                "Land_From": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    9
-                ],
-                "Plant_Data": "plant data should go here"
-            },
-            {
-                "Land_From": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4
-                ],
-                "Plant_Data": "plant data should go here"
-            },
-            {
-                "Land_From": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5
-                ],
-                "Plant_Data": "plant data should go here"
-            },
-            {
-                "Land_From": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6
-                ],
-                "Plant_Data": "plant data should go here"
-            }
-        ],
-        "After_Effects": {
-            "Add_To_Top": [
+        {
+            "generation_data": [
                 {
-                    "Material_id": 1,
-                    "Color_id": 0,
-                    "above_colors": [
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 5,
+                    "can_override": [
                         {
-                            "E": 1,
-                            "C": true
+                            "material": 0,
+                            "color": 0
                         },
                         {
-                            "E": 2,
-                            "C": true
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        },
+                        {
+                            "material": 2,
+                            "color": 2
+                        },
+                        {
+                            "material": 2,
+                            "color": 3
+                        },
+                        {
+                            "material": 2,
+                            "color": 4
                         }
                     ],
-                    "Can_Overwrite": [
+                    "size": 12,
+                    "DS": 4,
+                    "height": 8,
+                    "DH": 6,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 5,
+                    "can_override": [
                         {
-                            "E": true,
-                            "C": true
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        },
+                        {
+                            "material": 2,
+                            "color": 2
+                        },
+                        {
+                            "material": 2,
+                            "color": 3
+                        },
+                        {
+                            "material": 2,
+                            "color": 4
                         }
                     ],
-                    "how_to_add": [
+                    "size": 19,
+                    "DS": 2,
+                    "height": 16,
+                    "DH": 3,
+                    "DC": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 4,
+                    "can_override": [
                         {
-                            "Type": "add",
-                            "data": 3,
-                            "from": [
-                                59,
-                                66
-                            ]
+                            "material": 0,
+                            "color": 0
                         },
                         {
-                            "Type": "To",
-                            "data": 75,
-                            "from": [
-                                66,
-                                75
-                            ]
+                            "material": 1,
+                            "color": true
                         },
                         {
-                            "Type": "add",
-                            "data": 3,
-                            "from": [
-                                75,
-                                90
-                            ]
+                            "material": 2,
+                            "color": 0
                         },
                         {
-                            "Type": "To",
-                            "data": 97,
-                            "from": [
-                                90,
-                                97
-                            ]
+                            "material": 2,
+                            "color": 1
+                        },
+                        {
+                            "material": 2,
+                            "color": 2
+                        },
+                        {
+                            "material": 2,
+                            "color": 3
                         }
-                    ]
+                    ],
+                    "size": 12,
+                    "DS": 4,
+                    "height": 20,
+                    "DH": 6,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 4,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        },
+                        {
+                            "material": 2,
+                            "color": 2
+                        },
+                        {
+                            "material": 2,
+                            "color": 3
+                        }
+                    ],
+                    "size": 19,
+                    "DS": 2,
+                    "height": 28,
+                    "DH": 3,
+                    "DC": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 3,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        },
+                        {
+                            "material": 2,
+                            "color": 2
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 6,
+                    "height": 36,
+                    "DH": 8,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 3,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        },
+                        {
+                            "material": 2,
+                            "color": 2
+                        }
+                    ],
+                    "size": 22,
+                    "DS": 6,
+                    "height": 42,
+                    "DH": 3,
+                    "DC": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 2,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        }
+                    ],
+                    "size": 18,
+                    "DS": 8,
+                    "height": 52,
+                    "DH": 4,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 24,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 2,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 4,
+                    "height": 62,
+                    "DH": 4,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 20,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 2,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        }
+                    ],
+                    "size": 19,
+                    "DS": 2,
+                    "height": 67,
+                    "DH": 3,
+                    "DC": 1,
+                    "grid": {
+                        "radius": 16,
+                        "number": 4
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 2,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        },
+                        {
+                            "material": 2,
+                            "color": 1
+                        }
+                    ],
+                    "size": 18,
+                    "DS": 4,
+                    "height": 65,
+                    "DH": 4,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 18,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 1,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        }
+                    ],
+                    "size": 17,
+                    "DS": 4,
+                    "height": 80,
+                    "DH": 14,
+                    "DC": 4,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 1,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        }
+                    ],
+                    "size": 15,
+                    "DS": 3,
+                    "height": 92,
+                    "DH": 5,
+                    "DC": 1,
+                    "grid": {
+                        "radius": 16,
+                        "number": 4
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 1,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": 0
+                        }
+                    ],
+                    "size": 14,
+                    "DS": 6,
+                    "height": 60,
+                    "DH": 4,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 24,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 4,
+                    "height": 68,
+                    "DH": 10,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "RADIUS",
+                    "material_id": 2,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 4,
+                    "height": 74,
+                    "DH": 8,
+                    "DC": 4,
+                    "radius": {
+                        "radius": 12,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 2,
+                    "height": 90,
+                    "DH": 3,
+                    "DC": 2,
+                    "grid": {
+                        "radius": 8,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 1,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 4,
+                    "height": 28,
+                    "DH": 6,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 1,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 19,
+                    "DS": 2,
+                    "height": 34,
+                    "DH": 0,
+                    "DC": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 1,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 4,
+                    "height": 40,
+                    "DH": 6,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 1,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 19,
+                    "DS": 2,
+                    "height": 46,
+                    "DH": 0,
+                    "DC": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 1,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "DS": 4,
+                    "height": 52,
+                    "DH": 6,
+                    "DC": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 1,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 19,
+                    "DS": 2,
+                    "height": 58,
+                    "DH": 0,
+                    "DC": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
                 }
             ]
         }
-    }
+    ],
+    "tile_data": [
+        {
+            "used_tile_macros": [
+                0
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                7
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                8
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                3,
+                9
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        }
+    ],
+    "layer_effects": [
+        {
+            "material_id": 1,
+            "color_id": 0,
+            "above_colors": [
+                {
+                    "material": 1,
+                    "color": true
+                },
+                {
+                    "material": 2,
+                    "color": true
+                }
+            ],
+            "can_override": [
+                {
+                    "material": true,
+                    "color": true
+                }
+            ],
+            "how_to_add": [
+                {
+                    "add_directions": "ADD",
+                    "data": 3,
+                    "start": 59,
+                    "stop": 66
+                },
+                {
+                    "add_directions": "TO",
+                    "data": 75,
+                    "start": 75,
+                    "stop": 66
+                },
+                {
+                    "add_directions": "ADD",
+                    "data": 3,
+                    "start": 75,
+                    "stop": 90
+                },
+                {
+                    "add_directions": "TO",
+                    "data": 97,
+                    "start": 90,
+                    "stop": 97
+                }
+            ]
+        }
+    ]
 }

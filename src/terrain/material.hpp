@@ -24,6 +24,7 @@
 #pragma once
 
 #include "../types.hpp"
+#include "generation/terrain_genreration_types.hpp"
 
 #include <cstdint>
 #include <map>
@@ -31,6 +32,9 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <optional>
+
+#include <glaze/glaze.hpp>
 
 // not including all of glew
 using GLuint_p = unsigned int;
@@ -50,20 +54,52 @@ namespace terrain {
 struct Material {
     Material(
         std::vector<std::pair<const std::string, ColorInt>> color_in,
-        float speed_multiplier_in, bool solid_in, MaterialId element_id_in,
+        float speed_multiplier_in, bool solid_in, MaterialId material_id_in,
         std::string name_in
     ) :
         color(color_in),
         speed_multiplier(speed_multiplier_in), solid(solid_in),
-        element_id(element_id_in), name(name_in){};
+        material_id(material_id_in), name(name_in){};
     // vector of <name hex color> for possible colors
     std::vector<std::pair<const std::string, ColorInt>> color;
     float speed_multiplier = 1;         // speed on this material
     bool solid = false;                 // Is the material solid?
-    MaterialId element_id = AIR_MAT_ID; // The ID of the material (Air is 0)
+    MaterialId material_id = AIR_MAT_ID; // The ID of the material (Air is 0)
     const std::string name = "Air";     // The material name
     // int8_t deterioration from wind
     // int8_t deterioration from water
+};
+
+// TODO this for hex color
+// https://github.com/stephenberry/glaze?tab=readme-ov-file#custom-readwrite
+
+struct material_color_t {
+    std::string color_name;
+    ColorInt hex_color;
+};
+
+
+struct grass_data_t {
+    std::vector<int> levels;
+    int midpoint;
+};
+
+struct material_t {
+    std::vector<material_color_t> color;
+    float speed_multiplier;
+    bool solid;
+    MaterialId material_id;
+    const std::string name;
+
+    std::optional<grass_data_t> gradient;
+};
+
+struct all_materials_reader_t {
+    std::map<glz::sv, glz::raw_json> data;
+};
+
+struct all_materials_t {
+    std::map<std::string, material_t> data;
 };
 
 /**
@@ -163,3 +199,18 @@ material_in(
 }
 
 } // namespace terrain
+
+template <>
+struct glz::meta<terrain::all_materials_reader_t> {
+   using T = terrain::all_materials_reader_t;
+   static constexpr auto value = object(
+   );
+   
+   // with members
+   static constexpr auto unknown_write{&T::data};
+   static constexpr auto unknown_read{&T::data};
+   // with methods
+   // static constexpr auto unknown_write{&T::my_unknown_write};
+   // static constexpr auto unknown_read{&T::my_unknown_read};
+
+};

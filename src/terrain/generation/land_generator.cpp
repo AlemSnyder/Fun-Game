@@ -16,9 +16,8 @@
 #include "../../logging.hpp"
 #include "../../types.hpp"
 #include "../material.hpp"
+#include "terrain_genreration_types.hpp"
 #include "tile_stamp.hpp"
-
-#include <json/json.h>
 
 #include <math.h>
 
@@ -32,36 +31,24 @@ namespace terrain {
 
 namespace generation {
 
-LandGenerator::LandGenerator(const Json::Value& data) :
+LandGenerator::LandGenerator(const std::vector<generation_stamp_t>& data) :
     current_region(0), current_sub_region(0) {
-    for (const Json::Value& region : data) {
-        std::string type = region["Type"].asString();
-        char first_character = type.at(0);
+    for (const generation_stamp_t& region : data) {
+        generation_stamp_type type = region.type;
 
         std::shared_ptr<stamps::JsonToTile> stamp_generator;
-        switch (first_character) {
-            case 'P':
-                [[fallthrough]];
-            case 'p':
+        switch (type) {
+            case generation_stamp_type::POSITION:
                 stamp_generator = std::make_shared<stamps::FromPosition>(region);
                 break;
-            case 'R':
-                [[fallthrough]];
-            case 'r':
+            case generation_stamp_type::RADIUS:
                 stamp_generator = std::make_shared<stamps::FromRadius>(region);
                 break;
-            case 'G':
-                [[fallthrough]];
-            case 'g':
+            case generation_stamp_type::GRID:
                 stamp_generator = std::make_shared<stamps::FromGrid>(region);
                 break;
             [[unlikely]] default:
-                LOG_WARNING(
-                    logging::terrain_logger,
-                    "Terrain stamp type {} is not valid. Must be one of Position, "
-                    "Radius, Grid",
-                    type
-                );
+                LOG_WARNING(logging::terrain_logger, "-\\:)/-");
                 continue;
         }
         stamp_generators_.push_back(stamp_generator);
@@ -143,17 +130,43 @@ JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_eng
 }
 
 MaterialGroup
-JsonToTile::read_elements(const Json::Value& data) {
+JsonToTile::read_elements(const std::vector<material_designation_t>& data) {
     // want to return a group that represents the given data
     // There will be elements with no requirements on the color
     std::set<MaterialId> materials;
     // amd some with requirements on the color
     std::map<MaterialId, std::set<ColorId>> materials_w_color;
 
-    for (const Json::Value& material_data : data) {
+    for (const material_designation_t& material_data : data) {
         // read the material id from the data
-        MaterialId mat_id;
-        if (material_data["E"].isInt())
+        // MaterialId mat_id = material_data.material;
+
+        LOG_INFO(
+            logging::file_io_logger, "Trying to parse {}", material_data.color.str
+        );
+
+        /*
+        glz::context ctx();
+
+        bool data_b;
+
+        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
+            data_b, material_data.color.str, ctx
+        );
+
+        int data_i;
+
+        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
+            data_i, material_data.color.str, ctx
+        );
+
+        std::vector<int> data_v;
+
+        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
+            data_v, material_data.color.str, ctx
+        );
+
+        if (material_data.material)
             mat_id = material_data["E"].asInt();
         // determine what colors are excepted
         if (material_data["C"].isInt()) {
@@ -172,6 +185,7 @@ JsonToTile::read_elements(const Json::Value& data) {
             // colors
             materials.insert(mat_id);
         }
+        */
     }
     return MaterialGroup(materials, materials_w_color);
 }
@@ -218,12 +232,13 @@ FromRadius::get_stamp(
     return get_volume(center, rand_engine);
 }
 
-FromPosition::FromPosition(const Json::Value& data) :
-    JsonToTile(data), center_variance_(data["DC"].asInt()) {
-    points_.reserve(data["Positions"].size());
+FromPosition::FromPosition(
+    const generation_stamp_t& data, const stamp_generation_position_data_t& type_data
+) : JsonToTile(data), center_variance_(data.DC) {
+    points_.reserve(type_data.positions.size());
 
-    for (const Json::Value& point : data["Positions"]) {
-        points_.push_back({point[0].asInt(), point.asInt()});
+    for (const auto& [x, y] : type_data.positions) {
+        points_.push_back({x, y});
     }
 }
 
@@ -258,59 +273,33 @@ FromGrid::get_stamp(size_t current_sub_region, std::default_random_engine& rand_
 
 } // namespace stamps
 
-AddToTop::AddToTop(const Json::Value& json_data) :
-    elements_above_(stamps::JsonToTile::read_elements(json_data["above_colors"])),
-    elements_can_overwrite_(stamps::JsonToTile::read_elements(json_data["Can_Overwrite"]
-    )),
-    stamp_material_id_(json_data["Material_id"].asInt()),
-    stamp_color_id_(json_data["Color_id"].asInt()) {
-    for (const Json::Value& range_data : json_data["how_to_add"]) {
-        Dim start_height = range_data["from"][0].asInt();
-        Dim end_height = range_data["from"][1].asInt();
-        Dim data_value = range_data["data"].asInt();
+AddToTop::AddToTop(const layer_effects_t& layer_effect_data) :
+    elements_above_(stamps::JsonToTile::read_elements(layer_effect_data.above_colors)),
+    elements_can_overwrite_(
+        stamps::JsonToTile::read_elements(layer_effect_data.can_override)
+    ),
 
-        std::string type = range_data["Type"].asString();
-        char first_character = type.at(0);
-
-        AddMethod adder;
-        switch (first_character) {
-            case 'A':
-                [[fallthrough]];
-            case 'a':
-                adder = {start_height, end_height, data_value, AddDirections::Add};
-                break;
-
-            case 'T':
-                [[fallthrough]];
-            case 't':
-                adder = {start_height, end_height, data_value, AddDirections::To};
-                break;
-            [[unlikely]] default:
-                LOG_WARNING(
-                    logging::terrain_logger,
-                    "Terrain stamp type {} is not valid. Must be one of Position, "
-                    "Radius, Grid",
-                    type
-                );
-                continue;
-        }
-        data_.insert(adder);
+    stamp_material_id_(layer_effect_data.material_id),
+    stamp_color_id_(layer_effect_data.color_id) {
+    for (const layer_effect_data_t& range_data : layer_effect_data.how_to_add) {
+        data_.insert(range_data);
     }
 }
 
 Dim
 AddToTop::get_final_height(Dim height) const {
-    auto add_data = data_.lower_bound(AddMethod(height, 0, 0, AddDirections::None));
+    auto add_data =
+        data_.lower_bound(layer_effect_data_t(height, 0, 0, layer_effect_add::NONE));
 
     if (add_data == data_.end()) {
         return height;
     }
 
     switch (add_data->add_directions) {
-        case AddDirections::To:
+        case layer_effect_add::TO:
             return add_data->data;
             break;
-        case AddDirections::Add:
+        case layer_effect_add::ADD:
             return height + add_data->data;
             break;
 

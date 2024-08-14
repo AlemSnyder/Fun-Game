@@ -40,17 +40,6 @@ World::get_material(MaterialId material_id) const {
     return &biome_.get_materials().at(material_id);
 }
 
-std::vector<int>
-World::get_grass_grad_data(const Json::Value& materials_json) {
-    std::vector<int> grass_grad_data;
-    for (const Json::Value& grass_level :
-         materials_json["Dirt"]["Gradient"]["levels"]) {
-        grass_grad_data.push_back(grass_level.asInt());
-    }
-
-    return grass_grad_data;
-}
-
 World::World(const std::string& biome_name, const std::string& path, size_t seed) :
     biome_(biome_name, seed), terrain_main_(path, biome_) {}
 

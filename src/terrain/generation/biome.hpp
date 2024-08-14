@@ -23,6 +23,7 @@
 #include "../../util/files.hpp"
 #include "land_generator.hpp"
 #include "map_tile.hpp"
+#include "terrain_genreration_types.hpp"
 
 #include <sol/sol.hpp>
 
@@ -38,9 +39,9 @@ struct biome_json_data {
     // Name of biome. Used both for file name and display name
     std::string biome_name;
     // Json data that describes biome
-    Json::Value biome_data;
+    biome_data_t biome_data;
     // Json data that describes materials
-    Json::Value materials_data;
+    all_materials_t materials_data;
 };
 
 class GrassData {
@@ -58,7 +59,10 @@ class GrassData {
      *
      * @param json_grass_data Json data that describes grass gradient
      */
-    GrassData(const Json::Value& json_grass_data);
+    GrassData(const grass_data_t& json_grass_data);
+
+    GrassData(const std::optional<grass_data_t>& json_grass_data);
+
 
     /**
      * @brief Get the grass gradient length
@@ -254,13 +258,13 @@ class Biome {
 
  private:
     // read data to create generator component
-    void read_tile_macro_data_(const Json::Value& biome_data);
+    void read_tile_macro_data_(const std::vector<tile_macros_t>& biome_data);
 
     // read data to generate tile components for each macro map tile
-    void read_map_tile_data_(const Json::Value& biome_data);
+    void read_map_tile_data_(const std::vector<tile_data_t>& biome_data);
 
     // read data to generate the add to top after affect
-    void read_add_to_top_data_(const Json::Value& biome_data);
+    void read_add_to_top_data_(const std::vector<layer_effects_t>& biome_data);
 
     void
     init_lua_state_(const std::filesystem::path& lua_map_generator_file) {
@@ -273,7 +277,7 @@ class Biome {
      * @param material_data data to load from (see) data/materials.json
      */
     [[nodiscard]] std::map<MaterialId, const terrain::Material>
-    init_materials_(const Json::Value& material_data);
+    init_materials_(const all_materials_t& material_data);
 
     [[nodiscard]] biome_json_data get_json_data_(const std::string& biome_name);
 };

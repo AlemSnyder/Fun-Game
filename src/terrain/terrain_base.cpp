@@ -200,19 +200,4 @@ TerrainBase::init_area(generation::MapTile& map_tile, generation::LandGenerator 
     gen.reset();
 }
 
-Dim
-TerrainBase::get_stop_height(Dim height, const Json::Value& how_to_add) {
-    for (auto& add_data : how_to_add) {
-        if (height >= add_data["from"][0].asInt()
-            && height < add_data["from"][1].asInt()) {
-            if (add_data["to"].isInt()) {
-                return add_data["to"].asInt();
-            } else {
-                return height + add_data["add"].asInt();
-            }
-        }
-    }
-    return 0;
-}
-
 } // namespace terrain

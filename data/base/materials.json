@@ -1,211 +1,211 @@
 {
   "Air": {
-    "id": 0,
-    "colors": [
+    "material_id": 0,
+    "color": [
       {
-        "name": "air",
-        "hex": "00000000"
+        "color_name": "air",
+        "hex_color": "00000000"
       }
     ],
     "solid": false,
-    "speed": 1
+    "speed_multiplier": 1
   },
   "Wood": {
-    "id": 9,
-    "colors": [
+    "material_id": 9,
+    "color": [
       {
-        "name": "brown",
-        "hex": "330f00FF"
+        "color_name": "brown",
+        "hex_color": "330f00FF"
       },
       {
-        "name": "brown_2",
-        "hex": "472001FF"
+        "color_name": "brown_2",
+        "hex_color": "472001FF"
       },
       {
-        "name": "brown_3",
-        "hex": "663f23FF"
+        "color_name": "brown_3",
+        "hex_color": "663f23FF"
       },
       {
-        "name": "brown_4",
-        "hex": "E1DDDAFF"
+        "color_name": "brown_4",
+        "hex_color": "E1DDDAFF"
       },
       {
-        "name": "brown_5",
-        "hex": "ad9582FF"
+        "color_name": "brown_5",
+        "hex_color": "ad9582FF"
       },
       {
-        "name": "brown_6",
-        "hex": "351E0AFF"
+        "color_name": "brown_6",
+        "hex_color": "351E0AFF"
       }
     ],
     "solid": true,
-    "speed": 1
+    "speed_multiplier": 1
   },
   "Dirt": {
-    "id": 1,
+    "material_id": 1,
     "Gradient": {
       "levels": [1, 3, 4, 2, 2, 0, 0, 0],
       "midpoint": 2
     },
-    "colors": [
+    "color": [
       {
-        "name": "Grass *4",
-        "hex": "747724FF"
+        "color_name": "Grass *4",
+        "hex_color": "747724FF"
       },
       {
-        "name": "Grass *3",
-        "hex": "849846FF"
+        "color_name": "Grass *3",
+        "hex_color": "849846FF"
       },
       {
-        "name": "Grass *2",
-        "hex": "86A349FF"
+        "color_name": "Grass *2",
+        "hex_color": "86A349FF"
       },
       {
-        "name": "Grass *1",
-        "hex": "82AF4AFF"
+        "color_name": "Grass *1",
+        "hex_color": "82AF4AFF"
       },
       {
-        "name": "Grass Base",
-        "hex": "83B556FF"
+        "color_name": "Grass Base",
+        "hex_color": "83B556FF"
       },
       {
-        "name": "Grass -1",
-        "hex": "85C666FF"
+        "color_name": "Grass -1",
+        "hex_color": "85C666FF"
       },
       {
-        "name": "Grass -2",
-        "hex": "95D472FF"
+        "color_name": "Grass -2",
+        "hex_color": "95D472FF"
       },
       {
-        "name": "Grass -3",
-        "hex": "9DDE7EFF"
+        "color_name": "Grass -3",
+        "hex_color": "9DDE7EFF"
       },
       {
-        "name": "Dirt 1",
-        "hex": "5E400FFF"
+        "color_name": "Dirt 1",
+        "hex_color": "5E400FFF"
       },
       {
-        "name": "Dirt 2",
-        "hex": "7C510DFF"
+        "color_name": "Dirt 2",
+        "hex_color": "7C510DFF"
       }
     ],
     "solid": true,
-    "speed": 1
+    "speed_multiplier": 1
   },
   "Stone": {
-    "id": 6,
-    "colors": [
+    "material_id": 6,
+    "color": [
       {
-        "name": "path",
-        "hex": "4d4f4fFF"
+        "color_name": "path",
+        "hex_color": "4d4f4fFF"
       },
       {
-        "name": "path",
-        "hex": "a2a3a3FF"
+        "color_name": "path",
+        "hex_color": "a2a3a3FF"
       }
     ],
     "solid": true,
-    "speed": 1
+    "speed_multiplier": 1
   },
   "Brick": {
-    "id": 5,
-    "colors": [
+    "material_id": 5,
+    "color": [
       {
-        "name": "Blue_1",
-        "hex": "293E6DFF"
+        "color_name": "Blue_1",
+        "hex_color": "293E6DFF"
       },
       {
-        "name": "Blue_2",
-        "hex": "284C86FF"
+        "color_name": "Blue_2",
+        "hex_color": "284C86FF"
       },
       {
-        "name": "Blue_3",
-        "hex": "264678FF"
+        "color_name": "Blue_3",
+        "hex_color": "264678FF"
       },
       {
-        "name": "Blue_4",
-        "hex": "3968A2FF"
+        "color_name": "Blue_4",
+        "hex_color": "3968A2FF"
       },
       {
-        "name": "Red_1",
-        "hex": "BB4B39FF"
+        "color_name": "Red_1",
+        "hex_color": "BB4B39FF"
       },
       {
-        "name": "Red_2",
-        "hex": "B32D17FF"
+        "color_name": "Red_2",
+        "hex_color": "B32D17FF"
       },
       {
-        "name": "Red_3",
-        "hex": "CD6A5DFF"
+        "color_name": "Red_3",
+        "hex_color": "CD6A5DFF"
       }
     ],
     "solid": true,
-    "speed": 1
+    "speed_multiplier": 1
   },
   "Rock": {
-    "id": 2,
-    "colors": [
+    "material_id": 2,
+    "color": [
       {
-        "name": "mountain1",
-        "hex": "B8B0ABFF"
+        "color_name": "mountain1",
+        "hex_color": "B8B0ABFF"
       },
       {
-        "name": "mountain2",
-        "hex": "756D6AFF"
+        "color_name": "mountain2",
+        "hex_color": "756D6AFF"
       },
       {
-        "name": "mountain3",
-        "hex": "605955FF"
+        "color_name": "mountain3",
+        "hex_color": "605955FF"
       },
       {
-        "name": "mountain4",
-        "hex": "473F3BFF"
+        "color_name": "mountain4",
+        "hex_color": "473F3BFF"
       },
       {
-        "name": "mountain5",
-        "hex": "362F2CFF"
+        "color_name": "mountain5",
+        "hex_color": "362F2CFF"
       },
       {
-        "name": "mountain6",
-        "hex": "2C2724FF"
+        "color_name": "mountain6",
+        "hex_color": "2C2724FF"
       },
       {
-        "name": "mountain7",
-        "hex": "211E1CFF"
+        "color_name": "mountain7",
+        "hex_color": "211E1CFF"
       }
     ],
     "solid": true,
-    "speed": 1
+    "speed_multiplier": 1
   },
   "Debug": {
-    "id": 7,
-    "colors": [
+    "material_id": 7,
+    "color": [
       {
-        "name": "debug_1",
-        "hex": "b548b5FF"
+        "color_name": "debug_1",
+        "hex_color": "b548b5FF"
       },
       {
-        "name": "debug_2",
-        "hex": "5d4be3FF"
+        "color_name": "debug_2",
+        "hex_color": "5d4be3FF"
       },
       {
-        "name": "debug_3",
-        "hex": "cf7079FF"
+        "color_name": "debug_3",
+        "hex_color": "cf7079FF"
       },
       {
-        "name": "debug_4",
-        "hex": "81de3aFF"
+        "color_name": "debug_4",
+        "hex_color": "81de3aFF"
       },
       {
-        "name": "path_start",
-        "hex": "253456FF"
+        "color_name": "path_start",
+        "hex_color": "253456FF"
       },
       {
-        "name": "path",
-        "hex": "255634FF"
+        "color_name": "path",
+        "hex_color": "255634FF"
       }
     ],
     "solid": true,
-    "speed": 1
+    "speed_multiplier": 1
   }
 }

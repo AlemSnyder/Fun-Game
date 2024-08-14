@@ -33,8 +33,6 @@
 #include "path/unit_path.hpp"
 #include "tile.hpp"
 
-#include <json/json.h>
-
 #include <stdio.h>
 
 #include <cstdint>
@@ -446,15 +444,6 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param material material type to add
      */
     void add_to_top(const generation::AddToTop& to_data);
-
-    /**
-     * @brief Get the max allowable height of added material
-     *
-     * @param height height of terrain in question
-     * @param how_to_add json data that defines biome generation
-     * @return int max height
-     */
-    [[nodiscard]] static Dim get_stop_height(Dim height, const Json::Value& how_to_add);
 
     [[nodiscard]] inline bool
     has_tile_material(const MaterialGroup& material_test, Dim x, Dim y, Dim z) const {
