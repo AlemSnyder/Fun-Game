@@ -141,52 +141,166 @@ JsonToTile::read_elements(const std::vector<material_designation_t>& data) {
         // read the material id from the data
         // MaterialId mat_id = material_data.material;
 
-        LOG_INFO(
-            logging::file_io_logger, "Trying to parse {}", material_data.color.str
-        );
+        glz::raw_json material = material_data.material;
+        glz::raw_json color = material_data.color;
 
-        /*
-        glz::context ctx();
+        std::optional<bool> color_data_b;
+        std::optional<ColorId> color_data_i;
+        std::optional<std::vector<ColorId>> color_data_v;
+        {
+            auto ec_1 = glz::read_json(color_data_b, material_data.color.str);
 
-        bool data_b;
-
-        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
-            data_b, material_data.color.str, ctx
-        );
-
-        int data_i;
-
-        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
-            data_i, material_data.color.str, ctx
-        );
-
-        std::vector<int> data_v;
-
-        auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
-            data_v, material_data.color.str, ctx
-        );
-
-        if (material_data.material)
-            mat_id = material_data["E"].asInt();
-        // determine what colors are excepted
-        if (material_data["C"].isInt()) {
-            // if colors are color ids
-            ColorId color_id = material_data["C"].asInt();
-            auto iter = materials_w_color.find(mat_id);
-            if (iter != materials_w_color.end()) {
-                // add the color to the material if it exits
-                iter->second.insert(color_id);
+            if (ec_1) {
+                LOG_BACKTRACE(
+                    logging::file_io_logger, "Something went wrong {}",
+                    glz::format_error(ec_1, material_data.color.str)
+                );
             } else {
-                // add both if it does not
-                materials_w_color.insert({mat_id, {color_id}});
+                goto end_parse_color;
             }
-        } else if (material_data["C"].asBool()) {
-            // if color is a bool, then its probably true and we except all
-            // colors
-            materials.insert(mat_id);
+
+            auto ec_2 = glz::read_json(color_data_i, material_data.color.str);
+
+            if (ec_2) {
+                LOG_BACKTRACE(
+                    logging::file_io_logger, "Something went wrong {}",
+                    glz::format_error(ec_2, material_data.color.str)
+                );
+            } else {
+                goto end_parse_color;
+            }
+
+            auto ec_3 = glz::read_json(color_data_v, material_data.color.str);
+
+            if (ec_3) {
+                LOG_BACKTRACE(
+                    logging::file_io_logger, "Something went wrong {}",
+                    glz::format_error(ec_3, material_data.color.str)
+                );
+            } else {
+                goto end_parse_color;
+            }
+
+            LOG_CRITICAL(logging::file_io_logger, "could not parse color");
         }
-        */
+
+end_parse_color:
+
+        std::optional<bool> material_data_b;
+        std::optional<MaterialId> material_data_i;
+        std::optional<std::vector<MaterialId>> material_data_v;
+        {
+            auto ec_1 = glz::read_json(material_data_b, material_data.material.str);
+
+            if (ec_1) {
+                LOG_BACKTRACE(
+                    logging::file_io_logger, "Something went wrong {}",
+                    glz::format_error(ec_1, material_data.material.str)
+                );
+            } else {
+                goto end_parse_material;
+            }
+
+            auto ec_2 = glz::read_json(material_data_i, material_data.material.str);
+
+            if (ec_2) {
+                LOG_BACKTRACE(
+                    logging::file_io_logger, "Something went wrong {}",
+                    glz::format_error(ec_2, material_data.material.str)
+                );
+            } else {
+                goto end_parse_material;
+            }
+
+            auto ec_3 = glz::read_json(material_data_v, material_data.material.str);
+
+            if (ec_3) {
+                LOG_BACKTRACE(
+                    logging::file_io_logger, "Something went wrong {}",
+                    glz::format_error(ec_3, material_data.material.str)
+                );
+            } else {
+                goto end_parse_material;
+            }
+
+            LOG_CRITICAL(logging::file_io_logger, "could not parse material");
+        }
+
+end_parse_material:
+
+        // if (material_data_b.value_or(false)) {
+        //     // NOT IMPLEMENTED
+        //     return true; // TODO add true constructor to MaterialGroup
+        // }
+        if (material_data_i.has_value()) {
+            if (color_data_b.value_or(false)) {
+                materials.insert(material_data_i.value());
+            } else if (color_data_i.has_value()) {
+                auto iter = materials_w_color.find(material_data_i.value());
+                if (iter != materials_w_color.end()) {
+                    // add the color to the material if it exits
+                    iter->second.insert(color_data_i.value());
+                } else {
+                    // add both if it does not
+                    materials_w_color.insert(
+                        {material_data_i.value(), {color_data_i.value()}}
+                    );
+                }
+            } else if (color_data_v.has_value()) {
+                auto iter = materials_w_color.find(material_data_i.value());
+                if (iter != materials_w_color.end()) {
+                    // add the color to the material if it exits
+                    iter->second.insert(
+                        color_data_v.value().begin(), color_data_v.value().end()
+                    );
+                } else {
+                    // add both if it does not
+                    materials_w_color.insert(
+                        {material_data_i.value(),
+                         std::set<ColorId>(
+                             color_data_v.value().begin(), color_data_v.value().end()
+                         )}
+
+                    );
+                }
+            }
+        }
+
+        if (material_data_v.has_value()) {
+            for (MaterialId material_id : material_data_v.value()) {
+                if (color_data_b.value_or(false)) {
+                    materials.insert(material_id);
+                } else if (color_data_i.has_value()) {
+                    auto iter = materials_w_color.find(material_id);
+                    if (iter != materials_w_color.end()) {
+                        // add the color to the material if it exits
+                        iter->second.insert(color_data_i.value());
+                    } else {
+                        // add both if it does not
+                        materials_w_color.insert({material_id, {color_data_i.value()}});
+                    }
+                } else if (color_data_v.has_value()) {
+                    auto iter = materials_w_color.find(material_id);
+                    if (iter != materials_w_color.end()) {
+                        // add the color to the material if it exits
+                        iter->second.insert(
+                            color_data_v.value().begin(), color_data_v.value().end()
+                        );
+                    } else {
+                        // add both if it does not
+                        materials_w_color.insert(
+                            {material_id, std::set<ColorId>(
+                                              color_data_v.value().begin(),
+                                              color_data_v.value().end()
+                                          )}
+
+                        );
+                    }
+                }
+            }
+        }
     }
+
     return MaterialGroup(materials, materials_w_color);
 }
 
@@ -234,9 +348,7 @@ FromRadius::get_stamp(
 
 FromPosition::FromPosition(
     const generation_stamp_t& data, const stamp_generation_position_data_t& type_data
-) :
-    JsonToTile(data),
-    center_variance_(data.DC) {
+) : JsonToTile(data), center_variance_(data.DC) {
     points_.reserve(type_data.positions.size());
 
     for (const auto& [x, y] : type_data.positions) {

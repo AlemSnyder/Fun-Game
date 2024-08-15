@@ -77,8 +77,6 @@ target_link_libraries_system(FunGame PRIVATE quill::quill)
 target_link_libraries_system(FunGame PRIVATE sol2::sol2)
 target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
-# target_link_libraries_system(FunGame PRIVATE glaze::glaze)
-
 # Add include dirs
 target_include_directories(FunGame PRIVATE "vendor")
 target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")

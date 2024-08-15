@@ -37,6 +37,8 @@
 constexpr static size_t STRESS_TEST_SIZE = 16;
 constexpr static size_t SEED = 5;
 
+constexpr static std::string biome_base_name = "Base";
+
 void
 save_terrain(terrain::generation::biome_json_data biome_data) {
     quill::Logger* logger = logging::main_logger;
@@ -65,97 +67,14 @@ save_terrain(terrain::generation::biome_json_data biome_data) {
 
 int
 TerrainTypes(const argh::parser& cmdl) {
-    terrain::generation::biome_data_t biome_data;
+    terrain::generation::biome_json_data biome_data;
     glz::context ctx{};
-    {
-        std::string biome_name;
-        cmdl("biome-name", "-") >> biome_name;
-        std::filesystem::path biome_data_file = files::get_argument_path(biome_name);
-        // TODO make finding biome path better
-        // biome_data_file += ".json";
-        auto biome_file = files::open_data_file(biome_data_file);
 
-        if (biome_file.has_value()) {
-            std::string content(
-                (std::istreambuf_iterator<char>(biome_file.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read<glz::opts{}>(biome_data, content, ctx);
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "Error Parsing Json:\n{}",
-                    glz::format_error(ec, content)
-                );
-                return 1;
-            }
-        } else {
-            LOG_CRITICAL(
-                logging::file_io_logger, "Could not open biome data {}", biome_data_file
-            );
-            return 1;
-        }
-    }
-    terrain::all_materials_t materials;
+    std::string biome_name;
+    cmdl("biome-name", "-") >> biome_name;
+    biome_data = terrain::generation::Biome::get_json_data(biome_name);
 
-    {
-        terrain::all_materials_reader_t materials_reader;
-        std::string material_file;
-
-        cmdl("materials", "-") >> material_file;
-        std::filesystem::path material_data_file =
-            files::get_argument_path(material_file);
-        material_data_file += ".json";
-
-        auto materials_file = files::open_data_file(material_data_file);
-        if (materials_file.has_value()) {
-            std::string content(
-                (std::istreambuf_iterator<char>(materials_file.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
-                materials_reader, content, ctx
-            );
-
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "Error Parsing Json:{}{}",
-                    material_data_file, glz::format_error(ec, content)
-                );
-                return 1;
-            }
-
-            for (const auto& [material_name, material_json_string] :
-                 materials_reader.data) {
-                auto& material_to_be_assigned = materials.data[std::string(material_name)];
-
-                auto ec_2 =
-                    glz::read_json(material_to_be_assigned, material_json_string.str);
-
-                if (ec_2) {
-                    std::string error_string =
-                        glz::format_error(ec_2, material_json_string.str);
-                    LOG_ERROR(
-                        logging::file_io_logger, "Error Parsing Material {}{}",
-                        material_name, error_string
-                    );
-                    return 1;
-                }
-            }
-
-        } else {
-            LOG_CRITICAL(
-                logging::file_io_logger, "Could not open material data {}",
-                material_data_file
-            );
-            return 1;
-        }
-    }
-
-    terrain::generation::biome_json_data data(
-        biome_data.name, biome_data, materials
-    );
-
-    save_terrain(data);
+    save_terrain(biome_data);
 
     return 0;
 }
@@ -166,7 +85,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    World world("base", size, size);
+    World world(biome_base_name, size, size);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(2).str());
 
@@ -177,7 +96,7 @@ GenerateTerrain(const argh::parser& cmdl) {
 
 int
 MacroMap() {
-    terrain::generation::Biome biome("base", 2);
+    terrain::generation::Biome biome(biome_base_name, SEED);
 
     // test terrain generation
     auto map = biome.get_map(64);
@@ -231,7 +150,7 @@ image_test(const argh::parser& cmdl) {
 
 int
 ChunkDataTest() {
-    World world("base", 6, 6);
+    World world(biome_base_name, 6, 6);
 
     const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
 
@@ -298,7 +217,7 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    World world("base", path_in, seed);
+    World world(biome_base_name, path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -314,7 +233,7 @@ path_finder_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    World world("base", path_in, seed);
+    World world(biome_base_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -366,7 +285,7 @@ imgui_entry_main(const argh::parser& cmdl) {
     cmdl("size", 2) >> size;
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is 2,2.
-    World world("base", size, size, seed);
+    World world(biome_base_name, size, size, seed);
 
     return gui::imgui_entry(world);
 }
@@ -377,7 +296,7 @@ StressTest(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", STRESS_TEST_SIZE) >> size;
-    World world("base", size, size, seed);
+    World world(biome_base_name, size, size, seed);
     // Create world object from material data, biome data, and the number of
     // chunks in the x,y direction. Here the size is a user parameter that
     // defaults to STRESS_TEST_SIZE.
@@ -392,7 +311,7 @@ opengl_entry(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
 
-    World world("base", path_in, seed);
+    World world(biome_base_name, path_in, seed);
 
     return gui::opengl_entry(world);
 }
