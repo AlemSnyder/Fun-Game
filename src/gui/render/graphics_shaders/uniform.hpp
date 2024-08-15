@@ -67,7 +67,8 @@ class UniformsVector {
  public:
     std::set<std::pair<std::string, std::string>> get_names() const;
 
-    UniformsVector(std::vector<std::shared_ptr<Uniform>> uniforms) : uniforms_(uniforms) {}
+    UniformsVector(std::vector<std::shared_ptr<Uniform>> uniforms) :
+        uniforms_(uniforms) {}
 
     auto
     begin() {

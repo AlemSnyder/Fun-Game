@@ -108,19 +108,12 @@ struct biome_data_t {
 
 template <>
 struct glz::meta<terrain::generation::generation_stamp_type> {
-   using enum terrain::generation::generation_stamp_type;
-   static constexpr auto value = enumerate(GRID,
-                                           RADIUS,
-                                           POSITION
-   );
+    using enum terrain::generation::generation_stamp_type;
+    static constexpr auto value = enumerate(GRID, RADIUS, POSITION);
 };
 
 template <>
 struct glz::meta<terrain::generation::layer_effect_add> {
-   using enum terrain::generation::layer_effect_add;
-   static constexpr auto value = enumerate(NONE,
-                                           TO,
-                                           ADD
-   );
+    using enum terrain::generation::layer_effect_add;
+    static constexpr auto value = enumerate(NONE, TO, ADD);
 };
-

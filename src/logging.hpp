@@ -1,20 +1,18 @@
 #pragma once
 
-#include <quill/Backend.h>
-#include <quill/Frontend.h>
-#include <quill/LogMacros.h>
-#include <quill/Logger.h>
-#include <quill/sinks/FileSink.h>
-
-#include <quill/std/FilesystemPath.h>
-#include <quill/std/Vector.h>
-#include <quill/std/Map.h>
-#include <quill/std/Pair.h>
-#include <quill/std/Set.h>
-
 #include "util/files.hpp"
 
 #include <config.h>
+#include <quill/Backend.h>
+#include <quill/Frontend.h>
+#include <quill/Logger.h>
+#include <quill/LogMacros.h>
+#include <quill/sinks/FileSink.h>
+#include <quill/std/FilesystemPath.h>
+#include <quill/std/Map.h>
+#include <quill/std/Pair.h>
+#include <quill/std/Set.h>
+#include <quill/std/Vector.h>
 
 #include <string>
 
@@ -46,8 +44,7 @@ log_dir() noexcept {
     return files::get_root_path() / "logs";
 }
 
-void init(
-    bool console = true, quill::LogLevel log_level = DEFAULT_LOG_LEVEL);
+void init(bool console = true, quill::LogLevel log_level = DEFAULT_LOG_LEVEL);
 
 // TODO Quill will not log \n character. Maybe figure this out
 

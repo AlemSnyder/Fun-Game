@@ -24,8 +24,8 @@
 
 #include "../../types.hpp"
 #include "../material.hpp"
-#include "tile_stamp.hpp"
 #include "terrain_genreration_types.hpp"
+#include "tile_stamp.hpp"
 
 #include <glm/gtc/matrix_integer.hpp>
 
@@ -129,10 +129,7 @@ class FromPosition : public JsonToTile {
     );
 
     FromPosition(const generation_stamp_t& data) :
-        FromPosition(
-            data,
-            data.position.value()
-        ) {}
+        FromPosition(data, data.position.value()) {}
 };
 
 class FromRadius : public JsonToTile {
@@ -154,14 +151,12 @@ class FromRadius : public JsonToTile {
     FromRadius(
         const generation_stamp_t& data, const stamp_generation_radius_data_t& type_data
     ) :
-        JsonToTile(data), radius_(type_data.radius), number_(type_data.number),
+        JsonToTile(data),
+        radius_(type_data.radius), number_(type_data.number),
         center_variance_(data.DC) {}
 
     FromRadius(const generation_stamp_t& data) :
-        FromRadius(
-            data,
-            data.radius.value()
-        ) {}
+        FromRadius(data, data.radius.value()) {}
 };
 
 class FromGrid : public JsonToTile {
@@ -183,14 +178,11 @@ class FromGrid : public JsonToTile {
     FromGrid(
         const generation_stamp_t& data, const stamp_generation_grid_data_t& type_data
     ) :
-        JsonToTile(data), radius_(type_data.radius), number_(type_data.number),
+        JsonToTile(data),
+        radius_(type_data.radius), number_(type_data.number),
         center_variance_(data.DC) {}
 
-    FromGrid(const generation_stamp_t& data) :
-        FromGrid(
-            data,
-            data.grid.value()
-        ) {}
+    FromGrid(const generation_stamp_t& data) : FromGrid(data, data.grid.value()) {}
 };
 
 enum class Side : uint8_t {

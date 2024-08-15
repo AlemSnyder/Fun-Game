@@ -108,12 +108,13 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
         return color_texture_;
     }
 
-    [[nodiscard]] inline uint32_t get_num_vertices() const noexcept override {
+    [[nodiscard]] inline uint32_t
+    get_num_vertices() const noexcept override {
         return num_vertices_;
     }
 
-    [[nodiscard]] inline GPUDataType get_element_type(
-    ) const noexcept override {
+    [[nodiscard]] inline GPUDataType
+    get_element_type() const noexcept override {
         return element_array_.get_opengl_numeric_type();
     }
 };

@@ -50,7 +50,8 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
         color_texture_ = color_texture_id;
     }
 
-    inline void set_shadow_texture(GLuint shadow_texture){
+    inline void
+    set_shadow_texture(GLuint shadow_texture) {
         shadow_texture_ = shadow_texture;
     }
 

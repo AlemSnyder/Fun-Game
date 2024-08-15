@@ -43,7 +43,7 @@
   },
   "Dirt": {
     "material_id": 1,
-    "Gradient": {
+    "gradient": {
       "levels": [1, 3, 4, 2, 2, 0, 0, 0],
       "midpoint": 2
     },

@@ -234,7 +234,9 @@ FromRadius::get_stamp(
 
 FromPosition::FromPosition(
     const generation_stamp_t& data, const stamp_generation_position_data_t& type_data
-) : JsonToTile(data), center_variance_(data.DC) {
+) :
+    JsonToTile(data),
+    center_variance_(data.DC) {
     points_.reserve(type_data.positions.size());
 
     for (const auto& [x, y] : type_data.positions) {

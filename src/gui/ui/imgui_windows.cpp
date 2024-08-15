@@ -18,7 +18,6 @@ display_windows::display_data(
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
-
         for (auto& program_pair : programs) {
             auto& program = program_pair.second;
             // Display a data item

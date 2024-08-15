@@ -63,7 +63,6 @@ class GrassData {
 
     GrassData(const std::optional<grass_data_t>& json_grass_data);
 
-
     /**
      * @brief Get the grass gradient length
      *

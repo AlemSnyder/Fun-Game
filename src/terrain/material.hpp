@@ -26,15 +26,15 @@
 #include "../types.hpp"
 #include "generation/terrain_genreration_types.hpp"
 
+#include <glaze/glaze.hpp>
+
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <optional>
-
-#include <glaze/glaze.hpp>
 
 // not including all of glew
 using GLuint_p = unsigned int;
@@ -57,15 +57,14 @@ struct Material {
         float speed_multiplier_in, bool solid_in, MaterialId material_id_in,
         std::string name_in
     ) :
-        color(color_in),
-        speed_multiplier(speed_multiplier_in), solid(solid_in),
-        material_id(material_id_in), name(name_in){};
+        color(color_in), speed_multiplier(speed_multiplier_in), solid(solid_in),
+        material_id(material_id_in), name(name_in) {};
     // vector of <name hex color> for possible colors
     std::vector<std::pair<const std::string, ColorInt>> color;
-    float speed_multiplier = 1;         // speed on this material
-    bool solid = false;                 // Is the material solid?
+    float speed_multiplier = 1;          // speed on this material
+    bool solid = false;                  // Is the material solid?
     MaterialId material_id = AIR_MAT_ID; // The ID of the material (Air is 0)
-    const std::string name = "Air";     // The material name
+    const std::string name = "Air";      // The material name
     // int8_t deterioration from wind
     // int8_t deterioration from water
 };
@@ -76,8 +75,28 @@ struct Material {
 struct material_color_t {
     std::string color_name;
     ColorInt hex_color;
-};
 
+    void
+    read_hex_color(std::string hex_string) {
+        hex_color = std::stoll(hex_string, 0, 16);
+    }
+
+    std::string
+    string_hex_color() const {
+        std::stringstream stream;
+        stream << std::hex << hex_color;
+        std::string result(stream.str());
+        return result;
+    }
+
+    void read_color_name(std::string color_name_){
+        color_name = color_name_;
+    }
+
+    std::string write_color_name() const {
+        return color_name;
+    }
+};
 
 struct grass_data_t {
     std::vector<int> levels;
@@ -152,13 +171,13 @@ class MaterialGroup {
     std::map<MaterialId, std::set<ColorId>> materials_with_color_requirement_;
 
  public:
-    MaterialGroup(){};
+    MaterialGroup() {};
     MaterialGroup(
         std::set<MaterialId> materials,
         std::map<MaterialId, std::set<ColorId>> materials_w_color
     ) :
         materials_no_color_requirement_(materials),
-        materials_with_color_requirement_(materials_w_color){};
+        materials_with_color_requirement_(materials_w_color) {};
 
     [[nodiscard]] inline bool
     material_in(MaterialId material_id, ColorId color_id) const {
@@ -202,15 +221,28 @@ material_in(
 
 template <>
 struct glz::meta<terrain::all_materials_reader_t> {
-   using T = terrain::all_materials_reader_t;
-   static constexpr auto value = object(
-   );
-   
-   // with members
-   static constexpr auto unknown_write{&T::data};
-   static constexpr auto unknown_read{&T::data};
-   // with methods
-   // static constexpr auto unknown_write{&T::my_unknown_write};
-   // static constexpr auto unknown_read{&T::my_unknown_read};
+    using T = terrain::all_materials_reader_t;
+    static constexpr auto value = object();
 
+    // with members
+    static constexpr auto unknown_write{&T::data};
+    static constexpr auto unknown_read{&T::data};
+    // with methods
+    // static constexpr auto unknown_write{&T::my_unknown_write};
+    // static constexpr auto unknown_read{&T::my_unknown_read};
+};
+
+template <>
+struct glz::meta<terrain::material_color_t> {
+    //    using terrain::material_color_t;
+    static constexpr auto value = object(
+        "hex_color",
+        custom<
+            &terrain::material_color_t::read_hex_color,
+            &terrain::material_color_t::string_hex_color>,
+        "color_name",
+        custom<
+            &terrain::material_color_t::color_name,
+            &terrain::material_color_t::color_name>
+    );
 };

@@ -119,25 +119,24 @@ TerrainTypes(const argh::parser& cmdl) {
             if (ec) {
                 LOG_ERROR(
                     logging::file_io_logger, "Error Parsing Json:{}{}",
-                    material_data_file,
-                    glz::format_error(ec, content)
+                    material_data_file, glz::format_error(ec, content)
                 );
                 return 1;
             }
 
             for (const auto& [material_name, material_json_string] :
                  materials_reader.data) {
-                auto& material_to_be_assigned = materials.data[material_name.data()];
+                auto& material_to_be_assigned = materials.data[std::string(material_name)];
 
                 auto ec_2 =
                     glz::read_json(material_to_be_assigned, material_json_string.str);
 
                 if (ec_2) {
-                    std::string error_string = glz::format_error(ec_2, material_json_string.str);
+                    std::string error_string =
+                        glz::format_error(ec_2, material_json_string.str);
                     LOG_ERROR(
                         logging::file_io_logger, "Error Parsing Material {}{}",
-                        material_name,
-                        error_string
+                        material_name, error_string
                     );
                     return 1;
                 }
@@ -153,7 +152,7 @@ TerrainTypes(const argh::parser& cmdl) {
     }
 
     terrain::generation::biome_json_data data(
-        biome_data.description, biome_data, materials
+        biome_data.name, biome_data, materials
     );
 
     save_terrain(data);

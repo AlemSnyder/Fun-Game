@@ -21,8 +21,8 @@
  *
  */
 
-#include "entity/mesh.hpp"
 #include "array_buffer.hpp"
+#include "entity/mesh.hpp"
 #include "gpu_data.hpp"
 #include "non_instanced_i_mesh.hpp"
 

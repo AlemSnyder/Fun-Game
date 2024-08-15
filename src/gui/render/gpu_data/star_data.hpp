@@ -26,11 +26,11 @@
 #include "array_buffer.hpp"
 #include "gpu_data.hpp"
 
-#include <glaze/glaze.hpp>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+#include <glaze/glaze.hpp>
 
 #include <filesystem>
 #include <vector>

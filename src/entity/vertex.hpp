@@ -32,11 +32,11 @@ namespace entity {
 
 /**
  * @brief Position in mesh
- * 
+ *
  * @details Object used to store data of a vertex in a mesh. This class exists
  * so that it can be hashed, and compared in a map. This way less vertices are
  * sent to the gpu.
-*/
+ */
 struct Vertex {
     VoxelOffset position;
     glm::i8vec3 normal;
