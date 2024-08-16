@@ -119,7 +119,7 @@ struct glz::meta<terrain::generation::layer_effect_add> {
 };
 
 // TODO error with glaze
-// when using optional this happens
+// when using optional glaze causes compiler errors anc this suppresses those errors
 template<>
 inline glz::detail::any_t::operator terrain::generation::stamp_generation_grid_data_t() const{
     assert(false && "Not Implemented");
