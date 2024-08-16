@@ -246,3 +246,9 @@ struct glz::meta<terrain::material_color_t> {
             &terrain::material_color_t::color_name>
     );
 };
+
+template<>
+inline glz::detail::any_t::operator terrain::grass_data_t() const{
+    assert(false && "Not Implemented");
+    return {};
+}
