@@ -146,14 +146,14 @@ class ArrayBuffer {
     GLuint buffer_ID_; // For binding
     GLuint divisor_;   // For instancing usually 0, 1
 
-    size_t size = 0;
-    size_t aloc_size = 0;
+    size_t size_ = 0;
+    size_t aloc_size_ = 0;
 
  public:
     /**
      * @brief Default constructor
      */
-    inline ArrayBuffer() : divisor_(0), size(0), aloc_size(0) {
+    inline ArrayBuffer() : divisor_(0), size_(0), aloc_size_(0) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { glGenBuffers(1, &buffer_ID_); });
     }
@@ -291,21 +291,21 @@ ArrayBuffer<T, buffer>::pointer_update_(
         buffer_ID_, data_type.vec_size, to_string(data_type.draw_type)
     );
 
-    if (aloc_size < offset + add_data_size) {
+    if (aloc_size_ < offset + add_data_size) {
         // reallocate
-        aloc_size = offset + add_data_size;
+        aloc_size_ = offset + add_data_size;
 
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
         // this should theoretically copy the existing data into a new buffer.
         glBufferData(
             static_cast<GLenum>(buffer),
-            aloc_size * data_type.type_size * data_type.vec_size, nullptr,
+            aloc_size_ * data_type.type_size * data_type.vec_size, nullptr,
             GL_DYNAMIC_DRAW
         );
 
         glBufferSubData(
             static_cast<GLenum>(buffer), offset,
-            aloc_size * data_type.type_size * data_type.vec_size, data_begin
+            aloc_size_ * data_type.type_size * data_type.vec_size, data_begin
         );
 
         // TODO add case to reduce size

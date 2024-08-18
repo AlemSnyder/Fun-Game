@@ -23,11 +23,12 @@
 #include "terrain/generation/land_generator.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "util/files.hpp"
+#include "plant.hpp"
 
 #include <sol/sol.hpp>
 
-#include <compare>
 #include <map>
+#include <unordered_set>
 
 #pragma once
 
@@ -45,30 +46,6 @@ struct biome_json_data {
     Json::Value biome_data;
     // Json data that describes materials
     Json::Value materials_data;
-};
-
-/**
- * @brief Plant identification for biome generation.
- */
-// read from json
-struct Plant {
-    std::string name; // shortened name
-    // identification should look like path eg biome/trees/tree_type_1
-    std::string identification;
-    // The map that generates these plants eg Trees_1
-    std::string map_name;
-
-    [[nodiscard]] inline std::strong_ordering
-    operator<=>(const Plant& other) const {
-        std::strong_ordering ordering = name <=> other.name;
-        if (ordering != std::strong_ordering::equal)
-            return ordering;
-        ordering = identification <=> other.identification;
-        if (ordering != std::strong_ordering::equal)
-            return ordering;
-        ordering = map_name <=> other.map_name;
-        return ordering;
-    }
 };
 
 /**
@@ -139,7 +116,7 @@ class Biome {
     // materials that exist
     const std::map<MaterialId, const terrain::Material> materials_;
 
-    std::set<Plant> generate_plants_;
+    std::unordered_set<Plant> generate_plants_;
 
     GrassData grass_data_;
 
@@ -272,7 +249,7 @@ class Biome {
         return materials_;
     }
 
-    [[nodiscard]] inline const std::set<Plant>&
+    [[nodiscard]] inline const std::unordered_set<Plant>&
     get_generate_plants() const {
         return generate_plants_;
     }
