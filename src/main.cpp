@@ -83,7 +83,7 @@ TerrainTypes(const argh::parser& cmdl) {
     std::string biome_name;
 
     cmdl("biome-name", "-") >> biome_name;
-    std::filesystem::path biome_data_file = biome_name;
+    std::filesystem::path biome_data_file = files::get_argument_path(biome_name);
     biome_data_file += ".json";
     auto biome_file = files::open_data_file(biome_data_file);
     if (biome_file.has_value())
@@ -98,7 +98,7 @@ TerrainTypes(const argh::parser& cmdl) {
 
     Json::Value materials_json;
     cmdl("materials", "-") >> material_file;
-    std::filesystem::path material_data_file = material_file;
+    std::filesystem::path material_data_file = files::get_argument_path(material_file);
     material_data_file += ".json";
     auto materials_file = files::open_data_file(material_data_file);
     if (materials_file.has_value())
@@ -127,7 +127,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("size", 6) >> size;
     world::World world("base", size, size);
 
-    std::string path_out = cmdl(2).str();
+    std::filesystem::path path_out = files::get_argument_path(cmdl(2).str());
 
     world.qb_save(path_out);
 
@@ -175,11 +175,9 @@ image_test(const argh::parser& cmdl) {
         return result;
 
     } else {
-        std::string path_in = cmdl(3).str();
-        std::filesystem::path lua_file_path = files::get_root_path() / path_in;
+        std::filesystem::path lua_file_path = files::get_argument_path(cmdl(2).str());
+        std::filesystem::path png_path = files::get_argument_path(cmdl(3).str());
 
-        std::string path_out = cmdl(4).str();
-        std::filesystem::path png_path = files::get_root_path() / path_out;
         size_t size;
         cmdl("size", 6) >> size;
 
@@ -266,8 +264,10 @@ NoiseTest() {
 // reimplement
 int
 save_test(const argh::parser& cmdl) {
-    std::string path_in = cmdl(2).str();
-    std::string path_out = cmdl(3).str();
+    std::filesystem::path path_in = files::get_argument_path(cmdl(2).str());
+
+    std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
+
     size_t seed;
     cmdl("seed", SEED) >> seed;
     world::World world("base", path_in, seed);
@@ -280,8 +280,9 @@ save_test(const argh::parser& cmdl) {
 // reimplement
 int
 path_finder_test(const argh::parser& cmdl) {
-    std::string path_in = cmdl(2).str();
-    std::string path_out = cmdl(3).str();
+    std::filesystem::path path_in = files::get_argument_path(cmdl(2).str());
+
+    std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
     quill::Logger* logger = logging::main_logger;
 
     size_t seed;
