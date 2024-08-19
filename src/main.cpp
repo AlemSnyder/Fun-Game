@@ -349,7 +349,7 @@ LogTest() {
 
     GlobalContext& context = GlobalContext::instance();
 
-    std::future<void> future = context.submit_task([]() {
+    auto future = context.submit_task([]() {
         LOG_INFO(logging::main_logger, "Log from backend thread");
     });
 
