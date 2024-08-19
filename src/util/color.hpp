@@ -1,7 +1,29 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+/**
+ * @file color.hpp
+ *
+ * @brief Defines Color type conversions.
+ *
+ * @ingroup Util
+ *
+ */
+
 #pragma once
 
-#include "../types.hpp"
 #include "bits.hpp"
+#include "types.hpp"
 
 #include <vector>
 
@@ -49,5 +71,7 @@ convert_color_data(const std::vector<ColorInt>& color_map) {
     }
     return float_colors;
 }
+
+constexpr ColorFloat black({0, 0, 0, 1});
 
 } // namespace color

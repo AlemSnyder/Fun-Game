@@ -1,7 +1,29 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+/**
+ * @file voxel.hpp
+ *
+ * @brief Defines VoxelBase and VoxelObject classes.
+ *
+ * @ingroup Util
+ *
+ */
+
 #pragma once
 
-#include "../types.hpp"
 #include "glm/glm.hpp"
+#include "types.hpp"
 
 #include <array>
 #include <cstdint>
@@ -93,6 +115,17 @@ class VoxelObject : VoxelBase {
             return data_[get_position(x, y, z)];
         }
         return 0;
+    }
+
+    /**
+     * @brief Get the voxel color id
+     *
+     * @param VoxelOffset x, y, z position
+     * @return VoxelColorId
+     */
+    [[nodiscard]] inline VoxelColorId
+    get_voxel_color_id(const VoxelOffset& position) const {
+        return get_voxel_color_id(position.x, position.y, position.z);
     }
 
     /**

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../gl_enums.hpp"
+#include "global_context.hpp"
 #include "logging.hpp"
 
 #include <GL/glew.h>
@@ -145,11 +146,17 @@ class ArrayBuffer {
     GLuint buffer_ID_; // For binding
     GLuint divisor_;   // For instancing usually 0, 1
 
+    size_t size_ = 0;
+    size_t aloc_size_ = 0;
+
  public:
     /**
      * @brief Default constructor
      */
-    inline ArrayBuffer() : divisor_(0) {}
+    inline ArrayBuffer() : divisor_(0), size_(0), aloc_size_(0) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this]() { glGenBuffers(1, &buffer_ID_); });
+    }
 
     /**
      * @brief Construct ArrayBuffer with data
@@ -164,20 +171,17 @@ class ArrayBuffer {
      * @param std::vector<T>& data data to send to GPU
      * @param GLuint divisor go look up instancing
      */
-    inline explicit ArrayBuffer(const std::vector<T>& data, GLuint divisor) {
-        update(data, divisor);
-    };
-
-    /**
-     * @brief Construct ArrayBuffer with data and divisor
-     *
-     * @param std::vector<T>& data data to send to GPU
-     * @param GLuint divisor go look up instancing
-     */
-    inline ArrayBuffer(std::initializer_list<T> data, GLuint divisor) :
+    inline explicit ArrayBuffer(const std::vector<T>& data, GLuint divisor) :
         divisor_(divisor) {
-        pointer_update_(data.begin(), data.size());
-    }
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, data]() {
+            LOG_BACKTRACE(
+                logging::opengl_logger, "buffer ID before generation: {}", buffer_ID_
+            );
+            glGenBuffers(1, &buffer_ID_);
+            this->pointer_update_(data.data(), 0, data.size());
+        });
+    };
 
     /**
      * @brief Construct ArrayBuffer with data
@@ -193,9 +197,11 @@ class ArrayBuffer {
      * @param GLuint divisor go look up instancing
      */
     inline void
-    update(const std::vector<T>& data, GLuint divisor) {
-        divisor_ = divisor;
-        update(data);
+    update(std::vector<T> data, GLuint offset) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, data, offset]() {
+            this->pointer_update_(data.data(), offset, data.size());
+        });
     };
 
     /**
@@ -205,7 +211,7 @@ class ArrayBuffer {
      */
     inline void
     update(const std::vector<T>& data) {
-        pointer_update_(data.data(), data.size());
+        update(data.data(), 0);
     }
 
     /**
@@ -268,29 +274,58 @@ class ArrayBuffer {
      *
      * @param std::vector<T>& data data to send to GPU
      */
-    void pointer_update_(const T* data_begin, size_t size);
+    void pointer_update_(const T* data_begin, size_t offset, size_t add_data_size);
 };
+
+// go do vector implementations
 
 template <class T, BindingTarget buffer>
 void
-ArrayBuffer<T, buffer>::pointer_update_(const T* data_begin, size_t size) {
+ArrayBuffer<T, buffer>::pointer_update_(
+    const T* data_begin, size_t offset, size_t add_data_size
+) {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
-    glDeleteBuffers(1, &buffer_ID_);
-
-    glGenBuffers(1, &buffer_ID_);
-    glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
-    glBufferData(
-        static_cast<GLenum>(buffer), size * data_type.type_size * data_type.vec_size,
-        data_begin,
-        GL_DYNAMIC_DRAW // TODO
+    LOG_BACKTRACE(
+        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        buffer_ID_, data_type.vec_size, to_string(data_type.draw_type)
     );
+
+    if (aloc_size_ < offset + add_data_size) {
+        // reallocate
+        aloc_size_ = offset + add_data_size;
+
+        glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
+        // this should theoretically copy the existing data into a new buffer.
+        glBufferData(
+            static_cast<GLenum>(buffer),
+            aloc_size_ * data_type.type_size * data_type.vec_size, nullptr,
+            GL_DYNAMIC_DRAW
+        );
+
+        glBufferSubData(
+            static_cast<GLenum>(buffer), offset,
+            aloc_size_ * data_type.type_size * data_type.vec_size, data_begin
+        );
+
+        // TODO add case to reduce size
+        // The problem is that the way this is setup doesn't allow that.
+        // there is not way to say where the new data end is. one should not
+    } else {
+        glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
+        glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
+    }
 }
 
 template <class T, BindingTarget buffer>
 void
 ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+
+    LOG_BACKTRACE(
+        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        buffer_ID_, data_type.vec_size, to_string(data_type.draw_type)
+    );
 
     if constexpr (buffer != BindingTarget::ELEMENT_ARRAY_BUFFER)
         glEnableVertexAttribArray(index);

@@ -27,6 +27,8 @@ class Helio : public render::LightEnvironment, public render::StarRotation {
     glm::vec3 light_direction_;
     glm::vec3 sunlight_color_;
 
+    bool manual_light_direction_;
+
  public:
     // gives a slight insight to the internal workings
     // updated every frame, but never read.
@@ -37,6 +39,11 @@ class Helio : public render::LightEnvironment, public render::StarRotation {
     Helio(double earth_tilt, double year_days, double day_seconds, double latitude) :
         earth_tilt_(earth_tilt), year_days_(year_days), day_seconds_(day_seconds),
         latitude_(latitude) {}
+
+    bool&
+    control_lighting() {
+        return manual_light_direction_;
+    }
 
     /**
      * @brief Updates sun position and light colors
@@ -60,6 +67,14 @@ class Helio : public render::LightEnvironment, public render::StarRotation {
      */
     [[nodiscard]] inline glm::vec3
     get_light_direction() const override {
+        return light_direction_;
+    };
+
+    /**
+     * @brief Get the sunlight direction. Equivalent to sun position.
+     */
+    [[nodiscard]] inline glm::vec3&
+    control_light_direction() {
         return light_direction_;
     };
 

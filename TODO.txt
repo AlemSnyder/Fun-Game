@@ -3,14 +3,16 @@ Terrain generation
         rivers
     Mountain ranges
     WFC
-        mines/caves
-        towns
-        plants
+        mines/caves 
+        towns       probably not
+        plants      probably not
 
 GUI
-    deal with rotation
-        add fourth int to position
-        add for loop into vertex shader that rotates the 
+    in sky
+        maybe other planets
 
-    sun
-        maybe other plants
+    entities
+        load entities
+            multiple texture
+
+
