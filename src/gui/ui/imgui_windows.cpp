@@ -1,8 +1,15 @@
 #include "imgui_windows.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
+#include <numbers>
+
+namespace {
+constexpr float radtodeg = std::numbers::pi / 180;
+}
+
 namespace gui {
 
-namespace shader {
 void
 display_windows::display_data(
     std::map<const shader::ProgramData, shader::Program>& programs
@@ -42,6 +49,42 @@ display_windows::display_data(
     }
     ImGui::End();
 }
-} // namespace shader
+
+void
+display_windows::display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
+    glm::vec3 light_direction = helio->get_light_direction();
+
+    ImGui::Begin("Scene Data", &show);
+
+    bool& manual_light_direction = helio->control_lighting();
+    ImGui::Checkbox("Manually set light direction", &manual_light_direction);
+
+    static float theta_phi[2];
+
+    if (manual_light_direction) {
+        ImGui::DragFloat2("Light Direction", theta_phi);
+
+        helio->control_light_direction() = glm::vec3(
+            cos(theta_phi[0] * radtodeg) * sin(theta_phi[1] * radtodeg),
+            cos(theta_phi[0] * radtodeg) * cos(theta_phi[1] * radtodeg),
+            sin(theta_phi[0] * radtodeg)
+        );
+
+    } else {
+        ImGui::Text("Sun angle %.3f", helio->sun_angle);
+        ImGui::Text("Earth angle %.3f", helio->earth_angle);
+        ImGui::Text("Total angle %.3f", helio->total_angle);
+    }
+    glm::vec3 color = helio->get_specular_light();
+
+    ImGui::TextColored({color.r, color.g, color.b, 1}, "■");
+
+    ImGui::Text(
+        "Light Direction <%.3f, %.3f, %.3f>", light_direction.x, light_direction.y,
+        light_direction.z
+    );
+
+    ImGui::End();
+}
 
 } // namespace gui

@@ -181,7 +181,6 @@ class ShaderProgram_Standard :
                 GL_TRIANGLE_STRIP,       // mode
                 0,                       // start
                 mesh->get_num_vertices() // number of vertices
-
             );
 
             mesh->release();

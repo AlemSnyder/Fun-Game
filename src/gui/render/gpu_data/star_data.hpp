@@ -86,7 +86,7 @@ class StarShape : public virtual GPUData {
      *
      * @return const ArrayBuffer<glm::vec2>& shape_buffer_
      */
-    [[nodiscard]] inline const ArrayBuffer<glm::vec2>
+    [[nodiscard]] inline const ArrayBuffer<glm::vec2>&
     get_star_shape() const {
         return shape_buffer_;
     }

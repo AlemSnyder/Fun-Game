@@ -1,6 +1,7 @@
 #include "logging.hpp"
 
 #include "config.h"
+#include "global_context.hpp"
 #include "util/files.hpp"
 
 #include <quill/Backend.h>

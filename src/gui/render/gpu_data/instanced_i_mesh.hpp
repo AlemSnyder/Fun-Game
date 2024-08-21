@@ -22,9 +22,10 @@
  */
 
 #include "array_buffer.hpp"
-#include "entity/mesh.hpp"
+// #include "entity/mesh.hpp"
 #include "gpu_data.hpp"
 #include "non_instanced_i_mesh.hpp"
+#include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -44,9 +45,11 @@ namespace gpu_data {
  * @details Handles instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
- private:
-    ArrayBuffer<glm::ivec3> transforms_array_;
+class InstancedIMeshGPU :
+    public virtual NonInstancedIMeshGPU,
+    public virtual GPUDataElementsInstanced {
+ protected:
+    ArrayBuffer<glm::ivec4> transforms_array_;
     uint32_t num_models_;
 
  public:
@@ -57,8 +60,10 @@ class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
     inline InstancedIMeshGPU& operator=(InstancedIMeshGPU&& other) = default;
 
     InstancedIMeshGPU(
-        const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
+        const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     );
+
+    void update_transforms_array(std::vector<glm::ivec4> data, uint offset);
 
     inline void virtual bind() const override {
         NonInstancedIMeshGPU::bind();
@@ -70,12 +75,12 @@ class InstancedIMeshGPU : public virtual NonInstancedIMeshGPU {
         glDisableVertexAttribArray(3);
     }
 
-    [[nodiscard]] inline const ArrayBuffer<glm::ivec3>&
+    [[nodiscard]] inline const ArrayBuffer<glm::ivec4>&
     get_model_transforms() const noexcept {
         return transforms_array_;
     }
 
-    [[nodiscard]] inline uint32_t virtual get_num_models() const noexcept {
+    [[nodiscard]] inline uint32_t virtual get_num_models() const noexcept override {
         return num_models_;
     }
 };

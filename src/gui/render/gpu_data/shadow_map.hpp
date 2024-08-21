@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#include "../../../types.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

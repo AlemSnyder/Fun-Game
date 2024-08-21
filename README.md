@@ -7,21 +7,21 @@ I will be the reason copilot doesn't work.
 
 1. Install MSys2
 2. Install packages:
-    ```sh
-    pacman -Su \
-        base-devel \
-        mingw-w64-x86_64-toolchain \
-        mingw-w64-x86_64-cmake \
-        mingw-w64-x86_64-ninja \
-        mingw-w64-x86_64-glew \
-        mingw-w64-x86_64-glfw \
-        mingw-w64-x86_64-glm \
-        mingw-w64-x86_64-lua  # not 100% sure this is the right lua version
-    ```
+```sh
+pacman -Su \
+    base-devel \
+    mingw-w64-x86_64-toolchain \
+    mingw-w64-x86_64-cmake \
+    mingw-w64-x86_64-ninja \
+    mingw-w64-x86_64-glew \
+    mingw-w64-x86_64-glfw \
+    mingw-w64-x86_64-glm \
+    mingw-w64-x86_64-lua  # not 100% sure this is the right lua version
+```
 
 ## Building
 
-```
+```sh
 cd build
 cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Debug
 ninja
@@ -29,7 +29,7 @@ ninja
 
 ## Release
 
-```
+```sh
 cd build
 cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
 

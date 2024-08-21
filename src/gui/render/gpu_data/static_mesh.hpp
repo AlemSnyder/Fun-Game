@@ -22,6 +22,7 @@
  */
 
 #include "instanced_i_mesh.hpp"
+#include "world/entity/placement.hpp"
 
 #pragma once
 
@@ -36,16 +37,22 @@ namespace gpu_data {
  * each mesh.
  */
 class StaticMesh : public virtual InstancedIMeshGPU {
- public:
-    inline StaticMesh(
-        const entity::Mesh& mesh, const std::vector<glm::ivec3>& model_transforms
-    ) :
-        InstancedIMeshGPU(mesh, model_transforms) {
-        generate_color_texture(mesh);
-    }
-
  protected:
-    void generate_color_texture(const entity::Mesh& mesh);
+    Texture1D color_texture_;
+
+ public:
+    inline StaticMesh(const world::entity::Mesh& mesh) : StaticMesh(mesh, {}) {}
+
+    inline StaticMesh(
+        const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+    ) :
+        InstancedIMeshGPU(mesh, model_transforms) {}
+
+    inline void
+    bind() const override {
+        InstancedIMeshGPU::bind();
+        color_texture_.bind(0);
+    }
 };
 
 } // namespace gpu_data

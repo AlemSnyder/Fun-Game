@@ -4,7 +4,6 @@
 layout(location = 0) out vec3 color;
 
 uniform mat4 MVIP;
-uniform mat4 pixel_projection;
 uniform vec3 direct_light_color;
 
 in vec2 EyeDirectionScreenSpace;

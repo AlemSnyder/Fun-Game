@@ -182,8 +182,8 @@ Program::reload() {
     }
 
     LOG_INFO(
-        logging::opengl_logger, "Shader compiled successfully with program ID {}",
-        program_ID_
+        logging::opengl_logger, "Shader {} compiled successfully with program ID {}",
+        name_, program_ID_
     );
 
     status_ = ProgramStatus::OK;

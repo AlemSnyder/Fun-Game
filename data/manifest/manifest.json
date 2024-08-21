@@ -1,0 +1,15 @@
+{
+    "name": "base",
+    "entities": [
+        {
+            "identification": "base/Flower_Test",
+            "path": "base/models/Flower_Test/Flower_Test.json"
+        }
+    ],
+    "biomes": [
+        {
+            "identification": "Base",
+            "path": "base"
+        }
+    ]
+}

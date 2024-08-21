@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../types.hpp"
 #include "../scene/controls.hpp"
 #include "gpu_data/shadow_map.hpp"
 #include "graphics_shaders/uniform.hpp"
 #include "logging.hpp"
+#include "types.hpp"
 
 #include <glm/glm.hpp>
 

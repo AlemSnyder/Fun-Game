@@ -1,0 +1,21 @@
+{
+    "name": "Flower Test",
+    "models": [
+        {
+            "file_path": "./Flower_Test.qb",
+            "colors": [
+                {
+                    "map": {}
+                },
+                {
+                    "map": {"663f23FF" : "663f22FF"}
+                }
+            ],
+            "globals":{
+                "ambient": 0.4,
+                "specular": 0.2,
+                "diffuse": 0.8
+            }
+        }
+    ]
+}
