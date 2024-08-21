@@ -17,14 +17,22 @@ void
 ObjectHandler::read_object(const Manifest::descriptor_t& descriptor) {
     // json to read data into
 
+    object_t object_data;
+
     // read contents from path
     auto contents = files::open_data_file(descriptor.path);
     if (contents.has_value()) {
-        //        contents.value() >> object_json;
-    } else {
-        LOG_WARNING(
-            logging::file_io_logger, "Cannot open file {}.", descriptor.path.string()
+        std::string content(
+            (std::istreambuf_iterator<char>(contents.value())),
+            std::istreambuf_iterator<char>()
         );
+
+        auto ec = glz::read_json(object_data, content);
+        if (ec) {
+            LOG_ERROR(logging::file_io_logger, "{}", glz::format_error(ec, content));
+            return;
+        }
+    } else {
         return;
     }
 
@@ -43,11 +51,10 @@ ObjectHandler::read_object(const Manifest::descriptor_t& descriptor) {
     // when objects are initalized data is sent to the gpu.
     // we want to run the mesher async, but need to send the data to the gpu
     // on the main thread
-    // ided_objects.emplace(
-    //    std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
-    //    std::forward_as_tuple(object_json, object_path)
-    //);
-    // TODO
+    ided_objects.emplace(
+        std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
+        std::forward_as_tuple(object_data, descriptor)
+    );
 }
 
 void

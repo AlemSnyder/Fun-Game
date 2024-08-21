@@ -57,8 +57,8 @@ GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
 
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
-    grass_data_(biome_data.materials_data.data.at("Dirt").gradient), seed_(seed),
-    generate_plants_(biome_data.biome_data.plants_generated) { // TODO
+    grass_data_(biome_data.materials_data.data.at("Dirt").gradient),
+    generate_plants_(biome_data.biome_data.plants_generated, seed_(seed)) {
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
 
