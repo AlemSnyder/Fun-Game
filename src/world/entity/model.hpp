@@ -4,14 +4,15 @@
 #include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/gpu_data.hpp"
 #include "gui/render/gpu_data/static_mesh.hpp"
+#include "manifest.hpp"
 #include "placement.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
 
 #include <filesystem>
+#include <optional>
 #include <unordered_set>
 #include <vector>
-#include <optional>
 
 namespace world {
 
@@ -27,6 +28,14 @@ struct model_t {
     std::filesystem::path path;
     std::optional<std::vector<std::map<ColorInt, ColorInt>>> colors;
     global_illumination_t globals;
+};
+
+struct object_t {
+    std::string name;
+    std::vector<model_t> models;
+    // define interactions
+    // like on drop etc
+    // maybe it has a health
 };
 
 constexpr size_t NO_UPDATE = -1;
@@ -57,8 +66,9 @@ class ObjectData {
      *
      * @param Json::Value& JSON that describes the object
      * @param std::filesystem::path path to folder containing voxel
+     TODO fix documentation
      */
-    ObjectData(const model_t& object_data, std::filesystem::path model_path);
+    ObjectData(const object_t& object_data, const Manifest::descriptor_t& model_path);
 
     /**
      * @brief Get a model for this object by id.

@@ -74,7 +74,7 @@ World::World(
     std::uniform_int_distribution rotation_distribution(0, 3);
 
     // just debug
-    for (const terrain::generation::Plant& plant : biome_.get_generate_plants()) {
+    for (const terrain::generation::plant_t& plant : biome_.get_generate_plants()) {
         auto map = plant_maps[plant.map_name];
         LOG_DEBUG(logging::terrain_logger, "Plant map name: {}.", plant.map_name);
 
@@ -86,7 +86,7 @@ World::World(
 
     for (const auto& tile_position_pair : ordered_tiles) {
         glm::vec2 tile_position = tile_position_pair.second;
-        for (const terrain::generation::Plant& plant : biome_.get_generate_plants()) {
+        for (const terrain::generation::plant_t& plant : biome_.get_generate_plants()) {
             auto map = plant_maps[plant.map_name];
 
             float chance = map.get_tile(tile_position.x, tile_position.y);

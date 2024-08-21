@@ -1,7 +1,5 @@
 #include "model.hpp"
 
-#include "manifest.hpp"
-
 #include <filesystem>
 #include <iterator>
 
@@ -31,14 +29,15 @@ ObjectData::end() noexcept {
 }
 
 ObjectData::ObjectData(
-    const object_t& object_data, const Manifest::descriptor_t identification_data
+    const object_t& object_data, const Manifest::descriptor_t& identification_data
 ) :
     name_(object_data.name),
     identification_(identification_data.identification) {
-    for (const model_data& : object_json.models) {
+    for (const model_t& model_data : object_data.models) {
         // each object may have multiple models
-        std::filesystem::path file_path = identification_data.path.remove_filename()
-                                          / mesh_data["file_path"].asString();
+        std::filesystem::path object_path_copy = identification_data.path;
+        std::filesystem::path file_path =
+            object_path_copy.remove_filename() / model_data.path;
 
         // generate a model from the given filepath
         voxel_utility::VoxelObject model(file_path);

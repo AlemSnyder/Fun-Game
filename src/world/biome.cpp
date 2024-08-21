@@ -57,8 +57,8 @@ GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
 
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
-    grass_data_(biome_data.materials_data.data.at("Dirt").gradient),
-    seed_(seed) { // TODO
+    grass_data_(biome_data.materials_data.data.at("Dirt").gradient), seed_(seed),
+    generate_plants_(biome_data.biome_data.plants_generated) { // TODO
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
 
@@ -70,8 +70,6 @@ Biome::Biome(biome_json_data biome_data, size_t seed) :
     read_map_tile_data_(biome_data.biome_data.tile_data);
 
     read_add_to_top_data_(biome_data.biome_data.layer_effects);
-
-    read_plants_data_(biome_data.biome_data["Biome"]["Generate_Plants"]);
 
     init_lua_state_(lua_map_generator_file);
 }
@@ -349,16 +347,6 @@ void
 Biome::read_add_to_top_data_(const std::vector<layer_effects_t>& after_effects_data) {
     for (const layer_effects_t& add_data : after_effects_data) {
         add_to_top_generators_.emplace_back(add_data);
-    }
-}
-
-void
-Biome::read_plants_data_(const Json::Value& plants_data) {
-    for (const Json::Value& plant : plants_data) {
-        generate_plants_.emplace(
-            plant["name"].asString(), plant["identification"].asString(),
-            plant["map_name"].asString()
-        );
     }
 }
 

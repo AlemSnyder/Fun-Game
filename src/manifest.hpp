@@ -1,8 +1,9 @@
+#pragma once
 
 #include <filesystem>
-#include <vector>
-#include <string>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace Manifest {
 
@@ -20,7 +21,6 @@ struct manifest_t {
     // items may be different from entities
     // crafters
     // etc
-}
+};
 
-}
-
+} // namespace Manifest

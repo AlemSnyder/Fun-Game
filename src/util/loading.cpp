@@ -54,18 +54,21 @@ load_manifest() {
         LOG_DEBUG(
             logging::file_io_logger, "Loading manifest {} with {} biomes, {} entities.",
             manifest.name, num_biomes, num_entities
-        )
-
-        // iterate through objects in manifest and queue them to be loaded
-        for (const Manifest::entity_t& entity_data : manifest.entities) {
-            // Will check if path exists
-            GlobalContext& context = GlobalContext::instance();
-            auto future = context.submit([entity_data]() {
-                world::entity::ObjectHandler& object_handler =
-                    world::entity::ObjectHandler::instance();
-                object_handler.read_object(entity_data);
-            });
+        );
+        if (manifest.entities.has_value()) {
+            // iterate through objects in manifest and queue them to be loaded
+            for (const Manifest::descriptor_t& entity_data :
+                 manifest.entities.value()) {
+                // Will check if path exists
+                GlobalContext& context = GlobalContext::instance();
+                auto future = context.submit([entity_data]() {
+                    world::entity::ObjectHandler& object_handler =
+                        world::entity::ObjectHandler::instance();
+                    object_handler.read_object(entity_data);
+                });
+            }
         }
+        // if (manifest.biomes.has_value()) -> do something else
     }
 }
 

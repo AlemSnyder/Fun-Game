@@ -118,7 +118,7 @@ class Biome {
     // materials that exist
     const std::map<MaterialId, const terrain::Material> materials_;
 
-    std::unordered_set<Plant> generate_plants_;
+    std::unordered_set<plant_t> generate_plants_;
 
     GrassData grass_data_;
 
@@ -251,7 +251,7 @@ class Biome {
         return materials_;
     }
 
-    [[nodiscard]] inline const std::unordered_set<Plant>&
+    [[nodiscard]] inline const std::unordered_set<plant_t>&
     get_generate_plants() const {
         return generate_plants_;
     }
@@ -300,9 +300,6 @@ class Biome {
 
     // read data to generate the add to top after affect
     void read_add_to_top_data_(const std::vector<layer_effects_t>& biome_data);
-
-    // read data to generate plants
-    void read_plants_data_(const Json::Value& plants_data);
 
     void
     init_lua_state_(const std::filesystem::path& lua_map_generator_file) {

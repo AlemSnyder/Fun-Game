@@ -1,11 +1,13 @@
 #pragma once
 
 #include "types.hpp"
+#include "world/plant.hpp"
 
 #include <glaze/glaze.hpp>
 
 #include <filesystem>
 #include <map>
+#include <unordered_set>
 #include <vector>
 
 namespace terrain {
@@ -100,6 +102,8 @@ struct biome_data_t {
     std::vector<tile_macros_t> tile_macros;
     std::vector<tile_data_t> tile_data;
     std::vector<layer_effects_t> layer_effects;
+
+    std::unordered_set<plant_t> plants_generated;
 };
 
 } // namespace generation

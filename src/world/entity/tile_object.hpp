@@ -15,15 +15,6 @@ namespace world {
 
 namespace entity {
 
-
-struct object_t {
-    std::string name;
-    std::vector<model_t> models;
-    // define interactions
-    // like on drop etc
-    // maybe it has a health
-};
-
 struct TileObjectOrder;
 
 /**
