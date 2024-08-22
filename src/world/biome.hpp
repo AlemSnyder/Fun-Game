@@ -140,8 +140,7 @@ class Biome {
      *
      * @param biome_name name of biome
      */
-    Biome(const std::string& biome_name, size_t seed) :
-        Biome(get_json_data(biome_name), seed) {}
+    Biome(const std::string& biome_name, size_t seed);
 
     /**
      * @brief Get macro tile map

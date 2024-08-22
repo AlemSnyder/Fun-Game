@@ -24,6 +24,8 @@ struct Options {
 constexpr static size_t STRESS_TEST_SIZE = 16;
 constexpr static size_t SEED = 5;
 
+constexpr static std::string biome_base_name = "Base";
+
 int
 graphics_main(const argh::parser& cmdl) {
     // add window width and height?
@@ -64,7 +66,7 @@ graphics_main(const argh::parser& cmdl) {
     size_t size;
     cmdl("size", STRESS_TEST_SIZE) >> size;
     std::string biome_name;
-    cmdl("biome-name", "base") >> biome_name;
+    cmdl("biome-name", biome_base_name) >> biome_name;
 
     world::World world(biome_name, size, size, seed);
 

@@ -55,6 +55,10 @@ GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
     }
 }
 
+Biome::Biome(const std::string& biome_name, size_t seed) :
+    Biome(get_json_data(files::get_data_path() / biome_name), seed) {}
+
+
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
     generate_plants_(biome_data.biome_data.generate_plants),

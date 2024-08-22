@@ -2,7 +2,7 @@
     "name": "Flower Test",
     "models": [
         {
-            "file_path": "./Flower_Test.qb",
+            "path": "./Flower_Test.qb",
             "colors": [
                 {
                     "map": {}

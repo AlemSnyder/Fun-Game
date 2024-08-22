@@ -3,7 +3,7 @@
     "entities": [
         {
             "identification": "base/Flower_Test",
-            "path": "base/models/Flower_Test/Flower_Test.json"
+            "path": "Base/models/Flower_Test/Flower_Test.json"
         }
     ],
     "biomes": [
