@@ -8,6 +8,7 @@ namespace world {
 
 namespace entity {
 
+// TODO change to return a pointer (could be null)
 ObjectData&
 ObjectHandler::get_object(const std::string& id) {
     return ided_objects.at(id);

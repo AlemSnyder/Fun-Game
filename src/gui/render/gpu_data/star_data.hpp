@@ -57,9 +57,15 @@ struct star_data_t {
     float age;
 };
 
-struct night_data_t {
+struct stars_data_t {
     float brightness_scale;
-    std::vector<star_data_t> stars;
+    std::vector<star_data_t> data;
+
+};
+
+struct night_data_t {
+    stars_data_t stars;
+    planets_data_t planets;
 };
 
 /**

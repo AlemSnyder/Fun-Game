@@ -24,9 +24,21 @@ struct global_illumination_t {
     float diffuse;
 };
 
+// TODO move to cpp
+struct remapping_t {
+    std::map<ColorInt, ColorInt> map;
+
+    void
+    read(std::string input);
+    
+    [[nodiscard]] std::string
+    write() const;
+
+};
+
 struct model_t {
     std::filesystem::path path;
-    std::optional<std::vector<std::map<ColorInt, ColorInt>>> colors;
+    std::optional<std::vector<remapping_t>> colors;
     global_illumination_t globals;
 };
 
@@ -235,3 +247,16 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
 } // namespace entity
 
 } // namespace world
+
+// TODO make this more consistant
+// its copied from somewhere else
+
+template <>
+struct glz::meta<world::entity::remapping_t> {
+
+    // clang-format off
+    static constexpr auto value =
+        object("map",  custom<&world::entity::remapping_t::read,
+                              &world::entity::remapping_t::write>);
+    // clang-format on
+};

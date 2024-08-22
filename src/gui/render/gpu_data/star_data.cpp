@@ -49,7 +49,7 @@ StarData::read_data_from_file(std::filesystem::path path) {
     std::vector<glm::vec4> stars_positions;
     std::vector<GLfloat> star_age;
 
-    for (const auto& star : night_data.stars) {
+    for (const auto& star : night_data.stars.data) {
         float phi = glm::radians(star.phi);
         float theta = glm::radians(star.theta);
 
