@@ -69,9 +69,6 @@ struct Material {
     // int8_t deterioration from water
 };
 
-// TODO this for hex color
-// https://github.com/stephenberry/glaze?tab=readme-ov-file#custom-readwrite
-
 struct material_color_t {
     std::string color_name;
     ColorInt hex_color;
@@ -303,19 +300,19 @@ struct glz::meta<terrain::all_materials_reader_t> {
     using T = terrain::all_materials_reader_t;
     static constexpr auto value = object();
 
-    // with members
     static constexpr auto unknown_write{&T::data};
     static constexpr auto unknown_read{&T::data};
-    // with methods
-    // static constexpr auto unknown_write{&T::my_unknown_write};
-    // static constexpr auto unknown_read{&T::my_unknown_read};
 };
 
 template <>
 struct glz::meta<terrain::material_color_t> {
-    //    using terrain::material_color_t;
+    // clang-format off
     static constexpr auto value =
-        object("hex_color", custom<&terrain::material_color_t::read_hex_color, &terrain::material_color_t::string_hex_color>, "color_name", custom<&terrain::material_color_t::color_name, &terrain::material_color_t::color_name>);
+        object("hex_color",  custom<&terrain::material_color_t::read_hex_color,
+                                    &terrain::material_color_t::string_hex_color>,
+               "color_name", custom<&terrain::material_color_t::color_name,
+                                    &terrain::material_color_t::color_name>);
+    // clang-format on
 };
 
 template <>

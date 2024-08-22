@@ -1,7 +1,5 @@
-
 #include "material.hpp"
 
-// #include "../entity/mesh.hpp"
 #include "gui/render/gpu_data/texture.hpp"
 #include "logging.hpp"
 
