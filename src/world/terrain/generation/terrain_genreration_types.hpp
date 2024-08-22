@@ -103,7 +103,7 @@ struct biome_data_t {
     std::vector<tile_data_t> tile_data;
     std::vector<layer_effects_t> layer_effects;
 
-    std::unordered_set<plant_t> plants_generated;
+    std::unordered_set<plant_t> generate_plants;
 };
 
 } // namespace generation

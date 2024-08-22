@@ -833,5 +833,12 @@
                 }
             ]
         }
+    ],
+    "generate_plants": [
+        {
+            "identification": "base/Flower_Test",
+            "map_name": "Flower_1",
+            "map_generator_path": "biome_map.lua"
+        }
     ]
 }
