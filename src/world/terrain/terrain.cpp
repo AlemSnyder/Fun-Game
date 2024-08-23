@@ -269,7 +269,7 @@ Terrain::get_chunk_from_tile(Dim x, Dim y, Dim z) const {
 std::set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroup>* const node,
-    std::map<TileIndex, Node<const NodeGroup>>& nodes, path_t path_type
+    std::unordered_map<TileIndex, Node<const NodeGroup>>& nodes, path_t path_type
 ) const {
     std::set<Node<const NodeGroup>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
@@ -283,8 +283,8 @@ Terrain::get_adjacent_nodes(
 
 std::set<Node<const Tile>*>
 Terrain::get_adjacent_nodes(
-    const Node<const Tile>* node, std::map<TileIndex, Node<const Tile>>& nodes,
-    path_t path_type
+    const Node<const Tile>* node,
+    std::unordered_map<TileIndex, Node<const Tile>>& nodes, path_t path_type
 ) const {
     std::set<Node<const Tile>*> out;
     auto tile_it = get_tile_adjacent_iterator(pos(node->get_tile()), path_type);
@@ -537,7 +537,8 @@ Terrain::get_path(
     std::priority_queue<Node<const T>*, std::vector<Node<const T>*>, decltype(compare)>
         openNodes(compare);
 
-    std::map<TileIndex, Node<const T>> nodes; // The nodes that can be walked through
+    std::unordered_map<TileIndex, Node<const T>>
+        nodes; // The nodes that can be walked through
     for (const T* t : search_through) {
         nodes[pos_for_map(t)] =
             Node<const T>(t, get_H_cost(t->sop(), (*goal.begin())->sop()));

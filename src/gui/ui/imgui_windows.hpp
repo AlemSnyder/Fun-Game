@@ -14,9 +14,11 @@ namespace display_windows {
  *
  * @details Display compiled status and names of each program.
  *
- * @param std::map<const shader::ProgramData, shader::Program>& programs programs map
+ * @param std::map<const shader::ProgramData, shader::Program>& programs
+ * programs map
  */
-void display_data(std::map<const shader::ProgramData, shader::Program>& programs);
+void
+display_data(std::map<const shader::ProgramData, shader::Program>& programs);
 
 /**
  * @brief Display solar system data

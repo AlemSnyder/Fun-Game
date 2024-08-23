@@ -99,10 +99,12 @@ class TerrainColorMapping {
     /**
      * @brief Initializes data for color_ids_map and colors_inverse_map.
      *
-     * @param const std::map<MaterialId, const Material>& materials materials map
+     * @param const std::unordered_map<MaterialId, const Material>& materials materials
+     * map
      */
     static void
-    assign_color_mapping(const std::map<MaterialId, const Material>& materials);
+    assign_color_mapping(const std::unordered_map<MaterialId, const Material>& materials
+    );
 
     /**
      * @brief Return vector that maps terrain color id to color
@@ -159,7 +161,7 @@ class MaterialGroup {
     std::set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
     // this group the material key must map to a set containing the given color.
-    std::map<MaterialId, std::set<ColorId>> materials_with_color_requirement_;
+    std::unordered_map<MaterialId, std::set<ColorId>> materials_with_color_requirement_;
 
  public:
     /**
@@ -173,12 +175,12 @@ class MaterialGroup {
      * @brief Construct new MaterialGroup object.
      *
      * @param std::set<MaterialId> materials materials in group no matter the color
-     * @param std::map<MaterialId, std::set<ColorId>> materials_w_color materials in
-     * group when they have specific color
+     * @param std::unordered_map<MaterialId, std::set<ColorId>> materials_w_color
+     * materials in group when they have specific color
      */
     MaterialGroup(
         std::set<MaterialId> materials,
-        std::map<MaterialId, std::set<ColorId>> materials_w_color
+        std::unordered_map<MaterialId, std::set<ColorId>> materials_w_color
     ) :
         materials_no_color_requirement_(materials),
         materials_with_color_requirement_(materials_w_color){};

@@ -27,6 +27,7 @@
 #include "logging.hpp"
 #include "opengl_program_status.hpp"
 #include "types.hpp"
+#include "util/hash_combine.hpp"
 
 #include <GL/glew.h>
 
@@ -44,6 +45,22 @@
 namespace gui {
 
 namespace shader {
+/*
+class File;
+class ShaderData;
+class ProgramData;
+
+} // namespace shader
+} // namespace gui
+
+struct std::hash<gui::shader::File>;
+struct std::hash<gui::shader::ShaderData>;
+struct std::hash<gui::shader::ProgramData>;
+
+namespace gui {
+
+namespace shader {
+*/
 
 /**
  * @brief File that can be opened.
@@ -379,6 +396,66 @@ get_shader_string(gpu_data::ShaderType gl_shader_type) {
     }
 }
 
+/*
+} // namespace shader
+
+} // namespace gui
+
+template <>
+struct std::hash<gui::shader::File> {
+    size_t
+    operator()(const gui::shader::File& file) const noexcept {
+        std::hash<std::filesystem::path> hasher;
+        return hasher(file.file_);
+    }
+};
+
+template <>
+struct std::hash<std::vector<gui::shader::File>> {
+    size_t
+    operator()(const std::vector<gui::shader::File>& files) const noexcept {
+        size_t start = 0;
+        for (const auto& file : files) {
+            utils::hash_combine(start, file);
+        }
+        return start;
+    }
+};
+
+template <>
+struct std::hash<gui::shader::ShaderData> {
+    size_t
+    operator()(const gui::shader::ShaderData& shader) const noexcept {
+        std::hash<std::vector<gui::shader::File>> hasher;
+        return hasher(shader.files_);
+    }
+};
+
+template <>
+struct std::hash<gui::shader::Shader> {
+    size_t
+    operator()(const gui::shader::Shader& shader) const noexcept {
+        std::hash<gui::shader::ShaderData> hasher;
+        return hasher(shader);
+    }
+};
+
+template <>
+struct std::hash<gui::shader::ProgramData> {
+    size_t
+    operator()(const gui::shader::ProgramData& program) const noexcept {
+        size_t start = 0;
+        utils::hash_combine(start, gui::shader::ShaderData(program.vertex_shader_));
+        utils::hash_combine(start, gui::shader::ShaderData(program.fragment_shader_));
+
+        return start;
+    }
+};
+
+namespace gui {
+
+namespace shader {
+*/
 /**
  * @brief Loads and saves shader programs
  *

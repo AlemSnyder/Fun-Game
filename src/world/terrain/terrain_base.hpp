@@ -99,7 +99,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     void qb_read(
         std::vector<ColorInt> data,
-        const std::map<ColorInt, std::pair<const Material*, ColorId>>& materials_inverse
+        const std::unordered_map<ColorInt, std::pair<const Material*, ColorId>>&
+            materials_inverse
     );
 
     /**
@@ -415,7 +416,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return biome_.get_grass_colors();
     }
 
-    [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::Material>&
     get_materials() const {
         return biome_.get_materials();
     }

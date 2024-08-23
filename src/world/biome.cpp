@@ -248,9 +248,9 @@ Biome::get_map(const sol::state& lua, MacroDim size) {
     return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
-const std::map<std::string, PlantMap>
+const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
-    std::map<std::string, PlantMap> out;
+    std::unordered_map<std::string, PlantMap> out;
 
     sol::protected_function plant_map = lua_["plants_map"];
 
@@ -355,9 +355,9 @@ Biome::read_plants_data_(const Json::Value& plants_data) {
     }
 }
 
-std::map<MaterialId, const terrain::Material>
+std::unordered_map<MaterialId, const terrain::Material>
 Biome::init_materials_(const Json::Value& material_data) {
-    std::map<MaterialId, const terrain::Material> out;
+    std::unordered_map<MaterialId, const terrain::Material> out;
     for (const auto& key : material_data.getMemberNames()) {
         std::vector<std::pair<const std::string, ColorInt>> color_vector;
 
@@ -381,16 +381,17 @@ Biome::init_materials_(const Json::Value& material_data) {
     return out;
 }
 
-std::map<ColorInt, std::pair<const Material*, ColorId>>
+std::unordered_map<ColorInt, std::pair<const Material*, ColorId>>
 Biome::get_colors_inverse_map() const {
-    std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
+    std::unordered_map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
     for (const auto& element : materials_) {
         for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
             materials_inverse.insert(
-                std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
-                    element.second.color.at(color_id).second,
-                    std::make_pair(&element.second, color_id)
-                )
+                std::unordered_map<ColorInt, std::pair<const Material*, ColorId>>::
+                    value_type(
+                        element.second.color.at(color_id).second,
+                        std::make_pair(&element.second, color_id)
+                    )
             );
         }
     }

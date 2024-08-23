@@ -243,7 +243,7 @@ class Terrain : public TerrainBase {
      */
     [[nodiscard]] std::set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
-        std::map<TileIndex, Node<const NodeGroup>>& nodes, path_t type
+        std::unordered_map<TileIndex, Node<const NodeGroup>>& nodes, path_t type
     ) const;
 
     /**
@@ -256,7 +256,7 @@ class Terrain : public TerrainBase {
      */
     [[nodiscard]] std::set<Node<const Tile>*> get_adjacent_nodes(
         const Node<const Tile>* const node,
-        std::map<TileIndex, Node<const Tile>>& nodes, path_t type
+        std::unordered_map<TileIndex, Node<const Tile>>& nodes, path_t type
     ) const;
 
     /**
