@@ -29,9 +29,9 @@
 
 #include <cstdint>
 #include <map>
-#include <set>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace terrain {
@@ -158,10 +158,11 @@ class TerrainColorMapping {
 class MaterialGroup {
  private:
     // Any material in this set is in the group no matter the color.
-    std::set<MaterialId> materials_no_color_requirement_;
+    std::unordered_set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
     // this group the material key must map to a set containing the given color.
-    std::unordered_map<MaterialId, std::set<ColorId>> materials_with_color_requirement_;
+    std::unordered_map<MaterialId, std::unordered_set<ColorId>>
+        materials_with_color_requirement_;
 
  public:
     /**
@@ -174,13 +175,14 @@ class MaterialGroup {
     /**
      * @brief Construct new MaterialGroup object.
      *
-     * @param std::set<MaterialId> materials materials in group no matter the color
-     * @param std::unordered_map<MaterialId, std::set<ColorId>> materials_w_color
-     * materials in group when they have specific color
+     * @param std::unordered_set<MaterialId> materials materials in group no matter the
+     * color
+     * @param std::unordered_map<MaterialId, std::unordered_set<ColorId>>
+     * materials_w_color materials in group when they have specific color
      */
     MaterialGroup(
-        std::set<MaterialId> materials,
-        std::unordered_map<MaterialId, std::set<ColorId>> materials_w_color
+        std::unordered_set<MaterialId> materials,
+        std::unordered_map<MaterialId, std::unordered_set<ColorId>> materials_w_color
     ) :
         materials_no_color_requirement_(materials),
         materials_with_color_requirement_(materials_w_color){};

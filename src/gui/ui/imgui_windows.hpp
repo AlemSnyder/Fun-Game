@@ -17,8 +17,7 @@ namespace display_windows {
  * @param std::map<const shader::ProgramData, shader::Program>& programs
  * programs map
  */
-void
-display_data(std::map<const shader::ProgramData, shader::Program>& programs);
+void display_data(std::map<const shader::ProgramData, shader::Program>& programs);
 
 /**
  * @brief Display solar system data

@@ -17,7 +17,7 @@ TerrainBase::qb_read(
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
-    std::set<ColorInt> unknown_colors;
+    std::unordered_set<ColorInt> unknown_colors;
 
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         TerrainDim3 tile_position = sop(xyz);

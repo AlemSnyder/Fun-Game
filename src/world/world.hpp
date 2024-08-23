@@ -33,7 +33,8 @@
 
 #include <glm/glm.hpp>
 
-#include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace world {
@@ -65,7 +66,7 @@ class World {
 
     // Set of chunks that need to be updated on gpu.
     // They Need to be re-meshed, and that mesh need to be sent to gpu.
-    std::set<ChunkIndex> chunks_to_update_;
+    std::unordered_set<ChunkIndex> chunks_to_update_;
 
     // Set of meshes that need to be sent to gpu. These meshes should be sent
     // once per frame.
