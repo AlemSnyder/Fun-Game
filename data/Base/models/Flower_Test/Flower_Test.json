@@ -5,10 +5,10 @@
             "path": "./Flower_Test.qb",
             "colors": [
                 {
-                    "map": "{}"
+                    "map": {}
                 },
                 {
-                    "map": "{\"663f23FF\" : \"663f22FF\"}"
+                    "map": {"663f23FF" : "663f22FF"}
                 }
             ],
             "globals":{

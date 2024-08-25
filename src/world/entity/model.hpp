@@ -26,13 +26,35 @@ struct global_illumination_t {
 
 // TODO move to cpp
 struct remapping_t {
-    std::map<ColorInt, ColorInt> map;
+    std::unordered_map<ColorInt, ColorInt> map;
 
-    void
-    read(std::string input);
-    
-    [[nodiscard]] std::string
-    write() const;
+    void 
+    read_map(std::unordered_map<std::string, std::string> input)
+    {
+        for (const auto& [k, v] : input)
+            map[std::stoull(k, nullptr, 16)] = std::stoull(v,  nullptr, 16);
+    }
+
+    std::unordered_map<std::string, std::string> 
+    write_map() const 
+    {
+        std::unordered_map<std::string, std::string> res;
+
+        for (const auto& [key, value] : map) {
+            std::stringstream stream_key;
+            stream_key << std::hex << key;
+            std::string str_key(stream_key.str());
+
+            std::stringstream stream_value;
+            stream_value << std::hex << value;
+            std::string str_value(stream_value.str());
+
+            res.insert({str_key, str_value});
+        }
+
+        return res;
+
+    }
 
 };
 
@@ -256,7 +278,7 @@ struct glz::meta<world::entity::remapping_t> {
 
     // clang-format off
     static constexpr auto value =
-        object("map",  custom<&world::entity::remapping_t::read,
-                              &world::entity::remapping_t::write>);
+        object("map",  custom<&world::entity::remapping_t::read_map,
+                              &world::entity::remapping_t::write_map>);
     // clang-format on
 };

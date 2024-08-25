@@ -7,42 +7,6 @@ namespace world {
 
 namespace entity {
 
-    void
-    remapping_t::read(std::string input) {
-        std::map<std::string, std::string> data;
-        auto ec = glz::read_json(data, input);
-        if (ec) {
-            return; // TODO Log
-        }
-
-        for (const auto& [key, value] : data) {
-            map.insert({std::stoll(key, 0, 16), std::stoll(value, 0, 16)});
-        }
-    }
-
-    std::string
-    remapping_t::write() const {
-        std::map<std::string, std::string> out;
-
-        for (const auto& [key, value] : map) {
-            std::stringstream stream_key;
-            stream_key << std::hex << key;
-            std::string str_key(stream_key.str());
-
-            std::stringstream stream_value;
-            stream_value << std::hex << value;
-            std::string str_value(stream_value.str());
-
-            out.insert({str_key, str_value});
-        }
-        std::string out_str;
-        auto ec = glz::write_json(out, out_str);
-        if (ec) {
-            return {}; // TODO Log
-        }
-        return out_str;
-    }
-
 ModelController&
 ObjectData::get_model(size_t mesh_id) {
     assert(mesh_id < model_meshes_.size() && "Out of Bunds");
