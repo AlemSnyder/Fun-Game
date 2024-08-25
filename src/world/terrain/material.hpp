@@ -75,7 +75,7 @@ struct material_color_t {
 
     void
     read_hex_color(std::string hex_string) {
-        hex_color = std::stoll(hex_string, 0, 16);
+        hex_color = std::stoll(hex_string, nullptr, 16);
     }
 
     std::string
