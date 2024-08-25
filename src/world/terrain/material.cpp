@@ -12,7 +12,7 @@ std::unordered_map<ColorInt, MatColorId> TerrainColorMapping::colors_inverse_map
 
 void
 TerrainColorMapping::assign_color_mapping(
-    const std::map<MaterialId, const Material>& materials
+    const std::map<MaterialId, const material_t>& materials
 ) {
     color_ids_map.clear();
     colors_inverse_map.clear();
@@ -39,7 +39,7 @@ TerrainColorMapping::assign_color_mapping(
     colors_inverse_map[0] = 0;
     for (auto const& [id, material] : materials) {
         for (auto color_data : material.color) {
-            ColorInt color = color_data.second;
+            ColorInt color = color_data.hex_color;
             if (std::find(color_ids_map.begin(), color_ids_map.end(), color)
                 == color_ids_map.end()) {
                 // voxel_colors[i] is not in colors

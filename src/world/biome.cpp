@@ -353,40 +353,24 @@ Biome::read_add_to_top_data_(const std::vector<layer_effects_t>& after_effects_d
     }
 }
 
-std::map<MaterialId, const terrain::Material>
+std::map<MaterialId, const terrain::material_t>
 Biome::init_materials_(const all_materials_t& material_data) {
-    std::map<MaterialId, const terrain::Material> out;
+    std::map<MaterialId, const terrain::material_t> out;
     for (const auto& key : material_data.data) {
-        std::vector<std::pair<const std::string, ColorInt>> color_vector;
 
-        const auto& material = key.second;
-        std::string material_name = key.first.data();
-        for (const auto& color : material.color) {
-            const std::string color_name = color.color_name;
-            ColorInt color_value = color.hex_color;
-            color_vector.push_back(std::make_pair(std::move(color_name), color_value));
-        }
-
-        terrain::Material mat{
-            std::move(color_vector),   // color
-            material.speed_multiplier, // speed_multiplier
-            material.solid,            // solid
-            material.material_id,      // element_id
-            std::move(material_name)   // material_name
-        };
-        out.insert(std::make_pair(mat.material_id, std::move(mat)));
+        out.insert(std::make_pair(key.second.material_id, key.second));
     }
     return out;
 }
 
-std::map<ColorInt, std::pair<const Material*, ColorId>>
+std::map<ColorInt, std::pair<const material_t*, ColorId>>
 Biome::get_colors_inverse_map() const {
-    std::map<ColorInt, std::pair<const Material*, ColorId>> materials_inverse;
+    std::map<ColorInt, std::pair<const material_t*, ColorId>> materials_inverse;
     for (const auto& element : materials_) {
         for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
             materials_inverse.insert(
-                std::map<ColorInt, std::pair<const Material*, ColorId>>::value_type(
-                    element.second.color.at(color_id).second,
+                std::map<ColorInt, std::pair<const material_t*, ColorId>>::value_type(
+                    element.second.color.at(color_id).hex_color,
                     std::make_pair(&element.second, color_id)
                 )
             );
@@ -424,48 +408,29 @@ Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
         }
     }
     terrain::all_materials_t materials;
+    //std::map<std::string, material_t> materials;
+
 
     {
         std::filesystem::path materials_file_path =
             biome_folder_path / "materials.json";
         auto materials_file = files::open_data_file(materials_file_path);
 
-        terrain::all_materials_reader_t materials_reader;
-
         if (materials_file.has_value()) {
             std::string content(
                 (std::istreambuf_iterator<char>(materials_file.value())),
                 std::istreambuf_iterator<char>()
             );
-            auto ec = glz::read<glz::opts{.error_on_unknown_keys = false}>(
-                materials_reader, content, ctx
+            auto ec = glz::read<glz::opts{.error_on_unknown_keys = true}>(
+                materials.data, content, ctx
             );
 
             if (ec) {
-                LOG_ERROR(
+                LOG_CRITICAL(
                     logging::file_io_logger, "Error Parsing Json:{}{}",
                     materials_file_path, glz::format_error(ec, content)
                 );
                 return {};
-            }
-
-            for (const auto& [material_name, material_json_string] :
-                 materials_reader.data) {
-                auto& material_to_be_assigned =
-                    materials.data[std::string(material_name)];
-
-                auto ec_2 =
-                    glz::read_json(material_to_be_assigned, material_json_string.str);
-
-                if (ec_2) {
-                    std::string error_string =
-                        glz::format_error(ec_2, material_json_string.str);
-                    LOG_ERROR(
-                        logging::file_io_logger, "Error Parsing Material {}{}",
-                        material_name, error_string
-                    );
-                    return {};
-                }
             }
 
         } else {

@@ -38,7 +38,7 @@
 
 namespace world {
 
-const terrain::Material*
+const terrain::material_t*
 World::get_material(MaterialId material_id) const {
     return &biome_.get_materials().at(material_id);
 }
@@ -193,7 +193,7 @@ World::send_updated_chunks_mesh() {
 }
 
 void
-World::set_tile(Dim pos, const terrain::Material* mat, ColorId color_id) {
+World::set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id) {
     terrain_main_.get_tile(pos)->set_material(mat, color_id);
 
     TerrainDim3 tile_sop = terrain_main_.sop(pos);

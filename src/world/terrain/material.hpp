@@ -40,35 +40,6 @@
 
 namespace terrain {
 
-/**
- * @brief Holds Material data
- *
- * @details World class should have a map of materials organized by Material
- * Id. Each tile has the id of a material (currently uint8_t).
- *
- * materials organized by Material Id. Each tile has a material id.
- * The material determines if the tile is solid, and the potential color. Other
- * data will be added like how cretin materials respond to weather...
- */
-struct Material {
-    Material(
-        std::vector<std::pair<const std::string, ColorInt>> color_in,
-        float speed_multiplier_in, bool solid_in, MaterialId material_id_in,
-        std::string name_in
-    ) :
-        color(color_in),
-        speed_multiplier(speed_multiplier_in), solid(solid_in),
-        material_id(material_id_in), name(name_in){};
-    // vector of <name hex color> for possible colors
-    std::vector<std::pair<const std::string, ColorInt>> color;
-    float speed_multiplier = 1;          // speed on this material
-    bool solid = false;                  // Is the material solid?
-    MaterialId material_id = AIR_MAT_ID; // The ID of the material (Air is 0)
-    const std::string name = "Air";      // The material name
-    // int8_t deterioration from wind
-    // int8_t deterioration from water
-};
-
 struct material_color_t {
     std::string color_name;
     ColorInt hex_color;
@@ -79,21 +50,11 @@ struct material_color_t {
     }
 
     std::string
-    string_hex_color() const {
+    write_hex_color() const {
         std::stringstream stream;
         stream << std::hex << hex_color;
         std::string result(stream.str());
         return result;
-    }
-
-    void
-    read_color_name(std::string color_name_) {
-        color_name = color_name_;
-    }
-
-    std::string
-    write_color_name() const {
-        return color_name;
     }
 };
 
@@ -102,18 +63,36 @@ struct grass_data_t {
     int midpoint;
 };
 
+/**
+ * @brief Holds Material data
+ *
+ * @details World class should have a map of materials organized by Material
+ * Id. Each tile has the id of a material (currently uint8_t).
+ *
+ * materials organized by Material Id. Each tile has a material id.
+ * The material determines if the tile is solid, and the potential color. Other
+ * data will be added like how cretin materials respond to weather...
+ */
 struct material_t {
-    std::vector<material_color_t> color;
-    float speed_multiplier;
-    bool solid;
-    MaterialId material_id;
-    const std::string name;
+    //material_t(
+    //    std::vector<material_color_t> color_in,
+    //    float speed_multiplier_in, bool solid_in, MaterialId material_id_in,
+    //    std::string name_in
+    //) :
+    //    color(color_in),
+    //    speed_multiplier(speed_multiplier_in), solid(solid_in),
+    //    material_id(material_id_in), name(name_in){};
+    // vector of <name hex color> for possible colors
+        std::vector<material_color_t> color;
 
-    std::optional<grass_data_t> gradient;
-};
+    float speed_multiplier = 1;          // speed on this material
+    bool solid = false;                  // Is the material solid?
+    MaterialId material_id = AIR_MAT_ID; // The ID of the material (Air is 0)
+    const std::string name = "Air";      // The material name
+        std::optional<grass_data_t> gradient;
 
-struct all_materials_reader_t {
-    std::map<glz::sv, glz::raw_json> data;
+    // int8_t deterioration from wind
+    // int8_t deterioration from water
 };
 
 struct all_materials_t {
@@ -154,10 +133,10 @@ class TerrainColorMapping {
     /**
      * @brief Initializes data for color_ids_map and colors_inverse_map.
      *
-     * @param const std::map<MaterialId, const Material>& materials materials map
+     * @param const std::map<MaterialId, const material_t>& materials materials map
      */
     static void
-    assign_color_mapping(const std::map<MaterialId, const Material>& materials);
+    assign_color_mapping(const std::map<MaterialId, const material_t>& materials);
 
     /**
      * @brief Return vector that maps terrain color id to color
@@ -296,22 +275,13 @@ material_in(
 } // namespace terrain
 
 template <>
-struct glz::meta<terrain::all_materials_reader_t> {
-    using T = terrain::all_materials_reader_t;
-    static constexpr auto value = object();
-
-    static constexpr auto unknown_write{&T::data};
-    static constexpr auto unknown_read{&T::data};
-};
-
-template <>
 struct glz::meta<terrain::material_color_t> {
+    using T = terrain::material_color_t;
     // clang-format off
-    static constexpr auto value =
-        object("hex_color",  custom<&terrain::material_color_t::read_hex_color,
-                                    &terrain::material_color_t::string_hex_color>,
-               "color_name", custom<&terrain::material_color_t::color_name,
-                                    &terrain::material_color_t::color_name>);
+    static constexpr auto value = object(
+        "hex_color",  custom<&T::read_hex_color, &T::write_hex_color>,
+        "color_name", &T::color_name
+    );
     // clang-format on
 };
 

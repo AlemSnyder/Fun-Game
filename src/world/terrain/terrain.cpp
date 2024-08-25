@@ -144,7 +144,7 @@ Terrain::can_stand(const Tile tile, TerrainOffset dz, TerrainOffset dxy) const {
 }
 
 bool
-Terrain::paint(Tile* tile, const Material* mat, ColorId color_id) {
+Terrain::paint(Tile* tile, const material_t* mat, ColorId color_id) {
     // sets color_id if the material is the same.
     if (tile->get_material_id() == mat->material_id) {
         tile->set_color_id(color_id, mat);
@@ -155,7 +155,7 @@ Terrain::paint(Tile* tile, const Material* mat, ColorId color_id) {
 
 bool
 Terrain::player_set_tile_material(
-    TileIndex xyz, const Material* mat, ColorId color_id
+    TileIndex xyz, const material_t* mat, ColorId color_id
 ) {
     Tile* tile = get_tile(xyz);
     if (tile->is_solid() && mat->solid) {

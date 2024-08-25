@@ -276,7 +276,7 @@ path_finder_test(const argh::parser& cmdl) {
     }
 
     constexpr ColorId path_color_id = 5;
-    const terrain::Material* path_mat = world.get_material(DEBUG_MATERIAL);
+    const terrain::material_t* path_mat = world.get_material(DEBUG_MATERIAL);
     for (const terrain::Tile* tile : tile_path.value()) {
         world.get_terrain_main()
             .get_tile(world.get_terrain_main().pos(tile))

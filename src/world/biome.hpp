@@ -116,7 +116,7 @@ class Biome {
     std::vector<AddToTop> add_to_top_generators_;
 
     // materials that exist
-    const std::map<MaterialId, const terrain::Material> materials_;
+    const std::map<MaterialId, const terrain::material_t> materials_;
 
     std::unordered_set<plant_t> generate_plants_;
 
@@ -245,7 +245,7 @@ class Biome {
      *
      * @return materials_ map of MaterialId to material
      */
-    [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::map<MaterialId, const terrain::material_t>&
     get_materials() const {
         return materials_;
     }
@@ -262,7 +262,7 @@ class Biome {
      *
      * @return pointer to corresponding material
      */
-    [[nodiscard]] inline const terrain::Material*
+    [[nodiscard]] inline const terrain::material_t*
     get_material(MaterialId mat_id) const {
         auto mat = materials_.find(mat_id);
         if (mat == materials_.end()) [[unlikely]] {
@@ -276,7 +276,7 @@ class Biome {
      *
      * @return map from ColorInt to pair of material pointer and color id
      */
-    [[nodiscard]] std::map<ColorInt, std::pair<const Material*, ColorId>>
+    [[nodiscard]] std::map<ColorInt, std::pair<const material_t*, ColorId>>
     get_colors_inverse_map() const;
 
     static void init_lua_state(
@@ -310,7 +310,7 @@ class Biome {
      *
      * @param material_data data to load from (see) data/materials.json
      */
-    [[nodiscard]] std::map<MaterialId, const terrain::Material>
+    [[nodiscard]] std::map<MaterialId, const terrain::material_t>
     init_materials_(const all_materials_t& material_data);
 };
 

@@ -351,7 +351,7 @@ class Terrain : public TerrainBase {
      * @return true successful change materials is the same
      * @return false unsuccessful change materials is different
      */
-    bool paint(Tile* tile, const Material* mat, ColorId color_id);
+    bool paint(Tile* tile, const material_t* mat, ColorId color_id);
     /**
      * @brief add or remove tile, only works when either previous of materials
      * or set material is air
@@ -362,7 +362,7 @@ class Terrain : public TerrainBase {
      * @return true success
      * @return false failure
      */
-    bool player_set_tile_material(TileIndex xyz, const Material* mat, ColorId color_id);
+    bool player_set_tile_material(TileIndex xyz, const material_t* mat, ColorId color_id);
 
     /**
      * @brief Set the tile material with no tests
@@ -373,7 +373,7 @@ class Terrain : public TerrainBase {
      * @param color_id color id set to
      */
     inline void
-    set_tile_material(Tile* tile, const Material* mat, ColorId color_id) {
+    set_tile_material(Tile* tile, const material_t* mat, ColorId color_id) {
         tile->set_material(mat, color_id);
     }
 

@@ -97,7 +97,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     void qb_read(
         std::vector<ColorInt> data,
-        const std::map<ColorInt, std::pair<const Material*, ColorId>>& materials_inverse
+        const std::map<ColorInt, std::pair<const material_t*, ColorId>>& materials_inverse
     );
 
     /**
@@ -359,7 +359,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
             previous_color_id = color_id;
 
             auto mat = biome_.get_materials().at(previous_mat_id);
-            previous_out_color = mat.color[previous_color_id].second;
+            previous_out_color = mat.color[previous_color_id].hex_color;
         }
 
         return previous_out_color;
@@ -413,7 +413,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return biome_.get_grass_colors();
     }
 
-    [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::map<MaterialId, const terrain::material_t>&
     get_materials() const {
         return biome_.get_materials();
     }

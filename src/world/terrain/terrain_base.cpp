@@ -12,7 +12,7 @@ namespace terrain {
 void
 TerrainBase::qb_read(
     std::vector<ColorInt> data,
-    const std::map<ColorInt, std::pair<const Material*, ColorId>>& materials_inverse
+    const std::map<ColorInt, std::pair<const material_t*, ColorId>>& materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
