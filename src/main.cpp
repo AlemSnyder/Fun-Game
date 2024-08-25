@@ -33,14 +33,6 @@
 #include <iostream>
 #include <string>
 
-#define INITIAL_WINDOW_WIDTH  1024
-#define INITIAL_WINDOW_HEIGHT 768
-
-constexpr static size_t STRESS_TEST_SIZE = 16;
-constexpr static size_t SEED = 5;
-
-constexpr static std::string biome_base_name = "Base";
-
 void
 save_terrain(terrain::generation::biome_json_data biome_data) {
     quill::Logger* logger = logging::main_logger;
@@ -87,7 +79,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    world::World world(biome_base_name, size, size);
+    world::World world(BIOME_BASE_NAME, size, size);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(2).str());
 
@@ -99,7 +91,7 @@ GenerateTerrain(const argh::parser& cmdl) {
 int
 MacroMap(const argh::parser& cmdl) {
     std::string biome_name;
-    cmdl("biome-name", biome_base_name) >> biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
@@ -164,7 +156,7 @@ image_test(const argh::parser& cmdl) {
 // reimplement
 int
 ChunkDataTest() {
-    world::World world(biome_base_name, 6, 6);
+    world::World world(BIOME_BASE_NAME, 6, 6);
 
     const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
 
@@ -232,7 +224,7 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    world::World world(biome_base_name, path_in, seed);
+    world::World world(BIOME_BASE_NAME, path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -251,7 +243,7 @@ path_finder_test(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
 
     std::string biome_name;
-    cmdl("biome-name", biome_base_name) >> biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
     world::World world(biome_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();

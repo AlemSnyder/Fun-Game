@@ -29,7 +29,7 @@ ObjectData::end() noexcept {
 }
 
 ObjectData::ObjectData(
-    const object_t& object_data, const Manifest::descriptor_t& identification_data
+    const object_t& object_data, const manifest::descriptor_t& identification_data
 ) :
     name_(object_data.name),
     identification_(identification_data.identification) {

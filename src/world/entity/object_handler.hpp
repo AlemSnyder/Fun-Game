@@ -64,7 +64,7 @@ class ObjectHandler {
     /**
      * @brief Load new object from path.
      */
-    void read_object(const Manifest::descriptor_t& object_descriptor);
+    void read_object(const manifest::descriptor_t& object_descriptor);
 
     ObjectData& get_object(const std::string&);
 

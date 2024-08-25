@@ -15,7 +15,7 @@ ObjectHandler::get_object(const std::string& id) {
 }
 
 void
-ObjectHandler::read_object(const Manifest::descriptor_t& descriptor) {
+ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // json to read data into
 
     object_t object_data;
@@ -24,7 +24,7 @@ ObjectHandler::read_object(const Manifest::descriptor_t& descriptor) {
     auto contents = files::open_data_file(descriptor.path);
     if (contents.has_value()) {
         std::string content;
-        *contents.value() >> content;
+        contents.value() >> content;
 
         auto ec = glz::read_json(object_data, content);
         if (ec) {

@@ -8,6 +8,7 @@
 #include "types.hpp"
 #include "util/loading.hpp"
 #include "world/world.hpp"
+#include "config.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -20,11 +21,6 @@ struct Options {
 
     std::optional<std::filesystem::path> save_file;
 };*/
-
-constexpr static size_t STRESS_TEST_SIZE = 16;
-constexpr static size_t SEED = 5;
-
-constexpr static std::string biome_base_name = "Base";
 
 int
 graphics_main(const argh::parser& cmdl) {
@@ -66,7 +62,7 @@ graphics_main(const argh::parser& cmdl) {
     size_t size;
     cmdl("size", STRESS_TEST_SIZE) >> size;
     std::string biome_name;
-    cmdl("biome-name", biome_base_name) >> biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
 
     world::World world(biome_name, size, size, seed);
 

@@ -102,7 +102,7 @@ class ObjectData {
      * @param std::filesystem::path path to folder containing voxel
      TODO fix documentation
      */
-    ObjectData(const object_t& object_data, const Manifest::descriptor_t& model_path);
+    ObjectData(const object_t& object_data, const manifest::descriptor_t& model_path);
 
     /**
      * @brief Get a model for this object by id.

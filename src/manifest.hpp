@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Manifest {
+namespace manifest {
 
 struct descriptor_t {
     std::string identification;
@@ -23,4 +23,4 @@ struct manifest_t {
     // etc
 };
 
-} // namespace Manifest
+} // namespace manifest

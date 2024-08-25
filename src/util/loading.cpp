@@ -16,7 +16,7 @@ load_manifest() {
 
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
-        Manifest::manifest_t manifest;
+        manifest::manifest_t manifest;
 
         // path to manifest file
         auto manifest_file = directory_entry.path();
@@ -57,7 +57,7 @@ load_manifest() {
         );
         if (manifest.entities.has_value()) {
             // iterate through objects in manifest and queue them to be loaded
-            for (const Manifest::descriptor_t& entity_data :
+            for (const manifest::descriptor_t& entity_data :
                  manifest.entities.value()) {
                 // Will check if path exists
                 GlobalContext& context = GlobalContext::instance();
