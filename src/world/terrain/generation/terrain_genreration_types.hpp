@@ -78,10 +78,30 @@ struct layer_effect_data_t {
 
     layer_effect_add add_directions;
 
-    bool
-    operator<(const layer_effect_data_t& other) const {
-        return start < other.start;
+    [[nodiscard]] inline std::strong_ordering
+    operator<=>(const layer_effect_data_t& other) const {
+        // c for compare
+        auto stop_c = stop <=> other.stop;
+        if (stop_c != std::strong_ordering::equivalent){
+            return stop_c;
+        }
+        auto start_c = start <=> other.start;
+        if (start_c != std::strong_ordering::equivalent){
+            return start_c;
+        }
+
+        // we want to compare directions like this because going to a position is 
+        // bigger than adding some value assuming the stop is the same
+        auto directions_c = (int)add_directions <=> (int)other.add_directions;
+        if (directions_c != std::strong_ordering::equivalent){
+            return directions_c;
+        }
+
+        return data <=> other.data;
     }
+
+    [[nodiscard]] bool operator==(const layer_effect_data_t&) const = default;
+
 };
 
 struct layer_effects_t {

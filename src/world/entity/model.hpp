@@ -270,15 +270,10 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
 
 } // namespace world
 
-// TODO make this more consistant
-// its copied from somewhere else
-
 template <>
 struct glz::meta<world::entity::remapping_t> {
+    using T = world::entity::remapping_t;
 
-    // clang-format off
     static constexpr auto value =
-        object("map",  custom<&world::entity::remapping_t::read_map,
-                              &world::entity::remapping_t::write_map>);
-    // clang-format on
+        object("map",  custom<&T::map, &T::write_map>);
 };

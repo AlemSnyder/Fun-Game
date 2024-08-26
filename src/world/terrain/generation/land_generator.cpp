@@ -48,8 +48,7 @@ LandGenerator::LandGenerator(const std::vector<generation_stamp_t>& data) :
                 stamp_generator = std::make_shared<stamps::FromGrid>(region);
                 break;
             [[unlikely]] default:
-                LOG_WARNING(logging::terrain_logger, "-\\:)/-");
-                continue;
+                abort();
         }
         stamp_generators_.push_back(stamp_generator);
     }
