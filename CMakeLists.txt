@@ -85,6 +85,9 @@ target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
+# this is for fmt included in quill
+target_include_directories(FunGame PRIVATE "vendor/quill/quill/include/quill/bundled")
+
 # Set warning options
 if(MSVC)
   target_compile_options(FunGame PRIVATE /W4 /WX)

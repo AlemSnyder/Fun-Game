@@ -51,10 +51,7 @@ struct material_color_t {
 
     std::string
     write_hex_color() const {
-        std::stringstream stream;
-        stream << std::hex << hex_color;
-        std::string result(stream.str());
-        return result;
+        return fmtquill::format("{:08X}", hex_color);
     }
 };
 

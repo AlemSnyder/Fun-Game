@@ -8,6 +8,7 @@
 #include "placement.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
+#include "fmt/core.h"
 
 #include <filesystem>
 #include <optional>
@@ -41,13 +42,8 @@ struct remapping_t {
         std::unordered_map<std::string, std::string> res;
 
         for (const auto& [key, value] : map) {
-            std::stringstream stream_key;
-            stream_key << std::hex << key;
-            std::string str_key(stream_key.str());
-
-            std::stringstream stream_value;
-            stream_value << std::hex << value;
-            std::string str_value(stream_value.str());
+            std::string str_key = fmtquill::format("{:08X}", key);
+            std::string str_value = fmtquill::format("{:08X}", value);
 
             res.insert({str_key, str_value});
         }
