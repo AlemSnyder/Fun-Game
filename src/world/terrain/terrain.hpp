@@ -362,7 +362,8 @@ class Terrain : public TerrainBase {
      * @return true success
      * @return false failure
      */
-    bool player_set_tile_material(TileIndex xyz, const material_t* mat, ColorId color_id);
+    bool
+    player_set_tile_material(TileIndex xyz, const material_t* mat, ColorId color_id);
 
     /**
      * @brief Set the tile material with no tests

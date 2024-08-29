@@ -2,6 +2,8 @@
 
 #include "util/hash_combine.hpp"
 
+#include <glaze/glaze.hpp>
+
 #include <compare>
 #include <filesystem>
 #include <optional>
@@ -51,3 +53,9 @@ struct std::hash<terrain::generation::plant_t> {
         return hasher(plant.identification);
     }
 };
+
+template <>
+inline glz::detail::any_t::operator std::filesystem::path() const {
+    assert(false && "Not Implemented");
+    return {};
+}

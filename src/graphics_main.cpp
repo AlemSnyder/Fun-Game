@@ -1,5 +1,6 @@
 #include "graphics_main.hpp"
 
+#include "config.h"
 #include "gui/handler.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
@@ -8,7 +9,6 @@
 #include "types.hpp"
 #include "util/loading.hpp"
 #include "world/world.hpp"
-#include "config.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

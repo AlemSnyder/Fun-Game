@@ -97,7 +97,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     void qb_read(
         std::vector<ColorInt> data,
-        const std::map<ColorInt, std::pair<const material_t*, ColorId>>& materials_inverse
+        const std::map<ColorInt, std::pair<const material_t*, ColorId>>&
+            materials_inverse
     );
 
     /**

@@ -357,7 +357,6 @@ std::map<MaterialId, const terrain::material_t>
 Biome::init_materials_(const all_materials_t& material_data) {
     std::map<MaterialId, const terrain::material_t> out;
     for (const auto& key : material_data.data) {
-
         out.insert(std::make_pair(key.second.material_id, key.second));
     }
     return out;
@@ -408,8 +407,7 @@ Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
         }
     }
     terrain::all_materials_t materials;
-    //std::map<std::string, material_t> materials;
-
+    // std::map<std::string, material_t> materials;
 
     {
         std::filesystem::path materials_file_path =

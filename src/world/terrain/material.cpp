@@ -57,4 +57,107 @@ TerrainColorMapping::assign_color_mapping(
     }
 }
 
+MaterialGroup::MaterialGroup(const std::vector<generation::material_designation_t>& data
+) {
+    // want to return a group that represents the given data
+    // There will be elements with no requirements on the color
+    //    std::set<MaterialId> materials;
+    // amd some with requirements on the color
+    //    std::map<MaterialId, std::set<ColorId>> materials_w_color;
+
+    for (const generation::material_designation_t& material_data : data) {
+        // read the material id from the data
+        // MaterialId mat_id = material_data.material;
+
+        const auto& material = material_data.material;
+        const auto& color = material_data.color;
+
+        std::unordered_set<ColorId> colors;
+        std::unordered_set<MaterialId> materials;
+
+        {
+            switch (material.index()) {
+                case 0:
+                    { // bool
+
+                        bool all_materials = std::get<bool>(material);
+                        if (all_materials) {
+                            set_all();
+                            return;
+                        } else {
+                            // wut? why would you do this?
+                        }
+                        break;
+                    }
+                case 1:
+                    { // MaterialId
+                        materials.insert(std::get<MaterialId>(material));
+                        break;
+                    }
+                case 2:
+                    { // vector
+
+                        const auto& materials_to_add =
+
+                            std::get<std::vector<MaterialId>>(material);
+
+                        materials.insert(
+                            materials_to_add.begin(), materials_to_add.end()
+                        );
+
+                        break;
+                    }
+
+                default:
+                    break;
+            }
+        }
+
+        {
+            switch (color.index()) {
+                case 0: // bool
+                    {
+                        bool all_colors = std::get<bool>(color);
+                        if (all_colors)
+                            insert_(materials);
+
+                        continue;
+                    }
+                case 1: // ColorId
+                    {
+                        colors.insert(std::get<ColorId>(color));
+                        break;
+                    }
+                case 2:
+                    { // vector
+                        const auto& colors_to_add =
+                            std::get<std::vector<ColorId>>(color);
+
+                        colors.insert(colors_to_add.begin(), colors_to_add.end());
+
+                        break;
+                    }
+
+                default:
+                    break;
+            }
+        }
+        insert_(materials, colors);
+    }
+}
+
+void
+MaterialGroup::insert_(std::unordered_set<MaterialId> material_id) {
+    materials_no_color_requirement_.insert(material_id.begin(), material_id.end());
+}
+
+void
+MaterialGroup::insert_(
+    std::unordered_set<MaterialId> material_id, std::unordered_set<ColorId> color_ids
+) {
+    for (MaterialId id : material_id) {
+        materials_with_color_requirement_[id] = color_ids;
+    }
+}
+
 } // namespace terrain

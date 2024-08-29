@@ -66,7 +66,7 @@ class JsonToTile {
      */
     JsonToTile(const generation_stamp_t& data) :
         height_(data.height), height_variance_(data.DH), width_(data.size),
-        width_variance_(data.DC), elements_can_stamp_(read_elements(data.can_override)),
+        width_variance_(data.DC), elements_can_stamp_(data.can_override),
         stamp_material_id_(data.material_id), stamp_color_id_(data.color_id) {}
 
     /**
@@ -85,12 +85,6 @@ class JsonToTile {
     virtual size_t num_sub_region() const = 0;
 
     virtual ~JsonToTile() {}
-
-    /**
-     * @brief Read the materials and colors that this stamp can overwrite in
-     * terrain. Use the "Can_Stamp" dictionary.
-     */
-    static MaterialGroup read_elements(const std::vector<material_designation_t>& data);
 
  protected:
     /**

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "fmt/core.h"
 #include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/gpu_data.hpp"
 #include "gui/render/gpu_data/static_mesh.hpp"
@@ -8,7 +9,6 @@
 #include "placement.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
-#include "fmt/core.h"
 
 #include <filesystem>
 #include <optional>
@@ -29,16 +29,14 @@ struct global_illumination_t {
 struct remapping_t {
     std::unordered_map<ColorInt, ColorInt> map;
 
-    void 
-    read_map(std::unordered_map<std::string, std::string> input)
-    {
+    void
+    read_map(std::unordered_map<std::string, std::string> input) {
         for (const auto& [k, v] : input)
-            map[std::stoull(k, nullptr, 16)] = std::stoull(v,  nullptr, 16);
+            map[std::stoull(k, nullptr, 16)] = std::stoull(v, nullptr, 16);
     }
 
-    std::unordered_map<std::string, std::string> 
-    write_map() const 
-    {
+    std::unordered_map<std::string, std::string>
+    write_map() const {
         std::unordered_map<std::string, std::string> res;
 
         for (const auto& [key, value] : map) {
@@ -49,9 +47,7 @@ struct remapping_t {
         }
 
         return res;
-
     }
-
 };
 
 struct model_t {
@@ -270,6 +266,11 @@ template <>
 struct glz::meta<world::entity::remapping_t> {
     using T = world::entity::remapping_t;
 
-    static constexpr auto value =
-        object("map",  custom<&T::map, &T::write_map>);
+    static constexpr auto value = object("map", custom<&T::map, &T::write_map>);
 };
+
+template <>
+inline glz::detail::any_t::operator std::vector<world::entity::remapping_t>() const {
+    assert(false && "Not Implemented");
+    return {};
+}

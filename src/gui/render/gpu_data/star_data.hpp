@@ -60,7 +60,6 @@ struct star_data_t {
 struct stars_data_t {
     float brightness_scale;
     std::vector<star_data_t> data;
-
 };
 
 struct night_data_t {

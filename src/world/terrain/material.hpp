@@ -71,22 +71,13 @@ struct grass_data_t {
  * data will be added like how cretin materials respond to weather...
  */
 struct material_t {
-    //material_t(
-    //    std::vector<material_color_t> color_in,
-    //    float speed_multiplier_in, bool solid_in, MaterialId material_id_in,
-    //    std::string name_in
-    //) :
-    //    color(color_in),
-    //    speed_multiplier(speed_multiplier_in), solid(solid_in),
-    //    material_id(material_id_in), name(name_in){};
-    // vector of <name hex color> for possible colors
-        std::vector<material_color_t> color;
+    std::vector<material_color_t> color;
 
     float speed_multiplier = 1;          // speed on this material
     bool solid = false;                  // Is the material solid?
     MaterialId material_id = AIR_MAT_ID; // The ID of the material (Air is 0)
     const std::string name = "Air";      // The material name
-        std::optional<grass_data_t> gradient;
+    std::optional<grass_data_t> gradient;
 
     // int8_t deterioration from wind
     // int8_t deterioration from water
@@ -186,11 +177,12 @@ class TerrainColorMapping {
  */
 class MaterialGroup {
  private:
+    bool contain_all_materials;
     // Any material in this set is in the group no matter the color.
     std::set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
     // this group the material key must map to a set containing the given color.
-    std::map<MaterialId, std::set<ColorId>> materials_with_color_requirement_;
+    std::map<MaterialId, std::unordered_set<ColorId>> materials_with_color_requirement_;
 
  public:
     /**
@@ -198,7 +190,7 @@ class MaterialGroup {
      *
      * @details Default constructor. Nothing will be in the group.
      */
-    MaterialGroup(){};
+    MaterialGroup() : contain_all_materials(false){};
 
     /**
      * @brief Construct new MaterialGroup object.
@@ -209,10 +201,17 @@ class MaterialGroup {
      */
     MaterialGroup(
         std::set<MaterialId> materials,
-        std::map<MaterialId, std::set<ColorId>> materials_w_color
+        std::map<MaterialId, std::unordered_set<ColorId>> materials_w_color
     ) :
+        contain_all_materials(false),
         materials_no_color_requirement_(materials),
         materials_with_color_requirement_(materials_w_color){};
+
+    /**
+     * @brief Read the materials and colors that this stamp can overwrite in
+     * terrain. Use the "Can_Stamp" dictionary.
+     */
+    MaterialGroup(const std::vector<generation::material_designation_t>& data);
 
     /**
      * @brief Check if given material and color id are in the group.
@@ -225,6 +224,8 @@ class MaterialGroup {
      */
     [[nodiscard]] inline bool
     material_in(MaterialId material_id, ColorId color_id) const {
+        if (contain_all_materials)
+            return true;
         if (material_in(material_id))
             return true; // material found in set that disregards color
         auto iter = materials_with_color_requirement_.find(material_id);
@@ -244,30 +245,25 @@ class MaterialGroup {
      */
     [[nodiscard]] inline bool
     material_in(MaterialId material_id) const {
+        if (contain_all_materials)
+            return true;
         return materials_no_color_requirement_.contains(material_id);
     }
-};
 
-[[nodiscard]] inline bool
-material_in(
-    const std::set<std::pair<MaterialId, ColorId>> materials, MaterialId material_id,
-    ColorId color_id
-) {
-    auto same_mat = [&material_id](MaterialId m) {
-        return m == MAT_ANY_MATERIAL || m == material_id;
-    };
+ private:
+    void insert_(std::unordered_set<MaterialId> material_id);
+    void insert_(
+        std::unordered_set<MaterialId> material_id,
+        std::unordered_set<ColorId> color_ids
+    );
 
-    auto same_color = [&color_id](ColorId c) {
-        return c == COLOR_ANY_COLOR || c == color_id;
-    };
-
-    for (const auto& [mat, color] : materials) {
-        if (same_mat(mat) && same_color(color))
-            return true;
+    inline void
+    set_all() {
+        materials_no_color_requirement_.clear();
+        materials_with_color_requirement_.clear();
+        contain_all_materials = true;
     }
-
-    return false;
-}
+};
 
 } // namespace terrain
 

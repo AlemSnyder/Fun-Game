@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <map>
 #include <unordered_set>
+#include <variant>
 #include <vector>
 
 namespace terrain {
@@ -21,8 +22,9 @@ enum class generation_stamp_type {
 };
 
 struct material_designation_t {
-    glz::raw_json material; // bool or int
-    glz::raw_json color;    // bool or int
+    std::variant<bool, MaterialId, std::vector<MaterialId>>
+        material;                                            // bool or MaterialId
+    std::variant<bool, ColorId, std::vector<ColorId>> color; // bool or ColorId
 };
 
 struct stamp_generation_grid_data_t {
@@ -82,18 +84,18 @@ struct layer_effect_data_t {
     operator<=>(const layer_effect_data_t& other) const {
         // c for compare
         auto stop_c = stop <=> other.stop;
-        if (stop_c != std::strong_ordering::equivalent){
+        if (stop_c != std::strong_ordering::equivalent) {
             return stop_c;
         }
         auto start_c = start <=> other.start;
-        if (start_c != std::strong_ordering::equivalent){
+        if (start_c != std::strong_ordering::equivalent) {
             return start_c;
         }
 
-        // we want to compare directions like this because going to a position is 
+        // we want to compare directions like this because going to a position is
         // bigger than adding some value assuming the stop is the same
         auto directions_c = (int)add_directions <=> (int)other.add_directions;
-        if (directions_c != std::strong_ordering::equivalent){
+        if (directions_c != std::strong_ordering::equivalent) {
             return directions_c;
         }
 
@@ -101,7 +103,6 @@ struct layer_effect_data_t {
     }
 
     [[nodiscard]] bool operator==(const layer_effect_data_t&) const = default;
-
 };
 
 struct layer_effects_t {
