@@ -3,8 +3,8 @@
 
 #include "global_context.hpp"
 #include "manifest.hpp"
-#include "world/entity/object_handler.hpp"
 #include "world/entity/model.hpp"
+#include "world/entity/object_handler.hpp"
 
 #include <iostream>
 #include <string>
@@ -80,7 +80,6 @@ load_manifest_test() {
 
     std::unordered_set<std::string> ided_objects;
 
-
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
         manifest::manifest_t manifest;
@@ -118,7 +117,8 @@ load_manifest_test() {
         );
         if (manifest.entities.has_value()) {
             // iterate through objects in manifest and queue them to be loaded
-            for (const manifest::descriptor_t& entity_data : manifest.entities.value()) {
+            for (const manifest::descriptor_t& entity_data :
+                 manifest.entities.value()) {
                 // Will check if path exists
 
                 // struct to read data into
@@ -148,8 +148,6 @@ load_manifest_test() {
                     );
                     return 1;
                 }
-
-
 
                 // check identification
                 std::string identification = entity_data.identification;
