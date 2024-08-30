@@ -266,7 +266,7 @@ template <>
 struct glz::meta<world::entity::remapping_t> {
     using T = world::entity::remapping_t;
 
-    static constexpr auto value = object("map", custom<&T::map, &T::write_map>);
+    static constexpr auto value = object("map", custom<&T::read_map, &T::write_map>);
 };
 
 template <>
