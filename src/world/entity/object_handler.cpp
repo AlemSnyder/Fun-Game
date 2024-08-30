@@ -34,7 +34,10 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
             return;
         }
     } else {
-        LOG_ERROR(logging::file_io_logger, "Attempting to load {} from {} failed.", descriptor.identification, descriptor.path);
+        LOG_ERROR(
+            logging::file_io_logger, "Attempting to load {} from {} failed.",
+            descriptor.identification, descriptor.path
+        );
         return;
     }
 

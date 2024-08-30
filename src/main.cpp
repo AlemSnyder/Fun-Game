@@ -340,6 +340,8 @@ tests(const argh::parser& cmdl) {
         return ChunkDataTest();
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
+    } else if (run_function == "LoadManifest") {
+        return util::load_manifest_test();
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

@@ -130,4 +130,5 @@ add_test(NAME LuaTest COMMAND FunGame Test LuaTest)
 add_test(NAME NoiseTest COMMAND FunGame Test NoiseTest)
 add_test(NAME Logging COMMAND FunGame Test Logging)
 add_test(NAME ChunkDataTest COMMAND FunGame Test ChunkDataTest)
+add_test(NAME LoadManifest COMMAND FunGame Test LoadManifest)
 
