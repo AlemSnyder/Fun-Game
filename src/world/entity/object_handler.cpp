@@ -23,8 +23,10 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // read contents from path
     auto contents = files::open_data_file(descriptor.path);
     if (contents.has_value()) {
-        std::string content;
-        contents.value() >> content;
+        std::string content(
+            (std::istreambuf_iterator<char>(contents.value())),
+            std::istreambuf_iterator<char>()
+        );
 
         auto ec = glz::read_json(object_data, content);
         if (ec) {
@@ -32,6 +34,7 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
             return;
         }
     } else {
+        LOG_ERROR(logging::file_io_logger, "Attempting to load {} from {} failed.", descriptor.identification, descriptor.path);
         return;
     }
 

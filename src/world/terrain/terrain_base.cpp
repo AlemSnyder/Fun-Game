@@ -139,7 +139,7 @@ TerrainBase::add_to_top(const generation::AddToTop& top_data) {
             // if z is between some bounds
             // stop_h = get stop height (guess, top_data["how_to_add"])
             Dim max_height = top_data.get_final_height(guess);
-            for (size_t z = guess; z < max_height; z++) {
+            for (size_t z = guess; z < max_height && z < Z_MAX; z++) {
                 const Tile& tile = *get_tile(x, y, z);
                 if (top_data.can_overwrite_material(
                         tile.get_material_id(), tile.get_color_id()
