@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include "fmt/core.h"
 
 #include <filesystem>
 #include <iterator>
@@ -6,6 +7,26 @@
 namespace world {
 
 namespace entity {
+
+void
+remapping_t::read_map(std::unordered_map<std::string, std::string> input) {
+        for (const auto& [k, v] : input)
+            map[std::stoull(k, nullptr, 16)] = std::stoull(v, nullptr, 16);
+    }
+
+std::unordered_map<std::string, std::string>
+remapping_t::write_map() const {
+        std::unordered_map<std::string, std::string> res;
+
+        for (const auto& [key, value] : map) {
+            std::string str_key = fmtquill::format("{:08X}", key);
+            std::string str_value = fmtquill::format("{:08X}", value);
+
+            res.insert({str_key, str_value});
+        }
+
+        return res;
+    }
 
 ModelController&
 ObjectData::get_model(size_t mesh_id) {

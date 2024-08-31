@@ -1,8 +1,8 @@
 #pragma once
 
 #include "gui/render/gpu_data/array_buffer.hpp"
-#include "gui/render/gpu_data/static_mesh.hpp"
-#include "model.hpp"
+#include "gui/render/structures/static_mesh.hpp"
+#include "gui/render/structures/model.hpp"
 #include "placement.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"

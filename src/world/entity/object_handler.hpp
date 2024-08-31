@@ -21,7 +21,7 @@
  */
 
 #include "manifest.hpp"
-#include "model.hpp"
+#include "gui/render/structures/model.hpp"
 
 #include <filesystem>
 #include <map>

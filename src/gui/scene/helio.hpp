@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../render/uniform_types.hpp"
+#include "../render/structures/uniform_types.hpp"
 
 #include <glm/glm.hpp>
 

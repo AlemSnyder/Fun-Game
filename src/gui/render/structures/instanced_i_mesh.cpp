@@ -15,9 +15,7 @@ namespace gpu_data {
 
 InstancedIMeshGPU::InstancedIMeshGPU(
     const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
-) :
-    NonInstancedIMeshGPU(mesh),
-    transforms_array_(model_transforms, 1) {
+) : IMeshGPU(mesh), transforms_array_(model_transforms, 1) {
     // InstancedInt does not have a color texture. One must inherit from this
     // class and define a method that creates a color texture, and sets its id
     // as color_texture_.

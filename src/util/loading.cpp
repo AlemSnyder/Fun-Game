@@ -3,7 +3,7 @@
 
 #include "global_context.hpp"
 #include "manifest.hpp"
-#include "world/entity/model.hpp"
+#include "gui/render/structures/model.hpp"
 #include "world/entity/object_handler.hpp"
 
 #include <iostream>

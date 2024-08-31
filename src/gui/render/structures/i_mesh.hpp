@@ -25,9 +25,9 @@
 // reason it should be moved into gui/array_buffer
 // Also no namespace terrain
 
-#include "array_buffer.hpp"
-#include "gpu_data.hpp"
-#include "texture.hpp"
+#include "gui/render/gpu_data/array_buffer.hpp"
+#include "gui/render/gpu_data/data_types.hpp"
+#include "gui/render/gpu_data/texture.hpp"
 #include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
@@ -48,7 +48,7 @@ namespace gpu_data {
  * @details Handles non-instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class NonInstancedIMeshGPU : virtual public GPUDataElements {
+class IMeshGPU : virtual public GPUDataElements {
  protected:
     ArrayBuffer<glm::ivec3> vertex_array_;
     ArrayBuffer<uint16_t> color_array_;
@@ -58,17 +58,17 @@ class NonInstancedIMeshGPU : virtual public GPUDataElements {
     bool do_render_;
 
  public:
-    NonInstancedIMeshGPU(const NonInstancedIMeshGPU& other) = delete;
-    NonInstancedIMeshGPU(NonInstancedIMeshGPU&& other) = default;
+    IMeshGPU(const IMeshGPU& other) = delete;
+    IMeshGPU(IMeshGPU&& other) = default;
     // copy operator
-    NonInstancedIMeshGPU& operator=(const NonInstancedIMeshGPU& other) = delete;
-    NonInstancedIMeshGPU& operator=(NonInstancedIMeshGPU&& other) = default;
+    IMeshGPU& operator=(const IMeshGPU& other) = delete;
+    IMeshGPU& operator=(IMeshGPU&& other) = default;
 
-    inline NonInstancedIMeshGPU() :
+    inline IMeshGPU() :
         vertex_array_(), color_array_(), normal_array_(), element_array_(),
         num_vertices_(), do_render_() {}
 
-    explicit inline NonInstancedIMeshGPU(const world::entity::Mesh& mesh) :
+    explicit inline IMeshGPU(const world::entity::Mesh& mesh) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
         normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),

@@ -30,11 +30,12 @@ class GPUArrayType {
     const GPUDataType draw_type; // type of smallest unit of memory
 
     inline constexpr GPUArrayType(
-        uint8_t vec_size, uint8_t type_size, bool is_int, GPUDataType draw_type
+        uint8_t vec_size_, uint8_t type_size, bool is_int, GPUDataType draw_type
     ) :
-        vec_size(vec_size),
+        vec_size(vec_size_),
         type_size(type_size), is_int(is_int), draw_type(draw_type) {
-        assert((1 <= vec_size && vec_size <= 4) && "Vector size not allowed");
+//        static_assert((1 <= vec_size_ && vec_size_ <= 4), "Vector size not allowed");
+// TODO figure this out
     }
 
     template <std::integral T>

@@ -24,7 +24,7 @@
 
 #include "../render/gpu_data/frame_buffer_multisample.hpp"
 #include "../render/gpu_data/shadow_map.hpp"
-#include "../render/graphics_shaders/gui_render_types.hpp"
+#include "../render/graphics_shaders/render_types.hpp"
 #include "helio.hpp"
 
 #include <GLFW/glfw3.h>

@@ -1,6 +1,6 @@
 #include "program_handler.hpp"
 
-#include "gui_render_types.hpp"
+#include "render_types.hpp"
 #include "logging.hpp"
 
 #include <GL/glew.h>

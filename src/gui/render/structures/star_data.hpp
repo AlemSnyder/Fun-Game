@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "array_buffer.hpp"
-#include "gpu_data.hpp"
+#include "gui/render/gpu_data/array_buffer.hpp"
+#include "gui/render/gpu_data/data_types.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

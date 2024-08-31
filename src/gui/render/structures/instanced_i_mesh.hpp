@@ -21,9 +21,9 @@
  *
  */
 
-#include "array_buffer.hpp"
-#include "gpu_data.hpp"
-#include "non_instanced_i_mesh.hpp"
+#include "gui/render/gpu_data/array_buffer.hpp"
+#include "gui/render/gpu_data/data_types.hpp"
+#include "i_mesh.hpp"
 #include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
@@ -45,7 +45,7 @@ namespace gpu_data {
  * binding, and deleting data on GPU.
  */
 class InstancedIMeshGPU :
-    public virtual NonInstancedIMeshGPU,
+    public virtual IMeshGPU,
     public virtual GPUDataElementsInstanced {
  protected:
     ArrayBuffer<glm::ivec4> transforms_array_;
@@ -65,12 +65,12 @@ class InstancedIMeshGPU :
     void update_transforms_array(std::vector<glm::ivec4> data, uint offset);
 
     inline void virtual bind() const override {
-        NonInstancedIMeshGPU::bind();
+        IMeshGPU::bind();
         transforms_array_.bind(3, 3);
     }
 
     inline void virtual release() const override {
-        NonInstancedIMeshGPU::release();
+        IMeshGPU::release();
         glDisableVertexAttribArray(3);
     }
 

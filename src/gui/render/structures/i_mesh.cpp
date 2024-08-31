@@ -1,4 +1,4 @@
-#include "non_instanced_i_mesh.hpp"
+#include "i_mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -9,7 +9,7 @@ namespace gui {
 namespace gpu_data {
 
 void
-NonInstancedIMeshGPU::update(const world::entity::Mesh& mesh) {
+IMeshGPU::update(const world::entity::Mesh& mesh) {
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
 
@@ -20,7 +20,7 @@ NonInstancedIMeshGPU::update(const world::entity::Mesh& mesh) {
 }
 
 void
-NonInstancedIMeshGPU::bind() const {
+IMeshGPU::bind() const {
     vertex_array_.bind(0, 0);
     element_array_.bind(-1, -1); // why not have a bind with no parameters that asserts
                                  // that the array is the elements array?
@@ -29,7 +29,7 @@ NonInstancedIMeshGPU::bind() const {
 }
 
 void
-NonInstancedIMeshGPU::release() const {
+IMeshGPU::release() const {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
