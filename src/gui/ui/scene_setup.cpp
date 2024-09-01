@@ -140,7 +140,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             {matrix_view_projection_uniform, view_matrix_uniform,
              light_depth_texture_projection_uniform, shadow_texture_uniform,
              material_color_texture_uniform, spectral_light_color_uniform,
-             diffuse_light_color_uniform, light_direction_uniform}
+             diffuse_light_color_uniform, light_direction_uniform, light_depth_projection_uniform}
         )
     );
 
