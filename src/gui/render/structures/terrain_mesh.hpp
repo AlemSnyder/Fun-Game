@@ -42,10 +42,10 @@ class TerrainMesh : public virtual IMeshGPU {
 
  public:
     inline TerrainMesh() :
-        color_texture_(terrain::TerrainColorMapping::get_color_texture()) {};
+        color_texture_(terrain::TerrainColorMapping::get_color_texture()){};
 
     inline TerrainMesh(Texture1D& color_texture_id) :
-        color_texture_(color_texture_id) {};
+        color_texture_(color_texture_id){};
 
     inline TerrainMesh(const world::entity::Mesh& mesh, Texture1D& color_texture_id) :
         IMeshGPU(mesh), color_texture_(color_texture_id) {}

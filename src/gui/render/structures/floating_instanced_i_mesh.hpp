@@ -55,8 +55,10 @@ class FloatingInstancedIMeshGPU :
     inline FloatingInstancedIMeshGPU(const FloatingInstancedIMeshGPU& obj) = delete;
     inline FloatingInstancedIMeshGPU(FloatingInstancedIMeshGPU&& other) = default;
     // copy operator
-    inline FloatingInstancedIMeshGPU& operator=(const FloatingInstancedIMeshGPU& obj) = delete;
-    inline FloatingInstancedIMeshGPU& operator=(FloatingInstancedIMeshGPU&& other) = default;
+    inline FloatingInstancedIMeshGPU& operator=(const FloatingInstancedIMeshGPU& obj
+    ) = delete;
+    inline FloatingInstancedIMeshGPU& operator=(FloatingInstancedIMeshGPU&& other
+    ) = default;
 
     FloatingInstancedIMeshGPU(
         const world::entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms

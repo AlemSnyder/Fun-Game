@@ -2,8 +2,8 @@
 #include "loading.hpp"
 
 #include "global_context.hpp"
-#include "manifest.hpp"
 #include "gui/render/structures/model.hpp"
+#include "manifest.hpp"
 #include "world/entity/object_handler.hpp"
 
 #include <iostream>

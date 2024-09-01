@@ -3,11 +3,11 @@
 
 #include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
-#include "static_mesh.hpp"
 #include "manifest.hpp"
-#include "world/entity/placement.hpp" //
+#include "static_mesh.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
+#include "world/entity/placement.hpp" //
 
 #include <filesystem>
 #include <optional>
@@ -27,11 +27,9 @@ struct global_illumination_t {
 struct remapping_t {
     std::unordered_map<ColorInt, ColorInt> map;
 
-    void
-    read_map(std::unordered_map<std::string, std::string> input);
+    void read_map(std::unordered_map<std::string, std::string> input);
 
-    std::unordered_map<std::string, std::string>
-    write_map() const;
+    std::unordered_map<std::string, std::string> write_map() const;
 };
 
 struct model_t {

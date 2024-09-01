@@ -2,10 +2,10 @@
 
 #include "../gui_logging.hpp"
 #include "../handler.hpp"
-#include "../render/structures/screen_data.hpp"
-#include "../render/structures/star_data.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
+#include "../render/structures/screen_data.hpp"
+#include "../render/structures/star_data.hpp"
 #include "../render/structures/uniform_types.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/helio.hpp"

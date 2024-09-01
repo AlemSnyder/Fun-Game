@@ -20,8 +20,8 @@
  *
  */
 
-#include "manifest.hpp"
 #include "gui/render/structures/model.hpp"
+#include "manifest.hpp"
 
 #include <filesystem>
 #include <map>

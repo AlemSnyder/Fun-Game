@@ -34,8 +34,8 @@
 
 #include "gui/handler.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
-#include "render_types.hpp"
 #include "logging.hpp"
+#include "render_types.hpp"
 #include "types.hpp"
 #include "uniform.hpp"
 

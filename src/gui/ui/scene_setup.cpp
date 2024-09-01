@@ -1,10 +1,10 @@
 #include "scene_setup.hpp"
 
+#include "../render/graphics_shaders/program_handler.hpp"
+#include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/structures/screen_data.hpp"
 #include "../render/structures/star_data.hpp"
 #include "../render/structures/static_mesh.hpp"
-#include "../render/graphics_shaders/program_handler.hpp"
-#include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/structures/uniform_types.hpp"
 #include "world/entity/object_handler.hpp"
 

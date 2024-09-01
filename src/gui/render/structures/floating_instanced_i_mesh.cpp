@@ -15,14 +15,18 @@ namespace gpu_data {
 
 FloatingInstancedIMeshGPU::FloatingInstancedIMeshGPU(
     const world::entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
-) : IMeshGPU(mesh), transforms_array_(model_transforms, 1) {
+) :
+    IMeshGPU(mesh),
+    transforms_array_(model_transforms, 1) {
     // InstancedInt does not have a color texture. One must inherit from this
     // class and define a method that creates a color texture, and sets its id
     // as color_texture_.
 }
 
 void
-FloatingInstancedIMeshGPU::update_transforms_array(std::vector<glm::mat4> data, uint offset) {
+FloatingInstancedIMeshGPU::update_transforms_array(
+    std::vector<glm::mat4> data, uint offset
+) {
     transforms_array_.update(data, offset);
 }
 

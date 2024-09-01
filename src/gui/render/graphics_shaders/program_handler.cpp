@@ -1,7 +1,7 @@
 #include "program_handler.hpp"
 
-#include "render_types.hpp"
 #include "logging.hpp"
+#include "render_types.hpp"
 
 #include <GL/glew.h>
 
