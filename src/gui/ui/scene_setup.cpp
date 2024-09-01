@@ -6,7 +6,10 @@
 #include "../render/structures/star_data.hpp"
 #include "../render/structures/static_mesh.hpp"
 #include "../render/structures/uniform_types.hpp"
+#include "gui/render/structures/floating_instanced_i_mesh.hpp"
 #include "world/entity/object_handler.hpp"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <functional>
 #include <memory>
@@ -50,8 +53,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 
-    // TODO need to write another program like this
-    // needs to have sub block spacing
+    // TODO needs to have sub block spacing
 
     shader::Program& tile_entity_render_program = shader_handler.load_program(
         "Tile Entity Render",
@@ -87,6 +89,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         files::get_resources_path() / "shaders" / "background" / "Sun.vert",
         files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
+/*
+    shader::Program& entity_program = shader_handler.load_program("Entity",
+        files::get_resources_path() / "shaders" / "scene" / "Entity.vert",
+        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
+    );
+*/
     // clang-format on
 
     // These are uniforms
@@ -207,6 +215,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             chunks_render_program_uniforms
         );
 
+/*
+    auto entity_render_pipeline =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            entity_program, chunk_render_setup, chunks_render_program_uniforms
+        );
+*/
     // sky
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -235,11 +249,25 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunks_shadow_program->data.push_back(chunk_mesh);
     }
+/*
+    voxel_utility::VoxelObject test_entity(
+        files::get_data_path() / "Base" / "models" / "Test.qb"
+    );
+    auto test_object_mesh = world::entity::ambient_occlusion_mesher(test_entity);
+
+    std::vector<glm::mat4> test_object_positions;
+    glm::mat4 translate_start(1.0);
+    glm::vec3 position(80, 80, 80);
+    test_object_positions.push_back(glm::translate(translate_start, position));
+
+    auto gpu_test_object_data = std::make_shared<gpu_data::FloatingInstancedIMeshGPU>(
+        test_object_mesh, test_object_positions
+    );
+    entity_render_pipeline->data.push_back(gpu_test_object_data);*/
 
     voxel_utility::VoxelObject default_trees_voxel(
         files::get_data_path() / "Base" / "models" / "DefaultTree.qb"
     );
-
     auto mesh_trees = world::entity::ambient_occlusion_mesher(default_trees_voxel);
 
     std::vector<glm::ivec4> model_matrices;
@@ -283,6 +311,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     scene.add_mid_ground_renderer(chunks_render_program);
     scene.add_mid_ground_renderer(entity_render_program_execute);
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
+    // scene.add_mid_ground_renderer(entity_render_pipeline);
 
     scene.add_background_ground_renderer(sky_renderer);
     scene.add_background_ground_renderer(star_renderer);

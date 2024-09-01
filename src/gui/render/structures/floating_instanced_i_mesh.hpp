@@ -69,11 +69,19 @@ class FloatingInstancedIMeshGPU :
     inline void virtual bind() const override {
         IMeshGPU::bind();
         transforms_array_.bind(3, 3);
+        // will bind to 3, 4, 5, 6 because mat4
+        // here is a random GitHub link to fallow
+        // https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/4.advanced_opengl/10.3.asteroids_instanced/asteroids_instanced.cpp#L136
+        // One can only send vec4 to through a buffer. To send a mat4 multiple buffers
+        // are used.
     }
 
     inline void virtual release() const override {
         IMeshGPU::release();
         glDisableVertexAttribArray(3);
+        glDisableVertexAttribArray(4);
+        glDisableVertexAttribArray(5);
+        glDisableVertexAttribArray(6);
     }
 
     [[nodiscard]] inline const ArrayBuffer<glm::mat4>&

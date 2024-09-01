@@ -22,8 +22,7 @@ IMeshGPU::update(const world::entity::Mesh& mesh) {
 void
 IMeshGPU::bind() const {
     vertex_array_.bind(0, 0);
-    element_array_.bind(-1, -1); // why not have a bind with no parameters that asserts
-                                 // that the array is the elements array?
+    element_array_.bind();
     color_array_.bind(1, 1);
     normal_array_.bind(2, 2);
 }

@@ -52,7 +52,7 @@ TerrainBase::TerrainBase(
     }
 
     // srand(seed);
-    LOG_INFO(logging::terrain_logger, "Start of land generator.");
+    LOG_DEBUG(logging::terrain_logger, "Start of land generator.");
 
     // TODO make this faster 4
     for (size_t i = 0; i < x_map_tiles; i++)
@@ -64,14 +64,14 @@ TerrainBase::TerrainBase(
             }
         }
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: place tiles.");
 
     // TODO make this faster 3
     for (const generation::AddToTop& top_data : biome.get_top_generators()) {
         add_to_top(top_data);
     }
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: top layer placement.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: top layer placement.");
 }
 
 TerrainBase::TerrainBase(

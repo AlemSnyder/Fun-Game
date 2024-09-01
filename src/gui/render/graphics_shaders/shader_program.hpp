@@ -326,6 +326,11 @@ class ShaderProgram_ElementsInstanced :
                 continue;
             }
 
+            //            assert(static_cast<GLsizei>(mesh->get_num_vertices()) >= 0 &&
+            //            "Num vertices must non-negative");
+            //            assert(static_cast<GLsizei>(mesh->get_num_models()) >= 0 &&
+            //            "Num models must non-negative");
+
             mesh->bind();
 
             auto element_type = mesh->get_element_type();
@@ -336,7 +341,7 @@ class ShaderProgram_ElementsInstanced :
                 mesh->get_num_vertices(),          // count
                 static_cast<GLenum>(element_type), // type
                 (void*)0,                          // element array buffer offset
-                mesh->get_num_models()
+                mesh->get_num_models()             // instance count
             );
 
             mesh->release();

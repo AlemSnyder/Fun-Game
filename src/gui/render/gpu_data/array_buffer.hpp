@@ -246,6 +246,8 @@ class ArrayBuffer {
         bind(attribute, attribute);
     };
 
+    inline void bind() const;
+
     [[nodiscard]] inline constexpr static GPUArrayType
     get_array_type() {
         constexpr GPUArrayType data_type = GPUArrayType::create<T>();
@@ -293,6 +295,18 @@ ArrayBuffer<T, buffer>::pointer_update_(
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
+    size_t data_size_in_bytes =
+        add_data_size * 
+        static_cast<size_t>(data_type.type_size) * 
+        static_cast<size_t>(data_type.major_size) *
+        static_cast<size_t>(data_type.minor_size);
+
+    LOG_BACKTRACE(
+        logging::opengl_logger, "Writing {} * {} * {} * {} = {} bytes.", add_data_size,
+        data_type.type_size, data_type.major_size, data_type.minor_size,
+        data_size_in_bytes
+    );
+
     if (aloc_size_ < offset + add_data_size) {
         // reallocate
         aloc_size_ = offset + add_data_size;
@@ -300,28 +314,26 @@ ArrayBuffer<T, buffer>::pointer_update_(
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
         // this should theoretically copy the existing data into a new buffer.
         glBufferData(
-            static_cast<GLenum>(buffer),
-            aloc_size_ * data_type.type_size * data_type.major_size, nullptr,
-            GL_DYNAMIC_DRAW
-        );
-
-        glBufferSubData(
-            static_cast<GLenum>(buffer), offset,
-            aloc_size_ * data_type.type_size * data_type.major_size, data_begin
+            static_cast<GLenum>(buffer), data_size_in_bytes, nullptr, GL_DYNAMIC_DRAW
         );
 
         // TODO add case to reduce size
         // The problem is that the way this is setup doesn't allow that.
         // there is not way to say where the new data end is. one should not
-    } else {
-        glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
-        glBufferSubData(static_cast<GLenum>(buffer), offset, add_data_size, data_begin);
     }
+    // write data
+    glBufferSubData(
+        static_cast<GLenum>(buffer), offset, data_size_in_bytes, data_begin
+    );
 }
 
 template <class T, BindingTarget buffer>
 void
-ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
+ArrayBuffer<T, buffer>::bind() const {
+    static_assert(
+        buffer == BindingTarget::ELEMENT_ARRAY_BUFFER,
+        "Must supply attribute and index for non element array buffers."
+    );
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
     LOG_BACKTRACE(
@@ -329,8 +341,23 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
-    if constexpr (buffer != BindingTarget::ELEMENT_ARRAY_BUFFER)
-        glEnableVertexAttribArray(index);
+    glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
+}
+
+template <class T, BindingTarget buffer>
+void
+ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
+    static_assert(
+        buffer != BindingTarget::ELEMENT_ARRAY_BUFFER,
+        "Element array buffers do not have an attribute or index."
+    );
+
+    constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+
+    LOG_BACKTRACE(
+        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
+    );
 
     glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
 

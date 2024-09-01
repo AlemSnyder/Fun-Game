@@ -16,5 +16,6 @@ GlobalContext::run_opengl_queue() {
             function(); // run function
             opengl_functions.pop();
         }
+        LOG_DEBUG(logging::opengl_logger, "Completed opengl queue.");
     }
 }
