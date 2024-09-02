@@ -17,7 +17,8 @@ FloatingInstancedIMeshGPU::FloatingInstancedIMeshGPU(
     const world::entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
 ) :
     IMeshGPU(mesh),
-    transforms_array_(model_transforms, 1) {
+    transforms_array_(model_transforms, 1),
+    num_models_(model_transforms.size()) {
     // InstancedInt does not have a color texture. One must inherit from this
     // class and define a method that creates a color texture, and sets its id
     // as color_texture_.
