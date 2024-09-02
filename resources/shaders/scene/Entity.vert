@@ -26,19 +26,18 @@ main() {
     vec4 vertexNormal_modelspace_rotated = model_matrix_transform * vec4(vertexNormal_modelspace, 0);
 
     // Output position of the vertex, in clip space : MVP * position
-    gl_Position = MVP * vertex_postion_model_space_instanced;
+    gl_Position = MVP * vertex_postion_world_space;
 
-    // possibly use the below to get less dotted ness on some surfaes
-    //ShadowCoord = depth_MVP * (vertex_postion_model_space_instanced+vertexNormal_modelspace_rotated/10);
-    ShadowCoord = depth_MVP * (vertex_postion_model_space_instanced + vertexNormal_modelspace_rotated * .5);
+    // 
+    ShadowCoord = depth_MVP * (vertex_postion_world_space + vertexNormal_modelspace_rotated * .5);
 
     // Position of the vertex, in worldspace : M * position
-    Position_worldspace = (vertex_postion_model_space_instanced).xyz;
+    Position_worldspace = (vertex_postion_world_space).xyz;
 
     // Vector that goes from the vertex to the camera, in camera space.
     // In camera space, the camera is at the origin (0,0,0).
     EyeDirection_cameraspace =
-        vec3(0, 0, 0) - (view_matrix * vertex_postion_model_space_instanced).xyz;
+        vec3(0, 0, 0) - (view_matrix * vertex_postion_world_space).xyz;
 
     // Vector that goes from the vertex to the light, in camera space
     LightDirection_cameraspace = (view_matrix * vec4(light_direction, 0)).xyz;
