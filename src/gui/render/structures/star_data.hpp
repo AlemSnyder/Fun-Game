@@ -101,7 +101,7 @@ class StarShape : public virtual GPUData {
      */
     inline void
     bind() const override {
-        shape_buffer_.bind(0, 0);
+        shape_buffer_.bind(0);
     }
 
     /**
@@ -213,9 +213,9 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
      */
     inline void
     bind() const override {
-        star_positions_.bind(0, 0);
-        age_buffer_.bind(1, 1);
-        shape_buffer_.bind(2, 2);
+        star_positions_.bind(0);
+        age_buffer_.bind(1);
+        shape_buffer_.bind(2);
     }
 
     /**

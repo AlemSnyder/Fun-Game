@@ -228,22 +228,11 @@ class ArrayBuffer {
     ~ArrayBuffer() { glDeleteBuffers(1, &buffer_ID_); }
 
     /**
-     * @brief Bind to the given attribute
+     * @brief Bind to the given index
      *
-     * @param GLuint attribute the location = # in programs
-     * @param GLuint index I have no idea what this does.
+     * @param GLuint index the location = # in programs
      */
-    void bind(GLuint attribute, GLuint index) const;
-
-    /**
-     * @brief Bind to the given attribute
-     *
-     * @param GLuint attribute the location = # in programs
-     */
-    inline void
-    bind(GLuint attribute) const {
-        bind(attribute, attribute);
-    };
+    void bind(GLuint index) const;
 
     inline void bind() const;
 
@@ -294,6 +283,14 @@ ArrayBuffer<T, buffer>::pointer_update_(
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
+    static_assert(
+        sizeof(T)
+            == static_cast<size_t>(data_type.type_size)
+                   * static_cast<size_t>(data_type.major_size)
+                   * static_cast<size_t>(data_type.minor_size),
+        "You messed up how you do math"
+    );
+
     size_t data_size_in_bytes = add_data_size * static_cast<size_t>(data_type.type_size)
                                 * static_cast<size_t>(data_type.major_size)
                                 * static_cast<size_t>(data_type.minor_size);
@@ -337,7 +334,7 @@ void
 ArrayBuffer<T, buffer>::bind() const {
     static_assert(
         buffer == BindingTarget::ELEMENT_ARRAY_BUFFER,
-        "Must supply attribute and index for non element array buffers."
+        "Must supply index for non element array buffers."
     );
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
@@ -351,10 +348,10 @@ ArrayBuffer<T, buffer>::bind() const {
 
 template <class T, BindingTarget buffer>
 __attribute__((optimize(3))) void
-ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
+ArrayBuffer<T, buffer>::bind(GLuint index) const {
     static_assert(
         buffer != BindingTarget::ELEMENT_ARRAY_BUFFER,
-        "Element array buffers do not have an attribute or index."
+        "Element array buffers do not have an index."
     );
 
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
@@ -364,20 +361,19 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
-    glEnableVertexAttribArray(index);
-
     glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
 
     if constexpr (buffer == BindingTarget::ARRAY_BUFFER) {
 #pragma GCC unroll 4
         for (size_t i = 0; i < data_type.minor_size; i++) {
+            glEnableVertexAttribArray(index + i);
             constexpr GLenum type = static_cast<GLenum>(data_type.draw_type);
             constexpr GLuint stride =
                 data_type.major_size * data_type.minor_size * data_type.type_size;
             void* offset = (void*)(data_type.major_size * data_type.type_size * i);
             if constexpr (data_type.is_int) {
                 glVertexAttribIPointer(
-                    attribute + i,        // attribute
+                    index + i,            // index
                     data_type.major_size, // size
                     type,                 // type
                     stride,               // stride
@@ -386,7 +382,7 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
             } else {
                 if constexpr (data_type.draw_type == GPUDataType::FLOAT) {
                     glVertexAttribPointer(
-                        attribute + i,        // attribute
+                        index + i,            // index
                         data_type.major_size, // size
                         type,                 // type
                         false,                // normalize
@@ -395,7 +391,7 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
                     );
                 } else if constexpr (data_type.draw_type == GPUDataType::DOUBLE) {
                     glVertexAttribLPointer(
-                        attribute + i,        // attribute
+                        index + i,            // index
                         data_type.major_size, // size
                         type,                 // type
                         stride,               // stride
@@ -403,9 +399,9 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
                     );
                 }
             }
-        }
 
-        glVertexAttribDivisor(index, divisor_);
+            glVertexAttribDivisor(index + i, divisor_);
+        }
     }
 }
 

@@ -66,7 +66,7 @@ class InstancedIMeshGPU :
 
     inline void virtual bind() const override {
         IMeshGPU::bind();
-        transforms_array_.bind(3, 3);
+        transforms_array_.bind(3);
     }
 
     inline void virtual release() const override {

@@ -106,9 +106,7 @@ class Render_Base {
     inline Render_Base(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) :
-        opengl_program_(shader_program),
-        setup_(setup_commands), uniforms_(uniforms) {
+    ) : opengl_program_(shader_program), setup_(setup_commands), uniforms_(uniforms) {
         LOG_DEBUG(
             logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
         );
@@ -153,8 +151,7 @@ class ShaderProgram_Standard :
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+    ) : Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -201,8 +198,7 @@ class ShaderProgram_Elements :
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+    ) : Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -255,8 +251,7 @@ class ShaderProgram_Instanced :
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+    ) : Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -305,8 +300,7 @@ class ShaderProgram_ElementsInstanced :
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+    ) : Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -334,6 +328,13 @@ class ShaderProgram_ElementsInstanced :
             mesh->bind();
 
             auto element_type = mesh->get_element_type();
+
+            LOG_BACKTRACE(
+                logging::opengl_logger,
+                "glDrawElementsInstanced(GL_TRIANGLES, {}, {}, 0, {})",
+                mesh->get_num_vertices(), to_string(element_type),
+                mesh->get_num_models()
+            );
 
             // Draw the triangles !
             glDrawElementsInstanced(

@@ -205,7 +205,7 @@ revised_gui_test() {
         // but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        VBO3.bind(0, 0);
+        VBO3.bind(0);
 
         // draw our first triangle
         glUseProgram(green_program.get_program_ID());

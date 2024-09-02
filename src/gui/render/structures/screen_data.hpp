@@ -52,7 +52,7 @@ class ScreenData : public virtual GPUData {
 
     inline virtual void
     bind() const {
-        vertex_array_.bind(0, 0);
+        vertex_array_.bind(0);
     };
 
     inline virtual void

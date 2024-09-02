@@ -92,7 +92,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     shader::Program& entity_program = shader_handler.load_program("Entity",
         files::get_resources_path() / "shaders" / "scene" / "Entity.vert",
-        files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
+        files::get_resources_path() / "shaders" / "Red.frag"
     );
 
     // clang-format on

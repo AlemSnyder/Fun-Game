@@ -21,10 +21,10 @@ IMeshGPU::update(const world::entity::Mesh& mesh) {
 
 void
 IMeshGPU::bind() const {
-    vertex_array_.bind(0, 0);
+    vertex_array_.bind(0);
+    color_array_.bind(1);
+    normal_array_.bind(2);
     element_array_.bind();
-    color_array_.bind(1, 1);
-    normal_array_.bind(2, 2);
 }
 
 void
