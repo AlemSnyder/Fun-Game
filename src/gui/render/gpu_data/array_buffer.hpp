@@ -350,7 +350,7 @@ ArrayBuffer<T, buffer>::bind() const {
 }
 
 template <class T, BindingTarget buffer>
-void
+__attribute__((optimize(3))) void
 ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
     static_assert(
         buffer != BindingTarget::ELEMENT_ARRAY_BUFFER,
@@ -369,42 +369,41 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
     glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
 
     if constexpr (buffer == BindingTarget::ARRAY_BUFFER) {
- constexpr size_t i = 0;
-//#pragma GCC unroll 4
-//        for (size_t i = 0; i < data_type.minor_size; i++) {
-            // <- this literally 1/6ths the framerate
+#pragma GCC unroll 4
+        for (size_t i = 0; i < data_type.minor_size; i++) {
+            constexpr GLenum type = static_cast<GLenum>(data_type.draw_type);
+            constexpr GLuint stride =
+                data_type.major_size * data_type.minor_size * data_type.type_size;
+            void* offset = (void*)(data_type.major_size * data_type.type_size * i);
             if constexpr (data_type.is_int) {
                 glVertexAttribIPointer(
-                    attribute + i,                              // attribute
-                    data_type.major_size,                       // size
-                    static_cast<GLenum>(data_type.draw_type),   // type
-                    data_type.major_size * data_type.minor_size
-                        * data_type.type_size, // stride
-                    (void*)(data_type.major_size * data_type.type_size * i
-                    ) // array buffer offset
-                    // TODO change 0 to i * something
+                    attribute + i,        // attribute
+                    data_type.major_size, // size
+                    type,                 // type
+                    stride,               // stride
+                    offset                // array buffer offset
                 );
             } else {
                 if constexpr (data_type.draw_type == GPUDataType::FLOAT) {
                     glVertexAttribPointer(
-                        attribute + i,                              // attribute
-                        data_type.major_size,                       // size
-                        GL_FLOAT,                                   // type
-                        false,                                      // normalize
-                        data_type.major_size * data_type.type_size, // stride
-                        (void*)0 // array buffer offset
+                        attribute + i,        // attribute
+                        data_type.major_size, // size
+                        type,                 // type
+                        false,                // normalize
+                        stride,               // stride
+                        offset                // array buffer offset
                     );
                 } else if constexpr (data_type.draw_type == GPUDataType::DOUBLE) {
                     glVertexAttribLPointer(
-                        attribute + i,                              // attribute
-                        data_type.major_size,                       // size
-                        GL_DOUBLE,                                  // type
-                        data_type.major_size * data_type.type_size, // stride
-                        (void*)0 // array buffer offset
+                        attribute + i,        // attribute
+                        data_type.major_size, // size
+                        type,                 // type
+                        stride,               // stride
+                        offset                // array buffer offset
                     );
                 }
             }
-//        }
+        }
 
         glVertexAttribDivisor(index, divisor_);
     }
