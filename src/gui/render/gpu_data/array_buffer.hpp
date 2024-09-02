@@ -34,9 +34,8 @@ struct GPUArrayType {
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
         GPUDataType draw_type
     ) :
-        major_size(major_size_),
-        minor_size(minor_size_), type_size(type_size), is_int(is_int),
-        draw_type(draw_type) {}
+        major_size(major_size_), minor_size(minor_size_), type_size(type_size),
+        is_int(is_int), draw_type(draw_type) {}
 
  public:
     template <
@@ -295,11 +294,13 @@ ArrayBuffer<T, buffer>::pointer_update_(
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
-    size_t data_size_in_bytes =
-        add_data_size * 
-        static_cast<size_t>(data_type.type_size) * 
-        static_cast<size_t>(data_type.major_size) *
-        static_cast<size_t>(data_type.minor_size);
+    size_t data_size_in_bytes = add_data_size * static_cast<size_t>(data_type.type_size)
+                                * static_cast<size_t>(data_type.major_size)
+                                * static_cast<size_t>(data_type.minor_size);
+
+    size_t offset_size_in_bytes = offset * static_cast<size_t>(data_type.type_size)
+                                  * static_cast<size_t>(data_type.major_size)
+                                  * static_cast<size_t>(data_type.minor_size);
 
     LOG_BACKTRACE(
         logging::opengl_logger, "Writing {} * {} * {} * {} = {} bytes.", add_data_size,
@@ -311,10 +312,13 @@ ArrayBuffer<T, buffer>::pointer_update_(
         // reallocate
         aloc_size_ = offset + add_data_size;
 
+        // need to in addition allocate the offset
+
         glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
         // this should theoretically copy the existing data into a new buffer.
         glBufferData(
-            static_cast<GLenum>(buffer), data_size_in_bytes, nullptr, GL_DYNAMIC_DRAW
+            static_cast<GLenum>(buffer), offset_size_in_bytes + data_size_in_bytes,
+            nullptr, GL_DYNAMIC_DRAW
         );
 
         // TODO add case to reduce size
@@ -323,7 +327,8 @@ ArrayBuffer<T, buffer>::pointer_update_(
     }
     // write data
     glBufferSubData(
-        static_cast<GLenum>(buffer), offset, data_size_in_bytes, data_begin
+        static_cast<GLenum>(buffer), offset_size_in_bytes, data_size_in_bytes,
+        data_begin
     );
 }
 
@@ -337,7 +342,7 @@ ArrayBuffer<T, buffer>::bind() const {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
     LOG_BACKTRACE(
-        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        logging::opengl_logger, "Binding buffer ID: {}, vec size {}, data type: {}",
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
@@ -355,21 +360,29 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
     constexpr GPUArrayType data_type = GPUArrayType::create<T>();
 
     LOG_BACKTRACE(
-        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        logging::opengl_logger, "Binding buffer ID: {}, vec size {}, data type: {}",
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
+
+    glEnableVertexAttribArray(index);
 
     glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
 
     if constexpr (buffer == BindingTarget::ARRAY_BUFFER) {
-        for (size_t i = 0; i < data_type.minor_size; i++) {
+ constexpr size_t i = 0;
+//#pragma GCC unroll 4
+//        for (size_t i = 0; i < data_type.minor_size; i++) {
+            // <- this literally 1/6ths the framerate
             if constexpr (data_type.is_int) {
                 glVertexAttribIPointer(
                     attribute + i,                              // attribute
                     data_type.major_size,                       // size
                     static_cast<GLenum>(data_type.draw_type),   // type
-                    data_type.major_size * data_type.type_size, // stride
-                    (void*)0                                    // array buffer offset
+                    data_type.major_size * data_type.minor_size
+                        * data_type.type_size, // stride
+                    (void*)(data_type.major_size * data_type.type_size * i
+                    ) // array buffer offset
+                    // TODO change 0 to i * something
                 );
             } else {
                 if constexpr (data_type.draw_type == GPUDataType::FLOAT) {
@@ -391,7 +404,7 @@ ArrayBuffer<T, buffer>::bind(GLuint attribute, GLuint index) const {
                     );
                 }
             }
-        }
+//        }
 
         glVertexAttribDivisor(index, divisor_);
     }
