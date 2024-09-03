@@ -11,13 +11,13 @@
  */
 
 /**
- * @file instanced_i_mesh.hpp
+ * @file floating_instanced_i_mesh.hpp
  *
  * @author @AlemSnyder
  *
- * @brief Defines InstancedInt class
+ * @brief Defines FloatingInstancedIMeshGPU class
  *
- * @ingroup GUI  array_buffer
+ * @ingroup GUI  GPU_DATA
  *
  */
 
@@ -39,9 +39,9 @@ namespace gui {
 namespace gpu_data {
 
 /**
- * @brief Class to render instanced meshes
+ * @brief Class to render integer meshes with arbitrary position
  *
- * @details Handles instanced meshes. Sends mesh data to GPU, and handles
+ * @details Handles meshes, and the position. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
 class FloatingInstancedIMeshGPU :

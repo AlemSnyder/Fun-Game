@@ -15,9 +15,9 @@
  *
  * @author @AlemSnyder
  *
- * @brief Define ShaderHandler
+ * @brief Define Shader Program related classes
  *
- * @ingroup GUI  RENDER  GRAPHICS_SHADERS
+ * @ingroup GUI  SHADER
  *
  */
 

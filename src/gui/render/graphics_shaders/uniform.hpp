@@ -17,7 +17,7 @@
  *
  * @brief Defines Uniform Class
  *
- * @ingroup GUI  RENDER  GRAPHICS_SHADERS
+ * @ingroup GUI  SHADER
  *
  */
 

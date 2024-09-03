@@ -17,7 +17,7 @@
  *
  * @brief Defines shader program classes
  *
- * @ingroup GUI  RENDER  GRAPHICS_SHADERS
+ * @ingroup GUI  SHADER
  *
  * To any future reader: I hate how this is written. There is duplication
  * because of language constrains. If you can find a way to fix this that would

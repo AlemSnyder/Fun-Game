@@ -11,7 +11,7 @@
  */
 
 /**
- * @file non_instanced_i_mesh.hpp
+ * @file i_mesh.hpp
  *
  * @author @AlemSnyder
  *
@@ -74,11 +74,16 @@ class IMeshGPU : virtual public GPUDataElements {
         context.push_opengl_task([this]() { initialize(); });
     }
 
+    /**
+     * @brief Construct a new IMeshGPU object
+     *
+     * @param world::entity::Mesh& mesh to load
+     * @param bool b set to false when calling this constructor when inherited
+     */
     explicit inline IMeshGPU(const world::entity::Mesh& mesh, bool b = true) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
-        normal_array_(mesh.get_indexed_normals()),
-        element_array_(mesh.get_indices()),
+        normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),
         num_vertices_(mesh.get_indices().size()),
         do_render_(mesh.get_indices().size()) {
         if (b) {
@@ -87,8 +92,17 @@ class IMeshGPU : virtual public GPUDataElements {
         }
     }
 
+    /**
+     * @brief Initializes Vertex Array Object.
+     * 
+     * This might not have been the ideal design pattern. I may redo it later.
+     */
     void initialize();
 
+    /**
+     * @brief Attach all Vertex Buffers to Layout positions on vertex and fragment
+     * shaders.
+     */
     virtual void attach_all();
 
     virtual void update(const world::entity::Mesh& mesh);
