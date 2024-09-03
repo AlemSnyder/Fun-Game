@@ -25,9 +25,10 @@
 // reason it should be moved into gui/array_buffer
 // Also no namespace terrain
 
-#include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
 #include "gui/render/gpu_data/texture.hpp"
+#include "gui/render/gpu_data/vertex_array_object.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
@@ -50,10 +51,12 @@ namespace gpu_data {
  */
 class IMeshGPU : virtual public GPUDataElements {
  protected:
-    ArrayBuffer<glm::ivec3> vertex_array_;
-    ArrayBuffer<uint16_t> color_array_;
-    ArrayBuffer<glm::i8vec3> normal_array_;
-    ArrayBuffer<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
+    VertexArrayObject vertex_array_object_;
+
+    VertexBufferObject<glm::ivec3> vertex_array_;
+    VertexBufferObject<uint16_t> color_array_;
+    VertexBufferObject<glm::i8vec3> normal_array_;
+    VertexBufferObject<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
     uint32_t num_vertices_;
     bool do_render_;
 
@@ -66,14 +69,27 @@ class IMeshGPU : virtual public GPUDataElements {
 
     inline IMeshGPU() :
         vertex_array_(), color_array_(), normal_array_(), element_array_(),
-        num_vertices_(), do_render_() {}
+        num_vertices_(), do_render_() {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this]() { initialize(); });
+    }
 
-    explicit inline IMeshGPU(const world::entity::Mesh& mesh) :
+    explicit inline IMeshGPU(const world::entity::Mesh& mesh, bool b = true) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
-        normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),
+        normal_array_(mesh.get_indexed_normals()),
+        element_array_(mesh.get_indices()),
         num_vertices_(mesh.get_indices().size()),
-        do_render_(mesh.get_indices().size()) {}
+        do_render_(mesh.get_indices().size()) {
+        if (b) {
+            GlobalContext& context = GlobalContext::instance();
+            context.push_opengl_task([this]() { initialize(); });
+        }
+    }
+
+    void initialize();
+
+    virtual void attach_all();
 
     virtual void update(const world::entity::Mesh& mesh);
 

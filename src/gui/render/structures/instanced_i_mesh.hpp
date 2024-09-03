@@ -21,8 +21,8 @@
  *
  */
 
-#include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "i_mesh.hpp"
 #include "world/entity/mesh.hpp"
 
@@ -48,7 +48,7 @@ class InstancedIMeshGPU :
     public virtual IMeshGPU,
     public virtual GPUDataElementsInstanced {
  protected:
-    ArrayBuffer<glm::ivec4> transforms_array_;
+    VertexBufferObject<glm::ivec4> transforms_array_;
     uint32_t num_models_;
 
  public:
@@ -62,11 +62,13 @@ class InstancedIMeshGPU :
         const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     );
 
+    virtual void attach_all() override;
+
     void update_transforms_array(std::vector<glm::ivec4> data, uint offset);
 
     inline void virtual bind() const override {
         IMeshGPU::bind();
-        transforms_array_.bind(3);
+        transforms_array_.attach_to_vertex_attribute(3);
     }
 
     inline void virtual release() const override {
@@ -74,7 +76,7 @@ class InstancedIMeshGPU :
         glDisableVertexAttribArray(3);
     }
 
-    [[nodiscard]] inline const ArrayBuffer<glm::ivec4>&
+    [[nodiscard]] inline const VertexBufferObject<glm::ivec4>&
     get_model_transforms() const noexcept {
         return transforms_array_;
     }

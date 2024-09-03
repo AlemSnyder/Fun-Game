@@ -13,15 +13,31 @@ namespace gui {
 
 namespace gpu_data {
 
-StarShape::StarShape() :
+StarShape::StarShape(bool b) :
     shape_buffer_{
         {0,  1 },
         {1,  0 },
         {-1, 0 },
         {0,  -1}
 } {
-    // four point making a diamond centered at 0,0
-    // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
+    if (b) {
+        // four point making a diamond centered at 0,0
+        // note the order maters as this uses GL_TRIANGLE_STRIP to render stars.
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this]() { initialize(); });
+    }
+}
+
+void
+StarShape::initialize() {
+    vertex_array_object_.bind();
+    attach_all();
+    vertex_array_object_.release();
+}
+
+void
+StarShape::attach_all() {
+    shape_buffer_.attach_to_vertex_attribute(0);
 }
 
 star_data
@@ -63,6 +79,15 @@ StarData::read_data_from_file(std::filesystem::path path) {
     }
 
     return {stars_positions, star_age};
+}
+
+void
+StarData::attach_all() {
+    // look legacy
+    //    StarShape::attach_all();
+    star_positions_.attach_to_vertex_attribute(0);
+    age_buffer_.attach_to_vertex_attribute(1);
+    shape_buffer_.attach_to_vertex_attribute(2);
 }
 
 } // namespace gpu_data

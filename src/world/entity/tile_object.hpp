@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gui/render/gpu_data/array_buffer.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "gui/render/structures/model.hpp"
 #include "gui/render/structures/static_mesh.hpp"
 #include "placement.hpp"

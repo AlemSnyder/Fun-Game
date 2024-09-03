@@ -23,11 +23,11 @@
 
 #pragma once
 
-#include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
+#include "gui/render/gpu_data/vertex_array_object.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 #include <glaze/glaze.hpp>
@@ -75,7 +75,9 @@ struct night_data_t {
  */
 class StarShape : public virtual GPUData {
  protected:
-    ArrayBuffer<glm::vec2> shape_buffer_; // id of vertex buffer of star shape
+    VertexArrayObject vertex_array_object_;
+
+    VertexBufferObject<glm::vec2> shape_buffer_; // id of vertex buffer of star shape
 
  public:
     StarShape(const StarShape& obj) = delete;
@@ -84,14 +86,18 @@ class StarShape : public virtual GPUData {
     /**
      * @brief Only constructor is default constructor.
      */
-    StarShape();
+    StarShape(bool b = true);
+
+    void initialize();
+
+    virtual void attach_all();
 
     /**
      * @brief Get the star shape buffer.
      *
-     * @return const ArrayBuffer<glm::vec2>& shape_buffer_
+     * @return const VertexBufferObject<glm::vec2>& shape_buffer_
      */
-    [[nodiscard]] inline const ArrayBuffer<glm::vec2>&
+    [[nodiscard]] inline const VertexBufferObject<glm::vec2>&
     get_star_shape() const {
         return shape_buffer_;
     }
@@ -101,7 +107,7 @@ class StarShape : public virtual GPUData {
      */
     inline void
     bind() const override {
-        shape_buffer_.bind(0);
+        vertex_array_object_.bind();
     }
 
     /**
@@ -109,7 +115,7 @@ class StarShape : public virtual GPUData {
      */
     inline void
     release() const override {
-        glDisableVertexAttribArray(0);
+        vertex_array_object_.release();
     }
 
     /**
@@ -152,9 +158,10 @@ struct star_data {
  */
 class StarData : public StarShape, public virtual GPUDataInstanced {
  private:
-    ArrayBuffer<glm::vec4> star_positions_; // id of vertex buffer for star positions
-    ArrayBuffer<GLfloat> age_buffer_;       // id of vertex buffer for star age
-    size_t num_stars_;                      // number of stars to draw
+    VertexBufferObject<glm::vec4>
+        star_positions_;                     // id of vertex buffer for star positions
+    VertexBufferObject<GLfloat> age_buffer_; // id of vertex buffer for star age
+    size_t num_stars_;                       // number of stars to draw
 
  public:
     /**
@@ -179,7 +186,10 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
      */
     inline StarData(const star_data data) :
         star_positions_(data.star_position, 1), age_buffer_(data.star_age, 1),
-        num_stars_(data.star_age.size()) {}
+        num_stars_(data.star_age.size()) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this]() { initialize(); });
+    }
 
     /**
      * @brief StarData Constructor from path to stars json file
@@ -188,12 +198,14 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
      */
     StarData(std::filesystem::path path) : StarData(read_data_from_file(path)) {}
 
+    virtual void attach_all();
+
     /**
      * @brief Get the star position buffer.
      *
-     * @return const ArrayBuffer<glm::vec4>& star_position_
+     * @return const VertexBufferObject<glm::vec4>& star_position_
      */
-    [[nodiscard]] inline const ArrayBuffer<glm::vec4>&
+    [[nodiscard]] inline const VertexBufferObject<glm::vec4>&
     get_star_positions() const {
         return star_positions_;
     }
@@ -201,31 +213,11 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
     /**
      * @brief Get the star age buffer.
      *
-     * @return const ArrayBuffer<GLfloat>& star_age_
+     * @return const VertexBufferObject<GLfloat>& star_age_
      */
-    [[nodiscard]] inline const ArrayBuffer<GLfloat>&
+    [[nodiscard]] inline const VertexBufferObject<GLfloat>&
     get_star_age_() const {
         return age_buffer_;
-    }
-
-    /**
-     * @brief Bind star data to curent program.
-     */
-    inline void
-    bind() const override {
-        star_positions_.bind(0);
-        age_buffer_.bind(1);
-        shape_buffer_.bind(2);
-    }
-
-    /**
-     * @brief Release star data from curent program.
-     */
-    inline void
-    release() const override {
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
     }
 
     /**

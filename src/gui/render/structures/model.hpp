@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "manifest.hpp"
 #include "static_mesh.hpp"
 #include "types.hpp"
@@ -133,7 +133,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     gui::gpu_data::Texture2D model_textures_;
 
     // each mesh has a different texture
-    gui::gpu_data::ArrayBuffer<uint8_t> texture_id_;
+    gui::gpu_data::VertexBufferObject<uint8_t> texture_id_;
 
     // vector of placements PlacementOrder is the hash function
     std::unordered_set<Placement, PlacementOrder> placements_;
@@ -174,9 +174,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     ModelController(
         const world::entity::Mesh& model_mesh,
         const std::vector<std::vector<ColorFloat>>& vector_data
-    ) :
-        model_mesh_(model_mesh, {}),
-        model_textures_(vector_data) {}
+    ) : model_mesh_(model_mesh, {}), model_textures_(vector_data) {}
 
     /**
      * @brief Bind data for rendering
@@ -184,7 +182,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     inline void
     bind() const override {
         model_mesh_.bind();
-        texture_id_.bind(4);
+        texture_id_.attach_to_vertex_attribute(4);
         model_textures_.bind(0);
     }
 

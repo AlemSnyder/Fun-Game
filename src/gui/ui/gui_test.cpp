@@ -159,7 +159,7 @@ revised_gui_test() {
     // unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    gui::gpu_data::ArrayBuffer VBO3(vertices_2);
+    gui::gpu_data::VertexBufferObject VBO3(vertices_2);
 
     auto screen_data = std::make_shared<gui::gpu_data::ScreenData>();
     sky_renderer->data.push_back(screen_data);
@@ -205,7 +205,7 @@ revised_gui_test() {
         // but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        VBO3.bind(0);
+        VBO3.attach_to_vertex_attribute(0);
 
         // draw our first triangle
         glUseProgram(green_program.get_program_ID());

@@ -9,6 +9,21 @@ namespace gui {
 namespace gpu_data {
 
 void
+IMeshGPU::attach_all() {
+    vertex_array_.attach_to_vertex_attribute(0);
+    color_array_.attach_to_vertex_attribute(1);
+    normal_array_.attach_to_vertex_attribute(2);
+    element_array_.bind();
+}
+
+void
+IMeshGPU::initialize() {
+    vertex_array_object_.bind();
+    attach_all();
+    vertex_array_object_.release();
+}
+
+void
 IMeshGPU::update(const world::entity::Mesh& mesh) {
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
@@ -21,17 +36,12 @@ IMeshGPU::update(const world::entity::Mesh& mesh) {
 
 void
 IMeshGPU::bind() const {
-    vertex_array_.bind(0);
-    color_array_.bind(1);
-    normal_array_.bind(2);
-    element_array_.bind();
+    vertex_array_object_.bind();
 }
 
 void
 IMeshGPU::release() const {
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
+    vertex_array_object_.release();
 }
 
 } // namespace gpu_data

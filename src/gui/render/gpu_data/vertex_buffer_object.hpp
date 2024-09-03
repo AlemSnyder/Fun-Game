@@ -22,7 +22,7 @@ namespace {
  *
  * @details The entire thing works by template deduction and magic.
  */
-struct GPUArrayType {
+struct GPUStructureType {
     const uint8_t major_size; // 1,2,3 or 4 vec size
     const uint8_t minor_size;
     const uint8_t type_size;     // size of type float, int etc.
@@ -30,7 +30,7 @@ struct GPUArrayType {
     const GPUDataType draw_type; // type of smallest unit of memory
 
  private:
-    inline constexpr GPUArrayType(
+    inline constexpr GPUStructureType(
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
         GPUDataType draw_type
     ) :
@@ -41,7 +41,7 @@ struct GPUArrayType {
     template <
         uint8_t major_size_T, uint8_t minor_size_T, uint8_t type_size_T, bool is_int_T,
         GPUDataType draw_type_T>
-    constexpr inline static GPUArrayType
+    constexpr inline static GPUStructureType
     create_from_data() {
         static_assert(
             (1 <= major_size_T && major_size_T <= 4), "Vector size not allowed"
@@ -50,7 +50,7 @@ struct GPUArrayType {
             (1 <= minor_size_T && minor_size_T <= 4), "Vector size not allowed"
         );
 
-        return GPUArrayType(
+        return GPUStructureType(
             major_size_T, minor_size_T, type_size_T, is_int_T, draw_type_T
         );
     }
@@ -96,19 +96,19 @@ struct GPUArrayType {
     }
 
     template <std::integral T>
-    inline constexpr static GPUArrayType
+    inline constexpr static GPUStructureType
     create_from_object([[maybe_unused]] T i = 0) {
         return create_from_data<1, 1, sizeof(T), true, presume_type<T>()>();
     }
 
     template <std::floating_point T>
-    inline constexpr static GPUArrayType
+    inline constexpr static GPUStructureType
     create_from_object([[maybe_unused]] T i = 0) {
         return create_from_data<1, 1, sizeof(T), false, presume_type<T>()>();
     }
 
     template <int i, class T, glm::qualifier Q>
-    constexpr static GPUArrayType
+    constexpr static GPUStructureType
     create_from_object([[maybe_unused]] glm::vec<i, T, Q> V = 0) {
         return create_from_data<
             i, 1, sizeof(T), std::is_integral_v<T>, presume_type<T>()>();
@@ -116,21 +116,21 @@ struct GPUArrayType {
 
     // glm matricies
     template <int i, int j, class T, glm::qualifier Q>
-    constexpr static GPUArrayType
+    constexpr static GPUStructureType
     create_from_object([[maybe_unused]] glm::mat<i, j, T, Q> V = 0) {
         return create_from_data<
             i, j, sizeof(T), std::is_integral_v<T>, presume_type<T>()>();
     }
 
     template <class T>
-    constexpr static GPUArrayType
+    constexpr static GPUStructureType
     create_from_object([[maybe_unused]] T t) {
         assert(false && "Invalid type.");
         return create_from_data<0, 0, 0, true, GPUDataType::BYTE>();
     }
 
     template <class T>
-    constexpr static GPUArrayType
+    constexpr static GPUStructureType
     create() {
         return create_from_object(T());
     }
@@ -139,10 +139,10 @@ struct GPUArrayType {
 } // namespace
 
 /**
- * @brief Generates a vector like object to store data on GPU.
+ * @brief Generates a Vertex Buffer Object to store data on GPU.
  */
-template <class T, BindingTarget buffer = BindingTarget::ARRAY_BUFFER>
-class ArrayBuffer {
+template <class T, BindingTarget Buffer = BindingTarget::ARRAY_BUFFER>
+class VertexBufferObject {
  private:
     GLuint buffer_ID_; // For binding
     GLuint divisor_;   // For instancing usually 0, 1
@@ -154,30 +154,31 @@ class ArrayBuffer {
     /**
      * @brief Default constructor
      */
-    inline ArrayBuffer() : divisor_(0), size_(0), aloc_size_(0) {
+    inline VertexBufferObject() : divisor_(0), size_(0), aloc_size_(0) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { glGenBuffers(1, &buffer_ID_); });
     }
 
     /**
-     * @brief Construct ArrayBuffer with data
+     * @brief Construct VertexBufferObject with data
      *
      * @param std::vector<T>& data data to send to GPU
      */
-    inline explicit ArrayBuffer(const std::vector<T>& data) : ArrayBuffer(data, 0) {}
+    inline explicit VertexBufferObject(const std::vector<T>& data) :
+        VertexBufferObject(data, 0) {}
 
     /**
-     * @brief Construct ArrayBuffer with data and divisor
+     * @brief Construct VertexBufferObject with data and divisor
      *
      * @param std::vector<T>& data data to send to GPU
      * @param GLuint divisor go look up instancing
      */
-    inline explicit ArrayBuffer(const std::vector<T>& data, GLuint divisor) :
+    inline explicit VertexBufferObject(const std::vector<T>& data, GLuint divisor) :
         divisor_(divisor) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
             LOG_BACKTRACE(
-                logging::opengl_logger, "buffer ID before generation: {}", buffer_ID_
+                logging::opengl_logger, "Buffer ID before generation: {}", buffer_ID_
             );
             glGenBuffers(1, &buffer_ID_);
             this->pointer_update_(data.data(), 0, data.size());
@@ -185,14 +186,15 @@ class ArrayBuffer {
     };
 
     /**
-     * @brief Construct ArrayBuffer with data
+     * @brief Construct VertexBufferObject with data
      *
      * @param std::vector<T>& data data to send to GPU
      */
-    inline ArrayBuffer(std::initializer_list<T> data) : ArrayBuffer(data, 0) {}
+    inline VertexBufferObject(std::initializer_list<T> data) :
+        VertexBufferObject(data, 0) {}
 
     /**
-     * @brief Update ArrayBuffer with data and divisor
+     * @brief Update VertexBufferObject with data and divisor
      *
      * @param std::vector<T>& data data to send to GPU
      * @param GLuint divisor go look up instancing
@@ -206,7 +208,7 @@ class ArrayBuffer {
     };
 
     /**
-     * @brief Update ArrayBuffer with data
+     * @brief Update VertexBufferObject with data
      *
      * @param std::vector<T>& data data to send to GPU
      */
@@ -225,20 +227,20 @@ class ArrayBuffer {
         return divisor_;
     }
 
-    ~ArrayBuffer() { glDeleteBuffers(1, &buffer_ID_); }
+    ~VertexBufferObject() { glDeleteBuffers(1, &buffer_ID_); }
 
     /**
-     * @brief Bind to the given index
+     * @brief Attach to the given index
      *
      * @param GLuint index the location = # in programs
      */
-    void bind(GLuint index) const;
+    void attach_to_vertex_attribute(GLuint index) const;
 
     inline void bind() const;
 
-    [[nodiscard]] inline constexpr static GPUArrayType
+    [[nodiscard]] inline constexpr static GPUStructureType
     get_array_type() {
-        constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+        constexpr GPUStructureType data_type = GPUStructureType::create<T>();
         return data_type;
     }
 
@@ -262,7 +264,7 @@ class ArrayBuffer {
 
  private:
     /**
-     * @brief Update ArrayBuffer with data
+     * @brief Update VertexBufferObject with data
      *
      * @param std::vector<T>& data data to send to GPU
      */
@@ -271,15 +273,15 @@ class ArrayBuffer {
 
 // go do vector implementations
 
-template <class T, BindingTarget buffer>
+template <class T, BindingTarget Buffer>
 void
-ArrayBuffer<T, buffer>::pointer_update_(
+VertexBufferObject<T, Buffer>::pointer_update_(
     const T* data_begin, size_t offset, size_t add_data_size
 ) {
-    constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+    constexpr GPUStructureType data_type = GPUStructureType::create<T>();
 
     LOG_BACKTRACE(
-        logging::opengl_logger, "Updating buffer ID: {}, vec size {}, data type: {}",
+        logging::opengl_logger, "Updating Buffer ID: {}, vec size {}, data type: {}",
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
@@ -311,10 +313,10 @@ ArrayBuffer<T, buffer>::pointer_update_(
 
         // need to in addition allocate the offset
 
-        glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
+        glBindBuffer(static_cast<GLenum>(Buffer), buffer_ID_);
         // this should theoretically copy the existing data into a new buffer.
         glBufferData(
-            static_cast<GLenum>(buffer), offset_size_in_bytes + data_size_in_bytes,
+            static_cast<GLenum>(Buffer), offset_size_in_bytes + data_size_in_bytes,
             nullptr, GL_DYNAMIC_DRAW
         );
 
@@ -324,46 +326,37 @@ ArrayBuffer<T, buffer>::pointer_update_(
     }
     // write data
     glBufferSubData(
-        static_cast<GLenum>(buffer), offset_size_in_bytes, data_size_in_bytes,
+        static_cast<GLenum>(Buffer), offset_size_in_bytes, data_size_in_bytes,
         data_begin
     );
 }
 
-template <class T, BindingTarget buffer>
+template <class T, BindingTarget Buffer>
 void
-ArrayBuffer<T, buffer>::bind() const {
-    static_assert(
-        buffer == BindingTarget::ELEMENT_ARRAY_BUFFER,
-        "Must supply index for non element array buffers."
-    );
-    constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+VertexBufferObject<T, Buffer>::bind() const {
+    constexpr GPUStructureType data_type = GPUStructureType::create<T>();
 
     LOG_BACKTRACE(
-        logging::opengl_logger, "Binding buffer ID: {}, vec size {}, data type: {}",
+        logging::opengl_logger, "Binding Buffer ID: {}, vec size {}, data type: {}",
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
-    glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
+    glBindBuffer(static_cast<GLenum>(Buffer), buffer_ID_);
 }
 
-template <class T, BindingTarget buffer>
+template <class T, BindingTarget Buffer>
 __attribute__((optimize(3))) void
-ArrayBuffer<T, buffer>::bind(GLuint index) const {
+VertexBufferObject<T, Buffer>::attach_to_vertex_attribute(GLuint index) const {
     static_assert(
-        buffer != BindingTarget::ELEMENT_ARRAY_BUFFER,
+        Buffer != BindingTarget::ELEMENT_ARRAY_BUFFER,
         "Element array buffers do not have an index."
     );
 
-    constexpr GPUArrayType data_type = GPUArrayType::create<T>();
+    constexpr GPUStructureType data_type = GPUStructureType::create<T>();
 
-    LOG_BACKTRACE(
-        logging::opengl_logger, "Binding buffer ID: {}, vec size {}, data type: {}",
-        buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
-    );
+    bind();
 
-    glBindBuffer(static_cast<GLenum>(buffer), buffer_ID_);
-
-    if constexpr (buffer == BindingTarget::ARRAY_BUFFER) {
+    if constexpr (Buffer == BindingTarget::ARRAY_BUFFER) {
 #pragma GCC unroll 4
         for (size_t i = 0; i < data_type.minor_size; i++) {
             glEnableVertexAttribArray(index + i);
