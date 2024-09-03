@@ -126,7 +126,7 @@ struct GPUStructureType {
     constexpr static GPUStructureType
     create_from_object([[maybe_unused]] T t) {
         assert(false && "Invalid type.");
-        return create_from_data<0, 0, 0, true, GPUDataType::BYTE>();
+        return create_from_data<1, 1, 1, true, GPUDataType::BYTE>();
     }
 
     template <class T>
