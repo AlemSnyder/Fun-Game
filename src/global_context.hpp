@@ -50,10 +50,8 @@ class GlobalContext {
     std::mutex opengl_queue_mutex;
 
     // Private CTOR as this is a singleton
-    GlobalContext() //:
-    // TODO update to thread pool 4.0
-    //        thread_pool_([] { quill::detail::set_thread_name("BS thread pool"); })
-    {}
+    GlobalContext() :
+        thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -92,25 +90,29 @@ class GlobalContext {
     /**
      * @brief submit task to thread pool
      */
-    template <class... Args>
+    template <typename F, typename R = std::invoke_result_t<std::decay_t<F>>>
     auto
-    submit(Args&&... args) {
-        return thread_pool_.submit(std::forward<Args>(args)...);
+    submit_task(F&& function) {
+        return thread_pool_.submit_task(function);
     }
 
     /**
      * @brief push task to thread pool
      */
-    template <class... Args>
+    template <class F>
     void
-    push_task(Args&&... args) {
-        return thread_pool_.push_task(std::forward<Args>(args)...);
+    push_task(F&& function) {
+        thread_pool_.detach_task(function);
     }
 
+
+    // Might want to expose these in the future.
+    /*
     auto
     wait_for_tasks() {
-        return thread_pool_.wait_for_tasks();
+        return thread_pool_.wait();
     }
+    */
 
     // oh boy time to start wrapping tread_pool
 };
