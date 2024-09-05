@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <list>
 #include <set>
+#include <unordered_map>
 
 namespace terrain {
 
@@ -46,7 +47,7 @@ namespace terrain {
  */
 class NodeGroup {
     std::set<const Tile*, TilePCompare> tiles;
-    std::map<NodeGroup*, UnitPath> adjacent;
+    std::unordered_map<NodeGroup*, UnitPath> adjacent;
     float center_x, center_y, center_z; // volumetric center, a weighted average
     UnitPath path_type_; // the path restraints to get form any tile in this Group to
                          // any other tile
@@ -67,9 +68,9 @@ class NodeGroup {
      * @brief Merge two node groups together
      *
      * @param other the node group that is added to this one
-     * @return std::map<NodeGroup *, UnitPath> adjacent node groups of other
+     * @return std::unordered_map<NodeGroup *, UnitPath> adjacent node groups of other
      */
-    std::map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
+    std::unordered_map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
 
     // !void update(); If I modify terrain path finding should not break
     // this should be in chunk though
@@ -102,15 +103,15 @@ class NodeGroup {
     /**
      * @brief Get the adjacency map
      *
-     * @return std::map<NodeGroup *, UnitPath>
+     * @return std::unordered_map<NodeGroup *, UnitPath>
      */
-    std::map<NodeGroup*, UnitPath> get_adjacent_map();
+    std::unordered_map<NodeGroup*, UnitPath> get_adjacent_map();
     /**
      * @brief Get the adjacency map
      *
-     * @return std::map<const NodeGroup *, UnitPath>
+     * @return std::unordered_map<const NodeGroup *, UnitPath>
      */
-    std::map<const NodeGroup*, UnitPath> get_adjacent_map() const;
+    std::unordered_map<const NodeGroup*, UnitPath> get_adjacent_map() const;
     /**
      * @brief Test if two node groups are adjacent
      *

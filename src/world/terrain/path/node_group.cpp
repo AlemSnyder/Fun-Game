@@ -28,12 +28,14 @@ NodeGroup::remove_adjacent(NodeGroup* NG) {
     }
 }
 
-std::map<const NodeGroup*, UnitPath>
+std::unordered_map<const NodeGroup*, UnitPath>
 NodeGroup::get_adjacent_map() const {
-    return std::map<const NodeGroup*, UnitPath>(adjacent.begin(), adjacent.end());
+    return std::unordered_map<const NodeGroup*, UnitPath>(
+        adjacent.begin(), adjacent.end()
+    );
 }
 
-std::map<NodeGroup*, UnitPath>
+std::unordered_map<NodeGroup*, UnitPath>
 NodeGroup::get_adjacent_map() {
     return adjacent;
 }
@@ -50,7 +52,7 @@ NodeGroup::get_adjacent_clear(int path_type) const {
     return out;
 }
 
-std::map<NodeGroup*, UnitPath>
+std::unordered_map<NodeGroup*, UnitPath>
 NodeGroup::merge_groups(NodeGroup other) {
     auto size = tiles.size();
     auto other_size = other.tiles.size();

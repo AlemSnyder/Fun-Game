@@ -57,7 +57,7 @@ Chunk::merge_(NodeGroup& G1, std::set<NodeGroup*> to_merge) {
     }
     while (to_merge.size() > 0) {
         auto G2 = to_merge.begin();
-        std::map<NodeGroup*, UnitPath> to_add = G1.merge_groups(**(G2));
+        std::unordered_map<NodeGroup*, UnitPath> to_add = G1.merge_groups(**(G2));
         delete_node_group_(**G2);
         for (std::pair<NodeGroup* const, UnitPath> NG : to_add) {
             if (contains_node_group_(NG.first) && &G1 != NG.first) {

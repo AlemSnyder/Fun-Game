@@ -37,6 +37,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -217,7 +218,7 @@ class ProgramData {
     std::set<std::pair<std::string, std::string>> found_uniforms_;
 
     // todo make this a type
-    std::map<std::string, GLint> uniforms_;
+    std::unordered_map<std::string, GLint> uniforms_;
 
  public:
     inline ProgramData(Shader& vertex_shader, Shader& fragment_shader) :
