@@ -33,6 +33,7 @@ struct Placement;
 
 } // namespace world
 
+template<>
 struct std::hash<gui::Placement>;
 
 namespace gui {
@@ -40,10 +41,9 @@ namespace gui {
 /**
  * @brief Position and rotation of object.
  */
-class Placement {
+struct Placement {
     friend std::hash<gui::Placement>;
 
- public:
     Dim x;
     Dim y;
     Dim z;
@@ -68,6 +68,7 @@ class Placement {
 /**
  * @brief Create hash from position of object.
  */
+template<>
 struct std::hash<gui::Placement> {
     size_t
     operator()(const gui::Placement& pos) const noexcept {

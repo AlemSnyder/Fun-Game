@@ -170,6 +170,7 @@ class TileObject : public virtual Object {
 } // namespace world
 
 /*
+template<>
 struct std::hash<world::entity::TileObjectInstance> {
     size_t
     operator()(const world::entity::TileObjectInstance& object) const {
