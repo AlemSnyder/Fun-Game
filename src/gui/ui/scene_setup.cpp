@@ -291,13 +291,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     // attach the world objects to the render program
     world::entity::ObjectHandler& object_handler =
         world::entity::ObjectHandler::instance();
-    for (auto& [id, object] : object_handler.get_objects()) {
-        for (auto& mesh : object) {
-            // I'm so sorry for what I have done.
-            // create a shared pointer with a custom deconstructor {} (nothing).
-            auto mesh_ptr = std::shared_ptr<world::entity::ModelController>(
-                &mesh, [](world::entity::ModelController*) {}
-            );
+    for (auto& [id, object] : object_handler) {
+        if (! object) {
+            continue;
+        }
+        for (auto& mesh_ptr : object->renderable_data()) {
+
 
             // entity_shadow_program_execute->data.push_back(mesh_ptr);
             tile_entity_render_pipeline->data.push_back(mesh_ptr);

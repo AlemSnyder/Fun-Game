@@ -30,6 +30,7 @@
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
+#include "entity/tile_object.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -97,18 +98,27 @@ World::World(
                 uint z_position =
                     terrain_main_.get_Z_solid(tile_position.x, tile_position.y) + 1;
 
-                auto& object = object_handler.get_object(plant.identification);
 
                 // zero is for one of the models should be random number between 0, and
                 // num meshes
-                entity::ModelController& model = object.get_model(0);
+//                entity::ModelController& model = object_type->get_model(0);
+
 
                 // position, then rotation, and texture
-                entity::Placement placement(
+                gui::Placement placement(
                     tile_position.x, tile_position.y, z_position, rotation, 0
                 );
 
-                tile_entities_.emplace(model, placement);
+                auto tile_object_type = std::dynamic_pointer_cast<entity::TileObject>(object_handler.get_object(plant.identification));
+
+                if (!tile_object_type){
+                    continue;
+                }
+
+                auto new_object = std::make_shared<entity::TileObjectInstance>(tile_object_type, uint8_t(0), placement);
+
+
+                tile_entities_.insert(new_object);
             }
         }
     }

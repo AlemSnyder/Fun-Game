@@ -23,15 +23,26 @@
 #pragma once
 
 #include "types.hpp"
+#include "util/hash_combine.hpp"
+#include <functional>
 
-namespace world {
+namespace gui {
 
-namespace entity {
+struct Placement;
+
+
+} // namespace world
+
+struct std::hash<gui::Placement>;
+
+namespace gui {
 
 /**
  * @brief Position and rotation of object.
  */
 class Placement {
+    friend std::hash<gui::Placement>;
+
  public:
     Dim x;
     Dim y;
@@ -52,12 +63,14 @@ class Placement {
     }
 };
 
+}
+
 /**
- * @brief Create has from position of object.
+ * @brief Create hash from position of object.
  */
-struct PlacementOrder {
+struct std::hash<gui::Placement> {
     size_t
-    operator()(const Placement& pos) const noexcept {
+    operator()(const gui::Placement& pos) const noexcept {
         size_t result = 0;
 
         // Position
@@ -70,6 +83,3 @@ struct PlacementOrder {
     }
 };
 
-} // namespace entity
-
-} // namespace world

@@ -1,94 +1,11 @@
 #include "model.hpp"
 
-#include "fmt/core.h"
-
 #include <filesystem>
 #include <iterator>
 
-namespace world {
+namespace gui {
 
-namespace entity {
-
-void
-remapping_t::read_map(std::unordered_map<std::string, std::string> input) {
-    for (const auto& [k, v] : input)
-        map[std::stoull(k, nullptr, 16)] = std::stoull(v, nullptr, 16);
-}
-
-std::unordered_map<std::string, std::string>
-remapping_t::write_map() const {
-    std::unordered_map<std::string, std::string> res;
-
-    for (const auto& [key, value] : map) {
-        std::string str_key = fmtquill::format("{:08X}", key);
-        std::string str_value = fmtquill::format("{:08X}", value);
-
-        res.insert({str_key, str_value});
-    }
-
-    return res;
-}
-
-ModelController&
-ObjectData::get_model(size_t mesh_id) {
-    assert(mesh_id < model_meshes_.size() && "Out of Bunds");
-    return model_meshes_[mesh_id];
-}
-
-size_t
-ObjectData::num_models() const noexcept {
-    return model_meshes_.size();
-}
-
-std::vector<world::entity::ModelController>::iterator
-ObjectData::begin() noexcept {
-    return model_meshes_.begin();
-}
-
-std::vector<world::entity::ModelController>::iterator
-ObjectData::end() noexcept {
-    return model_meshes_.end();
-}
-
-ObjectData::ObjectData(
-    const object_t& object_data, const manifest::descriptor_t& identification_data
-) :
-    name_(object_data.name),
-    identification_(identification_data.identification) {
-    for (const model_t& model_data : object_data.models) {
-        // each object may have multiple models
-        std::filesystem::path object_path_copy = identification_data.path;
-        std::filesystem::path file_path =
-            object_path_copy.remove_filename() / model_data.path;
-
-        // generate a model from the given filepath
-        voxel_utility::VoxelObject model(files::get_data_path() / file_path);
-
-        // generate a mesh from the model
-        auto mesh = ambient_occlusion_mesher(model);
-        // load the mesh to the gpu
-        model_meshes_.emplace_back(
-            mesh, std::vector<std::vector<ColorFloat>>(
-                      {color::convert_color_data(mesh.get_color_map())}
-                  )
-        );
-
-        // some how change because other things.
-        // if we want glow or color in the model
-        // get to that eventually
-        // read complex texture data from json
-        // basically map color to
-        // color, diffuse, ambient, specular
-        // in addition to that need to generate multiple textures.
-    }
-}
-
-void
-ObjectData::update() {
-    for (auto& mesh : model_meshes_) {
-        mesh.update();
-    }
-}
+namespace render {
 
 void
 ModelController::insert(Placement placement) {

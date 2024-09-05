@@ -295,7 +295,7 @@ class ShaderProgram_ElementsInstanced :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUDataElementsInstanced>> data;
+    std::vector<std::shared_ptr<const gpu_data::GPUDataElementsInstanced>> data;
 
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
@@ -315,7 +315,7 @@ class ShaderProgram_ElementsInstanced :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUDataElementsInstanced> mesh : data) {
+        for (std::shared_ptr<const gpu_data::GPUDataElementsInstanced> mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }

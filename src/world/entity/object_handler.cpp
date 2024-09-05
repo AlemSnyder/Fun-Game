@@ -1,5 +1,6 @@
 #include "object_handler.hpp"
 
+#include "tile_object.hpp"
 #include "util/voxel.hpp"
 
 #include <utility>
@@ -9,7 +10,7 @@ namespace world {
 namespace entity {
 
 // TODO change to return a pointer (could be null)
-ObjectData&
+std::shared_ptr<Object>
 ObjectHandler::get_object(const std::string& id) {
     return ided_objects.at(id);
 }
@@ -53,19 +54,19 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
         return;
     }
 
+    std::shared_ptr<TileObject> new_object =
+        std::make_shared<TileObject>(object_data, descriptor);
+
     // when objects are initalized data is sent to the gpu.
     // we want to run the mesher async, but need to send the data to the gpu
     // on the main thread
-    ided_objects.emplace(
-        std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
-        std::forward_as_tuple(object_data, descriptor)
-    );
+    ided_objects[identification] = static_pointer_cast<Object>( new_object);
 }
 
 void
 ObjectHandler::update() {
     for (auto& [key, object] : ided_objects) {
-        object.update();
+        object->update();
     }
 }
 

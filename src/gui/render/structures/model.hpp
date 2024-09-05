@@ -7,115 +7,18 @@
 #include "static_mesh.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
-#include "world/entity/placement.hpp" //
+#include "gui/placement.hpp"
 
 #include <filesystem>
 #include <optional>
 #include <unordered_set>
 #include <vector>
 
-namespace world {
+namespace gui {
 
-namespace entity {
-
-struct global_illumination_t {
-    float ambient;
-    float specular;
-    float diffuse;
-};
-
-struct remapping_t {
-    std::unordered_map<ColorInt, ColorInt> map;
-
-    void read_map(std::unordered_map<std::string, std::string> input);
-
-    std::unordered_map<std::string, std::string> write_map() const;
-};
-
-struct model_t {
-    std::filesystem::path path;
-    std::optional<std::vector<remapping_t>> colors;
-    global_illumination_t globals;
-};
-
-struct object_t {
-    std::string name;
-    std::vector<model_t> models;
-    // define interactions
-    // like on drop etc
-    // maybe it has a health
-};
+namespace render {
 
 constexpr size_t NO_UPDATE = -1;
-
-class ModelController;
-
-/**
- * @brief Data of Objects of the same type
- *
- * @details Think of this class as rose bush. There are multiple rose bush models, but
- * they have the same size and drops.
- */
-class ObjectData {
- private:
-    std::vector<ModelController> model_meshes_;
-
-    // some size/offset/center. Models must have the same size.
-
-    std::string name_;
-    std::string identification_;
-
- public:
-    /**
-     * @brief Construct a new ObjectData object
-     *
-     * @details Generates a Object from the json parameters and the path to a voxel
-     * object.
-     *
-     * @param Json::Value& JSON that describes the object
-     * @param std::filesystem::path path to folder containing voxel
-     TODO fix documentation
-     */
-    ObjectData(const object_t& object_data, const manifest::descriptor_t& model_path);
-
-    /**
-     * @brief Get a model for this object by id.
-     *
-     * @param size_t model mesh id
-     *
-     * @return ModelController model.
-     */
-    [[nodiscard]] ModelController& get_model(size_t mesh_id);
-
-    /**
-     * @brief Get the number of models that can represent this object.
-     *
-     * @return size_t the number of models
-     */
-    [[nodiscard]] size_t num_models() const noexcept;
-
-    /**
-     * @brief Iterator to first model
-     */
-    [[nodiscard]] std::vector<world::entity::ModelController>::iterator
-    begin() noexcept;
-
-    /**
-     * @brief Iterator past last element
-     */
-    [[nodiscard]] std::vector<world::entity::ModelController>::iterator end() noexcept;
-
-    inline ObjectData(const ObjectData& obj) = delete;
-    inline ObjectData(ObjectData&& other) = default;
-    // copy operator
-    inline ObjectData& operator=(const ObjectData& obj) = delete;
-    inline ObjectData& operator=(ObjectData&& other) = default;
-
-    /**
-     * @brief Send all ModelController data to gpu. Should be run once per frame
-     */
-    void update();
-};
 
 // there is a model controller for each voxel object model
 /**
@@ -136,7 +39,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     gui::gpu_data::VertexBufferObject<uint8_t> texture_id_;
 
     // vector of placements PlacementOrder is the hash function
-    std::unordered_set<Placement, PlacementOrder> placements_;
+    std::unordered_set<gui::Placement> placements_;
 
     // position of data to be written in next frame
     size_t offset_ = NO_UPDATE;
@@ -156,9 +59,9 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
  public:
     // some way to generate an instanced Int mesh renderer, except with scale
 
-    void insert(Placement placement);
+    void insert(gui::Placement placement);
 
-    void remove(Placement placement);
+    void remove(gui::Placement placement);
 
     /**
      * @brief Send all placement data to gpu. Should only be run once per frame.
@@ -236,19 +139,6 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     }
 };
 
-} // namespace entity
+} // namespace render
 
-} // namespace world
-
-template <>
-struct glz::meta<world::entity::remapping_t> {
-    using T = world::entity::remapping_t;
-
-    static constexpr auto value = object("map", custom<&T::read_map, &T::write_map>);
-};
-
-template <>
-inline glz::detail::any_t::operator std::vector<world::entity::remapping_t>() const {
-    assert(false && "Not Implemented");
-    return {};
-}
+} // namespace gui

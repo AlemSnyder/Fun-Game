@@ -73,7 +73,7 @@ class World {
     std::mutex meshes_to_update_mutex_;
 
     // entity
-    std::unordered_set<entity::TileObject, entity::TileObjectOrder> tile_entities_;
+    std::unordered_set<std::shared_ptr<entity::TileObjectInstance>> tile_entities_;
 
  public:
     /**
