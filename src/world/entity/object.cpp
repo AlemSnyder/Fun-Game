@@ -2,7 +2,6 @@
 
 #include "fmt/core.h"
 
-
 namespace world {
 
 namespace entity {
@@ -27,6 +26,6 @@ remapping_t::write_map() const {
     return res;
 }
 
-}
+} // namespace entity
 
-}
+} // namespace world

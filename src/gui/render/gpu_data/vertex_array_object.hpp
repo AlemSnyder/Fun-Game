@@ -28,7 +28,9 @@ class VertexArrayObject {
     inline ~VertexArrayObject() {
         auto vertex_array = std::make_shared<GLuint>(vertex_array_);
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([vertex_array]() { glDeleteVertexArrays(1, vertex_array.get()); });
+        context.push_opengl_task([vertex_array]() {
+            glDeleteVertexArrays(1, vertex_array.get());
+        });
     };
 
     [[nodiscard]] inline GLuint

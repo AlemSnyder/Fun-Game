@@ -21,7 +21,7 @@ InstancedIMeshGPU::InstancedIMeshGPU(
     // InstancedInt does not have a color texture. One must inherit from this
     // class and define a method that creates a color texture, and sets its id
     // as color_texture_.
-        GlobalContext& context = GlobalContext::instance();
+    GlobalContext& context = GlobalContext::instance();
     context.push_opengl_task([this]() { initialize(); });
 }
 

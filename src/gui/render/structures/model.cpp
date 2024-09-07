@@ -68,6 +68,6 @@ ModelController::update() {
     });
 }
 
-} // namespace entity
+} // namespace render
 
-} // namespace world
+} // namespace gui

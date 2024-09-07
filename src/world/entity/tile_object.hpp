@@ -153,9 +153,9 @@ class TileObject : public virtual Object {
         return identification_;
     }
 
-    virtual std::vector<std::shared_ptr<const gui::gpu_data::GPUDataElementsInstanced>>
+    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
     renderable_data() const {
-        std::vector<std::shared_ptr<const gui::gpu_data::GPUDataElementsInstanced>> out;
+        std::vector<const gui::gpu_data::GPUDataElementsInstanced*> out;
 
         for (const auto& model : model_meshes_) {
             out.emplace_back(&model);

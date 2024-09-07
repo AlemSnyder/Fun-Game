@@ -106,7 +106,9 @@ class Render_Base {
     inline Render_Base(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) : opengl_program_(shader_program), setup_(setup_commands), uniforms_(uniforms) {
+    ) :
+        opengl_program_(shader_program),
+        setup_(setup_commands), uniforms_(uniforms) {
         LOG_DEBUG(
             logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
         );
@@ -146,12 +148,13 @@ class ShaderProgram_Standard :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUData>> data;
+    std::vector<const gpu_data::GPUData*> data;
 
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) : Render_Base(shader_program, setup_commands, uniforms) {}
+    ) :
+        Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -166,7 +169,7 @@ class ShaderProgram_Standard :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUData> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -193,12 +196,13 @@ class ShaderProgram_Elements :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUDataElements>> data;
+    std::vector<const gpu_data::GPUDataElements*> data;
 
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) : Render_Base(shader_program, setup_commands, uniforms) {}
+    ) :
+        Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -213,7 +217,7 @@ class ShaderProgram_Elements :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUDataElements> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -246,12 +250,13 @@ class ShaderProgram_Instanced :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUDataInstanced>> data;
+    std::vector<const gpu_data::GPUDataInstanced*> data;
 
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) : Render_Base(shader_program, setup_commands, uniforms) {}
+    ) :
+        Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -266,7 +271,7 @@ class ShaderProgram_Instanced :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUDataInstanced> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -295,12 +300,13 @@ class ShaderProgram_ElementsInstanced :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<const gpu_data::GPUDataElementsInstanced>> data;
+    std::vector<const gpu_data::GPUDataElementsInstanced*> data;
 
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
         UniformsVector uniforms
-    ) : Render_Base(shader_program, setup_commands, uniforms) {}
+    ) :
+        Render_Base(shader_program, setup_commands, uniforms) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -315,7 +321,7 @@ class ShaderProgram_ElementsInstanced :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<const gpu_data::GPUDataElementsInstanced> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }

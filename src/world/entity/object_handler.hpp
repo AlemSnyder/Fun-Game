@@ -24,10 +24,10 @@
 #include "manifest.hpp"
 #include "object.hpp"
 
-#include <unordered_map>
+#include <memory>
 #include <mutex>
 #include <string>
-#include <memory>
+#include <unordered_map>
 
 namespace world {
 
@@ -74,7 +74,7 @@ class ObjectHandler {
         return ided_objects.begin();
     };
 
-        [[nodiscard]] inline const auto
+    [[nodiscard]] inline const auto
     end() const {
         return ided_objects.end();
     };

@@ -22,9 +22,10 @@
  */
 #pragma once
 
-#include "../render/gpu_data/frame_buffer_multisample.hpp"
-#include "../render/gpu_data/shadow_map.hpp"
-#include "../render/graphics_shaders/render_types.hpp"
+#include "gui/render/gpu_data/frame_buffer_multisample.hpp"
+#include "gui/render/gpu_data/shadow_map.hpp"
+#include "gui/render/graphics_shaders/render_types.hpp"
+#include "gui/render/structures/screen_data.hpp"
 #include "helio.hpp"
 
 #include <GLFW/glfw3.h>
@@ -41,6 +42,8 @@ class Scene {
     gpu_data::FrameBufferMultisample frame_buffer_multisample_;
     std::shared_ptr<scene::Helio> environment_;
     gpu_data::ShadowMap shadow_map_;
+
+    gpu_data::ScreenData screen_data_;
 
     // background
     std::vector<std::shared_ptr<render_to::FrameBuffer>> background_frame_buffer_;
@@ -110,6 +113,17 @@ class Scene {
     const gpu_data::ShadowMap&
     get_shadow_map() const {
         return shadow_map_;
+    }
+
+    /**
+     * @brief Get the screen data
+     *
+     * @details Screen data is four vertices than can be mapped to the four corners of
+     * the screen.
+     */
+    const auto*
+    get_screen_data() const {
+        return &screen_data_;
     }
 
     /**

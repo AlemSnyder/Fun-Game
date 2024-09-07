@@ -22,7 +22,10 @@ namespace gui {
 // Its not in scene because I want to keep this out of the game engine part of
 // the code base.
 void
-setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) {
+setup(
+    Scene& scene, shader::ShaderHandler& shader_handler, world::World& world,
+    world::Climate& climate
+) {
     // assign map from all color ids to each color
     // to package as a texture
     terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
@@ -33,12 +36,9 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     auto terrain_mesh = world.get_chunks_mesh();
 
-    auto star_shape = std::make_shared<gpu_data::StarShape>();
+    auto star_shape = climate.get_sun_data();
 
-    auto star_data =
-        std::make_shared<gpu_data::StarData>(files::get_data_path() / "stars.json");
-
-    auto screen_data = std::make_shared<gpu_data::ScreenData>();
+    auto star_data = climate.get_stars_data();
 
     // Load programs from files
     // clang-format off
@@ -140,7 +140,8 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             {matrix_view_projection_uniform, view_matrix_uniform,
              light_depth_texture_projection_uniform, shadow_texture_uniform,
              material_color_texture_uniform, spectral_light_color_uniform,
-             diffuse_light_color_uniform, light_direction_uniform, light_depth_projection_uniform}
+             diffuse_light_color_uniform, light_direction_uniform,
+             light_depth_projection_uniform}
         )
     );
 
@@ -215,7 +216,6 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             chunks_render_program_uniforms
         );
 
-
     auto entity_render_pipeline =
         std::make_shared<shader::ShaderProgram_ElementsInstanced>(
             entity_program, chunk_render_setup, chunks_render_program_uniforms
@@ -237,67 +237,27 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     );
 
     // assign data
-    sky_renderer->data.push_back(screen_data);
+    sky_renderer->data.push_back(scene.get_screen_data());
     star_renderer->data.push_back(star_data);
     sun_renderer->data.push_back(star_shape);
 
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
-        chunks_render_program->data.push_back(chunk_mesh);
+        chunks_render_program->data.push_back(chunk_mesh.get());
     }
 
     for (const auto& chunk_mesh : terrain_mesh) {
-        chunks_shadow_program->data.push_back(chunk_mesh);
+        chunks_shadow_program->data.push_back(chunk_mesh.get());
     }
-
-    voxel_utility::VoxelObject test_entity(
-        files::get_data_path() / "Base" / "models" / "Test.qb"
-    );
-    auto test_object_mesh = world::entity::ambient_occlusion_mesher(test_entity);
-
-    std::vector<glm::mat4> test_object_positions;
-    glm::mat4 translate_start(1.0);
-    glm::vec3 position(5, 5, world.get_terrain_main().get_Z_solid(5, 5) + 1);
-    test_object_positions.push_back(glm::translate(translate_start, position));
-
-    auto gpu_test_object_data = std::make_shared<gpu_data::FloatingInstancedIMeshGPU>(
-        test_object_mesh, test_object_positions
-    );
-    entity_render_pipeline->data.push_back(gpu_test_object_data);
-
-    voxel_utility::VoxelObject default_trees_voxel(
-        files::get_data_path() / "Base" / "models" / "DefaultTree.qb"
-    );
-    auto mesh_trees = world::entity::ambient_occlusion_mesher(default_trees_voxel);
-
-    std::vector<glm::ivec4> model_matrices;
-    // generate positions of trees
-    for (size_t x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
-        for (size_t y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
-            size_t z = world.get_terrain_main().get_Z_solid(x, y) + 1;
-            if (z != 1) { // if the position of the ground is not zero
-                glm::ivec4 model(x, y, z, x / 40 + y / 40);
-                model_matrices.push_back(model);
-            }
-        }
-
-    // static because the mesh does not have moving parts
-    // this generates the buffer that holds the mesh data
-    auto gpu_trees_data =
-        std::make_shared<gpu_data::StaticMesh>(mesh_trees, model_matrices);
-    entity_shadow_program_execute->data.push_back(gpu_trees_data);
-    entity_render_program_execute->data.push_back(gpu_trees_data);
 
     // attach the world objects to the render program
     world::entity::ObjectHandler& object_handler =
         world::entity::ObjectHandler::instance();
     for (auto& [id, object] : object_handler) {
-        if (! object) {
+        if (!object) {
             continue;
         }
-        for (auto& mesh_ptr : object->renderable_data()) {
-
-
+        for (auto mesh_ptr : object->renderable_data()) {
             // entity_shadow_program_execute->data.push_back(mesh_ptr);
             tile_entity_render_pipeline->data.push_back(mesh_ptr);
         }

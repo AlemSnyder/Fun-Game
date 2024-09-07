@@ -8,7 +8,9 @@ namespace entity {
 
 TileObjectInstance::TileObjectInstance(
     std::shared_ptr<TileObject> object_type, uint8_t model_id, gui::Placement placement
-) : placement_(placement), model_id_(model_id), object_type_(object_type) {
+) :
+    placement_(placement),
+    model_id_(model_id), object_type_(object_type) {
     object_type_->get_model(model_id_).insert(placement_);
 }
 
@@ -51,7 +53,9 @@ TileObject::end() noexcept {
 
 TileObject::TileObject(
     const object_t& object_data, const manifest::descriptor_t& identification_data
-) : name_(object_data.name), identification_(identification_data.identification) {
+) :
+    name_(object_data.name),
+    identification_(identification_data.identification) {
     for (const model_t& model_data : object_data.models) {
         // each object may have multiple models
         std::filesystem::path object_path_copy = identification_data.path;

@@ -24,16 +24,16 @@
 
 #include "types.hpp"
 #include "util/hash_combine.hpp"
+
 #include <functional>
 
 namespace gui {
 
 struct Placement;
 
+} // namespace gui
 
-} // namespace world
-
-template<>
+template <>
 struct std::hash<gui::Placement>;
 
 namespace gui {
@@ -63,12 +63,12 @@ struct Placement {
     }
 };
 
-}
+} // namespace gui
 
 /**
  * @brief Create hash from position of object.
  */
-template<>
+template <>
 struct std::hash<gui::Placement> {
     size_t
     operator()(const gui::Placement& pos) const noexcept {
@@ -83,4 +83,3 @@ struct std::hash<gui::Placement> {
         return result;
     }
 };
-

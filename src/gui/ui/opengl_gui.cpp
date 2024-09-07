@@ -9,6 +9,7 @@
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 #include "util/files.hpp"
+#include "world/climate.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/world.hpp"
 
@@ -23,7 +24,7 @@
 namespace gui {
 
 int
-opengl_entry(world::World& world, GLFWwindow* window) {
+opengl_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     screen_size_t window_width;
     screen_size_t window_height;
     screen_size_t shadow_map_size = 4096;
@@ -41,7 +42,7 @@ opengl_entry(world::World& world, GLFWwindow* window) {
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, shader_handler, world);
+    setup(main_scene, shader_handler, world, climate);
 
     do {
         controls::computeMatricesFromInputs(window);

@@ -46,14 +46,14 @@ struct object_t {
 
 class Object {
  public:
-     virtual ~Object() {}
+    virtual ~Object() {}
 
     //    virtual void render()
 
     virtual std::string identification() const = 0;
 
     // one for each mesh
-    virtual std::vector<std::shared_ptr<const gui::gpu_data::GPUDataElementsInstanced>>
+    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
     renderable_data() const = 0;
 
     virtual void update() = 0;
@@ -62,6 +62,7 @@ class Object {
 class ObjectInstance {
  public:
     virtual ~ObjectInstance() {}
+
     virtual void destroy() = 0;
     virtual size_t get_health() const = 0;
     virtual void take_damage(size_t damage) = 0;

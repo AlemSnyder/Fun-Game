@@ -60,7 +60,7 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // when objects are initalized data is sent to the gpu.
     // we want to run the mesher async, but need to send the data to the gpu
     // on the main thread
-    ided_objects[identification] = static_pointer_cast<Object>( new_object);
+    ided_objects[identification] = static_pointer_cast<Object>(new_object);
 }
 
 void

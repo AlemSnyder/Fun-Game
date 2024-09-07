@@ -1,13 +1,13 @@
 
 #pragma once
 
+#include "gui/placement.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
 #include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "manifest.hpp"
 #include "static_mesh.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
-#include "gui/placement.hpp"
 
 #include <filesystem>
 #include <optional>
@@ -77,7 +77,17 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     ModelController(
         const world::entity::Mesh& model_mesh,
         const std::vector<std::vector<ColorFloat>>& vector_data
-    ) : model_mesh_(model_mesh, {}), model_textures_(vector_data) {}
+    ) :
+        model_mesh_(model_mesh, {}),
+        model_textures_(vector_data) {}
+
+    ~ModelController() {}
+
+    inline ModelController(const ModelController& obj) = delete;
+    inline ModelController(ModelController&& other) = default;
+    // copy operator
+    inline ModelController& operator=(const ModelController& obj) = delete;
+    inline ModelController& operator=(ModelController&& other) = default;
 
     /**
      * @brief Bind data for rendering

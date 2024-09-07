@@ -12,6 +12,7 @@
 #include "../scene/scene.hpp"
 #include "logging.hpp"
 #include "opengl_setup.hpp"
+#include "world/climate.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/world.hpp"
 
@@ -161,9 +162,9 @@ revised_gui_test() {
 
     gui::gpu_data::VertexBufferObject VBO3(vertices_2);
 
-    auto screen_data = std::make_shared<gui::gpu_data::ScreenData>();
-    sky_renderer->data.push_back(screen_data);
-    sky_renderer2->data.push_back(screen_data);
+    gui::gpu_data::ScreenData screen_data;
+    sky_renderer->data.push_back(&screen_data);
+    sky_renderer2->data.push_back(&screen_data);
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify
     // this VAO, but this rarely happens. Modifying other VAOs requires a call to
@@ -337,12 +338,11 @@ stars_test() {
 
     auto screen_data = std::make_shared<gpu_data::ScreenData>();
 
-    auto star_data =
-        std::make_shared<gpu_data::StarData>(files::get_data_path() / "stars.json");
+    world::Climate climate;
 
-    blue_background->data.push_back(screen_data);
+    blue_background->data.push_back(screen_data.get());
 
-    star_renderer->data.push_back(star_data);
+    star_renderer->data.push_back(climate.get_stars_data());
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify
     // this VAO, but this rarely happens. Modifying other VAOs requires a call to
@@ -379,13 +379,13 @@ stars_test() {
                 uniform->bind(uniform_id);
         }
 
-        star_data->bind();
+        climate.get_stars_data()->bind();
 
         glDrawArraysInstanced(
-            GL_TRIANGLE_STRIP,         // mode
-            0,                         // start
-            4,                         // number of vertices
-            star_data->get_num_stars() // number of models
+            GL_TRIANGLE_STRIP,                        // mode
+            0,                                        // start
+            4,                                        // number of vertices
+            climate.get_stars_data()->get_num_stars() // number of models
 
         );
 

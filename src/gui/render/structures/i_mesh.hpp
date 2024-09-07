@@ -94,7 +94,7 @@ class IMeshGPU : virtual public GPUDataElements {
 
     /**
      * @brief Initializes Vertex Array Object.
-     * 
+     *
      * This might not have been the ideal design pattern. I may redo it later.
      */
     void initialize();
