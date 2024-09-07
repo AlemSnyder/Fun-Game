@@ -25,6 +25,8 @@ EntityHandler::remove(size_t index) {
         return false;
     }
     local_positions_.erase(local_positions_.begin() + index);
+    //for (){}
+    // TODO update entity data_position
     return true;
 }
 

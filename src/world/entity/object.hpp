@@ -30,6 +30,11 @@ struct remapping_t {
     std::unordered_map<std::string, std::string> write_map() const;
 };
 
+enum class OBJECT_TYPE {
+    ENTITY,
+    TILE_OBJECT,
+};
+
 struct model_t {
     std::filesystem::path path;
     std::optional<std::vector<remapping_t>> colors;
@@ -38,10 +43,13 @@ struct model_t {
 
 struct object_t {
     std::string name;
+    OBJECT_TYPE type;
     std::vector<model_t> models;
     // define interactions
     // like on drop etc
     // maybe it has a health
+    std::optional<std::string> listeners;
+    std::optional<std::filesystem::path> ai;
 };
 
 class Object {
@@ -76,6 +84,12 @@ class ObjectInstance {
 } // namespace entity
 
 } // namespace world
+
+template <>
+struct glz::meta<world::entity::OBJECT_TYPE> {
+    using enum world::entity::OBJECT_TYPE;
+    static constexpr auto value = enumerate(ENTITY, TILE_OBJECT);
+};
 
 template <>
 struct glz::meta<world::entity::remapping_t> {
