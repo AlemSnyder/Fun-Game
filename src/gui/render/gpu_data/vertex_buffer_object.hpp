@@ -34,9 +34,8 @@ struct GPUStructureType {
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
         GPUDataType draw_type
     ) :
-        major_size(major_size_),
-        minor_size(minor_size_), type_size(type_size), is_int(is_int),
-        draw_type(draw_type) {}
+        major_size(major_size_), minor_size(minor_size_), type_size(type_size),
+        is_int(is_int), draw_type(draw_type) {}
 
  public:
     template <
@@ -145,20 +144,24 @@ struct GPUStructureType {
 template <class T, BindingTarget Buffer = BindingTarget::ARRAY_BUFFER>
 class VertexBufferObject {
  private:
-    GLuint buffer_ID_; // For binding
-    GLuint divisor_;   // For instancing usually 0, 1
+    GLuint buffer_ID_ = 0; // For binding
+    GLuint divisor_;       // For instancing usually 0, 1
 
     size_t size_ = 0;
-    size_t aloc_size_ = 0;
+    size_t alloc_size_ = 0;
 
  public:
     /**
      * @brief Default constructor
      */
-    inline VertexBufferObject() : divisor_(0), size_(0), aloc_size_(0) {
+    inline VertexBufferObject() : divisor_(0), size_(0), alloc_size_(0) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { glGenBuffers(1, &buffer_ID_); });
     }
+
+    VertexBufferObject(VertexBufferObject&&) = default;
+
+    VertexBufferObject(const VertexBufferObject&) = delete;
 
     /**
      * @brief Construct VertexBufferObject with data
@@ -203,7 +206,7 @@ class VertexBufferObject {
     inline void
     update(std::vector<T> data, GLuint offset) {
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this, data, offset]() {
+        context.push_opengl_task([this, data = std::move(data), offset]() {
             this->pointer_update_(data.data(), offset, data.size());
         });
     };
@@ -221,11 +224,16 @@ class VertexBufferObject {
     /**
      * @brief Get the divisor
      *
-     * @return GLuint& divisor_
+     * @return GLuint divisor_
      */
-    [[nodiscard]] inline GLuint&
-    divisor() noexcept {
+    [[nodiscard]] inline GLuint
+    divisor() const noexcept {
         return divisor_;
+    }
+
+    [[nodiscard]] inline size_t
+    size() const noexcept {
+        return size_;
     }
 
     ~VertexBufferObject() { glDeleteBuffers(1, &buffer_ID_); }
@@ -281,11 +289,6 @@ VertexBufferObject<T, Buffer>::pointer_update_(
 ) {
     constexpr GPUStructureType data_type = GPUStructureType::create<T>();
 
-    LOG_BACKTRACE(
-        logging::opengl_logger, "Updating Buffer ID: {}, vec size {}, data type: {}",
-        buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
-    );
-
     static_assert(
         sizeof(T)
             == static_cast<size_t>(data_type.type_size)
@@ -308,13 +311,13 @@ VertexBufferObject<T, Buffer>::pointer_update_(
         data_size_in_bytes
     );
 
-    if (aloc_size_ < offset + add_data_size) {
+    if (alloc_size_ < offset + add_data_size) {
         // reallocate
-        aloc_size_ = offset + add_data_size;
+        alloc_size_ = offset + add_data_size;
 
         // need to in addition allocate the offset
 
-        glBindBuffer(static_cast<GLenum>(Buffer), buffer_ID_);
+        bind();
         // this should theoretically copy the existing data into a new buffer.
         glBufferData(
             static_cast<GLenum>(Buffer), offset_size_in_bytes + data_size_in_bytes,
@@ -324,12 +327,19 @@ VertexBufferObject<T, Buffer>::pointer_update_(
         // TODO add case to reduce size
         // The problem is that the way this is setup doesn't allow that.
         // there is not way to say where the new data end is. one should not
+    } else {
+        LOG_BACKTRACE(
+            logging::opengl_logger,
+            "Updating Buffer ID: {}, vec size {}, data type: {}", buffer_ID_,
+            data_type.major_size, to_string(data_type.draw_type)
+        );
     }
     // write data
     glBufferSubData(
         static_cast<GLenum>(Buffer), offset_size_in_bytes, data_size_in_bytes,
         data_begin
     );
+    size_ = alloc_size_;
 }
 
 template <class T, BindingTarget Buffer>
@@ -341,6 +351,10 @@ VertexBufferObject<T, Buffer>::bind() const {
         logging::opengl_logger, "Binding Buffer ID: {}, vec size {}, data type: {}",
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
+
+    if (buffer_ID_ == 0){
+        LOG_ERROR(logging::opengl_logger, "Buffer ID 0 is not allowed. Has this buffer been initialized?");
+    }
 
     glBindBuffer(static_cast<GLenum>(Buffer), buffer_ID_);
 }

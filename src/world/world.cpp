@@ -32,6 +32,8 @@
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
 
+#include "glm/gtx/transform.hpp"
+
 #include <cstdint>
 #include <fstream>
 #include <mutex>
@@ -230,6 +232,40 @@ World::set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id) {
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z - 1});
     else if (edge_case == terrain::Chunk::SIZE - 1)
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z + 1});
+}
+
+void
+World::spawn_entity(std::string identification, glm::vec3 position) {
+    auto& object_handler = entity::ObjectHandler::instance();
+    auto object_type = object_handler.get_object(identification);
+
+    if (!object_type) {
+        LOG_ERROR(
+            logging::main_logger, "Identification {} does not exists", identification
+        );
+        return;
+    }
+
+    auto entity_type = std::dynamic_pointer_cast<entity::Entity>(
+        object_type
+    );
+
+    if (!entity_type) {
+        LOG_ERROR(
+            logging::main_logger, "Identification {} is not an entity type", identification
+        );
+        return;
+    }
+
+    auto entity = std::make_shared<entity::EntityInstance>(entity_type);
+
+    glm::mat4 transformation;
+
+
+    entity->update(glm::translate(transformation, position));
+
+    entities_.insert(entity);
+
 }
 
 } // namespace world

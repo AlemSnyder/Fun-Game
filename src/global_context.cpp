@@ -16,6 +16,6 @@ GlobalContext::run_opengl_queue() {
             function(); // run function
             opengl_functions.pop();
         }
-        LOG_DEBUG(logging::opengl_logger, "Completed opengl queue.");
+        LOG_DEBUG_LIMIT(std::chrono::seconds{60}, logging::opengl_logger, "Completed opengl queue.");
     }
 }

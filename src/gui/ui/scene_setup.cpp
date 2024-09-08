@@ -244,11 +244,12 @@ setup(
     for (const auto& chunk_mesh : terrain_mesh) {
         chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
         chunks_render_program->data.push_back(chunk_mesh.get());
-    }
-
-    for (const auto& chunk_mesh : terrain_mesh) {
         chunks_shadow_program->data.push_back(chunk_mesh.get());
     }
+
+    auto z = world.get_terrain_main().get_Z_solid(5, 5, 50);
+
+    world.spawn_entity("base/Test_Entity", {5, 5, z});
 
     // attach the world objects to the render program
     world::entity::ObjectHandler& object_handler =

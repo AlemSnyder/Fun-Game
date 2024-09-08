@@ -49,7 +49,6 @@ class FloatingInstancedIMeshGPU :
     public virtual GPUDataElementsInstanced {
  protected:
     VertexBufferObject<glm::mat4> transforms_array_;
-    uint32_t num_models_;
 
  public:
     inline FloatingInstancedIMeshGPU(const FloatingInstancedIMeshGPU& obj) = delete;
@@ -78,7 +77,7 @@ class FloatingInstancedIMeshGPU :
     }
 
     [[nodiscard]] inline uint32_t virtual get_num_models() const noexcept override {
-        return num_models_;
+        return transforms_array_.size();
     }
 };
 
