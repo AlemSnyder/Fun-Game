@@ -35,7 +35,7 @@ class TileObjectInstance : public virtual ObjectInstance {
 
     uint8_t model_id_;
 
-    std::shared_ptr<TileObject> object_type_;
+    std::weak_ptr<TileObject> object_type_;
 
  public:
     /**

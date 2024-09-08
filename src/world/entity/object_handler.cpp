@@ -1,6 +1,7 @@
 #include "object_handler.hpp"
 
 #include "tile_object.hpp"
+#include "entity.hpp"
 #include "util/voxel.hpp"
 
 #include <utility>
@@ -54,13 +55,29 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
         return;
     }
 
-    std::shared_ptr<TileObject> new_object =
-        std::make_shared<TileObject>(object_data, descriptor);
+    switch (object_data.type) {
+        case OBJECT_TYPE::TILE_OBJECT:
+            {
+                std::shared_ptr<TileObject> new_object =
+                    std::make_shared<TileObject>(object_data, descriptor);
 
-    // when objects are initalized data is sent to the gpu.
-    // we want to run the mesher async, but need to send the data to the gpu
-    // on the main thread
-    ided_objects[identification] = static_pointer_cast<Object>(new_object);
+                // when objects are initalized data is sent to the gpu.
+                // we want to run the mesher async, but need to send the data to the gpu
+                // on the main thread
+                ided_objects[identification] = static_pointer_cast<Object>(new_object);
+            }
+            break;
+        case OBJECT_TYPE::ENTITY:
+            {
+                std::shared_ptr<Entity> new_object =
+                    std::make_shared<Entity>(object_data, descriptor);
+                ided_objects[identification] = static_pointer_cast<Object>(new_object);
+            }
+            break;
+
+        default:
+            break;
+    }
 }
 
 void
