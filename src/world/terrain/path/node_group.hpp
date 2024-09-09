@@ -46,7 +46,7 @@ namespace terrain {
  *
  */
 class NodeGroup {
-    std::set<const Tile*, TilePCompare> tiles;
+    std::unordered_set<const Tile*> tiles;
     std::unordered_map<NodeGroup*, UnitPath> adjacent;
     float center_x, center_y, center_z; // volumetric center, a weighted average
     UnitPath path_type_; // the path restraints to get form any tile in this Group to
@@ -79,7 +79,7 @@ class NodeGroup {
      *
      * @return The set of tiles
      */
-    const std::set<const Tile*, TilePCompare> get_tiles() const;
+    const std::unordered_set<const Tile*> get_tiles() const;
     /**
      * @brief Add adjacent node group where
      *
@@ -93,7 +93,7 @@ class NodeGroup {
      * @param path_type type of paths that are allowed
      * @return set of adjacent node groups
      */
-    std::set<const NodeGroup*> get_adjacent_clear(int path_type) const;
+    std::unordered_set<const NodeGroup*> get_adjacent_clear(int path_type) const;
     /**
      * @brief Remove node group from adjacency
      *

@@ -40,9 +40,9 @@ NodeGroup::get_adjacent_map() {
     return adjacent;
 }
 
-std::set<const NodeGroup*>
+std::unordered_set<const NodeGroup*>
 NodeGroup::get_adjacent_clear(int path_type) const {
-    std::set<const NodeGroup*> out;
+    std::unordered_set<const NodeGroup*> out;
 
     for (const std::pair<NodeGroup*, UnitPath> t : adjacent) {
         if (t.second.compatible(path_type) && t.second.is_open()) {
@@ -96,9 +96,9 @@ NodeGroup::sop() const {
     return {center_x, center_y, center_z};
 }
 
-const std::set<const Tile*, TilePCompare>
+const std::unordered_set<const Tile*>
 NodeGroup::get_tiles() const {
-    return std::set<const Tile*, TilePCompare>(tiles.begin(), tiles.end());
+    return std::unordered_set<const Tile*>(tiles.begin(), tiles.end());
 }
 
 bool

@@ -221,25 +221,4 @@ class MaterialGroup {
     }
 };
 
-[[nodiscard]] inline bool
-material_in(
-    const std::set<std::pair<MaterialId, ColorId>> materials, MaterialId material_id,
-    ColorId color_id
-) {
-    auto same_mat = [&material_id](MaterialId m) {
-        return m == MAT_ANY_MATERIAL || m == material_id;
-    };
-
-    auto same_color = [&color_id](ColorId c) {
-        return c == COLOR_ANY_COLOR || c == color_id;
-    };
-
-    for (const auto& [mat, color] : materials) {
-        if (same_mat(mat) && same_color(color))
-            return true;
-    }
-
-    return false;
-}
-
 } // namespace terrain

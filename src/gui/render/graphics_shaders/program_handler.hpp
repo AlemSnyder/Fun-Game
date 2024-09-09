@@ -47,7 +47,7 @@
 namespace gui {
 
 namespace shader {
-/*
+
 class File;
 class ShaderData;
 class ProgramData;
@@ -55,14 +55,18 @@ class ProgramData;
 } // namespace shader
 } // namespace gui
 
+template <>
 struct std::hash<gui::shader::File>;
+
+template <>
 struct std::hash<gui::shader::ShaderData>;
+
+template <>
 struct std::hash<gui::shader::ProgramData>;
 
 namespace gui {
 
 namespace shader {
-*/
 
 /**
  * @brief File that can be opened.
@@ -70,6 +74,8 @@ namespace shader {
  * @details Has the file path, and stores the status of the file.
  */
 class File {
+    friend std::hash<gui::shader::File>;
+
  private:
     // path to file
     const std::filesystem::path file_;
@@ -129,6 +135,8 @@ class File {
  * @details In particular this holds the file path and the shader type.
  */
 class ShaderData {
+    friend std::hash<gui::shader::ShaderData>;
+
  protected:
     std::vector<File> files_;
     gpu_data::ShaderType shader_type_;
@@ -205,6 +213,8 @@ class Shader : public ShaderData {
  * @brief Contains the data to identify and create a program.
  */
 class ProgramData {
+    friend std::hash<gui::shader::ProgramData>;
+
  protected:
     Shader& vertex_shader_;
     Shader& fragment_shader_;
@@ -398,7 +408,6 @@ get_shader_string(gpu_data::ShaderType gl_shader_type) {
     }
 }
 
-/*
 } // namespace shader
 
 } // namespace gui
@@ -457,7 +466,7 @@ struct std::hash<gui::shader::ProgramData> {
 namespace gui {
 
 namespace shader {
-*/
+
 /**
  * @brief Loads and saves shader programs
  *
@@ -465,7 +474,7 @@ namespace shader {
  */
 class ShaderHandler {
  protected:
-    std::set<File> files_;
+    std::unordered_set<File> files_;
 
     std::map<const ShaderData, Shader> shaders_;
 
@@ -522,7 +531,7 @@ class ShaderHandler {
      */
     void clear();
 
-    inline ShaderHandler(){};
+    inline ShaderHandler() {};
 
     inline ~ShaderHandler() { shaders_.clear(); }
 };
