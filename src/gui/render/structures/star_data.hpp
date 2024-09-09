@@ -184,9 +184,9 @@ class StarData : public StarShape, public virtual GPUDataInstanced {
      *
      * @param stars_data data Data read from stars json file or otherwise.
      */
-    inline StarData(const star_data data) : StarShape(false),
-        star_positions_(data.star_position, 1), age_buffer_(data.star_age, 1),
-        num_stars_(data.star_age.size()) {
+    inline StarData(const star_data data) :
+        StarShape(false), star_positions_(data.star_position, 1),
+        age_buffer_(data.star_age, 1), num_stars_(data.star_age.size()) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { initialize(); });
     }

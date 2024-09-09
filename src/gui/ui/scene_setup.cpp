@@ -7,6 +7,7 @@
 #include "../render/structures/static_mesh.hpp"
 #include "../render/structures/uniform_types.hpp"
 #include "gui/render/structures/floating_instanced_i_mesh.hpp"
+#include "render_programs_struct.hpp"
 #include "world/entity/object_handler.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -249,7 +250,11 @@ setup(
 
     auto z = world.get_terrain_main().get_Z_solid(5, 5, 50);
 
-    world.spawn_entity("base/Test_Entity", {5, 5, z});
+    world.spawn_entity("base/Test_Entity", {5, 5, z + 1});
+
+    RenderPrograms object_render_programs{
+        .entity_render_program = entity_render_pipeline,
+        .tile_object_render_program = tile_entity_render_pipeline};
 
     // attach the world objects to the render program
     world::entity::ObjectHandler& object_handler =
@@ -258,10 +263,8 @@ setup(
         if (!object) {
             continue;
         }
-        for (auto mesh_ptr : object->renderable_data()) {
-            // entity_shadow_program_execute->data.push_back(mesh_ptr);
-            tile_entity_render_pipeline->data.push_back(mesh_ptr);
-        }
+
+        object->init_render(object_render_programs);
     }
 
     // attach program to scene

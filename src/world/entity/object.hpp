@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gui/render/gpu_data/data_types.hpp"
+#include "gui/ui/render_programs_struct.hpp"
 #include "types.hpp"
 
 #include <glaze/glaze.hpp>
@@ -61,8 +62,10 @@ class Object {
     virtual std::string identification() const = 0;
 
     // one for each mesh
-    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
-    renderable_data() const = 0;
+    //    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
+    //    renderable_data() const = 0;
+
+    virtual void init_render(RenderPrograms& programs) const = 0;
 
     virtual void update() = 0;
 };

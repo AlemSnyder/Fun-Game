@@ -153,16 +153,7 @@ class TileObject : public virtual Object {
         return identification_;
     }
 
-    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
-    renderable_data() const {
-        std::vector<const gui::gpu_data::GPUDataElementsInstanced*> out;
-
-        for (const auto& model : model_meshes_) {
-            out.emplace_back(&model);
-        }
-
-        return out;
-    };
+    virtual void init_render(RenderPrograms& programs) const override;
 };
 
 } // namespace entity

@@ -34,8 +34,9 @@ struct GPUStructureType {
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
         GPUDataType draw_type
     ) :
-        major_size(major_size_), minor_size(minor_size_), type_size(type_size),
-        is_int(is_int), draw_type(draw_type) {}
+        major_size(major_size_),
+        minor_size(minor_size_), type_size(type_size), is_int(is_int),
+        draw_type(draw_type) {}
 
  public:
     template <
@@ -352,8 +353,11 @@ VertexBufferObject<T, Buffer>::bind() const {
         buffer_ID_, data_type.major_size, to_string(data_type.draw_type)
     );
 
-    if (buffer_ID_ == 0){
-        LOG_ERROR(logging::opengl_logger, "Buffer ID 0 is not allowed. Has this buffer been initialized?");
+    if (buffer_ID_ == 0) {
+        LOG_ERROR(
+            logging::opengl_logger,
+            "Buffer ID 0 is not allowed. Has this buffer been initialized?"
+        );
     }
 
     glBindBuffer(static_cast<GLenum>(Buffer), buffer_ID_);

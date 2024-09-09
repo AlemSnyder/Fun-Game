@@ -1,7 +1,7 @@
 #include "object_handler.hpp"
 
-#include "tile_object.hpp"
 #include "entity.hpp"
+#include "tile_object.hpp"
 #include "util/voxel.hpp"
 
 #include <utility>

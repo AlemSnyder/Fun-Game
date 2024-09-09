@@ -11,7 +11,9 @@ Entity::Entity(const Mesh& mesh) :
 
 Entity::Entity(
     const object_t& object_data, const manifest::descriptor_t& identification_data
-) : name_(object_data.name), identification_(identification_data.identification) {
+) :
+    name_(object_data.name),
+    identification_(identification_data.identification) {
     const auto& model_data = object_data.models[0];
     // read mesh from path
     std::filesystem::path object_path_copy = identification_data.path;
@@ -61,9 +63,9 @@ Entity::identification() const {
     return identification_;
 }
 
-std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
-Entity::renderable_data() const {
-    return {mesh_and_positions_.get()};
+void
+Entity::init_render(RenderPrograms& programs) const {
+    programs.entity_render_program->data.push_back(mesh_and_positions_.get());
 }
 
 void

@@ -59,9 +59,8 @@ class FloatingInstancedIMeshGPU :
     inline FloatingInstancedIMeshGPU& operator=(FloatingInstancedIMeshGPU&& other
     ) = default;
 
-    inline FloatingInstancedIMeshGPU(
-        const world::entity::Mesh& mesh
-    ) : FloatingInstancedIMeshGPU(mesh, {}) {}
+    inline FloatingInstancedIMeshGPU(const world::entity::Mesh& mesh) :
+        FloatingInstancedIMeshGPU(mesh, {}) {}
 
     FloatingInstancedIMeshGPU(
         const world::entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms

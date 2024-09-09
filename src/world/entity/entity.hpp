@@ -1,8 +1,8 @@
 #pragma once
 
 #include "gui/render/structures/floating_instanced_i_mesh.hpp"
-#include "mesh.hpp"
 #include "manifest.hpp"
+#include "mesh.hpp"
 #include "object.hpp"
 
 #include <memory>
@@ -13,7 +13,7 @@ namespace entity {
 
 class Entity;
 
-class EntityInstance : public virtual ObjectInstance{
+class EntityInstance : public virtual ObjectInstance {
  private:
     std::weak_ptr<Entity> entity_type_;
 
@@ -37,7 +37,7 @@ class EntityInstance : public virtual ObjectInstance{
     virtual std::shared_ptr<const Object> get_object() const;
 };
 
-class Entity : public virtual  Object{
+class Entity : public virtual Object {
     friend EntityInstance;
 
  private:
@@ -49,12 +49,13 @@ class Entity : public virtual  Object{
     std::string identification_;
 
     std::vector<glm::mat4> local_positions_;
+
  public:
     Entity(const Mesh& mesh);
 
     Entity(const object_t& object_data, const manifest::descriptor_t& model_path);
 
-    virtual ~Entity() {};
+    virtual ~Entity(){};
 
     void reserve(size_t size);
 
@@ -65,8 +66,7 @@ class Entity : public virtual  Object{
 
     virtual std::string identification() const;
 
-    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
-    renderable_data() const override;
+    virtual void init_render(RenderPrograms& programs) const override;
 
     virtual void update() override;
 

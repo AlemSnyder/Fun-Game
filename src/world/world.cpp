@@ -25,14 +25,13 @@
 #include "entity/mesh.hpp"
 #include "entity/object_handler.hpp"
 #include "entity/tile_object.hpp"
+#include "glm/gtx/transform.hpp"
 #include "global_context.hpp"
 #include "logging.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
-
-#include "glm/gtx/transform.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -246,26 +245,23 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
         return;
     }
 
-    auto entity_type = std::dynamic_pointer_cast<entity::Entity>(
-        object_type
-    );
+    auto entity_type = std::dynamic_pointer_cast<entity::Entity>(object_type);
 
     if (!entity_type) {
         LOG_ERROR(
-            logging::main_logger, "Identification {} is not an entity type", identification
+            logging::main_logger, "Identification {} is not an entity type",
+            identification
         );
         return;
     }
 
     auto entity = std::make_shared<entity::EntityInstance>(entity_type);
 
-    glm::mat4 transformation;
-
+    glm::mat4 transformation(1.0);
 
     entity->update(glm::translate(transformation, position));
 
     entities_.insert(entity);
-
 }
 
 } // namespace world
