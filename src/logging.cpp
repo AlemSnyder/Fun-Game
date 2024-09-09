@@ -129,6 +129,14 @@ init(bool console, quill::LogLevel log_level) {
     lua_logger =
         quill::Frontend::create_or_get_logger("lua", file_sink, LOGLINE_FORMAT_LUA);
 
+    main_logger->set_log_level(_LOG_LEVEL);
+    opengl_logger->set_log_level(_LOG_LEVEL);
+    terrain_logger->set_log_level(_LOG_LEVEL);
+    game_map_logger->set_log_level(_LOG_LEVEL);
+    voxel_logger->set_log_level(_LOG_LEVEL);
+    file_io_logger->set_log_level(_LOG_LEVEL);
+    lua_logger->set_log_level(_LOG_LEVEL);
+
     // initialize backtrace on all loggers
     // is there a better way?
     main_logger->init_backtrace(5, quill::LogLevel::Error);

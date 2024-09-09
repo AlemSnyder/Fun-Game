@@ -21,6 +21,7 @@
  *
  */
 
+#include "world/climate.hpp"
 #include "world/world.hpp"
 
 #include <GL/glew.h>
@@ -35,6 +36,6 @@ namespace gui {
  *
  * @returns int exit status to be sent to main.
  */
-int imgui_entry(world::World& world, GLFWwindow* window);
+int imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate);
 
 } // namespace gui

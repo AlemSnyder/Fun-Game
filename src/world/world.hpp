@@ -23,13 +23,12 @@
 #pragma once
 
 #include "biome.hpp"
+#include "entity/entity.hpp"
 #include "entity/tile_object.hpp"
-#include "gui/render/gpu_data/terrain_mesh.hpp"
+#include "gui/render/structures/terrain_mesh.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "types.hpp"
-
-#include <json/json.h>
 
 #include <glm/glm.hpp>
 
@@ -74,8 +73,11 @@ class World {
     // mutex
     std::mutex meshes_to_update_mutex_;
 
-    // entity
-    std::unordered_set<entity::TileObject, entity::TileObjectOrder> tile_entities_;
+    // TileObjects
+    std::unordered_set<std::shared_ptr<entity::TileObjectInstance>> tile_entities_;
+
+    // Entities
+    std::unordered_set<std::shared_ptr<entity::EntityInstance>> entities_;
 
  public:
     /**
@@ -136,10 +138,10 @@ class World {
     /**
      * @brief Get the materials that exist in the world
      *
-     * @return const std::map<int, const Material>* map of materials_id to
+     * @return const std::map<int, const material_t>* map of materials_id to
      * materials pointer
      */
-    inline const std::map<MaterialId, const terrain::Material>&
+    inline const std::map<MaterialId, const terrain::material_t>&
     get_materials() const noexcept {
         return biome_.get_materials();
     }
@@ -148,18 +150,9 @@ class World {
      * @brief Get material from material_id
      *
      * @param material_id
-     * @return const Material* corresponding material
+     * @return const material_t* corresponding material
      */
-    const terrain::Material* get_material(MaterialId material_id) const;
-
-    /**
-     * @brief Get the grass gradient data
-     *
-     * @param material_json data to load from
-     *
-     * @return std::vector<int> width of each grass color
-     */
-    std::vector<int> get_grass_grad_data(const Json::Value& material_json);
+    const terrain::material_t* get_material(MaterialId material_id) const;
 
     // Updating chunks works by changing a tile in terrain. This marks the
     // chunk's mesh for update, and surrounding chunks is applicable.
@@ -214,10 +207,12 @@ class World {
      * @brief Set a tile to have a material and color
      *
      * @param Dim pos tile position
-     * @param terrain::Material* material to change to
+     * @param terrain::material_t* material to change to
      * @param ColorId color id to change to
      */
-    void set_tile(Dim pos, const terrain::Material* mat, ColorId color_id);
+    void set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id);
+
+    void spawn_entity(std::string id, glm::vec3 position);
 
     /**
      * @brief Save terrain with debug information

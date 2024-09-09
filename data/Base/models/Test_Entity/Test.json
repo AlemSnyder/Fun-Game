@@ -1,0 +1,21 @@
+{
+    "name": "Test Object",
+    "type": "ENTITY",
+    "models": [
+        {
+            "path": "./Test.qb",
+            "colors": [
+                {
+                    "map": {}
+                }
+            ],
+            "globals":{
+                "ambient": 0.4,
+                "specular": 0.2,
+                "diffuse": 0.8
+            }
+        }
+    ],
+    "listeners":"",
+    "ai":"ai.lua"
+}

@@ -16,7 +16,6 @@
 #include "world/world.hpp"
 
 #include <argh.h>
-#include <json/json.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -24,6 +23,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <glaze/glaze.hpp>
 #include <imgui/imgui.h>
 #include <png.h>
 
@@ -33,24 +33,14 @@
 #include <iostream>
 #include <string>
 
-#define INITIAL_WINDOW_WIDTH  1024
-#define INITIAL_WINDOW_HEIGHT 768
-
-constexpr static size_t STRESS_TEST_SIZE = 16;
-constexpr static size_t SEED = 5;
-
 void
-save_terrain(
-    Json::Value materials_json, Json::Value biome_data, std::string biome_name
-) {
+save_terrain(terrain::generation::biome_json_data biome_data) {
     quill::Logger* logger = logging::main_logger;
 
-    LOG_INFO(logger, "Saving {} tile types", biome_data["Tile_Data"].size());
+    LOG_INFO(logger, "Saving {} tile types", biome_data.biome_data.tile_data.size());
 
-    terrain::generation::biome_json_data biome_file_data{
-        biome_name, materials_json, biome_data};
-    for (MapTile_t i = 0; i < biome_data["Tile_Data"].size(); i++) {
-        terrain::generation::Biome biome(biome_file_data, 5);
+    for (MapTile_t i = 0; i < biome_data.biome_data.tile_data.size(); i++) {
+        terrain::generation::Biome biome(biome_data, 5);
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
@@ -61,7 +51,7 @@ save_terrain(
         );
 
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
-        save_path /= biome_name;
+        save_path /= biome_data.biome_name;
         save_path /= "biome_";
         save_path += std::to_string(i);
         save_path += ".qb";
@@ -69,51 +59,15 @@ save_terrain(
     }
 }
 
-void
-save_all_terrain(const Json::Value& materials_json, const Json::Value& biome_data) {
-    for (auto biome_type = biome_data.begin(); biome_type != biome_data.end();
-         biome_type++) {
-        save_terrain(materials_json, *biome_type, biome_type.key().asString());
-    }
-}
-
 int
 TerrainTypes(const argh::parser& cmdl) {
-    Json::Value biome_data;
+    terrain::generation::biome_json_data biome_data;
+
     std::string biome_name;
-
     cmdl("biome-name", "-") >> biome_name;
-    std::filesystem::path biome_data_file = files::get_argument_path(biome_name);
-    biome_data_file += ".json";
-    auto biome_file = files::open_data_file(biome_data_file);
-    if (biome_file.has_value())
-        biome_file.value() >> biome_data;
-    else {
-        LOG_CRITICAL(
-            logging::file_io_logger, "Could not open biome data {}", biome_data_file
-        );
-        return 1;
-    }
-    std::string material_file;
+    biome_data = terrain::generation::Biome::get_json_data(biome_name);
 
-    Json::Value materials_json;
-    cmdl("materials", "-") >> material_file;
-    std::filesystem::path material_data_file = files::get_argument_path(material_file);
-    material_data_file += ".json";
-    auto materials_file = files::open_data_file(material_data_file);
-    if (materials_file.has_value())
-        materials_file.value() >> materials_json;
-    else {
-        LOG_CRITICAL(
-            logging::file_io_logger, "Could not open material data {}", material_file
-        );
-        return 1;
-    }
-
-    if (cmdl[{"-a", "--all"}])
-        save_all_terrain(materials_json, biome_data);
-    else
-        save_terrain(biome_data[biome_name], materials_json, biome_name);
+    save_terrain(biome_data);
 
     return 0;
 }
@@ -125,7 +79,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    world::World world("base", size, size);
+    world::World world(BIOME_BASE_NAME, size, size);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(2).str());
 
@@ -137,7 +91,7 @@ GenerateTerrain(const argh::parser& cmdl) {
 int
 MacroMap(const argh::parser& cmdl) {
     std::string biome_name;
-    cmdl("biome-name", "base") >> biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
@@ -202,7 +156,7 @@ image_test(const argh::parser& cmdl) {
 // reimplement
 int
 ChunkDataTest() {
-    world::World world("base", 6, 6);
+    world::World world(BIOME_BASE_NAME, 6, 6);
 
     const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
 
@@ -270,7 +224,7 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    world::World world("base", path_in, seed);
+    world::World world(BIOME_BASE_NAME, path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -287,7 +241,10 @@ path_finder_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    world::World world("base", path_in, seed);
+
+    std::string biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
+    world::World world(biome_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -319,7 +276,7 @@ path_finder_test(const argh::parser& cmdl) {
     }
 
     constexpr ColorId path_color_id = 5;
-    const terrain::Material* path_mat = world.get_material(DEBUG_MATERIAL);
+    const terrain::material_t* path_mat = world.get_material(DEBUG_MATERIAL);
     for (const terrain::Tile* tile : tile_path.value()) {
         world.get_terrain_main()
             .get_tile(world.get_terrain_main().pos(tile))
@@ -383,6 +340,8 @@ tests(const argh::parser& cmdl) {
         return ChunkDataTest();
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
+    } else if (run_function == "LoadManifest") {
+        return util::load_manifest_test();
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

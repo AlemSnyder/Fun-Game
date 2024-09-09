@@ -12,7 +12,7 @@ namespace terrain {
 void
 TerrainBase::qb_read(
     std::vector<ColorInt> data,
-    const std::map<ColorInt, std::pair<const Material*, ColorId>>& materials_inverse
+    const std::map<ColorInt, std::pair<const material_t*, ColorId>>& materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
@@ -52,7 +52,7 @@ TerrainBase::TerrainBase(
     }
 
     // srand(seed);
-    LOG_INFO(logging::terrain_logger, "Start of land generator.");
+    LOG_DEBUG(logging::terrain_logger, "Start of land generator.");
 
     // TODO make this faster 4
     for (size_t i = 0; i < x_map_tiles; i++)
@@ -64,14 +64,14 @@ TerrainBase::TerrainBase(
             }
         }
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: place tiles.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: place tiles.");
 
     // TODO make this faster 3
     for (const generation::AddToTop& top_data : biome.get_top_generators()) {
         add_to_top(top_data);
     }
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: top layer placement.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: top layer placement.");
 }
 
 TerrainBase::TerrainBase(
@@ -139,7 +139,7 @@ TerrainBase::add_to_top(const generation::AddToTop& top_data) {
             // if z is between some bounds
             // stop_h = get stop height (guess, top_data["how_to_add"])
             Dim max_height = top_data.get_final_height(guess);
-            for (size_t z = guess; z < max_height; z++) {
+            for (size_t z = guess; z < max_height && z < Z_MAX; z++) {
                 const Tile& tile = *get_tile(x, y, z);
                 if (top_data.can_overwrite_material(
                         tile.get_material_id(), tile.get_color_id()
@@ -198,21 +198,6 @@ TerrainBase::init_area(generation::MapTile& map_tile, generation::LandGenerator 
         gen.next();
     }
     gen.reset();
-}
-
-Dim
-TerrainBase::get_stop_height(Dim height, const Json::Value& how_to_add) {
-    for (auto& add_data : how_to_add) {
-        if (height >= add_data["from"][0].asInt()
-            && height < add_data["from"][1].asInt()) {
-            if (add_data["to"].isInt()) {
-                return add_data["to"].asInt();
-            } else {
-                return height + add_data["add"].asInt();
-            }
-        }
-    }
-    return 0;
 }
 
 } // namespace terrain

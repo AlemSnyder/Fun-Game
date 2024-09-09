@@ -17,7 +17,7 @@
  *
  * @brief Defines FrameBufferMultisample
  *
- * @ingroup GUI  RENDER  array_buffer
+ * @ingroup GUI  GPU_DATA
  *
  */
 

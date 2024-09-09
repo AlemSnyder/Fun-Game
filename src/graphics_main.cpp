@@ -1,5 +1,6 @@
 #include "graphics_main.hpp"
 
+#include "config.h"
 #include "gui/handler.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
@@ -7,6 +8,7 @@
 #include "logging.hpp"
 #include "types.hpp"
 #include "util/loading.hpp"
+#include "world/climate.hpp"
 #include "world/world.hpp"
 
 #include <GL/glew.h>
@@ -20,9 +22,6 @@ struct Options {
 
     std::optional<std::filesystem::path> save_file;
 };*/
-
-constexpr static size_t STRESS_TEST_SIZE = 16;
-constexpr static size_t SEED = 5;
 
 int
 graphics_main(const argh::parser& cmdl) {
@@ -64,17 +63,19 @@ graphics_main(const argh::parser& cmdl) {
     size_t size;
     cmdl("size", STRESS_TEST_SIZE) >> size;
     std::string biome_name;
-    cmdl("biome-name", "base") >> biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
 
     world::World world(biome_name, size, size, seed);
+
+    world::Climate climate;
 
     // if need gui start gui
     bool imgui_debug = cmdl[{"-g", "--imgui"}];
     if (imgui_debug) {
-        return gui::imgui_entry(world, window);
+        return gui::imgui_entry(window, world, climate);
     } else {
         // if don't then strate to opengl
-        return gui::opengl_entry(world, window);
+        return gui::opengl_entry(window, world, climate);
     }
 
     glDeleteVertexArrays(1, &VertexArrayID);

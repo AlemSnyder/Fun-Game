@@ -32,6 +32,7 @@ get_root_path() {
 
 std::optional<std::ifstream>
 open_file(std::filesystem::path path) {
+    LOG_BACKTRACE(logging::file_io_logger, "Opening file {}", path.string());
     if (!std::filesystem::exists(path)) [[unlikely]] {
         LOG_WARNING(logging::file_io_logger, "File, {}, not found", path.string());
         return {};
