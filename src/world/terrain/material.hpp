@@ -190,7 +190,10 @@ class MaterialGroup {
      *
      * @details Default constructor. Nothing will be in the group.
      */
-    MaterialGroup() : contain_all_materials(false){};
+    inline MaterialGroup() : contain_all_materials(false){};
+
+    inline MaterialGroup(bool all_materials) : contain_all_materials(all_materials){};
+
 
     /**
      * @brief Construct new MaterialGroup object.
@@ -199,7 +202,7 @@ class MaterialGroup {
      * @param std::map<MaterialId, std::set<ColorId>> materials_w_color materials in
      * group when they have specific color
      */
-    MaterialGroup(
+    inline MaterialGroup(
         std::set<MaterialId> materials,
         std::map<MaterialId, std::unordered_set<ColorId>> materials_w_color
     ) :

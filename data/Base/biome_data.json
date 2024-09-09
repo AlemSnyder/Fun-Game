@@ -21,27 +21,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
-                        },
-                        {
-                            "material": 2,
-                            "color": 4
-                        },
-                        {
-                            "material": 2,
-                            "color": 5
+                            "color": [0, 1, 2, 3, 4, 5]
                         }
                     ],
                     "size": 28,
@@ -73,23 +53,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
-                        },
-                        {
-                            "material": 2,
-                            "color": 4
+                            "color": [0, 1, 2, 3, 4]
                         }
                     ],
                     "size": 12,
@@ -117,23 +81,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
-                        },
-                        {
-                            "material": 2,
-                            "color": 4
+                            "color": [0, 1, 2, 3, 4]
                         }
                     ],
                     "size": 19,
@@ -165,19 +113,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
+                            "color": [0, 1, 2, 3]
                         }
                     ],
                     "size": 12,
@@ -205,19 +141,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
+                            "color": [0, 1, 2, 3]
                         }
                     ],
                     "size": 19,
@@ -249,15 +173,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
+                            "color": [0, 1, 2]
                         }
                     ],
                     "size": 12,
@@ -285,15 +201,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
+                            "color": [0, 1, 2]
                         }
                     ],
                     "size": 22,
@@ -325,11 +233,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 18,
@@ -357,11 +261,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 12,
@@ -389,11 +289,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 19,
@@ -425,11 +321,7 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 18,
