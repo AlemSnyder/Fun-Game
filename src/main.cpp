@@ -385,7 +385,9 @@ main(int argc, char** argv) {
     if (argc == 1) {
         return graphics_main();
     } else if (start_type == "Test") {
-        return tests(cmdl);
+        int return_status = tests(cmdl);
+        logging::flush();
+        return return_status;
     } else if (start_type == "Start") {
         return graphics_main(cmdl);
     } else {

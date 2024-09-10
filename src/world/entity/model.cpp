@@ -1,5 +1,7 @@
 #include "model.hpp"
 
+#include "util/files.hpp"
+
 #include <filesystem>
 #include <iterator>
 

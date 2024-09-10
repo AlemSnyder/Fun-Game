@@ -2,6 +2,7 @@
 
 #include "logging.hpp"
 #include "types.hpp"
+#include "util/files.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -28,18 +29,8 @@ star_data
 StarData::read_data_from_file(std::filesystem::path path) {
     auto night_sky_file = files::open_data_file(path);
 
-    night_data_t night_data{};
-    if (night_sky_file.has_value()) {
-        std::string content(
-            (std::istreambuf_iterator<char>(night_sky_file.value())),
-            std::istreambuf_iterator<char>()
-        );
-        auto ec = glz::read_json(night_data, content);
-        if (ec) {
-            LOG_ERROR(logging::file_io_logger, "{}", glz::format_error(ec, content));
-            return {};
-        }
-    } else {
+    auto night_data = files::read_json_from_file<night_data_t>(path);
+    if (!night_data.has_value()) {
         LOG_WARNING(
             logging::file_io_logger, "Could not open sky data from file {}.", path
         );
@@ -49,7 +40,7 @@ StarData::read_data_from_file(std::filesystem::path path) {
     std::vector<glm::vec4> stars_positions;
     std::vector<GLfloat> star_age;
 
-    for (const auto& star : night_data.stars.data) {
+    for (const auto& star : night_data.value().stars.data) {
         float phi = glm::radians(star.phi);
         float theta = glm::radians(star.theta);
 

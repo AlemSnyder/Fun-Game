@@ -58,7 +58,8 @@ TerrainColorMapping::assign_color_mapping(
 }
 
 MaterialGroup::MaterialGroup(const std::vector<generation::material_designation_t>& data
-) : contain_all_materials(false) {
+) :
+    contain_all_materials(false) {
     // want to return a group that represents the given data
     // There will be elements with no requirements on the color
     //    std::set<MaterialId> materials;
@@ -156,7 +157,9 @@ MaterialGroup::insert_(
     std::unordered_set<MaterialId> material_id, std::unordered_set<ColorId> color_ids
 ) {
     for (MaterialId id : material_id) {
-        materials_with_color_requirement_[id].insert(color_ids.begin(), color_ids.end());
+        materials_with_color_requirement_[id].insert(
+            color_ids.begin(), color_ids.end()
+        );
     }
 }
 

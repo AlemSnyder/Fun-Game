@@ -1,6 +1,7 @@
 
 #include "loading.hpp"
 
+#include "files.hpp"
 #include "global_context.hpp"
 #include "manifest.hpp"
 #include "world/entity/model.hpp"
@@ -17,32 +18,14 @@ load_manifest() {
 
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
-        manifest::manifest_t manifest;
+        auto manifest_opt =
+            files::read_json_from_file<manifest::manifest_t>(directory_entry.path());
 
-        // path to manifest file
-        auto manifest_file = directory_entry.path();
-
-        auto contents = files::open_data_file(manifest_file);
-        if (contents.has_value()) [[likely]] {
-            // might fail
-            // if the json has some problems this will throw
-            std::string content(
-                (std::istreambuf_iterator<char>(contents.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read_json(manifest, content);
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "{}", glz::format_error(ec, content)
-                );
-                continue;
-            }
-
-        } else {
-            // Warning is already logged when opening file
-            // just move onto next file
+        if (!manifest_opt.has_value()) {
             continue;
         }
+
+        manifest::manifest_t& manifest = manifest_opt.value();
 
         int num_biomes =
             manifest.biomes.has_value() ? manifest.biomes.value().size() : 0;
@@ -82,29 +65,14 @@ load_manifest_test() {
 
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
-        manifest::manifest_t manifest;
+        auto manifest_opt =
+            files::read_json_from_file<manifest::manifest_t>(directory_entry.path());
 
-        // path to manifest file
-        auto manifest_file = directory_entry.path();
-
-        auto contents = files::open_data_file(manifest_file);
-        if (contents.has_value()) [[likely]] {
-            // might fail
-            // if the json has some problems this will throw
-            std::string content(
-                (std::istreambuf_iterator<char>(contents.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read_json(manifest, content);
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "{}", glz::format_error(ec, content)
-                );
-                return 1;
-            }
-        } else {
+        if (!manifest_opt.has_value()) {
             return 1;
         }
+
+        manifest::manifest_t& manifest = manifest_opt.value();
 
         int num_biomes =
             manifest.biomes.has_value() ? manifest.biomes.value().size() : 0;
@@ -122,25 +90,13 @@ load_manifest_test() {
                 // Will check if path exists
 
                 // struct to read data into
-                world::entity::object_t object_data;
+                auto object_data = files::read_json_from_file<world::entity::object_t>(
+                    files::get_data_path() / entity_data.path
+                );
 
                 // read contents from path
                 auto contents = files::open_data_file(entity_data.path);
-                if (contents.has_value()) [[likely]] {
-                    std::string content(
-                        (std::istreambuf_iterator<char>(contents.value())),
-                        std::istreambuf_iterator<char>()
-                    );
-
-                    auto ec = glz::read_json(object_data, content);
-                    if (ec) [[unlikely]] {
-                        LOG_ERROR(
-                            logging::file_io_logger, "{}",
-                            glz::format_error(ec, content)
-                        );
-                        return 1;
-                    }
-                } else {
+                if (!contents.has_value()) {
                     LOG_ERROR(
                         logging::file_io_logger,
                         "Attempting to load {} from {} failed.",

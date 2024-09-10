@@ -61,7 +61,7 @@ Biome::Biome(const std::string& biome_name, size_t seed) :
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
     generate_plants_(biome_data.biome_data.generate_plants),
-    grass_data_(biome_data.materials_data.data.at("Dirt").gradient), seed_(seed) {
+    grass_data_(biome_data.materials_data.at("Dirt").gradient), seed_(seed) {
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
 
@@ -356,7 +356,7 @@ Biome::read_add_to_top_data_(const std::vector<layer_effects_t>& after_effects_d
 std::map<MaterialId, const terrain::material_t>
 Biome::init_materials_(const all_materials_t& material_data) {
     std::map<MaterialId, const terrain::material_t> out;
-    for (const auto& key : material_data.data) {
+    for (const auto& key : material_data) {
         out.insert(std::make_pair(key.second.material_id, key.second));
     }
     return out;
@@ -380,67 +380,25 @@ Biome::get_colors_inverse_map() const {
 
 biome_json_data
 Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
-    glz::context ctx{};
-    terrain::generation::biome_data_t biome_data;
-    {
-        std::filesystem::path biome_data_file = biome_folder_path / "biome_data.json";
-        auto biome_file = files::open_data_file(biome_data_file);
+    auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
+        biome_folder_path / "biome_data.json"
+    );
 
-        if (biome_file.has_value()) {
-            std::string content(
-                (std::istreambuf_iterator<char>(biome_file.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read<glz::opts{}>(biome_data, content, ctx);
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "Error Parsing Json:\n{}",
-                    glz::format_error(ec, content)
-                );
-                return {};
-            }
-        } else {
-            LOG_CRITICAL(
-                logging::file_io_logger, "Could not open biome data {}", biome_data_file
-            );
-            return {};
-        }
-    }
-    terrain::all_materials_t materials;
-    // std::map<std::string, material_t> materials;
-
-    {
-        std::filesystem::path materials_file_path =
-            biome_folder_path / "materials.json";
-        auto materials_file = files::open_data_file(materials_file_path);
-
-        if (materials_file.has_value()) {
-            std::string content(
-                (std::istreambuf_iterator<char>(materials_file.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read<glz::opts{.error_on_unknown_keys = true}>(
-                materials.data, content, ctx
-            );
-
-            if (ec) {
-                LOG_CRITICAL(
-                    logging::file_io_logger, "Error Parsing Json:{}{}",
-                    materials_file_path, glz::format_error(ec, content)
-                );
-                return {};
-            }
-
-        } else {
-            LOG_CRITICAL(
-                logging::file_io_logger, "Could not open material data {}",
-                materials_file_path
-            );
-            return {};
-        }
+    if (!biome_data.has_value()) {
+        return {};
     }
 
-    terrain::generation::biome_json_data data(biome_data.name, biome_data, materials);
+    auto materials = files::read_json_from_file<all_materials_t>(
+        biome_folder_path / "materials.json"
+    );
+
+    if (!materials.has_value()) {
+        return {};
+    }
+
+    terrain::generation::biome_json_data data(
+        biome_data.value().name, biome_data.value(), materials.value()
+    );
     return data;
 }
 

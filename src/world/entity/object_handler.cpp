@@ -1,5 +1,6 @@
 #include "object_handler.hpp"
 
+#include "util/files.hpp"
 #include "util/voxel.hpp"
 
 #include <utility>
@@ -16,24 +17,10 @@ ObjectHandler::get_object(const std::string& id) {
 
 void
 ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
-    // json to read data into
-
-    object_t object_data;
-
     // read contents from path
-    auto contents = files::open_data_file(descriptor.path);
-    if (contents.has_value()) {
-        std::string content(
-            (std::istreambuf_iterator<char>(contents.value())),
-            std::istreambuf_iterator<char>()
-        );
+    auto object_data = files::read_json_from_file<object_t>(descriptor.path);
 
-        auto ec = glz::read_json(object_data, content);
-        if (ec) {
-            LOG_ERROR(logging::file_io_logger, "{}", glz::format_error(ec, content));
-            return;
-        }
-    } else {
+    if (!object_data.has_value()) {
         LOG_ERROR(
             logging::file_io_logger, "Attempting to load {} from {} failed.",
             descriptor.identification, descriptor.path
@@ -58,7 +45,7 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // on the main thread
     ided_objects.emplace(
         std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
-        std::forward_as_tuple(object_data, descriptor)
+        std::forward_as_tuple(object_data.value(), descriptor)
     );
 }
 

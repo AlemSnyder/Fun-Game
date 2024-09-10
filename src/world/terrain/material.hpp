@@ -83,9 +83,7 @@ struct material_t {
     // int8_t deterioration from water
 };
 
-struct all_materials_t {
-    std::map<std::string, material_t> data;
-};
+using all_materials_t = std::unordered_map<std::string, material_t>;
 
 /**
  * @brief Defines a map from colors to a color texture that is sent to the gpu.
@@ -193,7 +191,6 @@ class MaterialGroup {
     inline MaterialGroup() : contain_all_materials(false){};
 
     inline MaterialGroup(bool all_materials) : contain_all_materials(all_materials){};
-
 
     /**
      * @brief Construct new MaterialGroup object.
