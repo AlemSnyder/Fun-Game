@@ -16,9 +16,6 @@ void
 load_manifest() {
     auto manifest_folder = files::get_manifest_path();
 
-    world::entity::ObjectHandler& object_handler =
-        world::entity::ObjectHandler::instance();
-
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
         Json::Value manifest;
