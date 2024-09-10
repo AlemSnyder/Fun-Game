@@ -107,12 +107,10 @@ class GlobalContext {
 
 
     // Might want to expose these in the future.
-    /*
     auto
     wait_for_tasks() {
         return thread_pool_.wait();
     }
-    */
 
     // oh boy time to start wrapping tread_pool
 };
