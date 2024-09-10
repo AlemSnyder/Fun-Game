@@ -127,7 +127,6 @@ read_json_from_file(std::filesystem::path path) {
     }
 
     T data;
-
     auto ec = glz::read_file_json(data, path.c_str(), std::string{});
 
     if (ec) {
@@ -135,25 +134,8 @@ read_json_from_file(std::filesystem::path path) {
             logger, "Failed to read {} from path {}. Error: {}", typeid(T).name(), path,
             glz::format_error(ec)
         );
-        if (ec == glz::error_code::unknown_key) {
-            auto ec = glz::read_file_json<glz::opts{.error_on_unknown_keys = false}>(
-                data, path.c_str(), std::string{}
-            );
-
-            if (ec) {
-                LOG_ERROR(
-                    logger, "Failed to read {} from path {}. Error: {}",
-                    typeid(T).name(), path, glz::format_error(ec)
-                );
-                return {};
-            }
-            return data;
-
-        } else {
-            return {};
-        }
+        return {};
     }
-
     return data;
 }
 
