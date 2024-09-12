@@ -94,7 +94,8 @@ struct layer_effect_data_t {
 
         // we want to compare directions like this because going to a position is
         // bigger than adding some value assuming the stop is the same
-        auto directions_c = (int)add_directions <=> (int)other.add_directions;
+        auto directions_c =
+            static_cast<int>(add_directions) <=> static_cast<int>(other.add_directions);
         if (directions_c != std::strong_ordering::equivalent) {
             return directions_c;
         }

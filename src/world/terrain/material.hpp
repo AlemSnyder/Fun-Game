@@ -36,6 +36,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 namespace terrain {
@@ -250,12 +251,53 @@ class MaterialGroup {
         return materials_no_color_requirement_.contains(material_id);
     }
 
- private:
-    void insert_(std::unordered_set<MaterialId> material_id);
-    void insert_(
-        std::unordered_set<MaterialId> material_id,
-        std::unordered_set<ColorId> color_ids
+    bool insert(
+        const std::variant<bool, MaterialId, std::vector<MaterialId>>& material,
+        const std::variant<bool, ColorId, std::vector<ColorId>>& color
     );
+
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(bool value) {
+        if (value)
+            return {};
+        else
+        // TODO log error
+            return {{}};
+    }
+
+ private:
+
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(ColorId value) {
+        return {{value}};
+    }
+
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(std::vector<ColorId> value) {
+        return value;
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(bool value) {
+        if (value)
+            return {};
+        else
+            // TODO log error
+            return {{}};
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(MaterialId value) {
+        return {{value}};
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(std::vector<MaterialId> value) {
+        return value;
+    }
+
+    void insert_(std::vector<MaterialId> material_id);
+    void insert_(std::vector<MaterialId> material_id, std::vector<ColorId> color_ids);
 
     inline void
     set_all() {

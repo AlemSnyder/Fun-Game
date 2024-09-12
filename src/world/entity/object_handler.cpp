@@ -20,7 +20,7 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // read contents from path
     auto object_data = files::read_json_from_file<object_t>(descriptor.path);
 
-    if (!object_data.has_value()) {
+    if (!object_data) {
         LOG_ERROR(
             logging::file_io_logger, "Attempting to load {} from {} failed.",
             descriptor.identification, descriptor.path
@@ -45,7 +45,7 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // on the main thread
     ided_objects.emplace(
         std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
-        std::forward_as_tuple(object_data.value(), descriptor)
+        std::forward_as_tuple(*object_data, descriptor)
     );
 }
 

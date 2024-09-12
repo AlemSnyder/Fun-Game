@@ -202,12 +202,10 @@ enum class Side : uint8_t {
  *
  */
 class LandGenerator {
-    size_t current_region;
+    size_t current_region; // index of the next region to be generated
     size_t current_sub_region;
 
-    // const std::map<MaterialId, const material_t>& materials;
-    // const std::set<material_t*> elements_can_stamp_;
-    // const material_t* material_;
+    // ordered stamp generators
     std::vector<std::shared_ptr<stamps::JsonToTile>> stamp_generators_;
 
  public:
@@ -224,7 +222,7 @@ class LandGenerator {
      *
      * This should not be used.
      */
-    //    LandGenerator();
+    LandGenerator() = delete;
 
     /**
      * @brief Test if iteration is complete

@@ -57,104 +57,54 @@ TerrainColorMapping::assign_color_mapping(
     }
 }
 
+bool
+MaterialGroup::insert(
+    const std::variant<bool, MaterialId, std::vector<MaterialId>>& material_v,
+    const std::variant<bool, ColorId, std::vector<ColorId>>& color_v
+) {
+    std::optional<std::vector<MaterialId>> materials_ov =
+        std::visit([](auto&& arg) -> auto { return read_materials(arg); }, material_v);
+
+    if (!materials_ov) {
+        set_all();
+        return true;
+    }
+    std::optional<std::vector<ColorId>> colors_ov =
+        std::visit([](auto&& arg) -> auto { return read_colors(arg); }, color_v);
+    if (!colors_ov) {
+        insert_(*materials_ov);
+        return false;
+    }
+    insert_(*materials_ov, *colors_ov);
+    return false;
+}
+
 MaterialGroup::MaterialGroup(const std::vector<generation::material_designation_t>& data
 ) :
     contain_all_materials(false) {
-    // want to return a group that represents the given data
+    // want to generated a group that represents the given data
     // There will be elements with no requirements on the color
-    //    std::set<MaterialId> materials;
+    // materials_no_color_requirement_
     // amd some with requirements on the color
-    //    std::map<MaterialId, std::set<ColorId>> materials_w_color;
-
+    // materials_with_color_requirement_
     for (const generation::material_designation_t& material_data : data) {
         // read the material id from the data
         // MaterialId mat_id = material_data.material;
 
-        const auto& material = material_data.material;
-        const auto& color = material_data.color;
-
-        std::unordered_set<ColorId> colors;
-        std::unordered_set<MaterialId> materials;
-
-        {
-            switch (material.index()) {
-                case 0:
-                    { // bool
-
-                        bool all_materials = std::get<bool>(material);
-                        if (all_materials) {
-                            set_all();
-                            return;
-                        } else {
-                            // wut? why would you do this?
-                        }
-                        break;
-                    }
-                case 1:
-                    { // MaterialId
-                        materials.insert(std::get<MaterialId>(material));
-                        break;
-                    }
-                case 2:
-                    { // vector
-
-                        const auto& materials_to_add =
-
-                            std::get<std::vector<MaterialId>>(material);
-
-                        materials.insert(
-                            materials_to_add.begin(), materials_to_add.end()
-                        );
-
-                        break;
-                    }
-
-                default:
-                    break;
-            }
+        if (insert(material_data.material, material_data.color)) {
+            return;
         }
-
-        {
-            switch (color.index()) {
-                case 0: // bool
-                    {
-                        bool all_colors = std::get<bool>(color);
-                        if (all_colors)
-                            insert_(materials);
-
-                        continue;
-                    }
-                case 1: // ColorId
-                    {
-                        colors.insert(std::get<ColorId>(color));
-                        break;
-                    }
-                case 2:
-                    { // vector
-                        const auto& colors_to_add =
-                            std::get<std::vector<ColorId>>(color);
-
-                        colors.insert(colors_to_add.begin(), colors_to_add.end());
-
-                        break;
-                    }
-
-                default:
-                    break;
-            }
-        }
-        insert_(materials, colors);
     }
 }
 
 void
-MaterialGroup::insert_(std::unordered_set<MaterialId> material_id) {
+MaterialGroup::insert_(std::vector<MaterialId> material_id) {
     materials_no_color_requirement_.insert(material_id.begin(), material_id.end());
 }
 
 void
 MaterialGroup::insert_(
-    std::unordered_set<MaterialId> material_id, std::unordered_set<ColorId> color_ids
+    std::vector<MaterialId> material_id, std::vector<ColorId> color_ids
 ) {
     for (MaterialId id : material_id) {
         materials_with_color_requirement_[id].insert(

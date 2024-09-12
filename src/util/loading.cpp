@@ -21,25 +21,22 @@ load_manifest() {
         auto manifest_opt =
             files::read_json_from_file<manifest::manifest_t>(directory_entry.path());
 
-        if (!manifest_opt.has_value()) {
+        if (!manifest_opt) {
             continue;
         }
 
-        manifest::manifest_t& manifest = manifest_opt.value();
+        manifest::manifest_t& manifest = *manifest_opt;
 
-        int num_biomes =
-            manifest.biomes.has_value() ? manifest.biomes.value().size() : 0;
-        int num_entities =
-            manifest.entities.has_value() ? manifest.entities.value().size() : 0;
+        int num_biomes = manifest.biomes ? (*manifest.biomes).size() : 0;
+        int num_entities = manifest.entities ? (*manifest.entities).size() : 0;
 
         LOG_DEBUG(
             logging::file_io_logger, "Loading manifest {} with {} biomes, {} entities.",
             manifest.name, num_biomes, num_entities
         );
-        if (manifest.entities.has_value()) {
+        if (manifest.entities) {
             // iterate through objects in manifest and queue them to be loaded
-            for (const manifest::descriptor_t& entity_data :
-                 manifest.entities.value()) {
+            for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                 // Will check if path exists
                 GlobalContext& context = GlobalContext::instance();
                 auto future = context.submit([entity_data]() {
@@ -49,7 +46,7 @@ load_manifest() {
                 });
             }
         }
-        // if (manifest.biomes.has_value()) -> do something else
+        // if (manifest.biomes) -> do something else
     }
 }
 
@@ -68,25 +65,22 @@ load_manifest_test() {
         auto manifest_opt =
             files::read_json_from_file<manifest::manifest_t>(directory_entry.path());
 
-        if (!manifest_opt.has_value()) {
+        if (!manifest_opt) {
             return 1;
         }
 
-        manifest::manifest_t& manifest = manifest_opt.value();
+        manifest::manifest_t& manifest = *manifest_opt;
 
-        int num_biomes =
-            manifest.biomes.has_value() ? manifest.biomes.value().size() : 0;
-        int num_entities =
-            manifest.entities.has_value() ? manifest.entities.value().size() : 0;
+        int num_biomes = manifest.biomes ? (*manifest.biomes).size() : 0;
+        int num_entities = manifest.entities ? (*manifest.entities).size() : 0;
 
         LOG_DEBUG(
             logging::file_io_logger, "Loading manifest {} with {} biomes, {} entities.",
             manifest.name, num_biomes, num_entities
         );
-        if (manifest.entities.has_value()) {
+        if (manifest.entities) {
             // iterate through objects in manifest and queue them to be loaded
-            for (const manifest::descriptor_t& entity_data :
-                 manifest.entities.value()) {
+            for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                 // Will check if path exists
 
                 // struct to read data into
@@ -96,7 +90,7 @@ load_manifest_test() {
 
                 // read contents from path
                 auto contents = files::open_data_file(entity_data.path);
-                if (!contents.has_value()) {
+                if (!contents) {
                     LOG_ERROR(
                         logging::file_io_logger,
                         "Attempting to load {} from {} failed.",

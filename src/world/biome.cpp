@@ -50,7 +50,7 @@ GrassData::GrassData(const grass_data_t& grass_data) {
 
 GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
     GrassData(grass_data.value_or(grass_data_t())) {
-    if (!grass_data.has_value()) {
+    if (!grass_data) {
         LOG_WARNING(logging::terrain_logger, "Grass Data Empty");
     }
 }
@@ -384,7 +384,7 @@ Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
         biome_folder_path / "biome_data.json"
     );
 
-    if (!biome_data.has_value()) {
+    if (!biome_data) {
         return {};
     }
 
@@ -392,12 +392,12 @@ Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
         biome_folder_path / "materials.json"
     );
 
-    if (!materials.has_value()) {
+    if (!materials) {
         return {};
     }
 
     terrain::generation::biome_json_data data(
-        biome_data.value().name, biome_data.value(), materials.value()
+        biome_data->name, *biome_data, *materials
     );
     return data;
 }
