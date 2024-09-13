@@ -65,6 +65,22 @@ struct Material {
     // int8_t deterioration from water
 };
 
+struct MaterialColor {
+    const Material& material;
+    ColorId color;
+
+    inline MaterialColor(const MaterialColor& other) : material(other.material), color(other.color){
+    }
+
+
+    inline MaterialColor(MaterialColor&& other) : material(other.material), color(other.color){
+    }
+
+    inline MaterialColor(const Material& mat, ColorId col) : material(mat), color(col) {}
+
+
+};
+
 /**
  * @brief Defines a map from colors to a color texture that is sent to the gpu.
  */

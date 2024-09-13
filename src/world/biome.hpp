@@ -275,7 +275,7 @@ class Biome {
      *
      * @return map from ColorInt to pair of material pointer and color id
      */
-    [[nodiscard]] std::unordered_map<ColorInt, std::pair<const Material*, ColorId>>
+    [[nodiscard]] std::unordered_map<ColorInt, MaterialColor>
     get_colors_inverse_map() const;
 
     static void init_lua_state(
