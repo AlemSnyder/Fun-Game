@@ -39,7 +39,7 @@ load_manifest() {
             for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                 // Will check if path exists
                 GlobalContext& context = GlobalContext::instance();
-                auto future = context.submit([entity_data]() {
+                auto future = context.submit_task([entity_data]() {
                     world::entity::ObjectHandler& object_handler =
                         world::entity::ObjectHandler::instance();
                     object_handler.read_object(entity_data);
