@@ -261,8 +261,8 @@ class MaterialGroup {
         if (value)
             return {};
         else
-        // TODO log error
-            return {{}};
+//            LOG_WARNING(logging::file_io_logger, "colors = false. Why would you do this? It does nothing.")
+            return std::vector<ColorId>();
     }
 
  private:
@@ -282,8 +282,8 @@ class MaterialGroup {
         if (value)
             return {};
         else
-            // TODO log error
-            return {{}};
+//            LOG_WARNING(logging::file_io_logger, "material = false. Why would you do this? It does nothing.")
+            return std::vector<MaterialId>();
     }
 
     inline static std::optional<std::vector<MaterialId>>
