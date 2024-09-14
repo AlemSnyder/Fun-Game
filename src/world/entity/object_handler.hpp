@@ -20,6 +20,7 @@
  *
  */
 
+#include "manifest.hpp"
 #include "model.hpp"
 
 #include <filesystem>
@@ -63,7 +64,7 @@ class ObjectHandler {
     /**
      * @brief Load new object from path.
      */
-    void read_object(std::filesystem::path);
+    void read_object(const manifest::descriptor_t& object_descriptor);
 
     ObjectData& get_object(const std::string&);
 

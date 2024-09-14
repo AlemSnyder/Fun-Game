@@ -1,5 +1,6 @@
 #include "graphics_main.hpp"
 
+#include "config.h"
 #include "gui/handler.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
@@ -20,9 +21,6 @@ struct Options {
 
     std::optional<std::filesystem::path> save_file;
 };*/
-
-constexpr static size_t STRESS_TEST_SIZE = 16;
-constexpr static size_t SEED = 5;
 
 int
 graphics_main(const argh::parser& cmdl) {
@@ -64,7 +62,7 @@ graphics_main(const argh::parser& cmdl) {
     size_t size;
     cmdl("size", STRESS_TEST_SIZE) >> size;
     std::string biome_name;
-    cmdl("biome-name", "base") >> biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
 
     world::World world(biome_name, size, size, seed);
 

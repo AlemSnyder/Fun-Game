@@ -1,21 +1,68 @@
 
 #pragma once
 
+#include "fmt/core.h"
 #include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/gpu_data.hpp"
 #include "gui/render/gpu_data/static_mesh.hpp"
-#include "json/json.h"
+#include "manifest.hpp"
 #include "placement.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
 
 #include <filesystem>
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
 namespace world {
 
 namespace entity {
+
+struct global_illumination_t {
+    float ambient;
+    float specular;
+    float diffuse;
+};
+
+// TODO move to cpp
+struct remapping_t {
+    std::unordered_map<ColorInt, ColorInt> map;
+
+    void
+    read_map(std::unordered_map<std::string, std::string> input) {
+        for (const auto& [k, v] : input)
+            map[std::stoull(k, nullptr, 16)] = std::stoull(v, nullptr, 16);
+    }
+
+    std::unordered_map<std::string, std::string>
+    write_map() const {
+        std::unordered_map<std::string, std::string> res;
+
+        for (const auto& [key, value] : map) {
+            std::string str_key = fmtquill::format("{:08X}", key);
+            std::string str_value = fmtquill::format("{:08X}", value);
+
+            res.insert({str_key, str_value});
+        }
+
+        return res;
+    }
+};
+
+struct model_t {
+    std::filesystem::path path;
+    std::optional<std::vector<remapping_t>> colors;
+    global_illumination_t globals;
+};
+
+struct object_t {
+    std::string name;
+    std::vector<model_t> models;
+    // define interactions
+    // like on drop etc
+    // maybe it has a health
+};
 
 constexpr size_t NO_UPDATE = -1;
 
@@ -45,8 +92,9 @@ class ObjectData {
      *
      * @param Json::Value& JSON that describes the object
      * @param std::filesystem::path path to folder containing voxel
+     TODO fix documentation
      */
-    ObjectData(const Json::Value& object_json, std::filesystem::path model_path);
+    ObjectData(const object_t& object_data, const manifest::descriptor_t& model_path);
 
     /**
      * @brief Get a model for this object by id.
@@ -213,3 +261,16 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
 } // namespace entity
 
 } // namespace world
+
+template <>
+struct glz::meta<world::entity::remapping_t> {
+    using T = world::entity::remapping_t;
+
+    static constexpr auto value = object("map", custom<&T::read_map, &T::write_map>);
+};
+
+template <>
+inline glz::detail::any_t::operator std::vector<world::entity::remapping_t>() const {
+    assert(false && "Not Implemented");
+    return {};
+}

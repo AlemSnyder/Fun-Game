@@ -54,15 +54,15 @@ quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 quill::Logger* file_io_logger;  // for file io
 quill::Logger* lua_logger;      // for lua
 
-const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
+const static std::filesystem::path LOG_FILE = files::get_log_path() / "app.log";
 
 void
 init(bool console, quill::LogLevel log_level) {
     _LOG_LEVEL = log_level;
 
     // Create the logs directory
-    if (!std::filesystem::is_directory(log_dir()))
-        std::filesystem::create_directory(log_dir());
+    if (!std::filesystem::is_directory(files::get_log_path()))
+        std::filesystem::create_directory(files::get_log_path());
 
     // Initialize print handler
     if (console) {
@@ -128,6 +128,14 @@ init(bool console, quill::LogLevel log_level) {
         quill::Frontend::create_or_get_logger("file_io", file_sink, LOGLINE_FORMAT);
     lua_logger =
         quill::Frontend::create_or_get_logger("lua", file_sink, LOGLINE_FORMAT_LUA);
+
+    main_logger->set_log_level(_LOG_LEVEL);
+    opengl_logger->set_log_level(_LOG_LEVEL);
+    terrain_logger->set_log_level(_LOG_LEVEL);
+    game_map_logger->set_log_level(_LOG_LEVEL);
+    voxel_logger->set_log_level(_LOG_LEVEL);
+    file_io_logger->set_log_level(_LOG_LEVEL);
+    lua_logger->set_log_level(_LOG_LEVEL);
 
     // initialize backtrace on all loggers
     // is there a better way?

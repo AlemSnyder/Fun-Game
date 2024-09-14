@@ -237,7 +237,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     }
 
     voxel_utility::VoxelObject default_trees_voxel(
-        files::get_data_path() / "base" / "models" / "DefaultTree.qb"
+        files::get_data_path() / "Base" / "models" / "DefaultTree.qb"
     );
 
     auto mesh_trees = world::entity::ambient_occlusion_mesher(default_trees_voxel);
