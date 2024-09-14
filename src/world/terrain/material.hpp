@@ -27,6 +27,7 @@
 #include "gui/render/gpu_data/texture.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
+#include "logging.hpp"
 
 #include <glaze/glaze.hpp>
 
@@ -260,9 +261,11 @@ class MaterialGroup {
     read_colors(bool value) {
         if (value)
             return {};
-        else
-//            LOG_WARNING(logging::file_io_logger, "colors = false. Why would you do this? It does nothing.")
+        else {
+
+            LOG_WARNING(logging::file_io_logger, "colors = false. Why would you do this? It does nothing.");
             return std::vector<ColorId>();
+        }
     }
 
  private:
@@ -281,9 +284,11 @@ class MaterialGroup {
     read_materials(bool value) {
         if (value)
             return {};
-        else
-//            LOG_WARNING(logging::file_io_logger, "material = false. Why would you do this? It does nothing.")
+        else {
+
+            LOG_WARNING(logging::file_io_logger, "material = false. Why would you do this? It does nothing.");
             return std::vector<MaterialId>();
+        }
     }
 
     inline static std::optional<std::vector<MaterialId>>
