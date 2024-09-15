@@ -14,6 +14,7 @@
 #include "world/entity/mesh.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
+#include "world/terrain/generation/terrain_map.hpp"
 
 #include <argh.h>
 #include <json/json.h>
@@ -55,7 +56,7 @@ save_terrain(
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
-        auto macro_map = terrain::generation::Biome::single_tile_type_map(i);
+        auto macro_map = biome.single_tile_type_map(i);
         terrain::Terrain ter(
             map_size, map_size, world::World::macro_tile_size, terrain_height, 5, biome,
             macro_map
@@ -151,7 +152,7 @@ MacroMap(const argh::parser& cmdl) {
 
     std::vector<TileMacro_t> int_map;
     for (const auto& map_tile : map) {
-        int_map.push_back(map_tile.get_tile_type());
+        int_map.push_back(map_tile.get_type_id());
     }
 
     LOG_INFO(logging::main_logger, "Map: {}", int_map);
@@ -173,26 +174,43 @@ image_test(const argh::parser& cmdl) {
 
         image::log_result(result, png_path);
 
+        std::filesystem::path color_png_path =
+            files::get_root_path() / "terrain_output_data" / "color_test.png";
+
+        image::ColorImageTest color_image;
+
+        result = image::write_image(color_image, color_png_path);
+
+        image::log_result(result, color_png_path);
+
         return result;
 
     } else {
-        std::filesystem::path lua_file_path = files::get_argument_path(cmdl(2).str());
-        std::filesystem::path png_path = files::get_argument_path(cmdl(3).str());
+        // TODO need to make a way to use lua that isn't only in the biome
 
+        std::string biome_name;
+        cmdl("biome-name", "base") >> biome_name;
+        size_t seed;
+        cmdl("seed", SEED) >> seed;
         size_t size;
-        cmdl("size", 6) >> size;
+        cmdl("size", 64) >> size;
 
-        terrain::generation::TerrainMacroMap map =
-            terrain::generation::Biome::map_generation_test(lua_file_path, size);
+        terrain::generation::Biome biome(biome_name, seed);
+
+        auto map = biome.get_map(size);
+
+        std::filesystem::path png_save_path = files::get_argument_path(cmdl(3).str());
 
         if (!(map.get_height() == size)) {
             LOG_ERROR(logging::game_map_logger, "Error generating map.");
             return 1;
         }
 
-        image::write_result_t result = image::write_image(map, png_path);
+        auto map_rep = terrain::generation::TerrainMapRepresentation(map);
 
-        image::log_result(result, png_path);
+        image::write_result_t result = image::write_image(map_rep, png_save_path);
+
+        image::log_result(result, png_save_path);
 
         return result;
     }

@@ -49,7 +49,7 @@ namespace stamps {
  * @details This is a virtual class that handles creating tile stamps from JSON
  * Data.
  */
-class JsonToTile {
+class StampGenerator {
  protected:
     Dim height_;          // Average height generated
     Dim height_variance_; // Maximum chance from height
@@ -65,7 +65,7 @@ class JsonToTile {
     /**
      * @brief Default initializer use dictionary from "Tile_Macros" "Land_Data".
      */
-    JsonToTile(const Json::Value& data) :
+    StampGenerator(const Json::Value& data) :
         height_(data["Height"].asInt()), height_variance_(data["DH"].asInt()),
         width_(data["Size"].asInt()), width_variance_(data["DC"].asInt()),
         elements_can_stamp_(read_elements(data["Can_Overwrite"])),
@@ -87,13 +87,44 @@ class JsonToTile {
      */
     virtual size_t num_sub_region() const = 0;
 
-    virtual ~JsonToTile() {}
+    virtual ~StampGenerator() {}
 
     /**
      * @brief Read the materials and colors that this stamp can overwrite in
      * terrain. Use the "Can_Stamp" dictionary.
      */
     static MaterialGroup read_elements(const Json::Value& data);
+
+    [[nodiscard]] virtual Dim
+    height() const {
+        return height_;
+    }
+
+    [[nodiscard]] virtual Dim
+    height_variance() const {
+        return height_variance_;
+    }
+
+    [[nodiscard]] virtual Dim
+    width() const {
+        return width_;
+    }
+
+    [[nodiscard]] virtual Dim
+    width_variance() const {
+        return width_variance_;
+    }
+
+
+    [[nodiscard]] virtual MaterialId
+    material() const {
+        return stamp_material_id_;
+    }
+
+    [[nodiscard]] virtual ColorId
+    color() const {
+        return stamp_color_id_;
+    }
 
  protected:
     /**
@@ -111,7 +142,7 @@ class JsonToTile {
     get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine) const;
 };
 
-class FromPosition : public JsonToTile {
+class FromPosition : public StampGenerator {
  private:
     std::vector<glm::ivec2> points_;
     TerrainOffset center_variance_;
@@ -129,7 +160,7 @@ class FromPosition : public JsonToTile {
     FromPosition(const Json::Value& data);
 };
 
-class FromRadius : public JsonToTile {
+class FromRadius : public StampGenerator {
  private:
     TerrainOffset radius_;
     TerrainOffset number_;
@@ -146,12 +177,12 @@ class FromRadius : public JsonToTile {
     }
 
     FromRadius(const Json::Value& data) :
-        JsonToTile(data), radius_(data["Radius"]["radius"].asInt()),
+        StampGenerator(data), radius_(data["Radius"]["radius"].asInt()),
         number_(data["Radius"]["number"].asInt()),
         center_variance_(data["DC"].asInt()) {}
 };
 
-class FromGrid : public JsonToTile {
+class FromGrid : public StampGenerator {
  private:
     TerrainOffset radius_;
     TerrainOffset number_;
@@ -168,7 +199,7 @@ class FromGrid : public JsonToTile {
     }
 
     FromGrid(const Json::Value& data) :
-        JsonToTile(data), radius_(data["Grid"]["radius"].asInt()),
+        StampGenerator(data), radius_(data["Grid"]["radius"].asInt()),
         number_(data["Grid"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
 };
 
@@ -201,7 +232,7 @@ class LandGenerator {
     // const std::map<MaterialId, const Material>& materials;
     // const std::set<Material*> elements_can_stamp_;
     // const Material* material_;
-    std::vector<std::shared_ptr<stamps::JsonToTile>> stamp_generators_;
+    std::vector<std::shared_ptr<stamps::StampGenerator>> stamp_generators_;
     // Json::Value data_; // this should be a structure
 
  public:
@@ -256,6 +287,15 @@ class LandGenerator {
         current_region = 0;
         current_sub_region = 0;
     };
+
+    [[nodiscard]] inline const auto begin() const {
+        return stamp_generators_.begin();
+    }
+
+
+    [[nodiscard]] inline const auto end() const {
+        return stamp_generators_.end();
+    }
 };
 
 enum class AddDirections : uint8_t {

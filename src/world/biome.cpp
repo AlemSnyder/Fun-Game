@@ -177,21 +177,10 @@ Biome::init_lua_state(
 }
 
 TerrainMacroMap
-Biome::map_generation_test(
-    const std::filesystem::path& lua_map_generator_file, size_t size
-) {
-    sol::state lua;
-
-    Biome::init_lua_state(lua, lua_map_generator_file);
-
-    return get_map(std::move(lua), size);
-}
-
-TerrainMacroMap
-Biome::get_map(const sol::state& lua, MacroDim size) {
+Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
-    sol::protected_function map_function = lua["map"];
+    sol::protected_function map_function = lua_["map"];
 
     if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
@@ -240,8 +229,9 @@ Biome::get_map(const sol::state& lua, MacroDim size) {
     for (MacroDim x = 0; x < x_map_tiles; x++) {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             size_t map_index = x * y_map_tiles + y;
-            int value = tile_map_map[map_index].get_or<int, int>(0);
-            out.emplace_back(value, 0, x, y);
+            int tile_id = tile_map_map[map_index].get_or<int, int>(0);
+            const TileType& tile_type = macro_tile_types_[tile_id];
+            out.emplace_back(tile_type, seed_, x, y);
         }
     }
 
@@ -320,9 +310,10 @@ Biome::read_tile_macro_data_(const Json::Value& biome_data) {
 void
 Biome::read_map_tile_data_(const Json::Value& biome_data) {
     // add tile macro to tiles
-    for (const Json::Value& tile_type : biome_data["Tile_Data"]) {
-        std::vector<TileMacro_t> tile_macros;
-        for (const Json::Value& tile_macro_id : tile_type["Land_From"]) {
+    int type_id = 0; // TODO change from int
+    for (const Json::Value& tile_type_data : biome_data["Tile_Data"]) {
+        std::unordered_set<const LandGenerator*> tile_macros;
+        for (const Json::Value& tile_macro_id : tile_type_data["Land_From"]) {
             TileMacro_t tile_macro = tile_macro_id.asInt();
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
@@ -332,9 +323,12 @@ Biome::read_map_tile_data_(const Json::Value& biome_data) {
                 );
                 continue;
             }
-            tile_macros.push_back(tile_macro_id.asInt());
+//            const LandGenerator& land_generator = land_generators_[tile_macro];
+            tile_macros.insert(&land_generators_[tile_macro]);
         }
-        macro_tile_types_.push_back(std::move(tile_macros));
+//        TileType tile_type(tile_macros, type_id);
+
+        macro_tile_types_.emplace_back(tile_macros, type_id, add_to_top_generators_, materials_);
     }
 }
 

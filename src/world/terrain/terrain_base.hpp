@@ -28,6 +28,7 @@
 #include "logging.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
+#include "generation/terrain_map.hpp"
 #include "tile.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"

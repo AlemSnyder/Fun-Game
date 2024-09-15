@@ -21,6 +21,7 @@
  */
 
 #include "terrain/generation/land_generator.hpp"
+#include "terrain/generation/terrain_map.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "util/files.hpp"
 #include "plant.hpp"
@@ -109,7 +110,7 @@ class Biome {
     std::vector<generation::LandGenerator> land_generators_;
 
     // map of MapTile_t -> vector of TileMacro_t
-    std::vector<std::vector<TileMacro_t>> macro_tile_types_;
+    std::vector<TileType> macro_tile_types_;
 
     std::vector<AddToTop> add_to_top_generators_;
 
@@ -148,13 +149,8 @@ class Biome {
      *
      * @return 2D map of map tiles
      */
-    [[nodiscard]] static TerrainMacroMap
-    get_map(const sol::state& lua, MacroDim length);
-
-    [[nodiscard]] inline TerrainMacroMap
-    get_map(MacroDim length) const {
-        return get_map(lua_, length);
-    }
+    [[nodiscard]] TerrainMacroMap
+    get_map(MacroDim length) const;
 
     /**
      * @brief Get plant map
@@ -166,15 +162,15 @@ class Biome {
     [[nodiscard]] const std::map<std::string, PlantMap> get_plant_map(MacroDim length
     ) const;
 
-    inline static TerrainMacroMap
+    inline TerrainMacroMap
     single_tile_type_map(MapTile_t type) {
         std::vector<terrain::generation::MapTile> out;
         out.reserve(9);
         for (size_t i = 0; i < 4; i++)
-            out.emplace_back(0, 0);
-        out.emplace_back(type, 2);
+            out.emplace_back(get_macro_ids(0), 0);
+        out.emplace_back(get_macro_ids(type), 2);
         for (size_t i = 0; i < 4; i++)
-            out.emplace_back(0, 0);
+            out.emplace_back(get_macro_ids(0), 0);
 
         return TerrainMacroMap(out, 3, 3);
     }
@@ -194,7 +190,7 @@ class Biome {
      *
      * @return vector of TileMacro_t used to generate terrain on given MapTile_t
      */
-    [[nodiscard]] inline const std::vector<TileMacro_t>&
+    [[nodiscard]] inline const TileType&
     get_macro_ids(MapTile_t tile_id_type) const {
         return macro_tile_types_[tile_id_type];
     }

@@ -58,9 +58,8 @@ TerrainBase::TerrainBase(
     for (size_t i = 0; i < x_map_tiles; i++)
         for (size_t j = 0; j < y_map_tiles; j++) {
             generation::MapTile map_tile = macro_map.get_tile(i, j);
-            auto macro_types = biome_.get_macro_ids(map_tile.get_tile_type());
-            for (auto generator_macro : macro_types) {
-                init_area(map_tile, biome_.get_generator(generator_macro));
+            for (auto generator_macro : map_tile.get_type()) {
+                init_area(map_tile, *generator_macro);
             }
         }
 

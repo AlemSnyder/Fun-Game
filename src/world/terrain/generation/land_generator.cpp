@@ -38,7 +38,7 @@ LandGenerator::LandGenerator(const Json::Value& data) :
         std::string type = region["Type"].asString();
         char first_character = type.at(0);
 
-        std::shared_ptr<stamps::JsonToTile> stamp_generator;
+        std::shared_ptr<stamps::StampGenerator> stamp_generator;
         switch (first_character) {
             case 'P':
                 [[fallthrough]];
@@ -81,7 +81,7 @@ LandGenerator::next() {
 namespace stamps {
 
 TileStamp
-JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
+StampGenerator::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
     const {
     // center_x between center[1][0] and center[0][0] inclusive
     std::uniform_int_distribution<TerrainOffset> center_x_dist(
@@ -143,7 +143,7 @@ JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_eng
 }
 
 MaterialGroup
-JsonToTile::read_elements(const Json::Value& data) {
+StampGenerator::read_elements(const Json::Value& data) {
     // want to return a group that represents the given data
     // There will be elements with no requirements on the color
     std::set<MaterialId> materials;
@@ -219,7 +219,7 @@ FromRadius::get_stamp(
 }
 
 FromPosition::FromPosition(const Json::Value& data) :
-    JsonToTile(data), center_variance_(data["DC"].asInt()) {
+    StampGenerator(data), center_variance_(data["DC"].asInt()) {
     points_.reserve(data["Positions"].size());
 
     for (const Json::Value& point : data["Positions"]) {
@@ -259,9 +259,10 @@ FromGrid::get_stamp(size_t current_sub_region, std::default_random_engine& rand_
 } // namespace stamps
 
 AddToTop::AddToTop(const Json::Value& json_data) :
-    elements_above_(stamps::JsonToTile::read_elements(json_data["above_colors"])),
-    elements_can_overwrite_(stamps::JsonToTile::read_elements(json_data["Can_Overwrite"]
-    )),
+    elements_above_(stamps::StampGenerator::read_elements(json_data["above_colors"])),
+    elements_can_overwrite_(
+        stamps::StampGenerator::read_elements(json_data["Can_Overwrite"])
+    ),
     stamp_material_id_(json_data["Material_id"].asInt()),
     stamp_color_id_(json_data["Color_id"].asInt()) {
     for (const Json::Value& range_data : json_data["how_to_add"]) {
