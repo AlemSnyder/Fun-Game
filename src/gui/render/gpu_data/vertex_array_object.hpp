@@ -13,6 +13,9 @@ class VertexArrayObject {
     GLuint vertex_array_;
 
  public:
+    /**
+     * @brief construct a new VertexArrayObject
+     */
     inline VertexArrayObject() {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { glGenVertexArrays(1, &vertex_array_); });
@@ -33,17 +36,28 @@ class VertexArrayObject {
         });
     };
 
+    /**
+     * @brief Get the vertex array index
+     * 
+     * @return GLuint vertex_array_
+     */
     [[nodiscard]] inline GLuint
     get() {
         return vertex_array_;
     }
 
+    /**
+     * @brief Bind this vertex array
+     */
     inline void
     bind() const {
         auto& handler = VertexBufferHandler::instance();
         handler.bind_vertex_buffer(vertex_array_);
     }
 
+    /**
+     * @brief Release this vertex array
+     */
     inline void
     release() const {
         auto& handler = VertexBufferHandler::instance();

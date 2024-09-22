@@ -141,6 +141,8 @@ class Render_Base {
     }
 };
 
+// TODO each of these should use the glMulti... version of the given command
+
 /**
  * @brief No elements No instancing
  */

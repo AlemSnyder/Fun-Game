@@ -3,3 +3,14 @@ advanced
 row height
 
 use sorted on line 5299 of imgui_demo.cpp
+
+drawing vertex face:
+four bits for adjacent blocks
+2 bits for directions
+
+3 x 4 bits for position (16) or 3 x 8 (256)
+8 bits color id
+
+could change to 3 x 32 bit int for position
+
+and 14 bits in an int for the other data

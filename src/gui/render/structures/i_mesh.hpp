@@ -67,6 +67,11 @@ class IMeshGPU : virtual public GPUDataElements {
     IMeshGPU& operator=(const IMeshGPU& other) = delete;
     IMeshGPU& operator=(IMeshGPU&& other) = default;
 
+    /**
+     * @brief Construct a new NonInstancedIMeshGPU object
+     * 
+     * @details Default constructor
+     */
     inline IMeshGPU() :
         vertex_array_(), color_array_(), normal_array_(), element_array_(),
         num_vertices_(), do_render_() {

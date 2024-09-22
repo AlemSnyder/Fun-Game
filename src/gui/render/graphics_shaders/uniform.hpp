@@ -37,34 +37,75 @@ namespace shader {
 
 class UniformsVector;
 
+/**
+ * @brief Representation of a uniform
+ *
+ * @details Use virtual inheritance to extend this class.
+ * overwrite the bind method to send uniform data to the given
+ * uniform ID. 
+ */
 class Uniform {
     friend UniformsVector;
 
  protected:
-    const std::string name_;
-    const std::string type_;
+    const std::string name_; // name used in shader program
+    const std::string type_; // glsl type as stirng
 
  public:
+    /**
+     * @brief Get the name of the uniform
+     *
+     * @return const std::stirng& name used in shader program
+     */
     inline virtual const std::string&
     get_name() const {
         return name_;
     }
 
+    /**
+     * @brief Get the glsl type as a string
+     *
+     * @return const std::string& glsl type
+     */
     inline virtual const std::string&
     get_type() const {
         return type_;
     }
 
+    /**
+     * @brief Virtual method to override
+     *
+     * @details Use glUniform{__} to send data to the given uniform ID
+     *
+     * @param Glint uniform_ID uniform ID to send data to. 
+     */
     virtual void bind(GLint uniform_ID) = 0;
 
+    /**
+     * @brief Construct a new Uniform object
+     *
+     * @param std::string name name of uniform used in shader program
+     * @param std::string type glsl type
+     */
     inline Uniform(std::string name, std::string type) : name_(name), type_(type) {}
 };
 
+/**
+ * @brief The set of uniforms used in any particular program
+ */
 class UniformsVector {
  private:
+    // why are these a vector? I guess I don't want to bother with a hash,
+    // and it's not like we need to insert many things into this
     std::vector<std::shared_ptr<Uniform>> uniforms_;
 
  public:
+    /**
+     * @brief Get a set of all names and their corresponding type of uniforms
+     * in this object.
+     *
+     * @return std::set<std::pair<std::string, std::string>> set of [names, type]
+     */
     std::set<std::pair<std::string, std::string>> get_names() const;
 
     UniformsVector(std::vector<std::shared_ptr<Uniform>> uniforms) :

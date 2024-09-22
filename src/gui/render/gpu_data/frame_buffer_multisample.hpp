@@ -52,11 +52,23 @@ class FrameBufferMultisample {
     /**
      * @brief Delete constructor method
      *
+     * @details This is effectively a pointer. Copping this will delete the framebuffer
+     * and leave the class in an invalid state.
+     *
      * @param FrameBufferMultisample
      */
     FrameBufferMultisample(const FrameBufferMultisample& obj) = delete;
-    FrameBufferMultisample(const FrameBufferMultisample&& obj) = delete;
-    FrameBufferMultisample& operator=(const FrameBufferMultisample&& obj) = delete;
+    FrameBufferMultisample& operator=(const FrameBufferMultisample& obj) = delete;
+
+    /**
+     * @brief Move constructors
+     * 
+     * @details Move constructors are valid because the deconstructor will not be called.
+     * 
+     * @param FrameBufferMultisample
+     */
+    FrameBufferMultisample(FrameBufferMultisample&& obj) = default;
+    FrameBufferMultisample& operator=(FrameBufferMultisample&& obj) = default;
 
     /**
      * @brief Delete constructor method

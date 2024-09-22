@@ -339,6 +339,11 @@ class Program : public ProgramData {
         return program_ID_;
     }
 
+    /**
+     * @brief Get the program name
+     * 
+     * @return std::string program name
+     */
     [[nodiscard]] inline std::string
     get_name() const noexcept {
         return name_;
@@ -443,9 +448,12 @@ class ShaderHandler {
      */
     void clear();
 
+    /**
+     * @brief construct a new ShaderHandler
+     */
     inline ShaderHandler(){};
 
-    inline ~ShaderHandler() { shaders_.clear(); }
+    inline ~ShaderHandler() {}
 };
 
 } // namespace shader

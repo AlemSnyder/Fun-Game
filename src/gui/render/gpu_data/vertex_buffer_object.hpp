@@ -1,3 +1,26 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file Vertex_buffer_object.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines VertexBufferObject class
+ *
+ * @ingroup GUI  GPU_DATA
+ *
+ */
+
 #pragma once
 
 #include "../gl_enums.hpp"
@@ -30,6 +53,18 @@ struct GPUStructureType {
     const GPUDataType draw_type; // type of smallest unit of memory
 
  private:
+     /**
+     * @brief Construct a new GPUStructureType.
+     * 
+     * @details This one directly copies the given data in this class. Use a templated
+     * constructor with no arguments for the correct values.
+     * 
+     * @param uint8_t major_size_ the number of dimensions in a given vector
+     * @param uint8_t minor_size_ if matrix the number of rows
+     * @param uint8_t type_size the size in bytes of the low level value being stored
+     * @param bool is_int weather or not the data should be interpreted as an integer.
+     * @param GPUDataType draw_type buffer type.
+     */
     inline constexpr GPUStructureType(
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
         GPUDataType draw_type
@@ -38,7 +73,6 @@ struct GPUStructureType {
         minor_size(minor_size_), type_size(type_size), is_int(is_int),
         draw_type(draw_type) {}
 
- public:
     template <
         uint8_t major_size_T, uint8_t minor_size_T, uint8_t type_size_T, bool is_int_T,
         GPUDataType draw_type_T>
@@ -130,6 +164,7 @@ struct GPUStructureType {
         return create_from_data<1, 1, 1, true, GPUDataType::BYTE>();
     }
 
+ public:
     template <class T>
     constexpr static GPUStructureType
     create() {
@@ -167,7 +202,7 @@ class VertexBufferObject {
     /**
      * @brief Construct VertexBufferObject with data
      *
-     * @param std::vector<T>& data data to send to GPU
+     * @param const std::vector<T>& data data to send to GPU
      */
     inline explicit VertexBufferObject(const std::vector<T>& data) :
         VertexBufferObject(data, 0) {}
@@ -232,6 +267,11 @@ class VertexBufferObject {
         return divisor_;
     }
 
+    /**
+     * @brief Get the array's size
+     * 
+     * @return size_t size_
+     */
     [[nodiscard]] inline size_t
     size() const noexcept {
         return size_;
@@ -240,32 +280,66 @@ class VertexBufferObject {
     ~VertexBufferObject() { glDeleteBuffers(1, &buffer_ID_); }
 
     /**
-     * @brief Attach to the given index
+     * @brief Attach to the given index.
      *
      * @param GLuint index the location = # in programs
      */
     void attach_to_vertex_attribute(GLuint index) const;
 
+    /**
+     * @brief Bind this vertex buffer object.
+     */
     inline void bind() const;
 
+    /**
+     * @brief Get array type.
+     * 
+     * @return GPUArrayType array type
+     */
     [[nodiscard]] inline constexpr static GPUStructureType
     get_array_type() {
         constexpr GPUStructureType data_type = GPUStructureType::create<T>();
         return data_type;
     }
 
+    /**
+     * @brief Get data type
+     * 
+     * @return GPUDataType underlying data type
+     */
     [[nodiscard]] inline constexpr static GPUDataType
     get_opengl_numeric_type() {
         constexpr GPUDataType draw_type = get_array_type().draw_type;
         return draw_type;
     }
 
+    /**
+     * @brief Get the matrix row dimension
+     * 
+     * @return uint8_t row dimension
+     */
     [[nodiscard]] inline constexpr static uint8_t
     get_major_size() {
         constexpr uint8_t major_size = get_array_type().major_size;
         return major_size;
     }
 
+    /**
+     * @brief Get the matrix column dimension
+     * 
+     * @return uint8_t column dimension
+     */
+    [[nodiscard]] inline constexpr static uint8_t
+    get_minor_size() {
+        constexpr uint8_t minor_size = get_array_type().minor_size;
+        return minor_size;
+    }
+
+    /**
+     * @brief Get the size of the underling type
+     * 
+     * @return uint8_t type size
+     */
     [[nodiscard]] inline constexpr static uint8_t
     get_type_size() {
         constexpr uint8_t type_size = get_array_type().type_size;
