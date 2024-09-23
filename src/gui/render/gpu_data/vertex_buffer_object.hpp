@@ -243,7 +243,7 @@ class VertexBufferObject {
     update(std::vector<T> data, GLuint offset) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data = std::move(data), offset]() {
-            this->private_insert_(data.data(), offset, data.size());
+            this->private_insert_(data.data(), data.size(), offset, data.size() + offset);
         });
     };
 
