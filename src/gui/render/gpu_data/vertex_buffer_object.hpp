@@ -190,7 +190,7 @@ class VertexBufferObject {
     /**
      * @brief Default constructor
      */
-    inline VertexBufferObject() : divisor_(0), alloc_size_(0) {
+    inline VertexBufferObject() : divisor_(0), size_(0), alloc_size_(0) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { glGenBuffers(1, &buffer_ID_); });
     }
@@ -214,14 +214,14 @@ class VertexBufferObject {
      * @param GLuint divisor go look up instancing
      */
     inline explicit VertexBufferObject(const std::vector<T>& data, GLuint divisor) :
-        divisor_(divisor) {
+        divisor_(divisor), size_(0), alloc_size_(0)  {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
             LOG_BACKTRACE(
                 logging::opengl_logger, "Buffer ID before generation: {}", buffer_ID_
             );
             glGenBuffers(1, &buffer_ID_);
-            this->private_insert_(data.data(), data.size(), 0, data.size());
+            this->private_insert_(data.data(), data.size(), 0, 0);
         });
     };
 
@@ -243,7 +243,8 @@ class VertexBufferObject {
     update(std::vector<T> data, GLuint offset) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data = std::move(data), offset]() {
-            this->private_insert_(data.data(), data.size(), offset, data.size() + offset);
+            size_t end = std::min(size_, data.size() + offset);
+            this->private_insert_(data.data(), data.size(), offset, end);
         });
     };
 
@@ -378,7 +379,7 @@ VertexBufferObject<T, Buffer>::private_insert_(
     );
 
     assert(
-        start < alloc_size_ && end < alloc_size_ && "start and end must be within array"
+        start <= size_ && end <= size_ && "start and end must be within array"
     );
 
     assert(end >= start && "end must be greater than or equal to start");
