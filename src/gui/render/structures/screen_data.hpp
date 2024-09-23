@@ -27,7 +27,7 @@ class ScreenData : public virtual GPUData {
      * @brief Deleted copy operator
      */
     ScreenData& operator=(const ScreenData& obj) = delete;
-    
+
     /**
      * @brief Construct a new Screen Data object, default constructor
      *

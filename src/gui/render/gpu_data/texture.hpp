@@ -26,8 +26,8 @@ class Texture1D {
 
     /**
      * @brief Bind texture to given texture index
-     * 
-     * @param texture_index 
+     *
+     * @param texture_index
      */
     inline void
     bind(GLuint texture_index) const {
@@ -37,7 +37,7 @@ class Texture1D {
 
     /**
      * @brief Construct a new Texture1D from a vector of colors
-     * 
+     *
      * @param std::vector<ColorFloat>& color_data
      */
     Texture1D(const std::vector<ColorFloat>& color_data);
@@ -46,7 +46,7 @@ class Texture1D {
 
     /**
      * @brief Get the texture id
-     * 
+     *
      * @return GLuint the texture id
      */
     [[nodiscard]] inline GLuint
@@ -77,8 +77,8 @@ class Texture2D {
  public:
     /**
      * @brief Construct a new Texture2D from a vector of vectors of colors
-     * 
-     * @param const std::vector<std::vector<ColorFloat>>& color_data 
+     *
+     * @param const std::vector<std::vector<ColorFloat>>& color_data
      */
     inline Texture2D(const std::vector<std::vector<ColorFloat>>& color_data) :
         Texture2D(pad_color_data(color_data)) {}
@@ -87,7 +87,7 @@ class Texture2D {
 
     /**
      * @brief Get the texture id
-     * 
+     *
      * @return GLuint the texture id
      */
     [[nodiscard]] inline GLuint
@@ -97,8 +97,8 @@ class Texture2D {
 
     /**
      * @brief Bind texture to given texture index
-     * 
-     * @param texture_index 
+     *
+     * @param texture_index
      */
     inline void
     bind(GLuint texture_index) const {

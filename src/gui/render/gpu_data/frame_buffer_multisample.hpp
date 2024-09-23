@@ -62,9 +62,10 @@ class FrameBufferMultisample {
 
     /**
      * @brief Move constructors
-     * 
-     * @details Move constructors are valid because the deconstructor will not be called.
-     * 
+     *
+     * @details Move constructors are valid because the deconstructor will not be
+     * called.
+     *
      * @param FrameBufferMultisample
      */
     FrameBufferMultisample(FrameBufferMultisample&& obj) = default;

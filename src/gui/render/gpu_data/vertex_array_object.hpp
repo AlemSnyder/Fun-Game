@@ -38,7 +38,7 @@ class VertexArrayObject {
 
     /**
      * @brief Get the vertex array index
-     * 
+     *
      * @return GLuint vertex_array_
      */
     [[nodiscard]] inline GLuint

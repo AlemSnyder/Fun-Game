@@ -42,7 +42,7 @@ class UniformsVector;
  *
  * @details Use virtual inheritance to extend this class.
  * overwrite the bind method to send uniform data to the given
- * uniform ID. 
+ * uniform ID.
  */
 class Uniform {
     friend UniformsVector;
@@ -77,7 +77,7 @@ class Uniform {
      *
      * @details Use glUniform{__} to send data to the given uniform ID
      *
-     * @param Glint uniform_ID uniform ID to send data to. 
+     * @param Glint uniform_ID uniform ID to send data to.
      */
     virtual void bind(GLint uniform_ID) = 0;
 

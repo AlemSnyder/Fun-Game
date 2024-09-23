@@ -69,7 +69,7 @@ class IMeshGPU : virtual public GPUDataElements {
 
     /**
      * @brief Construct a new NonInstancedIMeshGPU object
-     * 
+     *
      * @details Default constructor
      */
     inline IMeshGPU() :
