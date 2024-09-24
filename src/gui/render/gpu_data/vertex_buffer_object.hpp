@@ -214,7 +214,7 @@ class VertexBufferObject {
      * @param GLuint divisor go look up instancing
      */
     inline explicit VertexBufferObject(const std::vector<T>& data, GLuint divisor) :
-        divisor_(divisor), size_(0), alloc_size_(0)  {
+        divisor_(divisor), size_(0), alloc_size_(0) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
             LOG_BACKTRACE(
@@ -378,9 +378,7 @@ VertexBufferObject<T, Buffer>::private_insert_(
         "You messed up how you do math"
     );
 
-    assert(
-        start <= size_ && end <= size_ && "start and end must be within array"
-    );
+    assert(start <= size_ && end <= size_ && "start and end must be within array");
 
     assert(end >= start && "end must be greater than or equal to start");
 
@@ -398,7 +396,18 @@ VertexBufferObject<T, Buffer>::private_insert_(
 
     // size_t size_ = alloc_size_;
 
-    if (start + data_size + (size_ - end) > alloc_size_) { // done
+    if (start == 0 && end == size_) {
+        bind();
+
+        alloc_size_ = data_size;
+
+        glBufferData(
+            static_cast<GLenum>(Buffer), alloc_size_ * type_size, data_begin,
+            GL_DYNAMIC_DRAW
+        );
+        size_ = alloc_size_;
+
+    } else if (start + data_size + (size_ - end) > alloc_size_) { // done
         // the size of the new array is large than the allocated size
         // copy end to size_
         alloc_size_ = start + data_size + (size_ - end);
