@@ -2,12 +2,6 @@
 
 namespace gui {
 
-namespace gpu_data {
+namespace gpu_data {}
 
-
-
-
-
-}
-
-}
+} // namespace gui

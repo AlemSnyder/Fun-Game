@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "mesh.hpp"
+// #include "mesh.hpp"
 #include "vertex_buffer_object.hpp"
 
 #include <cstdint>
@@ -12,11 +12,12 @@ struct DrawElementsIndirectCommand {
     uint count;         // Specifies the number of elements to be rendered.
     uint instanceCount; // Specifies the number of instances of the indexed geometry
                         // that should be drawn. (1)
-    uint firstIndex;    // Specifies an offset to the location where the indices are stored.
-    int baseVertex;     // Specifies a constant that should be added to each element of
-                        // indices when chosing elements from the enabled vertex arrays.
-    uint baseInstance;  // Specifies the base instance for use in fetching instanced
-                        // vertex attributes. (0)
+    uint
+        firstIndex; // Specifies an offset to the location where the indices are stored.
+    int baseVertex; // Specifies a constant that should be added to each element of
+                    // indices when chosing elements from the enabled vertex arrays.
+    uint baseInstance; // Specifies the base instance for use in fetching instanced
+                       // vertex attributes. (0)
 };
 
 namespace gui {
@@ -43,14 +44,12 @@ class MultiBuffer {
 
     //    bool reserve(size_t mesh_number, size_t mesh_size, size_t elements_size);
 
-    bool
-    update_component(
+    bool update_component(
         size_t id, std::vector<uint16_t> elements,
         std::tuple<std::vector<Data_Types>...> data
     );
 
-    bool
-    update_component(
+    bool update_component(
         size_t id, std::vector<uint16_t> elements, std::vector<Data_Types>... data
     );
 
@@ -62,6 +61,10 @@ class MultiBuffer {
     void bind() const;
 
     void release() const;
+
+    std::tuple<std::vector<Data_Types>...> get_all_data() const;
+
+    std::vector<std::uint16_t> get_element_data() const;
 
  private:
     bool update_by_index_(
@@ -95,7 +98,6 @@ MultiBuffer<Data_Types...>::update_by_index_(
     const size_t vertex_size = std::get<0>(data_).size();
 
     for (size_t i = 0; i < std::tuple_size(data_); i++) {
-
         assert(vertex_size == std::get<i>(data_).size());
 
         const auto& new_array_data = std::get<i>(data);
@@ -104,16 +106,20 @@ MultiBuffer<Data_Types...>::update_by_index_(
         );
     }
 
-    element_array_buffer_.insert(elements, command.firstIndex, command.firstIndex + command.count);
+    element_array_buffer_.insert(
+        elements, command.firstIndex, command.firstIndex + command.count
+    );
 
     const int size_difference = elements.size() - command.count;
-    const int vertex_size_difference = vertex_size - command.baseVertex + data_array_end_[index];
+    const int vertex_size_difference =
+        vertex_size - command.baseVertex + data_array_end_[index];
 
     command.count = elements.size();
 
     // update first index of everything past id
-    for (size_t further_index = index + 1; further_index < draw_commands_.size(); further_index++) {
-        draw_commands_[further_index].firstIndex += size_difference;// assert on size
+    for (size_t further_index = index + 1; further_index < draw_commands_.size();
+         further_index++) {
+        draw_commands_[further_index].firstIndex += size_difference; // assert on size
         draw_commands_[further_index].baseVertex += vertex_size_difference;
     }
 
@@ -142,10 +148,9 @@ size_t
 MultiBuffer<Data_Types...>::add_component(
     std::vector<uint16_t> elements, std::vector<Data_Types>... data
 ) {
-
     size_t out;
 
-    if (!unused_ids_.empty()){
+    if (!unused_ids_.empty()) {
         auto iterator = unused_ids_.begin();
         out = *iterator;
         unused_ids_.erase(iterator);
@@ -156,12 +161,11 @@ MultiBuffer<Data_Types...>::add_component(
 
     size_t index = draw_commands_.size();
 
-
-    uint count = 0;                     // number of elements: will be assigned later
-    uint instanceCount = 1;             // 1 (using terrain only one instance)
+    uint count = 0;         // number of elements: will be assigned later
+    uint instanceCount = 1; // 1 (using terrain only one instance)
     uint firstIndex = element_array_buffer_.size(); // begin of indecies array
-    int baseVertex = std::get<0>(data_).size(); // begin of data arrays
-    uint baseInstance = 0;                      // 0 no instances
+    int baseVertex = std::get<0>(data_).size();     // begin of data arrays
+    uint baseInstance = 0;                          // 0 no instances
 
     DrawElementsIndirectCommand command(
         count, instanceCount, firstIndex, baseVertex, baseInstance
@@ -201,6 +205,26 @@ MultiBuffer<Data_Types...>::bind() const {}
 template <class... Data_Types>
 void
 MultiBuffer<Data_Types...>::release() const {}
+
+template <class... Data_Types>
+std::tuple<std::vector<Data_Types>...>
+MultiBuffer<Data_Types...>::get_all_data() const {
+    std::tuple<std::vector<Data_Types>...> out;
+
+    for (size_t i = 0; i < std::tuple_size(data_); i++) {
+        //        assert(vertex_size == std::get<i>(data_).size());
+
+        std::get<i>(out) = std::get<i>(data_).read();
+    }
+
+    return out;
+}
+
+template <class... Data_Types>
+std::vector<std::uint16_t>
+MultiBuffer<Data_Types...>::get_element_data() const {
+    return element_array_buffer_.read();
+};
 
 } // namespace gpu_data
 
