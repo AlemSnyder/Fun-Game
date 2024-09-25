@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util/files.hpp"
 #include "glm_logging.hpp"
+#include "util/files.hpp"
 
 #include <config.h>
 #include <quill/Backend.h>

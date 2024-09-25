@@ -1,22 +1,22 @@
 #if 0
-#pragma once
+#  pragma once
 
 // Always required
-#include "quill/bundled/fmt/format.h"
-#include "quill/core/Codec.h"
-#include "quill/core/DynamicFormatArgStore.h"
-#include "quill/core/InlinedVector.h"
+#  include "quill/bundled/fmt/format.h"
+#  include "quill/core/Codec.h"
+#  include "quill/core/DynamicFormatArgStore.h"
+#  include "quill/core/InlinedVector.h"
 
 // To serialise the std::array member of User you need Array.h otherwise you don't need to include this
-#include "quill/std/Array.h"
-#include "quill/std/Vector.h"
+#  include "quill/std/Array.h"
+#  include "quill/std/Vector.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#  include <glm/glm.hpp>
+#  include <glm/gtc/type_ptr.hpp>
+#  include <glm/gtx/string_cast.hpp>
 
-#include <utility> // for declval only required if you do the decoding manualy and use declval
-#include <array>
+#  include <array>
+#  include <utility> // for declval only required if you do the decoding manualy and use declval
 
 /***/
 template <int i, class T, glm::qualifier Q>

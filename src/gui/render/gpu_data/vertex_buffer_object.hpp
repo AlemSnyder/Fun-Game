@@ -384,7 +384,7 @@ VertexBufferObject<T, Buffer>::private_insert_(
 
     assert(end >= start && "end must be greater than or equal to start");
 
-    size_t element_size = sizeof(T);
+    const size_t element_size = sizeof(T);
 
     size_t data_size_in_bytes = data_size * element_size;
 
@@ -409,7 +409,7 @@ VertexBufferObject<T, Buffer>::private_insert_(
         );
         size_ = alloc_size_;
 
-    } else if (start + data_size + (size_ - end) > alloc_size_) { // done
+    } else if (start + data_size + (size_ - end) > alloc_size_) { // Tested
         // the size of the new array is large than the allocated size
         // copy end to size_
         alloc_size_ = start + data_size + (size_ - end);
@@ -506,7 +506,7 @@ VertexBufferObject<T, Buffer>::private_insert_(
 
             size_ = alloc_size_;
 
-        } else { 
+        } else {
             if (end == size_) {
                 // no used data past what is inserted
                 // DO TEST
@@ -542,7 +542,7 @@ VertexBufferObject<T, Buffer>::private_insert_(
 
                 glDeleteBuffers(1, &new_buffer);
             }
-            size_ = size_ + data_size + (end - start);
+            size_ = size_ + data_size - (end - start);
         }
     }
 }
@@ -625,8 +625,6 @@ template <class T, BindingTarget Buffer>
 
 [[nodiscard]] std::vector<T>
 VertexBufferObject<T, Buffer>::read() const {
-    constexpr GPUStructureType data_type = GPUStructureType::create<T>();
-
     if (size_ == 0) {
         return {};
     }
@@ -637,9 +635,7 @@ VertexBufferObject<T, Buffer>::read() const {
 
     bind();
 
-    glGetBufferSubData(
-        static_cast<GLenum>(Buffer), 0, size_ * data_type.type_size, out.data()
-    );
+    glGetBufferSubData(static_cast<GLenum>(Buffer), 0, size_ * sizeof(T), out.data());
 
     return out;
 }
