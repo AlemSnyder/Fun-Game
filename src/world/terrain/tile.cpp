@@ -164,19 +164,4 @@ Tile::operator>(const Tile other) const {
     }
 }
 
-bool
-TilePCompare::operator()(const Tile* lhs, const Tile* rhs) const {
-    if (lhs->get_x() < rhs->get_x()) {
-        return true;
-    } else if (lhs->get_x() > rhs->get_x()) {
-        return false;
-    } else if (lhs->get_y() < rhs->get_y()) {
-        return true;
-    } else if (lhs->get_y() > rhs->get_y()) {
-        return false;
-    } else {
-        return lhs->get_z() < rhs->get_z();
-    }
-}
-
 } // namespace terrain

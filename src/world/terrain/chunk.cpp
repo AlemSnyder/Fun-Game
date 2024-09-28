@@ -38,7 +38,7 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
     auto it = node_groups_.begin();
     while (it != node_groups_.end()) {
         // to merge = get_adjacent_map()
-        std::set<NodeGroup*> to_merge;
+        std::unordered_set<NodeGroup*> to_merge;
         for (std::pair<NodeGroup* const, UnitPath> other : (it)->get_adjacent_map()) {
             if (contains_node_group_(other.first)) {
                 to_merge.insert(other.first);
@@ -51,13 +51,13 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
 }
 
 void
-Chunk::merge_(NodeGroup& G1, std::set<NodeGroup*> to_merge) {
+Chunk::merge_(NodeGroup& G1, std::unordered_set<NodeGroup*> to_merge) {
     if (to_merge.size() == 0) {
         return;
     }
     while (to_merge.size() > 0) {
         auto G2 = to_merge.begin();
-        std::map<NodeGroup*, UnitPath> to_add = G1.merge_groups(**(G2));
+        std::unordered_map<NodeGroup*, UnitPath> to_add = G1.merge_groups(**(G2));
         delete_node_group_(**G2);
         for (std::pair<NodeGroup* const, UnitPath> NG : to_add) {
             if (contains_node_group_(NG.first) && &G1 != NG.first) {
@@ -69,7 +69,7 @@ Chunk::merge_(NodeGroup& G1, std::set<NodeGroup*> to_merge) {
 }
 
 void
-Chunk::add_nodes_to(std::set<const NodeGroup*>& out) const {
+Chunk::add_nodes_to(std::unordered_set<const NodeGroup*>& out) const {
     for (auto it = node_groups_.begin(); it != node_groups_.end(); it++) {
         auto& elem = *it;
         out.insert(&elem); // Ptr to element

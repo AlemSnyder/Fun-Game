@@ -24,7 +24,7 @@
 #include "util/voxel.hpp"
 
 #include <list>
-#include <set>
+#include <unordered_set>
 
 namespace terrain {
 
@@ -65,7 +65,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @param out a set that gets the node groups in this chunk added to it
      */
-    void add_nodes_to(std::set<const NodeGroup*>& out) const;
+    void add_nodes_to(std::unordered_set<const NodeGroup*>& out) const;
 
     /**
      * @brief Used for getting mesh
@@ -144,7 +144,7 @@ class Chunk : public voxel_utility::VoxelBase {
     void delete_node_group_(NodeGroup& NG);
     void merge_node_group_(NodeGroup& g1, NodeGroup& g2);
     bool contains_node_group_(NodeGroup*);
-    void merge_(NodeGroup& g1, std::set<NodeGroup*> to_merge);
+    void merge_(NodeGroup& g1, std::unordered_set<NodeGroup*> to_merge);
 };
 
 /**

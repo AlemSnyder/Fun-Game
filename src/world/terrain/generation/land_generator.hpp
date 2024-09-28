@@ -229,7 +229,7 @@ class LandGenerator {
     size_t current_region;
     size_t current_sub_region;
 
-    // const std::map<MaterialId, const Material>& materials;
+    // const std::unordered_map<MaterialId, const Material>& materials;
     // const std::set<Material*> elements_can_stamp_;
     // const Material* material_;
     std::vector<std::shared_ptr<stamps::StampGenerator>> stamp_generators_;

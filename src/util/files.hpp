@@ -80,17 +80,16 @@ open_resource_file(std::filesystem::path path) {
 
 /**
  * @brief Get full path of path passed as command line argument.
- * 
+ *
  * @param std::filesystem::path path given as command line argument.
- * 
+ *
  * @return `std::filesystem::path` full path
  */
 inline std::filesystem::path
 get_argument_path(std::filesystem::path path) {
-    if (path.is_absolute()){
+    if (path.is_absolute()) {
         return path;
-    }
-    else {
+    } else {
         // yes I know this can be unsafe as current path can change
         // we could save it as a static variable in some function
         // but it probably won't change

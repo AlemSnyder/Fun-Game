@@ -14,7 +14,7 @@ std::unordered_map<ColorInt, MatColorId> TerrainColorMapping::colors_inverse_map
 
 void
 TerrainColorMapping::assign_color_mapping(
-    const std::map<MaterialId, const Material>& materials
+    const std::unordered_map<MaterialId, const Material>& materials
 ) {
     color_ids_map.clear();
     colors_inverse_map.clear();

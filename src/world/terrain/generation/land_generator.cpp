@@ -146,9 +146,9 @@ MaterialGroup
 StampGenerator::read_elements(const Json::Value& data) {
     // want to return a group that represents the given data
     // There will be elements with no requirements on the color
-    std::set<MaterialId> materials;
+    std::unordered_set<MaterialId> materials;
     // amd some with requirements on the color
-    std::map<MaterialId, std::set<ColorId>> materials_w_color;
+    std::unordered_map<MaterialId, std::unordered_set<ColorId>> materials_w_color;
 
     for (const Json::Value& material_data : data) {
         // read the material id from the data

@@ -49,6 +49,14 @@ struct WorleyPoint {
     operator<=>(const WorleyPoint& other) const {
         return x_position <=> other.x_position;
     }
+
+    bool
+    operator==(const WorleyPoint& other) const {
+        return (
+            (x_position == other.x_position) && (y_position == other.y_position)
+            && (radius == other.radius) && (positive == other.positive)
+        );
+    }
 };
 
 /**
