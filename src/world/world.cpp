@@ -143,8 +143,7 @@ void
 World::update_marked_chunks_mesh() {
     for (auto chunk_pos : chunks_to_update_) {
         GlobalContext& context = GlobalContext::instance();
-        context.submit_task(
-            [this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
+        context.submit_task([this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
         );
     }
     chunks_to_update_.clear();
@@ -168,9 +167,9 @@ World::update_all_chunks_mesh() {
     wait_for.reserve(num_chunks);
     GlobalContext& context = GlobalContext::instance();
     for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
-        auto future = context.submit_task(
-            [this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
-        );
+        auto future = context.submit_task([this, chunk_pos]() {
+            this->update_single_mesh(chunk_pos);
+        });
         wait_for.push_back(std::move(future));
     }
     // Should only wait for the previously queued tasks.

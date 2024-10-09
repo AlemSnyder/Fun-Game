@@ -25,9 +25,9 @@
 
 #include "generation/terrain_genreration_types.hpp"
 #include "gui/render/gpu_data/texture.hpp"
+#include "logging.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
-#include "logging.hpp"
 
 #include <glaze/glaze.hpp>
 
@@ -262,14 +262,15 @@ class MaterialGroup {
         if (value)
             return {};
         else {
-
-            LOG_WARNING(logging::file_io_logger, "colors = false. Why would you do this? It does nothing.");
+            LOG_WARNING(
+                logging::file_io_logger,
+                "colors = false. Why would you do this? It does nothing."
+            );
             return std::vector<ColorId>();
         }
     }
 
  private:
-
     inline static std::optional<std::vector<ColorId>>
     read_colors(ColorId value) {
         return {{value}};
@@ -285,8 +286,10 @@ class MaterialGroup {
         if (value)
             return {};
         else {
-
-            LOG_WARNING(logging::file_io_logger, "material = false. Why would you do this? It does nothing.");
+            LOG_WARNING(
+                logging::file_io_logger,
+                "material = false. Why would you do this? It does nothing."
+            );
             return std::vector<MaterialId>();
         }
     }

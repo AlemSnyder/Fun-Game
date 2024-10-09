@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "fmt/core.h"
 #include "gui/render/gpu_data/array_buffer.hpp"
 #include "gui/render/gpu_data/gpu_data.hpp"
 #include "gui/render/gpu_data/static_mesh.hpp"
@@ -25,29 +24,12 @@ struct global_illumination_t {
     float diffuse;
 };
 
-// TODO move to cpp
 struct remapping_t {
     std::unordered_map<ColorInt, ColorInt> map;
 
-    void
-    read_map(std::unordered_map<std::string, std::string> input) {
-        for (const auto& [k, v] : input)
-            map[std::stoull(k, nullptr, 16)] = std::stoull(v, nullptr, 16);
-    }
+    void read_map(std::unordered_map<std::string, std::string> input);
 
-    std::unordered_map<std::string, std::string>
-    write_map() const {
-        std::unordered_map<std::string, std::string> res;
-
-        for (const auto& [key, value] : map) {
-            std::string str_key = fmtquill::format("{:08X}", key);
-            std::string str_value = fmtquill::format("{:08X}", value);
-
-            res.insert({str_key, str_value});
-        }
-
-        return res;
-    }
+    std::unordered_map<std::string, std::string> write_map() const;
 };
 
 struct model_t {
