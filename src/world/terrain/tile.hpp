@@ -40,7 +40,6 @@ namespace terrain {
  */
 class Tile;
 
-
 /**
  * @brief represents a tile in the world
  *

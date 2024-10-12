@@ -531,7 +531,7 @@ class ShaderHandler {
      */
     void clear();
 
-    inline ShaderHandler() {};
+    inline ShaderHandler(){};
 
     inline ~ShaderHandler() { shaders_.clear(); }
 };

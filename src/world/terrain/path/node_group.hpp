@@ -27,7 +27,6 @@
 
 #include <cstdint>
 #include <list>
-#include <set>
 #include <unordered_map>
 
 namespace terrain {

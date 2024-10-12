@@ -45,7 +45,6 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
-#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -548,8 +547,9 @@ class Terrain : public TerrainBase {
      * @param goal set of excitable goals
      * @return std::optional<std::vector<const Tile*>> path to closest goal
      */
-    [[nodiscard]] std::optional<std::vector<const Tile*>>
-    get_path_breadth_first(const Tile* start, const std::unordered_set<const Tile*> goal);
+    [[nodiscard]] std::optional<std::vector<const Tile*>> get_path_breadth_first(
+        const Tile* start, const std::unordered_set<const Tile*> goal
+    );
     /**
      * @brief Get a path between start, and any goal using the breadth first
      * algorithm

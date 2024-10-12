@@ -27,7 +27,6 @@
 
 #include <sol/sol.hpp>
 
-#include <map>
 #include <unordered_set>
 
 #pragma once

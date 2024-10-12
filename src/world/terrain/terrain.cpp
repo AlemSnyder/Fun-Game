@@ -483,7 +483,9 @@ Terrain::get_path_breadth_first(
 }
 
 std::optional<std::vector<const Tile*>>
-Terrain::get_path_breadth_first(const Tile* start, const std::unordered_set<const Tile*> goal_) {
+Terrain::get_path_breadth_first(
+    const Tile* start, const std::unordered_set<const Tile*> goal_
+) {
     std::unordered_set<const NodeGroup*> goal_nodes;
     bool no_goal = true;
     for (const Tile* g : goal_) {
@@ -551,7 +553,8 @@ Terrain::get_path(
         Node<const T>* choice = openNodes.top();
         openNodes.pop(); // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::unordered_set<Node<const T>*> adjacent_nodes = get_adjacent_nodes(choice, nodes, 31);
+        std::unordered_set<Node<const T>*> adjacent_nodes =
+            get_adjacent_nodes(choice, nodes, 31);
         for (Node<const T>* n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
