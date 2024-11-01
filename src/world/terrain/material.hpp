@@ -67,15 +67,6 @@ struct Material {
 struct MaterialColor {
     const Material& material;
     ColorId color;
-
-    inline MaterialColor(const MaterialColor& other) :
-        material(other.material), color(other.color) {}
-
-    inline MaterialColor(MaterialColor&& other) :
-        material(other.material), color(other.color) {}
-
-    inline MaterialColor(const Material& mat, ColorId col) :
-        material(mat), color(col) {}
 };
 
 /**
