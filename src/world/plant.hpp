@@ -1,7 +1,7 @@
+#include "util/hash_combine.hpp"
+
 #include <compare>
 #include <string>
-
-#include "util/hash_combine.hpp"
 
 namespace terrain {
 
@@ -18,8 +18,8 @@ struct Plant {
     // The map that generates these plants eg Trees_1
     std::string map_name;
 
-    [[nodiscard]] inline std::strong_ordering
-    operator<=>(const Plant& other) const =default;
+    [[nodiscard]] inline std::strong_ordering operator<=>(const Plant& other
+    ) const = default;
 };
 
 } // namespace generation
@@ -37,4 +37,3 @@ struct std::hash<terrain::generation::Plant> {
         return start;
     }
 };
-

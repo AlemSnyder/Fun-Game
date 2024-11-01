@@ -12,7 +12,7 @@ namespace entity {
 
 void
 Mesh::change_color_indexing(
-    const std::map<MaterialId, const terrain::Material>& materials,
+    const std::unordered_map<MaterialId, const terrain::Material>& materials,
     const std::unordered_map<ColorInt, uint16_t>& mapping
 ) {
     for (auto& elem : indexed_color_ids_) {

@@ -45,9 +45,9 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
-#include <set>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace terrain {
@@ -239,11 +239,11 @@ class Terrain : public TerrainBase {
      * @param node node to find the adjacent of
      * @param nodes nodes that can be passed through
      * @param type path type allowed
-     * @return std::set<Node<const T> *> adjacent nodes
+     * @return std::unordered_set<Node<const T> *> adjacent nodes
      */
-    [[nodiscard]] std::set<Node<const NodeGroup>*> get_adjacent_nodes(
+    [[nodiscard]] std::unordered_set<Node<const NodeGroup>*> get_adjacent_nodes(
         const Node<const NodeGroup>* const node,
-        std::map<TileIndex, Node<const NodeGroup>>& nodes, path_t type
+        std::unordered_map<TileIndex, Node<const NodeGroup>>& nodes, path_t type
     ) const;
 
     /**
@@ -252,11 +252,11 @@ class Terrain : public TerrainBase {
      * @param node node to find the adjacent of
      * @param nodes nodes that can be passed through
      * @param type path type allowed
-     * @return std::set<Node<const T> *> adjacent nodes
+     * @return std::unordered_set<Node<const T> *> adjacent nodes
      */
-    [[nodiscard]] std::set<Node<const Tile>*> get_adjacent_nodes(
+    [[nodiscard]] std::unordered_set<Node<const Tile>*> get_adjacent_nodes(
         const Node<const Tile>* const node,
-        std::map<TileIndex, Node<const Tile>>& nodes, path_t type
+        std::unordered_map<TileIndex, Node<const Tile>>& nodes, path_t type
     ) const;
 
     /**
@@ -389,7 +389,7 @@ class Terrain : public TerrainBase {
      * @param all_grass set of pointers to tiles that are grass
      */
     inline void
-    grow_grass_high(std::set<Tile*> all_grass) {
+    grow_grass_high(std::unordered_set<Tile*> all_grass) {
         helper::grow_grass_recursive<
             helper::edge_detector_high, helper::getter_high, helper::setter_high>(
             *this, all_grass
@@ -402,7 +402,7 @@ class Terrain : public TerrainBase {
      * @param all_grass set of pointers to tiles that are grass
      */
     inline void
-    grow_grass_low(std::set<Tile*> all_grass) {
+    grow_grass_low(std::unordered_set<Tile*> all_grass) {
         helper::grow_grass_recursive<
             helper::edge_detector_low, helper::getter_low, helper::setter_low>(
             *this, all_grass
@@ -518,9 +518,9 @@ class Terrain : public TerrainBase {
     /**
      * @brief get all nod groups
      *
-     * @return std::set<const NodeGroup> set of all NodeGroups
+     * @return std::unordered_set<const NodeGroup> set of all NodeGroups
      */
-    [[nodiscard]] std::set<const NodeGroup*> get_all_node_groups() const;
+    [[nodiscard]] std::unordered_set<const NodeGroup*> get_all_node_groups() const;
     /**
      * @brief Get a path between start, and goal using the A* algorithm
      *
@@ -547,8 +547,9 @@ class Terrain : public TerrainBase {
      * @param goal set of excitable goals
      * @return std::optional<std::vector<const Tile*>> path to closest goal
      */
-    [[nodiscard]] std::optional<std::vector<const Tile*>>
-    get_path_breadth_first(const Tile* start, const std::set<const Tile*> goal);
+    [[nodiscard]] std::optional<std::vector<const Tile*>> get_path_breadth_first(
+        const Tile* start, const std::unordered_set<const Tile*> goal
+    );
     /**
      * @brief Get a path between start, and any goal using the breadth first
      * algorithm
@@ -558,7 +559,7 @@ class Terrain : public TerrainBase {
      * @return std::optional<std::vector<const NodeGroup*>> path to closest goal
      */
     [[nodiscard]] std::optional<std::vector<const NodeGroup*>> get_path_breadth_first(
-        const NodeGroup* start, const std::set<const NodeGroup*> goal
+        const NodeGroup* start, const std::unordered_set<const NodeGroup*> goal
     ) const;
     /**
      * @brief Get the path from start to a goal optimized by compare
@@ -572,8 +573,8 @@ class Terrain : public TerrainBase {
      */
     template <class T, bool compare(Node<const T>*, Node<const T>*)>
     [[nodiscard]] std::optional<std::vector<const T*>> get_path(
-        const T* start, const std::set<const T*> goal,
-        const std::set<const T*> search_through
+        const T* start, const std::unordered_set<const T*> goal,
+        const std::unordered_set<const T*> search_through
     ) const;
     /**
      * @brief initialize chunks

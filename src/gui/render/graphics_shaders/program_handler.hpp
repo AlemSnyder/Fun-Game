@@ -27,6 +27,7 @@
 #include "logging.hpp"
 #include "opengl_program_status.hpp"
 #include "types.hpp"
+#include "util/hash_combine.hpp"
 
 #include <GL/glew.h>
 
@@ -36,10 +37,32 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #define NO_UNIFORM_INT -1
+
+namespace gui {
+
+namespace shader {
+
+class File;
+class ShaderData;
+class ProgramData;
+
+} // namespace shader
+} // namespace gui
+
+template <>
+struct std::hash<gui::shader::File>;
+
+template <>
+struct std::hash<gui::shader::ShaderData>;
+
+template <>
+struct std::hash<gui::shader::ProgramData>;
 
 namespace gui {
 
@@ -51,6 +74,8 @@ namespace shader {
  * @details Has the file path, and stores the status of the file.
  */
 class File {
+    friend std::hash<gui::shader::File>;
+
  private:
     // path to file
     const std::filesystem::path file_;
@@ -110,6 +135,8 @@ class File {
  * @details In particular this holds the file path and the shader type.
  */
 class ShaderData {
+    friend std::hash<gui::shader::ShaderData>;
+
  protected:
     std::vector<File> files_;
     gpu_data::ShaderType shader_type_;
@@ -186,6 +213,8 @@ class Shader : public ShaderData {
  * @brief Contains the data to identify and create a program.
  */
 class ProgramData {
+    friend std::hash<gui::shader::ProgramData>;
+
  protected:
     Shader& vertex_shader_;
     Shader& fragment_shader_;
@@ -199,7 +228,7 @@ class ProgramData {
     std::set<std::pair<std::string, std::string>> found_uniforms_;
 
     // todo make this a type
-    std::map<std::string, GLint> uniforms_;
+    std::unordered_map<std::string, GLint> uniforms_;
 
  public:
     inline ProgramData(Shader& vertex_shader, Shader& fragment_shader) :
@@ -379,6 +408,65 @@ get_shader_string(gpu_data::ShaderType gl_shader_type) {
     }
 }
 
+} // namespace shader
+
+} // namespace gui
+
+template <>
+struct std::hash<gui::shader::File> {
+    size_t
+    operator()(const gui::shader::File& file) const noexcept {
+        std::hash<std::filesystem::path> hasher;
+        return hasher(file.file_);
+    }
+};
+
+template <>
+struct std::hash<std::vector<gui::shader::File>> {
+    size_t
+    operator()(const std::vector<gui::shader::File>& files) const noexcept {
+        size_t start = 0;
+        for (const auto& file : files) {
+            utils::hash_combine(start, file);
+        }
+        return start;
+    }
+};
+
+template <>
+struct std::hash<gui::shader::ShaderData> {
+    size_t
+    operator()(const gui::shader::ShaderData& shader) const noexcept {
+        std::hash<std::vector<gui::shader::File>> hasher;
+        return hasher(shader.files_);
+    }
+};
+
+template <>
+struct std::hash<gui::shader::Shader> {
+    size_t
+    operator()(const gui::shader::Shader& shader) const noexcept {
+        std::hash<gui::shader::ShaderData> hasher;
+        return hasher(shader);
+    }
+};
+
+template <>
+struct std::hash<gui::shader::ProgramData> {
+    size_t
+    operator()(const gui::shader::ProgramData& program) const noexcept {
+        size_t start = 0;
+        utils::hash_combine(start, gui::shader::ShaderData(program.vertex_shader_));
+        utils::hash_combine(start, gui::shader::ShaderData(program.fragment_shader_));
+
+        return start;
+    }
+};
+
+namespace gui {
+
+namespace shader {
+
 /**
  * @brief Loads and saves shader programs
  *
@@ -386,7 +474,7 @@ get_shader_string(gpu_data::ShaderType gl_shader_type) {
  */
 class ShaderHandler {
  protected:
-    std::set<File> files_;
+    std::unordered_set<File> files_;
 
     std::map<const ShaderData, Shader> shaders_;
 

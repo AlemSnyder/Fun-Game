@@ -41,14 +41,6 @@ namespace terrain {
 class Tile;
 
 /**
- * @brief arranges tiles
- *
- */
-struct TilePCompare {
-    bool operator()(const Tile* lhs, const Tile* rhs) const;
-};
-
-/**
  * @brief represents a tile in the world
  *
  * @details A tile in the terrain. This holds data like material, and color id.

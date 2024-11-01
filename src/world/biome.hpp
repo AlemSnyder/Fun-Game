@@ -20,15 +20,14 @@
  *
  */
 
+#include "plant.hpp"
 #include "terrain/generation/land_generator.hpp"
 #include "terrain/generation/terrain_map.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "util/files.hpp"
-#include "plant.hpp"
 
 #include <sol/sol.hpp>
 
-#include <map>
 #include <unordered_set>
 
 #pragma once
@@ -115,7 +114,7 @@ class Biome {
     std::vector<AddToTop> add_to_top_generators_;
 
     // materials that exist
-    const std::map<MaterialId, const terrain::Material> materials_;
+    const std::unordered_map<MaterialId, const terrain::Material> materials_;
 
     std::unordered_set<Plant> generate_plants_;
 
@@ -159,8 +158,8 @@ class Biome {
      *
      * @return 2D map of plant percentages
      */
-    [[nodiscard]] const std::map<std::string, PlantMap> get_plant_map(MacroDim length
-    ) const;
+    [[nodiscard]] const std::unordered_map<std::string, PlantMap>
+    get_plant_map(MacroDim length) const;
 
     inline TerrainMacroMap
     single_tile_type_map(MapTile_t type) {
@@ -240,7 +239,7 @@ class Biome {
      *
      * @return materials_ map of MaterialId to material
      */
-    [[nodiscard]] inline const std::map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::Material>&
     get_materials() const {
         return materials_;
     }
@@ -271,7 +270,7 @@ class Biome {
      *
      * @return map from ColorInt to pair of material pointer and color id
      */
-    [[nodiscard]] std::map<ColorInt, std::pair<const Material*, ColorId>>
+    [[nodiscard]] std::unordered_map<ColorInt, MaterialColor>
     get_colors_inverse_map() const;
 
     static void init_lua_state(
@@ -305,7 +304,7 @@ class Biome {
      *
      * @param material_data data to load from (see) data/materials.json
      */
-    [[nodiscard]] std::map<MaterialId, const terrain::Material>
+    [[nodiscard]] std::unordered_map<MaterialId, const terrain::Material>
     init_materials_(const Json::Value& material_data);
 
     [[nodiscard]] biome_json_data get_json_data_(const std::string& biome_name);

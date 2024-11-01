@@ -12,25 +12,25 @@ namespace terrain {
 void
 TerrainBase::qb_read(
     std::vector<ColorInt> data,
-    const std::map<ColorInt, std::pair<const Material*, ColorId>>& materials_inverse
+    const std::unordered_map<ColorInt, MaterialColor>& materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
-    std::set<ColorInt> unknown_colors;
+    std::unordered_set<ColorInt> unknown_colors;
 
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         TerrainDim3 tile_position = sop(xyz);
         ColorInt color = data[xyz];
         if (color == 0) {                             // if the qb voxel is transparent.
             auto mat_color = materials_inverse.at(0); // set the materials to air
-            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, &mat_color.material, mat_color.color));
         } else if (materials_inverse.count(color)) { // if the color is known
             auto mat_color = materials_inverse.at(color);
-            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, &mat_color.material, mat_color.color));
         } else { // the color is unknown
             unknown_colors.insert(color);
             auto mat_color = materials_inverse.at(0); // else set to air.
-            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, &mat_color.material, mat_color.color));
         }
     }
 
