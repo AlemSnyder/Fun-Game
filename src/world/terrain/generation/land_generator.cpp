@@ -36,7 +36,7 @@ LandGenerator::LandGenerator(const std::vector<generation_stamp_t>& data) :
     for (const generation_stamp_t& region : data) {
         generation_stamp_type type = region.type;
 
-        std::shared_ptr<stamps::JsonToTile> stamp_generator;
+        std::shared_ptr<stamps::StampGenerator> stamp_generator;
         switch (type) {
             case generation_stamp_type::POSITION:
                 stamp_generator = std::make_shared<stamps::FromPosition>(region);
@@ -67,7 +67,7 @@ LandGenerator::next() {
 namespace stamps {
 
 TileStamp
-JsonToTile::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
+StampGenerator::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
     const {
     // center_x between center[1][0] and center[0][0] inclusive
     std::uniform_int_distribution<TerrainOffset> center_x_dist(
@@ -173,7 +173,7 @@ FromRadius::get_stamp(
 FromPosition::FromPosition(
     const generation_stamp_t& data, const stamp_generation_position_data_t& type_data
 ) :
-    JsonToTile(data),
+    StampGenerator(data),
     center_variance_(data.DC) {
     points_.reserve(type_data.positions.size());
 

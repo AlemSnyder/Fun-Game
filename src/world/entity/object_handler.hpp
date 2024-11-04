@@ -44,7 +44,7 @@ class ObjectHandler {
     ObjectHandler() {}
 
     std::mutex map_mutex_;
-    std::map<std::string, ObjectData> ided_objects;
+    std::unordered_map<std::string, ObjectData> ided_objects;
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -68,7 +68,7 @@ class ObjectHandler {
 
     ObjectData& get_object(const std::string&);
 
-    [[nodiscard]] inline std::map<std::string, ObjectData>&
+    [[nodiscard]] inline std::unordered_map<std::string, ObjectData>&
     get_objects() {
         return ided_objects;
     };

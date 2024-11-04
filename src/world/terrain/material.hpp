@@ -32,12 +32,9 @@
 #include <glaze/glaze.hpp>
 
 #include <cstdint>
-#include <map>
-#include <optional>
-#include <set>
 #include <string>
 #include <unordered_map>
-#include <variant>
+#include <unordered_set>
 #include <vector>
 
 namespace terrain {
@@ -87,6 +84,11 @@ struct material_t {
 
 using all_materials_t = std::unordered_map<std::string, material_t>;
 
+struct MaterialColor {
+    const material_t& material;
+    ColorId color;
+};
+
 /**
  * @brief Defines a map from colors to a color texture that is sent to the gpu.
  */
@@ -121,10 +123,12 @@ class TerrainColorMapping {
     /**
      * @brief Initializes data for color_ids_map and colors_inverse_map.
      *
-     * @param const std::map<MaterialId, const material_t>& materials materials map
+     * @param const std::unordered_map<MaterialId, const Material>& materials materials
+     * map
      */
     static void
-    assign_color_mapping(const std::map<MaterialId, const material_t>& materials);
+    assign_color_mapping(const std::unordered_map<MaterialId, const material_t>& materials
+    );
 
     /**
      * @brief Return vector that maps terrain color id to color
@@ -179,10 +183,11 @@ class MaterialGroup {
  private:
     bool contain_all_materials;
     // Any material in this set is in the group no matter the color.
-    std::set<MaterialId> materials_no_color_requirement_;
+    std::unordered_set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
     // this group the material key must map to a set containing the given color.
-    std::map<MaterialId, std::unordered_set<ColorId>> materials_with_color_requirement_;
+    std::unordered_map<MaterialId, std::unordered_set<ColorId>>
+        materials_with_color_requirement_;
 
  public:
     /**
@@ -197,13 +202,14 @@ class MaterialGroup {
     /**
      * @brief Construct new MaterialGroup object.
      *
-     * @param std::set<MaterialId> materials materials in group no matter the color
-     * @param std::map<MaterialId, std::set<ColorId>> materials_w_color materials in
-     * group when they have specific color
+     * @param std::unordered_set<MaterialId> materials materials in group no matter the
+     * color
+     * @param std::unordered_map<MaterialId, std::unordered_set<ColorId>>
+     * materials_w_color materials in group when they have specific color
      */
-    inline MaterialGroup(
-        std::set<MaterialId> materials,
-        std::map<MaterialId, std::unordered_set<ColorId>> materials_w_color
+    MaterialGroup(
+        std::unordered_set<MaterialId> materials,
+        std::unordered_map<MaterialId, std::unordered_set<ColorId>> materials_w_color
     ) :
         contain_all_materials(false),
         materials_no_color_requirement_(materials),

@@ -48,7 +48,7 @@ namespace stamps {
  * @details This is a virtual class that handles creating tile stamps from JSON
  * Data.
  */
-class JsonToTile {
+class StampGenerator {
  protected:
     Dim height_;          // Average height generated
     Dim height_variance_; // Maximum chance from height
@@ -64,7 +64,7 @@ class JsonToTile {
     /**
      * @brief Default initializer use dictionary from "Tile_Macros" "Land_Data".
      */
-    JsonToTile(const generation_stamp_t& data) :
+    StampGenerator(const generation_stamp_t& data) :
         height_(data.height), height_variance_(data.DH), width_(data.size),
         width_variance_(data.DC), elements_can_stamp_(data.can_override),
         stamp_material_id_(data.material_id), stamp_color_id_(data.color_id) {}
@@ -84,7 +84,38 @@ class JsonToTile {
      */
     virtual size_t num_sub_region() const = 0;
 
-    virtual ~JsonToTile() {}
+    virtual ~StampGenerator() {}
+
+    [[nodiscard]] virtual Dim
+    height() const {
+        return height_;
+    }
+
+    [[nodiscard]] virtual Dim
+    height_variance() const {
+        return height_variance_;
+    }
+
+    [[nodiscard]] virtual Dim
+    width() const {
+        return width_;
+    }
+
+    [[nodiscard]] virtual Dim
+    width_variance() const {
+        return width_variance_;
+    }
+
+
+    [[nodiscard]] virtual MaterialId
+    material() const {
+        return stamp_material_id_;
+    }
+
+    [[nodiscard]] virtual ColorId
+    color() const {
+        return stamp_color_id_;
+    }
 
  protected:
     /**
@@ -102,7 +133,7 @@ class JsonToTile {
     get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine) const;
 };
 
-class FromPosition : public JsonToTile {
+class FromPosition : public StampGenerator {
  private:
     std::vector<glm::ivec2> points_;
     TerrainOffset center_variance_;
@@ -126,7 +157,7 @@ class FromPosition : public JsonToTile {
         FromPosition(data, data.position.value()) {}
 };
 
-class FromRadius : public JsonToTile {
+class FromRadius : public StampGenerator {
  private:
     TerrainOffset radius_;
     TerrainOffset number_;
@@ -145,7 +176,7 @@ class FromRadius : public JsonToTile {
     FromRadius(
         const generation_stamp_t& data, const stamp_generation_radius_data_t& type_data
     ) :
-        JsonToTile(data),
+        StampGenerator(data),
         radius_(type_data.radius), number_(type_data.number),
         center_variance_(data.DC) {}
 
@@ -153,7 +184,7 @@ class FromRadius : public JsonToTile {
         FromRadius(data, data.radius.value()) {}
 };
 
-class FromGrid : public JsonToTile {
+class FromGrid : public StampGenerator {
  private:
     TerrainOffset radius_;
     TerrainOffset number_;
@@ -172,7 +203,7 @@ class FromGrid : public JsonToTile {
     FromGrid(
         const generation_stamp_t& data, const stamp_generation_grid_data_t& type_data
     ) :
-        JsonToTile(data),
+        StampGenerator(data),
         radius_(type_data.radius), number_(type_data.number),
         center_variance_(data.DC) {}
 
@@ -205,8 +236,11 @@ class LandGenerator {
     size_t current_region; // index of the next region to be generated
     size_t current_sub_region;
 
-    // ordered stamp generators
-    std::vector<std::shared_ptr<stamps::JsonToTile>> stamp_generators_;
+    // const std::unordered_map<MaterialId, const Material>& materials;
+    // const std::set<Material*> elements_can_stamp_;
+    // const Material* material_;
+    std::vector<std::shared_ptr<stamps::StampGenerator>> stamp_generators_;
+    // Json::Value data_; // this should be a structure
 
  public:
     /**
@@ -260,6 +294,15 @@ class LandGenerator {
         current_region = 0;
         current_sub_region = 0;
     };
+
+    [[nodiscard]] inline const auto begin() const {
+        return stamp_generators_.begin();
+    }
+
+
+    [[nodiscard]] inline const auto end() const {
+        return stamp_generators_.end();
+    }
 };
 
 class AddToTop {

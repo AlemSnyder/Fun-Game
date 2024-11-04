@@ -72,8 +72,8 @@ class ObjectData {
      * @details Generates a Object from the json parameters and the path to a voxel
      * object.
      *
-     * @param Json::Value& JSON that describes the object
-     * @param std::filesystem::path path to folder containing voxel
+     * @param const object_t& object_data describes the object
+     * @param const manifest::descriptor_t& model_path path to folder containing voxel
      TODO fix documentation
      */
     ObjectData(const object_t& object_data, const manifest::descriptor_t& model_path);

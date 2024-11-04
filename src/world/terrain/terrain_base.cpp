@@ -12,25 +12,25 @@ namespace terrain {
 void
 TerrainBase::qb_read(
     std::vector<ColorInt> data,
-    const std::map<ColorInt, std::pair<const material_t*, ColorId>>& materials_inverse
+    const std::unordered_map<ColorInt, MaterialColor>& materials_inverse
 ) {
     tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
-    std::set<ColorInt> unknown_colors;
+    std::unordered_set<ColorInt> unknown_colors;
 
     for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
         TerrainDim3 tile_position = sop(xyz);
         ColorInt color = data[xyz];
         if (color == 0) {                             // if the qb voxel is transparent.
             auto mat_color = materials_inverse.at(0); // set the materials to air
-            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, &mat_color.material, mat_color.color));
         } else if (materials_inverse.count(color)) { // if the color is known
             auto mat_color = materials_inverse.at(color);
-            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, &mat_color.material, mat_color.color));
         } else { // the color is unknown
             unknown_colors.insert(color);
             auto mat_color = materials_inverse.at(0); // else set to air.
-            tiles_.push_back(Tile(tile_position, mat_color.first, mat_color.second));
+            tiles_.push_back(Tile(tile_position, &mat_color.material, mat_color.color));
         }
     }
 
@@ -58,9 +58,8 @@ TerrainBase::TerrainBase(
     for (size_t i = 0; i < x_map_tiles; i++)
         for (size_t j = 0; j < y_map_tiles; j++) {
             generation::MapTile map_tile = macro_map.get_tile(i, j);
-            auto macro_types = biome_.get_macro_ids(map_tile.get_tile_type());
-            for (auto generator_macro : macro_types) {
-                init_area(map_tile, biome_.get_generator(generator_macro));
+            for (auto generator_macro : map_tile.get_type()) {
+                init_area(map_tile, *generator_macro);
             }
         }
 

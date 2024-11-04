@@ -186,21 +186,10 @@ Biome::init_lua_state(
 }
 
 TerrainMacroMap
-Biome::map_generation_test(
-    const std::filesystem::path& lua_map_generator_file, size_t size
-) {
-    sol::state lua;
-
-    Biome::init_lua_state(lua, lua_map_generator_file);
-
-    return get_map(std::move(lua), size);
-}
-
-TerrainMacroMap
-Biome::get_map(const sol::state& lua, MacroDim size) {
+Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
-    sol::protected_function map_function = lua["map"];
+    sol::protected_function map_function = lua_["map"];
 
     if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
@@ -249,17 +238,18 @@ Biome::get_map(const sol::state& lua, MacroDim size) {
     for (MacroDim x = 0; x < x_map_tiles; x++) {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             size_t map_index = x * y_map_tiles + y;
-            int value = tile_map_map[map_index].get_or<int, int>(0);
-            out.emplace_back(value, 0, x, y);
+            int tile_id = tile_map_map[map_index].get_or<int, int>(0);
+            const TileType& tile_type = macro_tile_types_[tile_id];
+            out.emplace_back(tile_type, seed_, x, y);
         }
     }
 
     return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
-const std::map<std::string, PlantMap>
+const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
-    std::map<std::string, PlantMap> out;
+    std::unordered_map<std::string, PlantMap> out;
 
     sol::protected_function plant_map = lua_["plants_map"];
 
@@ -329,8 +319,9 @@ Biome::read_tile_macro_data_(const std::vector<tile_macros_t>& tile_macros) {
 void
 Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
     // add tile macro to tiles
+    MapTile_t type_id = 0;
     for (const tile_data_t& tile_type : biome_data) {
-        std::vector<TileMacro_t> tile_macros;
+        std::unordered_set<const LandGenerator*>  tile_macros;
         for (TileMacro_t tile_macro : tile_type.used_tile_macros) {
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
@@ -340,9 +331,13 @@ Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
                 );
                 continue;
             }
-            tile_macros.push_back(tile_macro);
+//            const LandGenerator& land_generator = land_generators_[tile_macro];
+            tile_macros.insert(&land_generators_[tile_macro]);
         }
-        macro_tile_types_.push_back(std::move(tile_macros));
+//        TileType tile_type(tile_macros, type_id);
+
+        macro_tile_types_.emplace_back(tile_macros, type_id, add_to_top_generators_, materials_);
+        type_id++;
     }
 }
 
@@ -353,25 +348,22 @@ Biome::read_add_to_top_data_(const std::vector<layer_effects_t>& after_effects_d
     }
 }
 
-std::map<MaterialId, const terrain::material_t>
+std::unordered_map<MaterialId, const terrain::material_t>
 Biome::init_materials_(const all_materials_t& material_data) {
-    std::map<MaterialId, const terrain::material_t> out;
+    std::unordered_map<MaterialId, const terrain::material_t> out;
     for (const auto& key : material_data) {
         out.insert(std::make_pair(key.second.material_id, key.second));
     }
     return out;
 }
 
-std::map<ColorInt, std::pair<const material_t*, ColorId>>
+std::unordered_map<ColorInt, MaterialColor>
 Biome::get_colors_inverse_map() const {
-    std::map<ColorInt, std::pair<const material_t*, ColorId>> materials_inverse;
+    std::unordered_map<ColorInt, MaterialColor> materials_inverse;
     for (const auto& element : materials_) {
         for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
-            materials_inverse.insert(
-                std::map<ColorInt, std::pair<const material_t*, ColorId>>::value_type(
-                    element.second.color.at(color_id).hex_color,
-                    std::make_pair(&element.second, color_id)
-                )
+            materials_inverse.emplace(
+                color_id, MaterialColor{element.second, color_id}
             );
         }
     }
