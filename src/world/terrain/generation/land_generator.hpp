@@ -117,6 +117,37 @@ class StampGenerator {
         return stamp_color_id_;
     }
 
+    [[nodiscard]] virtual Dim
+    height() const {
+        return height_;
+    }
+
+    [[nodiscard]] virtual Dim
+    height_variance() const {
+        return height_variance_;
+    }
+
+    [[nodiscard]] virtual Dim
+    width() const {
+        return width_;
+    }
+
+    [[nodiscard]] virtual Dim
+    width_variance() const {
+        return width_variance_;
+    }
+
+
+    [[nodiscard]] virtual MaterialId
+    material() const {
+        return stamp_material_id_;
+    }
+
+    [[nodiscard]] virtual ColorId
+    color() const {
+        return stamp_color_id_;
+    }
+
  protected:
     /**
      * @brief Gets a TileStamp given
