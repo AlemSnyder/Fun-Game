@@ -38,20 +38,9 @@
 
 namespace world {
 
-const terrain::Material*
+const terrain::material_t*
 World::get_material(MaterialId material_id) const {
     return &biome_.get_materials().at(material_id);
-}
-
-std::vector<int>
-World::get_grass_grad_data(const Json::Value& materials_json) {
-    std::vector<int> grass_grad_data;
-    for (const Json::Value& grass_level :
-         materials_json["Dirt"]["Gradient"]["levels"]) {
-        grass_grad_data.push_back(grass_level.asInt());
-    }
-
-    return grass_grad_data;
 }
 
 World::World(const std::string& biome_name, const std::string& path, size_t seed) :
@@ -85,7 +74,7 @@ World::World(
     std::uniform_int_distribution rotation_distribution(0, 3);
 
     // just debug
-    for (const terrain::generation::Plant& plant : biome_.get_generate_plants()) {
+    for (const terrain::generation::plant_t& plant : biome_.get_generate_plants()) {
         auto map = plant_maps[plant.map_name];
         LOG_DEBUG(logging::terrain_logger, "Plant map name: {}.", plant.map_name);
 
@@ -97,7 +86,7 @@ World::World(
 
     for (const auto& tile_position_pair : ordered_tiles) {
         glm::vec2 tile_position = tile_position_pair.second;
-        for (const terrain::generation::Plant& plant : biome_.get_generate_plants()) {
+        for (const terrain::generation::plant_t& plant : biome_.get_generate_plants()) {
             auto map = plant_maps[plant.map_name];
 
             float chance = map.get_tile(tile_position.x, tile_position.y);
@@ -154,8 +143,7 @@ void
 World::update_marked_chunks_mesh() {
     for (auto chunk_pos : chunks_to_update_) {
         GlobalContext& context = GlobalContext::instance();
-        context.submit_task(
-            [this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
+        context.submit_task([this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
         );
     }
     chunks_to_update_.clear();
@@ -179,9 +167,9 @@ World::update_all_chunks_mesh() {
     wait_for.reserve(num_chunks);
     GlobalContext& context = GlobalContext::instance();
     for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
-        auto future = context.submit_task(
-            [this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
-        );
+        auto future = context.submit_task([this, chunk_pos]() {
+            this->update_single_mesh(chunk_pos);
+        });
         wait_for.push_back(std::move(future));
     }
     // Should only wait for the previously queued tasks.
@@ -204,7 +192,7 @@ World::send_updated_chunks_mesh() {
 }
 
 void
-World::set_tile(Dim pos, const terrain::Material* mat, ColorId color_id) {
+World::set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id) {
     terrain_main_.get_tile(pos)->set_material(mat, color_id);
 
     TerrainDim3 tile_sop = terrain_main_.sop(pos);

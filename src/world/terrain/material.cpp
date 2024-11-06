@@ -1,7 +1,5 @@
-
 #include "material.hpp"
 
-#include "../entity/mesh.hpp"
 #include "gui/render/gpu_data/texture.hpp"
 #include "logging.hpp"
 
@@ -14,7 +12,7 @@ std::unordered_map<ColorInt, MatColorId> TerrainColorMapping::colors_inverse_map
 
 void
 TerrainColorMapping::assign_color_mapping(
-    const std::unordered_map<MaterialId, const Material>& materials
+    const std::unordered_map<MaterialId, const material_t>& materials
 ) {
     color_ids_map.clear();
     colors_inverse_map.clear();
@@ -41,7 +39,7 @@ TerrainColorMapping::assign_color_mapping(
     colors_inverse_map[0] = 0;
     for (auto const& [id, material] : materials) {
         for (auto color_data : material.color) {
-            ColorInt color = color_data.second;
+            ColorInt color = color_data.hex_color;
             if (std::find(color_ids_map.begin(), color_ids_map.end(), color)
                 == color_ids_map.end()) {
                 // voxel_colors[i] is not in colors
@@ -56,6 +54,62 @@ TerrainColorMapping::assign_color_mapping(
                     return;
             }
         }
+    }
+}
+
+bool
+MaterialGroup::insert(
+    const std::variant<bool, MaterialId, std::vector<MaterialId>>& material_v,
+    const std::variant<bool, ColorId, std::vector<ColorId>>& color_v
+) {
+    std::optional<std::vector<MaterialId>> materials_ov =
+        std::visit([](auto&& arg) -> auto { return read_materials(arg); }, material_v);
+
+    if (!materials_ov) {
+        set_all();
+        return true;
+    }
+    std::optional<std::vector<ColorId>> colors_ov =
+        std::visit([](auto&& arg) -> auto { return read_colors(arg); }, color_v);
+    if (!colors_ov) {
+        insert_(*materials_ov);
+        return false;
+    }
+    insert_(*materials_ov, *colors_ov);
+    return false;
+}
+
+MaterialGroup::MaterialGroup(const std::vector<generation::material_designation_t>& data
+) :
+    contain_all_materials(false) {
+    // want to generated a group that represents the given data
+    // There will be elements with no requirements on the color
+    // materials_no_color_requirement_
+    // amd some with requirements on the color
+    // materials_with_color_requirement_
+    for (const generation::material_designation_t& material_data : data) {
+        // read the material id from the data
+        // MaterialId mat_id = material_data.material;
+
+        if (insert(material_data.material, material_data.color)) {
+            return;
+        }
+    }
+}
+
+void
+MaterialGroup::insert_(std::vector<MaterialId> material_id) {
+    materials_no_color_requirement_.insert(material_id.begin(), material_id.end());
+}
+
+void
+MaterialGroup::insert_(
+    std::vector<MaterialId> material_id, std::vector<ColorId> color_ids
+) {
+    for (MaterialId id : material_id) {
+        materials_with_color_requirement_[id].insert(
+            color_ids.begin(), color_ids.end()
+        );
     }
 }
 

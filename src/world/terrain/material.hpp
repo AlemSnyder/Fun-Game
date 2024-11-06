@@ -23,9 +23,13 @@
 
 #pragma once
 
+#include "generation/terrain_genreration_types.hpp"
 #include "gui/render/gpu_data/texture.hpp"
+#include "logging.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
+
+#include <glaze/glaze.hpp>
 
 #include <cstdint>
 #include <string>
@@ -34,6 +38,26 @@
 #include <vector>
 
 namespace terrain {
+
+struct material_color_t {
+    std::string color_name;
+    ColorInt hex_color;
+
+    void
+    read_hex_color(std::string hex_string) {
+        hex_color = std::stoll(hex_string, nullptr, 16);
+    }
+
+    std::string
+    write_hex_color() const {
+        return fmtquill::format("{:08X}", hex_color);
+    }
+};
+
+struct grass_data_t {
+    std::vector<int> levels;
+    int midpoint;
+};
 
 /**
  * @brief Holds Material data
@@ -45,27 +69,23 @@ namespace terrain {
  * The material determines if the tile is solid, and the potential color. Other
  * data will be added like how cretin materials respond to weather...
  */
-struct Material {
-    Material(
-        std::vector<std::pair<const std::string, ColorInt>> color_in,
-        float speed_multiplier_in, bool solid_in, MaterialId element_id_in,
-        std::string name_in
-    ) :
-        color(color_in),
-        speed_multiplier(speed_multiplier_in), solid(solid_in),
-        element_id(element_id_in), name(name_in){};
-    // vector of <name hex color> for possible colors
-    std::vector<std::pair<const std::string, ColorInt>> color;
-    float speed_multiplier = 1;         // speed on this material
-    bool solid = false;                 // Is the material solid?
-    MaterialId element_id = AIR_MAT_ID; // The ID of the material (Air is 0)
-    const std::string name = "Air";     // The material name
+struct material_t {
+    std::vector<material_color_t> color;
+
+    float speed_multiplier = 1;          // speed on this material
+    bool solid = false;                  // Is the material solid?
+    MaterialId material_id = AIR_MAT_ID; // The ID of the material (Air is 0)
+    const std::string name = "Air";      // The material name
+    std::optional<grass_data_t> gradient;
+
     // int8_t deterioration from wind
     // int8_t deterioration from water
 };
 
+using all_materials_t = std::unordered_map<std::string, material_t>;
+
 struct MaterialColor {
-    const Material& material;
+    const material_t& material;
     ColorId color;
 };
 
@@ -107,7 +127,7 @@ class TerrainColorMapping {
      * map
      */
     static void
-    assign_color_mapping(const std::unordered_map<MaterialId, const Material>& materials
+    assign_color_mapping(const std::unordered_map<MaterialId, const material_t>& materials
     );
 
     /**
@@ -161,6 +181,7 @@ class TerrainColorMapping {
  */
 class MaterialGroup {
  private:
+    bool contain_all_materials;
     // Any material in this set is in the group no matter the color.
     std::unordered_set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
@@ -174,7 +195,9 @@ class MaterialGroup {
      *
      * @details Default constructor. Nothing will be in the group.
      */
-    MaterialGroup(){};
+    inline MaterialGroup() : contain_all_materials(false){};
+
+    inline MaterialGroup(bool all_materials) : contain_all_materials(all_materials){};
 
     /**
      * @brief Construct new MaterialGroup object.
@@ -188,8 +211,15 @@ class MaterialGroup {
         std::unordered_set<MaterialId> materials,
         std::unordered_map<MaterialId, std::unordered_set<ColorId>> materials_w_color
     ) :
+        contain_all_materials(false),
         materials_no_color_requirement_(materials),
         materials_with_color_requirement_(materials_w_color){};
+
+    /**
+     * @brief Read the materials and colors that this stamp can overwrite in
+     * terrain. Use the "Can_Stamp" dictionary.
+     */
+    MaterialGroup(const std::vector<generation::material_designation_t>& data);
 
     /**
      * @brief Check if given material and color id are in the group.
@@ -202,6 +232,8 @@ class MaterialGroup {
      */
     [[nodiscard]] inline bool
     material_in(MaterialId material_id, ColorId color_id) const {
+        if (contain_all_materials)
+            return true;
         if (material_in(material_id))
             return true; // material found in set that disregards color
         auto iter = materials_with_color_requirement_.find(material_id);
@@ -221,8 +253,89 @@ class MaterialGroup {
      */
     [[nodiscard]] inline bool
     material_in(MaterialId material_id) const {
+        if (contain_all_materials)
+            return true;
         return materials_no_color_requirement_.contains(material_id);
+    }
+
+    bool insert(
+        const std::variant<bool, MaterialId, std::vector<MaterialId>>& material,
+        const std::variant<bool, ColorId, std::vector<ColorId>>& color
+    );
+
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(bool value) {
+        if (value)
+            return {};
+        else {
+            LOG_WARNING(
+                logging::file_io_logger,
+                "colors = false. Why would you do this? It does nothing."
+            );
+            return std::vector<ColorId>();
+        }
+    }
+
+ private:
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(ColorId value) {
+        return {{value}};
+    }
+
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(std::vector<ColorId> value) {
+        return value;
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(bool value) {
+        if (value)
+            return {};
+        else {
+            LOG_WARNING(
+                logging::file_io_logger,
+                "material = false. Why would you do this? It does nothing."
+            );
+            return std::vector<MaterialId>();
+        }
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(MaterialId value) {
+        return {{value}};
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(std::vector<MaterialId> value) {
+        return value;
+    }
+
+    void insert_(std::vector<MaterialId> material_id);
+    void insert_(std::vector<MaterialId> material_id, std::vector<ColorId> color_ids);
+
+    inline void
+    set_all() {
+        materials_no_color_requirement_.clear();
+        materials_with_color_requirement_.clear();
+        contain_all_materials = true;
     }
 };
 
 } // namespace terrain
+
+template <>
+struct glz::meta<terrain::material_color_t> {
+    using T = terrain::material_color_t;
+    // clang-format off
+    static constexpr auto value = object(
+        "hex_color",  custom<&T::read_hex_color, &T::write_hex_color>,
+        "color_name", &T::color_name
+    );
+    // clang-format on
+};
+
+template <>
+inline glz::detail::any_t::operator terrain::grass_data_t() const {
+    assert(false && "Not Implemented");
+    return {};
+}

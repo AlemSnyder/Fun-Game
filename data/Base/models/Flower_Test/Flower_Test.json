@@ -1,15 +1,13 @@
 {
     "name": "Flower Test",
-    "identification": "base/Flower_Test",
     "models": [
         {
-            "file_path": "./Flower_Test.qb",
+            "path": "./Flower_Test.qb",
             "colors": [
                 {
-                    "type": "default"
+                    "map": {}
                 },
                 {
-                    "type": "remapping",
                     "map": {"663f23FF" : "663f22FF"}
                 }
             ],

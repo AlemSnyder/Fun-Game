@@ -34,8 +34,6 @@
 #include "util/voxel.hpp"
 #include "world/biome.hpp"
 
-#include <json/json.h>
-
 #include <stdio.h>
 
 #include <cstdint>
@@ -360,7 +358,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
             previous_color_id = color_id;
 
             auto mat = biome_.get_materials().at(previous_mat_id);
-            previous_out_color = mat.color[previous_color_id].second;
+            previous_out_color = mat.color[previous_color_id].hex_color;
         }
 
         return previous_out_color;
@@ -414,7 +412,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return biome_.get_grass_colors();
     }
 
-    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::material_t>&
     get_materials() const {
         return biome_.get_materials();
     }
@@ -445,15 +443,6 @@ class TerrainBase : public voxel_utility::VoxelBase {
      * @param material material type to add
      */
     void add_to_top(const generation::AddToTop& to_data);
-
-    /**
-     * @brief Get the max allowable height of added material
-     *
-     * @param height height of terrain in question
-     * @param how_to_add json data that defines biome generation
-     * @return int max height
-     */
-    [[nodiscard]] static Dim get_stop_height(Dim height, const Json::Value& how_to_add);
 
     [[nodiscard]] inline bool
     has_tile_material(const MaterialGroup& material_test, Dim x, Dim y, Dim z) const {
