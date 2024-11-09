@@ -8,7 +8,7 @@ namespace generation {
 TileType::TileType(
     const std::unordered_set<const LandGenerator*> land_generators, MapTile_t tile_type,
     const std::vector<AddToTop>& layer_effect_generators,
-    const std::map<MaterialId, const terrain::Material> materials
+    const std::unordered_map<MaterialId, const terrain::Material> materials
 ) : land_generators_(land_generators), tile_type_(tile_type) {
     Dim max_height = 0;
 
