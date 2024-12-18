@@ -5,7 +5,7 @@
 
 namespace terrain {
 
-Tile::Tile(TerrainDim3 sop, const terrain::Material* material, ColorId color_id) :
+Tile::Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id) :
     x(sop.x), y(sop.y), z(sop.z), mat_id_(0), color_id_(0), grow_data_high_(0),
     grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
     solid_(false) {
@@ -16,15 +16,15 @@ Tile::Tile(TerrainDim3 sop, const terrain::Material* material, ColorId color_id)
 
 // Set material, and color_id
 void
-Tile::set_material(const terrain::Material* const material, ColorId color_id_) {
+Tile::set_material(const terrain::material_t* const material, ColorId color_id_) {
     set_material(material);
     set_color_id(color_id_, material);
 }
 
 // Set the `mat_id_` to `material->element_id` and update `solid` and `color_id`.
 void
-Tile::set_material(const terrain::Material* const material) {
-    mat_id_ = material->element_id;
+Tile::set_material(const terrain::material_t* const material) {
+    mat_id_ = material->material_id;
     if (mat_id_ == DIRT_ID) { // being set to dirt
         color_id_ = (z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
     } else {
@@ -35,7 +35,7 @@ Tile::set_material(const terrain::Material* const material) {
 
 // If able, set `color_id` to `color_id_`.
 void
-Tile::set_color_id(ColorId color_id, const terrain::Material* const material) {
+Tile::set_color_id(ColorId color_id, const terrain::material_t* const material) {
     if (color_id >= material->color.size()) {
         return;
     }

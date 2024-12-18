@@ -21,7 +21,7 @@ file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # Set standard version
-set_property(TARGET FunGame PROPERTY CXX_STANDARD 20)
+set_property(TARGET FunGame PROPERTY CXX_STANDARD 23)
 set_property(TARGET FunGame PROPERTY C_STANDARD 17)
 
 # compile quill and sol2
@@ -35,6 +35,8 @@ block()
 endblock()
 
 add_subdirectory("vendor/sol2")
+
+add_subdirectory("vendor/glaze")
 
 # prefer newer OpenGL
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
@@ -78,9 +80,13 @@ target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 # Add include dirs
 target_include_directories(FunGame PRIVATE "vendor")
 target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
+target_include_directories(FunGame PRIVATE "vendor/glaze/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
+
+# this is for fmt included in quill
+target_include_directories(FunGame PRIVATE "vendor/quill/quill/include/quill/bundled")
 
 # Set warning options
 if(MSVC)
@@ -124,4 +130,5 @@ add_test(NAME LuaTest COMMAND FunGame Test LuaTest)
 add_test(NAME NoiseTest COMMAND FunGame Test NoiseTest)
 add_test(NAME Logging COMMAND FunGame Test Logging)
 add_test(NAME ChunkDataTest COMMAND FunGame Test ChunkDataTest)
+add_test(NAME LoadManifest COMMAND FunGame Test LoadManifest)
 

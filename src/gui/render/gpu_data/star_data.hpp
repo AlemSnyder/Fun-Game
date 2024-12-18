@@ -26,11 +26,11 @@
 #include "array_buffer.hpp"
 #include "gpu_data.hpp"
 
-#include <json/json.h>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+#include <glaze/glaze.hpp>
 
 #include <filesystem>
 #include <vector>
@@ -38,6 +38,34 @@
 namespace gui {
 
 namespace gpu_data {
+
+struct planet_data_t {
+    float radius;
+    float brightness;
+    float phase;
+};
+
+struct planets_data_t {
+    float brightness_scale;
+    std::vector<planet_data_t> data;
+};
+
+struct star_data_t {
+    float theta;
+    float phi;
+    float brightness;
+    float age;
+};
+
+struct stars_data_t {
+    float brightness_scale;
+    std::vector<star_data_t> data;
+};
+
+struct night_data_t {
+    stars_data_t stars;
+    planets_data_t planets;
+};
 
 /**
  * @brief Hold data for shape of star. This is used for the sun, and inherited for the

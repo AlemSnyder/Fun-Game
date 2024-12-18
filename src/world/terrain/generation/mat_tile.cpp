@@ -8,7 +8,7 @@ namespace generation {
 TileType::TileType(
     const std::unordered_set<const LandGenerator*> land_generators, MapTile_t tile_type,
     const std::vector<AddToTop>& layer_effect_generators,
-    const std::unordered_map<MaterialId, const terrain::Material> materials
+    const std::unordered_map<MaterialId, const terrain::material_t> materials
 ) : land_generators_(land_generators), tile_type_(tile_type) {
     Dim max_height = 0;
 
@@ -45,9 +45,9 @@ TileType::TileType(
         layer_effect_color_id = 0; // TODO this is the wrong glass color
     }
 
-    top_color_ = materials.at(stamp_material_id).color[stamp_color_id].second;
+    top_color_ = materials.at(stamp_material_id).color[stamp_color_id].hex_color;
 
-    secondary_color_ = materials.at(layer_effect_material_id).color[layer_effect_color_id].second;
+    secondary_color_ = materials.at(layer_effect_material_id).color[layer_effect_color_id].hex_color;
 
     if (max_height == max_layer_effect_height) {
         color_t real_color = color::uint32_to_color(secondary_color_);

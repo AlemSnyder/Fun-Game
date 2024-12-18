@@ -120,7 +120,11 @@
         "hash_map": "cpp",
         "any": "cpp",
         "*.ipp": "cpp",
-        "forward_list": "cpp"
+        "forward_list": "cpp",
+        "charconv": "cpp",
+        "coroutine": "cpp",
+        "expected": "cpp",
+        "latch": "cpp"
     },
     "editor.detectIndentation": false,
     "cmake.configureOnOpen": false

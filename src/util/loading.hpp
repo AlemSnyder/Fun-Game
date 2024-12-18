@@ -28,4 +28,6 @@ namespace util {
 // This loads objects from qb files onto the gpu
 void load_manifest();
 
+int load_manifest_test();
+
 } // namespace util

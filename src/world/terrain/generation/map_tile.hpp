@@ -62,7 +62,7 @@ class TileType {
     TileType(
         const std::unordered_set<const LandGenerator*> land_generators,
         MapTile_t tile_type, const std::vector<AddToTop>& layer_effect_generators,
-        const std::unordered_map<MaterialId, const terrain::Material> materials
+        const std::unordered_map<MaterialId, const terrain::material_t> materials
     );
 
     inline auto

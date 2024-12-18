@@ -1,6 +1,6 @@
 #include "object_handler.hpp"
 
-#include "json/json.h"
+#include "util/files.hpp"
 #include "util/voxel.hpp"
 
 #include <utility>
@@ -9,23 +9,21 @@ namespace world {
 
 namespace entity {
 
+// TODO change to return a pointer (could be null)
 ObjectData&
 ObjectHandler::get_object(const std::string& id) {
     return ided_objects.at(id);
 }
 
 void
-ObjectHandler::read_object(std::filesystem::path object_path) {
-    // json to read data into
-    Json::Value object_json;
-
+ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // read contents from path
-    auto contents = files::open_data_file(object_path);
-    if (contents.has_value()) {
-        contents.value() >> object_json;
-    } else {
-        LOG_WARNING(
-            logging::file_io_logger, "Cannot open file {}.", object_path.string()
+    auto object_data = files::read_json_from_file<object_t>(descriptor.path);
+
+    if (!object_data) {
+        LOG_ERROR(
+            logging::file_io_logger, "Attempting to load {} from {} failed.",
+            descriptor.identification, descriptor.path
         );
         return;
     }
@@ -33,7 +31,7 @@ ObjectHandler::read_object(std::filesystem::path object_path) {
     std::lock_guard<std::mutex> lock(this->map_mutex_);
 
     // check identification
-    std::string identification = object_json["identification"].asString();
+    std::string identification = descriptor.identification;
     if (ided_objects.find(identification) != ided_objects.end()) {
         LOG_WARNING(
             logging::file_io_logger, "Duplicate Identification \"{}\" found.",
@@ -47,7 +45,7 @@ ObjectHandler::read_object(std::filesystem::path object_path) {
     // on the main thread
     ided_objects.emplace(
         std::piecewise_construct, std::forward_as_tuple(std::move(identification)),
-        std::forward_as_tuple(object_json, object_path)
+        std::forward_as_tuple(*object_data, descriptor)
     );
 }
 

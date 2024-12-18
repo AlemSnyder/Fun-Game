@@ -104,7 +104,6 @@ class GlobalContext {
         thread_pool_.detach_task(function);
     }
 
-
     // Might want to expose these in the future.
     auto
     wait_for_tasks() {

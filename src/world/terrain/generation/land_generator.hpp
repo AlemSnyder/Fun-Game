@@ -23,10 +23,9 @@
 #pragma once
 
 #include "../material.hpp"
+#include "terrain_genreration_types.hpp"
 #include "tile_stamp.hpp"
 #include "types.hpp"
-
-#include <json/json.h>
 
 #include <glm/gtc/matrix_integer.hpp>
 
@@ -65,12 +64,10 @@ class StampGenerator {
     /**
      * @brief Default initializer use dictionary from "Tile_Macros" "Land_Data".
      */
-    StampGenerator(const Json::Value& data) :
-        height_(data["Height"].asInt()), height_variance_(data["DH"].asInt()),
-        width_(data["Size"].asInt()), width_variance_(data["DC"].asInt()),
-        elements_can_stamp_(read_elements(data["Can_Overwrite"])),
-        stamp_material_id_(data["Material_id"].asInt()),
-        stamp_color_id_(data["Color_id"].asInt()) {}
+    StampGenerator(const generation_stamp_t& data) :
+        height_(data.height), height_variance_(data.height_range), width_(data.size),
+        width_variance_(data.center_range), elements_can_stamp_(data.can_override),
+        stamp_material_id_(data.material_id), stamp_color_id_(data.color_id) {}
 
     /**
      * @brief Returns a tile stamp depending on the current sub region.
@@ -88,12 +85,6 @@ class StampGenerator {
     virtual size_t num_sub_region() const = 0;
 
     virtual ~StampGenerator() {}
-
-    /**
-     * @brief Read the materials and colors that this stamp can overwrite in
-     * terrain. Use the "Can_Stamp" dictionary.
-     */
-    static MaterialGroup read_elements(const Json::Value& data);
 
     [[nodiscard]] virtual Dim
     height() const {
@@ -157,7 +148,13 @@ class FromPosition : public StampGenerator {
         return points_.size();
     }
 
-    FromPosition(const Json::Value& data);
+    FromPosition(
+        const generation_stamp_t& data,
+        const stamp_generation_position_data_t& type_data
+    );
+
+    FromPosition(const generation_stamp_t& data) :
+        FromPosition(data, data.position.value()) {}
 };
 
 class FromRadius : public StampGenerator {
@@ -176,10 +173,15 @@ class FromRadius : public StampGenerator {
         return number_;
     }
 
-    FromRadius(const Json::Value& data) :
-        StampGenerator(data), radius_(data["Radius"]["radius"].asInt()),
-        number_(data["Radius"]["number"].asInt()),
-        center_variance_(data["DC"].asInt()) {}
+    FromRadius(
+        const generation_stamp_t& data, const stamp_generation_radius_data_t& type_data
+    ) :
+        StampGenerator(data),
+        radius_(type_data.radius), number_(type_data.number),
+        center_variance_(data.center_range) {}
+
+    FromRadius(const generation_stamp_t& data) :
+        FromRadius(data, data.radius.value()) {}
 };
 
 class FromGrid : public StampGenerator {
@@ -198,9 +200,14 @@ class FromGrid : public StampGenerator {
         return number_ * number_;
     }
 
-    FromGrid(const Json::Value& data) :
-        StampGenerator(data), radius_(data["Grid"]["radius"].asInt()),
-        number_(data["Grid"]["number"].asInt()), center_variance_(data["DC"].asInt()) {}
+    FromGrid(
+        const generation_stamp_t& data, const stamp_generation_grid_data_t& type_data
+    ) :
+        StampGenerator(data),
+        radius_(type_data.radius), number_(type_data.number),
+        center_variance_(data.center_range) {}
+
+    FromGrid(const generation_stamp_t& data) : FromGrid(data, data.grid.value()) {}
 };
 
 enum class Side : uint8_t {
@@ -226,7 +233,7 @@ enum class Side : uint8_t {
  *
  */
 class LandGenerator {
-    size_t current_region;
+    size_t current_region; // index of the next region to be generated
     size_t current_sub_region;
 
     // const std::unordered_map<MaterialId, const Material>& materials;
@@ -242,14 +249,14 @@ class LandGenerator {
      * @param materials the materials used in this biome
      * @param data the description of how tiles stamps should be generated
      */
-    LandGenerator(const Json::Value& data);
+    LandGenerator(const std::vector<terrain::generation::generation_stamp_t>& data);
 
     /**
      * @brief Construct a new LandGenerator object (default constructor)
      *
      * This should not be used.
      */
-    //    LandGenerator();
+    LandGenerator() = delete;
 
     /**
      * @brief Test if iteration is complete
@@ -298,27 +305,6 @@ class LandGenerator {
     }
 };
 
-enum class AddDirections : uint8_t {
-    None = 0,
-    To = 1,
-    Add = 2,
-};
-
-struct AddMethod {
-    // enum class about add n vs to n
-
-    Dim start;
-    Dim stop;
-    Dim data;
-
-    AddDirections add_directions;
-
-    bool
-    operator<(const AddMethod& other) const {
-        return start < other.start;
-    }
-};
-
 class AddToTop {
     const MaterialGroup elements_above_;
 
@@ -326,13 +312,13 @@ class AddToTop {
     const MaterialId stamp_material_id_; // MaterialId that will be set
     const ColorId stamp_color_id_;       // ColorId that will be set
 
-    std::set<AddMethod> data_;
+    std::set<layer_effect_data_t> data_;
     // use ordering by start
     // index into using find/ at
     // will likely give the correct AddMethod, but still should be checked
 
  public:
-    AddToTop(const Json::Value& json_data);
+    AddToTop(const layer_effects_t& layer_effect_data);
 
     Dim get_final_height(Dim height) const;
 

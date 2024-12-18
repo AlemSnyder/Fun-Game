@@ -29,6 +29,7 @@
 #include <sol/sol.hpp>
 
 #include <unordered_set>
+#include <unordered_map>
 
 #pragma once
 
@@ -43,9 +44,9 @@ struct biome_json_data {
     // Name of biome. Used both for file name and display name
     std::string biome_name;
     // Json data that describes biome
-    Json::Value biome_data;
+    biome_data_t biome_data;
     // Json data that describes materials
-    Json::Value materials_data;
+    all_materials_t materials_data;
 };
 
 /**
@@ -66,7 +67,9 @@ class GrassData {
      *
      * @param json_grass_data Json data that describes grass gradient
      */
-    GrassData(const Json::Value& json_grass_data);
+    GrassData(const grass_data_t& json_grass_data);
+
+    GrassData(const std::optional<grass_data_t>& json_grass_data);
 
     /**
      * @brief Get the grass gradient length
@@ -114,9 +117,9 @@ class Biome {
     std::vector<AddToTop> add_to_top_generators_;
 
     // materials that exist
-    const std::unordered_map<MaterialId, const terrain::Material> materials_;
+    const std::unordered_map<MaterialId, const terrain::material_t> materials_;
 
-    std::unordered_set<Plant> generate_plants_;
+    std::unordered_set<plant_t> generate_plants_;
 
     GrassData grass_data_;
 
@@ -131,15 +134,14 @@ class Biome {
      *
      * @param biome_data data containing biome_data material data and biome name
      */
-    Biome(const biome_json_data& biome_data, size_t seed);
+    Biome(biome_json_data biome_data, size_t seed);
 
     /**
      * @brief Construct a new Biome object
      *
      * @param biome_name name of biome
      */
-    Biome(const std::string& biome_name, size_t seed) :
-        Biome(get_json_data_(biome_name), seed) {}
+    Biome(const std::string& biome_name, size_t seed);
 
     /**
      * @brief Get macro tile map
@@ -239,12 +241,12 @@ class Biome {
      *
      * @return materials_ map of MaterialId to material
      */
-    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::Material>&
+    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::material_t>&
     get_materials() const {
         return materials_;
     }
 
-    [[nodiscard]] inline const std::unordered_set<Plant>&
+    [[nodiscard]] inline const std::unordered_set<plant_t>&
     get_generate_plants() const {
         return generate_plants_;
     }
@@ -256,7 +258,7 @@ class Biome {
      *
      * @return pointer to corresponding material
      */
-    [[nodiscard]] inline const terrain::Material*
+    [[nodiscard]] inline const terrain::material_t*
     get_material(MaterialId mat_id) const {
         auto mat = materials_.find(mat_id);
         if (mat == materials_.end()) [[unlikely]] {
@@ -281,18 +283,18 @@ class Biome {
         const std::filesystem::path& lua_map_generator_file, size_t size
     );
 
+    [[nodiscard]] static biome_json_data
+    get_json_data(const std::filesystem::path& biome_file_folder);
+
  private:
     // read data to create generator component
-    void read_tile_macro_data_(const Json::Value& biome_data);
+    void read_tile_macro_data_(const std::vector<tile_macros_t>& biome_data);
 
     // read data to generate tile components for each macro map tile
-    void read_map_tile_data_(const Json::Value& biome_data);
+    void read_map_tile_data_(const std::vector<tile_data_t>& biome_data);
 
     // read data to generate the add to top after affect
-    void read_add_to_top_data_(const Json::Value& biome_data);
-
-    // read data to generate plants
-    void read_plants_data_(const Json::Value& plants_data);
+    void read_add_to_top_data_(const std::vector<layer_effects_t>& biome_data);
 
     void
     init_lua_state_(const std::filesystem::path& lua_map_generator_file) {
@@ -304,8 +306,8 @@ class Biome {
      *
      * @param material_data data to load from (see) data/materials.json
      */
-    [[nodiscard]] std::unordered_map<MaterialId, const terrain::Material>
-    init_materials_(const Json::Value& material_data);
+    [[nodiscard]] std::unordered_map<MaterialId, const terrain::material_t>
+    init_materials_(const all_materials_t& material_data);
 
     [[nodiscard]] biome_json_data get_json_data_(const std::string& biome_name);
 };

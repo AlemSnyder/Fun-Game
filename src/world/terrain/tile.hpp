@@ -74,7 +74,7 @@ class Tile {
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(TerrainDim3 sop, const terrain::Material* material, ColorId color_id = 0);
+    Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id = 0);
 
     // This probably should not be used.
     Tile() :
@@ -88,9 +88,9 @@ class Tile {
      *
      * @param mat_ material to set
      */
-    void set_material(const terrain::Material* const materials);
+    void set_material(const terrain::material_t* const materials);
 
-    void set_material(const terrain::Material* const materials, ColorId color_id_);
+    void set_material(const terrain::material_t* const materials, ColorId color_id_);
 
     /**
      * @brief Set the color id, and material
@@ -98,7 +98,7 @@ class Tile {
      * @param color_id color to set
      * @param material material to set
      */
-    void set_color_id(ColorId color_id, const terrain::Material* const material);
+    void set_color_id(ColorId color_id, const terrain::material_t* const material);
     /**
      * @brief Set the distance from edge
      *
