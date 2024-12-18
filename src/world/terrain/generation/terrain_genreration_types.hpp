@@ -47,14 +47,14 @@ struct generation_stamp_t {
     ColorId color_id;
     std::vector<material_designation_t> can_override;
     int size;
-    int DS;
+    int size_range;
     int height;
-    int DH;
+    int height_range;
+    int center_range;
     std::optional<stamp_generation_grid_data_t> grid;
     std::optional<stamp_generation_position_data_t> position;
     std::optional<stamp_generation_radius_data_t> radius;
 
-    int DC;
 };
 
 struct tile_macros_t {

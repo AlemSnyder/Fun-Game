@@ -65,8 +65,8 @@ class StampGenerator {
      * @brief Default initializer use dictionary from "Tile_Macros" "Land_Data".
      */
     StampGenerator(const generation_stamp_t& data) :
-        height_(data.height), height_variance_(data.DH), width_(data.size),
-        width_variance_(data.DC), elements_can_stamp_(data.can_override),
+        height_(data.height), height_variance_(data.height_range), width_(data.size),
+        width_variance_(data.center_range), elements_can_stamp_(data.can_override),
         stamp_material_id_(data.material_id), stamp_color_id_(data.color_id) {}
 
     /**
@@ -178,7 +178,7 @@ class FromRadius : public StampGenerator {
     ) :
         StampGenerator(data),
         radius_(type_data.radius), number_(type_data.number),
-        center_variance_(data.DC) {}
+        center_variance_(data.center_range) {}
 
     FromRadius(const generation_stamp_t& data) :
         FromRadius(data, data.radius.value()) {}
@@ -205,7 +205,7 @@ class FromGrid : public StampGenerator {
     ) :
         StampGenerator(data),
         radius_(type_data.radius), number_(type_data.number),
-        center_variance_(data.DC) {}
+        center_variance_(data.center_range) {}
 
     FromGrid(const generation_stamp_t& data) : FromGrid(data, data.grid.value()) {}
 };

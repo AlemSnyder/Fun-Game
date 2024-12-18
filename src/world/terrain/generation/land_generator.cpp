@@ -174,7 +174,7 @@ FromPosition::FromPosition(
     const generation_stamp_t& data, const stamp_generation_position_data_t& type_data
 ) :
     StampGenerator(data),
-    center_variance_(data.DC) {
+    center_variance_(data.center_range) {
     points_.reserve(type_data.positions.size());
 
     for (const auto& [x, y] : type_data.positions) {
