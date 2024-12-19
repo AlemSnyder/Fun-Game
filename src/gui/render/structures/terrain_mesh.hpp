@@ -21,7 +21,7 @@
  *
  */
 
-#include "non_instanced_i_mesh.hpp"
+#include "i_mesh.hpp"
 #include "world/terrain/material.hpp"
 
 namespace gui {
@@ -34,7 +34,7 @@ namespace gpu_data {
  * @details Shallow derived class of IndividualInt. Color texture is made
  * for all materials in the terrain.
  */
-class TerrainMesh : public virtual NonInstancedIMeshGPU {
+class TerrainMesh : public virtual IMeshGPU {
  private:
     GLuint shadow_texture_;
 
@@ -48,7 +48,7 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
         color_texture_(color_texture_id){};
 
     inline TerrainMesh(const world::entity::Mesh& mesh, Texture1D& color_texture_id) :
-        NonInstancedIMeshGPU(mesh), color_texture_(color_texture_id) {}
+        IMeshGPU(mesh), color_texture_(color_texture_id) {}
 
     inline void
     set_color_texture(Texture1D& color_texture_id) noexcept {
@@ -63,7 +63,7 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     inline void
     bind() const override {
         LOG_BACKTRACE(logging::opengl_logger, "Binding Terrain Mesh.");
-        NonInstancedIMeshGPU::bind();
+        IMeshGPU::bind();
         color_texture_.bind(0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, shadow_texture_);

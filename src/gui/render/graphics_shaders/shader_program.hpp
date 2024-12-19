@@ -17,7 +17,7 @@
  *
  * @brief Defines shader program classes
  *
- * @ingroup GUI  RENDER  GRAPHICS_SHADERS
+ * @ingroup GUI  SHADER
  *
  * To any future reader: I hate how this is written. There is duplication
  * because of language constrains. If you can find a way to fix this that would
@@ -32,10 +32,11 @@
 
 #pragma once
 
-#include "../../handler.hpp"
-#include "../gpu_data/gpu_data.hpp"
-#include "gui_render_types.hpp"
+#include "gui/handler.hpp"
+#include "gui/render/gpu_data/data_types.hpp"
 #include "logging.hpp"
+#include "program_handler.hpp"
+#include "render_types.hpp"
 #include "types.hpp"
 #include "uniform.hpp"
 
@@ -140,6 +141,8 @@ class Render_Base {
     }
 };
 
+// TODO each of these should use the glMulti... version of the given command
+
 /**
  * @brief No elements No instancing
  */
@@ -148,7 +151,7 @@ class ShaderProgram_Standard :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUData>> data;
+    std::vector<const gpu_data::GPUData*> data;
 
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands,
@@ -169,7 +172,7 @@ class ShaderProgram_Standard :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUData> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -196,7 +199,7 @@ class ShaderProgram_Elements :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUDataElements>> data;
+    std::vector<const gpu_data::GPUDataElements*> data;
 
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands,
@@ -217,7 +220,7 @@ class ShaderProgram_Elements :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUDataElements> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -250,7 +253,7 @@ class ShaderProgram_Instanced :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUDataInstanced>> data;
+    std::vector<const gpu_data::GPUDataInstanced*> data;
 
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
@@ -271,7 +274,7 @@ class ShaderProgram_Instanced :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUDataInstanced> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
@@ -300,7 +303,7 @@ class ShaderProgram_ElementsInstanced :
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
-    std::vector<std::shared_ptr<gpu_data::GPUDataElementsInstanced>> data;
+    std::vector<const gpu_data::GPUDataElementsInstanced*> data;
 
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands,
@@ -321,14 +324,26 @@ class ShaderProgram_ElementsInstanced :
 
         Render_Base::render(width, height, framebuffer_ID);
 
-        for (std::shared_ptr<gpu_data::GPUDataElementsInstanced> mesh : data) {
+        for (const auto mesh : data) {
             if (!mesh->do_render()) {
                 continue;
             }
 
+            //            assert(static_cast<GLsizei>(mesh->get_num_vertices()) >= 0 &&
+            //            "Num vertices must non-negative");
+            //            assert(static_cast<GLsizei>(mesh->get_num_models()) >= 0 &&
+            //            "Num models must non-negative");
+
             mesh->bind();
 
             auto element_type = mesh->get_element_type();
+
+            LOG_BACKTRACE(
+                logging::opengl_logger,
+                "glDrawElementsInstanced(GL_TRIANGLES, {}, {}, 0, {})",
+                mesh->get_num_vertices(), to_string(element_type),
+                mesh->get_num_models()
+            );
 
             // Draw the triangles !
             glDrawElementsInstanced(
@@ -336,7 +351,7 @@ class ShaderProgram_ElementsInstanced :
                 mesh->get_num_vertices(),          // count
                 static_cast<GLenum>(element_type), // type
                 (void*)0,                          // element array buffer offset
-                mesh->get_num_models()
+                mesh->get_num_models()             // instance count
             );
 
             mesh->release();

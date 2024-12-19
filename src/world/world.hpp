@@ -23,8 +23,9 @@
 #pragma once
 
 #include "biome.hpp"
+#include "entity/entity.hpp"
 #include "entity/tile_object.hpp"
-#include "gui/render/gpu_data/terrain_mesh.hpp"
+#include "gui/render/structures/terrain_mesh.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "types.hpp"
@@ -73,8 +74,11 @@ class World {
     // mutex
     std::mutex meshes_to_update_mutex_;
 
-    // entity
-    std::unordered_set<entity::TileObject, entity::TileObjectOrder> tile_entities_;
+    // TileObjects
+    std::unordered_set<std::shared_ptr<entity::TileObjectInstance>> tile_entities_;
+
+    // Entities
+    std::unordered_set<std::shared_ptr<entity::EntityInstance>> entities_;
 
  public:
     /**
@@ -208,6 +212,8 @@ class World {
      * @param ColorId color id to change to
      */
     void set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id);
+
+    void spawn_entity(std::string id, glm::vec3 position);
 
     /**
      * @brief Save terrain with debug information

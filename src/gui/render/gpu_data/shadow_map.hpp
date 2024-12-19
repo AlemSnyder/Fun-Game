@@ -75,6 +75,11 @@ class ShadowMap {
         return depth_texture_id_;
     }
 
+    /**
+     * @brief Bind texture to given texture index
+     * 
+     * @param texture_index to bind texture to
+     */
     inline void
     bind(uint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
@@ -105,16 +110,30 @@ class ShadowMap {
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
+    /**
+     * @brief Get the light direction used for this shadow map
+     * 
+     * @return glm::vec3 the light direction
+     */
     [[nodiscard]] inline const glm::vec3&
     get_light_direction() const {
         return light_direction_;
     }
 
+    /**
+     * @brief Return the depth projection from world space to shadow depth space
+     * 
+     * @return glm::mat4 the depth projection matrix
+     */
     [[nodiscard]] inline const glm::mat4&
     get_depth_projection_matrix() const {
         return depth_projection_matrix_;
     }
 
+    /**
+     * @brief 
+     * @return 
+     */
     [[nodiscard]] inline const glm::mat4&
     get_depth_view_matrix() const {
         return depth_view_matrix_;
@@ -148,6 +167,11 @@ class ShadowMap {
      */
     void update();
 
+    /**
+     * @brief Update the light direction and depth projection matrix by using the given light direction.
+     * 
+     * @param glm::vec3 light_direction 
+     */
     void
     update(glm::vec3 light_direction) {
         set_light_direction(light_direction);
