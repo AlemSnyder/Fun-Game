@@ -1,5 +1,7 @@
 #include "tile_object.hpp"
 
+#include "util/files.hpp"
+
 #include "gui/render/structures/model.hpp"
 
 namespace world {

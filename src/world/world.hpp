@@ -32,7 +32,8 @@
 
 #include <glm/glm.hpp>
 
-#include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace world {
@@ -64,11 +65,11 @@ class World {
 
     // Set of chunks that need to be updated on gpu.
     // They Need to be re-meshed, and that mesh need to be sent to gpu.
-    std::set<ChunkIndex> chunks_to_update_;
+    std::unordered_set<ChunkIndex> chunks_to_update_;
 
     // Set of meshes that need to be sent to gpu. These meshes should be sent
     // once per frame.
-    std::map<ChunkIndex, entity::Mesh> meshes_to_update_;
+    std::unordered_map<ChunkIndex, entity::Mesh> meshes_to_update_;
     // Multiple threads are writing to this map concurrently so this is its
     // mutex
     std::mutex meshes_to_update_mutex_;
@@ -138,10 +139,10 @@ class World {
     /**
      * @brief Get the materials that exist in the world
      *
-     * @return const std::map<int, const material_t>* map of materials_id to
+     * @return const std::unordered_map<int, const material_t>* map of materials_id to
      * materials pointer
      */
-    inline const std::map<MaterialId, const terrain::material_t>&
+    inline const std::unordered_map<MaterialId, const terrain::material_t>&
     get_materials() const noexcept {
         return biome_.get_materials();
     }

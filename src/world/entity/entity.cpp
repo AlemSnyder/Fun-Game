@@ -1,5 +1,7 @@
 #include "entity.hpp"
 
+#include "util/files.hpp"
+
 namespace world {
 
 namespace entity {

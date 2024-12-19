@@ -80,7 +80,7 @@ class ObjectHandler {
     };
 
     /**
-     * @brief Update all ObjectData. Should be run once per frame.
+     * @brief Update all Object s. Should be run once per frame.
      */
     void update();
 };

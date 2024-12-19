@@ -22,9 +22,14 @@
 
 #pragma once
 
+#include "logging.hpp"
+
+#include <glaze/glaze.hpp>
+
 #include <filesystem>
 #include <fstream>
 #include <optional>
+#include <string>
 
 namespace files {
 
@@ -34,7 +39,7 @@ namespace files {
 std::filesystem::path get_root_path();
 
 /**
- * @brief Get the path to a data file
+ * @brief Get the path to the data folder
  */
 inline std::filesystem::path
 get_data_path() {
@@ -42,20 +47,7 @@ get_data_path() {
 }
 
 /**
- * @brief Open a given path
- */
-std::optional<std::ifstream> open_file(std::filesystem::path path);
-
-/**
- * @brief Get the path to a data file
- */
-inline std::optional<std::ifstream>
-open_data_file(std::filesystem::path path) {
-    return open_file(get_data_path() / path);
-}
-
-/**
- * @brief Get the path to a resource file
+ * @brief Get the path to the resource folder
  */
 inline std::filesystem::path
 get_resources_path() {
@@ -63,7 +55,7 @@ get_resources_path() {
 }
 
 /**
- * @brief Get the path to a resource file
+ * @brief Get the path to the manifest folder
  */
 inline std::filesystem::path
 get_manifest_path() {
@@ -71,7 +63,28 @@ get_manifest_path() {
 }
 
 /**
- * @brief Open a resource file
+ * @brief Get the path to the logging directory
+ */
+inline std::filesystem::path
+get_log_path() noexcept {
+    return files::get_root_path() / "logs";
+}
+
+/**
+ * @brief Get an ifstream of the contents of a given file
+ */
+std::optional<std::ifstream> open_file(std::filesystem::path path);
+
+/**
+ * @brief Get an ifstream of the contents of a file in the data folder
+ */
+inline std::optional<std::ifstream>
+open_data_file(std::filesystem::path path) {
+    return open_file(get_data_path() / path);
+}
+
+/**
+ * @brief Get an ifstream of the contents of a file in the resources folder
  */
 inline std::optional<std::ifstream>
 open_resource_file(std::filesystem::path path) {
@@ -95,6 +108,35 @@ get_argument_path(std::filesystem::path path) {
         // but it probably won't change
         return std::filesystem::current_path() / path;
     }
+}
+
+template <class T>
+std::optional<T>
+read_json_from_file(std::filesystem::path path) {
+    auto logger = logging::file_io_logger;
+
+    if (!path.is_absolute()) {
+        LOG_WARNING(
+            logger, "Path {} is not absolute. Best to use absolute path.", path
+        );
+    }
+
+    if (!std::filesystem::exists(path)) {
+        LOG_ERROR(logger, "Path {} does not exist.", path);
+        return {};
+    }
+
+    T data;
+    auto ec = glz::read_file_json(data, path.c_str(), std::string{});
+
+    if (ec) {
+        LOG_ERROR(
+            logger, "Failed to read {} from path {}. Error: {}", typeid(T).name(), path,
+            glz::format_error(ec)
+        );
+        return {};
+    }
+    return data;
 }
 
 } // namespace files

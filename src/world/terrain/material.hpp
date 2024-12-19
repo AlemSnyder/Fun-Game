@@ -25,17 +25,16 @@
 
 #include "generation/terrain_genreration_types.hpp"
 #include "gui/render/gpu_data/texture.hpp"
+#include "logging.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
 
 #include <glaze/glaze.hpp>
 
 #include <cstdint>
-#include <map>
-#include <optional>
-#include <set>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace terrain {
@@ -83,8 +82,11 @@ struct material_t {
     // int8_t deterioration from water
 };
 
-struct all_materials_t {
-    std::map<std::string, material_t> data;
+using all_materials_t = std::unordered_map<std::string, material_t>;
+
+struct MaterialColor {
+    const material_t& material;
+    ColorId color;
 };
 
 /**
@@ -121,10 +123,12 @@ class TerrainColorMapping {
     /**
      * @brief Initializes data for color_ids_map and colors_inverse_map.
      *
-     * @param const std::map<MaterialId, const material_t>& materials materials map
+     * @param const std::unordered_map<MaterialId, const Material>& materials materials
+     * map
      */
     static void
-    assign_color_mapping(const std::map<MaterialId, const material_t>& materials);
+    assign_color_mapping(const std::unordered_map<MaterialId, const material_t>& materials
+    );
 
     /**
      * @brief Return vector that maps terrain color id to color
@@ -179,10 +183,11 @@ class MaterialGroup {
  private:
     bool contain_all_materials;
     // Any material in this set is in the group no matter the color.
-    std::set<MaterialId> materials_no_color_requirement_;
+    std::unordered_set<MaterialId> materials_no_color_requirement_;
     // Map of materials to allowable color. For a material and color to be in
     // this group the material key must map to a set containing the given color.
-    std::map<MaterialId, std::unordered_set<ColorId>> materials_with_color_requirement_;
+    std::unordered_map<MaterialId, std::unordered_set<ColorId>>
+        materials_with_color_requirement_;
 
  public:
     /**
@@ -190,18 +195,21 @@ class MaterialGroup {
      *
      * @details Default constructor. Nothing will be in the group.
      */
-    MaterialGroup() : contain_all_materials(false){};
+    inline MaterialGroup() : contain_all_materials(false){};
+
+    inline MaterialGroup(bool all_materials) : contain_all_materials(all_materials){};
 
     /**
      * @brief Construct new MaterialGroup object.
      *
-     * @param std::set<MaterialId> materials materials in group no matter the color
-     * @param std::map<MaterialId, std::set<ColorId>> materials_w_color materials in
-     * group when they have specific color
+     * @param std::unordered_set<MaterialId> materials materials in group no matter the
+     * color
+     * @param std::unordered_map<MaterialId, std::unordered_set<ColorId>>
+     * materials_w_color materials in group when they have specific color
      */
     MaterialGroup(
-        std::set<MaterialId> materials,
-        std::map<MaterialId, std::unordered_set<ColorId>> materials_w_color
+        std::unordered_set<MaterialId> materials,
+        std::unordered_map<MaterialId, std::unordered_set<ColorId>> materials_w_color
     ) :
         contain_all_materials(false),
         materials_no_color_requirement_(materials),
@@ -250,12 +258,60 @@ class MaterialGroup {
         return materials_no_color_requirement_.contains(material_id);
     }
 
- private:
-    void insert_(std::unordered_set<MaterialId> material_id);
-    void insert_(
-        std::unordered_set<MaterialId> material_id,
-        std::unordered_set<ColorId> color_ids
+    bool insert(
+        const std::variant<bool, MaterialId, std::vector<MaterialId>>& material,
+        const std::variant<bool, ColorId, std::vector<ColorId>>& color
     );
+
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(bool value) {
+        if (value)
+            return {};
+        else {
+            LOG_WARNING(
+                logging::file_io_logger,
+                "colors = false. Why would you do this? It does nothing."
+            );
+            return std::vector<ColorId>();
+        }
+    }
+
+ private:
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(ColorId value) {
+        return {{value}};
+    }
+
+    inline static std::optional<std::vector<ColorId>>
+    read_colors(std::vector<ColorId> value) {
+        return value;
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(bool value) {
+        if (value)
+            return {};
+        else {
+            LOG_WARNING(
+                logging::file_io_logger,
+                "material = false. Why would you do this? It does nothing."
+            );
+            return std::vector<MaterialId>();
+        }
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(MaterialId value) {
+        return {{value}};
+    }
+
+    inline static std::optional<std::vector<MaterialId>>
+    read_materials(std::vector<MaterialId> value) {
+        return value;
+    }
+
+    void insert_(std::vector<MaterialId> material_id);
+    void insert_(std::vector<MaterialId> material_id, std::vector<ColorId> color_ids);
 
     inline void
     set_all() {

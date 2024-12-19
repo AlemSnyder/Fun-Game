@@ -54,15 +54,15 @@ quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 quill::Logger* file_io_logger;  // for file io
 quill::Logger* lua_logger;      // for lua
 
-const static std::filesystem::path LOG_FILE = log_dir() / "app.log";
+const static std::filesystem::path LOG_FILE = files::get_log_path() / "app.log";
 
 void
 init(bool console, quill::LogLevel log_level) {
     _LOG_LEVEL = log_level;
 
     // Create the logs directory
-    if (!std::filesystem::is_directory(log_dir()))
-        std::filesystem::create_directory(log_dir());
+    if (!std::filesystem::is_directory(files::get_log_path()))
+        std::filesystem::create_directory(files::get_log_path());
 
     // Initialize print handler
     if (console) {

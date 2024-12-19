@@ -1,5 +1,9 @@
 #include "model.hpp"
 
+#include "util/files.hpp"
+
+#include "fmt/core.h"
+
 #include <filesystem>
 #include <iterator>
 

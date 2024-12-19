@@ -28,19 +28,21 @@ NodeGroup::remove_adjacent(NodeGroup* NG) {
     }
 }
 
-std::map<const NodeGroup*, UnitPath>
+std::unordered_map<const NodeGroup*, UnitPath>
 NodeGroup::get_adjacent_map() const {
-    return std::map<const NodeGroup*, UnitPath>(adjacent.begin(), adjacent.end());
+    return std::unordered_map<const NodeGroup*, UnitPath>(
+        adjacent.begin(), adjacent.end()
+    );
 }
 
-std::map<NodeGroup*, UnitPath>
+std::unordered_map<NodeGroup*, UnitPath>
 NodeGroup::get_adjacent_map() {
     return adjacent;
 }
 
-std::set<const NodeGroup*>
+std::unordered_set<const NodeGroup*>
 NodeGroup::get_adjacent_clear(int path_type) const {
-    std::set<const NodeGroup*> out;
+    std::unordered_set<const NodeGroup*> out;
 
     for (const std::pair<NodeGroup*, UnitPath> t : adjacent) {
         if (t.second.compatible(path_type) && t.second.is_open()) {
@@ -50,7 +52,7 @@ NodeGroup::get_adjacent_clear(int path_type) const {
     return out;
 }
 
-std::map<NodeGroup*, UnitPath>
+std::unordered_map<NodeGroup*, UnitPath>
 NodeGroup::merge_groups(NodeGroup other) {
     auto size = tiles.size();
     auto other_size = other.tiles.size();
@@ -94,9 +96,9 @@ NodeGroup::sop() const {
     return {center_x, center_y, center_z};
 }
 
-const std::set<const Tile*, TilePCompare>
+const std::unordered_set<const Tile*>
 NodeGroup::get_tiles() const {
-    return std::set<const Tile*, TilePCompare>(tiles.begin(), tiles.end());
+    return std::unordered_set<const Tile*>(tiles.begin(), tiles.end());
 }
 
 bool
