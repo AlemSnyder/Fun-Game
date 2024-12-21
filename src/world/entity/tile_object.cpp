@@ -85,7 +85,7 @@ TileObject::update() {
 }
 
 void
-TileObject::init_render(RenderPrograms& programs) const {
+TileObject::init_render(render_programs_t& programs) const {
     for (const auto& mesh : model_meshes_) {
         programs.tile_object_render_program->data.push_back(&mesh);
     }

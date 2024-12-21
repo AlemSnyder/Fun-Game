@@ -76,7 +76,7 @@ class Entity : public virtual Object {
 
     virtual std::string identification() const;
 
-    virtual void init_render(RenderPrograms& programs) const override;
+    virtual void init_render(render_programs_t& programs) const override;
 
     virtual void update() override;
 

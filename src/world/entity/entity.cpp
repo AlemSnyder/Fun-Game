@@ -56,7 +56,7 @@ Entity::identification() const {
 }
 
 void
-Entity::init_render(RenderPrograms& programs) const {
+Entity::init_render(render_programs_t& programs) const {
     programs.entity_render_program->data.push_back(mesh_and_positions_.get());
 }
 

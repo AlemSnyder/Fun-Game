@@ -159,7 +159,7 @@ class TileObject : public virtual Object {
         return identification_;
     }
 
-    virtual void init_render(RenderPrograms& programs) const override;
+    virtual void init_render(render_programs_t& programs) const override;
 };
 
 } // namespace entity

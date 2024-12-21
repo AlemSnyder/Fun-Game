@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gui/render/gpu_data/data_types.hpp"
-#include "gui/ui/render_programs_struct.hpp"
+#include "gui/ui/render_programs.hpp"
 #include "types.hpp"
 
 #include <glaze/glaze.hpp>
@@ -65,7 +65,7 @@ class Object {
     //    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
     //    renderable_data() const = 0;
 
-    virtual void init_render(RenderPrograms& programs) const = 0;
+    virtual void init_render(render_programs_t& programs) const = 0;
 
     virtual void update() = 0;
 };
