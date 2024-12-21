@@ -1,7 +1,7 @@
 #include "shadow_map.hpp"
 
-#include "../../handler.hpp"
-#include "../../scene/controls.hpp"
+#include "gui/handler.hpp"
+#include "gui/scene/controls.hpp"
 #include "logging.hpp"
 
 #include <GL/glew.h>
@@ -9,9 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
-#include <algorithm>
 
 namespace gui {
 

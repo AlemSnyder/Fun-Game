@@ -50,12 +50,12 @@ Terrain::Terrain(
     // grows the grass
     init_grass();
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
 
     //  TODO make this faster 1
     init_chunks();
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: chunks.");
 }
 
 Terrain::Terrain(
@@ -67,12 +67,12 @@ Terrain::Terrain(
     // grows the grass
     init_grass();
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
 
     //  TODO make this faster 1
     init_chunks();
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: chunks.");
 }
 
 void

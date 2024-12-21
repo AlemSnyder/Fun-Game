@@ -106,7 +106,6 @@ class StampGenerator {
         return width_variance_;
     }
 
-
     [[nodiscard]] virtual MaterialId
     material() const {
         return stamp_material_id_;
@@ -295,12 +294,13 @@ class LandGenerator {
         current_sub_region = 0;
     };
 
-    [[nodiscard]] inline const auto begin() const {
+    [[nodiscard]] inline const auto
+    begin() const {
         return stamp_generators_.begin();
     }
 
-
-    [[nodiscard]] inline const auto end() const {
+    [[nodiscard]] inline const auto
+    end() const {
         return stamp_generators_.end();
     }
 };

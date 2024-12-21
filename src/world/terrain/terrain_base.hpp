@@ -24,11 +24,11 @@
 
 #include "generation/land_generator.hpp"
 #include "generation/map_tile.hpp"
+#include "generation/terrain_map.hpp"
 #include "generation/tile_stamp.hpp"
 #include "logging.hpp"
 #include "material.hpp"
 #include "path/unit_path.hpp"
-#include "generation/terrain_map.hpp"
 #include "tile.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
@@ -412,7 +412,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return biome_.get_grass_colors();
     }
 
-    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::material_t>&
+    [[nodiscard]] inline const std::unordered_map<
+        MaterialId, const terrain::material_t>&
     get_materials() const {
         return biome_.get_materials();
     }

@@ -8,6 +8,7 @@
 #include "logging.hpp"
 #include "types.hpp"
 #include "util/loading.hpp"
+#include "world/climate.hpp"
 #include "world/world.hpp"
 
 #include <GL/glew.h>
@@ -66,13 +67,15 @@ graphics_main(const argh::parser& cmdl) {
 
     world::World world(biome_name, size, size, seed);
 
+    world::Climate climate;
+
     // if need gui start gui
     bool imgui_debug = cmdl[{"-g", "--imgui"}];
     if (imgui_debug) {
-        return gui::imgui_entry(world, window);
+        return gui::imgui_entry(window, world, climate);
     } else {
         // if don't then strate to opengl
-        return gui::opengl_entry(world, window);
+        return gui::opengl_entry(window, world, climate);
     }
 
     glDeleteVertexArrays(1, &VertexArrayID);

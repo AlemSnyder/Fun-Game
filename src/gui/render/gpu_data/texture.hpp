@@ -24,16 +24,31 @@ class Texture1D {
         glGenTextures(1, &texture_ID_);
     }
 
+    /**
+     * @brief Bind texture to given texture index
+     *
+     * @param texture_index
+     */
     inline void
     bind(GLuint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
         glBindTexture(GL_TEXTURE_1D, texture_ID_);
     }
 
+    /**
+     * @brief Construct a new Texture1D from a vector of colors
+     *
+     * @param std::vector<ColorFloat>& color_data
+     */
     Texture1D(const std::vector<ColorFloat>& color_data);
 
     inline ~Texture1D() { glDeleteTextures(1, &texture_ID_); }
 
+    /**
+     * @brief Get the texture id
+     *
+     * @return GLuint the texture id
+     */
     [[nodiscard]] inline GLuint
     value() const {
         return texture_ID_;
@@ -60,16 +75,31 @@ class Texture2D {
     Texture2D(const texture2D_data_t& color_data);
 
  public:
+    /**
+     * @brief Construct a new Texture2D from a vector of vectors of colors
+     *
+     * @param const std::vector<std::vector<ColorFloat>>& color_data
+     */
     inline Texture2D(const std::vector<std::vector<ColorFloat>>& color_data) :
         Texture2D(pad_color_data(color_data)) {}
 
     ~Texture2D() { glDeleteTextures(1, &texture_ID_); }
 
+    /**
+     * @brief Get the texture id
+     *
+     * @return GLuint the texture id
+     */
     [[nodiscard]] inline GLuint
     value() const {
         return texture_ID_;
     }
 
+    /**
+     * @brief Bind texture to given texture index
+     *
+     * @param texture_index
+     */
     inline void
     bind(GLuint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);

@@ -22,14 +22,14 @@
 
 #include "plant.hpp"
 #include "terrain/generation/land_generator.hpp"
-#include "terrain/generation/terrain_map.hpp"
 #include "terrain/generation/map_tile.hpp"
+#include "terrain/generation/terrain_map.hpp"
 #include "util/files.hpp"
 
 #include <sol/sol.hpp>
 
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 
 #pragma once
 
@@ -150,8 +150,7 @@ class Biome {
      *
      * @return 2D map of map tiles
      */
-    [[nodiscard]] TerrainMacroMap
-    get_map(MacroDim length) const;
+    [[nodiscard]] TerrainMacroMap get_map(MacroDim length) const;
 
     /**
      * @brief Get plant map
@@ -241,7 +240,8 @@ class Biome {
      *
      * @return materials_ map of MaterialId to material
      */
-    [[nodiscard]] inline const std::unordered_map<MaterialId, const terrain::material_t>&
+    [[nodiscard]] inline const std::unordered_map<
+        MaterialId, const terrain::material_t>&
     get_materials() const {
         return materials_;
     }

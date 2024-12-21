@@ -1,15 +1,12 @@
 {
-    "name": "Flower Test",
-    "type":"TILE_OBJECT",
+    "name": "Test Object",
+    "type": "ENTITY",
     "models": [
         {
-            "path": "./Flower_Test.qb",
+            "path": "./Test.qb",
             "colors": [
                 {
                     "map": {}
-                },
-                {
-                    "map": {"663f23FF" : "663f22FF"}
                 }
             ],
             "globals":{
@@ -18,5 +15,7 @@
                 "diffuse": 0.8
             }
         }
-    ]
+    ],
+    "listeners":"",
+    "ai":"ai.lua"
 }
