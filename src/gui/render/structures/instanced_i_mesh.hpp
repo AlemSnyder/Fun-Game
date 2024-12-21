@@ -44,7 +44,7 @@ namespace gpu_data {
  * @details Handles instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU. The point of this class is that the
  * transforms array should be updated often.
- * 
+ *
  * @warning Maybe want to remove inheritance because we want to limit the data
  * size. NonInstancedIMeshGPU uses ints to save position, but models should only
  * need 5-6 bits.
@@ -65,7 +65,7 @@ class InstancedIMeshGPU :
 
     /**
      * @brief Construct a new InstancedIMeshGPU instance
-     * 
+     *
      * @param const Mesh& mesh
      * @param const std::vector<glm::ivec4>& model_transforms
      */
@@ -77,7 +77,7 @@ class InstancedIMeshGPU :
 
     /**
      * @brief Write given data to the transforms array starting at the given offset.
-     * 
+     *
      * @param std::vector<glm::ivec4> data data to be written
      * @param uint offset start index to write data
      */
@@ -101,7 +101,7 @@ class InstancedIMeshGPU :
 
     /**
      * @brief Get the transforms array
-     * 
+     *
      * @return const VertexBufferObject<glm::ivec4>& the transforms array
      */
     [[nodiscard]] inline const VertexBufferObject<glm::ivec4>&
@@ -111,7 +111,7 @@ class InstancedIMeshGPU :
 
     /**
      * @brief Get the number of models
-     * 
+     *
      * @return uint32_t the number of models
      */
     [[nodiscard]] inline uint32_t virtual get_num_models() const noexcept override {

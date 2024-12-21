@@ -1,8 +1,7 @@
 #include "tile_object.hpp"
 
-#include "util/files.hpp"
-
 #include "gui/render/structures/model.hpp"
+#include "util/files.hpp"
 
 namespace world {
 
@@ -43,16 +42,6 @@ TileObject::get_model(size_t mesh_id) {
 size_t
 TileObject::num_models() const noexcept {
     return model_meshes_.size();
-}
-
-std::vector<gui::render::ModelController>::iterator
-TileObject::begin() noexcept {
-    return model_meshes_.begin();
-}
-
-std::vector<gui::render::ModelController>::iterator
-TileObject::end() noexcept {
-    return model_meshes_.end();
 }
 
 TileObject::TileObject(

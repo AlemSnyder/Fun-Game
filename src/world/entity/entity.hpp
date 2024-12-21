@@ -28,8 +28,15 @@ class EntityInstance : public virtual ObjectInstance {
     void update(glm::mat4&& data);
 
     virtual void destroy();
-    virtual size_t get_health() const;
-    virtual void take_damage(size_t damage);
+
+    inline virtual size_t
+    get_health() const {
+        return 1;
+    }
+
+    inline virtual void
+    take_damage([[maybe_unused]] size_t damage) {}
+
     virtual glm::vec3 get_position() const;
 
     virtual std::shared_ptr<Object> get_object();
@@ -57,7 +64,10 @@ class Entity : public virtual Object {
 
     virtual ~Entity(){};
 
-    void reserve(size_t size);
+    inline void
+    reserve(size_t size) {
+        local_positions_.resize(size);
+    }
 
     [[nodiscard]] inline std::shared_ptr<const gui::gpu_data::FloatingInstancedIMeshGPU>
     data() const {
@@ -77,7 +87,10 @@ class Entity : public virtual Object {
         return local_positions_.size() - 1;
     }
 
-    void insert(glm::mat4&& data);
+    inline void
+    insert(glm::mat4&& data) {
+        local_positions_.push_back(data);
+    }
 
     bool remove(size_t index);
 

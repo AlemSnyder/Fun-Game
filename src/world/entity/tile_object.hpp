@@ -130,12 +130,18 @@ class TileObject : public virtual Object {
     /**
      * @brief Iterator to first model
      */
-    [[nodiscard]] std::vector<gui::render::ModelController>::iterator begin() noexcept;
+    [[nodiscard]] std::vector<gui::render::ModelController>::iterator
+    begin() noexcept {
+        return model_meshes_.begin();
+    }
 
     /**
      * @brief Iterator past last element
      */
-    [[nodiscard]] std::vector<gui::render::ModelController>::iterator end() noexcept;
+    [[nodiscard]] std::vector<gui::render::ModelController>::iterator
+    end() noexcept {
+        return model_meshes_.end();
+    }
 
     inline TileObject(const TileObject& obj) = delete;
     inline TileObject(TileObject&& other) = default;

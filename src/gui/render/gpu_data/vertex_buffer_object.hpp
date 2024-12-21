@@ -53,12 +53,12 @@ struct GPUStructureType {
     const GPUDataType draw_type; // type of smallest unit of memory
 
  private:
-     /**
+    /**
      * @brief Construct a new GPUStructureType.
-     * 
+     *
      * @details This one directly copies the given data in this class. Use a templated
      * constructor with no arguments for the correct values.
-     * 
+     *
      * @param uint8_t major_size_ the number of dimensions in a given vector
      * @param uint8_t minor_size_ if matrix the number of rows
      * @param uint8_t type_size the size in bytes of the low level value being stored
@@ -269,7 +269,7 @@ class VertexBufferObject {
 
     /**
      * @brief Get the array's size
-     * 
+     *
      * @return size_t size_
      */
     [[nodiscard]] inline size_t
@@ -293,7 +293,7 @@ class VertexBufferObject {
 
     /**
      * @brief Get array type.
-     * 
+     *
      * @return GPUArrayType array type
      */
     [[nodiscard]] inline constexpr static GPUStructureType
@@ -304,7 +304,7 @@ class VertexBufferObject {
 
     /**
      * @brief Get data type
-     * 
+     *
      * @return GPUDataType underlying data type
      */
     [[nodiscard]] inline constexpr static GPUDataType
@@ -315,7 +315,7 @@ class VertexBufferObject {
 
     /**
      * @brief Get the matrix row dimension
-     * 
+     *
      * @return uint8_t row dimension
      */
     [[nodiscard]] inline constexpr static uint8_t
@@ -326,7 +326,7 @@ class VertexBufferObject {
 
     /**
      * @brief Get the matrix column dimension
-     * 
+     *
      * @return uint8_t column dimension
      */
     [[nodiscard]] inline constexpr static uint8_t
@@ -337,7 +337,7 @@ class VertexBufferObject {
 
     /**
      * @brief Get the size of the underling type
-     * 
+     *
      * @return uint8_t type size
      */
     [[nodiscard]] inline constexpr static uint8_t

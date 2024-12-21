@@ -370,7 +370,7 @@ class Program : public ProgramData {
 
     /**
      * @brief Get the program name
-     * 
+     *
      * @return std::string program name
      */
     [[nodiscard]] inline std::string

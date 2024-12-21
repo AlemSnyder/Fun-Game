@@ -321,7 +321,7 @@ Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
     // add tile macro to tiles
     MapTile_t type_id = 0;
     for (const tile_data_t& tile_type : biome_data) {
-        std::unordered_set<const LandGenerator*>  tile_macros;
+        std::unordered_set<const LandGenerator*> tile_macros;
         for (TileMacro_t tile_macro : tile_type.used_tile_macros) {
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
@@ -331,12 +331,15 @@ Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
                 );
                 continue;
             }
-//            const LandGenerator& land_generator = land_generators_[tile_macro];
+            //            const LandGenerator& land_generator =
+            //            land_generators_[tile_macro];
             tile_macros.insert(&land_generators_[tile_macro]);
         }
-//        TileType tile_type(tile_macros, type_id);
+        //        TileType tile_type(tile_macros, type_id);
 
-        macro_tile_types_.emplace_back(tile_macros, type_id, add_to_top_generators_, materials_);
+        macro_tile_types_.emplace_back(
+            tile_macros, type_id, add_to_top_generators_, materials_
+        );
         type_id++;
     }
 }

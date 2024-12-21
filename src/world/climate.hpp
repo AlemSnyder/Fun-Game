@@ -12,7 +12,7 @@ class Climate {
     gui::gpu_data::StarData stars_data_;
 
  public:
-    Climate();
+    inline Climate() : stars_data_(files::get_data_path() / "stars.json") {}
 
     const auto*
     get_sun_data() const {
@@ -24,7 +24,5 @@ class Climate {
         return &stars_data_;
     }
 };
-
-inline Climate::Climate() : stars_data_(files::get_data_path() / "stars.json") {}
 
 } // namespace world

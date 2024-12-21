@@ -30,16 +30,6 @@ Entity::Entity(
         std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh);
 }
 
-void
-Entity::reserve(size_t size) {
-    local_positions_.resize(size);
-}
-
-void
-Entity::insert(glm::mat4&& data) {
-    local_positions_.push_back(data);
-}
-
 bool
 Entity::remove(size_t index) {
     if (index >= local_positions_.size()) [[unlikely]] {
@@ -98,14 +88,6 @@ EntityInstance::destroy() {
     }
     data_position_ = -1; // ya I know assigning -1 to size_t
 }
-
-size_t
-EntityInstance::get_health() const {
-    return 1;
-}
-
-void
-EntityInstance::take_damage([[maybe_unused]] size_t damage) {}
 
 glm::vec3
 EntityInstance::get_position() const {
