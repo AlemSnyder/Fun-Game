@@ -20,7 +20,7 @@ ObjectHandler::get_object(const std::string& id) {
 void
 ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
     // read contents from path
-    auto object_data = files::read_json_from_file<object_t>(descriptor.path);
+    auto object_data = files::read_json_from_file<object_t>(files::get_data_path() / descriptor.path);
 
     if (!object_data) {
         LOG_ERROR(
