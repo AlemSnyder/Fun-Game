@@ -23,11 +23,12 @@
 #include "plant.hpp"
 #include "terrain/generation/land_generator.hpp"
 #include "terrain/generation/map_tile.hpp"
+#include "terrain/generation/terrain_map.hpp"
 #include "util/files.hpp"
 
 #include <sol/sol.hpp>
 
-#include <map>
+#include <unordered_map>
 #include <unordered_set>
 
 #pragma once
@@ -111,12 +112,12 @@ class Biome {
     std::vector<generation::LandGenerator> land_generators_;
 
     // map of MapTile_t -> vector of TileMacro_t
-    std::vector<std::vector<TileMacro_t>> macro_tile_types_;
+    std::vector<TileType> macro_tile_types_;
 
     std::vector<AddToTop> add_to_top_generators_;
 
     // materials that exist
-    const std::map<MaterialId, const terrain::material_t> materials_;
+    const std::unordered_map<MaterialId, const terrain::material_t> materials_;
 
     std::unordered_set<plant_t> generate_plants_;
 
@@ -149,13 +150,7 @@ class Biome {
      *
      * @return 2D map of map tiles
      */
-    [[nodiscard]] static TerrainMacroMap
-    get_map(const sol::state& lua, MacroDim length);
-
-    [[nodiscard]] inline TerrainMacroMap
-    get_map(MacroDim length) const {
-        return get_map(lua_, length);
-    }
+    [[nodiscard]] TerrainMacroMap get_map(MacroDim length) const;
 
     /**
      * @brief Get plant map
@@ -164,18 +159,18 @@ class Biome {
      *
      * @return 2D map of plant percentages
      */
-    [[nodiscard]] const std::map<std::string, PlantMap> get_plant_map(MacroDim length
-    ) const;
+    [[nodiscard]] const std::unordered_map<std::string, PlantMap>
+    get_plant_map(MacroDim length) const;
 
-    inline static TerrainMacroMap
+    inline TerrainMacroMap
     single_tile_type_map(MapTile_t type) {
         std::vector<terrain::generation::MapTile> out;
         out.reserve(9);
         for (size_t i = 0; i < 4; i++)
-            out.emplace_back(0, 0);
-        out.emplace_back(type, 2);
+            out.emplace_back(get_macro_ids(0), 0);
+        out.emplace_back(get_macro_ids(type), 2);
         for (size_t i = 0; i < 4; i++)
-            out.emplace_back(0, 0);
+            out.emplace_back(get_macro_ids(0), 0);
 
         return TerrainMacroMap(out, 3, 3);
     }
@@ -195,7 +190,7 @@ class Biome {
      *
      * @return vector of TileMacro_t used to generate terrain on given MapTile_t
      */
-    [[nodiscard]] inline const std::vector<TileMacro_t>&
+    [[nodiscard]] inline const TileType&
     get_macro_ids(MapTile_t tile_id_type) const {
         return macro_tile_types_[tile_id_type];
     }
@@ -245,7 +240,8 @@ class Biome {
      *
      * @return materials_ map of MaterialId to material
      */
-    [[nodiscard]] inline const std::map<MaterialId, const terrain::material_t>&
+    [[nodiscard]] inline const std::unordered_map<
+        MaterialId, const terrain::material_t>&
     get_materials() const {
         return materials_;
     }
@@ -276,7 +272,7 @@ class Biome {
      *
      * @return map from ColorInt to pair of material pointer and color id
      */
-    [[nodiscard]] std::map<ColorInt, std::pair<const material_t*, ColorId>>
+    [[nodiscard]] std::unordered_map<ColorInt, MaterialColor>
     get_colors_inverse_map() const;
 
     static void init_lua_state(
@@ -310,8 +306,10 @@ class Biome {
      *
      * @param material_data data to load from (see) data/materials.json
      */
-    [[nodiscard]] std::map<MaterialId, const terrain::material_t>
+    [[nodiscard]] std::unordered_map<MaterialId, const terrain::material_t>
     init_materials_(const all_materials_t& material_data);
+
+    [[nodiscard]] biome_json_data get_json_data_(const std::string& biome_name);
 };
 
 } // namespace generation

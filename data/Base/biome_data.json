@@ -21,34 +21,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
-                        },
-                        {
-                            "material": 2,
-                            "color": 4
-                        },
-                        {
-                            "material": 2,
-                            "color": 5
+                            "color": [0, 1, 2, 3, 4, 5]
                         }
                     ],
                     "size": 28,
-                    "DS": 10,
+                    "size_range": 10,
                     "height": 8,
-                    "DH": 2,
-                    "DC": 0,
+                    "height_range": 2,
+                    "center_range": 0,
                     "grid": {
                         "radius": 16,
                         "number": 2
@@ -73,30 +53,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
-                        },
-                        {
-                            "material": 2,
-                            "color": 4
+                            "color": [0, 1, 2, 3, 4]
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 8,
-                    "DH": 6,
-                    "DC": 2,
+                    "height_range": 6,
+                    "center_range": 2,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -117,30 +81,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
-                        },
-                        {
-                            "material": 2,
-                            "color": 4
+                            "color": [0, 1, 2, 3, 4]
                         }
                     ],
                     "size": 19,
-                    "DS": 2,
+                    "size_range": 2,
                     "height": 16,
-                    "DH": 3,
-                    "DC": 0,
+                    "height_range": 3,
+                    "center_range": 0,
                     "grid": {
                         "radius": 16,
                         "number": 2
@@ -165,26 +113,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
+                            "color": [0, 1, 2, 3]
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 20,
-                    "DH": 6,
-                    "DC": 2,
+                    "height_range": 6,
+                    "center_range": 2,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -205,26 +141,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
-                        },
-                        {
-                            "material": 2,
-                            "color": 3
+                            "color": [0, 1, 2, 3]
                         }
                     ],
                     "size": 19,
-                    "DS": 2,
+                    "size_range": 2,
                     "height": 28,
-                    "DH": 3,
-                    "DC": 0,
+                    "height_range": 3,
+                    "center_range": 0,
                     "grid": {
                         "radius": 16,
                         "number": 2
@@ -249,22 +173,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
+                            "color": [0, 1, 2]
                         }
                     ],
                     "size": 12,
-                    "DS": 6,
+                    "size_range": 6,
                     "height": 36,
-                    "DH": 8,
-                    "DC": 2,
+                    "height_range": 8,
+                    "center_range": 2,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -285,22 +201,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
-                        },
-                        {
-                            "material": 2,
-                            "color": 2
+                            "color": [0, 1, 2]
                         }
                     ],
                     "size": 22,
-                    "DS": 6,
+                    "size_range": 6,
                     "height": 42,
-                    "DH": 3,
-                    "DC": 0,
+                    "height_range": 3,
+                    "center_range": 0,
                     "grid": {
                         "radius": 16,
                         "number": 2
@@ -325,18 +233,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 18,
-                    "DS": 8,
+                    "size_range": 8,
                     "height": 52,
-                    "DH": 4,
-                    "DC": 2,
+                    "height_range": 4,
+                    "center_range": 2,
                     "radius": {
                         "radius": 24,
                         "number": 16
@@ -357,18 +261,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 62,
-                    "DH": 4,
-                    "DC": 2,
+                    "height_range": 4,
+                    "center_range": 2,
                     "radius": {
                         "radius": 20,
                         "number": 16
@@ -389,18 +289,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 19,
-                    "DS": 2,
+                    "size_range": 2,
                     "height": 67,
-                    "DH": 3,
-                    "DC": 1,
+                    "height_range": 3,
+                    "center_range": 1,
                     "grid": {
                         "radius": 16,
                         "number": 4
@@ -425,18 +321,14 @@
                         },
                         {
                             "material": 2,
-                            "color": 0
-                        },
-                        {
-                            "material": 2,
-                            "color": 1
+                            "color": [0, 1]
                         }
                     ],
                     "size": 18,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 65,
-                    "DH": 4,
-                    "DC": 2,
+                    "height_range": 4,
+                    "center_range": 2,
                     "radius": {
                         "radius": 18,
                         "number": 16
@@ -461,10 +353,10 @@
                         }
                     ],
                     "size": 17,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 80,
-                    "DH": 14,
-                    "DC": 4,
+                    "height_range": 14,
+                    "center_range": 4,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -489,10 +381,10 @@
                         }
                     ],
                     "size": 15,
-                    "DS": 3,
+                    "size_range": 3,
                     "height": 92,
-                    "DH": 5,
-                    "DC": 1,
+                    "height_range": 5,
+                    "center_range": 1,
                     "grid": {
                         "radius": 16,
                         "number": 4
@@ -521,10 +413,10 @@
                         }
                     ],
                     "size": 14,
-                    "DS": 6,
+                    "size_range": 6,
                     "height": 60,
-                    "DH": 4,
-                    "DC": 2,
+                    "height_range": 4,
+                    "center_range": 2,
                     "radius": {
                         "radius": 24,
                         "number": 16
@@ -541,10 +433,10 @@
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 68,
-                    "DH": 10,
-                    "DC": 2,
+                    "height_range": 10,
+                    "center_range": 2,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -561,10 +453,10 @@
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 74,
-                    "DH": 8,
-                    "DC": 4,
+                    "height_range": 8,
+                    "center_range": 4,
                     "radius": {
                         "radius": 12,
                         "number": 16
@@ -581,10 +473,10 @@
                         }
                     ],
                     "size": 12,
-                    "DS": 2,
+                    "size_range": 2,
                     "height": 90,
-                    "DH": 3,
-                    "DC": 2,
+                    "height_range": 3,
+                    "center_range": 2,
                     "grid": {
                         "radius": 8,
                         "number": 2
@@ -605,10 +497,10 @@
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 28,
-                    "DH": 6,
-                    "DC": 2,
+                    "height_range": 6,
+                    "center_range": 2,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -625,10 +517,10 @@
                         }
                     ],
                     "size": 19,
-                    "DS": 2,
+                    "size_range": 2,
                     "height": 34,
-                    "DH": 0,
-                    "DC": 0,
+                    "height_range": 0,
+                    "center_range": 0,
                     "grid": {
                         "radius": 16,
                         "number": 2
@@ -649,10 +541,10 @@
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 40,
-                    "DH": 6,
-                    "DC": 2,
+                    "height_range": 6,
+                    "center_range": 2,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -669,10 +561,10 @@
                         }
                     ],
                     "size": 19,
-                    "DS": 2,
+                    "size_range": 2,
                     "height": 46,
-                    "DH": 0,
-                    "DC": 0,
+                    "height_range": 0,
+                    "center_range": 0,
                     "grid": {
                         "radius": 16,
                         "number": 2
@@ -693,10 +585,10 @@
                         }
                     ],
                     "size": 12,
-                    "DS": 4,
+                    "size_range": 4,
                     "height": 52,
-                    "DH": 6,
-                    "DC": 2,
+                    "height_range": 6,
+                    "center_range": 2,
                     "radius": {
                         "radius": 16,
                         "number": 16
@@ -713,10 +605,10 @@
                         }
                     ],
                     "size": 19,
-                    "DS": 2,
+                    "size_range": 2,
                     "height": 58,
-                    "DH": 0,
-                    "DC": 0,
+                    "height_range": 0,
+                    "center_range": 0,
                     "grid": {
                         "radius": 16,
                         "number": 2

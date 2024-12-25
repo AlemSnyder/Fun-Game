@@ -1,6 +1,7 @@
 
 #include "loading.hpp"
 
+#include "files.hpp"
 #include "global_context.hpp"
 #include "gui/render/structures/model.hpp"
 #include "manifest.hpp"
@@ -17,56 +18,35 @@ load_manifest() {
 
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
-        manifest::manifest_t manifest;
+        auto manifest_opt =
+            files::read_json_from_file<manifest::manifest_t>(directory_entry.path());
 
-        // path to manifest file
-        auto manifest_file = directory_entry.path();
-
-        auto contents = files::open_data_file(manifest_file);
-        if (contents.has_value()) [[likely]] {
-            // might fail
-            // if the json has some problems this will throw
-            std::string content(
-                (std::istreambuf_iterator<char>(contents.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read_json(manifest, content);
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "{}", glz::format_error(ec, content)
-                );
-                continue;
-            }
-
-        } else {
-            // Warning is already logged when opening file
-            // just move onto next file
+        if (!manifest_opt) {
             continue;
         }
 
-        int num_biomes =
-            manifest.biomes.has_value() ? manifest.biomes.value().size() : 0;
-        int num_entities =
-            manifest.entities.has_value() ? manifest.entities.value().size() : 0;
+        manifest::manifest_t& manifest = *manifest_opt;
+
+        int num_biomes = manifest.biomes ? (*manifest.biomes).size() : 0;
+        int num_entities = manifest.entities ? (*manifest.entities).size() : 0;
 
         LOG_DEBUG(
             logging::file_io_logger, "Loading manifest {} with {} biomes, {} entities.",
             manifest.name, num_biomes, num_entities
         );
-        if (manifest.entities.has_value()) {
+        if (manifest.entities) {
             // iterate through objects in manifest and queue them to be loaded
-            for (const manifest::descriptor_t& entity_data :
-                 manifest.entities.value()) {
+            for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                 // Will check if path exists
                 GlobalContext& context = GlobalContext::instance();
-                auto future = context.submit([entity_data]() {
+                auto future = context.submit_task([entity_data]() {
                     world::entity::ObjectHandler& object_handler =
                         world::entity::ObjectHandler::instance();
                     object_handler.read_object(entity_data);
                 });
             }
         }
-        // if (manifest.biomes.has_value()) -> do something else
+        // if (manifest.biomes) -> do something else
     }
 }
 
@@ -82,65 +62,35 @@ load_manifest_test() {
 
     for (const auto& directory_entry :
          std::filesystem::directory_iterator(manifest_folder)) {
-        manifest::manifest_t manifest;
+        auto manifest_opt =
+            files::read_json_from_file<manifest::manifest_t>(directory_entry.path());
 
-        // path to manifest file
-        auto manifest_file = directory_entry.path();
-
-        auto contents = files::open_data_file(manifest_file);
-        if (contents.has_value()) [[likely]] {
-            // might fail
-            // if the json has some problems this will throw
-            std::string content(
-                (std::istreambuf_iterator<char>(contents.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read_json(manifest, content);
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "{}", glz::format_error(ec, content)
-                );
-                return 1;
-            }
-        } else {
+        if (!manifest_opt) {
             return 1;
         }
 
-        int num_biomes =
-            manifest.biomes.has_value() ? manifest.biomes.value().size() : 0;
-        int num_entities =
-            manifest.entities.has_value() ? manifest.entities.value().size() : 0;
+        manifest::manifest_t& manifest = *manifest_opt;
+
+        int num_biomes = manifest.biomes ? (*manifest.biomes).size() : 0;
+        int num_entities = manifest.entities ? (*manifest.entities).size() : 0;
 
         LOG_DEBUG(
             logging::file_io_logger, "Loading manifest {} with {} biomes, {} entities.",
             manifest.name, num_biomes, num_entities
         );
-        if (manifest.entities.has_value()) {
+        if (manifest.entities) {
             // iterate through objects in manifest and queue them to be loaded
-            for (const manifest::descriptor_t& entity_data :
-                 manifest.entities.value()) {
+            for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                 // Will check if path exists
 
                 // struct to read data into
-                world::entity::object_t object_data;
+                auto object_data = files::read_json_from_file<world::entity::object_t>(
+                    files::get_data_path() / entity_data.path
+                );
 
                 // read contents from path
                 auto contents = files::open_data_file(entity_data.path);
-                if (contents.has_value()) [[likely]] {
-                    std::string content(
-                        (std::istreambuf_iterator<char>(contents.value())),
-                        std::istreambuf_iterator<char>()
-                    );
-
-                    auto ec = glz::read_json(object_data, content);
-                    if (ec) [[unlikely]] {
-                        LOG_ERROR(
-                            logging::file_io_logger, "{}",
-                            glz::format_error(ec, content)
-                        );
-                        return 1;
-                    }
-                } else {
+                if (!contents) {
                     LOG_ERROR(
                         logging::file_io_logger,
                         "Attempting to load {} from {} failed.",

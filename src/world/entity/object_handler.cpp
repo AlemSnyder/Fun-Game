@@ -2,6 +2,7 @@
 
 #include "entity.hpp"
 #include "tile_object.hpp"
+#include "util/files.hpp"
 #include "util/voxel.hpp"
 
 #include <utility>
@@ -18,26 +19,12 @@ ObjectHandler::get_object(const std::string& id) {
 
 void
 ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
-    // json to read data into
-
-    object_t object_data;
-
     // read contents from path
-    auto contents = files::open_data_file(descriptor.path);
-    if (contents.has_value()) {
-        std::string content(
-            (std::istreambuf_iterator<char>(contents.value())),
-            std::istreambuf_iterator<char>()
-        );
+    auto object_data = files::read_json_from_file<object_t>(files::get_data_path() / descriptor.path);
 
-        auto ec = glz::read_json(object_data, content);
-        if (ec) {
-            LOG_ERROR(logging::file_io_logger, "{}", glz::format_error(ec, content));
-            return;
-        }
-    } else {
+    if (!object_data) {
         LOG_ERROR(
-            logging::file_io_logger, "Attempting to load {} from {} failed.",
+            logging::file_io_logger, "Failed to load {} from {}.",
             descriptor.identification, descriptor.path
         );
         return;
@@ -55,11 +42,11 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
         return;
     }
 
-    switch (object_data.type) {
+    switch (object_data->type) {
         case OBJECT_TYPE::TILE_OBJECT:
             {
                 std::shared_ptr<TileObject> new_object =
-                    std::make_shared<TileObject>(object_data, descriptor);
+                    std::make_shared<TileObject>(*object_data, descriptor);
 
                 // when objects are initalized data is sent to the gpu.
                 // we want to run the mesher async, but need to send the data to the gpu
@@ -70,7 +57,7 @@ ObjectHandler::read_object(const manifest::descriptor_t& descriptor) {
         case OBJECT_TYPE::ENTITY:
             {
                 std::shared_ptr<Entity> new_object =
-                    std::make_shared<Entity>(object_data, descriptor);
+                    std::make_shared<Entity>(*object_data, descriptor);
                 ided_objects[identification] = static_pointer_cast<Object>(new_object);
             }
             break;

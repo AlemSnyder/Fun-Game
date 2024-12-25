@@ -50,7 +50,7 @@ GrassData::GrassData(const grass_data_t& grass_data) {
 
 GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
     GrassData(grass_data.value_or(grass_data_t())) {
-    if (!grass_data.has_value()) {
+    if (!grass_data) {
         LOG_WARNING(logging::terrain_logger, "Grass Data Empty");
     }
 }
@@ -61,7 +61,7 @@ Biome::Biome(const std::string& biome_name, size_t seed) :
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
     generate_plants_(biome_data.biome_data.generate_plants),
-    grass_data_(biome_data.materials_data.data.at("Dirt").gradient), seed_(seed) {
+    grass_data_(biome_data.materials_data.at("Dirt").gradient), seed_(seed) {
     std::filesystem::path biome_json_path =
         files::get_data_path() / biome_data.biome_name;
 
@@ -186,21 +186,10 @@ Biome::init_lua_state(
 }
 
 TerrainMacroMap
-Biome::map_generation_test(
-    const std::filesystem::path& lua_map_generator_file, size_t size
-) {
-    sol::state lua;
-
-    Biome::init_lua_state(lua, lua_map_generator_file);
-
-    return get_map(std::move(lua), size);
-}
-
-TerrainMacroMap
-Biome::get_map(const sol::state& lua, MacroDim size) {
+Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
-    sol::protected_function map_function = lua["map"];
+    sol::protected_function map_function = lua_["map"];
 
     if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
@@ -249,17 +238,18 @@ Biome::get_map(const sol::state& lua, MacroDim size) {
     for (MacroDim x = 0; x < x_map_tiles; x++) {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             size_t map_index = x * y_map_tiles + y;
-            int value = tile_map_map[map_index].get_or<int, int>(0);
-            out.emplace_back(value, 0, x, y);
+            int tile_id = tile_map_map[map_index].get_or<int, int>(0);
+            const TileType& tile_type = macro_tile_types_[tile_id];
+            out.emplace_back(tile_type, seed_, x, y);
         }
     }
 
     return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
-const std::map<std::string, PlantMap>
+const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
-    std::map<std::string, PlantMap> out;
+    std::unordered_map<std::string, PlantMap> out;
 
     sol::protected_function plant_map = lua_["plants_map"];
 
@@ -329,8 +319,9 @@ Biome::read_tile_macro_data_(const std::vector<tile_macros_t>& tile_macros) {
 void
 Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
     // add tile macro to tiles
+    MapTile_t type_id = 0;
     for (const tile_data_t& tile_type : biome_data) {
-        std::vector<TileMacro_t> tile_macros;
+        std::unordered_set<const LandGenerator*> tile_macros;
         for (TileMacro_t tile_macro : tile_type.used_tile_macros) {
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
@@ -340,9 +331,16 @@ Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
                 );
                 continue;
             }
-            tile_macros.push_back(tile_macro);
+            //            const LandGenerator& land_generator =
+            //            land_generators_[tile_macro];
+            tile_macros.insert(&land_generators_[tile_macro]);
         }
-        macro_tile_types_.push_back(std::move(tile_macros));
+        //        TileType tile_type(tile_macros, type_id);
+
+        macro_tile_types_.emplace_back(
+            tile_macros, type_id, add_to_top_generators_, materials_
+        );
+        type_id++;
     }
 }
 
@@ -353,25 +351,22 @@ Biome::read_add_to_top_data_(const std::vector<layer_effects_t>& after_effects_d
     }
 }
 
-std::map<MaterialId, const terrain::material_t>
+std::unordered_map<MaterialId, const terrain::material_t>
 Biome::init_materials_(const all_materials_t& material_data) {
-    std::map<MaterialId, const terrain::material_t> out;
-    for (const auto& key : material_data.data) {
+    std::unordered_map<MaterialId, const terrain::material_t> out;
+    for (const auto& key : material_data) {
         out.insert(std::make_pair(key.second.material_id, key.second));
     }
     return out;
 }
 
-std::map<ColorInt, std::pair<const material_t*, ColorId>>
+std::unordered_map<ColorInt, MaterialColor>
 Biome::get_colors_inverse_map() const {
-    std::map<ColorInt, std::pair<const material_t*, ColorId>> materials_inverse;
+    std::unordered_map<ColorInt, MaterialColor> materials_inverse;
     for (const auto& element : materials_) {
         for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
-            materials_inverse.insert(
-                std::map<ColorInt, std::pair<const material_t*, ColorId>>::value_type(
-                    element.second.color.at(color_id).hex_color,
-                    std::make_pair(&element.second, color_id)
-                )
+            materials_inverse.emplace(
+                color_id, MaterialColor{element.second, color_id}
             );
         }
     }
@@ -380,67 +375,25 @@ Biome::get_colors_inverse_map() const {
 
 biome_json_data
 Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
-    glz::context ctx{};
-    terrain::generation::biome_data_t biome_data;
-    {
-        std::filesystem::path biome_data_file = biome_folder_path / "biome_data.json";
-        auto biome_file = files::open_data_file(biome_data_file);
+    auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
+        biome_folder_path / "biome_data.json"
+    );
 
-        if (biome_file.has_value()) {
-            std::string content(
-                (std::istreambuf_iterator<char>(biome_file.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read<glz::opts{}>(biome_data, content, ctx);
-            if (ec) {
-                LOG_ERROR(
-                    logging::file_io_logger, "Error Parsing Json:\n{}",
-                    glz::format_error(ec, content)
-                );
-                return {};
-            }
-        } else {
-            LOG_CRITICAL(
-                logging::file_io_logger, "Could not open biome data {}", biome_data_file
-            );
-            return {};
-        }
-    }
-    terrain::all_materials_t materials;
-    // std::map<std::string, material_t> materials;
-
-    {
-        std::filesystem::path materials_file_path =
-            biome_folder_path / "materials.json";
-        auto materials_file = files::open_data_file(materials_file_path);
-
-        if (materials_file.has_value()) {
-            std::string content(
-                (std::istreambuf_iterator<char>(materials_file.value())),
-                std::istreambuf_iterator<char>()
-            );
-            auto ec = glz::read<glz::opts{.error_on_unknown_keys = true}>(
-                materials.data, content, ctx
-            );
-
-            if (ec) {
-                LOG_CRITICAL(
-                    logging::file_io_logger, "Error Parsing Json:{}{}",
-                    materials_file_path, glz::format_error(ec, content)
-                );
-                return {};
-            }
-
-        } else {
-            LOG_CRITICAL(
-                logging::file_io_logger, "Could not open material data {}",
-                materials_file_path
-            );
-            return {};
-        }
+    if (!biome_data) {
+        return {};
     }
 
-    terrain::generation::biome_json_data data(biome_data.name, biome_data, materials);
+    auto materials = files::read_json_from_file<all_materials_t>(
+        biome_folder_path / "materials.json"
+    );
+
+    if (!materials) {
+        return {};
+    }
+
+    terrain::generation::biome_json_data data(
+        biome_data->name, *biome_data, *materials
+    );
     return data;
 }
 

@@ -22,7 +22,8 @@ Scene::update(screen_size_t width, screen_size_t height) {
 
     GlobalContext& context = GlobalContext::instance();
     // wait for all tasks that may queue to opengl calls
-    context.wait_for_tasks();
+    // context.wait_for_tasks();
+    // not doing this they will just run in the background
     // run all opengl calls
     context.run_opengl_queue();
 

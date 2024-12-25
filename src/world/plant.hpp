@@ -5,8 +5,6 @@
 #include <glaze/glaze.hpp>
 
 #include <compare>
-#include <filesystem>
-#include <optional>
 #include <string>
 
 namespace terrain {
@@ -27,18 +25,8 @@ struct plant_t {
     // path to lua file that contains function map_name
     std::optional<std::filesystem::path> map_generator_path;
 
-    [[nodiscard]] inline std::strong_ordering
-    operator<=>(const plant_t& other) const {
-        return identification <=> other.identification;
-    }
-
-    [[nodiscard]] inline bool
-    operator==(const plant_t& other) const {
-        return identification == other.identification;
-    }
-
-    // only compare the identification
-    // can only insert entities from one map (fight me)
+    [[nodiscard]] inline std::strong_ordering operator<=>(const plant_t& other
+    ) const = default;
 };
 
 } // namespace generation

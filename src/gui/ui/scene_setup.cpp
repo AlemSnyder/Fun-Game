@@ -7,7 +7,7 @@
 #include "../render/structures/static_mesh.hpp"
 #include "../render/structures/uniform_types.hpp"
 #include "gui/render/structures/floating_instanced_i_mesh.hpp"
-#include "render_programs_struct.hpp"
+#include "render_programs.hpp"
 #include "world/entity/object_handler.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -252,7 +252,7 @@ setup(
 
     world.spawn_entity("base/Test_Entity", {5, 5, z + 1});
 
-    RenderPrograms object_render_programs{
+    render_programs_t object_render_programs{
         .entity_render_program = entity_render_pipeline,
         .tile_object_render_program = tile_entity_render_pipeline};
 

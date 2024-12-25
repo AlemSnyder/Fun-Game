@@ -24,6 +24,7 @@
 
 #include "generation/land_generator.hpp"
 #include "generation/map_tile.hpp"
+#include "generation/terrain_map.hpp"
 #include "generation/tile_stamp.hpp"
 #include "logging.hpp"
 #include "material.hpp"
@@ -36,8 +37,6 @@
 #include <stdio.h>
 
 #include <cstdint>
-#include <map>
-#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -97,8 +96,7 @@ class TerrainBase : public voxel_utility::VoxelBase {
 
     void qb_read(
         std::vector<ColorInt> data,
-        const std::map<ColorInt, std::pair<const material_t*, ColorId>>&
-            materials_inverse
+        const std::unordered_map<ColorInt, MaterialColor>& materials_inverse
     );
 
     /**
@@ -414,7 +412,8 @@ class TerrainBase : public voxel_utility::VoxelBase {
         return biome_.get_grass_colors();
     }
 
-    [[nodiscard]] inline const std::map<MaterialId, const terrain::material_t>&
+    [[nodiscard]] inline const std::unordered_map<
+        MaterialId, const terrain::material_t>&
     get_materials() const {
         return biome_.get_materials();
     }

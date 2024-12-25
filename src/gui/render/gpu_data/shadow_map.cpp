@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 
@@ -100,33 +101,25 @@ ShadowMap::update() {
     }
 
     // try to generate a prism that covers the entire field of wiew.
-    double x_max, x_min = shadow_range_corners[0].x;
-    double y_max, y_min = shadow_range_corners[0].y;
-    double z_max, z_min = shadow_range_corners[0].z;
+    float x_max = shadow_range_corners[0].x;
+    float x_min = shadow_range_corners[0].x;
+    float y_max = shadow_range_corners[0].y;
+    float y_min = shadow_range_corners[0].y;
+    float z_max = shadow_range_corners[0].z;
+    float z_min = shadow_range_corners[0].z;
 
     for (const glm::vec4& position : shadow_range_corners) {
-        if (position.x > x_max) {
-            x_max = position.x;
-        }
-        if (position.y > y_max) {
-            y_max = position.y;
-        }
-        if (position.z > z_max) {
-            z_max = position.z;
-        }
-        if (position.x < x_min) {
-            x_min = position.x;
-        }
-        if (position.y < y_min) {
-            y_min = position.y;
-        }
-        if (position.z < z_min) {
-            z_min = position.z;
-        }
+        x_max = std::max(position.x, x_max);
+        y_max = std::max(position.x, y_max);
+        z_max = std::max(position.x, z_max);
+
+        x_min = std::min(position.x, x_min);
+        y_min = std::min(position.x, y_min);
+        z_min = std::min(position.x, z_min);
     }
 
     depth_projection_matrix_ =
-        glm::ortho(x_min, x_max, y_min, y_max, -z_max - 100.0, -z_min);
+        glm::ortho(x_min, x_max, y_min, y_max, -z_max - 100.0f, -z_min);
 }
 
 } // namespace gpu_data

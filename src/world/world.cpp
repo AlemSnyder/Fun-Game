@@ -128,11 +128,10 @@ World::World(
 }
 
 World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
-    biome_(biome_name, seed),
-    terrain_main_(
-        3, 3, macro_tile_size, height, seed, biome_,
-        terrain::generation::Biome::single_tile_type_map(tile_type)
-    ) {}
+    biome_(biome_name, seed), terrain_main_(
+                                  3, 3, macro_tile_size, height, seed, biome_,
+                                  biome_.single_tile_type_map(tile_type)
+                              ) {}
 
 // Should not be called except by lambda function
 void
@@ -156,8 +155,7 @@ void
 World::update_marked_chunks_mesh() {
     for (auto chunk_pos : chunks_to_update_) {
         GlobalContext& context = GlobalContext::instance();
-        context.submit(
-            [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
+        context.submit_task([this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
         );
     }
     chunks_to_update_.clear();
@@ -181,9 +179,9 @@ World::update_all_chunks_mesh() {
     wait_for.reserve(num_chunks);
     GlobalContext& context = GlobalContext::instance();
     for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
-        auto future = context.submit(
-            [this](ChunkIndex p) { this->update_single_mesh(p); }, chunk_pos
-        );
+        auto future = context.submit_task([this, chunk_pos]() {
+            this->update_single_mesh(chunk_pos);
+        });
         wait_for.push_back(std::move(future));
     }
     // Should only wait for the previously queued tasks.

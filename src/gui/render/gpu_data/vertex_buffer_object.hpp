@@ -282,7 +282,7 @@ class VertexBufferObject {
     /**
      * @brief Get the array's size
      *
-     * @return size_t alloc_size_
+     * @return size_t size_
      */
     [[nodiscard]] inline size_t
     size() const noexcept {
