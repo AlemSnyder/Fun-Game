@@ -17,7 +17,7 @@ PositionSynchronizer::start(
 
     GlobalContext& context = GlobalContext::instance();
 
-    context.submit_task([this, &objects]() {
+    result_ = context.submit_task([this, &objects]() {
         while (execute_again_) {
 
             auto now = std::chrono::system_clock::now();

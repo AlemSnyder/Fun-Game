@@ -19,8 +19,17 @@ class PositionSynchronizer {
 
     std::atomic<bool> execute_again_ = false;
 
+    std::future<void> result_;
+
  public:
     inline PositionSynchronizer() {};
+
+    inline ~PositionSynchronizer() {
+        if (execute_again_) {
+            execute_again_ = false;
+            result_.wait();
+        }
+    }
 
     void start(std::unordered_map<std::string, std::shared_ptr<Object>>& objects);
 
