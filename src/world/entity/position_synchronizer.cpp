@@ -15,7 +15,9 @@ PositionSynchronizer::start(
 ) {
     execute_again_ = true;
 
-    std::thread thread = std::thread([this, &objects]() {
+    GlobalContext& context = GlobalContext::instance();
+
+    context.submit_task([this, &objects]() {
         while (execute_again_) {
 
             auto now = std::chrono::system_clock::now();
@@ -29,7 +31,6 @@ PositionSynchronizer::start(
         }
     });
 
-    thread.detach();
 }
 
 void
