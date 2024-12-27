@@ -21,6 +21,7 @@
  */
 
 #include "gui/render/structures/model.hpp"
+#include "position_synchronizer.hpp"
 #include "manifest.hpp"
 #include "object.hpp"
 
@@ -46,6 +47,8 @@ class ObjectHandler {
 
     std::mutex map_mutex_;
     std::unordered_map<std::string, std::shared_ptr<Object>> ided_objects;
+
+    PositionSynchronizer position_synchronizer_;
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -82,7 +85,12 @@ class ObjectHandler {
     /**
      * @brief Update all Object s. Should be run once per frame.
      */
-    void update();
+//    void update();
+
+    void start_update();
+
+    void stop_update();
+
 };
 
 } // namespace entity

@@ -14,11 +14,6 @@ namespace gui {
 
 void
 Scene::update(screen_size_t width, screen_size_t height) {
-    world::entity::ObjectHandler& object_handler =
-        world::entity::ObjectHandler::instance();
-
-    // send all data to gpu
-    object_handler.update();
 
     GlobalContext& context = GlobalContext::instance();
     // wait for all tasks that may queue to opengl calls

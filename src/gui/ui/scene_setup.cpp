@@ -279,6 +279,8 @@ setup(
     scene.add_background_ground_renderer(sky_renderer);
     scene.add_background_ground_renderer(star_renderer);
     scene.add_background_ground_renderer(sun_renderer);
+
+    object_handler.start_update();
 }
 
 } // namespace gui
