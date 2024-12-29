@@ -21,9 +21,9 @@
  */
 
 #include "gui/render/structures/model.hpp"
-#include "position_synchronizer.hpp"
 #include "manifest.hpp"
 #include "object.hpp"
+#include "position_synchronizer.hpp"
 
 #include <memory>
 #include <mutex>
@@ -85,12 +85,11 @@ class ObjectHandler {
     /**
      * @brief Update all Object s. Should be run once per frame.
      */
-//    void update();
+    //    void update();
 
     void start_update();
 
     void stop_update();
-
 };
 
 } // namespace entity

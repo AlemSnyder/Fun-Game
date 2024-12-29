@@ -35,7 +35,7 @@ setup(
     // parallel program to generate a mesh for each chunk
     world.update_all_chunks_mesh();
 
-    auto terrain_mesh = world.get_chunks_mesh();
+    auto terrain_mesh = world.get_terrain_mesh();
 
     auto star_shape = climate.get_sun_data();
 
@@ -242,11 +242,11 @@ setup(
     star_renderer->data.push_back(star_data);
     sun_renderer->data.push_back(star_shape);
 
-    for (const auto& chunk_mesh : terrain_mesh) {
-        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
-        chunks_render_program->data.push_back(chunk_mesh.get());
-        chunks_shadow_program->data.push_back(chunk_mesh.get());
-    }
+        terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
+//        chunks_render_program->data.push_back(chunk_mesh.get());
+//        chunks_shadow_program->data.push_back(chunk_mesh.get());
+
+    // TODO send terrain_mesh to a render program
 
     auto z = world.get_terrain_main().get_Z_solid(5, 5, 50);
 

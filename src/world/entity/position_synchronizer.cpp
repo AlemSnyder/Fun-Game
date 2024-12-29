@@ -19,7 +19,6 @@ PositionSynchronizer::start(
 
     result_ = context.submit_task([this, &objects]() {
         while (execute_again_) {
-
             auto now = std::chrono::system_clock::now();
 
             for (auto& [name, object] : objects) {
@@ -30,7 +29,6 @@ PositionSynchronizer::start(
             std::this_thread::sleep_until(now + sleep_time);
         }
     });
-
 }
 
 void

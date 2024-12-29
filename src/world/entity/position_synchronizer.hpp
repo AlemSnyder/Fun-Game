@@ -3,7 +3,6 @@
 #include "object.hpp"
 #include "position_synchronizer.hpp"
 
-
 #include <atomic>
 #include <memory>
 #include <thread>

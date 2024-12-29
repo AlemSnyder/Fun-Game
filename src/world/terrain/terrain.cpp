@@ -256,13 +256,28 @@ Terrain::pos(const NodeGroup* const node_group) const {
 }
 
 ChunkIndex
-Terrain::get_chunk_from_tile(Dim x, Dim y, Dim z) const {
+Terrain::get_chunk_index_from_tile(Dim x, Dim y, Dim z) const {
     TerrainOffset px = floor(x) / Chunk::SIZE;
     TerrainOffset py = floor(y) / Chunk::SIZE;
     TerrainOffset pz = floor(z) / Chunk::SIZE;
     return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX / Chunk::SIZE)
            + pz;
 }
+
+ChunkPos
+Terrain::get_chunk_pos_from_tile(Dim x, Dim y, Dim z) const {
+    TerrainOffset px = floor(x) / Chunk::SIZE;
+    TerrainOffset py = floor(y) / Chunk::SIZE;
+    TerrainOffset pz = floor(z) / Chunk::SIZE;
+    return {px, py, pz};
+}
+
+ChunkIndex
+Terrain::get_chunk_index_from_pos(ChunkPos pos) const {
+    return (pos.x * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (pos.y * Z_MAX / Chunk::SIZE)
+           + pos.z;
+}
+
 
 std::unordered_set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(
@@ -504,13 +519,13 @@ Terrain::get_path_breadth_first(
     if (!node_path)
         return {};
     const NodeGroup* end = node_path.value().back();
-    ChunkIndex chunk_index = get_chunk_from_tile(
+    ChunkIndex chunk_index = get_chunk_index_from_tile(
         end->get_center_x(), end->get_center_y(), end->get_center_z()
     );
 
     const Tile* goal = nullptr;
     for (const Tile* g : goal_) {
-        if (get_chunk_from_tile(g->sop()) == chunk_index) {
+        if (get_chunk_index_from_tile(g->sop()) == chunk_index) {
             if (end->get_tiles().find(g) != end->get_tiles().end()) {
                 goal = g;
                 break;

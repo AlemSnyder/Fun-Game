@@ -85,7 +85,6 @@ ObjectHandler::stop_update() {
     position_synchronizer_.stop();
 }
 
-
 } // namespace entity
 
 } // namespace world

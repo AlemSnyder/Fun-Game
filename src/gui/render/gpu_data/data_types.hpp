@@ -63,6 +63,23 @@ class GPUDataElementsInstanced : virtual public GPUDataElements {
     virtual uint32_t get_num_models() const = 0;
 };
 
+class GPUDataElementsMulti {
+ public:
+    virtual void bind() const = 0;
+
+    virtual void release() const = 0;
+
+    virtual bool do_render() const = 0;
+
+    virtual const std::vector<uint32_t> get_num_vertices() const = 0;
+
+    virtual GPUDataType get_elements_type() const = 0;
+
+    virtual uint32_t get_num_objects() const = 0;
+
+    virtual const std::vector<uint32_t> get_elements_position() const = 0;
+};
+
 } // namespace gpu_data
 
 } // namespace gui

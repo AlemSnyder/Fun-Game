@@ -14,7 +14,6 @@ namespace gui {
 
 void
 Scene::update(screen_size_t width, screen_size_t height) {
-
     GlobalContext& context = GlobalContext::instance();
     // wait for all tasks that may queue to opengl calls
     // context.wait_for_tasks();

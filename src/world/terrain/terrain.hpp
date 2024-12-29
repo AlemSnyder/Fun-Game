@@ -319,21 +319,38 @@ class Terrain : public TerrainBase {
     void remove_node_group(NodeGroup* NG);
 
     inline ChunkIndex
-    get_chunk_from_tile(TileIndex pos) const {
+    get_chunk_index_from_tile(TileIndex pos) const {
         TerrainDim3 tile_sop = sop(pos);
-        return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
+        return get_chunk_index_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
     inline ChunkIndex
-    get_chunk_from_tile(TerrainDim3 tile_sop) const {
-        return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
+    get_chunk_index_from_tile(TerrainDim3 tile_sop) const {
+        return get_chunk_index_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
-    ChunkIndex get_chunk_from_tile(Dim x, Dim y, Dim z) const;
+    ChunkIndex get_chunk_index_from_tile(Dim x, Dim y, Dim z) const;
+
+    ChunkPos get_chunk_pos_from_tile(TerrainDim3 tile_sop) const {
+        return get_chunk_pos_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
+    }
+
+    ChunkPos get_chunk_pos_from_tile(Dim x, Dim y, Dim z) const;
+
+    //ChunkPos get_chunk_pos_from_index() const;
+
+    ChunkIndex get_chunk_index_from_pos(ChunkPos pos) const;
+
 
     [[nodiscard]] inline const std::vector<Chunk>&
     get_chunks() const {
         return chunks_;
+    }
+
+
+    [[nodiscard]] inline const Chunk&
+    get_chunk(ChunkPos pos) const {
+        return get_chunk(get_chunk_index_from_pos(pos));
     }
 
     [[nodiscard]] inline const Chunk&
