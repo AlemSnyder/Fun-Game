@@ -41,8 +41,9 @@ struct coalesced_data {
 
     std::vector<uint16_t> element_array;
 
-    std::vector<uint32_t> num_vertices;
-    std::vector<uint32_t> elements_offsets;
+    std::vector<GLsizei> num_vertices;
+    std::vector<size_t> elements_offsets;
+    std::vector<GLint> base_vertex;
 
     coalesced_data(const std::vector< world::entity::Mesh> mesh_vector) {
         size_t total_size = 0;
@@ -99,6 +100,11 @@ struct coalesced_data {
         element_array.reserve(total_elements_size);
 
         size_t offset_size = 0;
+        size_t vertex_offset_size = 0;
+
+        num_vertices.reserve(mesh_map.size());
+        elements_offsets.reserve(mesh_map.size());
+        base_vertex.reserve(mesh_map.size());
 
         for (const auto& [pos, mesh] : mesh_map) {
             vertex_array.insert(
@@ -121,8 +127,10 @@ struct coalesced_data {
 
             num_vertices.push_back(mesh.get_indexed_vertices().size());
             elements_offsets.push_back(offset_size);
+            base_vertex.push_back(vertex_offset_size);
 
             offset_size += mesh.get_indices().size();
+            vertex_offset_size += mesh.get_indexed_vertices().size();
         }
     };
 };
@@ -138,8 +146,9 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
     VertexBufferObject<glm::i8vec3> normal_array_;
     VertexBufferObject<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
 
-    std::vector<uint32_t> num_vertices_;
-    std::vector<uint32_t> elements_offsets_;
+    std::vector<GLsizei> num_vertices_;      // number of elements to read
+    std::vector<size_t> elements_offsets_; // position of those elements
+    std::vector<GLint> base_vertex_;         // off set into vertex array
     bool do_render_;
 
  public:
@@ -165,6 +174,7 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         vertex_array_(data.vertex_array), color_array_(data.color_array),
         normal_array_(data.normal_array), element_array_(data.element_array),
         num_vertices_(data.num_vertices), elements_offsets_(data.elements_offsets),
+        base_vertex_(data.base_vertex),
         do_render_(data.num_vertices.size()) {
         if (b) {
             GlobalContext& context = GlobalContext::instance();
@@ -217,13 +227,13 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         return do_render_;
     }
 
-    inline virtual const std::vector<uint32_t>
+    inline virtual const std::vector<GLsizei>&
     get_num_vertices() const override {
         return num_vertices_;
     }
 
     inline virtual GPUDataType
-    get_elements_type() const override {
+    get_element_type() const override {
         return element_array_.get_opengl_numeric_type();
     }
 
@@ -232,10 +242,15 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         return num_vertices_.size();
     }
 
-    inline virtual const std::vector<uint32_t>
+    inline virtual const std::vector<size_t>&
     get_elements_position() const override {
         return elements_offsets_;
     }
+
+    inline virtual const std::vector<GLint>& get_base_vertex() const override {
+        return base_vertex_;
+    }
+
 
  private:
 };

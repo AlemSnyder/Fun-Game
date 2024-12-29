@@ -359,6 +359,69 @@ class ShaderProgram_ElementsInstanced :
     }
 };
 
+/**
+ * @brief No elements Yes instancing array of multiple
+ */
+class ShaderProgram_MultiElements :
+    public Render_Base,
+    virtual public render_to::FrameBuffer {
+ public:
+    // Ya I know this looks bad, but data_ is basically a parameter
+    std::vector<const gpu_data::GPUDataElementsMulti*> data;
+
+    inline ShaderProgram_MultiElements(
+        shader::Program& shader_program, const std::function<void()> setup_commands,
+        UniformsVector uniforms
+    ) :
+        Render_Base(shader_program, setup_commands, uniforms) {}
+
+    inline void virtual render(
+        screen_size_t width, screen_size_t height, GLuint framebuffer_ID
+    ) {
+#if DEBUG()
+        static bool has_logged = false;
+        if (data.size() == 0 && !has_logged) {
+            LOG_WARNING(logging::opengl_logger, "Nothing to be rendered.");
+            has_logged = true;
+        }
+#endif
+
+        Render_Base::render(width, height, framebuffer_ID);
+
+        for (const auto mesh : data) {
+            if (!mesh->do_render()) {
+                continue;
+            }
+
+            mesh->bind();
+
+            auto element_type = mesh->get_element_type();
+
+            LOG_BACKTRACE(
+                logging::opengl_logger,
+                "glMultiDrawElementsBaseVertex(GL_TRIANGLES, {}, {}, {}, {}, {})",
+                mesh->get_num_vertices(), to_string(element_type),
+                mesh->get_elements_position(),
+                mesh->get_num_objects(),
+                mesh->get_base_vertex()
+            );
+
+
+            // Draw the triangles !
+            glMultiDrawElementsBaseVertex(
+                GL_TRIANGLES,                         // mode
+                mesh->get_num_vertices().data(),     // count
+                static_cast<GLenum>(element_type),    // type
+                reinterpret_cast<const void* const *>(mesh->get_elements_position().data()), // indices
+                mesh->get_num_objects(),              // drawcount
+                mesh->get_base_vertex().data()
+            );
+
+            mesh->release();
+        }
+    }
+};
+
 } // namespace shader
 
 } // namespace gui

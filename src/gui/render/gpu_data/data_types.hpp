@@ -71,13 +71,15 @@ class GPUDataElementsMulti {
 
     virtual bool do_render() const = 0;
 
-    virtual const std::vector<uint32_t> get_num_vertices() const = 0;
+    virtual const std::vector<GLsizei>& get_num_vertices() const = 0;
 
-    virtual GPUDataType get_elements_type() const = 0;
+    virtual GPUDataType get_element_type() const = 0;
 
     virtual uint32_t get_num_objects() const = 0;
 
-    virtual const std::vector<uint32_t> get_elements_position() const = 0;
+    virtual const std::vector<size_t>& get_elements_position() const = 0;
+
+    virtual const std::vector<GLint>& get_base_vertex() const = 0;
 };
 
 } // namespace gpu_data

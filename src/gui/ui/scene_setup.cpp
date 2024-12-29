@@ -192,12 +192,12 @@ setup(
 
     // the programs
     // chunks
-    auto chunks_render_program = std::make_shared<shader::ShaderProgram_Elements>(
+    auto chunks_render_program = std::make_shared<shader::ShaderProgram_MultiElements>(
         render_program, chunk_render_setup, chunks_render_program_uniforms
     );
 
     // chunks shadow
-    auto chunks_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
+    auto chunks_shadow_program = std::make_shared<shader::ShaderProgram_MultiElements>(
         shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
     );
 
@@ -243,8 +243,8 @@ setup(
     sun_renderer->data.push_back(star_shape);
 
         terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
-//        chunks_render_program->data.push_back(chunk_mesh.get());
-//        chunks_shadow_program->data.push_back(chunk_mesh.get());
+        chunks_render_program->data.push_back(terrain_mesh.get());
+        chunks_shadow_program->data.push_back(terrain_mesh.get());
 
     // TODO send terrain_mesh to a render program
 

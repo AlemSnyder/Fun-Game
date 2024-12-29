@@ -37,6 +37,7 @@
 #include <unordered_set>
 #include <vector>
 
+// TODO this is nto a namespace. Should be world::terrain
 namespace terrain {
 
 struct material_color_t {

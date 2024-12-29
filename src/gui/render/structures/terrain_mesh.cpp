@@ -30,6 +30,8 @@ IMeshMultiGPU::push_back(const world::entity::Mesh& mesh) {
 
     element_array_.update(mesh.get_indices(), element_array_.size());
 
+    // TODO update base_vertex_
+
     return get_num_objects();
 }
 
@@ -54,6 +56,9 @@ IMeshMultiGPU::replace(size_t index, const world::entity::Mesh& mesh) {
     }
 
     element_array_.insert(mesh.get_indices(), start, end);
+
+    // TODO update base_vertex_
+
 }
 
 void
@@ -80,6 +85,9 @@ IMeshMultiGPU::remove(size_t index) {
 
     num_vertices_.erase(num_vertices_.begin() + index);
     elements_offsets_.erase(elements_offsets_.begin() + index);
+
+    // TODO update base_vertex_
+
 }
 
 void

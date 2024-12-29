@@ -180,7 +180,9 @@ World::update_all_chunks_mesh() {
     for (const auto& task : wait_for) {
         task.wait();
     }
-    send_updated_chunks_mesh();
+    
+    std::scoped_lock lock(meshes_to_update_mutex_);
+    terrain_mesh_ = std::make_shared<gui::gpu_data::TerrainMesh>(meshes_to_update_, terrain::TerrainColorMapping::get_color_texture());
 }
 
 // will be called once per frame
