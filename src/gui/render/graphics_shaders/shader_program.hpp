@@ -365,6 +365,8 @@ class ShaderProgram_ElementsInstanced :
 class ShaderProgram_MultiElements :
     public Render_Base,
     virtual public render_to::FrameBuffer {
+ private:
+    size_t i_ = 0;
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<const gpu_data::GPUDataElementsMulti*> data;
@@ -397,16 +399,21 @@ class ShaderProgram_MultiElements :
 
             auto element_type = mesh->get_element_type();
 
-            LOG_BACKTRACE(
-                logging::opengl_logger,
-                "glMultiDrawElementsBaseVertex(GL_TRIANGLES, {}, {}, {}, {}, {})",
-                mesh->get_num_vertices(), to_string(element_type),
-                mesh->get_elements_position(),
-                mesh->get_num_objects(),
-                mesh->get_base_vertex()
-            );
+#if DEBUG()
+            if (!has_logged) {
+                LOG_INFO(
+                    logging::opengl_logger,
+                    "glMultiDrawElementsBaseVertex(GL_TRIANGLES, {}, {}, {}, {}, {})",
+                    mesh->get_num_vertices(), to_string(element_type),
+                    mesh->get_elements_position(),
+                    mesh->get_num_objects(),
+                    mesh->get_base_vertex()
+                );
+                has_logged = true;
+            }
+#endif
 
-
+/*
             // Draw the triangles !
             glMultiDrawElementsBaseVertex(
                 GL_TRIANGLES,                         // mode
@@ -415,7 +422,23 @@ class ShaderProgram_MultiElements :
                 reinterpret_cast<const void* const *>(mesh->get_elements_position().data()), // indices
                 mesh->get_num_objects(),              // drawcount
                 mesh->get_base_vertex().data()
-            );
+            );*/
+
+//            for (size_t i = 0; i < mesh->get_num_objects(); i++)
+            {
+
+                glDrawElementsBaseVertex(
+                    GL_TRIANGLES,                         // mode
+                    mesh->get_num_vertices().data()[i_],     // count
+                    static_cast<GLenum>(element_type),    // type
+                    reinterpret_cast<const void* const *>(mesh->get_elements_position().data())[i_], // indices
+                    mesh->get_base_vertex().data()[i_]
+                );
+                //if (i > 5) {
+                //    break;
+                //}
+            }
+
 
             mesh->release();
         }

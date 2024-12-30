@@ -28,6 +28,8 @@
 #include "util/chunk_hash.hpp"
 #include "types.hpp"
 
+#include "logging.hpp"
+
 namespace gui {
 
 namespace gpu_data {
@@ -44,47 +46,6 @@ struct coalesced_data {
     std::vector<GLsizei> num_vertices;
     std::vector<size_t> elements_offsets;
     std::vector<GLint> base_vertex;
-
-    coalesced_data(const std::vector< world::entity::Mesh> mesh_vector) {
-        size_t total_size = 0;
-        size_t total_elements_size = 0;
-        for (const auto& mesh : mesh_vector) {
-            total_size += mesh.get_indexed_vertices().size();
-            total_elements_size += mesh.get_indices().size();
-        }
-        vertex_array.reserve(total_size);
-        color_array.reserve(total_size);
-        normal_array.reserve(total_size);
-
-        element_array.reserve(total_elements_size);
-
-        size_t offset_size = 0;
-
-        for (const auto& mesh : mesh_vector) {
-            vertex_array.insert(
-                vertex_array.end(), mesh.get_indexed_vertices().begin(),
-                mesh.get_indexed_vertices().end()
-            );
-            color_array.insert(
-                color_array.end(), mesh.get_indexed_color_ids().begin(),
-                mesh.get_indexed_color_ids().end()
-            );
-            normal_array.insert(
-                normal_array.end(), mesh.get_indexed_normals().begin(),
-                mesh.get_indexed_normals().end()
-            );
-
-            element_array.insert(
-                element_array.end(), mesh.get_indices().begin(),
-                mesh.get_indices().end()
-            );
-
-            num_vertices.push_back(mesh.get_indexed_vertices().size());
-            elements_offsets.push_back(offset_size);
-
-            offset_size += mesh.get_indices().size();
-        }
-    };
 
     coalesced_data(const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map) {
         size_t total_size = 0;
@@ -125,13 +86,28 @@ struct coalesced_data {
                 mesh.get_indices().end()
             );
 
-            num_vertices.push_back(mesh.get_indexed_vertices().size());
+            num_vertices.push_back(mesh.get_indices().size());
             elements_offsets.push_back(offset_size);
             base_vertex.push_back(vertex_offset_size);
 
             offset_size += mesh.get_indices().size();
             vertex_offset_size += mesh.get_indexed_vertices().size();
         }
+
+        LOG_INFO(logging::opengl_logger, "elements array size: {} expected size: {}", element_array.size(), total_elements_size);
+
+        LOG_INFO(logging::opengl_logger, "vertex array size: {} expected size: {}", vertex_array.size(), total_size);
+
+        LOG_INFO(logging::opengl_logger, "Elements {}", element_array);
+
+        LOG_INFO(logging::opengl_logger, "Num Vertices {}", num_vertices);
+
+        LOG_INFO(logging::opengl_logger, "Elements Offsets {}", elements_offsets);
+
+        LOG_INFO(logging::opengl_logger, "Base Vertex {}", base_vertex);
+
+
+
     };
 };
 
@@ -182,16 +158,7 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         }
     }
 
-    /**
-     * @brief Construct a new IMeshMultiGPU object
-     *
-     * @param world::entity::Mesh& mesh to load
-     * @param bool b set to false when calling this constructor when inherited
-     */
-    inline IMeshMultiGPU(
-        const std::vector<world::entity::Mesh> mesh, bool b = true
-    ) :
-        IMeshMultiGPU(coalesced_data(mesh), b) {}
+    // if you cant construct it you can't hurt yourself
 
     /**
      * @brief Initializes Vertex Array Object.
@@ -283,11 +250,10 @@ class TerrainMesh : public virtual IMeshMultiGPU {
         IMeshMultiGPU(coalesced_data(mesh_map), true),
         color_texture_(color_texture_id) {
             size_t index = 0;
-                    for (const auto& [pos, mesh] : mesh_map) {
-                        world_position_to_index_[pos] = index;
-                        index +=1;
-                    }
-
+            for (const auto& [pos, mesh] : mesh_map) {
+                world_position_to_index_[pos] = index;
+                index +=1;
+            }
         }
 
     inline void

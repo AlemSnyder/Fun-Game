@@ -144,8 +144,10 @@ World::update_single_mesh(ChunkPos chunk_pos) {
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
-    std::scoped_lock lock(meshes_to_update_mutex_);
-    meshes_to_update_.insert({chunk_pos, chunk_mesh});
+    if (chunk_mesh.get_indices().size() > 0) {
+        std::scoped_lock lock(meshes_to_update_mutex_);
+        meshes_to_update_.insert({chunk_pos, chunk_mesh});
+    }
 }
 
 // TODO should set a limit the the number
