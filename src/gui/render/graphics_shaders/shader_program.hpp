@@ -365,8 +365,6 @@ class ShaderProgram_ElementsInstanced :
 class ShaderProgram_MultiElements :
     public Render_Base,
     virtual public render_to::FrameBuffer {
- private:
-    size_t i_ = 0;
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
     std::vector<const gpu_data::GPUDataElementsMulti*> data;
@@ -424,15 +422,19 @@ class ShaderProgram_MultiElements :
                 mesh->get_base_vertex().data()
             );*/
 
-//            for (size_t i = 0; i < mesh->get_num_objects(); i++)
-            {
+            static_assert(sizeof(void*) == sizeof(size_t), "Sizes should match for reinterpret_cast.");
+            for (size_t i = 0; i < mesh->get_num_objects(); i++) {
 
+                auto count = mesh->get_num_vertices().data()[i];
+                auto positions = mesh->get_elements_position();
+                auto indices = reinterpret_cast<const void*>(positions[i]);
+                auto base_vertex = mesh->get_base_vertex().data()[i];
                 glDrawElementsBaseVertex(
-                    GL_TRIANGLES,                         // mode
-                    mesh->get_num_vertices().data()[i_],     // count
-                    static_cast<GLenum>(element_type),    // type
-                    reinterpret_cast<const void* const *>(mesh->get_elements_position().data())[i_], // indices
-                    mesh->get_base_vertex().data()[i_]
+                    GL_TRIANGLES,                       // mode
+                    count,                              // count
+                    static_cast<GLenum>(element_type),  // type
+                    indices,                            // indices
+                    base_vertex                         // basevertex
                 );
                 //if (i > 5) {
                 //    break;

@@ -34,7 +34,7 @@ namespace gui {
 
 namespace gpu_data {
 
-namespace {
+namespace detail {
 
 struct coalesced_data {
     std::vector<glm::ivec3> vertex_array;
@@ -47,68 +47,7 @@ struct coalesced_data {
     std::vector<size_t> elements_offsets;
     std::vector<GLint> base_vertex;
 
-    coalesced_data(const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map) {
-        size_t total_size = 0;
-        size_t total_elements_size = 0;
-        for (const auto& [pos, mesh] : mesh_map) {
-            total_size += mesh.get_indexed_vertices().size();
-            total_elements_size += mesh.get_indices().size();
-        }
-        vertex_array.reserve(total_size);
-        color_array.reserve(total_size);
-        normal_array.reserve(total_size);
-
-        element_array.reserve(total_elements_size);
-
-        size_t offset_size = 0;
-        size_t vertex_offset_size = 0;
-
-        num_vertices.reserve(mesh_map.size());
-        elements_offsets.reserve(mesh_map.size());
-        base_vertex.reserve(mesh_map.size());
-
-        for (const auto& [pos, mesh] : mesh_map) {
-            vertex_array.insert(
-                vertex_array.end(), mesh.get_indexed_vertices().begin(),
-                mesh.get_indexed_vertices().end()
-            );
-            color_array.insert(
-                color_array.end(), mesh.get_indexed_color_ids().begin(),
-                mesh.get_indexed_color_ids().end()
-            );
-            normal_array.insert(
-                normal_array.end(), mesh.get_indexed_normals().begin(),
-                mesh.get_indexed_normals().end()
-            );
-
-            element_array.insert(
-                element_array.end(), mesh.get_indices().begin(),
-                mesh.get_indices().end()
-            );
-
-            num_vertices.push_back(mesh.get_indices().size());
-            elements_offsets.push_back(offset_size);
-            base_vertex.push_back(vertex_offset_size);
-
-            offset_size += mesh.get_indices().size();
-            vertex_offset_size += mesh.get_indexed_vertices().size();
-        }
-
-        LOG_INFO(logging::opengl_logger, "elements array size: {} expected size: {}", element_array.size(), total_elements_size);
-
-        LOG_INFO(logging::opengl_logger, "vertex array size: {} expected size: {}", vertex_array.size(), total_size);
-
-        LOG_INFO(logging::opengl_logger, "Elements {}", element_array);
-
-        LOG_INFO(logging::opengl_logger, "Num Vertices {}", num_vertices);
-
-        LOG_INFO(logging::opengl_logger, "Elements Offsets {}", elements_offsets);
-
-        LOG_INFO(logging::opengl_logger, "Base Vertex {}", base_vertex);
-
-
-
-    };
+    coalesced_data(const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map);
 };
 
 } // namespace
@@ -146,7 +85,7 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         context.push_opengl_task([this]() { initialize(); });
     }
 
-    inline IMeshMultiGPU(const coalesced_data data, bool b = true) :
+    inline IMeshMultiGPU(const detail::coalesced_data data, bool b = true) :
         vertex_array_(data.vertex_array), color_array_(data.color_array),
         normal_array_(data.normal_array), element_array_(data.element_array),
         num_vertices_(data.num_vertices), elements_offsets_(data.elements_offsets),
@@ -247,7 +186,7 @@ class TerrainMesh : public virtual IMeshMultiGPU {
     inline TerrainMesh(
         const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map, Texture1D& color_texture_id
     ) :
-        IMeshMultiGPU(coalesced_data(mesh_map), true),
+        IMeshMultiGPU(detail::coalesced_data(mesh_map), true),
         color_texture_(color_texture_id) {
             size_t index = 0;
             for (const auto& [pos, mesh] : mesh_map) {

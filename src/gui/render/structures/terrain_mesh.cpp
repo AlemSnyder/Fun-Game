@@ -4,6 +4,92 @@ namespace gui {
 
 namespace gpu_data {
 
+namespace detail {
+
+coalesced_data::coalesced_data(const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map) {
+        size_t total_size = 0;
+        size_t total_elements_size = 0;
+        for (const auto& [pos, mesh] : mesh_map) {
+            total_size += mesh.get_indexed_vertices().size();
+            total_elements_size += mesh.get_indices().size();
+        }
+        vertex_array.reserve(total_size);
+        color_array.reserve(total_size);
+        normal_array.reserve(total_size);
+
+        element_array.reserve(total_elements_size);
+
+        size_t offset_size = 0;
+        size_t vertex_offset_size = 0;
+
+        num_vertices.reserve(mesh_map.size());
+        elements_offsets.reserve(mesh_map.size());
+        base_vertex.reserve(mesh_map.size());
+
+        for (const auto& [pos, mesh] : mesh_map) {
+            vertex_array.insert(
+                vertex_array.end(), mesh.get_indexed_vertices().begin(),
+                mesh.get_indexed_vertices().end()
+            );
+            color_array.insert(
+                color_array.end(), mesh.get_indexed_color_ids().begin(),
+                mesh.get_indexed_color_ids().end()
+            );
+            normal_array.insert(
+                normal_array.end(), mesh.get_indexed_normals().begin(),
+                mesh.get_indexed_normals().end()
+            );
+
+            element_array.insert(
+                element_array.end(), mesh.get_indices().begin(),
+                mesh.get_indices().end()
+            );
+
+            num_vertices.push_back(mesh.get_indices().size());
+            // TODO change to size of element
+            elements_offsets.push_back(offset_size * sizeof(unsigned short));
+            base_vertex.push_back(vertex_offset_size);
+
+            offset_size += mesh.get_indices().size();
+            vertex_offset_size += mesh.get_indexed_vertices().size();
+
+            if (offset_size != element_array.size()) {
+                LOG_WARNING(logging::opengl_logger, "Offset size: {} and element array size {} not equal", offset_size, element_array.size());
+
+            }
+
+            auto max_element = std::max_element(mesh.get_indices().begin(), mesh.get_indices().end());
+
+            if (*max_element != mesh.get_indexed_vertices().size() - 1) {
+                LOG_WARNING(logging::opengl_logger, "Max element: {} and indices offset {} not equal", *max_element, mesh.get_indices().size() - 1);
+
+            }
+        }
+/*
+        LOG_INFO(logging::opengl_logger, "elements array size: {} expected size: {}", element_array.size(), total_elements_size);
+
+        LOG_INFO(logging::opengl_logger, "vertex array size: {} expected size: {}", vertex_array.size(), total_size);
+
+        LOG_INFO(logging::opengl_logger, "Elements {}", element_array);
+
+        LOG_INFO(logging::opengl_logger, "Num Vertices {}", num_vertices); // sizes
+
+        LOG_INFO(logging::opengl_logger, "Elements Offsets {}", elements_offsets);
+
+        LOG_INFO(logging::opengl_logger, "Base Vertex {}", base_vertex);
+*/
+
+        for (size_t j = 0; j < mesh_map.size(); j++) {
+            size_t offset = elements_offsets[j];
+            LOG_INFO(logging::opengl_logger, "Index {}.", j);
+            LOG_INFO(logging::opengl_logger, "Num Vertices {}, Elements offsets {}, base vertex {}.", num_vertices[j], offset, base_vertex[j]);
+
+            LOG_INFO(logging::opengl_logger, "Elements [{}, {}, {}, {}, {}, {},...", element_array[offset], element_array[offset+1], element_array[offset+2], element_array[offset+3], element_array[offset+4], element_array[offset+5] );
+        }
+
+    }
+}
+
 void
 IMeshMultiGPU::attach_all() {
     vertex_array_.attach_to_vertex_attribute(0);
