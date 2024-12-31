@@ -46,8 +46,7 @@ coalesced_data::coalesced_data(const std::unordered_map<ChunkPos, world::entity:
             );
 
             num_vertices.push_back(mesh.get_indices().size());
-            // TODO change to size of element
-            elements_offsets.push_back(offset_size * sizeof(unsigned short));
+            elements_offsets.push_back(offset_size * sizeof(decltype(element_array)::value_type));
             base_vertex.push_back(vertex_offset_size);
 
             offset_size += mesh.get_indices().size();

@@ -411,7 +411,8 @@ class ShaderProgram_MultiElements :
             }
 #endif
 
-/*
+            static_assert(sizeof(void*) == sizeof(size_t), "Sizes should match for reinterpret_cast.");
+
             // Draw the triangles !
             glMultiDrawElementsBaseVertex(
                 GL_TRIANGLES,                         // mode
@@ -420,26 +421,7 @@ class ShaderProgram_MultiElements :
                 reinterpret_cast<const void* const *>(mesh->get_elements_position().data()), // indices
                 mesh->get_num_objects(),              // drawcount
                 mesh->get_base_vertex().data()
-            );*/
-
-            static_assert(sizeof(void*) == sizeof(size_t), "Sizes should match for reinterpret_cast.");
-            for (size_t i = 0; i < mesh->get_num_objects(); i++) {
-
-                auto count = mesh->get_num_vertices().data()[i];
-                auto positions = mesh->get_elements_position();
-                auto indices = reinterpret_cast<const void*>(positions[i]);
-                auto base_vertex = mesh->get_base_vertex().data()[i];
-                glDrawElementsBaseVertex(
-                    GL_TRIANGLES,                       // mode
-                    count,                              // count
-                    static_cast<GLenum>(element_type),  // type
-                    indices,                            // indices
-                    base_vertex                         // basevertex
-                );
-                //if (i > 5) {
-                //    break;
-                //}
-            }
+            );
 
 
             mesh->release();
