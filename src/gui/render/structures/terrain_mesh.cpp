@@ -106,6 +106,13 @@ IMeshMultiGPU::initialize() {
 
 size_t
 IMeshMultiGPU::push_back(const world::entity::Mesh& mesh) {
+    // update base_vertex_
+    if (base_vertex_.size() > 0) {
+        size_t size = base_vertex_.size();
+        base_vertex_.push_back( vertex_array_.size() );
+    } else {
+        base_vertex_.push_back(0);
+    }
     vertex_array_.update(mesh.get_indexed_vertices(), vertex_array_.size());
     color_array_.update(mesh.get_indexed_color_ids(), color_array_.size());
     normal_array_.update(mesh.get_indexed_normals(), normal_array_.size());
@@ -114,8 +121,6 @@ IMeshMultiGPU::push_back(const world::entity::Mesh& mesh) {
     elements_offsets_.push_back(element_array_.size());
 
     element_array_.update(mesh.get_indices(), element_array_.size());
-
-    // TODO update base_vertex_
 
     return get_num_objects();
 }
@@ -142,8 +147,20 @@ IMeshMultiGPU::replace(size_t index, const world::entity::Mesh& mesh) {
 
     element_array_.insert(mesh.get_indices(), start, end);
 
-    // TODO update base_vertex_
+    // update base_vertex_
+    if (index == num_vertices_.size()-1) {
+        if (index != 0){
+            base_vertex_[index] = base_vertex_[index - 1] + mesh.get_indexed_vertices().size();
+        } else {
+            base_vertex_[index] = mesh.get_indexed_vertices().size();
+        }
+    } else {
+        size_t difference = mesh.get_indexed_vertices().size() - (base_vertex_[index + 1] - base_vertex_[index]);
 
+        for (size_t i = index + 1; i < num_vertices_.size(); i++) {
+            base_vertex_[index] += difference;
+        }
+    }
 }
 
 void
@@ -171,7 +188,14 @@ IMeshMultiGPU::remove(size_t index) {
     num_vertices_.erase(num_vertices_.begin() + index);
     elements_offsets_.erase(elements_offsets_.begin() + index);
 
-    // TODO update base_vertex_
+    // update base_vertex_
+    if (index != num_vertices_.size()-1) {
+        size_t difference = (base_vertex_[index] - base_vertex_[index + 1]);
+        for (size_t i = index + 1; i < num_vertices_.size(); i++) {
+            base_vertex_[index] += difference;
+        }
+    }
+    base_vertex_.erase(base_vertex_.begin() + index);
 
 }
 
