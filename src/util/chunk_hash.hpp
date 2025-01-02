@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util/hash_combine.hpp"
 #include "types.hpp"
+#include "util/hash_combine.hpp"
 
 /**
  * @brief Create hash from position of object.

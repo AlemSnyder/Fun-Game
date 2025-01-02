@@ -93,8 +93,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
         model_mesh_(std::move(other.model_mesh_)),
         model_textures_(std::move(other.model_textures_)),
         texture_id_(std::move(other.texture_id_)),
-        placements_(std::move(other.placements_)),
-        offset_(std::move(other.offset_)) {};
+        placements_(std::move(other.placements_)), offset_(std::move(other.offset_)){};
     // copy operator
     inline ModelController& operator=(const ModelController& obj) = delete;
     ModelController& operator=(ModelController&& other) = default;

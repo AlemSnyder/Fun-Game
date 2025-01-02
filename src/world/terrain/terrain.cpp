@@ -274,10 +274,9 @@ Terrain::get_chunk_pos_from_tile(Dim x, Dim y, Dim z) const {
 
 ChunkIndex
 Terrain::get_chunk_index_from_pos(ChunkPos pos) const {
-    return (pos.x * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (pos.y * Z_MAX / Chunk::SIZE)
-           + pos.z;
+    return (pos.x * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE)
+           + (pos.y * Z_MAX / Chunk::SIZE) + pos.z;
 }
-
 
 std::unordered_set<Node<const NodeGroup>*>
 Terrain::get_adjacent_nodes(

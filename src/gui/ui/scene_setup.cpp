@@ -242,9 +242,9 @@ setup(
     star_renderer->data.push_back(star_data);
     sun_renderer->data.push_back(star_shape);
 
-        terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
-        chunks_render_program->data.push_back(terrain_mesh.get());
-        chunks_shadow_program->data.push_back(terrain_mesh.get());
+    terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
+    chunks_render_program->data.push_back(terrain_mesh.get());
+    chunks_shadow_program->data.push_back(terrain_mesh.get());
 
     // TODO send terrain_mesh to a render program
 

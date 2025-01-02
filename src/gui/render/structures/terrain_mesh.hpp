@@ -24,11 +24,10 @@
 #pragma once
 
 #include "i_mesh.hpp"
-#include "world/terrain/material.hpp"
-#include "util/chunk_hash.hpp"
-#include "types.hpp"
-
 #include "logging.hpp"
+#include "types.hpp"
+#include "util/chunk_hash.hpp"
+#include "world/terrain/material.hpp"
 
 namespace gui {
 
@@ -50,7 +49,7 @@ struct coalesced_data {
     coalesced_data(const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map);
 };
 
-} // namespace
+} // namespace detail
 
 class IMeshMultiGPU : public virtual GPUDataElementsMulti {
  protected:
@@ -61,9 +60,9 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
     VertexBufferObject<glm::i8vec3> normal_array_;
     VertexBufferObject<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
 
-    std::vector<GLsizei> num_vertices_;      // number of elements to read
+    std::vector<GLsizei> num_vertices_;    // number of elements to read
     std::vector<size_t> elements_offsets_; // position of those elements
-    std::vector<GLint> base_vertex_;         // off set into vertex array
+    std::vector<GLint> base_vertex_;       // off set into vertex array
     bool do_render_;
 
  public:
@@ -89,8 +88,7 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         vertex_array_(data.vertex_array), color_array_(data.color_array),
         normal_array_(data.normal_array), element_array_(data.element_array),
         num_vertices_(data.num_vertices), elements_offsets_(data.elements_offsets),
-        base_vertex_(data.base_vertex),
-        do_render_(data.num_vertices.size()) {
+        base_vertex_(data.base_vertex), do_render_(data.num_vertices.size()) {
         if (b) {
             GlobalContext& context = GlobalContext::instance();
             context.push_opengl_task([this]() { initialize(); });
@@ -153,10 +151,10 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         return elements_offsets_;
     }
 
-    inline virtual const std::vector<GLint>& get_base_vertex() const override {
+    inline virtual const std::vector<GLint>&
+    get_base_vertex() const override {
         return base_vertex_;
     }
-
 
  private:
 };
@@ -184,16 +182,17 @@ class TerrainMesh : public virtual IMeshMultiGPU {
         color_texture_(color_texture_id){};
 
     inline TerrainMesh(
-        const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map, Texture1D& color_texture_id
+        const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map,
+        Texture1D& color_texture_id
     ) :
         IMeshMultiGPU(detail::coalesced_data(mesh_map), true),
         color_texture_(color_texture_id) {
-            size_t index = 0;
-            for (const auto& [pos, mesh] : mesh_map) {
-                world_position_to_index_[pos] = index;
-                index +=1;
-            }
+        size_t index = 0;
+        for (const auto& [pos, mesh] : mesh_map) {
+            world_position_to_index_[pos] = index;
+            index += 1;
         }
+    }
 
     inline void
     set_color_texture(Texture1D& color_texture_id) noexcept {

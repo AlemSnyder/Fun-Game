@@ -331,22 +331,21 @@ class Terrain : public TerrainBase {
 
     ChunkIndex get_chunk_index_from_tile(Dim x, Dim y, Dim z) const;
 
-    ChunkPos get_chunk_pos_from_tile(TerrainDim3 tile_sop) const {
+    ChunkPos
+    get_chunk_pos_from_tile(TerrainDim3 tile_sop) const {
         return get_chunk_pos_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
     ChunkPos get_chunk_pos_from_tile(Dim x, Dim y, Dim z) const;
 
-    //ChunkPos get_chunk_pos_from_index() const;
+    // ChunkPos get_chunk_pos_from_index() const;
 
     ChunkIndex get_chunk_index_from_pos(ChunkPos pos) const;
-
 
     [[nodiscard]] inline const std::vector<Chunk>&
     get_chunks() const {
         return chunks_;
     }
-
 
     [[nodiscard]] inline const Chunk&
     get_chunk(ChunkPos pos) const {

@@ -21,7 +21,7 @@ class PositionSynchronizer {
     std::future<void> result_;
 
  public:
-    inline PositionSynchronizer() {};
+    inline PositionSynchronizer(){};
 
     inline ~PositionSynchronizer() {
         if (execute_again_) {

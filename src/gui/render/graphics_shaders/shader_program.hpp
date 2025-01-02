@@ -403,26 +403,28 @@ class ShaderProgram_MultiElements :
                     logging::opengl_logger,
                     "glMultiDrawElementsBaseVertex(GL_TRIANGLES, {}, {}, {}, {}, {})",
                     mesh->get_num_vertices(), to_string(element_type),
-                    mesh->get_elements_position(),
-                    mesh->get_num_objects(),
+                    mesh->get_elements_position(), mesh->get_num_objects(),
                     mesh->get_base_vertex()
                 );
                 has_logged = true;
             }
 #endif
 
-            static_assert(sizeof(void*) == sizeof(size_t), "Sizes should match for reinterpret_cast.");
+            static_assert(
+                sizeof(void*) == sizeof(size_t),
+                "Sizes should match for reinterpret_cast."
+            );
 
             // Draw the triangles !
             glMultiDrawElementsBaseVertex(
-                GL_TRIANGLES,                         // mode
-                mesh->get_num_vertices().data(),     // count
-                static_cast<GLenum>(element_type),    // type
-                reinterpret_cast<const void* const *>(mesh->get_elements_position().data()), // indices
-                mesh->get_num_objects(),              // drawcount
+                GL_TRIANGLES,                      // mode
+                mesh->get_num_vertices().data(),   // count
+                static_cast<GLenum>(element_type), // type
+                reinterpret_cast<const void* const*>(mesh->get_elements_position().data(
+                )),                      // indices
+                mesh->get_num_objects(), // drawcount
                 mesh->get_base_vertex().data()
             );
-
 
             mesh->release();
         }
