@@ -114,7 +114,6 @@ size_t
 IMeshMultiGPU::push_back(const world::entity::Mesh& mesh) {
     // update base_vertex_
     if (base_vertex_.size() > 0) {
-        size_t size = base_vertex_.size();
         base_vertex_.push_back(vertex_array_.size());
     } else {
         base_vertex_.push_back(0);

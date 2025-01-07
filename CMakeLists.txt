@@ -15,9 +15,9 @@ file(GLOB_RECURSE SOURCES1 "src/*.cpp")
 
 # this is one json file and whereami
 file(GLOB SOURCES4 "vendor/*.c*")
-file(GLOB SOURCES6 "vendor/imgui/*.c*")
-file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
-file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
+file(GLOB SOURCES6 "vendor/imgui/imgui/*.c*")
+file(GLOB SOURCES7 "vendor/imgui/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB SOURCES8 "vendor/imgui/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # Set standard version
@@ -82,6 +82,7 @@ target_include_directories(FunGame PRIVATE "vendor")
 target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
 target_include_directories(FunGame PRIVATE "vendor/glaze/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
+target_include_directories(FunGame PRIVATE "vendor/imgui/imgui")
 target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 

@@ -1,8 +1,10 @@
 #include "gui/handler.hpp"
-#include "gui/render/gpu_data/multi_buffer.hpp"
 #include "gui/ui/opengl_setup.hpp"
 #include "logging.hpp"
 #include "types.hpp"
+#include "global_context.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
+#include "gui/render/gpu_data/vertex_array_object.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
