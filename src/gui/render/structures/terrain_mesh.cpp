@@ -74,24 +74,6 @@ coalesced_data::coalesced_data(
             );
         }
     }
-    
-
-    for (size_t j = 0; j < mesh_map.size(); j++) {
-        size_t offset = elements_offsets[j];
-        LOG_INFO(logging::opengl_logger, "Index {}.", j);
-        LOG_INFO(
-            logging::opengl_logger,
-            "Num Vertices {}, Elements offsets {}, base vertex {}.", num_vertices[j],
-            offset, base_vertex[j]
-        );
-
-        LOG_INFO(
-            logging::opengl_logger, "Elements [{}, {}, {}, {}, {}, {},...",
-            element_array[offset], element_array[offset + 1], element_array[offset + 2],
-            element_array[offset + 3], element_array[offset + 4],
-            element_array[offset + 5]
-        );
-    }
 }
 } // namespace detail
 
