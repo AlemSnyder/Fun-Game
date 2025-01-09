@@ -2,6 +2,7 @@
 
 #include "gui_render_types.hpp"
 #include "logging.hpp"
+#include "gui/render/gl_enums.hpp"
 
 #include <GL/glew.h>
 
@@ -41,8 +42,6 @@ Shader::reload() {
         glDeleteShader(shader_ID_);
     }
 
-    found_uniforms_.clear();
-
     std::vector<std::string> source_string;
     std::string shader_type_string = get_shader_string(shader_type_);
 
@@ -65,25 +64,6 @@ Shader::reload() {
 
         source_string.push_back(file_text);
 
-        std::regex uniform_regex("\n[ |\t]{0,}uniform[ |\t]{1,}(\\w*)[ |\t]{1,}(\\w*);"
-        );
-
-        // default constructor = end-of-sequence:
-        std::regex_token_iterator<std::string::iterator> rend;
-
-        std::regex_token_iterator<std::string::iterator> type_iter(
-            file_text.begin(), file_text.end(), uniform_regex, 1
-        );
-
-        std::regex_token_iterator<std::string::iterator> name_iter(
-            file_text.begin(), file_text.end(), uniform_regex, 2
-        );
-        while (type_iter != rend) {
-            auto matched_type = *type_iter++;
-            auto matched_name = *name_iter++;
-
-            found_uniforms_.emplace(std::make_pair(matched_name, matched_type));
-        }
     }
 
     std::vector<const char*> source_char;
@@ -122,7 +102,7 @@ Shader::reload() {
 
 void
 Program::reload() {
-    found_uniforms_.clear();
+//    found_uniforms_.clear();
     uniforms_.clear();
 
     if (vertex_shader_.get_status() != ShaderStatus::OK) [[unlikely]] {
@@ -145,13 +125,14 @@ Program::reload() {
             return;
         }
     }
-
+/*
     found_uniforms_.insert(
         vertex_shader_.uniform_begin(), vertex_shader_.uniform_end()
     );
     found_uniforms_.insert(
         fragment_shader_.uniform_begin(), fragment_shader_.uniform_end()
     );
+*/
 
     GLint vertex_shader_id = vertex_shader_.get_shader_ID();
     GLint fragment_shader_id = fragment_shader_.get_shader_ID();
@@ -235,9 +216,30 @@ Program::get_status_string() const {
 
 void
 Program::attach_uniforms() {
-    for (const auto& uniform_names : found_uniforms_) {
-        const auto& name = uniform_names.first;
-        uniforms_[name] = new_uniform(name);
+    // for (const auto& uniform_names : found_uniforms_) {
+    //     const auto& name = uniform_names.first;
+    //     uniforms_[name] = new_uniform(name);
+    // }
+
+    GLint count;
+    const GLsizei buf_size = 16;
+    GLchar name[buf_size];
+    GLsizei length;
+    GLint size;
+    GLenum type;
+
+    glGetProgramiv(program_ID_, GL_ACTIVE_UNIFORMS, &count);
+
+    for (GLuint uid = 0; uid < static_cast<GLuint>(count); uid++) {
+        glGetActiveUniform(program_ID_, uid, buf_size, &length, &size, &type, name);
+
+        std::string str_name(name);
+
+        gpu_data::GPUDataType enum_type = static_cast<gpu_data::GPUDataType>(type); // this might fail
+
+        LOG_INFO(logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}", uid, name, gpu_data::to_string(enum_type));
+
+        uniforms_[str_name] = uid;
     }
 }
 

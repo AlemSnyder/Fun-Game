@@ -167,7 +167,7 @@ class Shader : public ShaderData {
 
     ShaderStatus status_;
 
-    std::set<std::pair<std::string, std::string>> found_uniforms_;
+//    std::set<std::pair<std::string, std::string>> found_uniforms_;
 
  public:
     inline Shader(const std::vector<File> files, gpu_data::ShaderType shader_type) :
@@ -197,7 +197,7 @@ class Shader : public ShaderData {
     get_shader_ID() const noexcept {
         return shader_ID_;
     }
-
+/*
     inline auto
     uniform_begin() {
         return found_uniforms_.begin();
@@ -207,6 +207,7 @@ class Shader : public ShaderData {
     uniform_end() {
         return found_uniforms_.end();
     }
+*/
 };
 
 /**
