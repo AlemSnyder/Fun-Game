@@ -167,8 +167,6 @@ class Shader : public ShaderData {
 
     ShaderStatus status_;
 
-//    std::set<std::pair<std::string, std::string>> found_uniforms_;
-
  public:
     inline Shader(const std::vector<File> files, gpu_data::ShaderType shader_type) :
         ShaderData(files, shader_type), shader_ID_(0), status_(ShaderStatus::EMPTY) {
@@ -226,7 +224,7 @@ class ProgramData {
     std::optional<Shader> tesselation_evaluation_shader_;
     */
 
-    std::set<std::pair<std::string, std::string>> found_uniforms_;
+    std::set<std::pair<std::string, gpu_data::GPUDataType>> found_uniforms_;
 
     // todo make this a type
     std::unordered_map<std::string, GLint> uniforms_;
@@ -346,7 +344,7 @@ class Program : public ProgramData {
      * @return std::set<std::pair<std::string, std::string>> set of paris of
      * uniform names and uniform types.
      */
-    [[nodiscard]] inline std::set<std::pair<std::string, std::string>>
+    [[nodiscard]] inline std::set<std::pair<std::string, gpu_data::GPUDataType>>
     get_detected_uniforms() const noexcept {
         return found_uniforms_;
     }

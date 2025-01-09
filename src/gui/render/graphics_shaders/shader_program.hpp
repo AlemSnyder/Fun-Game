@@ -53,20 +53,20 @@ namespace shader {
 /**
  * @brief Logs needed and unneeded uniforms.
  *
- * @param std::set<std::pair<std::string,std::string>> want_uniforms
- * @param std::set<std::pair<std::string,std::string>> has_uniforms
+ * @param std::set<std::pair<std::string,gpu_data::GPUDataType>> want_uniforms
+ * @param std::set<std::pair<std::string,gpu_data::GPUDataType>> has_uniforms
  */
 inline void
 log_uniforms(
-    std::set<std::pair<std::string, std::string>> want_uniforms,
-    std::set<std::pair<std::string, std::string>> has_uniforms
+    std::set<std::pair<std::string, gpu_data::GPUDataType>> want_uniforms,
+    std::set<std::pair<std::string, gpu_data::GPUDataType>> has_uniforms
 ) {
 #if DEBUG()
 
     // Literally just a set compare.
 
-    std::set<std::pair<std::string, std::string>> uniforms_needed;
-    std::set<std::pair<std::string, std::string>> uniforms_not_needed;
+    std::set<std::pair<std::string, gpu_data::GPUDataType>> uniforms_needed;
+    std::set<std::pair<std::string, gpu_data::GPUDataType>> uniforms_not_needed;
 
     std::set_difference(
         want_uniforms.begin(), want_uniforms.end(), has_uniforms.begin(),
@@ -79,12 +79,14 @@ log_uniforms(
         std::inserter(uniforms_not_needed, uniforms_not_needed.begin())
     );
 
+/*
     if (uniforms_needed.size() > 0)
         LOG_WARNING(logging::opengl_logger, "Needed uniforms {}", uniforms_needed);
     if (uniforms_not_needed.size() > 0)
         LOG_DEBUG(
             logging::opengl_logger, "Not needed uniforms {}", uniforms_not_needed
         );
+*/
 
 #endif
 }
@@ -113,7 +115,7 @@ class Render_Base {
         LOG_DEBUG(
             logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
         );
-        LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
+        //LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
         log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 

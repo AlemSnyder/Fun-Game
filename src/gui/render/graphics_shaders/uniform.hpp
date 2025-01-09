@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "gui/render/gl_enums.hpp"
+
 #include <GL/glew.h>
 
 #include <memory>
@@ -49,7 +51,7 @@ class Uniform {
 
  protected:
     const std::string name_; // name used in shader program
-    const std::string type_; // glsl type as stirng
+    const gpu_data::GPUDataType type_; // glsl type as stirng
 
  public:
     /**
@@ -65,9 +67,9 @@ class Uniform {
     /**
      * @brief Get the glsl type as a string
      *
-     * @return const std::string& glsl type
+     * @return const GPUDataType type
      */
-    inline virtual const std::string&
+    inline virtual const gpu_data::GPUDataType&
     get_type() const {
         return type_;
     }
@@ -85,9 +87,9 @@ class Uniform {
      * @brief Construct a new Uniform object
      *
      * @param std::string name name of uniform used in shader program
-     * @param std::string type glsl type
+     * @param gpu_data::GPUDataType type
      */
-    inline Uniform(std::string name, std::string type) : name_(name), type_(type) {}
+    inline Uniform(std::string name, gpu_data::GPUDataType type) : name_(name), type_(type) {}
 };
 
 /**
@@ -104,9 +106,9 @@ class UniformsVector {
      * @brief Get a set of all names and their corresponding type of uniforms
      * in this object.
      *
-     * @return std::set<std::pair<std::string, std::string>> set of [names, type]
+     * @return std::set<std::pair<std::string, gpu_data::GPUDataType>> set of [names, type]
      */
-    std::set<std::pair<std::string, std::string>> get_names() const;
+    std::set<std::pair<std::string, gpu_data::GPUDataType>> get_names() const;
 
     UniformsVector(std::vector<std::shared_ptr<Uniform>> uniforms) :
         uniforms_(uniforms) {}

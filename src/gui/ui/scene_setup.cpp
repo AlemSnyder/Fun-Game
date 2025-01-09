@@ -111,11 +111,11 @@ setup(
         std::make_shared<render::LightDepthTextureProjection>(&scene.get_shadow_map());
 
     auto shadow_texture_uniform = std::make_shared<render::TextureUniform>(
-        "shadow_texture", "sampler2DShadow", 1
+        "shadow_texture", gpu_data::GPUDataType::SAMPLER_2D_SHADOW, 1
     );
 
     auto material_color_texture_uniform = std::make_shared<render::TextureUniform>(
-        "material_color_texture", "sampler1D", 0
+        "material_color_texture", gpu_data::GPUDataType::SAMPLER_1D, 0
     );
 
     auto spectral_light_color_uniform =

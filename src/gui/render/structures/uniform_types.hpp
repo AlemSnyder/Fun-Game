@@ -5,6 +5,7 @@
 #include "gui/scene/controls.hpp"
 #include "logging.hpp"
 #include "types.hpp"
+#include "gui/render/gl_enums.hpp"
 
 #include <glm/glm.hpp>
 
@@ -36,7 +37,7 @@ class LightDirection : public shader::Uniform {
 
  public:
     LightDirection(std::shared_ptr<LightEnvironment> lighting) :
-        Uniform("light_direction", "vec3"), lighting_(lighting) {}
+        Uniform("light_direction", gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~LightDirection(){};
 
@@ -63,7 +64,7 @@ class DiffuseLight : public shader::Uniform {
 
  public:
     DiffuseLight(std::shared_ptr<LightEnvironment> lighting) :
-        Uniform("diffuse_light_color", "vec3"), lighting_(lighting) {}
+        Uniform("diffuse_light_color", gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~DiffuseLight(){};
 
@@ -90,7 +91,7 @@ class SpectralLight : public shader::Uniform {
 
  public:
     SpectralLight(std::shared_ptr<LightEnvironment> lighting) :
-        Uniform("direct_light_color", "vec3"), lighting_(lighting) {}
+        Uniform("direct_light_color", gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~SpectralLight(){};
 
@@ -111,7 +112,7 @@ class SpectralLight : public shader::Uniform {
 
 class MatrixViewProjection : public shader::Uniform {
  public:
-    MatrixViewProjection() : Uniform("MVP", "mat4") {}
+    MatrixViewProjection() : Uniform("MVP", gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~MatrixViewProjection(){};
 
@@ -130,7 +131,7 @@ class MatrixViewProjection : public shader::Uniform {
 
 class ViewMatrix : public shader::Uniform {
  public:
-    ViewMatrix() : Uniform("view_matrix", "mat4") {}
+    ViewMatrix() : Uniform("view_matrix", gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~ViewMatrix(){};
 
@@ -150,7 +151,7 @@ class LightDepthProjection : public shader::Uniform {
 
  public:
     LightDepthProjection(const gpu_data::ShadowMap* shadow_map) :
-        Uniform("depth_MVP", "mat4"), shadow_map_(shadow_map) {}
+        Uniform("depth_MVP", gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthProjection() {}
 
@@ -175,7 +176,7 @@ class LightDepthTextureProjection : public shader::Uniform {
 
  public:
     LightDepthTextureProjection(const gpu_data::ShadowMap* shadow_map) :
-        Uniform("depth_texture_projection", "mat4"), shadow_map_(shadow_map) {}
+        Uniform("depth_texture_projection", gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthTextureProjection() {}
 
@@ -213,7 +214,7 @@ class TextureUniform : public shader::Uniform {
 
  public:
     TextureUniform(
-        std::string name, std::string texture_type, uint8_t texture_location
+        std::string name, gpu_data::GPUDataType texture_type, uint8_t texture_location
     ) :
         Uniform(name, texture_type),
         texture_location_(texture_location) {}
@@ -231,7 +232,7 @@ class TextureUniform : public shader::Uniform {
 
 class MatrixViewInverseProjection : public shader::Uniform {
  public:
-    MatrixViewInverseProjection() : Uniform("MVIP", "mat4") {}
+    MatrixViewInverseProjection() : Uniform("MVIP", gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~MatrixViewInverseProjection() {}
 
@@ -256,7 +257,7 @@ class PixelProjection : public shader::Uniform {
     inline static screen_size_t height_;
 
  public:
-    PixelProjection() : Uniform("pixel_projection", "mat4") {}
+    PixelProjection() : Uniform("pixel_projection", gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~PixelProjection() {}
 
@@ -289,7 +290,7 @@ class StarRotationUniform : public shader::Uniform {
 
  public:
     StarRotationUniform(std::shared_ptr<render::StarRotation> rotation) :
-        Uniform("star_rotation", "mat4"), rotation_(rotation) {}
+        Uniform("star_rotation", gpu_data::GPUDataType::FLOAT_MAT4), rotation_(rotation) {}
 
     virtual ~StarRotationUniform() {}
 

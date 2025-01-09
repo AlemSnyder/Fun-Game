@@ -244,6 +244,7 @@ Program::attach_uniforms() {
         }
 
         uniforms_[str_name] = uid;
+        found_uniforms_.insert({name, enum_type});
     }
 }
 
