@@ -10,6 +10,7 @@
 #include "util/voxel.hpp"
 
 #include <filesystem>
+#include <mutex>
 #include <optional>
 #include <unordered_set>
 #include <vector>
@@ -29,6 +30,8 @@ constexpr size_t NO_UPDATE = -1;
  */
 class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
  private:
+    mutable std::mutex mut_;
+
     // model mesh on gpu
     gui::gpu_data::InstancedIMeshGPU model_mesh_;
 
@@ -53,6 +56,8 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
      */
     inline void
     reset_offset() {
+        // this is only called in update. and update already has a lock.
+        // If you call this function make sure that the mutex is locked
         offset_ = NO_UPDATE;
     }
 
@@ -74,20 +79,24 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
      * @param const world::entity::Mesh& Mesh data
      * @param const std::vector<std::vector<ColorFloat>>& color map data
      */
-    ModelController(
+    inline ModelController(
         const world::entity::Mesh& model_mesh,
         const std::vector<std::vector<ColorFloat>>& vector_data
-    ) :
+    ) noexcept :
         model_mesh_(model_mesh, {}),
         model_textures_(vector_data) {}
 
     ~ModelController() {}
 
     inline ModelController(const ModelController& obj) = delete;
-    inline ModelController(ModelController&& other) = default;
+    ModelController(ModelController&& other) :
+        model_mesh_(std::move(other.model_mesh_)),
+        model_textures_(std::move(other.model_textures_)),
+        texture_id_(std::move(other.texture_id_)),
+        placements_(std::move(other.placements_)), offset_(std::move(other.offset_)){};
     // copy operator
     inline ModelController& operator=(const ModelController& obj) = delete;
-    inline ModelController& operator=(ModelController&& other) = default;
+    ModelController& operator=(ModelController&& other) = default;
 
     /**
      * @brief Bind data for rendering
@@ -145,6 +154,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
      */
     [[nodiscard]] inline uint32_t
     get_num_models() const override {
+        std::lock_guard<std::mutex> lock(mut_);
         return placements_.size();
     }
 };
