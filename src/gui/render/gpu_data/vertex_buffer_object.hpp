@@ -214,14 +214,14 @@ class VertexBufferObject {
      * @param GLuint divisor go look up instancing
      */
     inline explicit VertexBufferObject(const std::vector<T>& data, GLuint divisor) :
-        divisor_(divisor) {
+        divisor_(divisor), size_(0), alloc_size_(0) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data]() {
             LOG_BACKTRACE(
                 logging::opengl_logger, "Buffer ID before generation: {}", buffer_ID_
             );
             glGenBuffers(1, &buffer_ID_);
-            this->pointer_update_(data.data(), 0, data.size());
+            this->private_insert_(data.data(), data.size(), 0, 0);
         });
     };
 
@@ -243,7 +243,8 @@ class VertexBufferObject {
     update(std::vector<T> data, GLuint offset) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this, data = std::move(data), offset]() {
-            this->pointer_update_(data.data(), offset, data.size());
+            size_t end = std::min(size_, data.size() + offset);
+            this->private_insert_(data.data(), data.size(), offset, end);
         });
     };
 
@@ -254,7 +255,18 @@ class VertexBufferObject {
      */
     inline void
     update(const std::vector<T>& data) {
-        update(data.data(), 0);
+        update(data, 0);
+    }
+
+    /**
+     * @brief Insert data into given range. Rearrange buffer to fit.
+     */
+    inline void
+    insert(const std::vector<T>& data, GLuint start, GLuint end) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, data = std::move(data), start, end]() {
+            this->private_insert_(data.data(), data.size(), start, end);
+        });
     }
 
     /**
@@ -346,21 +358,17 @@ class VertexBufferObject {
         return type_size;
     }
 
- private:
-    /**
-     * @brief Update VertexBufferObject with data
-     *
-     * @param std::vector<T>& data data to send to GPU
-     */
-    void pointer_update_(const T* data_begin, size_t offset, size_t add_data_size);
-};
+    [[nodiscard]] std::vector<T> read() const;
 
-// go do vector implementations
+ private:
+    void
+    private_insert_(const T* data_begin, size_t data_size, size_t start, size_t end);
+};
 
 template <class T, BindingTarget Buffer>
 void
-VertexBufferObject<T, Buffer>::pointer_update_(
-    const T* data_begin, size_t offset, size_t add_data_size
+VertexBufferObject<T, Buffer>::private_insert_(
+    const T* data_begin, size_t data_size, size_t start, size_t end
 ) {
     constexpr GPUStructureType data_type = GPUStructureType::create<T>();
 
@@ -372,49 +380,171 @@ VertexBufferObject<T, Buffer>::pointer_update_(
         "You messed up how you do math"
     );
 
-    size_t data_size_in_bytes = add_data_size * static_cast<size_t>(data_type.type_size)
-                                * static_cast<size_t>(data_type.major_size)
-                                * static_cast<size_t>(data_type.minor_size);
+    assert(start <= size_ && end <= size_ && "start and end must be within array");
 
-    size_t offset_size_in_bytes = offset * static_cast<size_t>(data_type.type_size)
-                                  * static_cast<size_t>(data_type.major_size)
-                                  * static_cast<size_t>(data_type.minor_size);
+    assert(end >= start && "end must be greater than or equal to start");
+
+    const size_t element_size = sizeof(T);
+
+    size_t data_size_in_bytes = data_size * element_size;
+
+    size_t offset_size_in_bytes = start * element_size;
 
     LOG_BACKTRACE(
-        logging::opengl_logger, "Writing {} * {} * {} * {} = {} bytes.", add_data_size,
+        logging::opengl_logger, "Writing {} * {} * {} * {} = {} bytes.", data_size,
         data_type.type_size, data_type.major_size, data_type.minor_size,
         data_size_in_bytes
     );
 
-    if (alloc_size_ < offset + add_data_size) {
-        // reallocate
-        alloc_size_ = offset + add_data_size;
+    // size_t size_ = alloc_size_;
 
-        // need to in addition allocate the offset
-
+    if (start == 0 && end == size_) { // Tested
         bind();
-        // this should theoretically copy the existing data into a new buffer.
-        glBufferData(
-            static_cast<GLenum>(Buffer), offset_size_in_bytes + data_size_in_bytes,
-            nullptr, GL_DYNAMIC_DRAW
-        );
 
-        // TODO add case to reduce size
-        // The problem is that the way this is setup doesn't allow that.
-        // there is not way to say where the new data end is. one should not
-    } else {
-        LOG_BACKTRACE(
-            logging::opengl_logger,
-            "Updating Buffer ID: {}, vec size {}, data type: {}", buffer_ID_,
-            data_type.major_size, to_string(data_type.draw_type)
+        alloc_size_ = data_size;
+
+        glBufferData(
+            static_cast<GLenum>(Buffer), alloc_size_ * element_size, data_begin,
+            GL_DYNAMIC_DRAW
         );
+        size_ = alloc_size_;
+
+    } else if (start + data_size + (size_ - end) > alloc_size_) { // Tested
+        // the size of the new array is large than the allocated size
+        // copy end to size_
+        alloc_size_ = start + data_size + (size_ - end);
+
+        // create a new buffer
+        GLuint new_buffer;
+        glGenBuffers(1, &new_buffer);
+        glBindBuffer(static_cast<GLenum>(Buffer), new_buffer);
+
+        glBufferData(
+            static_cast<GLenum>(Buffer), alloc_size_ * element_size, nullptr,
+            GL_DYNAMIC_DRAW
+        );
+        if (start != 0) {
+            // copy up to start
+            glCopyNamedBufferSubData(
+                buffer_ID_, new_buffer, 0, 0, offset_size_in_bytes
+            );
+        }
+        if (data_size != 0) {
+            // insert new data
+            glBufferSubData(
+                static_cast<GLenum>(Buffer), offset_size_in_bytes, data_size_in_bytes,
+                data_begin
+            );
+        }
+
+        if ((size_ - end) != 0) {
+            // copy data past insertion
+            glCopyNamedBufferSubData(
+                buffer_ID_, new_buffer, end * element_size,
+                data_size_in_bytes + offset_size_in_bytes, (size_ - end) * element_size
+            );
+        }
+
+        // clean up
+
+        glDeleteBuffers(1, &buffer_ID_);
+
+        buffer_ID_ = new_buffer;
+
+        size_ = alloc_size_;
+
+    } else if ((data_size == end - start) && (data_size != 0)) { // Tested
+        bind();
+        // The inserted data is the same size as the existing data
+        glBufferSubData(
+            static_cast<GLenum>(Buffer), offset_size_in_bytes, data_size_in_bytes,
+            data_begin
+        );
+    } else if (data_size < end - start) {
+        // if size less than half alloc_size reallocate
+        if (size_ < alloc_size_ / 2) { // copy end to size_
+            // DO TEST
+            alloc_size_ = start + data_size + (size_ - end);
+
+            // create a new buffer
+            GLuint new_buffer;
+            glGenBuffers(1, &new_buffer);
+            glBindBuffer(static_cast<GLenum>(Buffer), new_buffer);
+            glBufferData(
+                static_cast<GLenum>(Buffer), alloc_size_ * element_size, nullptr,
+                GL_DYNAMIC_DRAW
+            );
+            if (start != 0) {
+                // copy up to start
+                glCopyNamedBufferSubData(
+                    buffer_ID_, new_buffer, 0, 0, offset_size_in_bytes
+                );
+            }
+            if (data_size != 0) {
+                bind();
+                // insert new data
+                glBufferSubData(
+                    static_cast<GLenum>(Buffer), offset_size_in_bytes,
+                    data_size_in_bytes, data_begin
+                );
+            }
+
+            if ((size_ - end) != 0) {
+                // copy data past insertion
+                glCopyNamedBufferSubData(
+                    buffer_ID_, new_buffer, end * element_size,
+                    data_size_in_bytes + offset_size_in_bytes,
+                    (size_ - end) * element_size
+                );
+            }
+
+            // clean up
+
+            glDeleteBuffers(1, &buffer_ID_);
+
+            buffer_ID_ = new_buffer;
+
+            size_ = alloc_size_;
+
+        } else {
+            if (end == size_) {
+                // no used data past what is inserted
+                // DO TEST
+                bind();
+                glBufferSubData(
+                    static_cast<GLenum>(Buffer), offset_size_in_bytes,
+                    data_size_in_bytes, data_begin
+                );
+            } else {
+                // Tested
+                GLuint new_buffer;
+                glGenBuffers(1, &new_buffer);
+                glBindBuffer(static_cast<GLenum>(Buffer), new_buffer);
+                glBufferData(
+                    static_cast<GLenum>(Buffer), (size_ - end) * element_size, nullptr,
+                    GL_DYNAMIC_DRAW
+                );
+                // copy past end
+                glCopyNamedBufferSubData(
+                    buffer_ID_, new_buffer, end * element_size, 0,
+                    (size_ - end) * element_size
+                );
+                bind();
+                glBufferSubData(
+                    static_cast<GLenum>(Buffer), offset_size_in_bytes,
+                    data_size_in_bytes, data_begin
+                );
+
+                glCopyNamedBufferSubData(
+                    new_buffer, buffer_ID_, 0, (start + data_size) * element_size,
+                    (size_ - end) * element_size
+                );
+
+                glDeleteBuffers(1, &new_buffer);
+            }
+            size_ = size_ + data_size - (end - start);
+        }
     }
-    // write data
-    glBufferSubData(
-        static_cast<GLenum>(Buffer), offset_size_in_bytes, data_size_in_bytes,
-        data_begin
-    );
-    size_ = alloc_size_;
 }
 
 template <class T, BindingTarget Buffer>
@@ -489,6 +619,25 @@ VertexBufferObject<T, Buffer>::attach_to_vertex_attribute(GLuint index) const {
             glVertexAttribDivisor(index + i, divisor_);
         }
     }
+}
+
+template <class T, BindingTarget Buffer>
+
+[[nodiscard]] std::vector<T>
+VertexBufferObject<T, Buffer>::read() const {
+    if (size_ == 0) {
+        return {};
+    }
+
+    std::vector<T> out;
+
+    out.resize(size_);
+
+    bind();
+
+    glGetBufferSubData(static_cast<GLenum>(Buffer), 0, size_ * sizeof(T), out.data());
+
+    return out;
 }
 
 } // namespace gpu_data

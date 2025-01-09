@@ -12,6 +12,7 @@ namespace render {
 
 void
 ModelController::insert(Placement placement) {
+    std::lock_guard<std::mutex> lock(mut_);
     auto [iter, successes] = placements_.insert(placement);
 
     // if insertion fails
@@ -33,6 +34,7 @@ ModelController::insert(Placement placement) {
 
 void
 ModelController::remove(Placement placement) {
+    std::lock_guard<std::mutex> lock(mut_);
     // why would they do this?
     auto iter = placements_.erase(placements_.find(placement));
     uint offset_of_last_insertion = std::distance(placements_.begin(), iter);
@@ -45,30 +47,28 @@ ModelController::remove(Placement placement) {
 // call this once per frame
 void
 ModelController::update() {
+    std::lock_guard<std::mutex> lock(mut_);
     if (offset_ == NO_UPDATE) {
         return;
     }
 
-    GlobalContext& context = GlobalContext::instance();
-    context.push_task([this, &context]() {
-        std::vector<uint8_t> texture_data;
-        // no conversion from position to ivec4
-        // need to do ivec all the way down
-        std::vector<glm::ivec4> data;
-        auto iterator = placements_.begin();
-        assert(offset_ < placements_.size() && "Something Something This will break");
-        std::advance(iterator, offset_);
+    std::vector<uint8_t> texture_data;
+    // no conversion from position to ivec4
+    // need to do ivec all the way down
+    std::vector<glm::ivec4> data;
+    auto iterator = placements_.begin();
+    assert(offset_ < placements_.size() && "Something Something This will break");
+    std::advance(iterator, offset_);
 
-        for (; iterator != placements_.end(); iterator++) {
-            data.push_back((*iterator).as_vec());
-            texture_data.push_back((*iterator).texture_id);
-        }
+    for (; iterator != placements_.end(); iterator++) {
+        data.push_back((*iterator).as_vec());
+        texture_data.push_back((*iterator).texture_id);
+    }
 
-        // queueing three things on main thread. will eventually be run in this order.
-        model_mesh_.update_transforms_array(data, offset_);
-        texture_id_.update(texture_data, offset_);
-        context.push_opengl_task([this]() { reset_offset(); });
-    });
+    // queueing three things on main thread. will eventually be run in this order.
+    model_mesh_.update_transforms_array(data, offset_);
+    texture_id_.update(texture_data, offset_);
+    reset_offset();
 }
 
 } // namespace render

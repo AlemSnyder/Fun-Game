@@ -135,7 +135,7 @@ World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
 
 // Should not be called except by lambda function
 void
-World::update_single_mesh(ChunkIndex chunk_pos) {
+World::update_single_mesh(ChunkPos chunk_pos) {
     const auto& chunk = terrain_main_.get_chunk(chunk_pos);
     entity::Mesh chunk_mesh =
         entity::ambient_occlusion_mesher(terrain::ChunkData(chunk));
@@ -144,8 +144,10 @@ World::update_single_mesh(ChunkIndex chunk_pos) {
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
-    std::scoped_lock lock(meshes_to_update_mutex_);
-    meshes_to_update_.insert({chunk_pos, chunk_mesh});
+    if (chunk_mesh.get_indices().size() > 0) {
+        std::scoped_lock lock(meshes_to_update_mutex_);
+        meshes_to_update_.insert({chunk_pos, chunk_mesh});
+    }
 }
 
 // TODO should set a limit the the number
@@ -165,20 +167,12 @@ void
 World::update_all_chunks_mesh() {
     LOG_DEBUG(logging::terrain_logger, "Begin load chunks mesh");
     size_t num_chunks = terrain_main_.get_chunks().size();
-    if (chunks_mesh_.size() != num_chunks) {
-        chunks_mesh_.clear();
-        chunks_mesh_.reserve(num_chunks);
-        for (size_t i = 0; i < num_chunks; i++) {
-            chunks_mesh_.push_back(std::make_shared<gui::gpu_data::TerrainMesh>(
-                terrain::TerrainColorMapping::get_color_texture()
-            ));
-        }
-    }
 
     std::vector<std::future<void>> wait_for;
     wait_for.reserve(num_chunks);
     GlobalContext& context = GlobalContext::instance();
-    for (size_t chunk_pos = 0; chunk_pos < num_chunks; chunk_pos++) {
+    for (const auto& chunk : terrain_main_.get_chunks()) {
+        auto chunk_pos = chunk.get_chunk_position();
         auto future = context.submit_task([this, chunk_pos]() {
             this->update_single_mesh(chunk_pos);
         });
@@ -188,18 +182,19 @@ World::update_all_chunks_mesh() {
     for (const auto& task : wait_for) {
         task.wait();
     }
-    send_updated_chunks_mesh();
+
+    std::scoped_lock lock(meshes_to_update_mutex_);
+    terrain_mesh_ = std::make_shared<gui::gpu_data::TerrainMesh>(
+        meshes_to_update_, terrain::TerrainColorMapping::get_color_texture()
+    );
 }
 
 // will be called once per frame
 void
 World::send_updated_chunks_mesh() {
     std::scoped_lock lock(meshes_to_update_mutex_);
-    for (const auto& mesh_data : meshes_to_update_) {
-        chunks_mesh_[mesh_data.first]->update(mesh_data.second);
-        chunks_mesh_[mesh_data.first]->set_color_texture(
-            terrain::TerrainColorMapping::get_color_texture()
-        );
+    for (const auto& [chunk_pos, mesh_data] : meshes_to_update_) {
+        terrain_mesh_->replace(chunk_pos, mesh_data);
     }
 }
 

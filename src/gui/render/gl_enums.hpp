@@ -201,6 +201,31 @@ to_string(const GPUDataType& data_type) {
     }
 }
 
+/**
+ * @brief String representation of GPUDataType
+ *
+ * @param const GPUDataType& data type to represent
+ */
+constexpr inline size_t
+get_size(const GPUDataType& data_type) {
+    switch (data_type) {
+        case GPUDataType::BYTE:
+        case GPUDataType::UNSIGNED_BYTE:
+            return 1;
+        case GPUDataType::SHORT:
+        case GPUDataType::UNSIGNED_SHORT:
+            return 2;
+        case GPUDataType::INT:
+        case GPUDataType::UNSIGNED_INT:
+        case GPUDataType::FLOAT:
+            return 4;
+        case GPUDataType::DOUBLE:
+            return 8;
+        default:
+            abort();
+    }
+}
+
 } // namespace gpu_data
 
 } // namespace gui
