@@ -222,7 +222,7 @@ Program::attach_uniforms() {
     // }
 
     GLint count;
-    const GLsizei buf_size = 16;
+    const GLsizei buf_size = 64;
     GLchar name[buf_size];
     GLsizei length;
     GLint size;
@@ -238,6 +238,10 @@ Program::attach_uniforms() {
         gpu_data::GPUDataType enum_type = static_cast<gpu_data::GPUDataType>(type); // this might fail
 
         LOG_INFO(logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}", uid, name, gpu_data::to_string(enum_type));
+
+        if (length > buf_size - 4) {
+            LOG_WARNING(logging::opengl_logger, "Uniform name might be too long. Check that the name above is the same as the name in the source file.");
+        }
 
         uniforms_[str_name] = uid;
     }
