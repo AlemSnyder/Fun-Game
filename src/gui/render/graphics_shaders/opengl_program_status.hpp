@@ -15,9 +15,9 @@
  *
  * @author @AlemSnyder
  *
- * @brief Defines program statuses
+ * @brief Defines program status enums
  *
- * @ingroup GUI  RENDER  GRAPHICS_SHADERS
+ * @ingroup GUI  SHADER
  *
  */
 

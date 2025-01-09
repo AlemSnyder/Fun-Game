@@ -12,9 +12,9 @@
 #include "util/voxel_io.hpp"
 #include "world/biome.hpp"
 #include "world/entity/mesh.hpp"
+#include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
-#include "world/terrain/generation/terrain_map.hpp"
 
 #include <argh.h>
 

@@ -16,6 +16,7 @@
 #include "logging.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "world/climate.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/world.hpp"
 
@@ -42,7 +43,7 @@ namespace gui {
 // Main code
 // returns exit status
 int
-imgui_entry(world::World& world, GLFWwindow* window) {
+imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     screen_size_t window_width;
     screen_size_t window_height;
     screen_size_t shadow_map_size = 4096;
@@ -76,7 +77,7 @@ imgui_entry(world::World& world, GLFWwindow* window) {
 
     // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
-    setup(main_scene, shader_handler, world);
+    setup(main_scene, shader_handler, world, climate);
 
     glm::vec3 position;
 

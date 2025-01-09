@@ -1,8 +1,8 @@
 #include "program_handler.hpp"
 
-#include "gui_render_types.hpp"
 #include "logging.hpp"
 #include "gui/render/gl_enums.hpp"
+//#include "render_types.hpp"
 
 #include <GL/glew.h>
 

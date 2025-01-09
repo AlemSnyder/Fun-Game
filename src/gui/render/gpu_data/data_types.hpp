@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "array_buffer.hpp"
+#include "vertex_buffer_object.hpp"
 
 #include <stdint.h>
 
