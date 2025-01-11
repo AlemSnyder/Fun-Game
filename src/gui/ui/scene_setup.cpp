@@ -194,6 +194,7 @@ setup(
     stars_program.set_uniform(light_direction_uniform, "light_direction");
 
     sun_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    sun_program.set_uniform(pixel_projection, "pixel_projection");
     sun_program.set_uniform(light_direction_uniform, "light_direction");
     sun_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
 
