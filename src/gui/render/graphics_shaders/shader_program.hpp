@@ -398,6 +398,13 @@ class ShaderProgram_MultiElements :
                 "Sizes should match for reinterpret_cast."
             );
 
+            LOG_BACKTRACE(
+                logging::opengl_logger,
+                "glMultiDrawElementsBaseVertex(GL_TRIANGLES, [...], {}, [...], {}, [...])",
+                to_string(element_type),
+                mesh->get_num_objects()
+            );
+
             // Draw the triangles !
             glMultiDrawElementsBaseVertex(
                 GL_TRIANGLES,                      // mode

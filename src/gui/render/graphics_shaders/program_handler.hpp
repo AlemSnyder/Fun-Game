@@ -263,8 +263,6 @@ class Program : public ProgramData {
 
     std::string name_;
 
-    std::set<Uniform> uniforms;
-
  public:
     /**
      * @brief Crate a new Program object from a vertex and a fragment shader
@@ -349,8 +347,8 @@ class Program : public ProgramData {
      * @brief Send uniform data for this program.
      */
     void bind_uniforms() {
-        for (const auto& uniform : uniforms) {
-            uniform.bind();
+        for (const auto& uniform : uniforms_) {
+            uniform.second.bind();
         }
     }
 
