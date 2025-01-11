@@ -229,34 +229,37 @@ Program::attach_uniforms() {
             LOG_WARNING(logging::opengl_logger, "Uniform name might be too long. Check that the name above is the same as the name in the source file.");
         }
 
-        uniforms_.emplace(name, enum_type, uid);
+        uniforms_.emplace(std::piecewise_construct,
+            std::forward_as_tuple(name),
+            std::forward_as_tuple(name, enum_type, uid)
+        );
     }
 }
 
-    void inline Program::set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name) {
-        auto found_uniform = uniforms_.find(uniform_name);
+void
+Program::set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name) {
+    auto found_uniform = uniforms_.find(uniform_name);
 
-        if (found_uniform != uniforms_.end()) {
-            found_uniform->second.set_call_function(uex);
-            auto found_type = found_uniform->second.get_type();
-            auto given_type = uex->get_type();
-            if (given_type != found_type) {
-                LOG_WARNING(
-                    logging::opengl_logger,
-                    "Uniform types do not match. Given {} to uniform of type {}.",
-                    gpu_data::to_string(given_type),
-                    gpu_data::to_string(found_type)
-                );
-            }
-        } else {
+    if (found_uniform != uniforms_.end()) {
+        found_uniform->second.set_call_function(uex);
+        auto found_type = found_uniform->second.get_type();
+        auto given_type = uex->get_type();
+        if (given_type != found_type) {
             LOG_WARNING(
                 logging::opengl_logger,
-                "Uniform Error. Uniform \"{}\" not found in program.",
-                uniform_name.c_str()
+                "Uniform types do not match. Given {} to uniform of type {}.",
+                gpu_data::to_string(given_type),
+                gpu_data::to_string(found_type)
             );
         }
-
+    } else {
+        LOG_WARNING(
+            logging::opengl_logger,
+            "Uniform Error. Uniform \"{}\" not found in program.",
+            uniform_name.c_str()
+        );
     }
+}
 
 void
 ShaderHandler::clear() {

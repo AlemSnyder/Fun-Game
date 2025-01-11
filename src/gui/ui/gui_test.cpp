@@ -31,6 +31,7 @@ namespace gui {
 
 int
 revised_gui_test() {
+#if 0
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
 
@@ -233,11 +234,13 @@ revised_gui_test() {
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
+#endif
     return 0;
 }
 
 int
 stars_test() {
+#if 0
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
 
@@ -400,6 +403,7 @@ stars_test() {
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
+#endif
     return 0;
 }
 

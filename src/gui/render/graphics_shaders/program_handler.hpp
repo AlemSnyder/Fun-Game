@@ -360,7 +360,7 @@ class Program : public ProgramData {
     void attach_uniforms();
 
     // Set uniform executor
-    void inline set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name);
+    void set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name);
 
 };
 

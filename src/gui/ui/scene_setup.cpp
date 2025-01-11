@@ -116,7 +116,8 @@ setup(
     auto matrix_view_projection_uniform =
         std::make_shared<render::MatrixViewProjection>();
 
-    auto view_matrix_uniform = std::make_shared<render::ViewMatrix>();
+    auto view_matrix_uniform =
+        std::make_shared<render::ViewMatrix>();
 
     auto light_depth_projection_uniform =
         std::make_shared<render::LightDepthProjection>(&scene.get_shadow_map());
@@ -124,13 +125,11 @@ setup(
     auto light_depth_texture_projection_uniform =
         std::make_shared<render::LightDepthTextureProjection>(&scene.get_shadow_map());
 
-    auto shadow_texture_uniform = std::make_shared<render::TextureUniform>(
-        "shadow_texture", gpu_data::GPUDataType::SAMPLER_2D_SHADOW, 1
-    );
+    auto shadow_texture_uniform =
+        std::make_shared<render::TextureUniform>(gpu_data::GPUDataType::SAMPLER_2D_SHADOW, 1);
 
-    auto material_color_texture_uniform = std::make_shared<render::TextureUniform>(
-        "material_color_texture", gpu_data::GPUDataType::SAMPLER_1D, 0
-    );
+    auto material_color_texture_uniform =
+        std::make_shared<render::TextureUniform>(gpu_data::GPUDataType::SAMPLER_1D, 0);
 
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(scene.get_lighting_environment());
@@ -144,7 +143,8 @@ setup(
     auto matrix_view_inverse_projection =
         std::make_shared<render::MatrixViewInverseProjection>();
 
-    auto pixel_projection = std::make_shared<render::PixelProjection>();
+    auto pixel_projection =
+        std::make_shared<render::PixelProjection>();
 
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(scene.get_lighting_environment());
@@ -233,7 +233,7 @@ setup(
         chunks_shadow_program, chunk_render_setup
     );
 
-    auto entity_render_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+    auto object_render_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
         object_render_program, chunk_render_setup
     );
 

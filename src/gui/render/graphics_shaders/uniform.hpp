@@ -38,8 +38,6 @@ namespace gui {
 
 namespace shader {
 
-class UniformsVector;
-
 /**
  * @brief Representation of a uniform
  *
@@ -48,8 +46,6 @@ class UniformsVector;
  * uniform ID.
  */
 class Uniform {
-    friend UniformsVector;
-
  protected:
     const std::string name_; // name used in shader program
     const gpu_data::GPUDataType type_; // glsl type as stirng
