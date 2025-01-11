@@ -26,6 +26,7 @@
 #include "../gl_enums.hpp"
 #include "logging.hpp"
 #include "opengl_program_status.hpp"
+#include "uniform.hpp"
 #include "types.hpp"
 #include "util/hash_combine.hpp"
 
@@ -224,10 +225,8 @@ class ProgramData {
     std::optional<Shader> tesselation_evaluation_shader_;
     */
 
-    std::set<std::pair<std::string, gpu_data::GPUDataType>> found_uniforms_;
-
     // todo make this a type
-    std::unordered_map<std::string, GLint> uniforms_;
+    std::unordered_map<std::string, Uniform> uniforms_;
 
  public:
     inline ProgramData(Shader& vertex_shader, Shader& fragment_shader) :
@@ -264,20 +263,7 @@ class Program : public ProgramData {
 
     std::string name_;
 
-    // get uniform
-    // may be -1 if no uniform exists
-    [[nodiscard]] GLint inline new_uniform(std::string uniform_name) {
-        GLint out = glGetUniformLocation(program_ID_, uniform_name.c_str());
-        if (out == NO_UNIFORM_INT) {
-            LOG_WARNING(
-                logging::opengl_logger,
-                "Uniform Error. Uniform \"{}\" not found in program.",
-                uniform_name.c_str()
-            );
-        }
-        return out;
-        // if this returns -1 then the program ID may not exist or could be unused.
-    }
+    std::set<Uniform> uniforms;
 
  public:
     /**
@@ -313,21 +299,6 @@ class Program : public ProgramData {
     void reload();
 
     /**
-     * @brief Get uniform by its name.
-     *
-     * @param uniform_name string name of uniform
-     *
-     * @return GLint uniform id
-     */
-    [[nodiscard]] GLint inline get_uniform(std::string uniform_name) const {
-        auto value = uniforms_.find(uniform_name);
-        if (value != uniforms_.end()) {
-            return value->second;
-        }
-        return NO_UNIFORM_INT;
-    }
-
-    /**
      * @brief Return the status of the program.
      *
      * @details Gives information about the status of the compilation of the
@@ -336,17 +307,6 @@ class Program : public ProgramData {
     [[nodiscard]] inline ProgramStatus
     get_status() const noexcept {
         return status_;
-    }
-
-    /**
-     * @brief Get the set of detected uniforms
-     *
-     * @return std::set<std::pair<std::string, std::string>> set of paris of
-     * uniform names and uniform types.
-     */
-    [[nodiscard]] inline std::set<std::pair<std::string, gpu_data::GPUDataType>>
-    get_detected_uniforms() const noexcept {
-        return found_uniforms_;
     }
 
     /**
@@ -388,7 +348,20 @@ class Program : public ProgramData {
     /**
      * @brief Send uniform data for this program.
      */
+    void bind_uniforms() {
+        for (const auto& uniform : uniforms) {
+            uniform.bind();
+        }
+    }
+
+    /**
+     * @brief Generate uniforms for this program
+     */
     void attach_uniforms();
+
+    // Set uniform executor
+    void inline set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name);
+
 };
 
 /**

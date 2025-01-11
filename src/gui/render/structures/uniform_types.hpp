@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gui/render/gpu_data/shadow_map.hpp"
-#include "gui/render/graphics_shaders/uniform.hpp"
+#include "gui/render/graphics_shaders/uniform_exicuter.hpp"
 #include "gui/scene/controls.hpp"
 #include "logging.hpp"
 #include "types.hpp"
@@ -31,13 +31,13 @@ class StarRotation {
     virtual glm::mat4 get_sky_rotation() const = 0;
 };
 
-class LightDirection : public shader::Uniform {
+class LightDirection : public shader::UniformExecuter {
  private:
     std::shared_ptr<LightEnvironment> lighting_;
 
  public:
     LightDirection(std::shared_ptr<LightEnvironment> lighting) :
-        Uniform("light_direction", gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecuter(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~LightDirection(){};
 
@@ -47,7 +47,7 @@ class LightDirection : public shader::Uniform {
 
         LOG_BACKTRACE(
             logging::opengl_logger,
-            "Uniform {}, value: ({}, {}, {}), being initialized.", name_,
+            "Uniform {}, value: ({}, {}, {}), being initialized.", uniform_ID,
             light_direction.x, light_direction.y, light_direction.z
         );
 
@@ -58,13 +58,13 @@ class LightDirection : public shader::Uniform {
     }
 };
 
-class DiffuseLight : public shader::Uniform {
+class DiffuseLight : public shader::UniformExecuter {
  private:
     std::shared_ptr<LightEnvironment> lighting_;
 
  public:
     DiffuseLight(std::shared_ptr<LightEnvironment> lighting) :
-        Uniform("diffuse_light_color", gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecuter(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~DiffuseLight(){};
 
@@ -74,7 +74,7 @@ class DiffuseLight : public shader::Uniform {
 
         LOG_BACKTRACE(
             logging::opengl_logger,
-            "Uniform {}, value: ({}, {}, {}), being initialized.", name_,
+            "Uniform {}, value: ({}, {}, {}), being initialized.", uniform_ID,
             diffuse_light_color.r, diffuse_light_color.g, diffuse_light_color.b
         );
 
@@ -85,13 +85,13 @@ class DiffuseLight : public shader::Uniform {
     }
 };
 
-class SpectralLight : public shader::Uniform {
+class SpectralLight : public shader::UniformExecuter {
  private:
     std::shared_ptr<render::LightEnvironment> lighting_;
 
  public:
     SpectralLight(std::shared_ptr<LightEnvironment> lighting) :
-        Uniform("direct_light_color", gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecuter(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~SpectralLight(){};
 
@@ -101,7 +101,7 @@ class SpectralLight : public shader::Uniform {
 
         LOG_BACKTRACE(
             logging::opengl_logger,
-            "Uniform {}, value: ({}, {}, {}), being initialized.", name_,
+            "Uniform {}, value: ({}, {}, {}), being initialized.", uniform_ID,
             sunlight_color.r, sunlight_color.g, sunlight_color.b
         );
 
@@ -110,9 +110,9 @@ class SpectralLight : public shader::Uniform {
     }
 };
 
-class MatrixViewProjection : public shader::Uniform {
+class MatrixViewProjection : public shader::UniformExecuter {
  public:
-    MatrixViewProjection() : Uniform("MVP", gpu_data::GPUDataType::FLOAT_MAT4) {}
+    MatrixViewProjection() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~MatrixViewProjection(){};
 
@@ -123,15 +123,15 @@ class MatrixViewProjection : public shader::Uniform {
 
         glm::mat4 MVP = projection_matrix * view_matrix;
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &MVP[0][0]);
     }
 };
 
-class ViewMatrix : public shader::Uniform {
+class ViewMatrix : public shader::UniformExecuter {
  public:
-    ViewMatrix() : Uniform("view_matrix", gpu_data::GPUDataType::FLOAT_MAT4) {}
+    ViewMatrix() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~ViewMatrix(){};
 
@@ -139,19 +139,19 @@ class ViewMatrix : public shader::Uniform {
     bind(GLint uniform_ID) {
         const glm::mat4 view_matrix = controls::get_view_matrix();
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &view_matrix[0][0]);
     }
 };
 
-class LightDepthProjection : public shader::Uniform {
+class LightDepthProjection : public shader::UniformExecuter {
  private:
     const gpu_data::ShadowMap* shadow_map_;
 
  public:
     LightDepthProjection(const gpu_data::ShadowMap* shadow_map) :
-        Uniform("depth_MVP", gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
+        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthProjection() {}
 
@@ -164,19 +164,19 @@ class LightDepthProjection : public shader::Uniform {
         // matrix to calculate the length of a light ray in model space
         glm::mat4 depthMVP = depth_projection_matrix * depth_view_matrix;
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &depthMVP[0][0]);
     }
 };
 
-class LightDepthTextureProjection : public shader::Uniform {
+class LightDepthTextureProjection : public shader::UniformExecuter {
  private:
     const gpu_data::ShadowMap* shadow_map_;
 
  public:
     LightDepthTextureProjection(const gpu_data::ShadowMap* shadow_map) :
-        Uniform("depth_texture_projection", gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
+        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthTextureProjection() {}
 
@@ -202,13 +202,13 @@ class LightDepthTextureProjection : public shader::Uniform {
 
         glm::mat4 depth_bias_MVP = bias_matrix * depthMVP;
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &depth_bias_MVP[0][0]);
     }
 };
 
-class TextureUniform : public shader::Uniform {
+class TextureUniform : public shader::UniformExecuter {
  private:
     uint8_t texture_location_;
 
@@ -216,13 +216,13 @@ class TextureUniform : public shader::Uniform {
     TextureUniform(
         std::string name, gpu_data::GPUDataType texture_type, uint8_t texture_location
     ) :
-        Uniform(name, texture_type),
+        UniformExecuter(texture_type),
         texture_location_(texture_location) {}
 
     inline virtual void
     bind(GLint uniform_ID) {
         LOG_BACKTRACE(
-            logging::opengl_logger, "Uniform {}, value {} being initialized.", name_,
+            logging::opengl_logger, "Uniform {}, value {} being initialized.", uniform_ID,
             texture_location_
         );
 
@@ -230,9 +230,9 @@ class TextureUniform : public shader::Uniform {
     }
 };
 
-class MatrixViewInverseProjection : public shader::Uniform {
+class MatrixViewInverseProjection : public shader::UniformExecuter {
  public:
-    MatrixViewInverseProjection() : Uniform("MVIP", gpu_data::GPUDataType::FLOAT_MAT4) {}
+    MatrixViewInverseProjection() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~MatrixViewInverseProjection() {}
 
@@ -245,19 +245,19 @@ class MatrixViewInverseProjection : public shader::Uniform {
 
         glm::mat4 sky_rotation = glm::inverse(MVP);
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &sky_rotation[0][0]);
     }
 };
 
-class PixelProjection : public shader::Uniform {
+class PixelProjection : public shader::UniformExecuter {
  private:
     inline static screen_size_t width_;
     inline static screen_size_t height_;
 
  public:
-    PixelProjection() : Uniform("pixel_projection", gpu_data::GPUDataType::FLOAT_MAT4) {}
+    PixelProjection() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~PixelProjection() {}
 
@@ -272,7 +272,7 @@ class PixelProjection : public shader::Uniform {
             0, 0, 0, 1};
         // clang-format on
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &pixel_window[0][0]);
     }
@@ -284,13 +284,13 @@ class PixelProjection : public shader::Uniform {
     }
 };
 
-class StarRotationUniform : public shader::Uniform {
+class StarRotationUniform : public shader::UniformExecuter {
  private:
     std::shared_ptr<render::StarRotation> rotation_;
 
  public:
     StarRotationUniform(std::shared_ptr<render::StarRotation> rotation) :
-        Uniform("star_rotation", gpu_data::GPUDataType::FLOAT_MAT4), rotation_(rotation) {}
+        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4), rotation_(rotation) {}
 
     virtual ~StarRotationUniform() {}
 
@@ -299,7 +299,7 @@ class StarRotationUniform : public shader::Uniform {
         // Compute the MVP matrix from keyboard and mouse input
         glm::mat4 star_rotation = rotation_->get_sky_rotation();
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", name_);
+        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &star_rotation[0][0]);
     }

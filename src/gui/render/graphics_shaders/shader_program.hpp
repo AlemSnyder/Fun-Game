@@ -103,20 +103,16 @@ class Render_Base {
 
     const std::function<void()> setup_;
 
-    UniformsVector uniforms_;
-
  public:
     inline Render_Base(
-        shader::Program& shader_program, const std::function<void()> setup_commands,
-        UniformsVector uniforms
-    ) :
+        shader::Program& shader_program, const std::function<void()> setup_commands) :
         opengl_program_(shader_program),
-        setup_(setup_commands), uniforms_(uniforms) {
+        setup_(setup_commands) {
         LOG_DEBUG(
             logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
         );
         //LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
-        log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
+        //log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
     inline void virtual render(
@@ -133,13 +129,7 @@ class Render_Base {
 
         setup_();
 
-        // uniforms_.bind();
-
-        for (auto uniform : uniforms_) {
-            GLint uniform_id = opengl_program_.get_uniform(uniform->get_name());
-            if (uniform_id != -1)
-                uniform->bind(uniform_id);
-        }
+        opengl_program_.bind_uniforms();
     }
 };
 
@@ -156,10 +146,9 @@ class ShaderProgram_Standard :
     std::vector<const gpu_data::GPUData*> data;
 
     inline ShaderProgram_Standard(
-        shader::Program& shader_program, const std::function<void()> setup_commands,
-        UniformsVector uniforms
+        shader::Program& shader_program, const std::function<void()> setup_commands
     ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+        Render_Base(shader_program, setup_commands) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -204,10 +193,8 @@ class ShaderProgram_Elements :
     std::vector<const gpu_data::GPUDataElements*> data;
 
     inline ShaderProgram_Elements(
-        shader::Program& shader_program, const std::function<void()> setup_commands,
-        UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+        shader::Program& shader_program, const std::function<void()> setup_commands    ) :
+        Render_Base(shader_program, setup_commands) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -258,10 +245,8 @@ class ShaderProgram_Instanced :
     std::vector<const gpu_data::GPUDataInstanced*> data;
 
     inline ShaderProgram_Instanced(
-        shader::Program& shader_program, const std::function<void()> setup_commands,
-        UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+        shader::Program& shader_program, const std::function<void()> setup_commands    ) :
+        Render_Base(shader_program, setup_commands) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -308,10 +293,8 @@ class ShaderProgram_ElementsInstanced :
     std::vector<const gpu_data::GPUDataElementsInstanced*> data;
 
     inline ShaderProgram_ElementsInstanced(
-        shader::Program& shader_program, const std::function<void()> setup_commands,
-        UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+        shader::Program& shader_program, const std::function<void()> setup_commands    ) :
+        Render_Base(shader_program, setup_commands) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -372,10 +355,8 @@ class ShaderProgram_MultiElements :
     std::vector<const gpu_data::GPUDataElementsMulti*> data;
 
     inline ShaderProgram_MultiElements(
-        shader::Program& shader_program, const std::function<void()> setup_commands,
-        UniformsVector uniforms
-    ) :
-        Render_Base(shader_program, setup_commands, uniforms) {}
+        shader::Program& shader_program, const std::function<void()> setup_commands    ) :
+        Render_Base(shader_program, setup_commands) {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID

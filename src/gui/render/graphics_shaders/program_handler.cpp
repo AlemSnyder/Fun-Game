@@ -8,7 +8,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <regex>
 #include <set>
 #include <string>
 #include <utility>
@@ -102,7 +101,6 @@ Shader::reload() {
 
 void
 Program::reload() {
-//    found_uniforms_.clear();
     uniforms_.clear();
 
     if (vertex_shader_.get_status() != ShaderStatus::OK) [[unlikely]] {
@@ -125,14 +123,6 @@ Program::reload() {
             return;
         }
     }
-/*
-    found_uniforms_.insert(
-        vertex_shader_.uniform_begin(), vertex_shader_.uniform_end()
-    );
-    found_uniforms_.insert(
-        fragment_shader_.uniform_begin(), fragment_shader_.uniform_end()
-    );
-*/
 
     GLint vertex_shader_id = vertex_shader_.get_shader_ID();
     GLint fragment_shader_id = fragment_shader_.get_shader_ID();
@@ -216,10 +206,6 @@ Program::get_status_string() const {
 
 void
 Program::attach_uniforms() {
-    // for (const auto& uniform_names : found_uniforms_) {
-    //     const auto& name = uniform_names.first;
-    //     uniforms_[name] = new_uniform(name);
-    // }
 
     GLint count;
     const GLsizei buf_size = 64;
@@ -243,10 +229,34 @@ Program::attach_uniforms() {
             LOG_WARNING(logging::opengl_logger, "Uniform name might be too long. Check that the name above is the same as the name in the source file.");
         }
 
-        uniforms_[str_name] = uid;
-        found_uniforms_.insert({name, enum_type});
+        uniforms_.emplace(name, enum_type, uid);
     }
 }
+
+    void inline Program::set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name) {
+        auto found_uniform = uniforms_.find(uniform_name);
+
+        if (found_uniform != uniforms_.end()) {
+            found_uniform->second.set_call_function(uex);
+            auto found_type = found_uniform->second.get_type();
+            auto given_type = uex->get_type();
+            if (given_type != found_type) {
+                LOG_WARNING(
+                    logging::opengl_logger,
+                    "Uniform types do not match. Given {} to uniform of type {}.",
+                    gpu_data::to_string(given_type),
+                    gpu_data::to_string(found_type)
+                );
+            }
+        } else {
+            LOG_WARNING(
+                logging::opengl_logger,
+                "Uniform Error. Uniform \"{}\" not found in program.",
+                uniform_name.c_str()
+            );
+        }
+
+    }
 
 void
 ShaderHandler::clear() {

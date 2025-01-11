@@ -41,64 +41,78 @@ setup(
 
     auto star_data = climate.get_stars_data();
 
-    // Load programs from files
     // clang-format off
-    shader::Program& render_program = shader_handler.load_program(
+
+    ///////////////////////////////////////////////////////////////////////////
+    //  Load all programs from files.                                        //
+    ///////////////////////////////////////////////////////////////////////////
+
+    // Renders the chunks
+    shader::Program& chunks_render_program = shader_handler.load_program(
         "Render Chunks",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.vert",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
     );
-    shader::Program& shadow_program = shader_handler.load_program(
+    // Renders the chunk' shadows
+    shader::Program& chunks_shadow_program = shader_handler.load_program(
         "Shadow Chunks",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.vert",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 
-    // TODO needs to have sub block spacing
-
+    // Renders the tile entities (flowers)
     shader::Program& tile_entity_render_program = shader_handler.load_program(
         "Tile Entity Render",
         files::get_resources_path() / "shaders" / "scene" / "TileEntity.vert",
         files::get_resources_path() / "shaders" / "scene" / "TileEntity.frag"
     );
 
-    shader::Program& entity_render_program = shader_handler.load_program(
+    // Renders the objects (trees)
+    shader::Program& object_render_program = shader_handler.load_program(
         "Instanced Render",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMappingInstanced.vert",
         files::get_resources_path() / "shaders" / "scene" / "ShadowMapping.frag"
     );
-    shader::Program& entity_shadow_program = shader_handler.load_program(
+
+    // Renders the shadows of the objects
+    shader::Program& object_shadow_program = shader_handler.load_program(
         "Instanced Shadow Map",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTTInstanced.vert",
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 
+    // Renders the sky background
     shader::Program& sky_program = shader_handler.load_program(
         "Sky",
         files::get_resources_path() / "shaders" / "background" / "Sky.vert",
         files::get_resources_path() / "shaders" / "background" / "Sky.frag"
     );
 
+    // Renders the  stars
     shader::Program& stars_program = shader_handler.load_program(
         "Stars",
         files::get_resources_path() / "shaders" / "background" / "Stars.vert",
         files::get_resources_path() / "shaders" / "background" / "Stars.frag"
     );
 
+    // Renders the sun
     shader::Program& sun_program = shader_handler.load_program(
         "Sun",
         files::get_resources_path() / "shaders" / "background" / "Sun.vert",
         files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
 
-    shader::Program& entity_program = shader_handler.load_program("Entity",
+    // Renders the entities things not fixed to tile positions
+    shader::Program& entity_render_program = shader_handler.load_program(
+        "Entity",
         files::get_resources_path() / "shaders" / "scene" / "Entity.vert",
         files::get_resources_path() / "shaders" / "Red.frag"
     );
 
-    // clang-format on
+    ///////////////////////////////////////////////////////////////////////////
+    // Initialize the uniforms                                               //
+    ///////////////////////////////////////////////////////////////////////////
 
-    // These are uniforms
     auto matrix_view_projection_uniform =
         std::make_shared<render::MatrixViewProjection>();
 
@@ -135,43 +149,60 @@ setup(
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(scene.get_lighting_environment());
 
-    // Uniforms as a vector
-    shader::UniformsVector chunks_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>(
-            {matrix_view_projection_uniform, view_matrix_uniform,
-             light_depth_texture_projection_uniform, shadow_texture_uniform,
-             material_color_texture_uniform, spectral_light_color_uniform,
-             diffuse_light_color_uniform, light_direction_uniform,
-             light_depth_projection_uniform}
-        )
-    );
+    ///////////////////////////////////////////////////////////////////////////
+    // Link all uniforms to their respective programs                        //
+    ///////////////////////////////////////////////////////////////////////////
 
-    shader::UniformsVector chunks_shadow_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>({light_depth_projection_uniform})
-    );
+    chunks_render_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    chunks_render_program.set_uniform(view_matrix_uniform, "view_matrix");
+    chunks_render_program.set_uniform(light_direction_uniform, "light_direction");
+    chunks_render_program.set_uniform(light_depth_texture_projection_uniform, "depth_texture_projection");
+    chunks_render_program.set_uniform(shadow_texture_uniform, "shadow_texture");
+    chunks_render_program.set_uniform(material_color_texture_uniform, "material_color_texture");
+    chunks_render_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
+    chunks_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
 
-    shader::UniformsVector sun_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>(
-            {matrix_view_projection_uniform, pixel_projection, light_direction_uniform,
-             spectral_light_color_uniform}
-        )
-    );
+    chunks_shadow_program.set_uniform(light_depth_projection_uniform, "depth_MVP");
 
-    shader::UniformsVector sky_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>(
-            {matrix_view_inverse_projection, light_direction_uniform,
-             spectral_light_color_uniform}
-        )
-    );
+    tile_entity_render_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    tile_entity_render_program.set_uniform(view_matrix_uniform, "view_matrix");
+    tile_entity_render_program.set_uniform(light_direction_uniform, "light_direction");
+    tile_entity_render_program.set_uniform(light_depth_texture_projection_uniform, "depth_texture_projection");
+    tile_entity_render_program.set_uniform(shadow_texture_uniform, "shadow_texture");
+    tile_entity_render_program.set_uniform(material_color_texture_uniform, "material_color_texture");
+    tile_entity_render_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
+    tile_entity_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
 
-    shader::UniformsVector star_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>(
-            {matrix_view_projection_uniform, pixel_projection, star_rotation_uniform,
-             light_direction_uniform}
-        )
-    );
+    object_render_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    object_render_program.set_uniform(view_matrix_uniform, "view_matrix");
+    object_render_program.set_uniform(light_direction_uniform, "light_direction");
+    object_render_program.set_uniform(light_depth_texture_projection_uniform, "depth_texture_projection");
+    object_render_program.set_uniform(shadow_texture_uniform, "shadow_texture");
+    object_render_program.set_uniform(material_color_texture_uniform, "material_color_texture");
+    object_render_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
+    object_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
 
-    // program setup functions
+    object_shadow_program.set_uniform(light_depth_projection_uniform, "depth_MVP");
+
+    sky_program.set_uniform(matrix_view_inverse_projection, "MVIP");
+    sky_program.set_uniform(light_direction_uniform, "light_direction");
+    sky_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
+
+    stars_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    stars_program.set_uniform(pixel_projection, "pixel_projection");
+    stars_program.set_uniform(star_rotation_uniform, "star_rotation");
+    stars_program.set_uniform(light_direction_uniform, "light_direction");
+
+    sun_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    sun_program.set_uniform(light_direction_uniform, "light_direction");
+    sun_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
+
+    entity_render_program.set_uniform(matrix_view_projection_uniform, "MVP");
+
+    ///////////////////////////////////////////////////////////////////////////
+    // program setup functions                                               //
+    ///////////////////////////////////////////////////////////////////////////
+    // Anything the renders something in the world
     std::function<void()> chunk_render_setup = []() {
         // Cull back-facing triangles -> draw only front-facing triangles
         glEnable(GL_CULL_FACE);
@@ -182,6 +213,7 @@ setup(
         glDepthMask(GL_TRUE);
     };
 
+    // Overwrites anything that was there before
     std::function<void()> sky_render_setup = []() {
         // Draw over everything
         glDisable(GL_CULL_FACE);
@@ -192,59 +224,55 @@ setup(
 
     // the programs
     // chunks
-    auto chunks_render_program = std::make_shared<shader::ShaderProgram_MultiElements>(
-        render_program, chunk_render_setup, chunks_render_program_uniforms
+    auto chunks_render_pipeline = std::make_shared<shader::ShaderProgram_MultiElements>(
+        chunks_render_program, chunk_render_setup
     );
 
     // chunks shadow
-    auto chunks_shadow_program = std::make_shared<shader::ShaderProgram_MultiElements>(
-        shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
+    auto chunks_shadow_pipeline = std::make_shared<shader::ShaderProgram_MultiElements>(
+        chunks_shadow_program, chunk_render_setup
     );
 
-    auto entity_render_program_execute =
-        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
-            entity_render_program, chunk_render_setup, chunks_render_program_uniforms
-        );
+    auto entity_render_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+        object_render_program, chunk_render_setup
+    );
 
-    auto entity_shadow_program_execute =
-        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
-            entity_shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
-        );
+    auto entity_shadow_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+        object_shadow_program, chunk_render_setup
+    );
 
-    auto tile_entity_render_pipeline =
-        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
-            tile_entity_render_program, chunk_render_setup,
-            chunks_render_program_uniforms
-        );
+    auto tile_entity_render_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+        tile_entity_render_program, chunk_render_setup
+    );
 
-    auto entity_render_pipeline =
-        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
-            entity_program, chunk_render_setup, chunks_render_program_uniforms
-        );
+    auto entity_render_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+        entity_render_program, chunk_render_setup
+    );
 
     // sky
-    auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
-        sky_program, sky_render_setup, sky_render_program_uniforms
+    auto sky_pipeline = std::make_shared<shader::ShaderProgram_Standard>(
+        sky_program, sky_render_setup
     );
 
     // star
-    auto star_renderer = std::make_shared<shader::ShaderProgram_Instanced>(
-        stars_program, sky_render_setup, star_render_program_uniforms
+    auto star_pipeline = std::make_shared<shader::ShaderProgram_Instanced>(
+        stars_program, sky_render_setup
     );
 
     // sun
-    auto sun_renderer = std::make_shared<shader::ShaderProgram_Standard>(
-        sun_program, sky_render_setup, sun_render_program_uniforms
+    auto sun_pipeline = std::make_shared<shader::ShaderProgram_Standard>(
+        sun_program, sky_render_setup
     );
+    // clang-format on
 
     // assign data
-    sky_renderer->data.push_back(scene.get_screen_data());
-    star_renderer->data.push_back(star_data);
-    sun_renderer->data.push_back(star_shape);
+    sky_pipeline->data.push_back(scene.get_screen_data());
+    star_pipeline->data.push_back(star_data);
+    sun_pipeline->data.push_back(star_shape);
 
     terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
-    chunks_render_program->data.push_back(terrain_mesh.get());
-    chunks_shadow_program->data.push_back(terrain_mesh.get());
+    chunks_render_pipeline->data.push_back(terrain_mesh.get());
+    chunks_shadow_pipeline->data.push_back(terrain_mesh.get());
 
     // TODO send terrain_mesh to a render program
 
@@ -268,17 +296,17 @@ setup(
     }
 
     // attach program to scene
-    scene.shadow_attach(chunks_shadow_program);
-    scene.shadow_attach(entity_shadow_program_execute);
+    scene.shadow_attach(chunks_shadow_pipeline);
+    scene.shadow_attach(entity_shadow_pipeline);
 
-    scene.add_mid_ground_renderer(chunks_render_program);
-    scene.add_mid_ground_renderer(entity_render_program_execute);
+    scene.add_mid_ground_renderer(chunks_render_pipeline);
+    scene.add_mid_ground_renderer(entity_render_pipeline);
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
     scene.add_mid_ground_renderer(entity_render_pipeline);
 
-    scene.add_background_ground_renderer(sky_renderer);
-    scene.add_background_ground_renderer(star_renderer);
-    scene.add_background_ground_renderer(sun_renderer);
+    scene.add_background_ground_renderer(sky_pipeline);
+    scene.add_background_ground_renderer(star_pipeline);
+    scene.add_background_ground_renderer(sun_pipeline);
 
     object_handler.start_update();
 }

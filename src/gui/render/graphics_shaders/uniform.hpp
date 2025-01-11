@@ -24,6 +24,7 @@
 #pragma once
 
 #include "gui/render/gl_enums.hpp"
+#include "uniform_exicuter.hpp"
 
 #include <GL/glew.h>
 
@@ -53,14 +54,18 @@ class Uniform {
     const std::string name_; // name used in shader program
     const gpu_data::GPUDataType type_; // glsl type as stirng
 
+    const GLint uid_;
+
+    std::shared_ptr<UniformExecuter> call_function_;
+
  public:
     /**
      * @brief Get the name of the uniform
      *
      * @return const std::stirng& name used in shader program
      */
-    inline virtual const std::string&
-    get_name() const {
+    inline const std::string&
+    get_name() const noexcept {
         return name_;
     }
 
@@ -69,9 +74,19 @@ class Uniform {
      *
      * @return const GPUDataType type
      */
-    inline virtual const gpu_data::GPUDataType&
-    get_type() const {
+    inline const gpu_data::GPUDataType&
+    get_type() const noexcept {
         return type_;
+    }
+
+    /**
+     * @brief Get the uniform id
+     * 
+     * @return GLuint uid
+     */
+    [[nodiscard]] inline GLuint
+    get_uid() const noexcept {
+        return uid_;
     }
 
     /**
@@ -81,7 +96,18 @@ class Uniform {
      *
      * @param Glint uniform_ID uniform ID to send data to.
      */
-    virtual void bind(GLint uniform_ID) = 0;
+    inline void bind() const {
+        if (call_function_) {
+            call_function_->bind(uid_);
+        }
+    }
+
+    /**
+     * @brief Set the executor that will set the uniform
+     */
+    inline void set_call_function(std::shared_ptr<UniformExecuter> call_function) {
+        call_function_ = call_function;
+    }
 
     /**
      * @brief Construct a new Uniform object
@@ -89,49 +115,7 @@ class Uniform {
      * @param std::string name name of uniform used in shader program
      * @param gpu_data::GPUDataType type
      */
-    inline Uniform(std::string name, gpu_data::GPUDataType type) : name_(name), type_(type) {}
-};
-
-/**
- * @brief The set of uniforms used in any particular program
- */
-class UniformsVector {
- private:
-    // why are these a vector? I guess I don't want to bother with a hash,
-    // and it's not like we need to insert many things into this
-    std::vector<std::shared_ptr<Uniform>> uniforms_;
-
- public:
-    /**
-     * @brief Get a set of all names and their corresponding type of uniforms
-     * in this object.
-     *
-     * @return std::set<std::pair<std::string, gpu_data::GPUDataType>> set of [names, type]
-     */
-    std::set<std::pair<std::string, gpu_data::GPUDataType>> get_names() const;
-
-    UniformsVector(std::vector<std::shared_ptr<Uniform>> uniforms) :
-        uniforms_(uniforms) {}
-
-    auto
-    begin() {
-        return uniforms_.begin();
-    }
-
-    auto
-    begin() const {
-        return uniforms_.begin();
-    }
-
-    auto
-    end() {
-        return uniforms_.end();
-    }
-
-    auto
-    end() const {
-        return uniforms_.end();
-    }
+    inline Uniform(std::string name, gpu_data::GPUDataType type, GLuint uid) : name_(name), type_(type), uid_(uid) {}
 };
 
 } // namespace shader
