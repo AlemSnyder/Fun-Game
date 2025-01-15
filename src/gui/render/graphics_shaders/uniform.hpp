@@ -47,7 +47,7 @@ namespace shader {
  */
 class Uniform {
  protected:
-    const std::string name_; // name used in shader program
+    const std::string name_;           // name used in shader program
     const gpu_data::GPUDataType type_; // glsl type as stirng
 
     const GLint uid_;
@@ -77,7 +77,7 @@ class Uniform {
 
     /**
      * @brief Get the uniform id
-     * 
+     *
      * @return GLuint uid
      */
     [[nodiscard]] inline GLuint
@@ -92,7 +92,8 @@ class Uniform {
      *
      * @param Glint uniform_ID uniform ID to send data to.
      */
-    inline void bind() const {
+    inline void
+    bind() const {
         if (call_function_) {
             call_function_->bind(uid_);
         }
@@ -101,7 +102,8 @@ class Uniform {
     /**
      * @brief Set the executor that will set the uniform
      */
-    inline void set_call_function(std::shared_ptr<UniformExecuter> call_function) {
+    inline void
+    set_call_function(std::shared_ptr<UniformExecuter> call_function) {
         call_function_ = call_function;
     }
 
@@ -111,7 +113,8 @@ class Uniform {
      * @param std::string name name of uniform used in shader program
      * @param gpu_data::GPUDataType type
      */
-    inline Uniform(std::string name, gpu_data::GPUDataType type, GLuint uid) : name_(name), type_(type), uid_(uid) {}
+    inline Uniform(std::string name, gpu_data::GPUDataType type, GLuint uid) :
+        name_(name), type_(type), uid_(uid) {}
 };
 
 } // namespace shader

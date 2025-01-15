@@ -131,6 +131,9 @@ setup(
     auto material_color_texture_uniform =
         std::make_shared<render::TextureUniform>(gpu_data::GPUDataType::SAMPLER_1D, 0);
 
+    auto entity_color_texture_uniform =
+        std::make_shared<render::TextureUniform>(gpu_data::GPUDataType::SAMPLER_2D, 0);
+
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(scene.get_lighting_environment());
 
@@ -169,7 +172,7 @@ setup(
     tile_entity_render_program.set_uniform(light_direction_uniform, "light_direction");
     tile_entity_render_program.set_uniform(light_depth_texture_projection_uniform, "depth_texture_projection");
     tile_entity_render_program.set_uniform(shadow_texture_uniform, "shadow_texture");
-    tile_entity_render_program.set_uniform(material_color_texture_uniform, "material_color_texture");
+    tile_entity_render_program.set_uniform(entity_color_texture_uniform, "material_color_texture");
     tile_entity_render_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
     tile_entity_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
 
@@ -301,7 +304,7 @@ setup(
     scene.shadow_attach(entity_shadow_pipeline);
 
     scene.add_mid_ground_renderer(chunks_render_pipeline);
-    scene.add_mid_ground_renderer(entity_render_pipeline);
+    //    scene.add_mid_ground_renderer(entity_render_pipeline); this seems wrong
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
     scene.add_mid_ground_renderer(entity_render_pipeline);
 

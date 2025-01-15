@@ -26,8 +26,8 @@
 #include "../gl_enums.hpp"
 #include "logging.hpp"
 #include "opengl_program_status.hpp"
-#include "uniform.hpp"
 #include "types.hpp"
+#include "uniform.hpp"
 #include "util/hash_combine.hpp"
 
 #include <GL/glew.h>
@@ -196,17 +196,6 @@ class Shader : public ShaderData {
     get_shader_ID() const noexcept {
         return shader_ID_;
     }
-/*
-    inline auto
-    uniform_begin() {
-        return found_uniforms_.begin();
-    }
-
-    inline auto
-    uniform_end() {
-        return found_uniforms_.end();
-    }
-*/
 };
 
 /**
@@ -346,7 +335,8 @@ class Program : public ProgramData {
     /**
      * @brief Send uniform data for this program.
      */
-    void bind_uniforms() {
+    void
+    bind_uniforms() {
         for (const auto& uniform : uniforms_) {
             uniform.second.bind();
         }
@@ -359,7 +349,6 @@ class Program : public ProgramData {
 
     // Set uniform executor
     void set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name);
-
 };
 
 /**

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "gui/render/gl_enums.hpp"
 #include "gui/render/gpu_data/shadow_map.hpp"
 #include "gui/render/graphics_shaders/uniform_exicuter.hpp"
 #include "gui/scene/controls.hpp"
 #include "logging.hpp"
 #include "types.hpp"
-#include "gui/render/gl_enums.hpp"
 
 #include <glm/glm.hpp>
 
@@ -123,7 +123,9 @@ class MatrixViewProjection : public shader::UniformExecuter {
 
         glm::mat4 MVP = projection_matrix * view_matrix;
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
+        );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &MVP[0][0]);
     }
@@ -139,7 +141,9 @@ class ViewMatrix : public shader::UniformExecuter {
     bind(GLint uniform_ID) const override {
         const glm::mat4 view_matrix = controls::get_view_matrix();
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
+        );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &view_matrix[0][0]);
     }
@@ -164,7 +168,9 @@ class LightDepthProjection : public shader::UniformExecuter {
         // matrix to calculate the length of a light ray in model space
         glm::mat4 depthMVP = depth_projection_matrix * depth_view_matrix;
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
+        );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &depthMVP[0][0]);
     }
@@ -202,7 +208,9 @@ class LightDepthTextureProjection : public shader::UniformExecuter {
 
         glm::mat4 depth_bias_MVP = bias_matrix * depthMVP;
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
+        );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &depth_bias_MVP[0][0]);
     }
@@ -213,16 +221,14 @@ class TextureUniform : public shader::UniformExecuter {
     uint8_t texture_location_;
 
  public:
-    TextureUniform(gpu_data::GPUDataType texture_type, uint8_t texture_location
-    ) :
-        UniformExecuter(texture_type),
-        texture_location_(texture_location) {}
+    TextureUniform(gpu_data::GPUDataType texture_type, uint8_t texture_location) :
+        UniformExecuter(texture_type), texture_location_(texture_location) {}
 
     inline virtual void
     bind(GLint uniform_ID) const override {
         LOG_BACKTRACE(
-            logging::opengl_logger, "Uniform {}, value {} being initialized.", uniform_ID,
-            texture_location_
+            logging::opengl_logger, "Uniform {}, value {} being initialized.",
+            uniform_ID, texture_location_
         );
 
         glUniform1i(uniform_ID, texture_location_);
@@ -231,12 +237,13 @@ class TextureUniform : public shader::UniformExecuter {
 
 class MatrixViewInverseProjection : public shader::UniformExecuter {
  public:
-    MatrixViewInverseProjection() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    MatrixViewInverseProjection() :
+        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~MatrixViewInverseProjection() {}
 
     inline virtual void
-    bind(GLint uniform_ID) const override{
+    bind(GLint uniform_ID) const override {
         // Compute the MVP matrix from keyboard and mouse input
         glm::mat4 projection_matrix = controls::get_projection_matrix();
         glm::mat4 view_matrix = controls::get_view_matrix();
@@ -244,7 +251,9 @@ class MatrixViewInverseProjection : public shader::UniformExecuter {
 
         glm::mat4 sky_rotation = glm::inverse(MVP);
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
+        );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &sky_rotation[0][0]);
     }
@@ -271,7 +280,9 @@ class PixelProjection : public shader::UniformExecuter {
             0, 0, 0, 1};
         // clang-format on
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
+        );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &pixel_window[0][0]);
     }
@@ -298,7 +309,9 @@ class StarRotationUniform : public shader::UniformExecuter {
         // Compute the MVP matrix from keyboard and mouse input
         glm::mat4 star_rotation = rotation_->get_sky_rotation();
 
-        LOG_BACKTRACE(logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID);
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
+        );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &star_rotation[0][0]);
     }

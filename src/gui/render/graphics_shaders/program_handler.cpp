@@ -1,8 +1,7 @@
 #include "program_handler.hpp"
 
-#include "logging.hpp"
 #include "gui/render/gl_enums.hpp"
-//#include "render_types.hpp"
+#include "logging.hpp"
 
 #include <GL/glew.h>
 
@@ -62,7 +61,6 @@ Shader::reload() {
         std::string file_text = file_content.value();
 
         source_string.push_back(file_text);
-
     }
 
     std::vector<const char*> source_char;
@@ -206,7 +204,6 @@ Program::get_status_string() const {
 
 void
 Program::attach_uniforms() {
-
     GLint count;
     const GLsizei buf_size = 64;
     GLchar name[buf_size];
@@ -221,16 +218,24 @@ Program::attach_uniforms() {
 
         std::string str_name(name);
 
-        gpu_data::GPUDataType enum_type = static_cast<gpu_data::GPUDataType>(type); // this might fail
+        gpu_data::GPUDataType enum_type =
+            static_cast<gpu_data::GPUDataType>(type); // this might fail
 
-        LOG_INFO(logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}", uid, name, gpu_data::to_string(enum_type));
+        LOG_INFO(
+            logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}",
+            uid, name, gpu_data::to_string(enum_type)
+        );
 
         if (length > buf_size - 4) {
-            LOG_WARNING(logging::opengl_logger, "Uniform name might be too long. Check that the name above is the same as the name in the source file.");
+            LOG_WARNING(
+                logging::opengl_logger,
+                "Uniform name might be too long. Check that the name above is the same "
+                "as the name in the source file."
+            );
         }
 
-        uniforms_.emplace(std::piecewise_construct,
-            std::forward_as_tuple(name),
+        uniforms_.emplace(
+            std::piecewise_construct, std::forward_as_tuple(name),
             std::forward_as_tuple(name, enum_type, uid)
         );
     }
@@ -248,15 +253,13 @@ Program::set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_n
             LOG_WARNING(
                 logging::opengl_logger,
                 "Uniform types do not match. Given {} to uniform of type {}.",
-                gpu_data::to_string(given_type),
-                gpu_data::to_string(found_type)
+                gpu_data::to_string(given_type), gpu_data::to_string(found_type)
             );
         }
     } else {
         LOG_WARNING(
             logging::opengl_logger,
-            "Uniform Error. Uniform \"{}\" not found in program.",
-            uniform_name.c_str()
+            "Uniform Error. Uniform \"{}\" not found in program.", uniform_name.c_str()
         );
     }
 }
