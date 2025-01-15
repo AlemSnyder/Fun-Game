@@ -369,7 +369,7 @@ tests(const argh::parser& cmdl) {
         return image_test(cmdl);
     } else if (run_function == "LoadManifest") {
         return util::load_manifest_test();
-    } else if (run_function == "EnginTest") {
+    } else if (run_function == "EngineTest") {
         return gui::opengl_tests();
     } else {
         std::cout << "No known command" << std::endl;
