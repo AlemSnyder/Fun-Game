@@ -14,10 +14,10 @@ project(FunGame VERSION 0.1.0)
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
 
 # this is one json file and whereami
-file(GLOB SOURCES4 "vendor/*.c*")
-file(GLOB SOURCES6 "vendor/imgui/*.c*")
-file(GLOB SOURCES7 "vendor/imgui/backends/imgui_impl_opengl3.cpp")
-file(GLOB SOURCES8 "vendor/imgui/backends/imgui_impl_glfw.cpp")
+file(GLOB SOURCES4 "vendor/whereami/src/*.c*")
+file(GLOB SOURCES6 "vendor/imgui/imgui/*.c*")
+file(GLOB SOURCES7 "vendor/imgui/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB SOURCES8 "vendor/imgui/imgui/backends/imgui_impl_glfw.cpp")
 add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # Set standard version
@@ -38,6 +38,8 @@ add_subdirectory("vendor/sol2")
 
 add_subdirectory("vendor/glaze")
 
+add_subdirectory("vendor/argh")
+
 # prefer newer OpenGL
 # https://cmake.org/cmake/help/latest/policy/CMP0072.html
 cmake_policy(SET CMP0072 NEW)
@@ -51,13 +53,13 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(PNG REQUIRED)
-find_package(OpenMP REQUIRED)
+# find_package(OpenMP REQUIRED)
 
 target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
 target_link_libraries(FunGame PRIVATE PNG::PNG)
-target_link_libraries(FunGame PRIVATE OpenMP::OpenMP_CXX)
+# target_link_libraries(FunGame PRIVATE OpenMP::OpenMP_CXX)
 
 if(WIN32)
     target_link_libraries(FunGame PRIVATE glm)
@@ -78,7 +80,8 @@ target_link_libraries_system(FunGame PRIVATE sol2::sol2)
 target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
 # Add include dirs
-target_include_directories(FunGame PRIVATE "vendor")
+target_include_directories(FunGame PRIVATE "vendor/whereami/src")
+target_include_directories(FunGame PRIVATE "vendor/argh")
 target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
 target_include_directories(FunGame PRIVATE "vendor/glaze/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")

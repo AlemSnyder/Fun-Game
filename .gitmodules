@@ -5,7 +5,7 @@
 	path = vendor/sol2
 	url = https://github.com/ThePhD/sol2.git
 [submodule "vendor/imgui"]
-	path = vendor/imgui
+	path = vendor/imgui/imgui
 	url = https://github.com/ocornut/imgui
 [submodule "vendor/thread-pool"]
 	path = vendor/thread-pool
@@ -13,3 +13,9 @@
 [submodule "vendor/glaze"]
 	path = vendor/glaze
 	url = https://github.com/stephenberry/glaze.git
+[submodule "vendor/argh"]
+	path = vendor/argh
+	url = https://github.com/adishavit/argh.git
+[submodule "vendor/whereami"]
+	path = vendor/whereami
+	url = https://github.com/gpakosz/whereami.git
