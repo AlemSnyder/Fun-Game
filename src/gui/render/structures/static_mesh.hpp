@@ -52,6 +52,8 @@ class StaticMesh : public virtual InstancedIMeshGPU {
         InstancedIMeshGPU::bind();
         color_texture_.bind(0);
     }
+
+    inline virtual ~StaticMesh() { }
 };
 
 } // namespace gpu_data

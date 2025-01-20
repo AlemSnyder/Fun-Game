@@ -95,6 +95,8 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         }
     }
 
+    inline virtual ~IMeshMultiGPU() { }
+
     // if you cant construct it you can't hurt yourself
 
     /**

@@ -73,6 +73,8 @@ class InstancedIMeshGPU :
         const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     );
 
+    inline virtual ~InstancedIMeshGPU() { }
+
     virtual void attach_all() override;
 
     /**

@@ -88,6 +88,8 @@ class StarShape : public virtual GPUData {
      */
     StarShape(bool b = true);
 
+    inline virtual ~StarShape() { }
+
     void initialize();
 
     virtual void attach_all();
