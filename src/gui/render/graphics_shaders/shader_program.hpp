@@ -124,6 +124,8 @@ class Render_Base {
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
+
+    inline virtual ~Render_Base() { };
 };
 
 // TODO each of these should use the glMulti... version of the given command
@@ -146,6 +148,8 @@ class ShaderProgram_Standard :
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
+
+    inline virtual ~ShaderProgram_Standard() { };
 };
 
 /**
@@ -166,6 +170,8 @@ class ShaderProgram_Elements :
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
+
+    inline virtual ~ShaderProgram_Elements() { };
 };
 
 /**
@@ -186,6 +192,8 @@ class ShaderProgram_Instanced :
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
+
+    inline virtual ~ShaderProgram_Instanced() { };
 };
 
 /**
@@ -206,6 +214,8 @@ class ShaderProgram_ElementsInstanced :
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
+
+    inline virtual ~ShaderProgram_ElementsInstanced() { };
 };
 
 /**
@@ -226,6 +236,8 @@ class ShaderProgram_MultiElements :
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
+
+    inline virtual ~ShaderProgram_MultiElements() { };
 };
 
 } // namespace shader
