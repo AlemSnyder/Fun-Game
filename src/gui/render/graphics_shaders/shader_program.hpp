@@ -134,7 +134,7 @@ class Render_Base {
  * @brief No elements No instancing
  */
 class ShaderProgram_Standard :
-    public Render_Base,
+    virtual public Render_Base,
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -156,7 +156,7 @@ class ShaderProgram_Standard :
  * @brief Yes elements No instancing
  */
 class ShaderProgram_Elements :
-    public Render_Base,
+    virtual public Render_Base,
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -178,7 +178,7 @@ class ShaderProgram_Elements :
  * @brief No elements Yes instancing
  */
 class ShaderProgram_Instanced :
-    public Render_Base,
+    virtual public Render_Base,
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -200,7 +200,7 @@ class ShaderProgram_Instanced :
  * @brief Yes elements Yes instancing
  */
 class ShaderProgram_ElementsInstanced :
-    public Render_Base,
+    virtual public Render_Base,
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -222,7 +222,7 @@ class ShaderProgram_ElementsInstanced :
  * @brief No elements Yes instancing array of multiple
  */
 class ShaderProgram_MultiElements :
-    public Render_Base,
+    virtual public Render_Base,
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
