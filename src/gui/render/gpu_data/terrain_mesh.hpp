@@ -50,6 +50,8 @@ class TerrainMesh : public virtual NonInstancedIMeshGPU {
     inline TerrainMesh(const world::entity::Mesh& mesh, Texture1D& color_texture_id) :
         NonInstancedIMeshGPU(mesh), color_texture_(color_texture_id) {}
 
+    inline virtual ~TerrainMesh() {}
+
     inline void
     set_color_texture(Texture1D& color_texture_id) noexcept {
         color_texture_ = color_texture_id;

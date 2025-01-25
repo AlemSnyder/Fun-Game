@@ -144,7 +144,7 @@ class Render_Base {
  * @brief No elements No instancing
  */
 class ShaderProgram_Standard :
-    public Render_Base,
+    virtual public Render_Base,
     virtual public render_to::FrameBuffer {
  public:
     // Ya I know this looks bad, but data_ is basically a parameter
@@ -155,6 +155,8 @@ class ShaderProgram_Standard :
         UniformsVector uniforms
     ) :
         Render_Base(shader_program, setup_commands, uniforms) {}
+
+    inline virtual ~ShaderProgram_Standard() { }
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -203,6 +205,8 @@ class ShaderProgram_Elements :
         UniformsVector uniforms
     ) :
         Render_Base(shader_program, setup_commands, uniforms) {}
+
+    inline virtual ~ShaderProgram_Elements() {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
@@ -258,6 +262,8 @@ class ShaderProgram_Instanced :
     ) :
         Render_Base(shader_program, setup_commands, uniforms) {}
 
+    inline virtual ~ShaderProgram_Instanced() {}
+
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     ) {
@@ -307,6 +313,8 @@ class ShaderProgram_ElementsInstanced :
         UniformsVector uniforms
     ) :
         Render_Base(shader_program, setup_commands, uniforms) {}
+
+    inline virtual ~ShaderProgram_ElementsInstanced() {}
 
     inline void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID

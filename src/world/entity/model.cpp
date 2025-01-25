@@ -68,11 +68,11 @@ ObjectData::ObjectData(
 
         // generate a mesh from the model
         auto mesh = ambient_occlusion_mesher(model);
+	std::vector<std::vector<ColorFloat>>
+            color_data({color::convert_color_data(mesh.get_color_map())});
         // load the mesh to the gpu
         model_meshes_.emplace_back(
-            mesh, std::vector<std::vector<ColorFloat>>(
-                      {color::convert_color_data(mesh.get_color_map())}
-                  )
+            mesh, color_data
         );
 
         // some how change because other things.

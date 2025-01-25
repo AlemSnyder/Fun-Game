@@ -5,7 +5,11 @@
 #include "terrain/generation/noise.hpp"
 #include "terrain/generation/worley_noise.hpp"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
+#pragma clang diagnostic pop
+
 #include <sol/sol.hpp>
 
 #include <filesystem>

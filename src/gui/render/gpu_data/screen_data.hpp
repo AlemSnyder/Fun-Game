@@ -30,6 +30,8 @@ class ScreenData : public virtual GPUData {
      */
     ScreenData();
 
+    inline virtual ~ScreenData() {}
+
     /**
      * @brief Get the vertex buffer id
      *

@@ -24,6 +24,8 @@ add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES
 set_property(TARGET FunGame PROPERTY CXX_STANDARD 23)
 set_property(TARGET FunGame PROPERTY C_STANDARD 17)
 
+target_compile_definitions(FunGame PUBLIC GLM_ENABLE_EXPERIMENTAL)
+
 # compile quill and sol2
 block()
     set(QUILL_BUILD_EXAMPLES   OFF)

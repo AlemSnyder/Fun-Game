@@ -180,6 +180,10 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
         model_mesh_(model_mesh, {}),
         model_textures_(vector_data) {}
 
+    ModelController(ModelController&& other) = default;
+
+    inline virtual ~ModelController() { }
+
     /**
      * @brief Bind data for rendering
      */
