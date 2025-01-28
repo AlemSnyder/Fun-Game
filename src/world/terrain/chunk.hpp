@@ -54,9 +54,7 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param ter the terrain this chunk is in
      */
     Chunk(Dim bx, Dim by, Dim bz, Terrain* ter) :
-        Chunk({bx, by, bz}, ter){
-
-        };
+        Chunk({bx, by, bz}, ter){ };
 
     Chunk(TerrainDim3 chunk_position, Terrain* ter);
 

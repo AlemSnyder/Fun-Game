@@ -10,6 +10,7 @@ namespace terrain {
 
 Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
     ter_(ter), Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z) {
+    // initializing a node group on all walkable tiles
     for (Dim x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
         for (Dim y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
             for (Dim z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
@@ -23,6 +24,7 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
                 }
             }
 
+    // add all adjacent nodegroup
     for (NodeGroup& NG : node_groups_)
         for (const Tile* tile_main : NG.get_tiles()) {
             auto it = ter_->get_tile_adjacent_iterator(ter_->pos(tile_main), 31);
