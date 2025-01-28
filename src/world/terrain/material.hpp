@@ -126,8 +126,8 @@ class TerrainColorMapping {
      * @param const std::unordered_map<MaterialId, const Material>& materials materials
      * map
      */
-    static void
-    assign_color_mapping(const std::unordered_map<MaterialId, const material_t>& materials
+    static void assign_color_mapping(
+        const std::unordered_map<MaterialId, const material_t>& materials
     );
 
     /**

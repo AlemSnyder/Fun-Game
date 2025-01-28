@@ -39,8 +39,9 @@ log_result(write_result_t result, const std::filesystem::path& path) {
 
 #if DEBUG()
 // Literally just testing if this builds
-void test_function(){
-    write_image(ColorImageTest({}), "path");
+void
+test_function() {
+    [[maybe_unused]] auto result = write_image(ColorImageTest({}), "path");
 }
 
 #endif

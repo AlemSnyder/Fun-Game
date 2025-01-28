@@ -244,8 +244,8 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     std::vector<glm::ivec4> model_matrices;
     // generate positions of trees
-    for (size_t x = 0; x < world.get_terrain_main().get_X_MAX(); x += 40)
-        for (size_t y = 0; y < world.get_terrain_main().get_Y_MAX(); y += 40) {
+    for (size_t x = 0; x < world.get_terrain_main().X_MAX; x += 40)
+        for (size_t y = 0; y < world.get_terrain_main().Y_MAX; y += 40) {
             size_t z = world.get_terrain_main().get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec4 model(x, y, z, x / 40 + y / 40);

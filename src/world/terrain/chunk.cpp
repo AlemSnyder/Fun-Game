@@ -3,7 +3,6 @@
 #include "material.hpp"
 #include "path/tile_iterators.hpp"
 #include "terrain.hpp"
-#include "terrain_base.hpp"
 #include "tile.hpp"
 
 namespace terrain {

@@ -54,7 +54,6 @@ struct generation_stamp_t {
     std::optional<stamp_generation_grid_data_t> grid;
     std::optional<stamp_generation_position_data_t> position;
     std::optional<stamp_generation_radius_data_t> radius;
-
 };
 
 struct tile_macros_t {
