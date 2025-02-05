@@ -176,14 +176,17 @@ int
 ChunkDataTest() {
     world::World world(BIOME_BASE_NAME, 6, 6);
 
-    const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
+    const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0,0,0});
 
-    terrain::ChunkData chunk_data(chunk);
+    if (!chunk)
+        return 1;
+
+    terrain::ChunkData chunk_data(*chunk);
 
     for (VoxelDim x = -1; x < terrain::Chunk::SIZE; x++) {
         for (VoxelDim y = -1; y < terrain::Chunk::SIZE; y++) {
             for (VoxelDim z = -1; z < terrain::Chunk::SIZE; z++) {
-                MatColorId chunk_mat_color = chunk.get_voxel_color_id(x, y, z);
+                MatColorId chunk_mat_color = chunk->get_voxel_color_id(x, y, z);
                 MatColorId chunk_data_mat_color_id =
                     chunk_data.get_voxel_color_id(x, y, z);
                 if (chunk_mat_color != chunk_data_mat_color_id) {
@@ -267,13 +270,13 @@ path_finder_test(const argh::parser& cmdl) {
     auto start_end = world.get_terrain_main().get_start_end_test();
 
     LOG_INFO(
-        logger, "Start: {}, {}, {}", start_end.first->get_x(), start_end.first->get_y(),
-        start_end.first->get_z()
+        logger, "Start: {}, {}, {}", start_end.first.x, start_end.first.y,
+        start_end.first.z
     );
 
     LOG_INFO(
-        logger, "End: {}, {}, {}", start_end.second->get_x(), start_end.second->get_y(),
-        start_end.second->get_z()
+        logger, "End: {}, {}, {}", start_end.second.x, start_end.second.y,
+        start_end.second.z
     );
 
     auto tile_path =
@@ -295,9 +298,9 @@ path_finder_test(const argh::parser& cmdl) {
 
     constexpr ColorId path_color_id = 5;
     const terrain::material_t* path_mat = world.get_material(DEBUG_MATERIAL);
-    for (const terrain::Tile* tile : tile_path.value()) {
+    for (const TerrainOffset3 tile : tile_path.value()) {
         world.get_terrain_main()
-            .get_tile(world.get_terrain_main().pos(tile))
+            .get_tile(tile)
             ->set_material(path_mat, path_color_id);
     }
 

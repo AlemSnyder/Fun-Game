@@ -21,9 +21,11 @@
 #pragma once
 
 #include "path/node_group.hpp"
+#include "types.hpp"
 #include "util/voxel.hpp"
 
 #include <list>
+#include <mutex>
 #include <unordered_set>
 
 namespace terrain {
@@ -38,10 +40,21 @@ class Terrain;
  * modifications can be made.
  */
 class Chunk : public voxel_utility::VoxelBase {
-    std::list<NodeGroup> node_groups_;
+    mutable std::mutex mut_;
+
     Terrain* ter_;
-    Dim Cx_, Cy_, Cz_; // Chunk position. Incremented by 1 so multiply by
-                       // Chunk::SIZE to get tile position.
+
+    // Chunk position. Incremented by 1 so multiply by
+    // Chunk::SIZE to get tile position.
+    const Dim Cx_;
+    const Dim Cy_;
+    const Dim Cz_;
+
+    // vector of voxels in terrain
+    std::vector<Tile> tiles_;
+
+    std::list<NodeGroup> node_groups_;
+
  public:
     static const Dim SIZE = 16; // number of tiles in each direction
 
@@ -56,6 +69,12 @@ class Chunk : public voxel_utility::VoxelBase {
     Chunk(Dim bx, Dim by, Dim bz, Terrain* ter) : Chunk({bx, by, bz}, ter){};
 
     Chunk(TerrainDim3 chunk_position, Terrain* ter);
+
+    [[nodiscard]] inline std::mutex& get_mutex() const {
+        return mut_;
+    }
+
+    void init_nodegroups();
 
     /**
      * @brief adds node groups in this chunk to out
@@ -83,6 +102,25 @@ class Chunk : public voxel_utility::VoxelBase {
     get_size() {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
+
+    [[nodiscard]] inline Tile* get_tile(Dim x, Dim y, Dim z) {
+        return const_cast<Tile*>(std::as_const(*this).get_tile(x, y, z));
+    }
+
+    [[nodiscard]] inline Tile* get_tile(TerrainDim3 tile_relative_position) {
+        return get_tile(tile_relative_position.x, tile_relative_position.y, tile_relative_position.z);
+    }
+
+    [[nodiscard]] inline const Tile* get_tile(Dim x, Dim y, Dim z) const {
+        size_t index = x * SIZE * SIZE + y * SIZE + z;
+        return &tiles_[index];
+    }
+
+    [[nodiscard]] inline const Tile* get_tile(TerrainDim3 tile_relative_position) const {
+        return get_tile(tile_relative_position.x, tile_relative_position.y, tile_relative_position.z);
+    }
+
+    // VoxelBase Specialization
 
     /**
      * @brief Get the color of a tile

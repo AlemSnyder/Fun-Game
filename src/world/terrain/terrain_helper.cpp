@@ -31,26 +31,26 @@ than the saved height.
 */
 template <int getter(Tile*), void setter(Tile*, int)>
 void
-grow_grass_inner(Terrain& ter, std::unordered_set<Tile*> in_grass, int height) {
+grow_grass_inner(Terrain& ter, std::unordered_set<TerrainOffset3> in_grass, int height) {
     // height == 1 this is the end of recursion. Tile is default set to 0
     if (height == 1) {
         return;
     }
     // set of tiles that are of height - 2
     // the next level down
-    std::unordered_set<Tile*> next_grass_tiles;
-    for (Tile* tile : in_grass) {
+    std::unordered_set<TerrainOffset3> next_grass_tiles;
+    for (TerrainOffset3 tile : in_grass) {
         auto it = ter.get_tile_adjacent_iterator(
-            ter.pos(tile), DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+            tile, DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
         );
         for (; !it.end(); it++) {
-            size_t pos = it.get_pos();
+            auto pos = it.get_pos();
             Tile* adjacent_tile = ter.get_tile(pos);
             // instead of height used maxheight +1
             if (adjacent_tile->is_grass() && (getter(adjacent_tile) < height)) {
                 // if adjacent tile is on the level below
                 // it should be added to the next iteration
-                next_grass_tiles.insert(adjacent_tile);
+                next_grass_tiles.insert(pos);
                 // and the tiles with height less should have their height set
                 setter(adjacent_tile, height);
             }
@@ -77,17 +77,17 @@ Then next to those tiles set the grass
 */
 template <bool edge_detector(Tile*), int getter(Tile*), void setter(Tile*, int)>
 void
-grow_grass_recursive(Terrain& ter, std::unordered_set<Tile*> all_grass) {
+grow_grass_recursive(Terrain& ter, std::unordered_set<TerrainOffset3> all_grass) {
     // set of tiles that are of adjacent to an edge
     // the first level
-    std::unordered_set<Tile*> next_grass_tiles;
+    std::unordered_set<TerrainOffset3> next_grass_tiles;
     // maximum value for grass gradient
     int max_grass = ter.get_grass_grad_length() - 1;
-    for (Tile* tile : all_grass) {
+    for (TerrainOffset3 tile : all_grass) {
         // is the tile and edge
         bool is_source = false;
         auto it = ter.get_tile_adjacent_iterator(
-            ter.pos(tile), DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+            tile, DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
         );
         for (; !it.end(); it++) {
             Tile* adjacent_tile = ter.get_tile(it.get_pos());
@@ -97,9 +97,9 @@ grow_grass_recursive(Terrain& ter, std::unordered_set<Tile*> all_grass) {
                 break;
             }
         }
-        if (is_source && getter(tile) < max_grass) {
+        if (is_source && getter(ter.get_tile(tile)) < max_grass) {
             // set the tile grass index to max_grass
-            setter(tile, max_grass);
+            setter(ter.get_tile(tile), max_grass);
             // tile->grow_sink should be set to true
             // add it to the next iteration
             next_grass_tiles.insert(tile);

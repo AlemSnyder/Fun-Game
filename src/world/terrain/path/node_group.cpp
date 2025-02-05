@@ -4,13 +4,13 @@
 
 namespace terrain {
 
-NodeGroup::NodeGroup(Tile* tile, UnitPath path_type) {
-    tiles.insert(tile);
-    center_x = tile->get_x();
-    center_y = tile->get_y();
-    center_z = tile->get_z();
-    path_type_ = path_type;
-}
+NodeGroup::NodeGroup(LocalPosition position, UnitPath path_type) : 
+    tile_positions_({position}),
+    center_x(position.x),
+    center_y(position.y),
+    center_z(position.z),
+    path_type_(path_type)
+{}
 
 void
 NodeGroup::add_adjacent(NodeGroup* NG, UnitPath type) {
@@ -41,7 +41,7 @@ NodeGroup::get_adjacent_map() {
 }
 
 std::unordered_set<const NodeGroup*>
-NodeGroup::get_adjacent_clear(int path_type) const {
+NodeGroup::get_adjacent_clear(UnitPath path_type) const {
     std::unordered_set<const NodeGroup*> out;
 
     for (const std::pair<NodeGroup*, UnitPath> t : adjacent) {
@@ -54,16 +54,16 @@ NodeGroup::get_adjacent_clear(int path_type) const {
 
 std::unordered_map<NodeGroup*, UnitPath>
 NodeGroup::merge_groups(NodeGroup other) {
-    auto size = tiles.size();
-    auto other_size = other.tiles.size();
+    auto size = tile_positions_.size();
+    auto other_size = other.tile_positions_.size();
     auto total_size = size + other_size;
 
     center_x = (center_x * size + other.center_x * other_size) / total_size;
     center_y = (center_y * size + other.center_y * other_size) / total_size;
     center_z = (center_z * size + other.center_z * other_size) / total_size;
 
-    for (const Tile* t : other.get_tiles()) {
-        tiles.insert(t);
+    for (const auto t : other.get_tiles()) {
+        tile_positions_.insert(t);
     }
 
     for (std::pair<NodeGroup* const, UnitPath> adj : other.get_adjacent_map()) {
@@ -96,9 +96,13 @@ NodeGroup::sop() const {
     return {center_x, center_y, center_z};
 }
 
-const std::unordered_set<const Tile*>
+std::unordered_set<TerrainOffset3>
 NodeGroup::get_tiles() const {
-    return std::unordered_set<const Tile*>(tiles.begin(), tiles.end());
+    std::unordered_set<TerrainOffset3> out({});
+    for (auto position : tile_positions_) {
+        out.insert(TerrainOffset3(position) + chunk_position_);
+    }
+    return out;
 }
 
 bool
@@ -111,9 +115,9 @@ NodeGroup::operator==(const NodeGroup& other) const {
     return (this == &other);
 }
 
-bool
-NodeGroup::operator>(const NodeGroup& other) const {
-    return ((**tiles.begin()) > **(other.tiles.begin()));
-}
+// bool
+// NodeGroup::operator>(const NodeGroup& other) const {
+//     return ((**tile_positions_.begin()) > **(other.tile_positions_.begin()));
+// }
 
 } // namespace terrain

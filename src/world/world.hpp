@@ -59,16 +59,17 @@ class World {
     terrain::Terrain terrain_main_;
 
     // TerrainMesh for each chunk in terrain
-    std::vector<std::shared_ptr<gui::gpu_data::TerrainMesh>> chunks_mesh_;
+    std::unordered_map<TerrainOffset3, std::shared_ptr<gui::gpu_data::TerrainMesh>>
+        chunks_mesh_;
     // chunks_mesh like attorneys general
 
     // Set of chunks that need to be updated on gpu.
     // They Need to be re-meshed, and that mesh need to be sent to gpu.
-    std::unordered_set<ChunkIndex> chunks_to_update_;
+    std::unordered_set<TerrainOffset3> chunks_to_update_;
 
     // Set of meshes that need to be sent to gpu. These meshes should be sent
     // once per frame.
-    std::unordered_map<ChunkIndex, entity::Mesh> meshes_to_update_;
+    std::unordered_map<TerrainOffset3, entity::Mesh> meshes_to_update_;
     // Multiple threads are writing to this map concurrently so this is its
     // mutex
     std::mutex meshes_to_update_mutex_;
@@ -158,22 +159,14 @@ class World {
     // send_updated_chunks_mesh is called.
 
     /**
-     * @brief Marks a single chunk given by its position to be updated.
-     */
-    void
-    mark_for_update(ChunkIndex chunk_pos) {
-        chunks_to_update_.insert(chunk_pos);
-    }
-
-    /**
      * @brief Marks a single chunk given by a tile in the chunk for update
      */
     void
-    mark_for_update(TerrainDim3 tile_sop) {
+    mark_for_update(TerrainOffset3 tile_sop) {
         if (!terrain_main_.in_range(tile_sop))
             return;
-        Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
-        mark_for_update(chunk_pos);
+        TerrainOffset3 chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
+        chunks_to_update_.insert(chunk_pos);
     }
 
     /**
@@ -184,7 +177,7 @@ class World {
     /**
      * @brief Generates a mesh for a single chunk.
      */
-    void update_single_mesh(ChunkIndex chunk_pos);
+    void update_single_mesh(TerrainOffset3 chunk_pos);
 
     /**
      * @brief Sends chunk mesh data to gpu.
@@ -207,7 +200,7 @@ class World {
      * @param terrain::material_t* material to change to
      * @param ColorId color id to change to
      */
-    void set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id);
+    void set_tile(TerrainOffset3 pos, const terrain::material_t* mat, ColorId color_id);
 
     /**
      * @brief Save terrain with debug information
@@ -234,9 +227,16 @@ class World {
  private:
     inline void
     initialize_chunks_mesh_() {
-        chunks_mesh_.resize(terrain_main_.get_chunks().size());
-        for (auto& m : chunks_mesh_)
-            m = std::make_shared<gui::gpu_data::TerrainMesh>();
+        for (TerrainOffset x = 0; x < terrain_main_.X_MAX / terrain::Chunk::SIZE; x++) {
+            for (TerrainOffset y = 0; y < terrain_main_.Y_MAX / terrain::Chunk::SIZE;
+                 y++) {
+                for (TerrainOffset z = 0;
+                     z < terrain_main_.Z_MAX / terrain::Chunk::SIZE; z++) {
+                    chunks_mesh_[{x, y, z}] =
+                        std::make_shared<gui::gpu_data::TerrainMesh>();
+                }
+            }
+        }
     }
 };
 

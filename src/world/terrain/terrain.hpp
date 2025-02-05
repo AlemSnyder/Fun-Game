@@ -99,25 +99,23 @@ class Terrain : public voxel_utility::VoxelBase {
     friend class AdjacentIterator;
 
  private:
-    // vector of voxels in terrain
-    std::vector<Tile> tiles_;
     // size of terrain generation tile (see terrain generation)
-    const Dim area_size_;
+    const TerrainOffset area_size_;
     // mat of material id to material that describes materials in this terrain
     const generation::Biome& biome_;
 
-    std::vector<Chunk> chunks_;
-    std::unordered_map<TileIndex, NodeGroup*> tile_to_group_;
+    std::unordered_map<TerrainOffset3, Chunk> chunks_;
+    std::unordered_map<TerrainOffset3, NodeGroup*> tile_to_group_;
     // seed for randomness
     int seed;
 
  public:
     // length in the x direction
-    const Dim X_MAX;
+    const TerrainOffset X_MAX;
     // length in the y direction
-    const Dim Y_MAX;
+    const TerrainOffset Y_MAX;
     // length in the z direction
-    const Dim Z_MAX;
+    const TerrainOffset Z_MAX;
 
     /**
      * @brief position in tiles vector of given tile position
@@ -127,11 +125,11 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param z z coordinate
      * @return TileIndex
      */
-    [[nodiscard]] inline TileIndex
-    pos(Dim x, Dim y, Dim z) const noexcept {
-        // for loops should go z than y than x
-        return x * Y_MAX * Z_MAX + y * Z_MAX + z;
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos(TerrainOffset x, TerrainOffset y, TerrainOffset z) const noexcept {
+    //     // for loops should go z than y than x
+    //     return x * Y_MAX * Z_MAX + y * Z_MAX + z;
+    // }
 
     /**
      * @brief position in tiles vector of given tile position
@@ -139,10 +137,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param sop coordinate as an array
      * @return TileIndex
      */
-    [[nodiscard]] inline TileIndex
-    pos(const TerrainDim3& sop) const {
-        return sop.x * Y_MAX * Z_MAX + sop.y * Z_MAX + sop.z;
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos(const TerrainOffset3& sop) const {
+    //     return sop.x * Y_MAX * Z_MAX + sop.y * Z_MAX + sop.z;
+    // }
 
     /**
      * @brief position in tiles vector of given tile
@@ -150,10 +148,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param tile tile to find position of
      * @return TileIndex
      */
-    [[nodiscard]] inline TileIndex
-    pos(const Tile* const tile) const {
-        return pos(tile->sop());
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos(const Tile* const tile) const {
+    //     return pos(tile->sop());
+    // }
 
     /**
      * @brief position in tiles vector of given tile
@@ -161,10 +159,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param tile tile to find position of
      * @return TileIndex
      */
-    [[nodiscard]] inline TileIndex
-    pos(const Tile tile) const {
-        return pos(tile.get_x(), tile.get_y(), tile.get_z());
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos(const Tile tile) const {
+    //     return pos(tile.get_x(), tile.get_y(), tile.get_z());
+    // }
 
     /**
      * @brief unique map index
@@ -172,10 +170,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    [[nodiscard]] inline TileIndex
-    pos_for_map(const Tile tile) const {
-        return pos(tile);
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos_for_map(const Tile tile) const {
+    //     return pos(tile);
+    // }
 
     /**
      * @brief unique map index
@@ -183,23 +181,24 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    [[nodiscard]] inline TileIndex
-    pos_for_map(const Tile* const tile) const {
-        return pos(tile);
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos_for_map(const Tile* const tile) const {
+    //     return pos(tile);
+    // }
 
     /**
      * @brief return position in space of given vector index
      *
      * @param xyz vector index
-     * @return const TerrainDim3 position in space
+     * @return const TerrainOffset3 position in space
      */
-    [[nodiscard]] inline const TerrainDim3
-    sop(TileIndex xyz) const {
-        return {
-            static_cast<Dim>(xyz / (Y_MAX * Z_MAX)),
-            static_cast<Dim>((xyz / Z_MAX) % Y_MAX), static_cast<Dim>(xyz % (Z_MAX))};
-    }
+    // [[nodiscard]] inline const TerrainOffset3
+    // sop(TileIndex xyz) const {
+    //     return {
+    //         static_cast<TerrainOffset>(xyz / (Y_MAX * Z_MAX)),
+    //         static_cast<TerrainOffset>((xyz / Z_MAX) % Y_MAX),
+    //         static_cast<TerrainOffset>(xyz % (Z_MAX))};
+    // }
 
     /**
      * @brief return position in space of given index
@@ -208,17 +207,18 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param xm length in x direction
      * @param ym length in y direction
      * @param zm length in z direction
-     * @return TerrainDim3 position in 3D space
+     * @return TerrainOffset3 position in 3D space
      */
-    [[nodiscard]] inline static TerrainDim3
-    sop(TileIndex xyz, TileIndex xm, TileIndex ym, TileIndex zm) {
-        if (xyz >= xm * ym * zm) {
-            throw std::invalid_argument("index out of range");
-        }
-        return {
-            static_cast<Dim>(xyz / (ym * zm)), static_cast<Dim>((xyz / zm) % ym),
-            static_cast<Dim>(xyz % (zm))};
-    }
+    // [[nodiscard]] inline static TerrainOffset3
+    // sop(TileIndex xyz, TileIndex xm, TileIndex ym, TileIndex zm) {
+    //     if (xyz >= xm * ym * zm) {
+    //         throw std::invalid_argument("index out of range");
+    //     }
+    //     return {
+    //         static_cast<TerrainOffset>(xyz / (ym * zm)),
+    //         static_cast<TerrainOffset>((xyz / zm) % ym),
+    //         static_cast<TerrainOffset>(xyz % (zm))};
+    // }
 
     /**
      * @brief Get the size of terrain
@@ -254,8 +254,9 @@ class Terrain : public voxel_utility::VoxelBase {
     [[nodiscard]] inline bool
     in_range(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
         return (
-            static_cast<Dim>(x) < X_MAX && x >= 0 && static_cast<Dim>(y) < Y_MAX
-            && y >= 0 && static_cast<Dim>(z) < Z_MAX && z >= 0
+            static_cast<TerrainOffset>(x) < X_MAX && x >= 0
+            && static_cast<TerrainOffset>(y) < Y_MAX && y >= 0
+            && static_cast<TerrainOffset>(z) < Z_MAX && z >= 0
         );
     }
 
@@ -276,11 +277,11 @@ class Terrain : public voxel_utility::VoxelBase {
     [[nodiscard]] inline Tile*
     get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) {
         return const_cast<Tile*>(std::as_const(*this).get_tile(x, y, z));
-    };
+    }
 
     [[nodiscard]] inline Tile*
-    get_tile(TileIndex xyz) {
-        return const_cast<Tile*>(std::as_const(*this).get_tile(xyz));
+    get_tile(TerrainOffset3 xyz) {
+        return get_tile(xyz.x, xyz.y, xyz.z);
     }
 
     /**
@@ -293,31 +294,26 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] inline const Tile*
     get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
-        if (!in_range(x, y, z)) {
-            LOG_CRITICAL(
-                logging::terrain_logger, "Tile position ({}, {}, {}), out of range.", x,
-                y, z
-            );
-            throw std::invalid_argument("index out of range");
-        }
-        return &tiles_[pos(
-            static_cast<Dim>(x), static_cast<Dim>(y), static_cast<Dim>(z)
-        )];
-    };
+        TerrainOffset3 chunk_position(
+            x / Chunk::SIZE, y / Chunk::SIZE, y / Chunk::SIZE
+        );
+        auto chunk = chunks_.find(chunk_position);
 
-    /**
-     * @brief Get the tile at the given index
-     *
-     * @param xyz tile index
-     * @return const Tile* tile at index
-     */
-    [[nodiscard]] inline const Tile*
-    get_tile(TileIndex xyz) const {
-        if (xyz >= X_MAX * Y_MAX * Z_MAX) {
-            LOG_CRITICAL(logging::terrain_logger, "Tile index {}, out of range.", xyz);
-            throw std::invalid_argument("index out of range");
+        if (chunk == chunks_.end()) {
+            LOG_WARNING(
+                logging::terrain_logger, "Tile position ({}, {}, {}), out of range because the chunk ({}, {}, {}) does not exist.", x,
+                y, z, chunk_position.x, chunk_position.y, chunk_position.z
+            );
+            return nullptr;
         }
-        return &tiles_[xyz];
+
+        TerrainOffset3 tile_position(x % Chunk::SIZE, y % Chunk::SIZE, y % Chunk::SIZE);
+        return chunk->second.get_tile(tile_position);
+    }
+
+    [[nodiscard]] inline const Tile*
+    get_tile(TerrainOffset3 xyz) const {
+        return get_tile(xyz.x, xyz.y, xyz.z);
     }
 
     /**
@@ -337,11 +333,13 @@ class Terrain : public voxel_utility::VoxelBase {
         static ColorId previous_color_id = 0;
         static ColorInt previous_out_color = 0;
 
-        if (!in_range(x, y, z))
+        auto tile = get_tile(x, y, z);
+
+        if (!tile)
             return 0;
 
-        MaterialId mat_id = tiles_[pos(x, y, z)].get_material_id();
-        ColorId color_id = tiles_[pos(x, y, z)].get_color_id();
+        MaterialId mat_id = tile->get_material_id();
+        ColorId color_id = tile->get_color_id();
 
         if (mat_id != previous_mat_id || color_id != previous_color_id) {
             previous_mat_id = mat_id;
@@ -360,7 +358,7 @@ class Terrain : public voxel_utility::VoxelBase {
     }
 
     [[nodiscard]] inline VoxelColorId
-    get_voxel_color_id(Dim x, Dim y, Dim z) const {
+    get_voxel_color_id(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
         // if not in range, then considered to be air
         if (!in_range(x, y, z))
             return 0;
@@ -384,8 +382,10 @@ class Terrain : public voxel_utility::VoxelBase {
      *
      * @return int height
      */
-    [[nodiscard]] Dim
-    get_first_not(const MaterialGroup& materials, Dim x, Dim y, Dim guess = 0) const;
+    [[nodiscard]] TerrainOffset get_first_not(
+        const MaterialGroup& materials, TerrainOffset x, TerrainOffset y,
+        TerrainOffset guess = 0
+    ) const;
 
     [[nodiscard]] inline uint8_t
     get_grass_grad_length() const noexcept {
@@ -436,7 +436,10 @@ class Terrain : public voxel_utility::VoxelBase {
     void add_to_top(const generation::AddToTop& to_data);
 
     [[nodiscard]] inline bool
-    has_tile_material(const MaterialGroup& material_test, Dim x, Dim y, Dim z) const {
+    has_tile_material(
+        const MaterialGroup& material_test, TerrainOffset x, TerrainOffset y,
+        TerrainOffset z
+    ) const {
         return has_tile_material(material_test, get_tile(x, y, z));
     }
 
@@ -449,7 +452,7 @@ class Terrain : public voxel_utility::VoxelBase {
     }
 
     // test for path finding
-    std::pair<const Tile*, const Tile*> get_start_end_test() const;
+    std::pair<TerrainOffset3, TerrainOffset3> get_start_end_test() const;
 
     /**
      * @brief Get the UnitPath defined by the path type between two tiles
@@ -465,7 +468,7 @@ class Terrain : public voxel_utility::VoxelBase {
     get_path_type(int xs, int ys, int zs, int xf, int yf, int zf) const;
 
     [[nodiscard]] inline const UnitPath
-    get_path_type(TerrainDim3 start_position, TerrainDim3 final_position) const {
+    get_path_type(TerrainOffset3 start_position, TerrainOffset3 final_position) const {
         return get_path_type(
             start_position.x, start_position.y, start_position.z, final_position.x,
             final_position.y, final_position.z
@@ -488,7 +491,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param xyz2 position 2
      * @return float time between positions
      */
-    [[nodiscard]] static float get_H_cost(TerrainDim3 xyz1, TerrainDim3 xyz2);
+    [[nodiscard]] static float get_H_cost(TerrainOffset3 xyz1, TerrainOffset3 xyz2);
     /**
      * @brief Get time required to get to node from start plus time required
      * to get from node to tile
@@ -507,7 +510,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param node_group node group to find position of chunk
      * @return ChunkIndex chunk pos
      */
-    [[nodiscard]] ChunkIndex pos(const NodeGroup* const node_group) const;
+    //    [[nodiscard]] ChunkIndex pos(const NodeGroup* const node_group) const;
 
     /**
      * @brief unique map index
@@ -515,10 +518,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    [[nodiscard]] inline TileIndex
-    pos_for_map(const NodeGroup NG) const {
-        return pos(*(NG.get_tiles().begin()));
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos_for_map(const NodeGroup NG) const {
+    //     return pos(*(NG.get_tiles().begin()));
+    // }
 
     /**
      * @brief unique map index
@@ -526,10 +529,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param tile
      * @return int
      */
-    [[nodiscard]] inline TileIndex
-    pos_for_map(const NodeGroup* const NG) const {
-        return pos(*(NG->get_tiles().begin()));
-    }
+    // [[nodiscard]] inline TileIndex
+    // pos_for_map(const NodeGroup* const NG) const {
+    //     return pos(*(NG->get_tiles().begin()));
+    // }
 
     /**
      * @brief Construct a new Terrain object
@@ -546,8 +549,9 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param grass_mid gradient index of grass not effected by an edge
      */
     Terrain(
-        Dim x_tiles, Dim y_tiles, Dim area_size_, Dim z_tiles, int seed,
-        const generation::Biome& biome, const generation::TerrainMacroMap& macro_map
+        TerrainOffset x_tiles, TerrainOffset y_tiles, TerrainOffset area_size_,
+        TerrainOffset z_tiles, int seed, const generation::Biome& biome,
+        const generation::TerrainMacroMap& macro_map
     );
     /**
      * @brief Construct a new Terrain object
@@ -569,6 +573,10 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data);
 
+    [[nodiscard]] inline const terrain::material_t*
+    get_material(MaterialId mat_id) const {
+        return biome_.get_material(mat_id);
+    }
     // TODO place block
 
     using iterator = path::AdjacentIterator;
@@ -582,7 +590,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return iterator
      */
     [[nodiscard]] inline iterator
-    get_tile_adjacent_iterator(size_t pos, UnitPath path_type = 127U) const {
+    get_tile_adjacent_iterator(TerrainOffset3 pos, UnitPath path_type = 127U) const {
         return iterator(*this, pos, path_type);
     }
 
@@ -594,9 +602,9 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param type path type allowed
      * @return std::unordered_set<Node<const T> *> adjacent nodes
      */
-    [[nodiscard]] std::unordered_set<Node<const NodeGroup>*> get_adjacent_nodes(
-        const Node<const NodeGroup>* const node,
-        std::unordered_map<TileIndex, Node<const NodeGroup>>& nodes, path_t type
+    [[nodiscard]] std::unordered_set<Node<const NodeGroupWrapper>*> get_adjacent_nodes(
+        const Node<const NodeGroupWrapper>* const node,
+        std::unordered_map<TerrainOffset3, Node<const NodeGroupWrapper>>& nodes, path_t type
     ) const;
 
     /**
@@ -607,9 +615,9 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param type path type allowed
      * @return std::unordered_set<Node<const T> *> adjacent nodes
      */
-    [[nodiscard]] std::unordered_set<Node<const Tile>*> get_adjacent_nodes(
-        const Node<const Tile>* const node,
-        std::unordered_map<TileIndex, Node<const Tile>>& nodes, path_t type
+    [[nodiscard]] std::unordered_set<Node<const PositionWrapper>*> get_adjacent_nodes(
+        const Node<const PositionWrapper>* const node,
+        std::unordered_map<TerrainOffset3, Node<const PositionWrapper>>& nodes, path_t type
     ) const;
 
     /**
@@ -618,7 +626,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param xyz tile index in vector tiles
      * @return NodeGroup* NodeGroup tile is in
      */
-    [[nodiscard]] NodeGroup* get_node_group(TileIndex xyz);
+    [[nodiscard]] NodeGroup* get_node_group(TerrainOffset3 xyz);
     /**
      * @brief Get the node group from tile
      *
@@ -642,7 +650,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param xyz tile index in vector tiles
      * @return NodeGroup* NodeGroup tile is in
      */
-    [[nodiscard]] const NodeGroup* get_node_group(TileIndex xyz) const;
+    [[nodiscard]] const NodeGroup* get_node_group(TerrainOffset3 xyz) const;
     /**
      * @brief Get the node group from tile
      *
@@ -671,28 +679,36 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     void remove_node_group(NodeGroup* NG);
 
-    inline ChunkIndex
-    get_chunk_from_tile(TileIndex pos) const {
-        TerrainDim3 tile_sop = sop(pos);
+    inline TerrainOffset3
+    get_chunk_from_tile(TerrainOffset3 tile_sop) const {
         return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
-    inline ChunkIndex
-    get_chunk_from_tile(TerrainDim3 tile_sop) const {
-        return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
+    TerrainOffset3
+    get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const;
+
+    [[nodiscard]] inline size_t
+    num_chunks() const {
+        return chunks_.size();
     }
 
-    ChunkIndex get_chunk_from_tile(Dim x, Dim y, Dim z) const;
+    [[nodiscard]] inline Chunk*
+    get_chunk(TerrainOffset3 chunk_position) {
+        auto chunk = chunks_.find(chunk_position);
 
-    [[nodiscard]] inline const std::vector<Chunk>&
-    get_chunks() const {
+        if (chunk == chunks_.end()) {
+            LOG_WARNING(
+                logging::terrain_logger, "Chunk position ({}, {}, {}), out of range.",
+                chunk_position.x, chunk_position.y, chunk_position.z
+            );
+            return nullptr;
+        }
+        return &chunk->second;
+    }
+
+    [[nodiscard]] inline const auto&
+    get_chunks() {
         return chunks_;
-    }
-
-    [[nodiscard]] inline const Chunk&
-    get_chunk(size_t i) const {
-        assert(i < chunks_.size());
-        return chunks_[i];
     }
 
     /**
@@ -715,8 +731,9 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return true success
      * @return false failure
      */
-    bool
-    player_set_tile_material(TileIndex xyz, const material_t* mat, ColorId color_id);
+    bool player_set_tile_material(
+        TerrainOffset3 xyz, const material_t* mat, ColorId color_id
+    );
 
     /**
      * @brief Set the tile material with no tests
@@ -785,7 +802,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] bool can_stand_1(TileIndex xyz
+    [[nodiscard]] bool can_stand_1(TerrainOffset3 xyz
     ) const; // this is fast, and used for looping
 
     // Ok so basically when running through a loop the cpu moves a large chunk
@@ -799,10 +816,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] inline bool
-    can_stand_1(const Tile tile) const {
-        return can_stand(tile, 1, 1);
-    }
+    // [[nodiscard]] inline bool
+    // can_stand_1(const Tile tile) const {
+    //     return can_stand(tile, 1, 1);
+    // }
 
     /**
      * @brief test if 1 x 1 x 1 object can stand at given tile
@@ -811,10 +828,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] inline bool
-    can_stand_1(const Tile* tile) const {
-        return can_stand(tile, 1, 1);
-    }
+    // [[nodiscard]] inline bool
+    // can_stand_1(const Tile* tile) const {
+    //     return can_stand(tile, 1, 1);
+    // }
 
     /**
      * @brief test if dxy x dyx x dz object can stand at given position
@@ -844,7 +861,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return false cannot stand
      */
     [[nodiscard]] bool
-    can_stand(const Tile tile, TerrainOffset dz, TerrainOffset dxy) const;
+    can_stand(TerrainOffset3 tile, TerrainOffset dz, TerrainOffset dxy) const;
 
     /**
      * @brief test if dxy x dyx x dz object can stand at given tile
@@ -856,8 +873,8 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] bool
-    can_stand(const Tile* tile, TerrainOffset dz, TerrainOffset dxy) const;
+//    [[nodiscard]] bool
+//    can_stand(TerrainOffset3 tile, TerrainOffset dz, TerrainOffset dxy) const;
 
     void qb_read(
         std::vector<ColorInt> data,
@@ -893,8 +910,8 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param goal end tile
      * @return std::vector<const Tile *> path
      */
-    [[nodiscard]] std::optional<std::vector<const Tile*>>
-    get_path_Astar(const Tile* start, const Tile* goal) const;
+    [[nodiscard]] std::optional<std::vector<TerrainOffset3>>
+    get_path_Astar(TerrainOffset3 start, TerrainOffset3 goal) const;
 
     /**
      * @brief Get a path between start, and goal using the A* algorithm
@@ -903,7 +920,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param goal end NodeGroup
      * @return std::optional<std::vector<const NodeGroup*>> path
      */
-    [[nodiscard]] std::optional<std::vector<const NodeGroup*>>
+    [[nodiscard]] std::optional<std::vector<NodeGroupWrapper>>
     get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const;
 
     /**
@@ -914,9 +931,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param goal set of excitable goals
      * @return std::optional<std::vector<const Tile*>> path to closest goal
      */
-    [[nodiscard]] std::optional<std::vector<const Tile*>> get_path_breadth_first(
-        const Tile* start, const std::unordered_set<const Tile*> goal
-    );
+    [[nodiscard]] std::optional<std::vector<TerrainOffset3>>
+    get_path_breadth_first(
+        const TerrainOffset3, const std::unordered_set<TerrainOffset3> goal
+    ) const;
 
     /**
      * @brief Get a path between start, and any goal using the breadth first
@@ -926,8 +944,9 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param goal set of excitable goals
      * @return std::optional<std::vector<const NodeGroup*>> path to closest goal
      */
-    [[nodiscard]] std::optional<std::vector<const NodeGroup*>> get_path_breadth_first(
-        const NodeGroup* start, const std::unordered_set<const NodeGroup*> goal
+    [[nodiscard]] std::optional<std::vector<NodeGroupWrapper>>
+    get_path_breadth_first(
+        const NodeGroupWrapper start, const std::unordered_set<NodeGroupWrapper> goal
     ) const;
 
     /**
@@ -941,9 +960,9 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return std::vector<const T *> path optimized by compare
      */
     template <class T, bool compare(Node<const T>*, Node<const T>*)>
-    [[nodiscard]] std::optional<std::vector<const T*>> get_path(
-        const T* start, const std::unordered_set<const T*> goal,
-        const std::unordered_set<const T*> search_through
+    [[nodiscard]] std::optional<std::vector<T>> get_path(
+        const T start, const std::unordered_set<T> goal,
+        const std::unordered_set<T> search_through
     ) const;
 
     /**
@@ -979,10 +998,10 @@ class Terrain : public voxel_utility::VoxelBase {
     template <class T>
     void
     get_path_through_nodes(
-        Node<const T>* node, std::vector<const T*>& out, const T* start
+        Node<const T>* node, std::vector<T>& out, T start
     ) const {
-        out.push_back(node->get_tile());
-        if (start == node->get_tile()) {
+        out.push_back(*node->get_tile());
+        if (start == *node->get_tile()) {
             return;
         }
         get_path_through_nodes(node->get_parent(), out, start);

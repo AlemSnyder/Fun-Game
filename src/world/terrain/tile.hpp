@@ -76,6 +76,12 @@ class Tile {
      */
     Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id = 0);
 
+    Tile(const terrain::material_t* material, ColorId color_id = 0);
+
+    Tile(const Tile&);
+
+    Tile(const Tile&&);
+
     // This probably should not be used.
     Tile() :
         x(0), y(0), z(0), mat_id_(0), color_id_(0), grow_data_high_(0),

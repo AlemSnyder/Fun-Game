@@ -227,12 +227,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     star_renderer->data.push_back(star_data);
     sun_renderer->data.push_back(star_shape);
 
-    for (const auto& chunk_mesh : terrain_mesh) {
+    for (const auto& [chunk_position, chunk_mesh] : terrain_mesh) {
         chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
         chunks_render_program->data.push_back(chunk_mesh);
     }
 
-    for (const auto& chunk_mesh : terrain_mesh) {
+    for (const auto& [chunk_position, chunk_mesh] : terrain_mesh) {
         chunks_shadow_program->data.push_back(chunk_mesh);
     }
 
@@ -244,9 +244,9 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     std::vector<glm::ivec4> model_matrices;
     // generate positions of trees
-    for (size_t x = 0; x < world.get_terrain_main().X_MAX; x += 40)
-        for (size_t y = 0; y < world.get_terrain_main().Y_MAX; y += 40) {
-            size_t z = world.get_terrain_main().get_Z_solid(x, y) + 1;
+    for (TerrainOffset x = 0; x < world.get_terrain_main().X_MAX; x += 40)
+        for (TerrainOffset y = 0; y < world.get_terrain_main().Y_MAX; y += 40) {
+            TerrainOffset z = world.get_terrain_main().get_Z_solid(x, y) + 1;
             if (z != 1) { // if the position of the ground is not zero
                 glm::ivec4 model(x, y, z, x / 40 + y / 40);
                 model_matrices.push_back(model);

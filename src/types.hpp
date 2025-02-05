@@ -5,13 +5,16 @@
 #include <array>
 #include <cstdint>
 
+#include "util/hash_combine.hpp"
+
 /***********
  * Terrain *
  ***********/
 
 // Tile index in terrain's vector. Also know as pos
-using TileIndex = size_t;
-using ChunkIndex = size_t;
+// using TileIndex = size_t;
+// using ChunkIndex = size_t;
+using LocalPosition = glm::u8vec3;
 // Tile position in terrain.
 using Dim = uint16_t;
 // Tile position in terrain with all dimensions.
@@ -101,3 +104,40 @@ static_assert(sizeof(VoxelColorId) == sizeof(MatColorId));
 using screen_size_t = int;
 // I'm so sorry, but this is needed because opengl uses ints to return from get
 // window size
+
+template <>
+struct std::hash<TerrainOffset3> {
+    inline size_t
+    operator()(const TerrainOffset3& position) const {
+        size_t result = 0;
+        utils::hash_combine(result, position.x);
+        utils::hash_combine(result, position.y);
+        utils::hash_combine(result, position.z);
+        return result;
+    }
+};
+
+template <>
+struct std::hash<glm::i8vec3> {
+    inline size_t
+    operator()(const glm::i8vec3& position) const {
+        size_t result = 0;
+        utils::hash_combine<int8_t>(result, position.x);
+        utils::hash_combine<int8_t>(result, position.y);
+        utils::hash_combine<int8_t>(result, position.z);
+        return result;
+    }
+};
+
+
+template <>
+struct std::hash<glm::u8vec3> {
+    inline size_t
+    operator()(const glm::u8vec3& position) const {
+        size_t result = 0;
+        utils::hash_combine<uint8_t>(result, position.x);
+        utils::hash_combine<uint8_t>(result, position.y);
+        utils::hash_combine<uint8_t>(result, position.z);
+        return result;
+    }
+};
