@@ -33,6 +33,7 @@
 #include "material.hpp"
 #include "path/node.hpp"
 #include "path/node_group.hpp"
+#include "path/node_wrappers.hpp"
 #include "path/tile_iterators.hpp"
 #include "path/unit_path.hpp"
 #include "terrain_helper.hpp"
@@ -760,7 +761,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param all_grass set of pointers to tiles that are grass
      */
     inline void
-    grow_grass_high(std::unordered_set<Tile*> all_grass) {
+    grow_grass_high(std::unordered_set<TerrainOffset3> all_grass) {
         helper::grow_grass_recursive<
             helper::edge_detector_high, helper::getter_high, helper::setter_high>(
             *this, all_grass
@@ -773,7 +774,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param all_grass set of pointers to tiles that are grass
      */
     inline void
-    grow_grass_low(std::unordered_set<Tile*> all_grass) {
+    grow_grass_low(std::unordered_set<TerrainOffset3> all_grass) {
         helper::grow_grass_recursive<
             helper::edge_detector_low, helper::getter_low, helper::setter_low>(
             *this, all_grass

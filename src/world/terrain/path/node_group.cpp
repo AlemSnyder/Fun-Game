@@ -91,7 +91,7 @@ NodeGroup::get_center_z() const {
     return center_z;
 }
 
-std::array<float, 3>
+glm::vec3
 NodeGroup::sop() const {
     return {center_x, center_y, center_z};
 }
@@ -113,6 +113,13 @@ NodeGroup::adjacent_to(NodeGroup* other) const {
 bool
 NodeGroup::operator==(const NodeGroup& other) const {
     return (this == &other);
+}
+
+// TODO this needs to be fixed
+// chunk_position is not defined, and I don't know it it has the same units
+TerrainOffset3
+NodeGroup::unique_position() const {
+    return TerrainOffset3(*tile_positions_.begin()) + chunk_position_;
 }
 
 // bool

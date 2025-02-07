@@ -331,6 +331,15 @@ Terrain::get_Z_solid(TerrainOffset x, TerrainOffset y) const {
     return get_Z_solid(x, y, Z_MAX - 1);
 }
 
+
+bool
+Terrain::can_stand(
+    TerrainOffset3 xyz, TerrainOffset dz,
+    TerrainOffset dxy
+) const { 
+    return can_stand(xyz.x, xyz.y, xyz.z, dz, dxy);
+}
+
 bool
 Terrain::can_stand(
     TerrainOffset x, TerrainOffset y, TerrainOffset z, TerrainOffset dz,
@@ -397,7 +406,7 @@ Terrain::player_set_tile_material(
 
 void
 Terrain::init_grass() {
-    std::unordered_set<Tile*> all_grass;
+    std::unordered_set<TerrainOffset3> all_grass;
 
     // Test all ties to see if they can be grass.
     for (TerrainOffset x = 0; x < X_MAX; x++)
@@ -407,7 +416,7 @@ Terrain::init_grass() {
                     get_tile(x, y, z)->try_grow_grass(); // add to sources and sinks
                     // if grass add to some set
                     if (get_tile(x, y, z)->is_grass()) {
-                        all_grass.insert(get_tile(x, y, z));
+                        all_grass.insert({x, y, z});
                     }
                     // both higher, and lower set
                 }
@@ -417,14 +426,14 @@ Terrain::init_grass() {
         for (TerrainOffset y = 0; y < Y_MAX; y++) {
             get_tile(x, y, z)->try_grow_grass(); // add to sources and sinks
             if (get_tile(x, y, z)->is_grass()) {
-                all_grass.insert(get_tile(x, y, z));
+                all_grass.insert({x, y, z});
             }
             // same thing here as above
         }
     grow_grass_low(all_grass);
     grow_grass_high(all_grass);
-    for (Tile* t : all_grass) {
-        t->set_grass_color(
+    for (const auto t : all_grass) {
+        get_tile(t)->set_grass_color(
             get_grass_grad_length(), get_grass_mid(), get_grass_colors()
         );
     }
@@ -439,6 +448,12 @@ Terrain::init_grass() {
 //     }
 //     return (!get_tile(xyz)->is_solid() && get_tile(xyz - 1)->is_solid());
 // }
+
+bool
+Terrain::can_stand_1(TerrainOffset3 xyz) const {
+    // TODO
+    return (!get_tile(xyz)->is_solid() && get_tile(xyz - TerrainOffset3(0,0,1))->is_solid());
+}
 
 float
 Terrain::get_H_cost(std::array<float, 3> xyz1, std::array<float, 3> xyz2) {

@@ -31,49 +31,6 @@
 
 namespace terrain {
 
-class PositionWrapper {
-    TerrainOffset3 position_;
- public:
-    inline PositionWrapper() {};
-
-    PositionWrapper(TerrainOffset3 position);
-
-    [[nodiscard]] glm::vec3 average_position() const;
-
-    [[nodiscard]] TerrainOffset3 unique_position() const;
-
-    [[nodiscard]] inline bool operator==(const PositionWrapper& other) const {
-        return unique_position() == other.unique_position();
-    }
-};
-
-class NodeGroupWrapper {
-
-    const NodeGroup* nodegroup;
- public:
-    NodeGroupWrapper(const NodeGroup* nodegroup);
-
-
-    [[nodiscard]] glm::vec3 average_position() const;
-
-    [[nodiscard]] TerrainOffset3 unique_position() const;
-
-    [[nodiscard]] inline std::unordered_set<const NodeGroup*> get_adjacent_clear(UnitPath path_type
-    ) const {
-        return nodegroup->get_adjacent_clear(path_type);
-    }
-
-    [[nodiscard]] bool contains(const TerrainOffset3 position) const;
-
-    [[nodiscard]] std::unordered_set<TerrainOffset3> get_tiles() const;
-
-
-    [[nodiscard]] inline bool operator==(const NodeGroupWrapper& other) const {
-        return unique_position() == other.unique_position();
-    }
-
-};
-
 /**
  * @brief A node used to find a path with the A* or breadth first algorithm
  *
@@ -195,21 +152,3 @@ class Node {            // Used to find paths.
 };
 
 } // namespace terrain
-
-template <>
-struct std::hash<terrain::PositionWrapper> {
-    inline size_t
-    operator()(const terrain::PositionWrapper& position) const noexcept {
-        std::hash<TerrainOffset3> hasher;
-        return hasher(position.unique_position());
-    }
-};
-
-template <>
-struct std::hash<terrain::NodeGroupWrapper> {
-    inline size_t
-    operator()(const terrain::NodeGroupWrapper& position) const noexcept {
-        std::hash<TerrainOffset3> hasher;
-        return hasher(position.unique_position());
-    }
-};

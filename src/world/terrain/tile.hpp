@@ -74,13 +74,14 @@ class Tile {
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id = 0);
+    Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id = 0) :
+        Tile(material, color_id) {}
 
     Tile(const terrain::material_t* material, ColorId color_id = 0);
 
-    Tile(const Tile&);
+    Tile(const Tile&) = default;
 
-    Tile(const Tile&&);
+    Tile(Tile&&) = default;
 
     // This probably should not be used.
     Tile() :

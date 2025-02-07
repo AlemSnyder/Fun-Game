@@ -5,8 +5,8 @@
 
 namespace terrain {
 
-Tile::Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id) :
-    x(sop.x), y(sop.y), z(sop.z), mat_id_(0), color_id_(0), grow_data_high_(0),
+Tile::Tile(const terrain::material_t* material, ColorId color_id) :
+    x(0), y(0), z(0), mat_id_(0), color_id_(0), grow_data_high_(0),
     grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
     solid_(false) {
     // set material should not fail so if material is bad for some reason

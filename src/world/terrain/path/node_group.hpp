@@ -158,7 +158,7 @@ class NodeGroup {
      *
      * @return std::array<float, 3>
      */
-    [[nodiscard]] std::array<float, 3> sop() const;
+    [[nodiscard]] glm::vec3 sop() const;
 
     [[nodiscard]] TerrainOffset3 unique_position() const;
 
