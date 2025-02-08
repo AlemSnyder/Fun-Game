@@ -8,7 +8,7 @@
 namespace terrain {
 
 Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
-    ter_(ter), Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z),
+    ter_(ter), chunk_position_(chunk_position),
     tiles_(SIZE * SIZE * SIZE, Tile(ter_->get_material(0), 0)) {}
 
 // initialize all tiles. this is done above. currently it is wrong.
@@ -25,7 +25,7 @@ Chunk::init_nodegroups() {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
                     // look at onePath for more information
-                    NodeGroup group = NodeGroup({x, y, z}, 31);
+                    NodeGroup group(chunk_position_, {x, y, z}, 31);
                     node_groups_.push_back(group);
                     // ter_->add_node_group(&node_groups_.back());
                     map____.emplace(LocalPosition(x, y, z), node_groups_.back());
@@ -115,25 +115,17 @@ Chunk::merge_node_group_(NodeGroup& G1, NodeGroup& G2) {
 
 inline bool
 Chunk::contains_node_group_(NodeGroup* NG) {
-    return (
-        NG->get_center_x() >= SIZE * Cx_ && NG->get_center_x() < SIZE * (1 + Cx_)
-        && NG->get_center_y() >= SIZE * Cy_ && NG->get_center_y() < SIZE * (1 + Cy_)
-        && NG->get_center_z() >= SIZE * Cz_ && NG->get_center_z() < SIZE * (1 + Cz_)
-    );
+    return (NG->get_chunk_position() == chunk_position_);
 }
 
 ColorInt
 terrain::Chunk::get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
-    return ter_->get_voxel(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
+    return ter_->get_voxel( get_offset() + VoxelOffset(x,y,z));
 }
 
 MatColorId
 terrain::Chunk::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
-    return ter_->get_voxel_color_id(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
+    return ter_->get_voxel_color_id(get_offset() + VoxelOffset(x,y,z));
 }
 
 std::vector<MatColorId>

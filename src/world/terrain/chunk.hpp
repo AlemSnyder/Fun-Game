@@ -46,9 +46,7 @@ class Chunk : public voxel_utility::VoxelBase {
 
     // Chunk position. Incremented by 1 so multiply by
     // Chunk::SIZE to get tile position.
-    const Dim Cx_;
-    const Dim Cy_;
-    const Dim Cz_;
+    const TerrainOffset3 chunk_position_;
 
     // vector of voxels in terrain
     std::vector<Tile> tiles_;
@@ -91,7 +89,7 @@ class Chunk : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] inline VoxelOffset
     get_offset() const {
-        return {Cx_ * Chunk::SIZE, Cy_ * Chunk::SIZE, Cz_ * Chunk::SIZE};
+        return chunk_position_ * TerrainOffset(Chunk::SIZE);
     }
 
     /**

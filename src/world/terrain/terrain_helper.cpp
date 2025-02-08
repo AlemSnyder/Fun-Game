@@ -93,6 +93,9 @@ grow_grass_recursive(Terrain& ter, std::unordered_set<TerrainOffset3> all_grass)
         );
         for (; !it.end(); it++) {
             Tile* adjacent_tile = ter.get_tile(it.get_pos());
+            if (!adjacent_tile){
+                continue;
+            }
             // (in some cases: not solid, and others: solid and not grass)
             if (edge_detector(adjacent_tile)) {
                 is_source = true;

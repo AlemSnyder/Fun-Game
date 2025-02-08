@@ -46,11 +46,11 @@ namespace terrain {
  *
  */
 class NodeGroup {
-    TerrainOffset3 chunk_position_;
+    const TerrainOffset3 chunk_position_;
+    UnitPath path_type_; // the path restraints to get form any tile in this Group to
     std::unordered_set<LocalPosition> tile_positions_;
     std::unordered_map<NodeGroup*, UnitPath> adjacent;
     float center_x, center_y, center_z; // volumetric center, a weighted average
-    UnitPath path_type_; // the path restraints to get form any tile in this Group to
                          // any other tile
  public:
     /**
@@ -64,7 +64,7 @@ class NodeGroup {
      * @param path_type most complex path type used to get from any tile to any other
      * tile in this node group
      */
-    NodeGroup(LocalPosition, UnitPath path_type);
+    NodeGroup(TerrainOffset3 chunk_position, LocalPosition tile_position, UnitPath path_type);
 
     //NodeGroup(std::unordered_set<LocalPosition>, UnitPath path_type);
 
@@ -75,6 +75,10 @@ class NodeGroup {
      * @return std::unordered_map<NodeGroup *, UnitPath> adjacent node groups of other
      */
     std::unordered_map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
+
+    [[nodiscard]] inline const TerrainOffset3 get_chunk_position() {
+        return chunk_position_;
+    }
 
     // !void update(); If I modify terrain path finding should not break
     // this should be in chunk though
@@ -131,27 +135,6 @@ class NodeGroup {
      * @return false otherwise
      */
     [[nodiscard]] bool adjacent_to(NodeGroup* other) const;
-
-    /**
-     * @brief Get the center in the x direction
-     *
-     * @return float
-     */
-    [[nodiscard]] float get_center_x() const;
-
-    /**
-     * @brief Get the center in the y direction
-     *
-     * @return float
-     */
-    [[nodiscard]] float get_center_y() const;
-
-    /**
-     * @brief Get the center in the z direction
-     *
-     * @return float
-     */
-    [[nodiscard]] float get_center_z() const;
 
     /**
      * @brief vector to volumetric center

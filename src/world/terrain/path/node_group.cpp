@@ -1,15 +1,17 @@
 #include "node_group.hpp"
+#include "world/terrain/chunk.hpp"
 
 #include <cstdint>
 
 namespace terrain {
 
-NodeGroup::NodeGroup(LocalPosition position, UnitPath path_type) : 
-    tile_positions_({position}),
-    center_x(position.x),
-    center_y(position.y),
-    center_z(position.z),
-    path_type_(path_type)
+NodeGroup::NodeGroup(TerrainOffset3 chunk_position, LocalPosition tile_position, UnitPath path_type) : \
+    chunk_position_(chunk_position),
+    path_type_(path_type),
+    tile_positions_({tile_position}),
+    center_x(tile_position.x),
+    center_y(tile_position.y),
+    center_z(tile_position.z)
 {}
 
 void
@@ -76,24 +78,9 @@ NodeGroup::merge_groups(NodeGroup other) {
     return other.get_adjacent_map();
 }
 
-float
-NodeGroup::get_center_x() const {
-    return center_x;
-}
-
-float
-NodeGroup::get_center_y() const {
-    return center_y;
-}
-
-float
-NodeGroup::get_center_z() const {
-    return center_z;
-}
-
 glm::vec3
 NodeGroup::sop() const {
-    return {center_x, center_y, center_z};
+    return glm::vec3(center_x, center_y, center_z) + glm::vec3(chunk_position_) * float(Chunk::SIZE);
 }
 
 std::unordered_set<TerrainOffset3>
@@ -115,11 +102,9 @@ NodeGroup::operator==(const NodeGroup& other) const {
     return (this == &other);
 }
 
-// TODO this needs to be fixed
-// chunk_position is not defined, and I don't know it it has the same units
 TerrainOffset3
 NodeGroup::unique_position() const {
-    return TerrainOffset3(*tile_positions_.begin()) + chunk_position_;
+    return TerrainOffset3(*tile_positions_.begin()) + chunk_position_ * TerrainOffset(Chunk::SIZE);
 }
 
 // bool

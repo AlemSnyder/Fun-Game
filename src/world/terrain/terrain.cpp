@@ -92,6 +92,9 @@ Terrain::Terrain(
 
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
+    
+    //  TODO make this faster 1
+    init_chunks();
 
     // TODO make this faster 4
     for (TerrainOffset i = 0; i < x_map_tiles; i++)
@@ -115,9 +118,6 @@ Terrain::Terrain(
     init_grass();
 
     LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
-
-    //  TODO make this faster 1
-    init_chunks();
 
     LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
 }
@@ -456,7 +456,6 @@ Terrain::init_grass() {
 
 bool
 Terrain::can_stand_1(TerrainOffset3 xyz) const {
-    // TODO
     return (
         !get_tile(xyz)->is_solid()
         && get_tile(xyz - TerrainOffset3(0, 0, 1))->is_solid()

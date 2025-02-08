@@ -74,7 +74,6 @@ class ObjectData {
      *
      * @param const object_t& object_data describes the object
      * @param const manifest::descriptor_t& model_path path to folder containing voxel
-     TODO fix documentation
      */
     ObjectData(const object_t& object_data, const manifest::descriptor_t& model_path);
 

@@ -143,7 +143,7 @@ struct glz::meta<terrain::generation::layer_effect_add> {
     static constexpr auto value = enumerate(NONE, TO, ADD);
 };
 
-// TODO error with glaze
+// error with glaze
 // when using optional glaze causes compiler errors and this suppresses those errors
 template <>
 inline glz::detail::any_t::operator terrain::generation::stamp_generation_grid_data_t(
