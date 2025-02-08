@@ -176,7 +176,7 @@ int
 ChunkDataTest() {
     world::World world(BIOME_BASE_NAME, 6, 6);
 
-    const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0,0,0});
+    const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
 
     if (!chunk)
         return 1;
@@ -299,9 +299,7 @@ path_finder_test(const argh::parser& cmdl) {
     constexpr ColorId path_color_id = 5;
     const terrain::material_t* path_mat = world.get_material(DEBUG_MATERIAL);
     for (const TerrainOffset3 tile : tile_path.value()) {
-        world.get_terrain_main()
-            .get_tile(tile)
-            ->set_material(path_mat, path_color_id);
+        world.get_terrain_main().get_tile(tile)->set_material(path_mat, path_color_id);
     }
 
     world.qb_save(path_out);

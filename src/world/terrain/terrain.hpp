@@ -302,8 +302,10 @@ class Terrain : public voxel_utility::VoxelBase {
 
         if (chunk == chunks_.end()) {
             LOG_WARNING(
-                logging::terrain_logger, "Tile position ({}, {}, {}), out of range because the chunk ({}, {}, {}) does not exist.", x,
-                y, z, chunk_position.x, chunk_position.y, chunk_position.z
+                logging::terrain_logger,
+                "Tile position ({}, {}, {}), out of range because the chunk ({}, {}, "
+                "{}) does not exist.",
+                x, y, z, chunk_position.x, chunk_position.y, chunk_position.z
             );
             return nullptr;
         }
@@ -578,6 +580,7 @@ class Terrain : public voxel_utility::VoxelBase {
     get_material(MaterialId mat_id) const {
         return biome_.get_material(mat_id);
     }
+
     // TODO place block
 
     using iterator = path::AdjacentIterator;
@@ -605,7 +608,8 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] std::unordered_set<Node<const NodeGroupWrapper>*> get_adjacent_nodes(
         const Node<const NodeGroupWrapper>* const node,
-        std::unordered_map<TerrainOffset3, Node<const NodeGroupWrapper>>& nodes, path_t type
+        std::unordered_map<TerrainOffset3, Node<const NodeGroupWrapper>>& nodes,
+        path_t type
     ) const;
 
     /**
@@ -618,7 +622,8 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] std::unordered_set<Node<const PositionWrapper>*> get_adjacent_nodes(
         const Node<const PositionWrapper>* const node,
-        std::unordered_map<TerrainOffset3, Node<const PositionWrapper>>& nodes, path_t type
+        std::unordered_map<TerrainOffset3, Node<const PositionWrapper>>& nodes,
+        path_t type
     ) const;
 
     /**
@@ -874,8 +879,8 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return true can stand
      * @return false cannot stand
      */
-//    [[nodiscard]] bool
-//    can_stand(TerrainOffset3 tile, TerrainOffset dz, TerrainOffset dxy) const;
+    //    [[nodiscard]] bool
+    //    can_stand(TerrainOffset3 tile, TerrainOffset dz, TerrainOffset dxy) const;
 
     void qb_read(
         std::vector<ColorInt> data,
@@ -932,8 +937,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param goal set of excitable goals
      * @return std::optional<std::vector<const Tile*>> path to closest goal
      */
-    [[nodiscard]] std::optional<std::vector<TerrainOffset3>>
-    get_path_breadth_first(
+    [[nodiscard]] std::optional<std::vector<TerrainOffset3>> get_path_breadth_first(
         const TerrainOffset3, const std::unordered_set<TerrainOffset3> goal
     ) const;
 
@@ -945,8 +949,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param goal set of excitable goals
      * @return std::optional<std::vector<const NodeGroup*>> path to closest goal
      */
-    [[nodiscard]] std::optional<std::vector<NodeGroupWrapper>>
-    get_path_breadth_first(
+    [[nodiscard]] std::optional<std::vector<NodeGroupWrapper>> get_path_breadth_first(
         const NodeGroupWrapper start, const std::unordered_set<NodeGroupWrapper> goal
     ) const;
 
@@ -998,9 +1001,7 @@ class Terrain : public voxel_utility::VoxelBase {
     // trace nodes through parents to reach start
     template <class T>
     void
-    get_path_through_nodes(
-        Node<const T>* node, std::vector<T>& out, T start
-    ) const {
+    get_path_through_nodes(Node<const T>* node, std::vector<T>& out, T start) const {
         out.push_back(*node->get_tile());
         if (start == *node->get_tile()) {
             return;

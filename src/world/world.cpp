@@ -124,7 +124,7 @@ World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
 void
 World::update_single_mesh(TerrainOffset3 chunk_pos) {
     const auto chunk = terrain_main_.get_chunk(chunk_pos);
-    if (!chunk){
+    if (!chunk) {
         return;
     }
     entity::Mesh chunk_mesh =

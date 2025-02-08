@@ -79,7 +79,8 @@ Terrain::Terrain(
     TerrainOffset z, int seed_, const generation::Biome& biome,
     const generation::TerrainMacroMap& macro_map
 ) :
-    area_size_(area_size_), biome_(biome), seed(seed_), X_MAX(x_map_tiles * area_size_),
+    area_size_(area_size_),
+    biome_(biome), seed(seed_), X_MAX(x_map_tiles * area_size_),
     Y_MAX(y_map_tiles * area_size_), Z_MAX(z) {
     // tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
 
@@ -134,7 +135,11 @@ Terrain::qb_read(
     for (TerrainOffset x = 0; x < X_MAX / Chunk::SIZE; x++) {
         for (TerrainOffset y = 0; y < Y_MAX / Chunk::SIZE; y++) {
             for (TerrainOffset z = 0; z < Z_MAX / Chunk::SIZE; z++) {
-                chunks_.emplace(std::piecewise_construct, std::forward_as_tuple(TerrainDim3(x, y, z)), std::forward_as_tuple(x, y, z, this));
+                chunks_.emplace(
+                    std::piecewise_construct,
+                    std::forward_as_tuple(TerrainDim3(x, y, z)),
+                    std::forward_as_tuple(x, y, z, this)
+                );
             }
         }
     }
@@ -147,7 +152,8 @@ Terrain::qb_read(
     for (auto& [chunk_position, chunk] : chunks_) {
         context.submit_task([chunk_position, &chunk, &materials_inverse, &data,
                              &unknown_colors, &unknown_colors_mutex_,
-                             X_MAX = this->X_MAX, Y_MAX = this->X_MAX, Z_MAX = this->X_MAX]() {
+                             X_MAX = this->X_MAX, Y_MAX = this->X_MAX,
+                             Z_MAX = this->X_MAX]() {
             std::unique_lock chunk_lock(chunk.get_mutex());
             for (Dim xl = 0; xl < Chunk::SIZE; xl++) {
                 for (Dim yl = 0; yl < Chunk::SIZE; yl++) {
@@ -155,7 +161,7 @@ Terrain::qb_read(
                         TerrainDim3 tile_relative_position(xl, yl, zl);
 
                         TerrainOffset3 tile_position = tile_relative_position;
-                            chunk_position * static_cast<TerrainOffset>(Chunk::SIZE);
+                        chunk_position* static_cast<TerrainOffset>(Chunk::SIZE);
                         size_t index = tile_position.x * Y_MAX * Z_MAX
                                        + tile_position.y * Z_MAX + tile_position.z;
                         ColorInt color = data[index];
@@ -180,7 +186,7 @@ Terrain::qb_read(
 
                         Tile* tile = chunk.get_tile(tile_relative_position);
 
-                        tile->set_material( &mat_color->material, mat_color->color);
+                        tile->set_material(&mat_color->material, mat_color->color);
                     }
                 }
             }
@@ -310,7 +316,10 @@ Terrain::init_chunks() {
         for (TerrainOffset y = 0; y < C_length_Y; y++) {
             for (TerrainOffset z = 0; z < C_length_Z; z++) {
                 TerrainOffset3 chunk_position(x, y, z);
-                chunks_.emplace(std::piecewise_construct, std::forward_as_tuple(chunk_position), std::forward_as_tuple(chunk_position, this));
+                chunks_.emplace(
+                    std::piecewise_construct, std::forward_as_tuple(chunk_position),
+                    std::forward_as_tuple(chunk_position, this)
+                );
             }
         }
     }
@@ -331,12 +340,8 @@ Terrain::get_Z_solid(TerrainOffset x, TerrainOffset y) const {
     return get_Z_solid(x, y, Z_MAX - 1);
 }
 
-
 bool
-Terrain::can_stand(
-    TerrainOffset3 xyz, TerrainOffset dz,
-    TerrainOffset dxy
-) const { 
+Terrain::can_stand(TerrainOffset3 xyz, TerrainOffset dz, TerrainOffset dxy) const {
     return can_stand(xyz.x, xyz.y, xyz.z, dz, dxy);
 }
 
@@ -452,7 +457,10 @@ Terrain::init_grass() {
 bool
 Terrain::can_stand_1(TerrainOffset3 xyz) const {
     // TODO
-    return (!get_tile(xyz)->is_solid() && get_tile(xyz - TerrainOffset3(0,0,1))->is_solid());
+    return (
+        !get_tile(xyz)->is_solid()
+        && get_tile(xyz - TerrainOffset3(0, 0, 1))->is_solid()
+    );
 }
 
 float
@@ -486,7 +494,8 @@ Terrain::get_H_cost(TerrainOffset3 position1, TerrainOffset3 position2) {
 template <class T>
 float
 Terrain::get_G_cost(const T tile, const Node<const T> node) {
-    return node.get_time_cost() + get_H_cost(tile.average_position(), node.get_tile()->average_position());
+    return node.get_time_cost()
+           + get_H_cost(tile.average_position(), node.get_tile()->average_position());
 }
 
 // TileIndex
@@ -511,7 +520,8 @@ Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) 
 std::unordered_set<Node<const NodeGroupWrapper>*>
 Terrain::get_adjacent_nodes(
     const Node<const NodeGroupWrapper>* const node,
-    std::unordered_map<TerrainOffset3, Node<const NodeGroupWrapper>>& nodes, path_t path_type
+    std::unordered_map<TerrainOffset3, Node<const NodeGroupWrapper>>& nodes,
+    path_t path_type
 ) const {
     std::unordered_set<Node<const NodeGroupWrapper>*> out;
     for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
@@ -526,10 +536,12 @@ Terrain::get_adjacent_nodes(
 std::unordered_set<Node<const PositionWrapper>*>
 Terrain::get_adjacent_nodes(
     const Node<const PositionWrapper>* node,
-    std::unordered_map<TerrainOffset3, Node<const PositionWrapper>>& nodes, path_t path_type
+    std::unordered_map<TerrainOffset3, Node<const PositionWrapper>>& nodes,
+    path_t path_type
 ) const {
     std::unordered_set<Node<const PositionWrapper>*> out;
-    auto tile_it = get_tile_adjacent_iterator(node->get_tile()->unique_position(), path_type);
+    auto tile_it =
+        get_tile_adjacent_iterator(node->get_tile()->unique_position(), path_type);
     while (!tile_it.end()) {
         auto adj_node = nodes.find(tile_it.get_pos());
         if (adj_node != nodes.end()) {
@@ -694,7 +706,9 @@ Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const {
         search_through_wrapped.emplace(node);
     }
 
-    return get_path<NodeGroupWrapper, helper::astar_compare>(NodeGroupWrapper(start), {NodeGroupWrapper(goal)}, search_through_wrapped);
+    return get_path<NodeGroupWrapper, helper::astar_compare>(
+        NodeGroupWrapper(start), {NodeGroupWrapper(goal)}, search_through_wrapped
+    );
 }
 
 std::optional<std::vector<TerrainOffset3>>
@@ -717,22 +731,18 @@ Terrain::get_path_Astar(TerrainOffset3 start, TerrainOffset3 goal) const {
         search_through.insert(tiles.begin(), tiles.end());
     }
 
-
-
     auto wrapped_path = get_path<PositionWrapper, helper::astar_compare>(
-        PositionWrapper(start),
-        {PositionWrapper(goal)}, search_through);
-
+        PositionWrapper(start), {PositionWrapper(goal)}, search_through
+    );
 
     if (!wrapped_path) {
         return {};
     }
     std::vector<TerrainOffset3> path;
-    for (const auto position: wrapped_path.value()) {
+    for (const auto position : wrapped_path.value()) {
         path.push_back(position.unique_position());
     }
     return path;
-    
 }
 
 std::optional<std::vector<NodeGroupWrapper>>
@@ -774,9 +784,7 @@ Terrain::get_path_breadth_first(
     if (!node_path)
         return {};
     NodeGroupWrapper end = node_path.value().back();
-    TerrainOffset3 chunk_position = get_chunk_from_tile(
-        end.unique_position()
-    );
+    TerrainOffset3 chunk_position = get_chunk_from_tile(end.unique_position());
 
     std::unordered_set<PositionWrapper> goal({});
     for (const TerrainOffset3 g : goal_) {
@@ -794,13 +802,15 @@ Terrain::get_path_breadth_first(
         search_through.insert(tiles.begin(), tiles.end());
     }
 
-    auto wrapped_path = get_path<PositionWrapper, helper::breadth_first_compare>(start, goal, search_through);
+    auto wrapped_path = get_path<PositionWrapper, helper::breadth_first_compare>(
+        start, goal, search_through
+    );
 
-        if (!wrapped_path) {
+    if (!wrapped_path) {
         return {};
     }
     std::vector<TerrainOffset3> path;
-    for (const auto position: wrapped_path.value()) {
+    for (const auto position : wrapped_path.value()) {
         path.push_back(position.unique_position());
     }
     return path;
@@ -818,8 +828,9 @@ Terrain::get_path(
     std::unordered_map<TerrainOffset3, Node<const T>>
         nodes; // The nodes that can be walked through
     for (const T& t : search_through) {
-        nodes[t.unique_position()] =
-            Node<const T>(&t, get_H_cost(t.average_position(), (*goal.begin()).average_position()));
+        nodes[t.unique_position()] = Node<const T>(
+            &t, get_H_cost(t.average_position(), (*goal.begin()).average_position())
+        );
     }
     Node<const T> start_node = nodes[start.unique_position()];
     openNodes.push(&start_node); // gotta start somewhere

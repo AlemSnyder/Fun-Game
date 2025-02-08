@@ -47,9 +47,6 @@ class Tile;
  */
 class Tile {
  private:
-    Dim x; // The x index
-    Dim y; // The y index
-    Dim z; // The z index
     // does this need to know where it is?
     // The material id of the tile
     MaterialId mat_id_;
@@ -70,13 +67,9 @@ class Tile {
     /**
      * @brief Construct a new Tile object
      *
-     * @param sop tile position
      * @param material material of tile
      * @param color_id color of tile
      */
-    Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id = 0) :
-        Tile(material, color_id) {}
-
     Tile(const terrain::material_t* material, ColorId color_id = 0);
 
     Tile(const Tile&) = default;
@@ -85,9 +78,8 @@ class Tile {
 
     // This probably should not be used.
     Tile() :
-        x(0), y(0), z(0), mat_id_(0), color_id_(0), grow_data_high_(0),
-        grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
-        solid_(false) {}
+        mat_id_(0), color_id_(0), grow_data_high_(0), grow_data_low_(0),
+        grow_sink_(false), grow_source_(false), grass_(false), solid_(false) {}
 
     // Setters
     /**
@@ -155,45 +147,6 @@ class Tile {
     );
 
     // Getters
-    /**
-     * @brief Get the x position
-     *
-     * @return Dim x position
-     */
-    [[nodiscard]] inline Dim
-    get_x() const noexcept {
-        return x;
-    }
-
-    /**
-     * @brief Get the y position
-     *
-     * @return Dim y position
-     */
-    [[nodiscard]] inline Dim
-    get_y() const noexcept {
-        return y;
-    }
-
-    /**
-     * @brief Get the z position
-     *
-     * @return Dim z position
-     */
-    [[nodiscard]] inline Dim
-    get_z() const noexcept {
-        return z;
-    }
-
-    /**
-     * @brief coordinate of tile
-     *
-     * @return TerrainDim3 array of x, y, z
-     */
-    [[nodiscard]] TerrainDim3
-    sop() const noexcept {
-        return {x, y, z};
-    }
 
     /**
      * @brief is the tile grass
@@ -244,17 +197,17 @@ class Tile {
         return solid_;
     }
 
-    inline bool
-    operator==(const Tile other) const {
-        return (this->x == other.x && this->y == other.y && this->z == other.z);
-    }
+    // inline bool
+    // operator==(const Tile other) const {
+    //     return (this->x == other.x && this->y == other.y && this->z == other.z);
+    // }
 
-    inline bool
-    operator==(const Tile* other) const {
-        return (this->x == other->x && this->y == other->y && this->z == other->z);
-    }
+    // inline bool
+    // operator==(const Tile* other) const {
+    //     return (this->x == other->x && this->y == other->y && this->z == other->z);
+    // }
 
-    bool operator>(const Tile other) const;
+    // bool operator>(const Tile other) const;
 };
 
 } // namespace terrain

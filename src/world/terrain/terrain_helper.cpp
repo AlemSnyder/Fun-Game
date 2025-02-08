@@ -31,7 +31,9 @@ than the saved height.
 */
 template <int getter(Tile*), void setter(Tile*, int)>
 void
-grow_grass_inner(Terrain& ter, std::unordered_set<TerrainOffset3> in_grass, int height) {
+grow_grass_inner(
+    Terrain& ter, std::unordered_set<TerrainOffset3> in_grass, int height
+) {
     // height == 1 this is the end of recursion. Tile is default set to 0
     if (height == 1) {
         return;

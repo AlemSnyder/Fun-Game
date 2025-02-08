@@ -70,7 +70,8 @@ class Chunk : public voxel_utility::VoxelBase {
 
     Chunk(TerrainDim3 chunk_position, Terrain* ter);
 
-    [[nodiscard]] inline std::mutex& get_mutex() const {
+    [[nodiscard]] inline std::mutex&
+    get_mutex() const {
         return mut_;
     }
 
@@ -103,21 +104,29 @@ class Chunk : public voxel_utility::VoxelBase {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
 
-    [[nodiscard]] inline Tile* get_tile(Dim x, Dim y, Dim z) {
+    [[nodiscard]] inline Tile*
+    get_tile(Dim x, Dim y, Dim z) {
         return const_cast<Tile*>(std::as_const(*this).get_tile(x, y, z));
     }
 
-    [[nodiscard]] inline Tile* get_tile(TerrainDim3 tile_relative_position) {
-        return get_tile(tile_relative_position.x, tile_relative_position.y, tile_relative_position.z);
+    [[nodiscard]] inline Tile*
+    get_tile(TerrainDim3 tile_relative_position) {
+        return get_tile(
+            tile_relative_position.x, tile_relative_position.y, tile_relative_position.z
+        );
     }
 
-    [[nodiscard]] inline const Tile* get_tile(Dim x, Dim y, Dim z) const {
+    [[nodiscard]] inline const Tile*
+    get_tile(Dim x, Dim y, Dim z) const {
         size_t index = x * SIZE * SIZE + y * SIZE + z;
         return &tiles_[index];
     }
 
-    [[nodiscard]] inline const Tile* get_tile(TerrainDim3 tile_relative_position) const {
-        return get_tile(tile_relative_position.x, tile_relative_position.y, tile_relative_position.z);
+    [[nodiscard]] inline const Tile*
+    get_tile(TerrainDim3 tile_relative_position) const {
+        return get_tile(
+            tile_relative_position.x, tile_relative_position.y, tile_relative_position.z
+        );
     }
 
     // VoxelBase Specialization

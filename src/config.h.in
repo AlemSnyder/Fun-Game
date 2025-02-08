@@ -23,16 +23,16 @@
 
 #define NUM_GRASS 8 // TODO this should be removed
 // just the mum grass this is wrong might have more or less grass
-#define AIR_ID           0
-#define DIRT_ID          1
+#define AIR_ID                0
+#define DIRT_ID               1
 
-#define DEBUG_MATERIAL   7
-#define NUM_DEBUG_COLORS 4
+#define DEBUG_MATERIAL        7
+#define NUM_DEBUG_COLORS      4
 
 #define INITIAL_WINDOW_WIDTH  1024
 #define INITIAL_WINDOW_HEIGHT 768
 
-#define STRESS_TEST_SIZE 16
-#define SEED 5
+#define STRESS_TEST_SIZE      16
+#define SEED                  5
 
-#define BIOME_BASE_NAME "Base"
+#define BIOME_BASE_NAME       "Base"
