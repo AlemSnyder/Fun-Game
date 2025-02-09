@@ -106,7 +106,6 @@ class StampGenerator {
         return width_variance_;
     }
 
-
     [[nodiscard]] virtual MaterialId
     material() const {
         return stamp_material_id_;
@@ -295,15 +294,15 @@ class LandGenerator {
         current_sub_region = 0;
     };
 
-    [[nodiscard]] inline auto begin() const {
+    [[nodiscard]] inline auto
+    begin() const {
         return stamp_generators_.begin();
     }
 
-
     [[nodiscard]] inline auto end() const {
         return stamp_generators_.end();
-    }
-};
+}
+}; // namespace generation
 
 class AddToTop {
     const MaterialGroup elements_above_;
@@ -348,6 +347,6 @@ class AddToTop {
     }
 };
 
-} // namespace generation
+} // namespace terrain
 
 } // namespace terrain

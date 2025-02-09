@@ -4,6 +4,10 @@
         {
             "identification": "base/Flower_Test",
             "path": "Base/models/Flower_Test/Flower_Test.json"
+        },
+        {
+            "identification": "base/Test_Entity",
+            "path": "Base/models/Test_Entity/Test.json"
         }
     ],
     "biomes": [

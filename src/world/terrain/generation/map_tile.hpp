@@ -75,15 +75,18 @@ class TileType {
         return land_generators_.end();
     }
 
-    inline auto get_top_color() const {
+    inline auto
+    get_top_color() const {
         return top_color_;
     }
 
-    inline auto get_secondary_color() const {
+    inline auto
+    get_secondary_color() const {
         return secondary_color_;
     }
 
-    inline auto get_height() const {
+    inline auto
+    get_height() const {
         return height_;
     }
 };
@@ -120,7 +123,7 @@ class MapTile {
         rand_engine_(
             Noise::get_double((seed ^ tile_type.get_tile_type()) % RANDOM_NUMBER, x, y)
             * INT32_MAX
-        ) {};
+        ){};
 
     /**
      * @brief Get the x coordinate
@@ -188,7 +191,7 @@ class PlantMap {
      *
      * @details Default constructor
      */
-    inline PlantMap() : width_(0), height_(0) {};
+    inline PlantMap() : width_(0), height_(0){};
 
     /**
      * @brief Construct a new PlantMap object

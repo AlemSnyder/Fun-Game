@@ -22,7 +22,6 @@
  */
 
 #include "instanced_i_mesh.hpp"
-#include "world/entity/placement.hpp"
 
 #pragma once
 

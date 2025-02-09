@@ -25,10 +25,14 @@
 
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/scene.hpp"
+#include "world/climate.hpp"
 #include "world/world.hpp"
 
 namespace gui {
 
-void setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world);
+void setup(
+    Scene& scene, shader::ShaderHandler& shader_handler, world::World& world,
+    world::Climate& climate
+);
 
 }

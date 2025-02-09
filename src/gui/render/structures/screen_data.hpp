@@ -1,7 +1,8 @@
 #pragma once
 
-#include "array_buffer.hpp"
-#include "gpu_data.hpp"
+#include "gui/render/gpu_data/data_types.hpp"
+#include "gui/render/gpu_data/vertex_array_object.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 
 #include <glm/glm.hpp>
 
@@ -11,7 +12,9 @@ namespace gpu_data {
 
 class ScreenData : public virtual GPUData {
  private:
-    ArrayBuffer<glm::vec3> vertex_array_;
+    VertexArrayObject vertex_array_object_;
+
+    VertexBufferObject<glm::vec3> vertex_array_;
     unsigned int num_vertices_;
 
  public:
@@ -24,6 +27,7 @@ class ScreenData : public virtual GPUData {
      * @brief Deleted copy operator
      */
     ScreenData& operator=(const ScreenData& obj) = delete;
+
     /**
      * @brief Construct a new Screen Data object, default constructor
      *
@@ -35,9 +39,9 @@ class ScreenData : public virtual GPUData {
     /**
      * @brief Get the vertex buffer id
      *
-     * @return ArrayBuffer id of vertex buffer on gpu
+     * @return VertexBufferObject id of vertex buffer on gpu
      */
-    inline const ArrayBuffer<glm::vec3>&
+    inline const VertexBufferObject<glm::vec3>&
     get_vertex_buffer() const {
         return vertex_array_;
     }
@@ -54,12 +58,12 @@ class ScreenData : public virtual GPUData {
 
     inline virtual void
     bind() const {
-        vertex_array_.bind(0, 0);
+        vertex_array_object_.bind();
     };
 
     inline virtual void
     release() const {
-        glDisableVertexAttribArray(0);
+        vertex_array_object_.release();
     }
 
     inline virtual bool

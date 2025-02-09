@@ -68,9 +68,19 @@ class Chunk : public voxel_utility::VoxelBase {
     void add_nodes_to(std::unordered_set<const NodeGroup*>& out) const;
 
     /**
+     * @brief Chunk position relative to other chunks
+     *
+     * @return ChunkPos
+     */
+    [[nodiscard]] inline ChunkPos
+    get_chunk_position() const {
+        return {Cx_, Cy_, Cz_};
+    }
+
+    /**
      * @brief Used for getting mesh
      *
-     * @return std::vector<int> offset of chunk in world space
+     * @return VoxelOffset offset of chunk in world space
      */
     [[nodiscard]] inline VoxelOffset
     get_offset() const {
