@@ -2,6 +2,7 @@
 #include "graphics_main.hpp"
 #include "gui/render/graphics_shaders/program_handler.hpp"
 #include "gui/scene/controls.hpp"
+#include "gui/tests.hpp"
 #include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
@@ -24,7 +25,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
+#pragma clang diagnostic pop
+
 #include <imgui/imgui.h>
 #include <png.h>
 
@@ -369,6 +374,8 @@ tests(const argh::parser& cmdl) {
         return image_test(cmdl);
     } else if (run_function == "LoadManifest") {
         return util::load_manifest_test();
+    } else if (run_function == "EnginTest") {
+        return gui::opengl_tests();
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

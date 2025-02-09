@@ -240,7 +240,7 @@ class PlantMap {
      *
      * @return iterator to first element in map data
      */
-    [[nodiscard]] const auto
+    [[nodiscard]] auto
     begin() const {
         return plant_map_.begin();
     }
@@ -253,7 +253,7 @@ class PlantMap {
      *
      * @return iterator past end of map
      */
-    [[nodiscard]] const auto
+    [[nodiscard]] auto
     end() const {
         return plant_map_.end();
     }

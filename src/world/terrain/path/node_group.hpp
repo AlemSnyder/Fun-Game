@@ -46,7 +46,7 @@ namespace terrain {
  *
  */
 class NodeGroup {
-    const TerrainOffset3 chunk_position_;
+    const ChunkPos chunk_position_;
     UnitPath path_type_; // the path restraints to get form any tile in this Group to
     std::unordered_set<LocalPosition> tile_positions_;
     std::unordered_map<NodeGroup*, UnitPath> adjacent;
@@ -64,7 +64,7 @@ class NodeGroup {
      * @param path_type most complex path type used to get from any tile to any other
      * tile in this node group
      */
-    NodeGroup(TerrainOffset3 chunk_position, LocalPosition tile_position, UnitPath path_type);
+    NodeGroup(ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type);
 
     //NodeGroup(std::unordered_set<LocalPosition>, UnitPath path_type);
 
@@ -76,7 +76,7 @@ class NodeGroup {
      */
     std::unordered_map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
 
-    [[nodiscard]] inline const TerrainOffset3 get_chunk_position() {
+    [[nodiscard]] inline const ChunkPos get_chunk_position() {
         return chunk_position_;
     }
 

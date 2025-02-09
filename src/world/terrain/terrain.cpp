@@ -66,12 +66,12 @@ Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) 
     // grows the grass
     init_grass();
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
 
     //  TODO make this faster 1
     init_chunks();
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: chunks.");
 }
 
 Terrain::Terrain(
@@ -117,7 +117,7 @@ Terrain::Terrain(
     // grows the grass
     init_grass();
 
-    LOG_INFO(logging::terrain_logger, "End of land generator: grass.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
 
     LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
 }
@@ -508,7 +508,7 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
 //            + pz;
 // }
 
-TerrainOffset3
+ChunkPos
 Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
     TerrainOffset px = floor(x) / Chunk::SIZE;
     TerrainOffset py = floor(y) / Chunk::SIZE;
@@ -783,7 +783,7 @@ Terrain::get_path_breadth_first(
     if (!node_path)
         return {};
     NodeGroupWrapper end = node_path.value().back();
-    TerrainOffset3 chunk_position = get_chunk_from_tile(end.unique_position());
+    ChunkPos chunk_position = get_chunk_from_tile(end.unique_position());
 
     std::unordered_set<PositionWrapper> goal({});
     for (const TerrainOffset3 g : goal_) {

@@ -22,7 +22,6 @@
  */
 
 #include "instanced_i_mesh.hpp"
-#include "world/entity/placement.hpp"
 
 #pragma once
 
@@ -47,6 +46,8 @@ class StaticMesh : public virtual InstancedIMeshGPU {
         const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     ) :
         InstancedIMeshGPU(mesh, model_transforms) {}
+
+    inline virtual ~StaticMesh() {}
 
     inline void
     bind() const override {

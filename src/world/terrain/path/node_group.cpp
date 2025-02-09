@@ -5,7 +5,7 @@
 
 namespace terrain {
 
-NodeGroup::NodeGroup(TerrainOffset3 chunk_position, LocalPosition tile_position, UnitPath path_type) : \
+NodeGroup::NodeGroup(ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type) : \
     chunk_position_(chunk_position),
     path_type_(path_type),
     tile_positions_({tile_position}),
@@ -87,7 +87,7 @@ std::unordered_set<TerrainOffset3>
 NodeGroup::get_tiles() const {
     std::unordered_set<TerrainOffset3> out({});
     for (auto position : tile_positions_) {
-        out.insert(TerrainOffset3(position) + chunk_position_);
+        out.insert(TerrainOffset3(position) + TerrainOffset3(chunk_position_));
     }
     return out;
 }
@@ -104,7 +104,7 @@ NodeGroup::operator==(const NodeGroup& other) const {
 
 TerrainOffset3
 NodeGroup::unique_position() const {
-    return TerrainOffset3(*tile_positions_.begin()) + chunk_position_ * TerrainOffset(Chunk::SIZE);
+    return TerrainOffset3(*tile_positions_.begin()) + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE);
 }
 
 // bool

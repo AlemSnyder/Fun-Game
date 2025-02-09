@@ -685,12 +685,12 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     void remove_node_group(NodeGroup* NG);
 
-    inline TerrainOffset3
+    inline ChunkPos
     get_chunk_from_tile(TerrainOffset3 tile_sop) const {
         return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
-    TerrainOffset3
+    ChunkPos
     get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const;
 
     [[nodiscard]] inline size_t
@@ -699,7 +699,7 @@ class Terrain : public voxel_utility::VoxelBase {
     }
 
     [[nodiscard]] inline Chunk*
-    get_chunk(TerrainOffset3 chunk_position) {
+    get_chunk(ChunkPos chunk_position) {
         auto chunk = chunks_.find(chunk_position);
 
         if (chunk == chunks_.end()) {
@@ -809,35 +809,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return false cannot stand
      */
     [[nodiscard]] bool can_stand_1(TerrainOffset3 xyz
-    ) const; // this is fast, and used for looping
-
-    // Ok so basically when running through a loop the cpu moves a large chunk
-    // of memory that is close together into the cpu's memory, then this
-    // function iterates over memory space, rather then coordinate space.
-    // someone should test if this is true.
-    /**
-     * @brief test if 1 x 1 x 1 object can stand at given tile
-     *
-     * @param tile tile to test
-     * @return true can stand
-     * @return false cannot stand
-     */
-    // [[nodiscard]] inline bool
-    // can_stand_1(const Tile tile) const {
-    //     return can_stand(tile, 1, 1);
-    // }
-
-    /**
-     * @brief test if 1 x 1 x 1 object can stand at given tile
-     *
-     * @param tile tile to test
-     * @return true can stand
-     * @return false cannot stand
-     */
-    // [[nodiscard]] inline bool
-    // can_stand_1(const Tile* tile) const {
-    //     return can_stand(tile, 1, 1);
-    // }
+    ) const; // this might be faster, and used for looping
 
     /**
      * @brief test if dxy x dyx x dz object can stand at given position

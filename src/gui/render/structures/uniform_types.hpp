@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../scene/controls.hpp"
-#include "gpu_data/shadow_map.hpp"
-#include "graphics_shaders/uniform.hpp"
+#include "gui/render/gpu_data/shadow_map.hpp"
+#include "gui/render/graphics_shaders/uniform.hpp"
+#include "gui/scene/controls.hpp"
 #include "logging.hpp"
 #include "types.hpp"
 
@@ -217,6 +217,8 @@ class TextureUniform : public shader::Uniform {
     ) :
         Uniform(name, texture_type),
         texture_location_(texture_location) {}
+
+    inline virtual ~TextureUniform() {}
 
     inline virtual void
     bind(GLint uniform_ID) {

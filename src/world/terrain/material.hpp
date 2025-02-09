@@ -29,7 +29,10 @@
 #include "types.hpp"
 #include "util/color.hpp"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
+#pragma clang diagnostic pop
 
 #include <cstdint>
 #include <string>
@@ -37,6 +40,7 @@
 #include <unordered_set>
 #include <vector>
 
+// TODO this is nto a namespace. Should be world::terrain
 namespace terrain {
 
 struct material_color_t {

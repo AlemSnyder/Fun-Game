@@ -46,7 +46,7 @@ class Chunk : public voxel_utility::VoxelBase {
 
     // Chunk position. Incremented by 1 so multiply by
     // Chunk::SIZE to get tile position.
-    const TerrainOffset3 chunk_position_;
+    const ChunkPos chunk_position_;
 
     // vector of voxels in terrain
     std::vector<Tile> tiles_;
@@ -83,13 +83,23 @@ class Chunk : public voxel_utility::VoxelBase {
     void add_nodes_to(std::unordered_set<const NodeGroup*>& out) const;
 
     /**
+     * @brief Chunk position relative to other chunks
+     *
+     * @return ChunkPos
+     */
+    [[nodiscard]] inline ChunkPos
+    get_chunk_position() const {
+        return chunk_position_;
+    }
+
+    /**
      * @brief Used for getting mesh
      *
-     * @return std::vector<int> offset of chunk in world space
+     * @return VoxelOffset offset of chunk in world space
      */
     [[nodiscard]] inline VoxelOffset
     get_offset() const {
-        return chunk_position_ * TerrainOffset(Chunk::SIZE);
+        return VoxelOffset(chunk_position_) * TerrainOffset(Chunk::SIZE);
     }
 
     /**

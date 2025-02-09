@@ -1,7 +1,7 @@
 #include "shadow_map.hpp"
 
-#include "../../handler.hpp"
-#include "../../scene/controls.hpp"
+#include "gui/handler.hpp"
+#include "gui/scene/controls.hpp"
 #include "logging.hpp"
 
 #include <GL/glew.h>

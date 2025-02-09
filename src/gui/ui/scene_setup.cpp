@@ -1,12 +1,16 @@
 #include "scene_setup.hpp"
 
-#include "../render/gpu_data/screen_data.hpp"
-#include "../render/gpu_data/star_data.hpp"
-#include "../render/gpu_data/static_mesh.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
-#include "../render/uniform_types.hpp"
+#include "../render/structures/screen_data.hpp"
+#include "../render/structures/star_data.hpp"
+#include "../render/structures/static_mesh.hpp"
+#include "../render/structures/uniform_types.hpp"
+#include "gui/render/structures/floating_instanced_i_mesh.hpp"
+#include "render_programs.hpp"
 #include "world/entity/object_handler.hpp"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <functional>
 #include <memory>
@@ -19,7 +23,10 @@ namespace gui {
 // Its not in scene because I want to keep this out of the game engine part of
 // the code base.
 void
-setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) {
+setup(
+    Scene& scene, shader::ShaderHandler& shader_handler, world::World& world,
+    world::Climate& climate
+) {
     // assign map from all color ids to each color
     // to package as a texture
     terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
@@ -28,14 +35,11 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     // parallel program to generate a mesh for each chunk
     world.update_all_chunks_mesh();
 
-    auto terrain_mesh = world.get_chunks_mesh();
+    auto terrain_mesh = world.get_terrain_mesh();
 
-    auto star_shape = std::make_shared<gpu_data::StarShape>();
+    auto star_shape = climate.get_sun_data();
 
-    auto star_data =
-        std::make_shared<gpu_data::StarData>(files::get_data_path() / "stars.json");
-
-    auto screen_data = std::make_shared<gpu_data::ScreenData>();
+    auto star_data = climate.get_stars_data();
 
     // Load programs from files
     // clang-format off
@@ -50,8 +54,7 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
     );
 
-    // TODO need to write another program like this
-    // needs to have sub block spacing
+    // TODO needs to have sub block spacing
 
     shader::Program& tile_entity_render_program = shader_handler.load_program(
         "Tile Entity Render",
@@ -87,6 +90,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
         files::get_resources_path() / "shaders" / "background" / "Sun.vert",
         files::get_resources_path() / "shaders" / "background" / "Sun.frag"
     );
+
+    shader::Program& entity_program = shader_handler.load_program("Entity",
+        files::get_resources_path() / "shaders" / "scene" / "Entity.vert",
+        files::get_resources_path() / "shaders" / "Red.frag"
+    );
+
     // clang-format on
 
     // These are uniforms
@@ -132,7 +141,8 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             {matrix_view_projection_uniform, view_matrix_uniform,
              light_depth_texture_projection_uniform, shadow_texture_uniform,
              material_color_texture_uniform, spectral_light_color_uniform,
-             diffuse_light_color_uniform, light_direction_uniform}
+             diffuse_light_color_uniform, light_direction_uniform,
+             light_depth_projection_uniform}
         )
     );
 
@@ -182,12 +192,12 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
 
     // the programs
     // chunks
-    auto chunks_render_program = std::make_shared<shader::ShaderProgram_Elements>(
+    auto chunks_render_program = std::make_shared<shader::ShaderProgram_MultiElements>(
         render_program, chunk_render_setup, chunks_render_program_uniforms
     );
 
     // chunks shadow
-    auto chunks_shadow_program = std::make_shared<shader::ShaderProgram_Elements>(
+    auto chunks_shadow_program = std::make_shared<shader::ShaderProgram_MultiElements>(
         shadow_program, chunk_render_setup, chunks_shadow_program_uniforms
     );
 
@@ -207,6 +217,11 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
             chunks_render_program_uniforms
         );
 
+    auto entity_render_pipeline =
+        std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+            entity_program, chunk_render_setup, chunks_render_program_uniforms
+        );
+
     // sky
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
         sky_program, sky_render_setup, sky_render_program_uniforms
@@ -223,57 +238,33 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     );
 
     // assign data
-    sky_renderer->data.push_back(screen_data);
+    sky_renderer->data.push_back(scene.get_screen_data());
     star_renderer->data.push_back(star_data);
     sun_renderer->data.push_back(star_shape);
 
-    for (const auto& [chunk_position, chunk_mesh] : terrain_mesh) {
-        chunk_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
-        chunks_render_program->data.push_back(chunk_mesh);
-    }
+    terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
+    chunks_render_program->data.push_back(terrain_mesh.get());
+    chunks_shadow_program->data.push_back(terrain_mesh.get());
 
-    for (const auto& [chunk_position, chunk_mesh] : terrain_mesh) {
-        chunks_shadow_program->data.push_back(chunk_mesh);
-    }
+    // TODO send terrain_mesh to a render program
 
-    voxel_utility::VoxelObject default_trees_voxel(
-        files::get_data_path() / "Base" / "models" / "DefaultTree.qb"
-    );
+    auto z = world.get_terrain_main().get_Z_solid(5, 5, 50);
 
-    auto mesh_trees = world::entity::ambient_occlusion_mesher(default_trees_voxel);
+    world.spawn_entity("base/Test_Entity", {5, 5, z + 1});
 
-    std::vector<glm::ivec4> model_matrices;
-    // generate positions of trees
-    for (TerrainOffset x = 0; x < world.get_terrain_main().X_MAX; x += 40)
-        for (TerrainOffset y = 0; y < world.get_terrain_main().Y_MAX; y += 40) {
-            TerrainOffset z = world.get_terrain_main().get_Z_solid(x, y) + 1;
-            if (z != 1) { // if the position of the ground is not zero
-                glm::ivec4 model(x, y, z, x / 40 + y / 40);
-                model_matrices.push_back(model);
-            }
-        }
-
-    // static because the mesh does not have moving parts
-    // this generates the buffer that holds the mesh data
-    auto gpu_trees_data =
-        std::make_shared<gpu_data::StaticMesh>(mesh_trees, model_matrices);
-    entity_shadow_program_execute->data.push_back(gpu_trees_data);
-    entity_render_program_execute->data.push_back(gpu_trees_data);
+    render_programs_t object_render_programs{
+        .entity_render_program = entity_render_pipeline,
+        .tile_object_render_program = tile_entity_render_pipeline};
 
     // attach the world objects to the render program
     world::entity::ObjectHandler& object_handler =
         world::entity::ObjectHandler::instance();
-    for (auto& [id, object] : object_handler.get_objects()) {
-        for (auto& mesh : object) {
-            // I'm so sorry for what I have done.
-            // create a shared pointer with a custom deconstructor {} (nothing).
-            auto mesh_ptr = std::shared_ptr<world::entity::ModelController>(
-                &mesh, [](world::entity::ModelController*) {}
-            );
-
-            // entity_shadow_program_execute->data.push_back(mesh_ptr);
-            tile_entity_render_pipeline->data.push_back(mesh_ptr);
+    for (auto& [id, object] : object_handler) {
+        if (!object) {
+            continue;
         }
+
+        object->init_render(object_render_programs);
     }
 
     // attach program to scene
@@ -283,10 +274,13 @@ setup(Scene& scene, shader::ShaderHandler& shader_handler, world::World& world) 
     scene.add_mid_ground_renderer(chunks_render_program);
     scene.add_mid_ground_renderer(entity_render_program_execute);
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
+    scene.add_mid_ground_renderer(entity_render_pipeline);
 
     scene.add_background_ground_renderer(sky_renderer);
     scene.add_background_ground_renderer(star_renderer);
     scene.add_background_ground_renderer(sun_renderer);
+
+    object_handler.start_update();
 }
 
 } // namespace gui

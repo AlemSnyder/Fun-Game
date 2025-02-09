@@ -24,6 +24,8 @@
 
 #include "entity/mesh.hpp"
 #include "entity/object_handler.hpp"
+#include "entity/tile_object.hpp"
+#include "glm/gtx/transform.hpp"
 #include "global_context.hpp"
 #include "logging.hpp"
 #include "terrain/generation/map_tile.hpp"
@@ -97,18 +99,29 @@ World::World(
                 uint z_position =
                     terrain_main_.get_Z_solid(tile_position.x, tile_position.y) + 1;
 
-                auto& object = object_handler.get_object(plant.identification);
-
                 // zero is for one of the models should be random number between 0, and
                 // num meshes
-                entity::ModelController& model = object.get_model(0);
+                //                entity::ModelController& model =
+                //                object_type->get_model(0);
 
                 // position, then rotation, and texture
-                entity::Placement placement(
+                gui::Placement placement(
                     tile_position.x, tile_position.y, z_position, rotation, 0
                 );
 
-                tile_entities_.emplace(model, placement);
+                auto tile_object_type = std::dynamic_pointer_cast<entity::TileObject>(
+                    object_handler.get_object(plant.identification)
+                );
+
+                if (!tile_object_type) {
+                    continue;
+                }
+
+                auto new_object = std::make_shared<entity::TileObjectInstance>(
+                    tile_object_type, uint8_t(0), placement
+                );
+
+                tile_entities_.insert(new_object);
             }
         }
     }
@@ -122,7 +135,7 @@ World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
 
 // Should not be called except by lambda function
 void
-World::update_single_mesh(TerrainOffset3 chunk_pos) {
+World::update_single_mesh(ChunkPos chunk_pos) {
     const auto chunk = terrain_main_.get_chunk(chunk_pos);
     if (!chunk) {
         return;
@@ -134,8 +147,10 @@ World::update_single_mesh(TerrainOffset3 chunk_pos) {
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
     );
 
-    std::scoped_lock lock(meshes_to_update_mutex_);
-    meshes_to_update_.insert({chunk_pos, chunk_mesh});
+    if (chunk_mesh.get_indices().size() > 0) {
+        std::scoped_lock lock(meshes_to_update_mutex_);
+        meshes_to_update_.insert({chunk_pos, chunk_mesh});
+    }
 }
 
 // TODO should set a limit the the number
@@ -155,17 +170,6 @@ void
 World::update_all_chunks_mesh() {
     LOG_DEBUG(logging::terrain_logger, "Begin load chunks mesh");
     size_t num_chunks = terrain_main_.num_chunks();
-    if (chunks_mesh_.size() != num_chunks) {
-        chunks_mesh_.clear();
-        chunks_mesh_.reserve(num_chunks);
-        for (const auto& [chunk_pos, chunk] : terrain_main_.get_chunks()) {
-            chunks_mesh_.emplace(
-                chunk_pos, std::make_shared<gui::gpu_data::TerrainMesh>(
-                               terrain::TerrainColorMapping::get_color_texture()
-                           )
-            );
-        }
-    }
 
     std::vector<std::future<void>> wait_for;
     wait_for.reserve(num_chunks);
@@ -180,18 +184,19 @@ World::update_all_chunks_mesh() {
     for (const auto& task : wait_for) {
         task.wait();
     }
-    send_updated_chunks_mesh();
+
+    std::scoped_lock lock(meshes_to_update_mutex_);
+    terrain_mesh_ = std::make_shared<gui::gpu_data::TerrainMesh>(
+        meshes_to_update_, terrain::TerrainColorMapping::get_color_texture()
+    );
 }
 
 // will be called once per frame
 void
 World::send_updated_chunks_mesh() {
     std::scoped_lock lock(meshes_to_update_mutex_);
-    for (const auto& mesh_data : meshes_to_update_) {
-        chunks_mesh_[mesh_data.first]->update(mesh_data.second);
-        chunks_mesh_[mesh_data.first]->set_color_texture(
-            terrain::TerrainColorMapping::get_color_texture()
-        );
+    for (const auto& [chunk_pos, mesh_data] : meshes_to_update_) {
+        terrain_mesh_->replace(chunk_pos, mesh_data);
     }
 }
 
@@ -223,6 +228,37 @@ World::set_tile(
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z - 1});
     else if (edge_case == terrain::Chunk::SIZE - 1)
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z + 1});
+}
+
+void
+World::spawn_entity(std::string identification, glm::vec3 position) {
+    auto& object_handler = entity::ObjectHandler::instance();
+    auto object_type = object_handler.get_object(identification);
+
+    if (!object_type) {
+        LOG_ERROR(
+            logging::main_logger, "Identification {} does not exists", identification
+        );
+        return;
+    }
+
+    auto entity_type = std::dynamic_pointer_cast<entity::Entity>(object_type);
+
+    if (!entity_type) {
+        LOG_ERROR(
+            logging::main_logger, "Identification {} is not an entity type",
+            identification
+        );
+        return;
+    }
+
+    auto entity = std::make_shared<entity::EntityInstance>(entity_type);
+
+    glm::mat4 transformation(1.0);
+
+    entity->update(glm::translate(transformation, position));
+
+    entities_.insert(entity);
 }
 
 } // namespace world
