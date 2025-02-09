@@ -31,6 +31,7 @@ namespace gui {
 
 int
 revised_gui_test() {
+#if 1
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
 
@@ -84,21 +85,24 @@ revised_gui_test() {
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(lighting_environment);
 
-    shader::UniformsVector sky_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>(
-            {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
-             spectral_light_color_uniform}
-        )
-    );
+    // shader::UniformsVector sky_render_program_uniforms(
+    //     std::vector<std::shared_ptr<shader::Uniform>>(
+    //         {pixel_projection, matrix_view_inverse_projection,
+    //         light_direction_uniform,
+    //          spectral_light_color_uniform}
+    //     )
+    // );
 
-    shader::UniformsVector no_uniforms({});
+    sky_program.set_uniform(pixel_projection, "pixel_projection");
+    sky_program.set_uniform(matrix_view_inverse_projection, "MVIP");
+    sky_program.set_uniform(light_direction_uniform, "light_direction");
+    sky_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
 
-    auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
-        sky_program, sky_render_setup, sky_render_program_uniforms
-    );
+    auto sky_renderer2 =
+        std::make_shared<shader::ShaderProgram_Standard>(sky_program, sky_render_setup);
 
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
-        blue_program, sky_render_setup, no_uniforms
+        blue_program, sky_render_setup
     );
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -233,11 +237,13 @@ revised_gui_test() {
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
+#endif
     return 0;
 }
 
 int
 stars_test() {
+#if 1
     screen_size_t window_width = 1280;
     screen_size_t window_height = 800;
 
@@ -297,29 +303,20 @@ stars_test() {
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(lighting_environment);
 
-    shader::UniformsVector sky_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>(
-            {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
-             spectral_light_color_uniform}
-        )
-    );
-
-    shader::UniformsVector no_uniforms({});
-
-    auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
-        sky_program, sky_render_setup, sky_render_program_uniforms
-    );
+    auto sky_renderer2 =
+        std::make_shared<shader::ShaderProgram_Standard>(sky_program, sky_render_setup);
 
     auto blue_background = std::make_shared<shader::ShaderProgram_Standard>(
-        blue_program, sky_render_setup, no_uniforms
+        blue_program, sky_render_setup
     );
 
-    shader::UniformsVector star_render_program_uniforms(
-        std::vector<std::shared_ptr<shader::Uniform>>(
-            {matrix_view_projection_uniform, pixel_projection, star_rotation_uniform,
-             light_direction_uniform}
-        )
-    );
+    stars_program.set_uniform(matrix_view_projection_uniform, "MVIP");
+    stars_program.set_uniform(pixel_projection, "pixel_projection");
+    stars_program.set_uniform(star_rotation_uniform, "star_rotation");
+    stars_program.set_uniform(light_direction_uniform, "light_direction");
+
+    sky_program.set_uniform(matrix_view_projection_uniform, "MVIP");
+    sky_program.set_uniform(light_direction_uniform, "light_direction");
 
     std::function<void()> star_render_setup = []() {
         // Draw over everything
@@ -329,7 +326,7 @@ stars_test() {
     };
 
     auto star_renderer = std::make_shared<shader::ShaderProgram_Instanced>(
-        stars_program, star_render_setup, star_render_program_uniforms
+        stars_program, star_render_setup
     );
 
     GLuint VertexArrayID;
@@ -369,25 +366,7 @@ stars_test() {
 
         blue_background->render(window_width, window_height, 0);
 
-        // star_renderer->render(window_width, window_height, 0);
-
-        stars_program.use_program();
-
-        for (auto uniform : star_render_program_uniforms) {
-            GLint uniform_id = stars_program.get_uniform(uniform->get_name());
-            if (uniform_id != 0)
-                uniform->bind(uniform_id);
-        }
-
-        climate.get_stars_data()->bind();
-
-        glDrawArraysInstanced(
-            GL_TRIANGLE_STRIP,                        // mode
-            0,                                        // start
-            4,                                        // number of vertices
-            climate.get_stars_data()->get_num_stars() // number of models
-
-        );
+        star_renderer->render(window_width, window_height, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -400,6 +379,7 @@ stars_test() {
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
+#endif
     return 0;
 }
 

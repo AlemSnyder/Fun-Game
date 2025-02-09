@@ -66,6 +66,8 @@ class FloatingInstancedIMeshGPU :
         const world::entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
     );
 
+    inline virtual ~FloatingInstancedIMeshGPU() {}
+
     virtual void attach_all() override;
 
     void update_transforms_array(std::vector<glm::mat4> data, uint offset);
