@@ -61,7 +61,6 @@ enum class ShaderType : GLenum {
     GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
     //    TESS_CONTROL_SHADER = GL_TESS_CONTROL_SHADER,
     //    TESS_EVALUATION_SHADER = GL_TESS_EVALUATION_SHADER,
-    //    GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
     //    COMPUTE_SHADER = GL_COMPUTE_SHADER,
 };
 
@@ -89,6 +88,31 @@ to_string(const GPUDataType& data_type) {
             return "FLOAT";
         case GPUDataType::DOUBLE:
             return "DOUBLE";
+        default:
+            abort();
+    }
+}
+
+/**
+ * @brief String representation of GPUDataType
+ *
+ * @param const GPUDataType& data type to represent
+ */
+constexpr inline size_t
+get_size(const GPUDataType& data_type) {
+    switch (data_type) {
+        case GPUDataType::BYTE:
+        case GPUDataType::UNSIGNED_BYTE:
+            return 1;
+        case GPUDataType::SHORT:
+        case GPUDataType::UNSIGNED_SHORT:
+            return 2;
+        case GPUDataType::INT:
+        case GPUDataType::UNSIGNED_INT:
+        case GPUDataType::FLOAT:
+            return 4;
+        case GPUDataType::DOUBLE:
+            return 8;
         default:
             abort();
     }

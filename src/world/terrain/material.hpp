@@ -37,6 +37,7 @@
 #include <unordered_set>
 #include <vector>
 
+// TODO this is nto a namespace. Should be world::terrain
 namespace terrain {
 
 struct material_color_t {
@@ -126,8 +127,8 @@ class TerrainColorMapping {
      * @param const std::unordered_map<MaterialId, const Material>& materials materials
      * map
      */
-    static void
-    assign_color_mapping(const std::unordered_map<MaterialId, const material_t>& materials
+    static void assign_color_mapping(
+        const std::unordered_map<MaterialId, const material_t>& materials
     );
 
     /**

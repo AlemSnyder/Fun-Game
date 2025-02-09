@@ -26,10 +26,10 @@
 
 #include <png.h>
 
+#include <array>
 #include <cstring>
 #include <filesystem>
 #include <new>
-#include <array>
 
 namespace image {
 
@@ -55,6 +55,7 @@ concept ImageColor = requires(T const img, size_t i, size_t j) {
     { img.get_width() } -> std::convertible_to<size_t>;
     { img.get_color(i, j) } -> std::same_as<std::array<png_byte, 3>>;
 };
+
 template <ImageBW T>
 [[nodiscard]] write_result_t
 write_image(T image, const std::filesystem::path& path) {
@@ -292,7 +293,6 @@ write_image(T image, const std::filesystem::path& path) {
             row[3 * j] = pixel_color[0];
             row[3 * j + 1] = pixel_color[1];
             row[3 * j + 2] = pixel_color[2];
-
         }
 
         // write the row
@@ -322,10 +322,9 @@ fopen_failed:
     return status;
 }
 
-
 class ColorImageTest {
  public:
-    ColorImageTest() {};
+    ColorImageTest(){};
 
     size_t
     get_height() const {
@@ -339,7 +338,9 @@ class ColorImageTest {
 
     std::array<png_byte, 3>
     get_color(size_t i, size_t j) const {
-        return std::array<png_byte, 3>({static_cast<png_byte>(i), static_cast<png_byte>(j), 10});
+        return std::array<png_byte, 3>(
+            {static_cast<png_byte>(i), static_cast<png_byte>(j), 10}
+        );
     }
 };
 

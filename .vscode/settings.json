@@ -127,5 +127,8 @@
         "latch": "cpp"
     },
     "editor.detectIndentation": false,
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "C_Cpp.clang_format_path": "{workspaceFolder}/.clang-format",
+    "C_Cpp.doxygen.generatedStyle": "/**",
+    "todo-tree.filtering.ignoreGitSubmodules": true
 }

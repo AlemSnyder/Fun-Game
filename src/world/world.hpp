@@ -23,8 +23,9 @@
 #pragma once
 
 #include "biome.hpp"
+#include "entity/entity.hpp"
 #include "entity/tile_object.hpp"
-#include "gui/render/gpu_data/terrain_mesh.hpp"
+#include "gui/render/structures/terrain_mesh.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "types.hpp"
@@ -58,23 +59,26 @@ class World {
     // terrain in the world
     terrain::Terrain terrain_main_;
 
-    // TerrainMesh for each chunk in terrain
-    std::vector<std::shared_ptr<gui::gpu_data::TerrainMesh>> chunks_mesh_;
+    // TerrainMesh for all terrain
+    std::shared_ptr<gui::gpu_data::TerrainMesh> terrain_mesh_;
     // chunks_mesh like attorneys general
 
     // Set of chunks that need to be updated on gpu.
     // They Need to be re-meshed, and that mesh need to be sent to gpu.
-    std::unordered_set<ChunkIndex> chunks_to_update_;
+    std::unordered_set<ChunkPos> chunks_to_update_;
 
     // Set of meshes that need to be sent to gpu. These meshes should be sent
     // once per frame.
-    std::unordered_map<ChunkIndex, entity::Mesh> meshes_to_update_;
+    std::unordered_map<ChunkPos, entity::Mesh> meshes_to_update_;
     // Multiple threads are writing to this map concurrently so this is its
     // mutex
     std::mutex meshes_to_update_mutex_;
 
-    // entity
-    std::unordered_set<entity::TileObject, entity::TileObjectOrder> tile_entities_;
+    // TileObjects
+    std::unordered_set<std::shared_ptr<entity::TileObjectInstance>> tile_entities_;
+
+    // Entities
+    std::unordered_set<std::shared_ptr<entity::EntityInstance>> entities_;
 
  public:
     /**
@@ -97,8 +101,8 @@ class World {
      * @brief Get gui mesh data
      */
     const auto&
-    get_chunks_mesh() const {
-        return chunks_mesh_;
+    get_terrain_mesh() const {
+        return terrain_mesh_;
     }
 
     // all of these things are for saving
@@ -161,7 +165,7 @@ class World {
      * @brief Marks a single chunk given by its position to be updated.
      */
     void
-    mark_for_update(ChunkIndex chunk_pos) {
+    mark_chunk_for_update(ChunkPos chunk_pos) {
         chunks_to_update_.insert(chunk_pos);
     }
 
@@ -172,8 +176,8 @@ class World {
     mark_for_update(TerrainDim3 tile_sop) {
         if (!terrain_main_.in_range(tile_sop))
             return;
-        Dim chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
-        mark_for_update(chunk_pos);
+        ChunkPos chunk_pos = terrain_main_.get_chunk_pos_from_tile(tile_sop);
+        mark_chunk_for_update(chunk_pos);
     }
 
     /**
@@ -184,7 +188,7 @@ class World {
     /**
      * @brief Generates a mesh for a single chunk.
      */
-    void update_single_mesh(ChunkIndex chunk_pos);
+    void update_single_mesh(ChunkPos chunk_pos);
 
     /**
      * @brief Sends chunk mesh data to gpu.
@@ -208,6 +212,8 @@ class World {
      * @param ColorId color id to change to
      */
     void set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id);
+
+    void spawn_entity(std::string id, glm::vec3 position);
 
     /**
      * @brief Save terrain with debug information
@@ -233,10 +239,8 @@ class World {
 
  private:
     inline void
-    initialize_chunks_mesh_() {
-        chunks_mesh_.resize(terrain_main_.get_chunks().size());
-        for (auto& m : chunks_mesh_)
-            m = std::make_shared<gui::gpu_data::TerrainMesh>();
+    initialize_terrain_mesh_() {
+        terrain_mesh_ = std::make_shared<gui::gpu_data::TerrainMesh>();
     }
 };
 

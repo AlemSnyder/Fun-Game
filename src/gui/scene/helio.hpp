@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../render/uniform_types.hpp"
+#include "../render/structures/uniform_types.hpp"
 
 #include <glm/glm.hpp>
 
@@ -27,7 +27,7 @@ class Helio : public render::LightEnvironment, public render::StarRotation {
     glm::vec3 light_direction_;
     glm::vec3 sunlight_color_;
 
-    bool manual_light_direction_;
+    bool manual_light_direction_ = false;
 
  public:
     // gives a slight insight to the internal workings

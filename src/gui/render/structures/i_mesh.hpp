@@ -11,7 +11,7 @@
  */
 
 /**
- * @file non_instanced_i_mesh.hpp
+ * @file i_mesh.hpp
  *
  * @author @AlemSnyder
  *
@@ -25,9 +25,10 @@
 // reason it should be moved into gui/array_buffer
 // Also no namespace terrain
 
-#include "array_buffer.hpp"
-#include "gpu_data.hpp"
-#include "texture.hpp"
+#include "gui/render/gpu_data/data_types.hpp"
+#include "gui/render/gpu_data/texture.hpp"
+#include "gui/render/gpu_data/vertex_array_object.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "world/entity/mesh.hpp"
 
 #include <GL/glew.h>
@@ -48,32 +49,66 @@ namespace gpu_data {
  * @details Handles non-instanced meshes. Sends mesh data to GPU, and handles
  * binding, and deleting data on GPU.
  */
-class NonInstancedIMeshGPU : virtual public GPUDataElements {
+class IMeshGPU : virtual public GPUDataElements {
  protected:
-    ArrayBuffer<glm::ivec3> vertex_array_;
-    ArrayBuffer<uint16_t> color_array_;
-    ArrayBuffer<glm::i8vec3> normal_array_;
-    ArrayBuffer<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
+    VertexArrayObject vertex_array_object_;
+
+    VertexBufferObject<glm::ivec3> vertex_array_;
+    VertexBufferObject<uint16_t> color_array_;
+    VertexBufferObject<glm::i8vec3> normal_array_;
+    VertexBufferObject<uint16_t, BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
     uint32_t num_vertices_;
     bool do_render_;
 
  public:
-    NonInstancedIMeshGPU(const NonInstancedIMeshGPU& other) = delete;
-    NonInstancedIMeshGPU(NonInstancedIMeshGPU&& other) = default;
+    IMeshGPU(const IMeshGPU& other) = delete;
+    IMeshGPU(IMeshGPU&& other) = default;
     // copy operator
-    NonInstancedIMeshGPU& operator=(const NonInstancedIMeshGPU& other) = delete;
-    NonInstancedIMeshGPU& operator=(NonInstancedIMeshGPU&& other) = default;
+    IMeshGPU& operator=(const IMeshGPU& other) = delete;
+    IMeshGPU& operator=(IMeshGPU&& other) = default;
 
-    inline NonInstancedIMeshGPU() :
+    /**
+     * @brief Construct a new NonInstancedIMeshGPU object
+     *
+     * @details Default constructor
+     */
+    inline IMeshGPU() :
         vertex_array_(), color_array_(), normal_array_(), element_array_(),
-        num_vertices_(), do_render_() {}
+        num_vertices_(), do_render_() {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this]() { initialize(); });
+    }
 
-    explicit inline NonInstancedIMeshGPU(const world::entity::Mesh& mesh) :
+    /**
+     * @brief Construct a new IMeshGPU object
+     *
+     * @param world::entity::Mesh& mesh to load
+     * @param bool b set to false when calling this constructor when inherited
+     */
+    explicit inline IMeshGPU(const world::entity::Mesh& mesh, bool b = true) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
         normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),
         num_vertices_(mesh.get_indices().size()),
-        do_render_(mesh.get_indices().size()) {}
+        do_render_(mesh.get_indices().size()) {
+        if (b) {
+            GlobalContext& context = GlobalContext::instance();
+            context.push_opengl_task([this]() { initialize(); });
+        }
+    }
+
+    /**
+     * @brief Initializes Vertex Array Object.
+     *
+     * This might not have been the ideal design pattern. I may redo it later.
+     */
+    void initialize();
+
+    /**
+     * @brief Attach all Vertex Buffers to Layout positions on vertex and fragment
+     * shaders.
+     */
+    virtual void attach_all();
 
     virtual void update(const world::entity::Mesh& mesh);
 

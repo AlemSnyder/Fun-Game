@@ -1,5 +1,6 @@
 {
     "name": "Flower Test",
+    "type":"TILE_OBJECT",
     "models": [
         {
             "path": "./Flower_Test.qb",

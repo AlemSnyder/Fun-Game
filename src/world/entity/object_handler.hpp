@@ -20,13 +20,15 @@
  *
  */
 
+#include "gui/render/structures/model.hpp"
 #include "manifest.hpp"
-#include "model.hpp"
+#include "object.hpp"
+#include "position_synchronizer.hpp"
 
-#include <filesystem>
-#include <map>
+#include <memory>
 #include <mutex>
 #include <string>
+#include <unordered_map>
 
 namespace world {
 
@@ -44,7 +46,9 @@ class ObjectHandler {
     ObjectHandler() {}
 
     std::mutex map_mutex_;
-    std::unordered_map<std::string, ObjectData> ided_objects;
+    std::unordered_map<std::string, std::shared_ptr<Object>> ided_objects;
+
+    PositionSynchronizer position_synchronizer_;
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -66,17 +70,26 @@ class ObjectHandler {
      */
     void read_object(const manifest::descriptor_t& object_descriptor);
 
-    ObjectData& get_object(const std::string&);
+    std::shared_ptr<Object> get_object(const std::string&);
 
-    [[nodiscard]] inline std::unordered_map<std::string, ObjectData>&
-    get_objects() {
-        return ided_objects;
+    [[nodiscard]] inline const auto
+    begin() const {
+        return ided_objects.begin();
+    };
+
+    [[nodiscard]] inline const auto
+    end() const {
+        return ided_objects.end();
     };
 
     /**
-     * @brief Update all ObjectData. Should be run once per frame.
+     * @brief Update all Object s. Should be run once per frame.
      */
-    void update();
+    //    void update();
+
+    void start_update();
+
+    void stop_update();
 };
 
 } // namespace entity
