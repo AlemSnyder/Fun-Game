@@ -87,7 +87,8 @@ revised_gui_test() {
 
     // shader::UniformsVector sky_render_program_uniforms(
     //     std::vector<std::shared_ptr<shader::Uniform>>(
-    //         {pixel_projection, matrix_view_inverse_projection, light_direction_uniform,
+    //         {pixel_projection, matrix_view_inverse_projection,
+    //         light_direction_uniform,
     //          spectral_light_color_uniform}
     //     )
     // );
@@ -97,9 +98,8 @@ revised_gui_test() {
     sky_program.set_uniform(light_direction_uniform, "light_direction");
     sky_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
 
-    auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
-        sky_program, sky_render_setup
-    );
+    auto sky_renderer2 =
+        std::make_shared<shader::ShaderProgram_Standard>(sky_program, sky_render_setup);
 
     auto sky_renderer = std::make_shared<shader::ShaderProgram_Standard>(
         blue_program, sky_render_setup
@@ -303,9 +303,8 @@ stars_test() {
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(lighting_environment);
 
-    auto sky_renderer2 = std::make_shared<shader::ShaderProgram_Standard>(
-        sky_program, sky_render_setup
-    );
+    auto sky_renderer2 =
+        std::make_shared<shader::ShaderProgram_Standard>(sky_program, sky_render_setup);
 
     auto blue_background = std::make_shared<shader::ShaderProgram_Standard>(
         blue_program, sky_render_setup
@@ -329,8 +328,6 @@ stars_test() {
     auto star_renderer = std::make_shared<shader::ShaderProgram_Instanced>(
         stars_program, star_render_setup
     );
-
-    
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);

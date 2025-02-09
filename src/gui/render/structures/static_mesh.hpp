@@ -47,13 +47,15 @@ class StaticMesh : public virtual InstancedIMeshGPU {
     ) :
         InstancedIMeshGPU(mesh, model_transforms) {}
 
+    inline virtual ~StaticMesh() {}
+
     inline void
     bind() const override {
         InstancedIMeshGPU::bind();
         color_texture_.bind(0);
     }
 
-    inline virtual ~StaticMesh() { }
+    inline virtual ~StaticMesh() {}
 };
 
 } // namespace gpu_data

@@ -95,7 +95,7 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         }
     }
 
-    inline virtual ~IMeshMultiGPU() { }
+    inline virtual ~IMeshMultiGPU() {}
 
     // if you cant construct it you can't hurt yourself
 
@@ -195,6 +195,8 @@ class TerrainMesh : public virtual IMeshMultiGPU {
             index += 1;
         }
     }
+
+    inline virtual ~TerrainMesh() {}
 
     inline void
     set_color_texture(Texture1D& color_texture_id) noexcept {

@@ -53,10 +53,10 @@ class ObjectHandler {
  public:
     // Delete all CTORs and CTOR-like operators
     ObjectHandler(ObjectHandler&&) = delete;
-    ObjectHandler(ObjectHandler const&) = default;
+    ObjectHandler(ObjectHandler const&) = delete;
 
     ObjectHandler& operator=(ObjectHandler&&) = delete;
-    ObjectHandler& operator=(ObjectHandler const&) = default;
+    ObjectHandler& operator=(ObjectHandler const&) = delete;
 
     // Instance accessor
     static inline ObjectHandler&

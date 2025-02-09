@@ -2,7 +2,10 @@
 
 #include "util/hash_combine.hpp"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
+#pragma clang diagnostic pop
 
 #include <compare>
 #include <string>

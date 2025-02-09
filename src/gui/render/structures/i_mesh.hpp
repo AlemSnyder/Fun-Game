@@ -97,7 +97,7 @@ class IMeshGPU : virtual public GPUDataElements {
         }
     }
 
-    inline virtual ~IMeshGPU() { }
+    inline virtual ~IMeshGPU() {}
 
     /**
      * @brief Initializes Vertex Array Object.

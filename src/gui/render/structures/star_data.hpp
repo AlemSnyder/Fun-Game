@@ -30,7 +30,10 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
+#pragma clang diagnostic pop
 
 #include <filesystem>
 #include <vector>
@@ -88,11 +91,13 @@ class StarShape : public virtual GPUData {
      */
     StarShape(bool b = true);
 
-    inline virtual ~StarShape() { }
+    inline virtual ~StarShape() {}
 
     void initialize();
 
     virtual void attach_all();
+
+    inline virtual ~StarShape() {}
 
     /**
      * @brief Get the star shape buffer.

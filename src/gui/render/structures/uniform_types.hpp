@@ -224,6 +224,8 @@ class TextureUniform : public shader::UniformExecuter {
     TextureUniform(gpu_data::GPUDataType texture_type, uint8_t texture_location) :
         UniformExecuter(texture_type), texture_location_(texture_location) {}
 
+    inline virtual ~TextureUniform() {}
+
     inline virtual void
     bind(GLint uniform_ID) const override {
         LOG_BACKTRACE(
