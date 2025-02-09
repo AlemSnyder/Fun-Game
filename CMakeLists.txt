@@ -96,9 +96,9 @@ target_include_directories(FunGame PRIVATE "vendor/quill/quill/include/quill/bun
 
 # Set warning options
 if(MSVC)
-  target_compile_options(FunGame PRIVATE /W4 /WX)
+  target_compile_options(FunGame PRIVATE /W4 /WX -wd4068)
 else()
-  target_compile_options(FunGame PRIVATE -Wall -Wextra -Wpedantic -pedantic -fdiagnostics-color=always)
+  target_compile_options(FunGame PRIVATE -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -pedantic -fdiagnostics-color=always)
 endif()
 
 # Resource and data handling
