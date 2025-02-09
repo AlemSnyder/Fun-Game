@@ -46,7 +46,7 @@ Render_Base::render(screen_size_t width, screen_size_t height, GLuint framebuffe
     opengl_program_.bind_uniforms();
 }
 
-inline void
+void
 ShaderProgram_Standard::render(
     screen_size_t width, screen_size_t height, GLuint framebuffer_ID
 ) {

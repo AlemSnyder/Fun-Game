@@ -149,7 +149,7 @@ class ShaderProgram_Standard :
 
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
-    );
+    ) override;
 };
 
 /**
@@ -171,7 +171,7 @@ class ShaderProgram_Elements :
 
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
-    );
+    ) override;
 };
 
 /**
@@ -193,7 +193,7 @@ class ShaderProgram_Instanced :
 
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
-    );
+    ) override;
 };
 
 /**
@@ -215,7 +215,7 @@ class ShaderProgram_ElementsInstanced :
 
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
-    );
+    ) override;
 };
 
 /**
@@ -233,11 +233,11 @@ class ShaderProgram_MultiElements :
     ) :
         Render_Base(shader_program, setup_commands) {}
 
+    inline virtual ~ShaderProgram_MultiElements() {}
+
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
-    );
-
-    inline virtual ~ShaderProgram_MultiElements() {}
+    ) override;
 };
 
 } // namespace shader
