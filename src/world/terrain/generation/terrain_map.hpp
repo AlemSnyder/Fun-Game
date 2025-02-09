@@ -66,7 +66,7 @@ class TerrainMacroMap {
     /**
      * @brief iterator to first map tile
      */
-    const auto
+    auto
     begin() const {
         return terrain_map_.begin();
     }
@@ -74,7 +74,7 @@ class TerrainMacroMap {
     /**
      * @brief iterator past last map tile
      */
-    const auto
+    auto
     end() const {
         return terrain_map_.end();
     }

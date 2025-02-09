@@ -47,6 +47,8 @@ class StaticMesh : public virtual InstancedIMeshGPU {
     ) :
         InstancedIMeshGPU(mesh, model_transforms) {}
 
+    inline virtual ~StaticMesh() {}
+
     inline void
     bind() const override {
         InstancedIMeshGPU::bind();

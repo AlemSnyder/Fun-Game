@@ -294,16 +294,15 @@ class LandGenerator {
         current_sub_region = 0;
     };
 
-    [[nodiscard]] inline const auto
+    [[nodiscard]] inline auto
     begin() const {
         return stamp_generators_.begin();
     }
 
-    [[nodiscard]] inline const auto
-    end() const {
+    [[nodiscard]] inline auto end() const {
         return stamp_generators_.end();
-    }
-};
+}
+}; // namespace generation
 
 class AddToTop {
     const MaterialGroup elements_above_;
@@ -348,6 +347,6 @@ class AddToTop {
     }
 };
 
-} // namespace generation
+} // namespace terrain
 
 } // namespace terrain

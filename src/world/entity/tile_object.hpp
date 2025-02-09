@@ -109,6 +109,8 @@ class TileObject : public virtual Object {
      */
     TileObject(const object_t& object_data, const manifest::descriptor_t& model_path);
 
+    inline virtual ~TileObject() {}
+
     /**
      * @brief Get a model for this object by id.
      *

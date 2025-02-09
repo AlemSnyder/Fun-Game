@@ -25,7 +25,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
+#pragma clang diagnostic pop
+
 #include <imgui/imgui.h>
 #include <png.h>
 

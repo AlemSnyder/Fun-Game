@@ -218,6 +218,8 @@ class TextureUniform : public shader::Uniform {
         Uniform(name, texture_type),
         texture_location_(texture_location) {}
 
+    inline virtual ~TextureUniform() {}
+
     inline virtual void
     bind(GLint uniform_ID) {
         LOG_BACKTRACE(

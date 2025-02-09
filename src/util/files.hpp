@@ -24,7 +24,10 @@
 
 #include "logging.hpp"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
+#pragma clang diagnostic pop
 
 #include <filesystem>
 #include <fstream>
