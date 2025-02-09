@@ -58,8 +58,8 @@ namespace shader {
  */
 inline void
 log_uniforms(
-    std::set<std::pair<std::string, std::string>> want_uniforms,
-    std::set<std::pair<std::string, std::string>> has_uniforms
+    [[maybe_unused]] std::set<std::pair<std::string, std::string>> want_uniforms,
+    [[maybe_unused]] std::set<std::pair<std::string, std::string>> has_uniforms
 ) {
 #if DEBUG()
 
