@@ -97,8 +97,6 @@ class StarShape : public virtual GPUData {
 
     virtual void attach_all();
 
-    inline virtual ~StarShape() {}
-
     /**
      * @brief Get the star shape buffer.
      *

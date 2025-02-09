@@ -58,8 +58,8 @@ namespace shader {
  */
 inline void
 log_uniforms(
-    std::set<std::pair<std::string, gpu_data::GPUDataType>> want_uniforms,
-    std::set<std::pair<std::string, gpu_data::GPUDataType>> has_uniforms
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>> want_uniforms,
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>> has_uniforms
 ) {
 #if DEBUG()
 
@@ -125,7 +125,7 @@ class Render_Base {
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
 
-    inline virtual ~Render_Base() { }
+    inline virtual ~Render_Base() {}
 };
 
 // TODO each of these should use the glMulti... version of the given command
@@ -145,11 +145,11 @@ class ShaderProgram_Standard :
     ) :
         Render_Base(shader_program, setup_commands) {}
 
+    inline virtual ~ShaderProgram_Standard() {}
+
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
-
-    inline virtual ~ShaderProgram_Standard() { }
 };
 
 /**
@@ -167,11 +167,11 @@ class ShaderProgram_Elements :
     ) :
         Render_Base(shader_program, setup_commands) {}
 
+    inline virtual ~ShaderProgram_Elements() {}
+
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
-
-    inline virtual ~ShaderProgram_Elements() { }
 };
 
 /**
@@ -189,11 +189,11 @@ class ShaderProgram_Instanced :
     ) :
         Render_Base(shader_program, setup_commands) {}
 
+    inline virtual ~ShaderProgram_Instanced() {}
+
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
-
-    inline virtual ~ShaderProgram_Instanced() { }
 };
 
 /**
@@ -211,11 +211,11 @@ class ShaderProgram_ElementsInstanced :
     ) :
         Render_Base(shader_program, setup_commands) {}
 
+    inline virtual ~ShaderProgram_ElementsInstanced() {}
+
     void virtual render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
-
-    inline virtual ~ShaderProgram_ElementsInstanced() { }
 };
 
 /**
@@ -237,7 +237,7 @@ class ShaderProgram_MultiElements :
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID
     );
 
-    inline virtual ~ShaderProgram_MultiElements() { }
+    inline virtual ~ShaderProgram_MultiElements() {}
 };
 
 } // namespace shader
