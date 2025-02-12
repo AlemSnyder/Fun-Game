@@ -48,6 +48,9 @@ grow_grass_inner(
         for (; !it.end(); it++) {
             auto pos = it.get_pos();
             Tile* adjacent_tile = ter.get_tile(pos);
+            if (!adjacent_tile) {
+                continue;
+            }
             // instead of height used maxheight +1
             if (adjacent_tile->is_grass() && (getter(adjacent_tile) < height)) {
                 // if adjacent tile is on the level below
@@ -93,7 +96,7 @@ grow_grass_recursive(Terrain& ter, std::unordered_set<TerrainOffset3> all_grass)
         );
         for (; !it.end(); it++) {
             Tile* adjacent_tile = ter.get_tile(it.get_pos());
-            if (!adjacent_tile){
+            if (!adjacent_tile) {
                 continue;
             }
             // (in some cases: not solid, and others: solid and not grass)

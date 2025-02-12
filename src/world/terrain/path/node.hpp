@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "types.hpp"
 #include "node_group.hpp"
+#include "types.hpp"
 
 #include <unordered_set>
 

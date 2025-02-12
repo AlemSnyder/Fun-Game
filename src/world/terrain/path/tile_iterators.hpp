@@ -75,7 +75,6 @@ class AdjacentIterator {
         return pos_ + TerrainOffset3(dpos_);
     }
 
-
     [[nodiscard]] inline UnitPath
     get_path_type() const {
         return path_type_;

@@ -92,7 +92,7 @@ Terrain::Terrain(
 
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
-    
+
     //  TODO make this faster 1
     init_chunks();
 
@@ -120,6 +120,41 @@ Terrain::Terrain(
     LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
 
     LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
+}
+
+const Tile*
+Terrain::get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
+    // o3 will absolve my crimes
+    TerrainOffset x_ = x;
+    TerrainOffset y_ = y;
+    TerrainOffset z_ = z;
+
+    if (x_ < 0) {
+        x_ -= Chunk::SIZE - 1;
+    }
+    if (y_ < 0) {
+        y_ -= Chunk::SIZE - 1;
+    }
+    if (z_ < 0) {
+        z_ -= Chunk::SIZE - 1;
+    }
+    TerrainOffset3 chunk_position(x_ / Chunk::SIZE, y_ / Chunk::SIZE, z_ / Chunk::SIZE);
+    auto chunk_iter = chunks_.find(chunk_position);
+
+    if (chunk_iter == chunks_.end()) {
+        LOG_WARNING(
+            logging::terrain_logger,
+            "Tile position ({}, {}, {}), out of range because the chunk ({}, {}, "
+            "{}) does not exist.",
+            x, y, z, chunk_position.x, chunk_position.y, chunk_position.z
+        );
+        return nullptr;
+    }
+
+    auto& chunk = chunk_iter->second;
+
+    TerrainOffset3 tile_position(x % Chunk::SIZE, y % Chunk::SIZE, z % Chunk::SIZE);
+    return chunk.get_tile(tile_position);
 }
 
 void
@@ -250,8 +285,8 @@ Terrain::add_to_top(const generation::AddToTop& top_data) {
                 if (top_data.can_overwrite_material(
                         tile.get_material_id(), tile.get_color_id()
                     )) {
-                    get_tile(x, y, z)->set_material(
-                        biome_.get_material(top_data.get_material_id()),
+                    set_tile_material(
+                        {x, y, z}, biome_.get_material(top_data.get_material_id()),
                         top_data.get_color_id()
                     );
                 }
@@ -280,12 +315,13 @@ Terrain::stamp_tile_region(
                         if (stamp.elements_can_stamp.value().material_in(
                                 tile->get_material_id(), tile->get_color_id()
                             ))
-                            tile->set_material(
-                                biome_.get_material(stamp.mat), stamp.color_id
+                            set_tile_material(
+                                {x, y, z}, biome_.get_material(stamp.mat),
+                                stamp.color_id
                             );
                     } else {
-                        tile->set_material(
-                            biome_.get_material(stamp.mat), stamp.color_id
+                        set_tile_material(
+                            {x, y, z}, biome_.get_material(stamp.mat), stamp.color_id
                         );
                     }
                 }
@@ -394,6 +430,19 @@ Terrain::paint(Tile* tile, const material_t* mat, ColorId color_id) {
         return true;
     }
     return false;
+}
+
+void
+Terrain::set_tile_material(
+    TerrainOffset3 xyz, const material_t* mat, ColorId color_id
+) {
+    auto mat_id = mat->material_id;
+    if (mat_id == DIRT_ID) { // being set to dirt
+        color_id = (xyz.z + (xyz.x / 16 + xyz.y / 16) % 2) / 3 % 2 + NUM_GRASS;
+    }
+    if (auto tile = get_tile(xyz)) {
+        tile->set_material(mat, color_id);
+    }
 }
 
 bool
@@ -884,9 +933,9 @@ Terrain::qb_save_debug(const std::string path) {
             for (const TerrainOffset3& t : NG->get_tiles()) {
                 // Terrain owns the tile so this is fine
 
-                Tile* non_const_tile = get_tile(t);
+                // Tile* non_const_tile = get_tile(t);
                 set_tile_material(
-                    non_const_tile, &get_materials().at(DEBUG_MATERIAL),
+                    t, &get_materials().at(DEBUG_MATERIAL),
                     debug_color % NUM_DEBUG_COLORS
                 );
             }

@@ -1,18 +1,17 @@
 #include "node_group.hpp"
+
 #include "world/terrain/chunk.hpp"
 
 #include <cstdint>
 
 namespace terrain {
 
-NodeGroup::NodeGroup(ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type) : \
+NodeGroup::NodeGroup(
+    ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type
+) :
     chunk_position_(chunk_position),
-    path_type_(path_type),
-    tile_positions_({tile_position}),
-    center_x(tile_position.x),
-    center_y(tile_position.y),
-    center_z(tile_position.z)
-{}
+    path_type_(path_type), tile_positions_({tile_position}), center_x(tile_position.x),
+    center_y(tile_position.y), center_z(tile_position.z) {}
 
 void
 NodeGroup::add_adjacent(NodeGroup* NG, UnitPath type) {
@@ -80,7 +79,8 @@ NodeGroup::merge_groups(NodeGroup other) {
 
 glm::vec3
 NodeGroup::sop() const {
-    return glm::vec3(center_x, center_y, center_z) + glm::vec3(chunk_position_) * float(Chunk::SIZE);
+    return glm::vec3(center_x, center_y, center_z)
+           + glm::vec3(chunk_position_) * float(Chunk::SIZE);
 }
 
 std::unordered_set<TerrainOffset3>
@@ -104,7 +104,8 @@ NodeGroup::operator==(const NodeGroup& other) const {
 
 TerrainOffset3
 NodeGroup::unique_position() const {
-    return TerrainOffset3(*tile_positions_.begin()) + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE);
+    return TerrainOffset3(*tile_positions_.begin())
+           + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE);
 }
 
 // bool

@@ -120,12 +120,12 @@ Chunk::contains_node_group_(NodeGroup* NG) {
 
 ColorInt
 terrain::Chunk::get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
-    return ter_->get_voxel( get_offset() + VoxelOffset(x,y,z));
+    return ter_->get_voxel(get_offset() + VoxelOffset(x, y, z));
 }
 
 MatColorId
 terrain::Chunk::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
-    return ter_->get_voxel_color_id(get_offset() + VoxelOffset(x,y,z));
+    return ter_->get_voxel_color_id(get_offset() + VoxelOffset(x, y, z));
 }
 
 std::vector<MatColorId>

@@ -348,6 +348,6 @@ class AddToTop {
     }
 };
 
-} // namespace terrain
+} // namespace generation
 
 } // namespace terrain

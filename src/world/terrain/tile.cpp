@@ -38,9 +38,11 @@ Tile::set_color_id(ColorId color_id, const terrain::material_t* const material) 
     if (color_id >= material->color.size()) {
         return;
     }
-    if ((mat_id_ != DIRT_ID) || (color_id < NUM_GRASS && grass_)) {
-        color_id_ = color_id;
-    } // cannot set the color of dirt
+    // if ((mat_id_ != DIRT_ID) || (color_id < NUM_GRASS && grass_)) {
+    color_id_ = color_id;
+    //} // cannot set the color of dirt
+    // now setting to color of dirt
+    // I guess the plan is to change tile to a struct
 }
 
 // Set `grow_data_high` to `num`

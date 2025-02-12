@@ -51,7 +51,7 @@ class NodeGroup {
     std::unordered_set<LocalPosition> tile_positions_;
     std::unordered_map<NodeGroup*, UnitPath> adjacent;
     float center_x, center_y, center_z; // volumetric center, a weighted average
-                         // any other tile
+                                        // any other tile
  public:
     /**
      * @brief Construct a new Node Group object
@@ -66,7 +66,7 @@ class NodeGroup {
      */
     NodeGroup(ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type);
 
-    //NodeGroup(std::unordered_set<LocalPosition>, UnitPath path_type);
+    // NodeGroup(std::unordered_set<LocalPosition>, UnitPath path_type);
 
     /**
      * @brief Merge two node groups together
@@ -76,7 +76,8 @@ class NodeGroup {
      */
     std::unordered_map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
 
-    [[nodiscard]] inline const ChunkPos get_chunk_position() {
+    [[nodiscard]] inline const ChunkPos
+    get_chunk_position() {
         return chunk_position_;
     }
 
@@ -102,8 +103,8 @@ class NodeGroup {
      * @param path_type type of paths that are allowed
      * @return set of adjacent node groups
      */
-    [[nodiscard]] std::unordered_set<const NodeGroup*> get_adjacent_clear(UnitPath path_type
-    ) const;
+    [[nodiscard]] std::unordered_set<const NodeGroup*>
+    get_adjacent_clear(UnitPath path_type) const;
 
     /**
      * @brief Remove node group from adjacency
