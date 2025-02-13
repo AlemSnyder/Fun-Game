@@ -125,7 +125,11 @@ terrain::Chunk::get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
 
 MatColorId
 terrain::Chunk::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
-    return ter_->get_voxel_color_id(get_offset() + VoxelOffset(x, y, z));
+    if (x >= Chunk::SIZE || x < 0 || y >= Chunk::SIZE || y < 0 || z >= Chunk::SIZE
+        || z < 0) [[unlikely]] {
+        return ter_->get_voxel_color_id(get_offset() + VoxelOffset(x, y, z));
+    }
+    return get_tile(x, y, z)->get_mat_color_id();
 }
 
 std::vector<MatColorId>

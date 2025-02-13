@@ -142,7 +142,7 @@ Terrain::get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
     auto chunk_iter = chunks_.find(chunk_position);
 
     if (chunk_iter == chunks_.end()) {
-        LOG_WARNING(
+        LOG_BACKTRACE(
             logging::terrain_logger,
             "Tile position ({}, {}, {}), out of range because the chunk ({}, {}, "
             "{}) does not exist.",

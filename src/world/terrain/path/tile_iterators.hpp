@@ -72,7 +72,7 @@ class AdjacentIterator {
 
     [[nodiscard]] inline TerrainOffset3
     get_pos() {
-        return pos_ + TerrainOffset3(dpos_);
+        return pos_ + TerrainOffset3(get_relative_position());
     }
 
     [[nodiscard]] inline UnitPath
