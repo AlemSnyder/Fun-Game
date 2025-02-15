@@ -27,15 +27,22 @@ Chunk::stamp_tile_region(
                     if (elements_can_stamp.has_value()) {
                         if (elements_can_stamp.value().material_in(
                                 tile->get_material_id(), tile->get_color_id()
-                            ))
-                            ter_->set_tile_material(
+                            )) {
+                            tile->set_material(
+                                ter_->get_material(mat),
+                                ter_->natural_color(
+                                    TerrainOffset3(x, y, z) + get_offset(),
+                                    ter_->get_material(mat), color_id
+                                )
+                            );
+                        }
+                    } else {
+                        tile->set_material(
+                            ter_->get_material(mat),
+                            ter_->natural_color(
                                 TerrainOffset3(x, y, z) + get_offset(),
                                 ter_->get_material(mat), color_id
-                            );
-                    } else {
-                        ter_->set_tile_material(
-                            TerrainOffset3(x, y, z) + get_offset(),
-                            ter_->get_material(mat), color_id
+                            )
                         );
                     }
                 }

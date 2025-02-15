@@ -597,6 +597,10 @@ class Terrain : public voxel_utility::VoxelBase {
         TerrainOffset3 xyz, const material_t* mat, ColorId color_id
     );
 
+    ColorId natural_color(
+        TerrainOffset3 xyz, const material_t* mat, ColorId color_id
+    ) const;
+
     /**
      * @brief Set the tile material with no tests
      *

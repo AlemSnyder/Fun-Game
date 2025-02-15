@@ -543,13 +543,20 @@ void
 Terrain::set_tile_material(
     TerrainOffset3 xyz, const material_t* mat, ColorId color_id
 ) {
+    if (auto tile = get_tile(xyz)) {
+        tile->set_material(mat, natural_color(xyz, mat, color_id));
+    }
+}
+
+ColorId
+Terrain::natural_color(TerrainOffset3 xyz, const material_t* mat, ColorId color_id)
+    const {
     auto mat_id = mat->material_id;
     if (mat_id == DIRT_ID) { // being set to dirt
         color_id = (xyz.z + (xyz.x / 16 + xyz.y / 16) % 2) / 3 % 2 + NUM_GRASS;
     }
-    if (auto tile = get_tile(xyz)) {
-        tile->set_material(mat, color_id);
-    }
+
+    return color_id;
 }
 
 bool
