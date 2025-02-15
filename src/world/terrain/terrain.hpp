@@ -299,6 +299,11 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     void init_area(generation::MapTile& map_tile, generation::LandGenerator gen);
 
+    void init_all_map_tile_regions(
+        TerrainOffset x_map_tiles, TerrainOffset y_map_tiles,
+        generation::TerrainMacroMap& macro_map
+    );
+
     /**
      * @brief Set a group of tiles
      *
@@ -405,7 +410,7 @@ class Terrain : public voxel_utility::VoxelBase {
     Terrain(
         TerrainOffset x_tiles, TerrainOffset y_tiles, TerrainOffset area_size_,
         TerrainOffset z_tiles, int seed, const generation::Biome& biome,
-        const generation::TerrainMacroMap& macro_map
+        generation::TerrainMacroMap macro_map
     );
     /**
      * @brief Construct a new Terrain object
@@ -554,7 +559,7 @@ class Terrain : public voxel_utility::VoxelBase {
         auto chunk = chunks_.find(chunk_position);
 
         if (chunk == chunks_.end()) {
-            LOG_WARNING(
+            LOG_BACKTRACE(
                 logging::terrain_logger, "Chunk position ({}, {}, {}), out of range.",
                 chunk_position.x, chunk_position.y, chunk_position.z
             );

@@ -53,7 +53,8 @@ World::World(
 ) :
     biome_(biome_name, seed),
     terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, seed, biome_, biome_.get_map(x_tiles)
+        x_tiles, y_tiles, macro_tile_size, height, seed, biome_,
+        std::move(biome_.get_map(x_tiles))
     ) {
     auto plant_maps = biome_.get_plant_map(x_tiles * macro_tile_size);
 

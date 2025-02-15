@@ -73,6 +73,17 @@ class Chunk : public voxel_utility::VoxelBase {
         return mut_;
     }
 
+    [[nodiscard]] inline bool static in_range(TerrainOffset3 position) {
+        return (
+            position.x < SIZE && position.y < SIZE && position.z < SIZE
+            && position.x >= 0 && position.y >= 0 && position.z >= 0
+        );
+    }
+
+    /*    [[nodiscard]] inline bool static in_range(LocalPosition position) {
+            return (position.x < SIZE && position.y < SIZE && position.z < SIZE);
+        }*/
+
     void init_nodegroups();
 
     /**
@@ -136,6 +147,12 @@ class Chunk : public voxel_utility::VoxelBase {
             tile_relative_position.x, tile_relative_position.y, tile_relative_position.z
         );
     }
+
+    void stamp_tile_region(
+        MaterialId mat, ColorId color_id,
+        std::optional<MaterialGroup> elements_can_stamp, LocalPosition xyz_start,
+        LocalPosition xyz_end
+    );
 
     // VoxelBase Specialization
 

@@ -77,7 +77,7 @@ Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) 
 Terrain::Terrain(
     TerrainOffset x_map_tiles, TerrainOffset y_map_tiles, TerrainOffset area_size_,
     TerrainOffset z, int seed_, const generation::Biome& biome,
-    const generation::TerrainMacroMap& macro_map
+    generation::TerrainMacroMap macro_map
 ) :
     area_size_(area_size_),
     biome_(biome), seed(seed_), X_MAX(x_map_tiles * area_size_),
@@ -96,14 +96,10 @@ Terrain::Terrain(
     //  TODO make this faster 1
     init_chunks();
 
-    // TODO make this faster 4
-    for (TerrainOffset i = 0; i < x_map_tiles; i++)
-        for (TerrainOffset j = 0; j < y_map_tiles; j++) {
-            generation::MapTile map_tile = macro_map.get_tile(i, j);
-            for (auto generator_macro : map_tile.get_type()) {
-                init_area(map_tile, *generator_macro);
-            }
-        }
+    init_all_map_tile_regions(x_map_tiles, y_map_tiles, macro_map);
+
+    GlobalContext& context = GlobalContext::instance();
+    context.wait_for_tasks();
 
     LOG_INFO(logging::terrain_logger, "End of land generator: place tiles.");
 
@@ -124,21 +120,7 @@ Terrain::Terrain(
 
 const Tile*
 Terrain::get_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
-    // o3 will absolve my crimes
-    TerrainOffset x_ = x;
-    TerrainOffset y_ = y;
-    TerrainOffset z_ = z;
-
-    if (x_ < 0) {
-        x_ -= Chunk::SIZE - 1;
-    }
-    if (y_ < 0) {
-        y_ -= Chunk::SIZE - 1;
-    }
-    if (z_ < 0) {
-        z_ -= Chunk::SIZE - 1;
-    }
-    TerrainOffset3 chunk_position(x_ / Chunk::SIZE, y_ / Chunk::SIZE, z_ / Chunk::SIZE);
+    TerrainOffset3 chunk_position = get_chunk_from_tile({x, y, z});
     auto chunk_iter = chunks_.find(chunk_position);
 
     if (chunk_iter == chunks_.end()) {
@@ -306,6 +288,9 @@ Terrain::stamp_tile_region(
     TerrainOffset x_end = stamp.x_end + x_offset * area_size_ + area_size_ / 2;
     TerrainOffset y_end = stamp.y_end + y_offset * area_size_ + area_size_ / 2;
 
+    TerrainOffset3 start(x_start, y_start, stamp.z_start);
+    TerrainOffset3 end(x_end, y_end, stamp.z_end);
+    /*
     for (TerrainOffset x = x_start; x < x_end; x++) {
         for (TerrainOffset y = y_start; y < y_end; y++) {
             for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
@@ -328,6 +313,101 @@ Terrain::stamp_tile_region(
             }
         }
     }
+    */
+
+    std::vector<std::future<void>> futures;
+
+    // iterate through chunks
+
+    ChunkPos chunk_start = get_chunk_from_tile(start);
+    ChunkPos chunk_end = get_chunk_from_tile(end - TerrainOffset3(1, 1, 1));
+
+    ChunkPos size_number_chunks = chunk_end - chunk_start;
+
+    futures.reserve(
+        (size_number_chunks.x + 1) * (size_number_chunks.y + 1)
+        * (size_number_chunks.z + 1)
+    );
+
+    GlobalContext& context = GlobalContext::instance();
+
+    for (ChunkDim x = chunk_start.x; x <= chunk_end.x; x++) {
+        for (ChunkDim y = chunk_start.y; y <= chunk_end.y; y++) {
+            for (ChunkDim z = chunk_start.z; z <= chunk_end.z; z++) {
+                context.push_task(
+                    [x, y, z, start, end, stamp, this] {
+                        TerrainOffset3 local_start =
+                            start
+                            - TerrainOffset3({x, y, z}) * TerrainOffset(Chunk::SIZE);
+                        TerrainOffset3 local_end =
+                            end
+                            - TerrainOffset3({x, y, z}) * TerrainOffset(Chunk::SIZE);
+
+                        if (local_start.x < 0) {
+                            local_start.x = 0;
+                        }
+                        if (local_start.x >= Chunk::SIZE) {
+                            local_start.x = Chunk::SIZE;
+                        }
+                        if (local_start.y < 0) {
+                            local_start.y = 0;
+                        }
+                        if (local_start.y >= Chunk::SIZE) {
+                            local_start.y = Chunk::SIZE;
+                        }
+                        if (local_start.z < 0) {
+                            local_start.z = 0;
+                        }
+                        if (local_start.z >= Chunk::SIZE) {
+                            local_start.z = Chunk::SIZE;
+                        }
+
+                        if (local_end.x < 0) {
+                            local_end.x = 0;
+                        }
+                        if (local_end.x >= Chunk::SIZE) {
+                            local_end.x = Chunk::SIZE;
+                        }
+                        if (local_end.y < 0) {
+                            local_end.y = 0;
+                        }
+                        if (local_end.y >= Chunk::SIZE) {
+                            local_end.y = Chunk::SIZE;
+                        }
+                        if (local_end.z < 0) {
+                            local_end.z = 0;
+                        }
+                        if (local_end.z >= Chunk::SIZE) {
+                            local_end.z = Chunk::SIZE;
+                        }
+
+                        if (local_start.x == local_end.x || local_start.y == local_end.y
+                            || local_start.z == local_end.z) {
+                            return;
+                        }
+
+                        Chunk* chunk = get_chunk({x, y, z});
+                        if (!chunk) {
+                            return;
+                        }
+
+                        std::unique_lock chunk_lock(chunk->get_mutex());
+
+                        chunk->stamp_tile_region(
+                            stamp.mat, stamp.color_id, stamp.elements_can_stamp,
+                            local_start, local_end
+                        );
+                    },
+                    BS::pr::highest
+                );
+
+                //                futures.push_back(std::move(future));
+            }
+        }
+    }
+    // for (const auto& future : futures) {
+    //     future.wait();
+    // }
 }
 
 void
@@ -359,6 +439,33 @@ Terrain::init_chunks() {
             }
         }
     }
+}
+
+void
+Terrain::init_all_map_tile_regions(
+    TerrainOffset x_map_tiles, TerrainOffset y_map_tiles,
+    generation::TerrainMacroMap& macro_map
+) {
+    std::vector<std::future<void>> futures;
+
+    GlobalContext& context = GlobalContext::instance();
+
+    for (TerrainOffset i = 0; i < x_map_tiles; i++) {
+        for (TerrainOffset j = 0; j < y_map_tiles; j++) {
+            generation::MapTile& map_tile = macro_map.get_tile(i, j);
+
+            context.push_task([&map_tile, this] {
+                for (auto generator_macro : map_tile.get_type()) {
+                    init_area(map_tile, *generator_macro);
+                }
+            });
+
+            //            futures.push_back(std::move(future));
+        }
+    }
+    // for (const auto& future : futures) {
+    //     future.wait();
+    // }
 }
 
 TerrainOffset
@@ -559,10 +666,18 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
 
 ChunkPos
 Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
-    TerrainOffset px = floor(x) / Chunk::SIZE;
-    TerrainOffset py = floor(y) / Chunk::SIZE;
-    TerrainOffset pz = floor(z) / Chunk::SIZE;
-    return {px, py, pz};
+    if (x < 0) {
+        x -= Chunk::SIZE - 1;
+    }
+    if (y < 0) {
+        y -= Chunk::SIZE - 1;
+    }
+    if (z < 0) {
+        z -= Chunk::SIZE - 1;
+    }
+    ChunkPos chunk_position(x / Chunk::SIZE, y / Chunk::SIZE, z / Chunk::SIZE);
+
+    return chunk_position;
 }
 
 std::unordered_set<Node<const NodeGroupWrapper>*>

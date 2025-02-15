@@ -25,7 +25,10 @@ using TerrainOffset = int32_t;
 using TerrainOffset3 = glm::i32vec3;
 static_assert(sizeof(TerrainOffset3) == 3 * sizeof(TerrainOffset));
 
+using ChunkDim = int16_t;
 using ChunkPos = glm::i16vec3;
+static_assert(sizeof(ChunkPos) == 3 * sizeof(ChunkDim));
+
 // Macro tile position in macro map.
 using MacroDim = uint16_t;
 

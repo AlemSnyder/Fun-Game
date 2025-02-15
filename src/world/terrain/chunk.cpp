@@ -13,6 +13,37 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
 
 // initialize all tiles. this is done above. currently it is wrong.
 
+// TODO this is an incredibly cursed function
+void
+Chunk::stamp_tile_region(
+    MaterialId mat, ColorId color_id, std::optional<MaterialGroup> elements_can_stamp,
+    LocalPosition xyz_start, LocalPosition xyz_end
+) {
+    for (TerrainOffset x = xyz_start.x; x < xyz_end.x; x++) {
+        for (TerrainOffset y = xyz_start.z; y < xyz_end.y; y++) {
+            for (TerrainOffset z = xyz_start.z; z < xyz_end.z; z++) {
+                if (in_range(TerrainOffset3(x, y, z))) {
+                    Tile* tile = get_tile(x, y, z);
+                    if (elements_can_stamp.has_value()) {
+                        if (elements_can_stamp.value().material_in(
+                                tile->get_material_id(), tile->get_color_id()
+                            ))
+                            ter_->set_tile_material(
+                                TerrainOffset3(x, y, z) + get_offset(),
+                                ter_->get_material(mat), color_id
+                            );
+                    } else {
+                        ter_->set_tile_material(
+                            TerrainOffset3(x, y, z) + get_offset(),
+                            ter_->get_material(mat), color_id
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
 void
 Chunk::init_nodegroups() {
     std::unordered_map<LocalPosition, NodeGroup&> map____({});
