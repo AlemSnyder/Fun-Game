@@ -87,7 +87,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("size", 6) >> size;
     world::World world(BIOME_BASE_NAME, size, size);
 
-    std::filesystem::path path_out = files::get_argument_path(cmdl(2).str());
+    std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
 
     world.qb_save(path_out);
 
@@ -260,9 +260,9 @@ save_test(const argh::parser& cmdl) {
 // reimplement
 int
 path_finder_test(const argh::parser& cmdl) {
-    std::filesystem::path path_in = files::get_argument_path(cmdl(2).str());
+    std::filesystem::path path_in = files::get_argument_path(cmdl(3).str());
 
-    std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
+    std::filesystem::path path_out = files::get_argument_path(cmdl(4).str());
     quill::Logger* logger = logging::main_logger;
 
     size_t seed;

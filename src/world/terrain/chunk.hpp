@@ -80,11 +80,11 @@ class Chunk : public voxel_utility::VoxelBase {
         );
     }
 
-    /*    [[nodiscard]] inline bool static in_range(LocalPosition position) {
-            return (position.x < SIZE && position.y < SIZE && position.z < SIZE);
-        }*/
-
     void init_nodegroups();
+
+    void add_nodegroup_adjacent_mp();
+
+    void add_nodegroup_adjacent_all();
 
     /**
      * @brief adds node groups in this chunk to out

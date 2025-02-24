@@ -370,7 +370,7 @@ Biome::get_colors_inverse_map() const {
     for (const auto& element : materials_) {
         for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
             materials_inverse.emplace(
-                color_id, MaterialColor{element.second, color_id}
+                element.second.color.at(color_id).hex_color, MaterialColor{element.second, color_id}
             );
         }
     }

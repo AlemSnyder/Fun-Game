@@ -82,19 +82,13 @@ Terrain::Terrain(
     area_size_(area_size_),
     biome_(biome), seed(seed_), X_MAX(x_map_tiles * area_size_),
     Y_MAX(y_map_tiles * area_size_), Z_MAX(z) {
-    // tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
-
-    chunks_.reserve(X_MAX * Y_MAX * Z_MAX / Chunk::SIZE / Chunk::SIZE / Chunk::SIZE);
-
-    // for (size_t xyz = 0; xyz < X_MAX * Y_MAX * Z_MAX; xyz++) {
-    //     tiles_.push_back(Tile(sop(xyz), biome_.get_material(0), 0));
-    // }
 
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
     //  TODO make this faster 1
     init_chunks();
+    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
 
     init_all_map_tile_regions(x_map_tiles, y_map_tiles, macro_map);
 
@@ -114,8 +108,6 @@ Terrain::Terrain(
     init_grass();
 
     LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
-
-    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
 }
 
 const Tile*
@@ -163,9 +155,6 @@ Terrain::qb_read(
 
     GlobalContext& context = GlobalContext::instance();
 
-    // TODO pass X_MAX, Y_MAX, Z_MAX
-    // define set tile in chunk
-
     for (auto& [chunk_position, chunk] : chunks_) {
         context.submit_task([chunk_position, &chunk, &materials_inverse, &data,
                              &unknown_colors, &unknown_colors_mutex_,
@@ -175,10 +164,9 @@ Terrain::qb_read(
             for (Dim xl = 0; xl < Chunk::SIZE; xl++) {
                 for (Dim yl = 0; yl < Chunk::SIZE; yl++) {
                     for (Dim zl = 0; zl < Chunk::SIZE; zl++) {
-                        TerrainDim3 tile_relative_position(xl, yl, zl);
+                        TerrainOffset3 tile_relative_position(xl, yl, zl);
 
-                        TerrainOffset3 tile_position = tile_relative_position;
-                        chunk_position* static_cast<TerrainOffset>(Chunk::SIZE);
+                        TerrainOffset3 tile_position = tile_relative_position + chunk_position * static_cast<TerrainOffset>(Chunk::SIZE);
                         size_t index = tile_position.x * Y_MAX * Z_MAX
                                        + tile_position.y * Z_MAX + tile_position.z;
                         ColorInt color = data[index];
@@ -209,6 +197,7 @@ Terrain::qb_read(
             }
         });
     }
+    context.wait_for_tasks();
 
     for (ColorInt color : unknown_colors) {
         LOG_WARNING(logging::terrain_logger, "Cannot find color: {:x}", color);
@@ -290,44 +279,20 @@ Terrain::stamp_tile_region(
 
     TerrainOffset3 start(x_start, y_start, stamp.z_start);
     TerrainOffset3 end(x_end, y_end, stamp.z_end);
-    /*
-    for (TerrainOffset x = x_start; x < x_end; x++) {
-        for (TerrainOffset y = y_start; y < y_end; y++) {
-            for (TerrainOffset z = stamp.z_start; z < stamp.z_end; z++) {
-                if (in_range(x, y, z)) {
-                    Tile* tile = get_tile(x, y, z);
-                    if (stamp.elements_can_stamp.has_value()) {
-                        if (stamp.elements_can_stamp.value().material_in(
-                                tile->get_material_id(), tile->get_color_id()
-                            ))
-                            set_tile_material(
-                                {x, y, z}, biome_.get_material(stamp.mat),
-                                stamp.color_id
-                            );
-                    } else {
-                        set_tile_material(
-                            {x, y, z}, biome_.get_material(stamp.mat), stamp.color_id
-                        );
-                    }
-                }
-            }
-        }
-    }
-    */
 
-    std::vector<std::future<void>> futures;
+    // std::vector<std::future<void>> futures;
 
     // iterate through chunks
 
     ChunkPos chunk_start = get_chunk_from_tile(start);
     ChunkPos chunk_end = get_chunk_from_tile(end - TerrainOffset3(1, 1, 1));
 
-    ChunkPos size_number_chunks = chunk_end - chunk_start;
+    // ChunkPos size_number_chunks = chunk_end - chunk_start;
 
-    futures.reserve(
-        (size_number_chunks.x + 1) * (size_number_chunks.y + 1)
-        * (size_number_chunks.z + 1)
-    );
+    // futures.reserve(
+    //     (size_number_chunks.x + 1) * (size_number_chunks.y + 1)
+    //     * (size_number_chunks.z + 1)
+    // );
 
     GlobalContext& context = GlobalContext::instance();
 
@@ -424,6 +389,9 @@ Terrain::init_area(generation::MapTile& map_tile, generation::LandGenerator gen)
 
 void
 Terrain::init_chunks() {
+
+    chunks_.reserve(X_MAX * Y_MAX * Z_MAX / Chunk::SIZE / Chunk::SIZE / Chunk::SIZE);
+
     // chunk length in _ direction
     TerrainOffset C_length_X = ((X_MAX - 1) / Chunk::SIZE + 1);
     TerrainOffset C_length_Y = ((Y_MAX - 1) / Chunk::SIZE + 1);
@@ -438,6 +406,16 @@ Terrain::init_chunks() {
                 );
             }
         }
+    }
+
+    for (auto& [position, chunk] : chunks_) {
+        chunk.init_nodegroups();
+    }
+    // wait for the above to finish
+
+
+    for (auto& [position, chunk] : chunks_) {
+        chunk.add_nodegroup_adjacent_mp();
     }
 }
 
@@ -608,20 +586,19 @@ Terrain::init_grass() {
 }
 
 // this should be the same as can_stand(x,y,z,1,1)
-// bool
-// Terrain::can_stand_1(TileIndex xyz) const {
-//     if (static_cast<TileIndex>(xyz) % Z_MAX < 1
-//         || static_cast<TileIndex>(xyz) >= X_MAX * Y_MAX * Z_MAX) {
-//         return false;
-//     }
-//     return (!get_tile(xyz)->is_solid() && get_tile(xyz - 1)->is_solid());
-// }
-
 bool
 Terrain::can_stand_1(TerrainOffset3 xyz) const {
+
+    const Tile* bottom_tile = get_tile(xyz - TerrainOffset3(0, 0, 1));
+    const Tile* top_tile = get_tile(xyz);
+    
+    if (!bottom_tile || !top_tile){
+        return false;
+    }
+
     return (
-        !get_tile(xyz)->is_solid()
-        && get_tile(xyz - TerrainOffset3(0, 0, 1))->is_solid()
+        !top_tile->is_solid()
+        && bottom_tile->is_solid()
     );
 }
 
@@ -659,17 +636,6 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
     return node.get_time_cost()
            + get_H_cost(tile.average_position(), node.get_tile()->average_position());
 }
-
-// TileIndex
-// Terrain::pos(const NodeGroup* const node_group) const {
-//     auto [x, y, z] = node_group->sop();
-//     TerrainOffset px = floor(x) / Chunk::SIZE;
-//     TerrainOffset py = floor(y) / Chunk::SIZE;
-//     TerrainOffset pz = floor(z) / Chunk::SIZE;
-//     return (px * Y_MAX / Chunk::SIZE * Z_MAX / Chunk::SIZE) + (py * Z_MAX /
-//     Chunk::SIZE)
-//            + pz;
-// }
 
 ChunkPos
 Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
@@ -731,16 +697,6 @@ Terrain::get_node_group(TerrainOffset3 xyz) {
     return node_group->second;
 }
 
-// NodeGroup*
-// Terrain::get_node_group(const Tile t) {
-//     return get_node_group(pos(t));
-// }
-
-// NodeGroup*
-// Terrain::get_node_group(const Tile* t) {
-//     return get_node_group(pos(t));
-// }
-
 const NodeGroup*
 Terrain::get_node_group(TerrainOffset3 xyz) const {
     auto out = tile_to_group_.find(xyz);
@@ -749,16 +705,6 @@ Terrain::get_node_group(TerrainOffset3 xyz) const {
     }
     return out->second;
 }
-
-// const NodeGroup*
-// Terrain::get_node_group(const Tile t) const {
-//     return get_node_group(pos(t));
-// }
-
-// const NodeGroup*
-// Terrain::get_node_group(const Tile* t) const {
-//     return get_node_group(pos(t));
-// }
 
 void
 Terrain::add_node_group(NodeGroup* NG) {

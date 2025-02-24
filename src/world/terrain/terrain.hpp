@@ -489,22 +489,6 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return NodeGroup* NodeGroup tile is in
      */
     [[nodiscard]] NodeGroup* get_node_group(TerrainOffset3 xyz);
-    /**
-     * @brief Get the node group from tile
-     *
-     * @param t tile
-     *
-     * @return NodeGroup* NodeGroup tile is in
-     */
-    [[nodiscard]] NodeGroup* get_node_group(const Tile t);
-    /**
-     * @brief Get the node group from tile
-     *
-     * @param t
-     *
-     * @return NodeGroup* NodeGroup tile is in
-     */
-    [[nodiscard]] NodeGroup* get_node_group(const Tile* t);
 
     /**
      * @brief Get the node group from tile index
@@ -513,20 +497,6 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return NodeGroup* NodeGroup tile is in
      */
     [[nodiscard]] const NodeGroup* get_node_group(TerrainOffset3 xyz) const;
-    /**
-     * @brief Get the node group from tile
-     *
-     * @param t tile
-     * @return NodeGroup* NodeGroup tile is in
-     */
-    [[nodiscard]] const NodeGroup* get_node_group(const Tile t) const;
-    /**
-     * @brief Get the node group from tile
-     *
-     * @param t
-     * @return NodeGroup* NodeGroup tile is in
-     */
-    [[nodiscard]] const NodeGroup* get_node_group(const Tile* t) const;
 
     /**
      * @brief Add a node group to possible node groups
@@ -697,19 +667,6 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     [[nodiscard]] bool
     can_stand(TerrainOffset3 tile, TerrainOffset dz, TerrainOffset dxy) const;
-
-    /**
-     * @brief test if dxy x dyx x dz object can stand at given tile
-     *
-     * @param tile tile to test
-     * @param dz height of object to test
-     * @param dxy width of object to test
-     *
-     * @return true can stand
-     * @return false cannot stand
-     */
-    //    [[nodiscard]] bool
-    //    can_stand(TerrainOffset3 tile, TerrainOffset dz, TerrainOffset dxy) const;
 
     void qb_read(
         std::vector<ColorInt> data,

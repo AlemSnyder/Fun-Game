@@ -77,6 +77,20 @@ NodeGroup::merge_groups(NodeGroup other) {
     return other.get_adjacent_map();
 }
 
+void
+NodeGroup::add_tile(LocalPosition position){
+
+    auto size = tile_positions_.size();
+
+
+    tile_positions_.insert(position);
+
+    center_x = (center_x * size + position.x) / (size + 1);
+    center_y = (center_y * size + position.y) / (size + 1);
+    center_z = (center_z * size + position.z) / (size + 1);
+
+}
+
 glm::vec3
 NodeGroup::sop() const {
     return glm::vec3(center_x, center_y, center_z)

@@ -84,9 +84,9 @@ class NodeGroup {
     // !void update(); If I modify terrain path finding should not break
     // this should be in chunk though
     /**
-     * @brief Get set of tiles in this group
+     * @brief Get a set of tile positions for each tile in the group.
      *
-     * @return The set of tiles
+     * @return A set of global tile positions.
      */
     [[nodiscard]] std::unordered_set<TerrainOffset3> get_tiles() const;
     /**
@@ -127,6 +127,13 @@ class NodeGroup {
      */
     [[nodiscard]] std::unordered_map<const NodeGroup*, UnitPath>
     get_adjacent_map() const;
+
+    /**
+     * @brief Add a tile to the node_group
+     * 
+     * @param LocalPosition tile_position offset from chunk origen of tile
+     */
+    void add_tile(LocalPosition tile_position);
 
     /**
      * @brief Test if two node groups are adjacent

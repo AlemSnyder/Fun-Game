@@ -55,11 +55,24 @@ void
 Chunk::init_nodegroups() {
     std::unordered_map<LocalPosition, NodeGroup&> map____({});
 
+
+    // for all tiles:
+    // x, y, z
+    //      check 1) tile is not solid 2) tile below is 3) tile is not in map
+    //          if any of the above are false continue
+    //      create a nodegroup for the tile
+    //      add tile to map____
+    //      recursively add adjacent tiles to the nodegroup if they are open and in this chunk
+
     // initializing a node group on all walkable tiles
     for (uint8_t x = 0; x < SIZE; x++)
         for (uint8_t y = 0; y < SIZE; y++)
             for (uint8_t z = 0; z < SIZE; z++) {
-                if (ter_->can_stand_1(x, y, z)) {
+                LocalPosition local_position(x, y, z);
+                if (ter_->can_stand_1(get_offset() + TerrainOffset3(local_position))) {
+                    if (map____.find(local_position) != map____.end()) {
+                        continue;
+                    }
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
                     // look at onePath for more information
@@ -67,44 +80,113 @@ Chunk::init_nodegroups() {
                     node_groups_.push_back(group);
                     // ter_->add_node_group(&node_groups_.back());
                     map____.emplace(LocalPosition(x, y, z), node_groups_.back());
+
+                    std::queue<TerrainOffset3> adjacent_tiles;
+                    adjacent_tiles.emplace(get_offset() + TerrainOffset3(local_position));
+
+                    while (adjacent_tiles.size() > 0) {
+                        TerrainOffset3 next_position = adjacent_tiles.back();
+                        adjacent_tiles.pop();
+                        path::AdjacentIterator it(* ter_, next_position, DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2 | DirectionFlags::VERTICAL | DirectionFlags::UP_AND_OVER | DirectionFlags::UP_AND_DIAGONAL | DirectionFlags::OPEN);
+                        for (; !it.end(); it++) {
+                            TerrainOffset3 current_position = it.get_pos();
+                            if (ter_->get_chunk_from_tile(current_position) != chunk_position_) {
+                                continue;
+                            }
+                            if (!ter_->can_stand_1(get_offset() + TerrainOffset3(current_position))) {
+                                continue;
+                            }
+                            if (map____.find(current_position) != map____.end()) {
+                                continue;
+                            }
+
+
+                            group.add_tile(current_position); // this might not be equivalent to node_groups_.back()
+
+                            map____.emplace(current_position, node_groups_.back());
+
+                            adjacent_tiles.push(current_position);
+                        }
+                    }
                 }
             }
 
-    // add all adjacent nodegroup
-    for (NodeGroup& NG : node_groups_)
+    for (auto& [position, node_group] : map____) {
+        ter_->add_node_group(&node_group);
+    }
+
+
+}
+
+void Chunk::add_nodegroup_adjacent_mp() {
+
+
+        // add all adjacent nodegroup
+        for (NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_tiles()) {
+
+            if (position.x != SIZE -1 || position.y != SIZE -1 || position.z != SIZE -1){
+                continue;
+            }
+
             auto it = ter_->get_tile_adjacent_iterator(
                 TerrainOffset3(position) + get_offset(), 31
             );
             for (; !it.end(); it++) {
-                auto to_add = map____.find(
-                    TerrainOffset3(it.get_relative_position())
-                    + TerrainOffset3(position) + get_offset()
-                );
+                TerrainOffset3 iterator_position = it.get_pos();
+                ChunkPos adjacent_chunk = ter_->get_chunk_from_tile(iterator_position);
 
-                if (to_add == map____.end()) {
-                    // possible to go in both directions
-                    // like add adjacent from above, and below
+
+                ChunkPos relative_position = adjacent_chunk - chunk_position_;
+
+                if (relative_position.x * 4 + relative_position.y * 2 + relative_position.z < 0) {
                     continue;
                 }
-                NG.add_adjacent(&to_add->second, 31);
+
+                NodeGroup* to_add = ter_->get_node_group(it.get_pos());
+                
+
+                if (!to_add) {
+                    continue;
+                }
+                NG.add_adjacent(to_add, 31);
             }
+        }
+}
+
+void Chunk::add_nodegroup_adjacent_all() {
+
+
+    // add all adjacent nodegroup
+    for (NodeGroup& NG : node_groups_)
+    for (LocalPosition position : NG.get_tiles()) {
+
+        if (position.x != SIZE -1 || position.y != SIZE -1 || position.z != SIZE -1 || position.x != 0 || position.y != 0 || position.z != 0){
+            continue;
         }
 
-    auto it = node_groups_.begin();
-    while (it != node_groups_.end()) {
-        // to merge = get_adjacent_map()
-        std::unordered_set<NodeGroup*> to_merge;
-        for (std::pair<NodeGroup* const, UnitPath> other : (it)->get_adjacent_map()) {
-            if (contains_node_group_(other.first)) {
-                to_merge.insert(other.first);
+        auto it = ter_->get_tile_adjacent_iterator(
+            TerrainOffset3(position) + get_offset(), 31
+        );
+        for (; !it.end(); it++) {
+            TerrainOffset3 iterator_position = it.get_pos();
+            ChunkPos adjacent_chunk = ter_->get_chunk_from_tile(iterator_position);
+
+
+            ChunkPos relative_position = adjacent_chunk - chunk_position_;
+
+            if (relative_position == ChunkPos(0)) {
+                continue;
             }
+
+            NodeGroup* to_add = ter_->get_node_group(it.get_pos());
+            
+
+            if (!to_add) {
+                continue;
+            }
+            NG.add_adjacent(to_add, 31);
         }
-        merge_((*it), std::move(to_merge));
-        ter_->add_node_group(&(*it));
-        // TODO this is not right. This will try to rm from terrain nodegroups, but we
-        // want to rm from the local map____.
-        it++;
     }
 }
 
