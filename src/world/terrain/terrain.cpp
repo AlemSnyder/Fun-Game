@@ -156,17 +156,18 @@ Terrain::qb_read(
     GlobalContext& context = GlobalContext::instance();
 
     for (auto& [chunk_position, chunk] : chunks_) {
-        context.submit_task([chunk_position, &chunk, &materials_inverse, &data,
+        context.submit_task([&chunk, &materials_inverse, &data,
                              &unknown_colors, &unknown_colors_mutex_,
-                             X_MAX = this->X_MAX, Y_MAX = this->X_MAX,
-                             Z_MAX = this->X_MAX]() {
+                             X_MAX = this->X_MAX, Y_MAX = this->Y_MAX,
+                             Z_MAX = this->Z_MAX]() {
             std::unique_lock chunk_lock(chunk.get_mutex());
             for (Dim xl = 0; xl < Chunk::SIZE; xl++) {
                 for (Dim yl = 0; yl < Chunk::SIZE; yl++) {
                     for (Dim zl = 0; zl < Chunk::SIZE; zl++) {
                         TerrainOffset3 tile_relative_position(xl, yl, zl);
 
-                        TerrainOffset3 tile_position = tile_relative_position + chunk_position * static_cast<TerrainOffset>(Chunk::SIZE);
+                        TerrainOffset3 tile_position = tile_relative_position + chunk.get_offset();
+
                         size_t index = tile_position.x * Y_MAX * Z_MAX
                                        + tile_position.y * Z_MAX + tile_position.z;
                         ColorInt color = data[index];
@@ -1027,8 +1028,9 @@ Terrain::get_start_end_test() const {
     for (TerrainOffset x = 0; x < X_MAX; x++) {
         for (TerrainOffset y = 0; y < Y_MAX; y++) {
             for (TerrainOffset z = 0; z < Z_MAX; z++) {
-                if (get_tile(x, y, z)->get_material_id() == DEBUG_MATERIAL
-                    && get_tile(x, z, y)->get_color_id() == 4) {
+                const Tile* tile = get_tile(x, y, z);
+                if (tile->get_material_id() == DEBUG_MATERIAL
+                    && tile->get_color_id() == 4) {
                     if (first) {
                         out.first = {x, z, y};
                         first = false;

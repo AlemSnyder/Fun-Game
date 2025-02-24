@@ -101,7 +101,7 @@ std::unordered_set<TerrainOffset3>
 NodeGroup::get_tiles() const {
     std::unordered_set<TerrainOffset3> out({});
     for (auto position : tile_positions_) {
-        out.insert(TerrainOffset3(position) + TerrainOffset3(chunk_position_));
+        out.insert(TerrainOffset3(position) + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE));
     }
     return out;
 }
