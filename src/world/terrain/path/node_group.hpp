@@ -89,6 +89,11 @@ class NodeGroup {
      * @return A set of global tile positions.
      */
     [[nodiscard]] std::unordered_set<TerrainOffset3> get_tiles() const;
+
+    [[nodiscard]] inline const std::unordered_set<LocalPosition>& get_local_positions() const {
+        return tile_positions_;
+    }
+
     /**
      * @brief Add adjacent node group where
      *

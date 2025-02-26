@@ -274,18 +274,21 @@ path_finder_test(const argh::parser& cmdl) {
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
+    TerrainOffset3 start = start_end.first;
+    TerrainOffset3 end = start_end.second;
+
     LOG_INFO(
-        logger, "Start: {}, {}, {}", start_end.first.x, start_end.first.y,
-        start_end.first.z
+        logger, "Start: {}, {}, {}", start.x, start.y,
+        start.z
     );
 
     LOG_INFO(
-        logger, "End: {}, {}, {}", start_end.second.x, start_end.second.y,
-        start_end.second.z
+        logger, "End: {}, {}, {}", end.x, end.y,
+        end.z
     );
 
     auto tile_path =
-        world.get_terrain_main().get_path_Astar(start_end.first, start_end.second);
+        world.get_terrain_main().get_path_Astar(start, end);
 
     if (!tile_path) {
         LOG_WARNING(logger, "NO PATH FOUND");

@@ -1032,10 +1032,10 @@ Terrain::get_start_end_test() const {
                 if (tile->get_material_id() == DEBUG_MATERIAL
                     && tile->get_color_id() == 4) {
                     if (first) {
-                        out.first = {x, z, y};
+                        out.first = {x, y, z+1};
                         first = false;
                     } else {
-                        out.second = {x, z, y};
+                        out.second = {x, y, z+1};
                         return out;
                     }
                 }

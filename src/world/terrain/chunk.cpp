@@ -55,7 +55,6 @@ void
 Chunk::init_nodegroups() {
     std::unordered_map<LocalPosition, NodeGroup&> map____({});
 
-
     // for all tiles:
     // x, y, z
     //      check 1) tile is not solid 2) tile below is 3) tile is not in map
@@ -76,36 +75,37 @@ Chunk::init_nodegroups() {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
                     // look at onePath for more information
-                    NodeGroup group(chunk_position_, {x, y, z}, 31);
-                    node_groups_.push_back(group);
+                    NodeGroup group(chunk_position_, local_position, 31);
+                    node_groups_.push_back(std::move(group));
                     // ter_->add_node_group(&node_groups_.back());
-                    map____.emplace(LocalPosition(x, y, z), node_groups_.back());
+                    map____.emplace(local_position, node_groups_.back());
 
-                    std::queue<TerrainOffset3> adjacent_tiles;
+                    std::unordered_set<TerrainOffset3> adjacent_tiles;
                     adjacent_tiles.emplace(get_offset() + TerrainOffset3(local_position));
 
                     while (adjacent_tiles.size() > 0) {
-                        TerrainOffset3 next_position = adjacent_tiles.back();
-                        adjacent_tiles.pop();
+                        auto iter = adjacent_tiles.begin();
+                        TerrainOffset3 next_position = *iter;
+                        adjacent_tiles.erase(iter);
                         path::AdjacentIterator it(* ter_, next_position, DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2 | DirectionFlags::VERTICAL | DirectionFlags::UP_AND_OVER | DirectionFlags::UP_AND_DIAGONAL | DirectionFlags::OPEN);
                         for (; !it.end(); it++) {
                             TerrainOffset3 current_position = it.get_pos();
                             if (ter_->get_chunk_from_tile(current_position) != chunk_position_) {
                                 continue;
                             }
-                            if (!ter_->can_stand_1(get_offset() + TerrainOffset3(current_position))) {
+                            if (!ter_->can_stand_1(current_position)) {
                                 continue;
                             }
-                            if (map____.find(current_position) != map____.end()) {
+                            LocalPosition iterator_local_position = current_position - get_offset();
+                            if (map____.find(iterator_local_position) != map____.end()) {
                                 continue;
                             }
 
+                            node_groups_.back().add_tile(iterator_local_position); // this might not be equivalent to node_groups_.back()
 
-                            group.add_tile(current_position); // this might not be equivalent to node_groups_.back()
+                            map____.emplace(iterator_local_position, node_groups_.back());
 
-                            map____.emplace(current_position, node_groups_.back());
-
-                            adjacent_tiles.push(current_position);
+                            adjacent_tiles.insert(current_position);
                         }
                     }
                 }
@@ -114,8 +114,6 @@ Chunk::init_nodegroups() {
     for (auto& [position, node_group] : map____) {
         ter_->add_node_group(&node_group);
     }
-
-
 }
 
 void Chunk::add_nodegroup_adjacent_mp() {
@@ -123,9 +121,9 @@ void Chunk::add_nodegroup_adjacent_mp() {
 
         // add all adjacent nodegroup
         for (NodeGroup& NG : node_groups_)
-        for (LocalPosition position : NG.get_tiles()) {
+        for (LocalPosition position : NG.get_local_positions()) {
 
-            if (position.x != SIZE -1 || position.y != SIZE -1 || position.z != SIZE -1){
+            if (position.x != SIZE -1 && position.y != SIZE -1 && position.z != SIZE -1){
                 continue;
             }
 
