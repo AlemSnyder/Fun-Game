@@ -24,7 +24,10 @@
 
 #pragma once
 
-#include <set>
+#include "node_group.hpp"
+#include "types.hpp"
+
+#include <unordered_set>
 
 namespace terrain {
 

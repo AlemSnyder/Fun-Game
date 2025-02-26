@@ -314,8 +314,11 @@ class MaterialGroup {
         return value;
     }
 
-    void insert_(std::vector<MaterialId> material_id);
-    void insert_(std::vector<MaterialId> material_id, std::vector<ColorId> color_ids);
+    void insert_(const std::vector<MaterialId>& material_id);
+    void insert_(
+        const std::vector<MaterialId>& material_id,
+        const std::vector<ColorId>& color_ids
+    );
 
     inline void
     set_all() {

@@ -53,7 +53,8 @@ World::World(
 ) :
     biome_(biome_name, seed),
     terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, seed, biome_, biome_.get_map(x_tiles)
+        x_tiles, y_tiles, macro_tile_size, height, seed, biome_,
+        std::move(biome_.get_map(x_tiles))
     ) {
     auto plant_maps = biome_.get_plant_map(x_tiles * macro_tile_size);
 
@@ -136,9 +137,12 @@ World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
 // Should not be called except by lambda function
 void
 World::update_single_mesh(ChunkPos chunk_pos) {
-    const auto& chunk = terrain_main_.get_chunk(chunk_pos);
+    const auto chunk = terrain_main_.get_chunk(chunk_pos);
+    if (!chunk) {
+        return;
+    }
     entity::Mesh chunk_mesh =
-        entity::ambient_occlusion_mesher(terrain::ChunkData(chunk));
+        entity::ambient_occlusion_mesher(terrain::ChunkData(*chunk));
 
     chunk_mesh.change_color_indexing(
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
@@ -166,13 +170,12 @@ World::update_marked_chunks_mesh() {
 void
 World::update_all_chunks_mesh() {
     LOG_DEBUG(logging::terrain_logger, "Begin load chunks mesh");
-    size_t num_chunks = terrain_main_.get_chunks().size();
+    size_t num_chunks = terrain_main_.num_chunks();
 
     std::vector<std::future<void>> wait_for;
     wait_for.reserve(num_chunks);
     GlobalContext& context = GlobalContext::instance();
-    for (const auto& chunk : terrain_main_.get_chunks()) {
-        auto chunk_pos = chunk.get_chunk_position();
+    for (const auto& [chunk_pos, chunk] : terrain_main_.get_chunks()) {
         auto future = context.submit_task([this, chunk_pos]() {
             this->update_single_mesh(chunk_pos);
         });
@@ -199,10 +202,12 @@ World::send_updated_chunks_mesh() {
 }
 
 void
-World::set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id) {
-    terrain_main_.get_tile(pos)->set_material(mat, color_id);
+World::set_tile(
+    TerrainOffset3 tile_sop, const terrain::material_t* mat, ColorId color_id
+) {
+    terrain_main_.get_tile(tile_sop)->set_material(mat, color_id);
 
-    TerrainDim3 tile_sop = terrain_main_.sop(pos);
+    //    TerrainDim3 tile_sop = terrain_main_.sop(pos);
     mark_for_update(tile_sop);
 
     // do some math:

@@ -146,7 +146,7 @@ write_image(T image, const std::filesystem::path& path) {
     for (i = 0; i < HEIGHT; i++) {
         // set row data
         for (j = 0; j < WIDTH; j++)
-            row[j] = image.get_color(i, j);
+            row[j] = static_cast<png_byte>(image.get_color(i, j));
 
         // write the row
         png_write_row(png_ptr, row);

@@ -45,36 +45,43 @@ namespace path {
 
 // static uint8_t offsets[26];
 
-TerrainDim3 get_indexed_offsets(uint8_t index);
+glm::i8vec3 get_indexed_offsets(uint8_t index);
 
 class AdjacentIterator {
  private:
     const Terrain& parent_;
     const UnitPath path_type_constraint_;
-    const size_t pos_;
+    const TerrainOffset3 pos_;
     UnitPath path_type_;
     uint8_t dpos_;
 
     void update_path();
     void iterate_to_next_available();
     // Is the adjacent position in the bounds of the terrain
-    bool is_valid_end_position();
+    [[nodiscard]] bool is_valid_end_position() const;
 
  public:
-    AdjacentIterator(const Terrain& parent, unsigned int xyz, UnitPath path_type);
+    AdjacentIterator(const Terrain& parent, TerrainOffset3 xyz, UnitPath path_type);
     int operator++();
     int operator++(int);
 
-    inline bool
-    end() {
+    [[nodiscard]] inline bool
+    end() const {
         return dpos_ > NUMBER_OF_BORDER_CUBES;
     }
 
-    size_t get_pos();
-    UnitPath get_path_type();
+    [[nodiscard]] inline TerrainOffset3
+    get_pos() {
+        return pos_ + TerrainOffset3(get_relative_position());
+    }
 
-    inline TerrainDim3
-    get_relative_position() {
+    [[nodiscard]] inline UnitPath
+    get_path_type() const {
+        return path_type_;
+    }
+
+    [[nodiscard]] inline glm::i8vec3
+    get_relative_position() const {
         return get_indexed_offsets(dpos_);
     }
 };

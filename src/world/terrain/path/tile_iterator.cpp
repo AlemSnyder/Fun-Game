@@ -45,18 +45,18 @@ static uint8_t offsets[26] = {
     0b00100101, 0b00100110, 0b00101000, 0b00101001, 0b00101010,
 };
 
-TerrainDim3
+glm::i8vec3
 get_indexed_offsets(uint8_t index) {
-    std::array<int8_t, 3> out;
     uint8_t offset_type = offsets[index];
-    out[0] = (offset_type & int8_t(3)) - 1;
-    out[1] = (offset_type >> 2 & int8_t(3)) - 1;
-    out[2] = (offset_type >> 4 & int8_t(3)) - 1;
-    return {out[0], out[1], out[2]};
+    glm::i8vec3 out(
+        offset_type & int8_t(3), offset_type >> 2 & int8_t(3),
+        offset_type >> 4 & int8_t(3)
+    );
+    return out - glm::i8vec3(1, 1, 1);
 }
 
 AdjacentIterator::AdjacentIterator(
-    const Terrain& parent, unsigned int xyz, UnitPath path_type
+    const Terrain& parent, TerrainOffset3 xyz, UnitPath path_type
 ) :
     parent_(parent),
     path_type_constraint_(path_type), pos_(xyz), path_type_(0), dpos_(0) {
@@ -80,18 +80,16 @@ AdjacentIterator::operator++(int) {
 
 void
 AdjacentIterator::update_path() {
-    auto start_position = parent_.sop(pos_);
     auto offset = get_relative_position();
 
-    path_type_ = parent_.get_path_type(start_position, start_position + offset);
+    path_type_ = parent_.get_path_type(pos_, pos_ + TerrainOffset3(offset));
 }
 
 bool
-AdjacentIterator::is_valid_end_position() {
-    auto start_position = parent_.sop(pos_);
+AdjacentIterator::is_valid_end_position() const {
     auto offset = get_relative_position();
 
-    return parent_.in_range(start_position + offset);
+    return parent_.in_range(pos_ + TerrainOffset3(offset));
 }
 
 void
@@ -104,14 +102,6 @@ AdjacentIterator::iterate_to_next_available() {
     } while (!path_type_.compatible(path_type_constraint_) || !is_valid_end_position());
     // If the path is not compatible with the path type or
     // the final position is not in bounds then continue iterating
-}
-
-size_t
-AdjacentIterator::get_pos() {
-    auto start_position = parent_.sop(pos_);
-    auto offset = get_relative_position();
-    size_t pos = parent_.pos(start_position + offset);
-    return pos;
 }
 
 } // namespace path

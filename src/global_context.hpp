@@ -25,6 +25,7 @@
 
 #include "logging.hpp"
 
+#define BS_THREAD_POOL_ENABLE_PRIORITY
 #include <BS_thread_pool.hpp>
 
 #include <functional>
@@ -75,7 +76,7 @@ class GlobalContext {
     void
     push_opengl_task(std::function<void()> task) {
         std::lock_guard<std::mutex> lock(opengl_queue_mutex);
-        return opengl_functions.push(task);
+        opengl_functions.push(task);
     }
 
     /**
@@ -88,11 +89,14 @@ class GlobalContext {
 
     /**
      * @brief submit task to thread pool
+     *
+     * @param F&& function to run
+     * @param BS::priority_t priority = BS::pr::normal
      */
     template <typename F, typename R = std::invoke_result_t<std::decay_t<F>>>
     auto
-    submit_task(F&& function) {
-        return thread_pool_.submit_task(function);
+    submit_task(F&& function, BS::priority_t priority = BS::pr::normal) {
+        return thread_pool_.submit_task(function, priority);
     }
 
     /**
@@ -100,8 +104,8 @@ class GlobalContext {
      */
     template <class F>
     void
-    push_task(F&& function) {
-        thread_pool_.detach_task(function);
+    push_task(F&& function, BS::priority_t priority = BS::pr::normal) {
+        thread_pool_.detach_task(function, priority);
     }
 
     // Might want to expose these in the future.
