@@ -126,9 +126,10 @@ class Biome {
     // lua state that generates macro map
     sol::state lua_;
 
-    size_t seed_;
-
+    
  public:
+    const size_t seed_; // TODO change to seed (remove _)
+
     /**
      * @brief Construct a new Biome object
      *

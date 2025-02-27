@@ -761,6 +761,8 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     void init_chunks();
 
+    void init_nodegroups();
+
     /**
      * @brief Get the hightest solid z at the x, y quadrates
      *

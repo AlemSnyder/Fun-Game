@@ -56,12 +56,22 @@ World::World(
         x_tiles, y_tiles, macro_tile_size, height, seed, biome_,
         std::move(biome_.get_map(x_tiles))
     ) {
-    auto plant_maps = biome_.get_plant_map(x_tiles * macro_tile_size);
+}
+
+World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
+    biome_(biome_name, seed), terrain_main_(
+                                  3, 3, macro_tile_size, height, seed, biome_,
+                                  biome_.single_tile_type_map(tile_type)
+                              ) {}
+
+void World::generate_plants() {
+
+    auto plant_maps = biome_.get_plant_map(terrain_main_.X_MAX);
 
     std::unordered_map<int, glm::ivec2> ordered_tiles;
     for (Dim x = 0; x < terrain_main_.X_MAX; x++) {
         for (Dim y = 0; y < terrain_main_.Y_MAX; y++) {
-            size_t tile_hash = seed;
+            size_t tile_hash = biome_.seed_;
             utils::hash_combine(tile_hash, x);
             utils::hash_combine(tile_hash, y);
             ordered_tiles[tile_hash] = glm::vec2(x, y);
@@ -72,7 +82,7 @@ World::World(
     // maybe generating each plant position, orientation, and model
     entity::ObjectHandler& object_handler = entity::ObjectHandler::instance();
 
-    std::default_random_engine rand_engine(seed + 1);
+    std::default_random_engine rand_engine(biome_.seed_ + 1);
     std::uniform_real_distribution uniform_distribution(0.0, 1.0);
     std::uniform_int_distribution rotation_distribution(0, 3);
 
@@ -126,13 +136,8 @@ World::World(
             }
         }
     }
-}
 
-World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
-    biome_(biome_name, seed), terrain_main_(
-                                  3, 3, macro_tile_size, height, seed, biome_,
-                                  biome_.single_tile_type_map(tile_type)
-                              ) {}
+}
 
 // Should not be called except by lambda function
 void

@@ -85,7 +85,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    world::World world(BIOME_BASE_NAME, size, size);
+    world::World world(BIOME_BASE_NAME, size, size, seed);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
 
@@ -250,6 +250,7 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
+    util::load_manifest();
     world::World world(BIOME_BASE_NAME, path_in, seed);
 
     world.qb_save_debug(path_out);
@@ -270,6 +271,7 @@ path_finder_test(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
+    util::load_manifest();
     world::World world(biome_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
@@ -311,6 +313,45 @@ path_finder_test(const argh::parser& cmdl) {
     }
 
     world.qb_save(path_out);
+
+    return 0;
+}
+
+int
+path_finder_test() {
+
+    quill::Logger* logger = logging::main_logger;
+
+    //util::load_manifest();
+    world::World world(BIOME_BASE_NAME, 4, 4, SEED);
+
+    TerrainOffset3 start(20,20, world.get_terrain_main().get_Z_solid(20, 20)+1);
+    TerrainOffset3 end(90,90, world.get_terrain_main().get_Z_solid(90, 90)+1);
+
+    LOG_INFO(
+        logger, "Start: {}, {}, {}", start.x, start.y,
+        start.z
+    );
+
+    LOG_INFO(
+        logger, "End: {}, {}, {}", end.x, end.y,
+        end.z
+    );
+
+    auto tile_path =
+        world.get_terrain_main().get_path_Astar(start, end);
+
+    if (!tile_path) {
+        LOG_WARNING(logger, "NO PATH FOUND");
+        return 1;
+    }
+
+    LOG_INFO(logger, "Path length: {}", tile_path.value().size());
+
+    if (tile_path.value().size() == 0) {
+        LOG_WARNING(logger, "NO PATH FOUND");
+        return 1;
+    }
 
     return 0;
 }
@@ -369,6 +410,8 @@ tests(const argh::parser& cmdl) {
         return save_test(cmdl);
     } else if (run_function == "PathFinder") {
         return path_finder_test(cmdl);
+    } else if (run_function == "PathFinderTest") {
+        return path_finder_test();
     } else if (run_function == "Logging") {
         return LogTest();
     } else if (run_function == "ChunkDataTest") {

@@ -47,9 +47,12 @@ Terrain::Terrain(const std::string& path, const generation::Biome& biome) :
 Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) :
     area_size_(32), biome_(biome), X_MAX(data.size.x), Y_MAX(data.size.y),
     Z_MAX(data.size.z) {
-    // tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
+
+    LOG_INFO(logging::terrain_logger, "Start of read from qb.");
 
     chunks_.reserve(X_MAX * Y_MAX * Z_MAX / Chunk::SIZE / Chunk::SIZE / Chunk::SIZE);
+
+    init_chunks();
 
     auto materials_inverse = biome.get_colors_inverse_map();
 
@@ -63,15 +66,16 @@ Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) 
         throw;
     }
 
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: qb_read.");
+
     // grows the grass
     init_grass();
 
-    LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: init_grass.");
 
-    //  TODO make this faster 1
-    init_chunks();
+    init_nodegroups();
 
-    LOG_DEBUG(logging::terrain_logger, "End of land generator: chunks.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: init_nodegroups.");
 }
 
 Terrain::Terrain(
@@ -86,9 +90,8 @@ Terrain::Terrain(
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
-    //  TODO make this faster 1
     init_chunks();
-    LOG_INFO(logging::terrain_logger, "End of land generator: chunks.");
+    LOG_INFO(logging::terrain_logger, "End of land generator: init_chunks.");
 
     init_all_map_tile_regions(x_map_tiles, y_map_tiles, macro_map);
 
@@ -107,7 +110,11 @@ Terrain::Terrain(
     // grows the grass
     init_grass();
 
-    LOG_DEBUG(logging::terrain_logger, "End of land generator: grass.");
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: init_grass.");
+
+    init_nodegroups();
+
+    LOG_DEBUG(logging::terrain_logger, "End of land generator: init_nodegroups.");
 }
 
 const Tile*
@@ -140,18 +147,6 @@ Terrain::qb_read(
 
     std::unordered_set<ColorInt> unknown_colors;
     std::mutex unknown_colors_mutex_;
-
-    for (TerrainOffset x = 0; x < X_MAX / Chunk::SIZE; x++) {
-        for (TerrainOffset y = 0; y < Y_MAX / Chunk::SIZE; y++) {
-            for (TerrainOffset z = 0; z < Z_MAX / Chunk::SIZE; z++) {
-                chunks_.emplace(
-                    std::piecewise_construct,
-                    std::forward_as_tuple(TerrainDim3(x, y, z)),
-                    std::forward_as_tuple(x, y, z, this)
-                );
-            }
-        }
-    }
 
     GlobalContext& context = GlobalContext::instance();
 
@@ -409,6 +404,10 @@ Terrain::init_chunks() {
         }
     }
 
+}
+
+void
+Terrain::init_nodegroups() {
     for (auto& [position, chunk] : chunks_) {
         chunk.init_nodegroups();
     }

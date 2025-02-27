@@ -125,7 +125,7 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/generation/land_generator.hpp
      */
-    World(const std::string& biome_name, MapTile_t type, size_t seed);
+    explicit World(const std::string& biome_name, MapTile_t type, size_t seed);
     World(
         const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed
     );
@@ -135,6 +135,8 @@ class World {
 
     // void save(); TODO define save
     //  this would require creating some sort of file type
+
+    void generate_plants();
 
     /**
      * @brief Get the materials that exist in the world
