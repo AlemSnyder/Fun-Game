@@ -295,14 +295,15 @@ Terrain::stamp_tile_region(
     for (ChunkDim x = chunk_start.x; x <= chunk_end.x; x++) {
         for (ChunkDim y = chunk_start.y; y <= chunk_end.y; y++) {
             for (ChunkDim z = chunk_start.z; z <= chunk_end.z; z++) {
+                ChunkPos chunk_pos(x, y, z);
                 context.push_task(
-                    [x, y, z, start, end, stamp, this] {
+                    [chunk_pos, start, end, stamp, this] {
                         TerrainOffset3 local_start =
                             start
-                            - TerrainOffset3({x, y, z}) * TerrainOffset(Chunk::SIZE);
+                            - TerrainOffset3(chunk_pos) * TerrainOffset(Chunk::SIZE);
                         TerrainOffset3 local_end =
                             end
-                            - TerrainOffset3({x, y, z}) * TerrainOffset(Chunk::SIZE);
+                            - TerrainOffset3(chunk_pos) * TerrainOffset(Chunk::SIZE);
 
                         if (local_start.x < 0) {
                             local_start.x = 0;
@@ -347,7 +348,7 @@ Terrain::stamp_tile_region(
                             return;
                         }
 
-                        Chunk* chunk = get_chunk({x, y, z});
+                        Chunk* chunk = get_chunk(chunk_pos);
                         if (!chunk) {
                             return;
                         }

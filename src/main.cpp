@@ -71,7 +71,7 @@ TerrainTypes(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
-    biome_data = terrain::generation::Biome::get_json_data(biome_name);
+    biome_data = terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
 
     save_terrain(biome_data);
 
@@ -147,7 +147,7 @@ image_test(const argh::parser& cmdl) {
         // TODO need to make a way to use lua that isn't only in the biome
 
         std::string biome_name;
-        cmdl("biome-name", "base") >> biome_name;
+        cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
         size_t seed;
         cmdl("seed", SEED) >> seed;
         size_t size;

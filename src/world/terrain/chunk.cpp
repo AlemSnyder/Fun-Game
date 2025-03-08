@@ -20,7 +20,7 @@ Chunk::stamp_tile_region(
     LocalPosition xyz_start, LocalPosition xyz_end
 ) {
     for (TerrainOffset x = xyz_start.x; x < xyz_end.x; x++) {
-        for (TerrainOffset y = xyz_start.z; y < xyz_end.y; y++) {
+        for (TerrainOffset y = xyz_start.y; y < xyz_end.y; y++) {
             for (TerrainOffset z = xyz_start.z; z < xyz_end.z; z++) {
                 if (in_range(TerrainOffset3(x, y, z))) {
                     Tile* tile = get_tile(x, y, z);
