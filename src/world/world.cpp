@@ -55,8 +55,7 @@ World::World(
     terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, seed, biome_,
         std::move(biome_.get_map(x_tiles))
-    ) {
-}
+    ) {}
 
 World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
     biome_(biome_name, seed), terrain_main_(
@@ -64,8 +63,8 @@ World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
                                   biome_.single_tile_type_map(tile_type)
                               ) {}
 
-void World::generate_plants() {
-
+void
+World::generate_plants() {
     auto plant_maps = biome_.get_plant_map(terrain_main_.X_MAX);
 
     std::unordered_map<int, glm::ivec2> ordered_tiles;
@@ -136,7 +135,6 @@ void World::generate_plants() {
             }
         }
     }
-
 }
 
 // Should not be called except by lambda function

@@ -78,17 +78,14 @@ NodeGroup::merge_groups(NodeGroup other) {
 }
 
 void
-NodeGroup::add_tile(LocalPosition position){
-
+NodeGroup::add_tile(LocalPosition position) {
     auto size = tile_positions_.size();
-
 
     tile_positions_.insert(position);
 
     center_x = (center_x * size + position.x) / (size + 1);
     center_y = (center_y * size + position.y) / (size + 1);
     center_z = (center_z * size + position.z) / (size + 1);
-
 }
 
 glm::vec3
@@ -101,7 +98,10 @@ std::unordered_set<TerrainOffset3>
 NodeGroup::get_tiles() const {
     std::unordered_set<TerrainOffset3> out({});
     for (auto position : tile_positions_) {
-        out.insert(TerrainOffset3(position) + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE));
+        out.insert(
+            TerrainOffset3(position)
+            + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE)
+        );
     }
     return out;
 }

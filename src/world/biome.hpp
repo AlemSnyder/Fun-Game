@@ -126,7 +126,6 @@ class Biome {
     // lua state that generates macro map
     sol::state lua_;
 
-    
  public:
     const size_t seed_; // TODO change to seed (remove _)
 
@@ -168,7 +167,7 @@ class Biome {
     single_tile_type_map(MapTile_t type) {
         std::vector<terrain::generation::MapTile> out;
         out.reserve(9);
-        
+
         out.emplace_back(get_macro_ids(0), 0, 0, 0);
         out.emplace_back(get_macro_ids(0), 0, 0, 1);
         out.emplace_back(get_macro_ids(0), 0, 0, 2);

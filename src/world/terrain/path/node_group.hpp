@@ -90,7 +90,8 @@ class NodeGroup {
      */
     [[nodiscard]] std::unordered_set<TerrainOffset3> get_tiles() const;
 
-    [[nodiscard]] inline const std::unordered_set<LocalPosition>& get_local_positions() const {
+    [[nodiscard]] inline const std::unordered_set<LocalPosition>&
+    get_local_positions() const {
         return tile_positions_;
     }
 
@@ -135,7 +136,7 @@ class NodeGroup {
 
     /**
      * @brief Add a tile to the node_group
-     * 
+     *
      * @param LocalPosition tile_position offset from chunk origen of tile
      */
     void add_tile(LocalPosition tile_position);

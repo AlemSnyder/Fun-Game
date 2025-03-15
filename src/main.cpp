@@ -71,7 +71,8 @@ TerrainTypes(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
-    biome_data = terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
+    biome_data =
+        terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
 
     save_terrain(biome_data);
 
@@ -279,18 +280,11 @@ path_finder_test(const argh::parser& cmdl) {
     TerrainOffset3 start = start_end.first;
     TerrainOffset3 end = start_end.second;
 
-    LOG_INFO(
-        logger, "Start: {}, {}, {}", start.x, start.y,
-        start.z
-    );
+    LOG_INFO(logger, "Start: {}, {}, {}", start.x, start.y, start.z);
 
-    LOG_INFO(
-        logger, "End: {}, {}, {}", end.x, end.y,
-        end.z
-    );
+    LOG_INFO(logger, "End: {}, {}, {}", end.x, end.y, end.z);
 
-    auto tile_path =
-        world.get_terrain_main().get_path_Astar(start, end);
+    auto tile_path = world.get_terrain_main().get_path_Astar(start, end);
 
     if (!tile_path) {
         LOG_WARNING(logger, "NO PATH FOUND");
@@ -319,27 +313,19 @@ path_finder_test(const argh::parser& cmdl) {
 
 int
 path_finder_test() {
-
     quill::Logger* logger = logging::main_logger;
 
-    //util::load_manifest();
+    // util::load_manifest();
     world::World world(BIOME_BASE_NAME, 4, 4, SEED);
 
-    TerrainOffset3 start(20,20, world.get_terrain_main().get_Z_solid(20, 20)+1);
-    TerrainOffset3 end(90,90, world.get_terrain_main().get_Z_solid(90, 90)+1);
+    TerrainOffset3 start(20, 20, world.get_terrain_main().get_Z_solid(20, 20) + 1);
+    TerrainOffset3 end(90, 90, world.get_terrain_main().get_Z_solid(90, 90) + 1);
 
-    LOG_INFO(
-        logger, "Start: {}, {}, {}", start.x, start.y,
-        start.z
-    );
+    LOG_INFO(logger, "Start: {}, {}, {}", start.x, start.y, start.z);
 
-    LOG_INFO(
-        logger, "End: {}, {}, {}", end.x, end.y,
-        end.z
-    );
+    LOG_INFO(logger, "End: {}, {}, {}", end.x, end.y, end.z);
 
-    auto tile_path =
-        world.get_terrain_main().get_path_Astar(start, end);
+    auto tile_path = world.get_terrain_main().get_path_Astar(start, end);
 
     if (!tile_path) {
         LOG_WARNING(logger, "NO PATH FOUND");

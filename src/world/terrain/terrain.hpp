@@ -46,6 +46,7 @@
 #include <array>
 #include <cstdint>
 #include <functional>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -105,6 +106,8 @@ class Terrain : public voxel_utility::VoxelBase {
     // mat of material id to material that describes materials in this terrain
     const generation::Biome& biome_;
 
+    mutable std::mutex nodegroup_mutex_;
+
     std::unordered_map<TerrainOffset3, Chunk> chunks_;
     std::unordered_map<TerrainOffset3, NodeGroup*> tile_to_group_;
     // seed for randomness
@@ -117,6 +120,11 @@ class Terrain : public voxel_utility::VoxelBase {
     const TerrainOffset Y_MAX;
     // length in the z direction
     const TerrainOffset Z_MAX;
+
+    [[nodiscard]] inline std::mutex&
+    get_nodegroup_mutex() const {
+        return nodegroup_mutex_;
+    }
 
     /**
      * @brief Get the size of terrain
@@ -567,9 +575,8 @@ class Terrain : public voxel_utility::VoxelBase {
         TerrainOffset3 xyz, const material_t* mat, ColorId color_id
     );
 
-    ColorId natural_color(
-        TerrainOffset3 xyz, const material_t* mat, ColorId color_id
-    ) const;
+    ColorId
+    natural_color(TerrainOffset3 xyz, const material_t* mat, ColorId color_id) const;
 
     /**
      * @brief Set the tile material with no tests

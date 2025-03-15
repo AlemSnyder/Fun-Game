@@ -47,7 +47,6 @@ Terrain::Terrain(const std::string& path, const generation::Biome& biome) :
 Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) :
     area_size_(32), biome_(biome), X_MAX(data.size.x), Y_MAX(data.size.y),
     Z_MAX(data.size.z) {
-
     LOG_INFO(logging::terrain_logger, "Start of read from qb.");
 
     chunks_.reserve(X_MAX * Y_MAX * Z_MAX / Chunk::SIZE / Chunk::SIZE / Chunk::SIZE);
@@ -86,7 +85,6 @@ Terrain::Terrain(
     area_size_(area_size_),
     biome_(biome), seed(seed_), X_MAX(x_map_tiles * area_size_),
     Y_MAX(y_map_tiles * area_size_), Z_MAX(z) {
-
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
@@ -151,17 +149,17 @@ Terrain::qb_read(
     GlobalContext& context = GlobalContext::instance();
 
     for (auto& [chunk_position, chunk] : chunks_) {
-        context.submit_task([&chunk, &materials_inverse, &data,
-                             &unknown_colors, &unknown_colors_mutex_,
-                             X_MAX = this->X_MAX, Y_MAX = this->Y_MAX,
-                             Z_MAX = this->Z_MAX]() {
+        context.submit_task([&chunk, &materials_inverse, &data, &unknown_colors,
+                             &unknown_colors_mutex_, X_MAX = this->X_MAX,
+                             Y_MAX = this->Y_MAX, Z_MAX = this->Z_MAX]() {
             std::unique_lock chunk_lock(chunk.get_mutex());
             for (Dim xl = 0; xl < Chunk::SIZE; xl++) {
                 for (Dim yl = 0; yl < Chunk::SIZE; yl++) {
                     for (Dim zl = 0; zl < Chunk::SIZE; zl++) {
                         TerrainOffset3 tile_relative_position(xl, yl, zl);
 
-                        TerrainOffset3 tile_position = tile_relative_position + chunk.get_offset();
+                        TerrainOffset3 tile_position =
+                            tile_relative_position + chunk.get_offset();
 
                         size_t index = tile_position.x * Y_MAX * Z_MAX
                                        + tile_position.y * Z_MAX + tile_position.z;
@@ -386,7 +384,6 @@ Terrain::init_area(generation::MapTile& map_tile, generation::LandGenerator gen)
 
 void
 Terrain::init_chunks() {
-
     chunks_.reserve(X_MAX * Y_MAX * Z_MAX / Chunk::SIZE / Chunk::SIZE / Chunk::SIZE);
 
     // chunk length in _ direction
@@ -404,19 +401,45 @@ Terrain::init_chunks() {
             }
         }
     }
-
 }
 
 void
 Terrain::init_nodegroups() {
+    GlobalContext& context = GlobalContext::instance();
+
+    std::vector<std::future<void>> futures;
+    futures.reserve(num_chunks());
+
     for (auto& [position, chunk] : chunks_) {
-        chunk.init_nodegroups();
+        futures.push_back(context.submit_task([position, this]() {
+            Chunk* chunk = get_chunk(position);
+            if (!chunk) {
+                return;
+            }
+            chunk->init_nodegroups();
+        }));
     }
     // wait for the above to finish
 
+    for (const auto& future : futures) {
+        future.wait();
+    }
+
+    futures.clear();
 
     for (auto& [position, chunk] : chunks_) {
-        chunk.add_nodegroup_adjacent_mp();
+        futures.push_back(context.submit_task([position, this]() {
+            Chunk* chunk = get_chunk(position);
+            if (!chunk) {
+                return;
+            }
+            chunk->add_nodegroup_adjacent_mp();
+        }));
+    }
+    // wait for the above to finish
+
+    for (const auto& future : futures) {
+        future.wait();
     }
 }
 
@@ -589,18 +612,14 @@ Terrain::init_grass() {
 // this should be the same as can_stand(x,y,z,1,1)
 bool
 Terrain::can_stand_1(TerrainOffset3 xyz) const {
-
     const Tile* bottom_tile = get_tile(xyz - TerrainOffset3(0, 0, 1));
     const Tile* top_tile = get_tile(xyz);
-    
-    if (!bottom_tile || !top_tile){
+
+    if (!bottom_tile || !top_tile) {
         return false;
     }
 
-    return (
-        !top_tile->is_solid()
-        && bottom_tile->is_solid()
-    );
+    return (!top_tile->is_solid() && bottom_tile->is_solid());
 }
 
 float
@@ -689,6 +708,9 @@ Terrain::get_adjacent_nodes(
     return out;
 }
 
+// this feels like it's wrong
+// it's fine NodeGroup*s are stored in a linked list. Shouldn't move
+// idk seams like there could be a better way to do this.
 NodeGroup*
 Terrain::get_node_group(TerrainOffset3 xyz) {
     auto node_group = tile_to_group_.find(xyz);
@@ -1032,10 +1054,10 @@ Terrain::get_start_end_test() const {
                 if (tile->get_material_id() == DEBUG_MATERIAL
                     && tile->get_color_id() == 4) {
                     if (first) {
-                        out.first = {x, y, z+1};
+                        out.first = {x, y, z + 1};
                         first = false;
                     } else {
-                        out.second = {x, y, z+1};
+                        out.second = {x, y, z + 1};
                         return out;
                     }
                 }

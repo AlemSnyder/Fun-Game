@@ -55,7 +55,7 @@ class VoxelObject : VoxelBase {
     VoxelSize size_;
     bool ok_;
 
-    [[nodiscard]] inline size_t //TileIndex
+    [[nodiscard]] inline size_t // TileIndex
     get_position(VoxelDim x, VoxelDim y, VoxelDim z) const {
         return ((x * size_.y + y) * size_.z + z);
     }
