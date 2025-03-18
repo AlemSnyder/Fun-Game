@@ -135,6 +135,7 @@ Chunk::init_nodegroups() {
 void
 Chunk::add_nodegroup_adjacent_mp() {
     // add all adjacent nodegroup
+    std::unique_lock this_lock{mut_, std::defer_lock};
     for (NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_local_positions()) {
             if (position.x != SIZE - 1 && position.y != SIZE - 1
@@ -153,7 +154,7 @@ Chunk::add_nodegroup_adjacent_mp() {
 
                 if (relative_position.x * 4 + relative_position.y * 2
                         + relative_position.z
-                    < 0) {
+                    <= 0) {
                     continue;
                 }
 
@@ -162,13 +163,25 @@ Chunk::add_nodegroup_adjacent_mp() {
                 if (!to_add) {
                     continue;
                 }
+                // Don't lock if the nodegroup is already adjacent
+                // this didn't work for me. might want to add a shared lock, but I don't know if speed will mater here.
+                // this_lock.lock();
+                // if (NG.adjacent_to(to_add)) {
+                //     continue;
+                // }
+                // this_lock.unlock();
+                std::unique_lock next_lock{ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
+                std::lock(this_lock, next_lock);
                 NG.add_adjacent(to_add, 31);
+                this_lock.unlock();
+                next_lock.unlock(); // not necessary as will unlock on deconstruction
             }
         }
 }
 
 void
 Chunk::add_nodegroup_adjacent_all() {
+    std::unique_lock this_lock{mut_, std::defer_lock};
     // add all adjacent nodegroup
     for (NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_tiles()) {
@@ -196,7 +209,11 @@ Chunk::add_nodegroup_adjacent_all() {
                 if (!to_add) {
                     continue;
                 }
+                std::unique_lock next_lock{ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
+                std::lock(this_lock, next_lock);
                 NG.add_adjacent(to_add, 31);
+                this_lock.unlock();
+                next_lock.unlock(); // not necessary as will unlock on deconstruction
             }
         }
 }
