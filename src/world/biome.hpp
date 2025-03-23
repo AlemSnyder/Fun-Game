@@ -126,9 +126,9 @@ class Biome {
     // lua state that generates macro map
     sol::state lua_;
 
-    size_t seed_;
-
  public:
+    const size_t seed_; // TODO change to seed (remove _)
+
     /**
      * @brief Construct a new Biome object
      *
@@ -162,15 +162,23 @@ class Biome {
     [[nodiscard]] const std::unordered_map<std::string, PlantMap>
     get_plant_map(MacroDim length) const;
 
+    // TODO pass seed
     inline TerrainMacroMap
     single_tile_type_map(MapTile_t type) {
         std::vector<terrain::generation::MapTile> out;
         out.reserve(9);
-        for (size_t i = 0; i < 4; i++)
-            out.emplace_back(get_macro_ids(0), 0);
-        out.emplace_back(get_macro_ids(type), 2);
-        for (size_t i = 0; i < 4; i++)
-            out.emplace_back(get_macro_ids(0), 0);
+
+        out.emplace_back(get_macro_ids(0), 0, 0, 0);
+        out.emplace_back(get_macro_ids(0), 0, 0, 1);
+        out.emplace_back(get_macro_ids(0), 0, 0, 2);
+
+        out.emplace_back(get_macro_ids(0), 0, 1, 0);
+        out.emplace_back(get_macro_ids(type), 2, 1, 1);
+        out.emplace_back(get_macro_ids(0), 0, 1, 2);
+
+        out.emplace_back(get_macro_ids(0), 0, 2, 0);
+        out.emplace_back(get_macro_ids(0), 0, 2, 1);
+        out.emplace_back(get_macro_ids(0), 0, 2, 2);
 
         return TerrainMacroMap(out, 3, 3);
     }

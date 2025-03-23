@@ -66,6 +66,7 @@ graphics_main(const argh::parser& cmdl) {
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
 
     world::World world(biome_name, size, size, seed);
+    world.generate_plants();
 
     world::Climate climate;
 

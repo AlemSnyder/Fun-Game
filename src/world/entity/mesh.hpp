@@ -153,7 +153,7 @@ class Mesh {
 template <voxel_utility::VoxelLike T>
 std::optional<std::vector<Vertex>>
 analyze_voxel_interface(
-    T voxel_object, VoxelOffset position, VoxelOffset major_direction,
+    const T& voxel_object, VoxelOffset position, VoxelOffset major_direction,
     VoxelOffset minor_direction_1, VoxelOffset minor_direction_2
 ) {
     VoxelColorId voxel_a = voxel_object.get_voxel_color_id(position);
@@ -281,7 +281,7 @@ for dimension (x,y,z direction)
  */
 template <voxel_utility::VoxelLike T>
 Mesh
-ambient_occlusion_mesher(T voxel_object) {
+ambient_occlusion_mesher(const T& voxel_object) {
     std::vector<uint16_t> indicies;
     std::vector<VoxelOffset> indexed_vertices;
     std::vector<MatColorId> indexed_colors;

@@ -53,6 +53,18 @@ class TerrainMacroMap {
     }
 
     /**
+     * @brief Get the MapTile at a given position
+     *
+     * @param size_t i x axis
+     * @param size_t j y axis
+     */
+    MapTile&
+    get_tile(size_t i, size_t j) {
+        assert(i < width_ && j < height_);
+        return terrain_map_[height_ * j + i];
+    }
+
+    /**
      * @brief Get the color representation of the given position
      *
      * @param size_t i x axis

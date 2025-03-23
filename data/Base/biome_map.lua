@@ -8,6 +8,7 @@
 
 spacing = .05
 
+
 -- Terrain map
 function map(number)
     result = {}
@@ -15,6 +16,7 @@ function map(number)
     result.y = number
     result["map"] = {}
 
+    -- num_octaves persistence prime_index
     noise_F = FractalNoise:new(4, 0.6, 3)
 
     noise_W = WorleyNoise:new(1, 1.0)

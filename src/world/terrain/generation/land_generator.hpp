@@ -299,9 +299,10 @@ class LandGenerator {
         return stamp_generators_.begin();
     }
 
-    [[nodiscard]] inline auto end() const {
+    [[nodiscard]] inline auto
+    end() const {
         return stamp_generators_.end();
-}
+    }
 }; // namespace generation
 
 class AddToTop {
@@ -347,6 +348,6 @@ class AddToTop {
     }
 };
 
-} // namespace terrain
+} // namespace generation
 
 } // namespace terrain

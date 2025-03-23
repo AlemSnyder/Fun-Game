@@ -37,19 +37,19 @@ namespace terrain {
 // implementations of start of iteration
 template void helper::grow_grass_recursive<
     helper::edge_detector_low, helper::getter_low,
-    helper::setter_low>(Terrain&, std::unordered_set<Tile*>);
+    helper::setter_low>(Terrain&, std::unordered_set<TerrainOffset3>);
 
 template void helper::grow_grass_recursive<
     helper::edge_detector_high, helper::getter_high,
-    helper::setter_high>(Terrain&, std::unordered_set<Tile*>);
+    helper::setter_high>(Terrain&, std::unordered_set<TerrainOffset3>);
 
 // implementations of inner recursive loop
 template void helper::grow_grass_inner<helper::getter_low, helper::setter_low>(
-    Terrain&, std::unordered_set<Tile*>, int
+    Terrain&, std::unordered_set<TerrainOffset3>, int
 );
 
 template void helper::grow_grass_inner<helper::getter_high, helper::setter_high>(
-    Terrain&, std::unordered_set<Tile*>, int
+    Terrain&, std::unordered_set<TerrainOffset3>, int
 );
 
 } // namespace terrain

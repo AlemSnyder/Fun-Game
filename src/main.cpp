@@ -71,7 +71,8 @@ TerrainTypes(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
-    biome_data = terrain::generation::Biome::get_json_data(biome_name);
+    biome_data =
+        terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
 
     save_terrain(biome_data);
 
@@ -85,9 +86,9 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    world::World world(BIOME_BASE_NAME, size, size);
+    world::World world(BIOME_BASE_NAME, size, size, seed);
 
-    std::filesystem::path path_out = files::get_argument_path(cmdl(2).str());
+    std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
 
     world.qb_save(path_out);
 
@@ -181,14 +182,17 @@ int
 ChunkDataTest() {
     world::World world(BIOME_BASE_NAME, 6, 6);
 
-    const terrain::Chunk chunk = world.get_terrain_main().get_chunks()[1];
+    const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
 
-    terrain::ChunkData chunk_data(chunk);
+    if (!chunk)
+        return 1;
+
+    terrain::ChunkData chunk_data(*chunk);
 
     for (VoxelDim x = -1; x < terrain::Chunk::SIZE; x++) {
         for (VoxelDim y = -1; y < terrain::Chunk::SIZE; y++) {
             for (VoxelDim z = -1; z < terrain::Chunk::SIZE; z++) {
-                MatColorId chunk_mat_color = chunk.get_voxel_color_id(x, y, z);
+                MatColorId chunk_mat_color = chunk->get_voxel_color_id(x, y, z);
                 MatColorId chunk_data_mat_color_id =
                     chunk_data.get_voxel_color_id(x, y, z);
                 if (chunk_mat_color != chunk_data_mat_color_id) {
@@ -247,6 +251,7 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
+    util::load_manifest();
     world::World world(BIOME_BASE_NAME, path_in, seed);
 
     world.qb_save_debug(path_out);
@@ -257,9 +262,9 @@ save_test(const argh::parser& cmdl) {
 // reimplement
 int
 path_finder_test(const argh::parser& cmdl) {
-    std::filesystem::path path_in = files::get_argument_path(cmdl(2).str());
+    std::filesystem::path path_in = files::get_argument_path(cmdl(3).str());
 
-    std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
+    std::filesystem::path path_out = files::get_argument_path(cmdl(4).str());
     quill::Logger* logger = logging::main_logger;
 
     size_t seed;
@@ -267,22 +272,19 @@ path_finder_test(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
+    util::load_manifest();
     world::World world(biome_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
-    LOG_INFO(
-        logger, "Start: {}, {}, {}", start_end.first->get_x(), start_end.first->get_y(),
-        start_end.first->get_z()
-    );
+    TerrainOffset3 start = start_end.first;
+    TerrainOffset3 end = start_end.second;
 
-    LOG_INFO(
-        logger, "End: {}, {}, {}", start_end.second->get_x(), start_end.second->get_y(),
-        start_end.second->get_z()
-    );
+    LOG_INFO(logger, "Start: {}, {}, {}", start.x, start.y, start.z);
 
-    auto tile_path =
-        world.get_terrain_main().get_path_Astar(start_end.first, start_end.second);
+    LOG_INFO(logger, "End: {}, {}, {}", end.x, end.y, end.z);
+
+    auto tile_path = world.get_terrain_main().get_path_Astar(start, end);
 
     if (!tile_path) {
         LOG_WARNING(logger, "NO PATH FOUND");
@@ -300,13 +302,42 @@ path_finder_test(const argh::parser& cmdl) {
 
     constexpr ColorId path_color_id = 5;
     const terrain::material_t* path_mat = world.get_material(DEBUG_MATERIAL);
-    for (const terrain::Tile* tile : tile_path.value()) {
-        world.get_terrain_main()
-            .get_tile(world.get_terrain_main().pos(tile))
-            ->set_material(path_mat, path_color_id);
+    for (const TerrainOffset3 tile : tile_path.value()) {
+        world.get_terrain_main().get_tile(tile)->set_material(path_mat, path_color_id);
     }
 
     world.qb_save(path_out);
+
+    return 0;
+}
+
+int
+path_finder_test() {
+    quill::Logger* logger = logging::main_logger;
+
+    // util::load_manifest();
+    world::World world(BIOME_BASE_NAME, 4, 4, SEED);
+
+    TerrainOffset3 start(20, 20, world.get_terrain_main().get_Z_solid(20, 20) + 1);
+    TerrainOffset3 end(90, 90, world.get_terrain_main().get_Z_solid(90, 90) + 1);
+
+    LOG_INFO(logger, "Start: {}, {}, {}", start.x, start.y, start.z);
+
+    LOG_INFO(logger, "End: {}, {}, {}", end.x, end.y, end.z);
+
+    auto tile_path = world.get_terrain_main().get_path_Astar(start, end);
+
+    if (!tile_path) {
+        LOG_WARNING(logger, "NO PATH FOUND");
+        return 1;
+    }
+
+    LOG_INFO(logger, "Path length: {}", tile_path.value().size());
+
+    if (tile_path.value().size() == 0) {
+        LOG_WARNING(logger, "NO PATH FOUND");
+        return 1;
+    }
 
     return 0;
 }
@@ -365,6 +396,8 @@ tests(const argh::parser& cmdl) {
         return save_test(cmdl);
     } else if (run_function == "PathFinder") {
         return path_finder_test(cmdl);
+    } else if (run_function == "PathFinderTest") {
+        return path_finder_test();
     } else if (run_function == "Logging") {
         return LogTest();
     } else if (run_function == "ChunkDataTest") {

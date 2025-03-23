@@ -1,16 +1,17 @@
 #include "node_group.hpp"
 
+#include "world/terrain/chunk.hpp"
+
 #include <cstdint>
 
 namespace terrain {
 
-NodeGroup::NodeGroup(Tile* tile, UnitPath path_type) {
-    tiles.insert(tile);
-    center_x = tile->get_x();
-    center_y = tile->get_y();
-    center_z = tile->get_z();
-    path_type_ = path_type;
-}
+NodeGroup::NodeGroup(
+    ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type
+) :
+    chunk_position_(chunk_position),
+    path_type_(path_type), tile_positions_({tile_position}), center_x(tile_position.x),
+    center_y(tile_position.y), center_z(tile_position.z) {}
 
 void
 NodeGroup::add_adjacent(NodeGroup* NG, UnitPath type) {
@@ -41,7 +42,7 @@ NodeGroup::get_adjacent_map() {
 }
 
 std::unordered_set<const NodeGroup*>
-NodeGroup::get_adjacent_clear(int path_type) const {
+NodeGroup::get_adjacent_clear(UnitPath path_type) const {
     std::unordered_set<const NodeGroup*> out;
 
     for (const std::pair<NodeGroup*, UnitPath> t : adjacent) {
@@ -54,16 +55,16 @@ NodeGroup::get_adjacent_clear(int path_type) const {
 
 std::unordered_map<NodeGroup*, UnitPath>
 NodeGroup::merge_groups(NodeGroup other) {
-    auto size = tiles.size();
-    auto other_size = other.tiles.size();
+    auto size = tile_positions_.size();
+    auto other_size = other.tile_positions_.size();
     auto total_size = size + other_size;
 
     center_x = (center_x * size + other.center_x * other_size) / total_size;
     center_y = (center_y * size + other.center_y * other_size) / total_size;
     center_z = (center_z * size + other.center_z * other_size) / total_size;
 
-    for (const Tile* t : other.get_tiles()) {
-        tiles.insert(t);
+    for (const auto t : other.get_tiles()) {
+        tile_positions_.insert(t);
     }
 
     for (std::pair<NodeGroup* const, UnitPath> adj : other.get_adjacent_map()) {
@@ -76,29 +77,33 @@ NodeGroup::merge_groups(NodeGroup other) {
     return other.get_adjacent_map();
 }
 
-float
-NodeGroup::get_center_x() const {
-    return center_x;
+void
+NodeGroup::add_tile(LocalPosition position) {
+    auto size = tile_positions_.size();
+
+    tile_positions_.insert(position);
+
+    center_x = (center_x * size + position.x) / (size + 1);
+    center_y = (center_y * size + position.y) / (size + 1);
+    center_z = (center_z * size + position.z) / (size + 1);
 }
 
-float
-NodeGroup::get_center_y() const {
-    return center_y;
-}
-
-float
-NodeGroup::get_center_z() const {
-    return center_z;
-}
-
-std::array<float, 3>
+glm::vec3
 NodeGroup::sop() const {
-    return {center_x, center_y, center_z};
+    return glm::vec3(center_x, center_y, center_z)
+           + glm::vec3(chunk_position_) * float(Chunk::SIZE);
 }
 
-const std::unordered_set<const Tile*>
+std::unordered_set<TerrainOffset3>
 NodeGroup::get_tiles() const {
-    return std::unordered_set<const Tile*>(tiles.begin(), tiles.end());
+    std::unordered_set<TerrainOffset3> out({});
+    for (auto position : tile_positions_) {
+        out.insert(
+            TerrainOffset3(position)
+            + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE)
+        );
+    }
+    return out;
 }
 
 bool
@@ -111,9 +116,15 @@ NodeGroup::operator==(const NodeGroup& other) const {
     return (this == &other);
 }
 
-bool
-NodeGroup::operator>(const NodeGroup& other) const {
-    return ((**tiles.begin()) > **(other.tiles.begin()));
+TerrainOffset3
+NodeGroup::unique_position() const {
+    return TerrainOffset3(*tile_positions_.begin())
+           + TerrainOffset3(chunk_position_) * TerrainOffset(Chunk::SIZE);
 }
+
+// bool
+// NodeGroup::operator>(const NodeGroup& other) const {
+//     return ((**tile_positions_.begin()) > **(other.tile_positions_.begin()));
+// }
 
 } // namespace terrain
