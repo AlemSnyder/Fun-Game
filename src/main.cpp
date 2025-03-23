@@ -147,7 +147,7 @@ image_test(const argh::parser& cmdl) {
         // TODO need to make a way to use lua that isn't only in the biome
 
         std::string biome_name;
-        cmdl("biome-name", "base") >> biome_name;
+        cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
         size_t seed;
         cmdl("seed", SEED) >> seed;
         size_t size;
