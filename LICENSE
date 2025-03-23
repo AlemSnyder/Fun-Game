@@ -4,26 +4,27 @@ Version 0.1.0
 Preamble
 
 A video game is a multi-media artwork. The software and the game art must necessarily be
-licensed under different license agreements. There are five general part 1) the software
-2) the game art and 3) the game play 4) promotional material 5) additional artwork. Each
+licensed under different license agreements. There are five general parts 1) the software
+2) the game art 3) the game play 4) promotional material, and 5) additional artwork. Each
 is licensed under a different license. (At this point only the first three exist). 
 
-In the sprit of GNU the software is free as in bear and as in speech. You are free to use
-the artwork for you own personal use. You may not however modify 
+In the spirit of GNU the software is free as in bear and free as in speech. You are free
+to use the artwork for your own personal use. You may not however modify and reproduce
+the artwork.
 
 This license is not fixed. As it stands this license prevents the use of "texture packs."
-For this reason the repository is also licensed under any potential future versions of
+For this reason, the repository is also licensed under any potential future versions of
 this license.
 
 The purpose of this license is to describe the license for specific material in this
 repository. If not specified it's probably GNU. NOTE: the three license files do not
-necessarily describe all the material in this repository. For example the vendor
+necessarily describe all the material in this repository. For example, the vendor
 subdirectory contains external material that has its own license. I addition there is
 code copied for Stack Overflow. (At the time of writing only two copied sections)
 
-This repository includes many works from may others. The authors can only grand rights
+This repository includes many works from many others. The authors can only grant rights
 they themselves have the right to grand. File structures generally have their own
-license. Go checkout the JSON license for example.
+license. Go check out the JSON license for example.
 
 DEFINITIONS
 
@@ -33,8 +34,8 @@ universal constant
     - conversion factors
 geometric constant
     - constant derived from a shape or volume
-game play
-    - any out put from any executable compiled by following the build directions given in
+gameplay
+    - any output from any executable compiled by following the build directions given in
       the README.md file.
     - includes terminal output and log output
 
@@ -43,28 +44,29 @@ BREAKDOWN OF LICENSED WORK
 1) Software is covered under the terms of the GNU GENERAL PUBLIC LICENSE Version 2
 (GPLv2) included in this repository in the LICENSE-SOFTWARE file. Works covered by the
 GPLv2 license are in the folders /resources /scripts /src. However, hard-coded constants,
-that are not universal/geometric, are considered game art. All work not explicitly
+that are not universal/geometric, are considered game art. All works not explicitly
 covered by a different license are covered by the GPLv2 license.
 
-The structure of folders and files the /data folder is subject to the GPLv2 license. The
+The structure of folders and files in the /data folder is subject to the GPLv2 license. The
 content is considered game art for the purpose of this license. 
 
 2) Game art is covered under the terms of the Creative Commons
 Attribution-NonCommercial-NoDerivatives 4.0 International Public License
 (CC BY-NC-ND 4.0) included in this repository in the LICENSE-ARTWORK file. The content of
-file in the /data folder and subfolders is considered game art for the purpose of this
-license. In addition other items described in section 1) are also considered game art.
+any file in the /data folder and subfolders is considered game art for the purpose of
+this license. In addition, other items described in section 1) are also considered game
+art.
 
-3) Game play is licensed under the terms of the Creative Commons Attribution 4.0
+3) Gameplay is licensed under the terms of the Creative Commons Attribution 4.0
 International Public License (CC BY 4.0) included in this repository in the
-LICENSE-GAMEPLAY file. "Game play" is defined in definitions.
+LICENSE-GAMEPLAY file. "Gameplay" is defined in definitions.
 
 4) Promotional material. At the moment no promotional material is included in this
 repository. Any added promotional material will tentatively be licensed under the
 CC BY 4.0 license. Promotional material will be outside of the /data folder.
 
-5) Additional artwork will not be included in this repository.
+5) Additional types of artwork will not be included in this repository.
 
 LIMITATIONS
 
-This license does NOT supersed the license of any included code artwork or other material.
+This license does NOT supersede the license of any included code artwork or other material.
