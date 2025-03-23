@@ -47,11 +47,18 @@ ninja
 ./FunGame <args>
 gprof ./FunGame gmon.out | gprof2dot | dot -Tsvg -o output.svg
 ```
-Don't know how to turn this off though
-
+To turn off
 ```sh
 rm -rf build # or
 cmake --fresh
+```
+
+gprof doesn't work with multi-threading. For that we can use perf.
+
+```sh
+perf record -ag ./FunGame Start # or any other commands
+perf script report flamegraph # this will ask to download something
+firefox flamegraph.html
 ```
 
 ## Formatting

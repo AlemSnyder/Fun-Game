@@ -255,7 +255,7 @@ class ChunkData : public voxel_utility::VoxelBase {
      * @return VoxelSize vector of Chunk::SIZE
      */
     [[nodiscard]] inline VoxelSize
-    get_size() {
+    get_size() const {
         return {Chunk::SIZE, Chunk::SIZE, Chunk::SIZE};
     }
 
