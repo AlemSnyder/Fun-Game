@@ -234,7 +234,7 @@ World::set_tile(
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z + 1});
 }
 
-void
+std::shared_ptr<entity::EntityInstance>
 World::spawn_entity(std::string identification, glm::vec3 position) {
     auto& object_handler = entity::ObjectHandler::instance();
     auto object_type = object_handler.get_object(identification);
@@ -243,7 +243,7 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
         LOG_ERROR(
             logging::main_logger, "Identification {} does not exists", identification
         );
-        return;
+        return {};
     }
 
     auto entity_type = std::dynamic_pointer_cast<entity::Entity>(object_type);
@@ -253,7 +253,7 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
             logging::main_logger, "Identification {} is not an entity type",
             identification
         );
-        return;
+        return {};
     }
 
     auto entity = std::make_shared<entity::EntityInstance>(entity_type);
@@ -263,7 +263,23 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
     entity->update(glm::translate(transformation, position));
 
     entities_.insert(entity);
+
+    return entity;
 }
+
+void World::remove_entity(std::shared_ptr<entity::EntityInstance> entity) {
+
+    if (!entity) {
+        LOG_WARNING(logging::main_logger, "Entity is null.");
+        return;
+    }
+    entity->destroy();
+    size_t erased = entities_.erase(entity);
+    if (!erased) {
+        LOG_WARNING(logging::main_logger, "Entity not found in World.");
+    }
+}
+
 
 std::optional<std::vector<TerrainOffset3>>
 World::pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id) const {

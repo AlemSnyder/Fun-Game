@@ -19,6 +19,7 @@
 #include "world/climate.hpp"
 #include "world/entity/mesh.hpp"
 #include "world/world.hpp"
+#include "world/entity/object_handler.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -70,6 +71,10 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     bool show_light_controls = false;
     bool show_shadow_map = false;
 
+    glm::vec3 position;
+
+    std::unordered_set<std::shared_ptr<world::entity::EntityInstance>> path_entities;
+
     shader::ShaderHandler shader_handler;
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
@@ -78,8 +83,6 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, shader_handler, world, climate);
-
-    glm::vec3 position;
 
     //! Main loop
 
@@ -152,6 +155,13 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             static int path_length = 0;
 
             if (ImGui::Button("Breadth First Search")) {
+
+                    for (auto& entity : path_entities) {
+                        
+                        world.remove_entity(entity);
+                        
+                    }
+                    path_entities.clear();
                 auto path = world.pathfind_to_object(
                     TerrainOffset3(
                         breadth_first_search_start[0],
@@ -162,6 +172,17 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 if (path) {
                     path_exists = true;
                     path_length = path.value().size();
+
+                    
+                    //auto test_object = object_handler.get_object("base/Test_Entity");
+
+                    for (auto position : path.value()) {
+
+                        auto new_entity = world.spawn_entity("base/Test_Entity", position);
+                        
+                        path_entities.insert(new_entity);
+                    }
+
                 } else {
                     path_exists = false;
                     path_length = 0;
@@ -170,6 +191,16 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             ImGui::Text(
                 "Path found: %s. With length %d.", path_exists ? "true" : "false", path_length
             );
+
+            if (ImGui::Button("Clear Breadth First Search")) {
+
+                for (auto& entity : path_entities) {
+                    
+                    world.remove_entity(entity);
+                    
+                }
+                path_entities.clear();
+            }
             ImGui::End();
         }
 
