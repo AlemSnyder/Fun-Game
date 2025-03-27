@@ -217,6 +217,9 @@ class World {
 
     void spawn_entity(std::string id, glm::vec3 position);
 
+    [[nodiscard]] std::optional<std::vector<TerrainOffset3>>
+    pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id) const;
+
     /**
      * @brief Save terrain with debug information
      *

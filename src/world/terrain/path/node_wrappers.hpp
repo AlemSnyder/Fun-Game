@@ -44,6 +44,10 @@ class NodeGroupWrapper {
         return nodegroup_->unique_position();
     }
 
+    [[nodiscard]] inline ChunkPos get_chunk_position() const {
+        return nodegroup_->get_chunk_position();
+    }
+
     [[nodiscard]] inline std::unordered_set<const NodeGroup*>
     get_adjacent_clear(UnitPath path_type) const {
         return nodegroup_->get_adjacent_clear(path_type);

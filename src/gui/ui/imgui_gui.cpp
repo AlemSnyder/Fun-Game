@@ -146,6 +146,30 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
                 io.Framerate
             );
+            static int breadth_first_search_start[3];
+            ImGui::DragInt3("Start Position", breadth_first_search_start, (1.0F), 0, world.height);
+            static bool path_exists = false;
+            static int path_length = 0;
+
+            if (ImGui::Button("Breadth First Search")) {
+                auto path = world.pathfind_to_object(
+                    TerrainOffset3(
+                        breadth_first_search_start[0],
+                        breadth_first_search_start[1],
+                        breadth_first_search_start[2]),
+                    "base/Flower_Test"
+                );
+                if (path) {
+                    path_exists = true;
+                    path_length = path.value().size();
+                } else {
+                    path_exists = false;
+                    path_length = 0;
+                }
+            }
+            ImGui::Text(
+                "Path found: %s. With length %d.", path_exists ? "true" : "false", path_length
+            );
             ImGui::End();
         }
 

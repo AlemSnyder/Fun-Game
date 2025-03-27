@@ -76,6 +76,11 @@ class TileObjectInstance : public virtual ObjectInstance {
         return {placement_.x, placement_.y, placement_.z};
     }
 
+    [[nodiscard]] virtual TerrainOffset3
+    get_terrain_position() const {
+        return {placement_.x, placement_.y, placement_.z};
+    }
+
     virtual std::shared_ptr<Object> get_object();
 
     virtual std::shared_ptr<const Object> get_object() const;

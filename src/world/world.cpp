@@ -265,4 +265,31 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
     entities_.insert(entity);
 }
 
+std::optional<std::vector<TerrainOffset3>>
+World::pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id) const {
+    entity::ObjectHandler& object_context = entity::ObjectHandler::instance();
+    auto object = object_context.get_object(object_id);
+    if (!object) {
+        LOG_WARNING(logging::terrain_logger, "Object {} not found.", object_id);
+        return {};
+    }
+    //object->
+
+    std::unordered_set<TerrainOffset3> object_positions;
+
+
+    // This makes me sad
+    // TODO fix the storage mechanism
+    for (const auto& tile_entity: tile_entities_) {
+        if (tile_entity->get_object() == object) {
+            object_positions.insert(tile_entity->get_terrain_position());
+        }
+    }
+
+    auto path = terrain_main_.get_path_breadth_first(start_position, object_positions);
+
+    return path;
+}
+
+
 } // namespace world
