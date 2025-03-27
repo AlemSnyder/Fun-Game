@@ -127,7 +127,7 @@ class Biome {
     sol::state lua_;
 
  public:
-    const size_t seed_; // TODO change to seed (remove _)
+    const size_t seed;
 
     /**
      * @brief Construct a new Biome object

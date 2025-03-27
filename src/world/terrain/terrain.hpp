@@ -110,8 +110,6 @@ class Terrain : public voxel_utility::VoxelBase {
 
     std::unordered_map<TerrainOffset3, Chunk> chunks_;
     std::unordered_map<TerrainOffset3, NodeGroup*> tile_to_group_;
-    // seed for randomness
-    int seed;
 
  public:
     // length in the x direction
@@ -408,7 +406,6 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param y_tiles number of macro tiles in y direction
      * @param Area_size_ size of a macro map tile
      * @param z_tiles number of voxel tiles in z direction
-     * @param seed seed of random number generator
      * @param material set of materials used in the world
      * @param biome_data json data that contains biome data
      * @param grass_grad_data vector that determines grass color from edge
@@ -417,7 +414,7 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     Terrain(
         TerrainOffset x_tiles, TerrainOffset y_tiles, TerrainOffset area_size_,
-        TerrainOffset z_tiles, int seed, const generation::Biome& biome,
+        TerrainOffset z_tiles, const generation::Biome& biome,
         generation::TerrainMacroMap macro_map
     );
     /**

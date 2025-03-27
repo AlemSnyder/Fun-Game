@@ -8,13 +8,6 @@
 #include "node_wrappers.hpp"
 
 namespace terrain {
-/*
-template class Node<Tile>;
-template class Node<NodeGroup>;
-
-template class Node<Tile const>;
-template class Node<NodeGroup const>;
-*/
 
 template class Node<PositionWrapper>;
 template class Node<NodeGroupWrapper>;

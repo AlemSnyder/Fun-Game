@@ -79,11 +79,11 @@ Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) 
 
 Terrain::Terrain(
     TerrainOffset x_map_tiles, TerrainOffset y_map_tiles, TerrainOffset area_size_,
-    TerrainOffset z, int seed_, const generation::Biome& biome,
+    TerrainOffset z, const generation::Biome& biome,
     generation::TerrainMacroMap macro_map
 ) :
     area_size_(area_size_),
-    biome_(biome), seed(seed_), X_MAX(x_map_tiles * area_size_),
+    biome_(biome), X_MAX(x_map_tiles * area_size_),
     Y_MAX(y_map_tiles * area_size_), Z_MAX(z) {
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
@@ -448,23 +448,26 @@ Terrain::init_all_map_tile_regions(
     TerrainOffset x_map_tiles, TerrainOffset y_map_tiles,
     generation::TerrainMacroMap& macro_map
 ) {
-    std::vector<std::future<void>> futures;
+    //std::vector<std::future<void>> futures;
 
     GlobalContext& context = GlobalContext::instance();
 
-    for (TerrainOffset i = 0; i < x_map_tiles; i++) {
-        for (TerrainOffset j = 0; j < y_map_tiles; j++) {
-            generation::MapTile& map_tile = macro_map.get_tile(i, j);
-
-            context.push_task([&map_tile, this] {
-                for (auto generator_macro : map_tile.get_type()) {
+    for (size_t start_index = 0; start_index < 4; start_index++){
+        
+        for (TerrainOffset i = start_index % 2; i < x_map_tiles; i+=2) {
+            for (TerrainOffset j = start_index / 2; j < y_map_tiles; j+=2) {
+                generation::MapTile& map_tile = macro_map.get_tile(i, j);
+                
+                context.push_task([&map_tile, this] {
+                    for (auto generator_macro : map_tile.get_type()) {
                     init_area(map_tile, *generator_macro);
                 }
             });
-
+            
             //            futures.push_back(std::move(future));
         }
     }
+}
     // for (const auto& future : futures) {
     //     future.wait();
     // }
@@ -520,16 +523,6 @@ Terrain::can_stand(
     // currently this only requires one solid tile.
     return true;
 }
-
-// bool
-// Terrain::can_stand(const Tile* tile, TerrainOffset dz, TerrainOffset dxy) const {
-//     return can_stand(tile->get_x(), tile->get_y(), tile->get_z(), dz, dxy);
-// }
-
-// bool
-// Terrain::can_stand(const Tile tile, TerrainOffset dz, TerrainOffset dxy) const {
-//     return can_stand(tile.get_x(), tile.get_y(), tile.get_z(), dz, dxy);
-// }
 
 bool
 Terrain::paint(Tile* tile, const material_t* mat, ColorId color_id) {
