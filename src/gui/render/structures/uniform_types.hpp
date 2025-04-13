@@ -31,13 +31,13 @@ class StarRotation {
     virtual glm::mat4 get_sky_rotation() const = 0;
 };
 
-class LightDirection : public shader::UniformExecuter {
+class LightDirection : public shader::UniformExecutor {
  private:
     std::shared_ptr<LightEnvironment> lighting_;
 
  public:
     LightDirection(std::shared_ptr<LightEnvironment> lighting) :
-        UniformExecuter(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~LightDirection(){};
 
@@ -58,13 +58,13 @@ class LightDirection : public shader::UniformExecuter {
     }
 };
 
-class DiffuseLight : public shader::UniformExecuter {
+class DiffuseLight : public shader::UniformExecutor {
  private:
     std::shared_ptr<LightEnvironment> lighting_;
 
  public:
     DiffuseLight(std::shared_ptr<LightEnvironment> lighting) :
-        UniformExecuter(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~DiffuseLight(){};
 
@@ -85,13 +85,13 @@ class DiffuseLight : public shader::UniformExecuter {
     }
 };
 
-class SpectralLight : public shader::UniformExecuter {
+class SpectralLight : public shader::UniformExecutor {
  private:
     std::shared_ptr<render::LightEnvironment> lighting_;
 
  public:
     SpectralLight(std::shared_ptr<LightEnvironment> lighting) :
-        UniformExecuter(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~SpectralLight(){};
 
@@ -110,9 +110,9 @@ class SpectralLight : public shader::UniformExecuter {
     }
 };
 
-class MatrixViewProjection : public shader::UniformExecuter {
+class MatrixViewProjection : public shader::UniformExecutor {
  public:
-    MatrixViewProjection() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    MatrixViewProjection() : UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~MatrixViewProjection(){};
 
@@ -131,9 +131,9 @@ class MatrixViewProjection : public shader::UniformExecuter {
     }
 };
 
-class ViewMatrix : public shader::UniformExecuter {
+class ViewMatrix : public shader::UniformExecutor {
  public:
-    ViewMatrix() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    ViewMatrix() : UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~ViewMatrix(){};
 
@@ -149,13 +149,13 @@ class ViewMatrix : public shader::UniformExecuter {
     }
 };
 
-class LightDepthProjection : public shader::UniformExecuter {
+class LightDepthProjection : public shader::UniformExecutor {
  private:
     const gpu_data::ShadowMap* shadow_map_;
 
  public:
     LightDepthProjection(const gpu_data::ShadowMap* shadow_map) :
-        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthProjection() {}
 
@@ -176,13 +176,13 @@ class LightDepthProjection : public shader::UniformExecuter {
     }
 };
 
-class LightDepthTextureProjection : public shader::UniformExecuter {
+class LightDepthTextureProjection : public shader::UniformExecutor {
  private:
     const gpu_data::ShadowMap* shadow_map_;
 
  public:
     LightDepthTextureProjection(const gpu_data::ShadowMap* shadow_map) :
-        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthTextureProjection() {}
 
@@ -216,13 +216,13 @@ class LightDepthTextureProjection : public shader::UniformExecuter {
     }
 };
 
-class TextureUniform : public shader::UniformExecuter {
+class TextureUniform : public shader::UniformExecutor {
  private:
     uint8_t texture_location_;
 
  public:
     TextureUniform(gpu_data::GPUDataType texture_type, uint8_t texture_location) :
-        UniformExecuter(texture_type), texture_location_(texture_location) {}
+        UniformExecutor(texture_type), texture_location_(texture_location) {}
 
     inline virtual ~TextureUniform() {}
 
@@ -237,10 +237,10 @@ class TextureUniform : public shader::UniformExecuter {
     }
 };
 
-class MatrixViewInverseProjection : public shader::UniformExecuter {
+class MatrixViewInverseProjection : public shader::UniformExecutor {
  public:
     MatrixViewInverseProjection() :
-        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~MatrixViewInverseProjection() {}
 
@@ -261,13 +261,13 @@ class MatrixViewInverseProjection : public shader::UniformExecuter {
     }
 };
 
-class PixelProjection : public shader::UniformExecuter {
+class PixelProjection : public shader::UniformExecutor {
  private:
     inline static screen_size_t width_;
     inline static screen_size_t height_;
 
  public:
-    PixelProjection() : UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    PixelProjection() : UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
 
     virtual ~PixelProjection() {}
 
@@ -296,13 +296,13 @@ class PixelProjection : public shader::UniformExecuter {
     }
 };
 
-class StarRotationUniform : public shader::UniformExecuter {
+class StarRotationUniform : public shader::UniformExecutor {
  private:
     std::shared_ptr<render::StarRotation> rotation_;
 
  public:
     StarRotationUniform(std::shared_ptr<render::StarRotation> rotation) :
-        UniformExecuter(gpu_data::GPUDataType::FLOAT_MAT4), rotation_(rotation) {}
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), rotation_(rotation) {}
 
     virtual ~StarRotationUniform() {}
 

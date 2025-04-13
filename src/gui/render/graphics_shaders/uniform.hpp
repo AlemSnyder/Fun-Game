@@ -52,7 +52,7 @@ class Uniform {
 
     const GLint uid_;
 
-    std::shared_ptr<UniformExecuter> call_function_;
+    std::shared_ptr<UniformExecutor> call_function_;
 
  public:
     /**
@@ -103,7 +103,7 @@ class Uniform {
      * @brief Set the executor that will set the uniform
      */
     inline void
-    set_call_function(std::shared_ptr<UniformExecuter> call_function) {
+    set_call_function(std::shared_ptr<UniformExecutor> call_function) {
         call_function_ = call_function;
     }
 

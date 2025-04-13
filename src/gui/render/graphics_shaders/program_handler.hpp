@@ -348,7 +348,7 @@ class Program : public ProgramData {
     void attach_uniforms();
 
     // Set uniform executor
-    void set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name);
+    void set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_name);
 };
 
 /**

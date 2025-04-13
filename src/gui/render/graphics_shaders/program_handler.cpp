@@ -218,7 +218,7 @@ Program::attach_uniforms() {
 
         std::string str_name(name);
 
-        if (type >= GPUDataType::NUM_TYPES) {
+        if (type >= static_cast<GLenum>(gpu_data::GPUDataType::NUM_TYPES)) {
             LOG_WARNING(
                 logging::opengl_logger,
                 "Uniform type id: {} ivalid.", type
@@ -250,7 +250,7 @@ Program::attach_uniforms() {
 }
 
 void
-Program::set_uniform(std::shared_ptr<UniformExecuter> uex, std::string uniform_name) {
+Program::set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_name) {
     auto found_uniform = uniforms_.find(uniform_name);
 
     if (found_uniform != uniforms_.end()) {

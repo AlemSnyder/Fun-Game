@@ -13,9 +13,9 @@ class UniformExecutor {
     const gpu_data::GPUDataType data_type_;
 
  public:
-    UniformExecuter(gpu_data::GPUDataType data_type) : data_type_(data_type) {}
+    UniformExecutor(gpu_data::GPUDataType data_type) : data_type_(data_type) {}
 
-    virtual inline ~UniformExecuter() {}
+    virtual inline ~UniformExecutor() {}
 
     virtual void bind(GLint uid) const = 0;
 
