@@ -8,7 +8,7 @@ namespace gui {
 
 namespace shader {
 
-class UniformExecuter {
+class UniformExecutor {
  protected:
     const gpu_data::GPUDataType data_type_;
 
@@ -19,8 +19,8 @@ class UniformExecuter {
 
     virtual void bind(GLint uid) const = 0;
 
-    virtual inline gpu_data::GPUDataType
-    get_type() const final {
+    inline gpu_data::GPUDataType
+    get_type() const {
         return data_type_;
     }
 };

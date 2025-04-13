@@ -140,7 +140,8 @@ enum class GPUDataType : GLenum {
         GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE, // 	uimage2DMS
     UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY =
         GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,              // 	uimage2DMSArray
-    UNSIGNED_INT_ATOMIC_COUNTER = GL_UNSIGNED_INT_ATOMIC_COUNTER //
+    UNSIGNED_INT_ATOMIC_COUNTER = GL_UNSIGNED_INT_ATOMIC_COUNTER,//
+    NUM_TYPES
 };
 
 /**
@@ -424,7 +425,9 @@ get_size(const GPUDataType& data_type) {
         case GPUDataType::DOUBLE:
             return 8;
         default:
-            abort(); // ya this is not grate
+            abort();
+        // This should implement all the types defined above, but
+        // only 8 are defined.
     }
 }
 

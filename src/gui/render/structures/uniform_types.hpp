@@ -2,7 +2,7 @@
 
 #include "gui/render/gl_enums.hpp"
 #include "gui/render/gpu_data/shadow_map.hpp"
-#include "gui/render/graphics_shaders/uniform_exicuter.hpp"
+#include "gui/render/graphics_shaders/uniform_executor.hpp"
 #include "gui/scene/controls.hpp"
 #include "logging.hpp"
 #include "types.hpp"

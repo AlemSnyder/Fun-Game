@@ -218,8 +218,16 @@ Program::attach_uniforms() {
 
         std::string str_name(name);
 
+        if (type >= GPUDataType::NUM_TYPES) {
+            LOG_WARNING(
+                logging::opengl_logger,
+                "Uniform type id: {} ivalid.", type
+            );
+        }
+
         gpu_data::GPUDataType enum_type =
-            static_cast<gpu_data::GPUDataType>(type); // this might fail
+            static_cast<gpu_data::GPUDataType>(type);
+        // this probably won't fail
 
         LOG_INFO(
             logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}",

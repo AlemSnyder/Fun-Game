@@ -24,7 +24,7 @@
 #pragma once
 
 #include "gui/render/gl_enums.hpp"
-#include "uniform_exicuter.hpp"
+#include "uniform_executor.hpp"
 
 #include <GL/glew.h>
 
