@@ -55,7 +55,8 @@ Chunk::stamp_tile_region(
 
 void
 Chunk::init_nodegroups() {
-    std::unordered_map<LocalPosition, NodeGroup&> temporary_position_to_nodegroup_map({});
+    std::unordered_map<LocalPosition, NodeGroup&> temporary_position_to_nodegroup_map({}
+    );
 
     // for all tiles:
     // x, y, z
@@ -72,7 +73,8 @@ Chunk::init_nodegroups() {
             for (uint8_t z = 0; z < SIZE; z++) {
                 LocalPosition local_position(x, y, z);
                 if (ter_->can_stand_1(get_offset() + TerrainOffset3(local_position))) {
-                    if (temporary_position_to_nodegroup_map.find(local_position) != temporary_position_to_nodegroup_map.end()) {
+                    if (temporary_position_to_nodegroup_map.find(local_position)
+                        != temporary_position_to_nodegroup_map.end()) {
                         continue;
                     }
                     // the int determines which paths between two tiles are
@@ -81,7 +83,9 @@ Chunk::init_nodegroups() {
                     NodeGroup group(chunk_position_, local_position, 31);
                     node_groups_.push_back(std::move(group));
                     // ter_->add_node_group(&node_groups_.back());
-                    temporary_position_to_nodegroup_map.emplace(local_position, node_groups_.back());
+                    temporary_position_to_nodegroup_map.emplace(
+                        local_position, node_groups_.back()
+                    );
 
                     std::unordered_set<TerrainOffset3> adjacent_tiles;
                     adjacent_tiles.emplace(
@@ -109,7 +113,9 @@ Chunk::init_nodegroups() {
                             }
                             LocalPosition iterator_local_position =
                                 current_position - get_offset();
-                            if (temporary_position_to_nodegroup_map.find(iterator_local_position)
+                            if (temporary_position_to_nodegroup_map.find(
+                                    iterator_local_position
+                                )
                                 != temporary_position_to_nodegroup_map.end()) {
                                 continue;
                             }
@@ -166,13 +172,14 @@ Chunk::add_nodegroup_adjacent_mp() {
                     continue;
                 }
                 // Don't lock if the nodegroup is already adjacent
-                // this didn't work for me. might want to add a shared lock, but I don't know if speed will mater here.
-                // this_lock.lock();
-                // if (NG.adjacent_to(to_add)) {
+                // this didn't work for me. might want to add a shared lock, but I don't
+                // know if speed will mater here. this_lock.lock(); if
+                // (NG.adjacent_to(to_add)) {
                 //     continue;
                 // }
                 // this_lock.unlock();
-                std::unique_lock next_lock{ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
+                std::unique_lock next_lock{
+                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
                 std::lock(this_lock, next_lock);
                 NG.add_adjacent(to_add, 31);
                 this_lock.unlock();
@@ -211,7 +218,8 @@ Chunk::add_nodegroup_adjacent_all() {
                 if (!to_add) {
                     continue;
                 }
-                std::unique_lock next_lock{ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
+                std::unique_lock next_lock{
+                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
                 std::lock(this_lock, next_lock);
                 NG.add_adjacent(to_add, 31);
                 this_lock.unlock();

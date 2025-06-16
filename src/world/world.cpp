@@ -58,10 +58,10 @@ World::World(
     ) {}
 
 World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
-    biome_(biome_name, seed), terrain_main_(
-                                  3, 3, macro_tile_size, height, biome_,
-                                  biome_.single_tile_type_map(tile_type)
-                              ) {}
+    biome_(biome_name, seed),
+    terrain_main_(
+        3, 3, macro_tile_size, height, biome_, biome_.single_tile_type_map(tile_type)
+    ) {}
 
 void
 World::generate_plants() {

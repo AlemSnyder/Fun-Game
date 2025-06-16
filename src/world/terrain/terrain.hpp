@@ -303,9 +303,10 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param area_y area y coordinate
      * @param gen Generator object that generates tile types
      */
-    void init_area(generation::MapTile& map_tile, generation::LandGenerator gen);
+    [[nodiscard]] std::vector<std::future<void>>
+    init_area(generation::MapTile& map_tile, generation::LandGenerator gen);
 
-    void init_all_map_tile_regions(
+    [[nodiscard]] std::vector<std::vector<std::future<void>>> init_all_map_tile_regions(
         TerrainOffset x_map_tiles, TerrainOffset y_map_tiles,
         generation::TerrainMacroMap& macro_map
     );
@@ -317,7 +318,8 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param x macro map x position
      * @param y macro map y position
      */
-    inline void stamp_tile_region(const generation::TileStamp& tStamp, int x, int y);
+    [[nodiscard]] std::vector<std::future<void>>
+    stamp_tile_region(const generation::TileStamp& tStamp, int x, int y);
 
     /**
      * @brief add material on top of extant voxels

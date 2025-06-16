@@ -83,18 +83,26 @@ Terrain::Terrain(
     generation::TerrainMacroMap macro_map
 ) :
     area_size_(area_size_),
-    biome_(biome), X_MAX(x_map_tiles * area_size_),
-    Y_MAX(y_map_tiles * area_size_), Z_MAX(z) {
+    biome_(biome), X_MAX(x_map_tiles * area_size_), Y_MAX(y_map_tiles * area_size_),
+    Z_MAX(z) {
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
     init_chunks();
     LOG_INFO(logging::terrain_logger, "End of land generator: init_chunks.");
 
-    init_all_map_tile_regions(x_map_tiles, y_map_tiles, macro_map);
-
     GlobalContext& context = GlobalContext::instance();
-    context.wait_for_tasks();
+    std::future<std::vector<std::vector<std::future<void>>>> map_tile_async_status =
+        context.submit_task([&x_map_tiles, &y_map_tiles, &macro_map, this]() {
+            return this->init_all_map_tile_regions(x_map_tiles, y_map_tiles, macro_map);
+        });
+
+    auto futures = map_tile_async_status.get();
+    for (const auto& sub_future : futures){
+        for (const auto& sub_sub_future : sub_future) {
+            sub_sub_future.wait();
+        }
+    }
 
     LOG_INFO(logging::terrain_logger, "End of land generator: place tiles.");
 
@@ -259,7 +267,7 @@ Terrain::add_to_top(const generation::AddToTop& top_data) {
         }
 }
 
-void
+std::vector<std::future<void>>
 Terrain::stamp_tile_region(
     const generation::TileStamp& stamp, TerrainOffset x_offset = 0,
     TerrainOffset y_offset = 0
@@ -274,19 +282,19 @@ Terrain::stamp_tile_region(
     TerrainOffset3 start(x_start, y_start, stamp.z_start);
     TerrainOffset3 end(x_end, y_end, stamp.z_end);
 
-    // std::vector<std::future<void>> futures;
+    std::vector<std::future<void>> futures;
 
     // iterate through chunks
 
     ChunkPos chunk_start = get_chunk_from_tile(start);
     ChunkPos chunk_end = get_chunk_from_tile(end - TerrainOffset3(1, 1, 1));
 
-    // ChunkPos size_number_chunks = chunk_end - chunk_start;
+    ChunkPos size_number_chunks = chunk_end - chunk_start;
 
-    // futures.reserve(
-    //     (size_number_chunks.x + 1) * (size_number_chunks.y + 1)
-    //     * (size_number_chunks.z + 1)
-    // );
+    futures.reserve(
+        (size_number_chunks.x + 1) * (size_number_chunks.y + 1)
+        * (size_number_chunks.z + 1)
+    );
 
     GlobalContext& context = GlobalContext::instance();
 
@@ -294,7 +302,7 @@ Terrain::stamp_tile_region(
         for (ChunkDim y = chunk_start.y; y <= chunk_end.y; y++) {
             for (ChunkDim z = chunk_start.z; z <= chunk_end.z; z++) {
                 ChunkPos chunk_pos(x, y, z);
-                context.push_task(
+                auto future = context.submit_task(
                     [chunk_pos, start, end, stamp, this] {
                         TerrainOffset3 local_start =
                             start
@@ -357,29 +365,39 @@ Terrain::stamp_tile_region(
                             stamp.mat, stamp.color_id, stamp.elements_can_stamp,
                             local_start, local_end
                         );
+                        return;
                     },
                     BS::pr::highest
                 );
 
-                //                futures.push_back(std::move(future));
+                futures.push_back(std::move(future));
             }
         }
     }
-    // for (const auto& future : futures) {
-    //     future.wait();
-    // }
+    return futures;
 }
 
-void
+std::vector<std::future<void>>
 Terrain::init_area(generation::MapTile& map_tile, generation::LandGenerator gen) {
+    std::vector<std::future<void>> area_async_status;
     while (!gen.empty()) {
-        stamp_tile_region(
+        std::vector<std::future<void>> async_status = stamp_tile_region(
             gen.get_stamp(map_tile.get_rand_engine()), map_tile.get_x(),
             map_tile.get_y()
         );
+
+        // might need to be moved
+        // area_async_status.insert(async_status.begin(), async_status.end());
+
+        for (auto& future: async_status) {
+            area_async_status.push_back(std::move(future));
+        }
+
         gen.next();
     }
-    gen.reset();
+    gen.reset(); // why do this if passed by copy?
+
+    return area_async_status;
 }
 
 void
@@ -443,34 +461,27 @@ Terrain::init_nodegroups() {
     }
 }
 
-void
+std::vector<std::vector<std::future<void>>>
 Terrain::init_all_map_tile_regions(
     TerrainOffset x_map_tiles, TerrainOffset y_map_tiles,
     generation::TerrainMacroMap& macro_map
 ) {
-    //std::vector<std::future<void>> futures;
+    std::vector<std::vector<std::future<void>>> futures;
 
-    GlobalContext& context = GlobalContext::instance();
-
-    for (size_t start_index = 0; start_index < 4; start_index++){
-        
-        for (TerrainOffset i = start_index % 2; i < x_map_tiles; i+=2) {
-            for (TerrainOffset j = start_index / 2; j < y_map_tiles; j+=2) {
+    for (size_t start_index = 0; start_index < 4; start_index++) {
+        for (TerrainOffset i = start_index % 2; i < x_map_tiles; i += 2) {
+            for (TerrainOffset j = start_index / 2; j < y_map_tiles; j += 2) {
                 generation::MapTile& map_tile = macro_map.get_tile(i, j);
-                
-                context.push_task([&map_tile, this] {
-                    for (auto generator_macro : map_tile.get_type()) {
-                    init_area(map_tile, *generator_macro);
+
+                for (auto generator_macro : map_tile.get_type()) {
+                    std::vector<std::future<void>> future =
+                        init_area(map_tile, *generator_macro);
+                    futures.push_back(std::move(future));
                 }
-            });
-            
-            //            futures.push_back(std::move(future));
+            }
         }
     }
-}
-    // for (const auto& future : futures) {
-    //     future.wait();
-    // }
+    return futures;
 }
 
 TerrainOffset
