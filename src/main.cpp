@@ -9,6 +9,7 @@
 #include "logging.hpp"
 #include "util/files.hpp"
 #include "util/loading.hpp"
+#include "util/lua/lua_logging.hpp"
 #include "util/png_image.hpp"
 #include "util/voxel_io.hpp"
 #include "world/biome.hpp"
@@ -16,7 +17,6 @@
 #include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
-#include "util/lua/lua_logging.hpp"
 
 #include <argh.h>
 
@@ -349,20 +349,23 @@ LogTest() {
     return 0;
 }
 
-int lua_log_test() {
+int
+lua_log_test() {
     sol::state lua;
     lua.open_libraries(sol::lib::debug);
     lua.open_libraries(sol::lib::string);
 
-    std::filesystem::path logging_file_path = files::get_resources_path() / "lua" / "logging.lua";
+    std::filesystem::path logging_file_path =
+        files::get_resources_path() / "lua" / "logging.lua";
 
     lua_logging::setup_lua_logging(lua);
 
-    auto result = lua.safe_script_file(logging_file_path.string(), sol::script_pass_on_error);
+    auto result =
+        lua.safe_script_file(logging_file_path.string(), sol::script_pass_on_error);
 
     LOG_DEBUG(logging::main_logger, "{}", static_cast<int>(result.status()));
 
-    if (!result.valid()){
+    if (!result.valid()) {
         sol::error err = result; // who designed this?
         std::string what = err.what();
         LOG_DEBUG(logging::main_logger, "{}", what);
