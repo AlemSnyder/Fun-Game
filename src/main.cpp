@@ -351,25 +351,7 @@ LogTest() {
 
 int
 lua_log_test() {
-    sol::state lua;
-    lua.open_libraries(sol::lib::debug);
-    lua.open_libraries(sol::lib::string);
-
-    std::filesystem::path logging_file_path =
-        files::get_resources_path() / "lua" / "logging.lua";
-
-    lua_logging::setup_lua_logging(lua);
-
-    auto result =
-        lua.safe_script_file(logging_file_path.string(), sol::script_pass_on_error);
-
-    LOG_DEBUG(logging::main_logger, "{}", static_cast<int>(result.status()));
-
-    if (!result.valid()) {
-        sol::error err = result; // who designed this?
-        std::string what = err.what();
-        LOG_DEBUG(logging::main_logger, "{}", what);
-    }
+    auto& lua = LocalContext::get_lua_state();
 
     sol::protected_function map_function = lua["LOG_CRITICAL"];
 

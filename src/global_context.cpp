@@ -1,5 +1,6 @@
 #include "global_context.hpp"
 
+#include "local_context.hpp"
 #include "logging.hpp"
 
 void
@@ -21,5 +22,14 @@ GlobalContext::run_opengl_queue() {
         LOG_DEBUG_LIMIT(
             std::chrono::seconds{60}, logging::opengl_logger, "Completed opengl queue."
         );
+    }
+}
+
+GlobalContext::GlobalContext() :
+    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {
+    local_thread_contexts.insert({std::this_thread::get_id(), std::move(LocalContext())}
+    );
+    for (const auto& thread_id : thread_pool_.get_thread_ids()) {
+        local_thread_contexts.insert({thread_id, std::move(LocalContext())});
     }
 }

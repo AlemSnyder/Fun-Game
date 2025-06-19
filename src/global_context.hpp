@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "local_context.hpp"
 #include "logging.hpp"
 
 #include <BS_thread_pool.hpp>
@@ -31,6 +32,8 @@
 #include <mutex>
 #include <queue>
 #include <set>
+#include <thread>
+#include <unordered_map>
 
 /**
  * @brief Any global context that are needed will go in this class.
@@ -48,9 +51,10 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
+    std::unordered_map<std::thread::id, LocalContext> local_thread_contexts;
+
     // Private CTOR as this is a singleton
-    GlobalContext() :
-        thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
+    GlobalContext();
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -65,6 +69,11 @@ class GlobalContext {
     instance() {
         static GlobalContext obj;
         return obj;
+    }
+
+    static inline LocalContext&
+    get_local(const std::thread::id& thread_id) {
+        return instance().local_thread_contexts.at(thread_id);
     }
 
     void run_opengl_queue();

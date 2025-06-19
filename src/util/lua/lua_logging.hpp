@@ -1,4 +1,7 @@
+#pragma once
+
 #include "logging.hpp"
+#include "util/files.hpp"
 
 #include <fmt/core.h>
 #include <sol/sol.hpp>
@@ -53,14 +56,26 @@ lua_log_critical(std::string file, int line, std::string message) {
     );
 }
 
-void
+inline void
 setup_lua_logging(sol::state& lua) {
     lua.set_function("lua_log_backtrace", lua_log_backtrace);
-    lua.set_function("lua_log_info",      lua_log_info);
-    lua.set_function("lua_log_debug",     lua_log_debug);
-    lua.set_function("lua_log_warning",   lua_log_warning);
-    lua.set_function("lua_log_error",     lua_log_error);
-    lua.set_function("lua_log_critical",  lua_log_critical);
+    lua.set_function("lua_log_info", lua_log_info);
+    lua.set_function("lua_log_debug", lua_log_debug);
+    lua.set_function("lua_log_warning", lua_log_warning);
+    lua.set_function("lua_log_error", lua_log_error);
+    lua.set_function("lua_log_critical", lua_log_critical);
+
+    std::filesystem::path logging_file_path =
+        files::get_resources_path() / "lua" / "logging.lua";
+
+    auto result =
+        lua.safe_script_file(logging_file_path.string(), sol::script_pass_on_error);
+
+    if (!result.valid()) {
+        sol::error err = result; // who designed this?
+        std::string what = err.what();
+        LOG_WARNING(logging::main_logger, "{}", what);
+    }
 }
 
 } // namespace lua_logging
