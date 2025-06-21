@@ -2,6 +2,7 @@
 
 #include "entity/object_handler.hpp"
 #include "logging.hpp"
+#include "terrain/generation/lua_interface.hpp"
 #include "terrain/generation/noise.hpp"
 #include "terrain/generation/worley_noise.hpp"
 
@@ -65,127 +66,21 @@ Biome::Biome(const std::string& biome_name, size_t seed) :
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
     generate_plants_(biome_data.biome_data.generate_plants),
-    grass_data_(biome_data.materials_data.at("Dirt").gradient), seed_(seed) {
-    std::filesystem::path biome_json_path =
-        files::get_data_path() / biome_data.biome_name;
-
-    std::filesystem::path lua_map_generator_file =
-        biome_json_path / biome_data.biome_data.map_generator_path;
-
+    grass_data_(biome_data.materials_data.at("Dirt").gradient), seed_(seed),
+    lua_map_generator_file_(
+        files::get_data_path() / biome_data.biome_name
+        / biome_data.biome_data.map_generator_path
+    ) {
     read_tile_macro_data_(biome_data.biome_data.tile_macros);
 
     read_map_tile_data_(biome_data.biome_data.tile_data);
 
     read_add_to_top_data_(biome_data.biome_data.layer_effects);
 
-    init_lua_state_(lua_map_generator_file);
-}
-
-void
-Biome::init_lua_state(
-    sol::state& lua, const std::filesystem::path& lua_map_generator_file
-) {
-    if (!std::filesystem::exists(lua_map_generator_file)) [[unlikely]] {
+    if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
         LOG_ERROR(
-            logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
+            logging::lua_logger, "File, {}, not found", lua_map_generator_file_.string()
         );
-        return;
-    }
-
-    // add functions/libraries etc
-    lua.open_libraries(sol::lib::base);
-    lua.open_libraries(sol::lib::math);
-    lua.new_usertype<FractalNoise>(
-        "FractalNoise", sol::meta_function::construct,
-        sol::factories(
-            // FractalNoise.new(...) -- dot syntax, no "self" value
-            // passed in
-            [](int num_octaves, double persistence, int prime_index) {
-                return std::make_shared<FractalNoise>(
-                    num_octaves, persistence, prime_index
-                );
-            },
-            // FractalNoise:new(...) -- colon syntax, passes in the
-            // "self" value as first argument implicitly
-            [](sol::object, int num_octaves, double persistence, int prime_index) {
-                return std::make_shared<FractalNoise>(
-                    num_octaves, persistence, prime_index
-                );
-            }
-        ),
-        // FractalNoise(...) syntax, only
-        sol::call_constructor,
-        sol::factories([](int num_octaves, double persistence, int prime_index) {
-            return std::make_shared<FractalNoise>(
-                num_octaves, persistence, prime_index
-            );
-        }),
-        "sample", &FractalNoise::get_noise
-    );
-
-    lua.new_usertype<WorleyNoise>(
-        "WorleyNoise", sol::meta_function::construct,
-        sol::factories(
-            // WorleyNoise.new(...) -- dot syntax, no "self" value
-            // passed in
-            [](int tile_size, double radius) {
-                return std::make_shared<WorleyNoise>(tile_size, radius);
-            },
-            // WorleyNoise:new(...) -- colon syntax, passes in the
-            // "self" value as first argument implicitly
-            [](sol::object, int tile_size, double radius) {
-                return std::make_shared<WorleyNoise>(tile_size, radius);
-            }
-        ),
-        // WorleyNoise(...) syntax, only
-        sol::call_constructor, sol::factories([](int tile_size, double radius) {
-            return std::make_shared<WorleyNoise>(tile_size, radius);
-        }),
-        "sample", &WorleyNoise::get_noise
-    );
-
-    lua.new_usertype<AlternativeWorleyNoise>(
-        "AlternativeWorleyNoise", sol::meta_function::construct,
-        sol::factories(
-            // AlternativeWorleyNoise.new(...) -- dot syntax, no "self" value
-            // passed in
-            [](int tile_size, double positive_chance, double radius) {
-                return std::make_shared<AlternativeWorleyNoise>(
-                    tile_size, positive_chance, radius
-                );
-            },
-            // AlternativeWorleyNoise:new(...) -- colon syntax, passes in the
-            // "self" value as first argument implicitly
-            [](sol::object, int tile_size, double positive_chance, double radius) {
-                return std::make_shared<AlternativeWorleyNoise>(
-                    tile_size, positive_chance, radius
-                );
-            }
-        ),
-        // AlternativeWorleyNoise(...) syntax, only
-        sol::call_constructor,
-        sol::factories([](int tile_size, double positive_chance, double radius) {
-            return std::make_shared<AlternativeWorleyNoise>(
-                tile_size, positive_chance, radius
-            );
-        }),
-        "sample", &AlternativeWorleyNoise::get_noise
-    );
-
-    auto result = lua.safe_script_file(
-        lua_map_generator_file.string(), sol::script_pass_on_error
-    );
-    if (!result.valid()) {
-        sol::error err = result;
-        sol::call_status status = result.status();
-        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
-        return;
-    }
-
-    sol::protected_function map_function = lua["map"];
-    if (!map_function.valid()) {
-        LOG_ERROR(logging::lua_logger, "Function map not defined.");
-        return;
     }
 }
 
@@ -193,7 +88,25 @@ TerrainMacroMap
 Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
-    sol::protected_function map_function = lua_["map"];
+    sol::state& lua = LocalContext::get_lua_state();
+    if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
+        return {};
+    }
+
+    init_lua_interface(lua);
+
+    auto result = lua.safe_script_file(
+        lua_map_generator_file_.string(), sol::script_pass_on_error
+    );
+    
+    if (!result.valid()) {
+        sol::error err = result;
+        sol::call_status status = result.status();
+        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
+        return {};
+    }
+
+    sol::protected_function map_function = lua["map"];
 
     if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
@@ -255,9 +168,28 @@ const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;
 
-    sol::protected_function plant_map = lua_["plants_map"];
+    sol::state& lua = LocalContext::get_lua_state();
 
-    sol::protected_function map_function = lua_["map"];
+    init_lua_interface(lua);
+
+    if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
+        return {};
+    }
+
+    auto result = lua.safe_script_file(
+        lua_map_generator_file_.string(), sol::script_pass_on_error
+    );
+    
+    if (!result.valid()) {
+        sol::error err = result;
+        sol::call_status status = result.status();
+        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
+        return {};
+    }
+
+    sol::protected_function plant_map = lua["plants_map"];
+
+    sol::protected_function map_function = lua["map"];
 
     sol::table macor_map = map_function(length);
 
