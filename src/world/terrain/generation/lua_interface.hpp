@@ -1,13 +1,14 @@
 #pragma once
-#include <sol/sol.hpp>
-
 #include "noise.hpp"
 #include "worley_noise.hpp"
 
+#include <sol/sol.hpp>
+
 namespace terrain {
 namespace generation {
-void init_lua_interface(sol::state& lua) {
-        lua.new_usertype<FractalNoise>(
+void
+init_lua_interface(sol::state& lua) {
+    lua.new_usertype<FractalNoise>(
         "FractalNoise", sol::meta_function::construct,
         sol::factories(
             // FractalNoise.new(...) -- dot syntax, no "self" value
@@ -83,8 +84,6 @@ void init_lua_interface(sol::state& lua) {
         }),
         "sample", &AlternativeWorleyNoise::get_noise
     );
-
 }
-}
-}
-
+} // namespace generation
+} // namespace terrain

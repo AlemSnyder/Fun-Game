@@ -98,7 +98,7 @@ Biome::get_map(MacroDim size) const {
     auto result = lua.safe_script_file(
         lua_map_generator_file_.string(), sol::script_pass_on_error
     );
-    
+
     if (!result.valid()) {
         sol::error err = result;
         sol::call_status status = result.status();
@@ -179,7 +179,7 @@ Biome::get_plant_map(Dim length) const {
     auto result = lua.safe_script_file(
         lua_map_generator_file_.string(), sol::script_pass_on_error
     );
-    
+
     if (!result.valid()) {
         sol::error err = result;
         sol::call_status status = result.status();
