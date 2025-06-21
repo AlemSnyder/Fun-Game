@@ -355,12 +355,12 @@ lua_log_test() {
 
     sol::protected_function map_function = lua["LOG_CRITICAL"];
 
-    auto result2 = map_function.call("CPP message");
+    auto result = map_function.call("Critical message from cpp!!");
 
-    if (!result2.valid()) {
-        sol::error err2 = result2; // who designed this?
-        std::string what2 = err2.what();
-        LOG_DEBUG(logging::main_logger, "{}", what2);
+    if (!result.valid()) {
+        sol::error err = result; // who designed this?
+        std::string what = err.what();
+        LOG_DEBUG(logging::main_logger, "{}", what);
     }
 
     return 0;
