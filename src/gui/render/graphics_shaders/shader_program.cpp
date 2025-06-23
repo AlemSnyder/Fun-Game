@@ -181,11 +181,6 @@ ShaderProgram_ElementsInstanced::render(
             continue;
         }
 
-        //            assert(static_cast<GLsizei>(mesh->get_num_vertices()) >= 0 &&
-        //            "Num vertices must non-negative");
-        //            assert(static_cast<GLsizei>(mesh->get_num_models()) >= 0 &&
-        //            "Num models must non-negative");
-
         mesh->bind();
 
         auto element_type = mesh->get_element_type();
