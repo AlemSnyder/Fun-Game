@@ -67,9 +67,11 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Our state
-    bool show_another_window = false;
+    bool show_position_window = false;
     bool show_light_controls = false;
     bool show_shadow_map = false;
+    bool show_programs_window = false;
+    bool show_entity_window = false;
 
     glm::vec3 position;
 
@@ -141,9 +143,11 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Another Window", &show_another_window);
+            ImGui::Checkbox("Position Window", &show_position_window);
             ImGui::Checkbox("Show Light Controls", &show_light_controls);
             ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
+            ImGui::Checkbox("Show Programs", &show_programs_window);
+            ImGui::Checkbox("Show Entities", &show_entity_window);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
@@ -205,16 +209,14 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         }
 
         // 3. Show another simple window.
-        if (show_another_window) {
+        if (show_position_window) {
             ImGui::Begin(
-                "Another Window", &show_another_window
+                "Position Window", &show_position_window
             ); // Pass a pointer to our bool variable (the window will have a closing
                // button that will clear the bool when clicked)
             ImGui::Text(
                 "position <%.3f, %.3f, %.3f>", position.x, position.y, position.z
             );
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
             ImGui::End();
         }
 
@@ -224,7 +226,17 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
         }
 
-        display_windows::display_data(shader_handler.get_programs());
+        if (show_programs_window) {
+            display_windows::display_data(
+                shader_handler.get_programs(), show_programs_window
+            );
+        }
+
+        if (show_entity_window) {
+            display_windows::display_data(
+                world::entity::ObjectHandler::instance(), show_entity_window
+            );
+        }
 
         if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
             show_shadow_map = true;

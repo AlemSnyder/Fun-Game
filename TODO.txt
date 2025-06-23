@@ -15,4 +15,6 @@ GUI
         load entities
             multiple texture
 
+    make trees function like entities   # here
+        same shader etc
 

@@ -1,5 +1,7 @@
 #include "imgui_windows.hpp"
 
+#include "world/entity/object_handler.hpp"
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <numbers>
@@ -10,11 +12,13 @@ constexpr float radtodeg = std::numbers::pi / 180;
 
 namespace gui {
 
+namespace display_windows {
+
 void
-display_windows::display_data(
-    std::map<const shader::ProgramData, shader::Program>& programs
+display_data(
+    std::map<const shader::ProgramData, shader::Program>& programs, bool& show
 ) {
-    ImGui::Begin("Shader Programs");
+    ImGui::Begin("Shader Programs", &show);
 
     if (ImGui::BeginTable("table_sorting", 4, 0, ImVec2(0.0f, 24 * 15), 0.0f)) {
         // Declare columns
@@ -51,7 +55,7 @@ display_windows::display_data(
 }
 
 void
-display_windows::display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
+display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
     glm::vec3 light_direction = helio->get_light_direction();
 
     ImGui::Begin("Scene Data", &show);
@@ -86,5 +90,38 @@ display_windows::display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
 
     ImGui::End();
 }
+
+void
+display_data(world::entity::ObjectHandler& object_handler, bool& show) {
+    ImGui::Begin("Shader Objects", &show);
+
+    if (ImGui::BeginTable("table_sorting", 3, 0, ImVec2(0.0f, 24 * 15), 0.0f)) {
+        // Declare columns
+        ImGui::TableSetupColumn("ID");
+        ImGui::TableSetupColumn("Name");
+//        ImGui::TableSetupColumn("Action");
+        ImGui::TableSetupColumn("Number of models");
+        ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
+        ImGui::TableHeadersRow();
+
+        for (auto& [id, object] : object_handler) {
+            // Display a data item
+            ImGui::PushID(std::hash<std::string>{}(id)); // maybe not grate to call hashes like this
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text(id.c_str()); // ID
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted(object->get_name().c_str());
+            ImGui::TableNextColumn();
+            ImGui::Text("%ld", object->num_models()); // number of models
+            // include info on models
+            ImGui::PopID();
+        }
+        ImGui::EndTable();
+    }
+    ImGui::End();
+}
+
+} // namespace display_windows
 
 } // namespace gui

@@ -132,7 +132,7 @@ class TileObject : public virtual Object {
      *
      * @return size_t the number of models
      */
-    [[nodiscard]] size_t num_models() const noexcept;
+    [[nodiscard]] virtual size_t num_models() const noexcept;
 
     /**
      * @brief Iterator to first model
@@ -161,9 +161,14 @@ class TileObject : public virtual Object {
      */
     virtual void update();
 
-    virtual std::string
+    [[nodiscard]] inline virtual std::string
     identification() const {
         return identification_;
+    }
+
+    [[nodiscard]] inline virtual const std::string&
+    get_name() const {
+        return name_;
     }
 
     virtual void init_render(render_programs_t& programs) const override;

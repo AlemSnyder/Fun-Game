@@ -80,6 +80,14 @@ class Entity : public virtual Object {
 
     virtual void update() override;
 
+    [[nodiscard]] inline virtual const std::string& get_name() const {
+        return name_;
+    }
+
+    [[nodiscard]] inline virtual size_t num_models() const {
+        return 1;
+    }
+
  private:
     inline size_t
     add() {
