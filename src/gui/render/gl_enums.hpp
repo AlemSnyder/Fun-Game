@@ -1,5 +1,8 @@
 #pragma once
 
+#include "logging.hpp"
+#include "exceptions.hpp"
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -400,7 +403,8 @@ to_string(const GPUDataType& data_type) {
         case GPUDataType::UNSIGNED_INT_ATOMIC_COUNTER:
             return "GL_UNSIGNED_INT_ATOMIC_COUNTER"; //
         default:
-            return "Not Implemented";
+            LOG_CRITICAL(logging::opengl_logger, "GPUDataType with value {} is not implemented.", static_cast<GLenum>(data_type));
+            throw exc::not_implemented_error("Given GPUDataType is not implemented.");
     }
 }
 
@@ -414,20 +418,132 @@ get_size(const GPUDataType& data_type) {
     switch (data_type) {
         case GPUDataType::BYTE:
         case GPUDataType::UNSIGNED_BYTE:
+        case GPUDataType::BOOL:
             return 1;
         case GPUDataType::SHORT:
         case GPUDataType::UNSIGNED_SHORT:
+        case GPUDataType::BOOL_VEC2:
             return 2;
+        case GPUDataType::BOOL_VEC3:
+            return 3;
         case GPUDataType::INT:
         case GPUDataType::UNSIGNED_INT:
         case GPUDataType::FLOAT:
+        case GPUDataType::BOOL_VEC4:
+        // Everything below this with size 4 is basically a pointer
+        case GPUDataType::SAMPLER_1D:
+        case GPUDataType::SAMPLER_2D:
+        case GPUDataType::SAMPLER_3D:
+        case GPUDataType::SAMPLER_CUBE:
+        case GPUDataType::SAMPLER_1D_SHADOW:
+        case GPUDataType::SAMPLER_2D_SHADOW:
+        case GPUDataType::SAMPLER_1D_ARRAY:
+        case GPUDataType::SAMPLER_2D_ARRAY:
+        case GPUDataType::SAMPLER_1D_ARRAY_SHADOW:
+        case GPUDataType::SAMPLER_2D_ARRAY_SHADOW:
+        case GPUDataType::SAMPLER_2D_MULTISAMPLE:
+        case GPUDataType::SAMPLER_2D_MULTISAMPLE_ARRAY:
+        case GPUDataType::SAMPLER_CUBE_SHADOW:
+        case GPUDataType::SAMPLER_BUFFER:
+        case GPUDataType::SAMPLER_2D_RECT:
+        case GPUDataType::SAMPLER_2D_RECT_SHADOW:
+        case GPUDataType::INT_SAMPLER_1D:
+        case GPUDataType::INT_SAMPLER_2D:
+        case GPUDataType::INT_SAMPLER_3D:
+        case GPUDataType::INT_SAMPLER_CUBE:
+        case GPUDataType::INT_SAMPLER_1D_ARRAY:
+        case GPUDataType::INT_SAMPLER_2D_ARRAY:
+        case GPUDataType::INT_SAMPLER_2D_MULTISAMPLE:
+        case GPUDataType::INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+        case GPUDataType::INT_SAMPLER_BUFFER:
+        case GPUDataType::INT_SAMPLER_2D_RECT:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_1D:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_2D:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_3D:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_CUBE:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_1D_ARRAY:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_2D_ARRAY:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_BUFFER:
+        case GPUDataType::UNSIGNED_INT_SAMPLER_2D_RECT:
+        case GPUDataType::IMAGE_1D:
+        case GPUDataType::IMAGE_2D:
+        case GPUDataType::IMAGE_3D:
+        case GPUDataType::IMAGE_2D_RECT:
+        case GPUDataType::IMAGE_CUBE:
+        case GPUDataType::IMAGE_BUFFER:
+        case GPUDataType::IMAGE_1D_ARRAY:
+        case GPUDataType::IMAGE_2D_ARRAY:
+        case GPUDataType::IMAGE_2D_MULTISAMPLE:
+        case GPUDataType::IMAGE_2D_MULTISAMPLE_ARRAY:
+        case GPUDataType::INT_IMAGE_1D:
+        case GPUDataType::INT_IMAGE_2D:
+        case GPUDataType::INT_IMAGE_3D:
+        case GPUDataType::INT_IMAGE_2D_RECT:
+        case GPUDataType::INT_IMAGE_CUBE:
+        case GPUDataType::INT_IMAGE_BUFFER:
+        case GPUDataType::INT_IMAGE_1D_ARRAY:
+        case GPUDataType::INT_IMAGE_2D_ARRAY:
+        case GPUDataType::INT_IMAGE_2D_MULTISAMPLE:
+        case GPUDataType::INT_IMAGE_2D_MULTISAMPLE_ARRAY:
+        case GPUDataType::UNSIGNED_INT_IMAGE_1D:
+        case GPUDataType::UNSIGNED_INT_IMAGE_2D:
+        case GPUDataType::UNSIGNED_INT_IMAGE_3D:
+        case GPUDataType::UNSIGNED_INT_IMAGE_2D_RECT:
+        case GPUDataType::UNSIGNED_INT_IMAGE_CUBE:
+        case GPUDataType::UNSIGNED_INT_IMAGE_BUFFER:
+        case GPUDataType::UNSIGNED_INT_IMAGE_1D_ARRAY:
+        case GPUDataType::UNSIGNED_INT_IMAGE_2D_ARRAY:
+        case GPUDataType::UNSIGNED_INT_IMAGE_2D_MULTISAMPLE:
+        case GPUDataType::UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY:
+        case GPUDataType::UNSIGNED_INT_ATOMIC_COUNTER:
             return 4;
         case GPUDataType::DOUBLE:
+        case GPUDataType::INT_VEC2:
+        case GPUDataType::UNSIGNED_INT_VEC2:
+        case GPUDataType::FLOAT_VEC2:
             return 8;
+        case GPUDataType::INT_VEC3:
+        case GPUDataType::UNSIGNED_INT_VEC3:
+        case GPUDataType::FLOAT_VEC3:
+            return 12;
+        case GPUDataType::INT_VEC4:
+        case GPUDataType::UNSIGNED_INT_VEC4:
+        case GPUDataType::FLOAT_VEC4:
+        case GPUDataType::DOUBLE_VEC2:
+        case GPUDataType::FLOAT_MAT2:
+            return 16;
+        case GPUDataType::DOUBLE_VEC3:
+        case GPUDataType::FLOAT_MAT2x3:
+        case GPUDataType::FLOAT_MAT3x2:
+        return 24;
+        case GPUDataType::DOUBLE_VEC4:
+        case GPUDataType::FLOAT_MAT2x4:
+        case GPUDataType::FLOAT_MAT4x2:
+        case GPUDataType::DOUBLE_MAT2:
+            return 32;
+        case GPUDataType::FLOAT_MAT3:
+            return 36;
+        case GPUDataType::FLOAT_MAT3x4:
+        case GPUDataType::FLOAT_MAT4x3:
+        case GPUDataType::DOUBLE_MAT2x3:
+        case GPUDataType::DOUBLE_MAT3x2:
+            return 48;
+        case GPUDataType::FLOAT_MAT4:
+        case GPUDataType::DOUBLE_MAT2x4:
+        case GPUDataType::DOUBLE_MAT4x2:
+            return 64;
+        case GPUDataType::DOUBLE_MAT3:
+            return 72;
+        case GPUDataType::DOUBLE_MAT3x4:
+        case GPUDataType::DOUBLE_MAT4x3:
+            return 96;
+        case GPUDataType::DOUBLE_MAT4:
+            return 128;
         default:
-            abort();
-        // This should implement all the types defined above, but
-        // only 8 are defined.
+            LOG_CRITICAL(logging::opengl_logger, "GPUDataType with value {} is not implemented.", static_cast<GLenum>(data_type));
+            throw exc::not_implemented_error("Given GPUDataType is not implemented.");
     }
 }
 
