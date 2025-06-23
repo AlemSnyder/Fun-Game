@@ -466,12 +466,14 @@ lua_loadtime_test() {
         }
         l_mean /= run_times.size();
 
-        // TODO find way to log chrono times.
-        std::cout << r_mean << " " << l_mean << "\n";
+        LOG_INFO(
+            logging::main_logger, "Mean load time of {} samples is {}ns.",
+            load_times.size(), int64_t(l_mean.count())
+        );
 
         LOG_INFO(
-            logging::main_logger, "Mean execution time of {} samples is {}.",
-            run_times.size(), 0
+            logging::main_logger, "Mean execution time of {} samples is {}ns.",
+            run_times.size(), int64_t(r_mean.count())
         );
     }
 
