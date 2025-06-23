@@ -117,6 +117,9 @@ Biome::get_map(MacroDim size) const {
 
     if (!function_output.valid()) {
         LOG_ERROR(logging::lua_logger, "Function result not valid.");
+        sol::error err = function_output;
+        sol::call_status status = function_output.status();
+        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
         return {};
     }
 
@@ -170,8 +173,7 @@ Biome::get_plant_map(Dim length) const {
 
     sol::state& lua = LocalContext::get_lua_state();
 
-    init_lua_interface(lua);
-
+    // TODO need to do something about the interface
     if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
         return {};
     }
@@ -189,11 +191,30 @@ Biome::get_plant_map(Dim length) const {
 
     sol::protected_function plant_map = lua["plants_map"];
 
+    if (!plant_map.valid()) {
+        LOG_ERROR(logging::lua_logger, "Error with plant_map in {}.", lua_map_generator_file_);
+        return {};
+    }
+
     sol::protected_function map_function = lua["map"];
 
-    sol::table macor_map = map_function(length);
+    if (!map_function.valid()) {
+        LOG_ERROR(logging::lua_logger, "Error with map_function in {}.", lua_map_generator_file_);
+        return {};
+    }
 
-    sol::table map = plant_map(length, macor_map);
+    sol::protected_function_result macor_map = map_function(length);
+
+    if (!macor_map.valid()) {
+        sol::error err = macor_map;
+        sol::call_status status = macor_map.status();
+        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
+        return {};
+    }
+
+    sol::table macro_map_table = macor_map;
+
+    sol::table map = plant_map(length, macro_map_table);
 
     MacroDim x_map_tiles = map["x"];
     MacroDim y_map_tiles = map["y"];
