@@ -27,9 +27,19 @@ GlobalContext::run_opengl_queue() {
 
 GlobalContext::GlobalContext() :
     thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {
-    local_thread_contexts.insert({std::this_thread::get_id(), std::move(LocalContext())}
-    );
-    for (const auto& thread_id : thread_pool_.get_thread_ids()) {
-        local_thread_contexts.insert({thread_id, std::move(LocalContext())});
+    std::mutex local_context_map_mut;
+    auto future = submit_task([this, &local_context_map_mut]() {
+        auto local_context = LocalContext();
+        std::scoped_lock lock(local_context_map_mut);
+        local_thread_contexts.insert(
+            {std::this_thread::get_id(), std::move(local_context)}
+        );
+    });
+    auto local_context = LocalContext();
+    {
+        std::scoped_lock lock(local_context_map_mut);
+        local_thread_contexts.insert({std::this_thread::get_id(), std::move(local_context)});
     }
+
+    future.wait();
 }
