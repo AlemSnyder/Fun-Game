@@ -210,7 +210,6 @@ World::set_tile(
 ) {
     terrain_main_.get_tile(tile_sop)->set_material(mat, color_id);
 
-    //    TerrainDim3 tile_sop = terrain_main_.sop(pos);
     mark_for_update(tile_sop);
 
     // do some math:

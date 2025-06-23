@@ -149,8 +149,6 @@ Terrain::qb_read(
     const std::vector<ColorInt> data,
     const std::unordered_map<ColorInt, MaterialColor>& materials_inverse
 ) {
-    //    tiles_.reserve(X_MAX * Y_MAX * Z_MAX);
-
     std::unordered_set<ColorInt> unknown_colors;
     std::mutex unknown_colors_mutex_;
 
@@ -176,19 +174,13 @@ Terrain::qb_read(
                         if (color == 0) { // if the qb voxel is transparent.
                             mat_color =
                                 &materials_inverse.at(0); // set the materials to air
-                            // tiles_.push_back(Tile(tile_position, &mat_color.material,
-                            // mat_color.color));
                         } else if (materials_inverse.count(color
                                    )) { // if the color is known
                             mat_color = &materials_inverse.at(color);
-                            // tiles_.push_back(Tile(tile_position, &mat_color.material,
-                            // mat_color.color));
                         } else { // the color is unknown
                             std::unique_lock lock(unknown_colors_mutex_);
                             unknown_colors.insert(color);
                             mat_color = &materials_inverse.at(0); // else set to air.
-                            // tiles_.push_back(Tile(tile_position, &mat_color.material,
-                            // mat_color.color));
                         }
 
                         Tile* tile = chunk.get_tile(tile_relative_position);
@@ -395,8 +387,6 @@ Terrain::init_area(generation::MapTile& map_tile, generation::LandGenerator gen)
 
         gen.next();
     }
-    gen.reset(); // why do this if passed by copy?
-
     return area_async_status;
 }
 
@@ -559,6 +549,7 @@ Terrain::natural_color(TerrainOffset3 xyz, const material_t* mat, ColorId color_
     const {
     auto mat_id = mat->material_id;
     if (mat_id == DIRT_ID) { // being set to dirt
+        // adds striations to the dirt. (This should be done by lua in the future)
         color_id = (xyz.z + (xyz.x / 16 + xyz.y / 16) % 2) / 3 % 2 + NUM_GRASS;
     }
 

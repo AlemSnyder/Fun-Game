@@ -73,8 +73,7 @@ Chunk::init_nodegroups() {
             for (uint8_t z = 0; z < SIZE; z++) {
                 LocalPosition local_position(x, y, z);
                 if (ter_->can_stand_1(get_offset() + TerrainOffset3(local_position))) {
-                    if (temporary_position_to_nodegroup_map.find(local_position)
-                        != temporary_position_to_nodegroup_map.end()) {
+                    if (temporary_position_to_nodegroup_map.contains(local_position)) {
                         continue;
                     }
                     // the int determines which paths between two tiles are
@@ -113,10 +112,9 @@ Chunk::init_nodegroups() {
                             }
                             LocalPosition iterator_local_position =
                                 current_position - get_offset();
-                            if (temporary_position_to_nodegroup_map.find(
+                            if (temporary_position_to_nodegroup_map.contains(
                                     iterator_local_position
-                                )
-                                != temporary_position_to_nodegroup_map.end()) {
+                                )) {
                                 continue;
                             }
 
@@ -134,16 +132,17 @@ Chunk::init_nodegroups() {
 
     // need to lock here
     // modifying the length of nodegroups
-    std::unique_lock terrain_lock(ter_->get_nodegroup_mutex());
-    for (auto& [position, node_group] : temporary_position_to_nodegroup_map) {
-        ter_->add_node_group(&node_group);
+    {
+        std::unique_lock terrain_lock(ter_->get_nodegroup_mutex());
+        for (auto& [position, node_group] : temporary_position_to_nodegroup_map) {
+            ter_->add_node_group(&node_group);
+        }
     }
 }
 
 void
 Chunk::add_nodegroup_adjacent_mp() {
     // add all adjacent nodegroup
-    std::unique_lock this_lock{mut_, std::defer_lock};
     for (NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_local_positions()) {
             if (position.x != SIZE - 1 && position.y != SIZE - 1
@@ -171,26 +170,15 @@ Chunk::add_nodegroup_adjacent_mp() {
                 if (!to_add) {
                     continue;
                 }
-                // Don't lock if the nodegroup is already adjacent
-                // this didn't work for me. might want to add a shared lock, but I don't
-                // know if speed will mater here. this_lock.lock(); if
-                // (NG.adjacent_to(to_add)) {
-                //     continue;
-                // }
-                // this_lock.unlock();
-                std::unique_lock next_lock{
-                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
-                std::lock(this_lock, next_lock);
+                std::scoped_lock lock{mut_,
+                    ter_->get_chunk(adjacent_chunk)->get_mutex()};
                 NG.add_adjacent(to_add, 31);
-                this_lock.unlock();
-                next_lock.unlock(); // not necessary as will unlock on deconstruction
             }
         }
 }
 
 void
 Chunk::add_nodegroup_adjacent_all() {
-    std::unique_lock this_lock{mut_, std::defer_lock};
     // add all adjacent nodegroup
     for (NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_tiles()) {
@@ -218,12 +206,9 @@ Chunk::add_nodegroup_adjacent_all() {
                 if (!to_add) {
                     continue;
                 }
-                std::unique_lock next_lock{
-                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
-                std::lock(this_lock, next_lock);
+                std::scoped_lock lock{mut_,
+                    ter_->get_chunk(adjacent_chunk)->get_mutex()};
                 NG.add_adjacent(to_add, 31);
-                this_lock.unlock();
-                next_lock.unlock(); // not necessary as will unlock on deconstruction
             }
         }
 }
