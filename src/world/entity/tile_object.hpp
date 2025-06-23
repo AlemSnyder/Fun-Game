@@ -103,11 +103,10 @@ class TileObject : public virtual Object {
      * @details Generates a Object from the json parameters and the path to a voxel
      * object.
      *
-     * @param Json::Value& JSON that describes the object
-     * @param std::filesystem::path path to folder containing voxel
-     TODO fix documentation
+     * @param object_t Struct from JSON that describes the object
+     * @param manifest::descriptor_t Struct containing path to object data, and object identification
      */
-    TileObject(const object_t& object_data, const manifest::descriptor_t& model_path);
+    TileObject(const object_t& object_data, const manifest::descriptor_t& identification_data);
 
     inline virtual ~TileObject() {}
 
@@ -118,9 +117,17 @@ class TileObject : public virtual Object {
      *
      * @return ModelController model.
      */
-    [[nodiscard]] gui::render::ModelController& get_model(size_t mesh_id);
-
     [[nodiscard]] const gui::render::ModelController& get_model(size_t mesh_id) const;
+    /**
+     * @brief Get a model for this object by id.
+     *
+     * @param size_t model mesh id
+     *
+     * @return ModelController model.
+     */
+    [[nodiscard]] inline gui::render::ModelController& get_model(size_t mesh_id) {
+        return const_cast<gui::render::ModelController&>(std::as_const(*this).get_model(mesh_id));
+    }
 
     /**
      * @brief Get the number of models that can represent this object.

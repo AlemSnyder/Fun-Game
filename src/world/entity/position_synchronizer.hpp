@@ -12,6 +12,12 @@ namespace world {
 
 namespace entity {
 
+// TODO convert to background task
+// I don't really like how this works.
+// 1) probably shouldn't use the thread pool especially because there is much waiting
+// 2) what happens to the result when the thread pool is destroyed?
+// 3) objects might change want to pass the object handler or place all this logic in object handler
+
 class PositionSynchronizer {
  private:
     //    std::thread thread_;

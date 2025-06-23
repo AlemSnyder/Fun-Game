@@ -53,5 +53,4 @@ end
 
 
 LOG_BACKTRACE("Finished lua logging initialization.")
--- print("Something")
 

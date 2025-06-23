@@ -31,12 +31,12 @@ TileObjectInstance::get_object() const {
     return object_type_.lock();
 }
 
-gui::render::ModelController&
-TileObject::get_model(size_t mesh_id) {
+const gui::render::ModelController&
+TileObject::get_model(size_t mesh_id) const {
     if (mesh_id >= model_meshes_.size()) {
         throw std::invalid_argument("ID out of range");
     }
-    return model_meshes_[mesh_id];
+    return model_meshes_.at(mesh_id);
 }
 
 size_t

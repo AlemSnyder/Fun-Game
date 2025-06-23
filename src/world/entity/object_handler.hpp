@@ -69,7 +69,12 @@ class ObjectHandler {
      * @brief Load new object from path.
      */
     void read_object(const manifest::descriptor_t& object_descriptor);
-
+    /**
+     * @brief Get object pointer by identification string.
+     * 
+     * @param std::string& identifier
+     * @return std::shared_ptr<Object> Object
+     */
     std::shared_ptr<Object> get_object(const std::string&);
 
     [[nodiscard]] inline const auto
@@ -87,8 +92,13 @@ class ObjectHandler {
      */
     //    void update();
 
+    /**
+     * @brief Start background task object updater.
+     */
     void start_update();
-
+    /**
+     * @brief End background task object updater.
+     */
     void stop_update();
 };
 

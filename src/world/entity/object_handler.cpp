@@ -11,10 +11,14 @@ namespace world {
 
 namespace entity {
 
-// TODO change to return a pointer (could be null)
 std::shared_ptr<Object>
 ObjectHandler::get_object(const std::string& id) {
-    return ided_objects.at(id);
+    auto position = ided_objects.find(id);
+    if (position == ided_objects.end()) {
+        return {};
+    } else {
+        return position->second;
+    }
 }
 
 void
