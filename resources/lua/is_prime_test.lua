@@ -1,5 +1,6 @@
+tests = tests or {}
 
-function is_prime(N)
+function tests.is_prime(N)
     for x = 2, N^(1/2) do
         if N % x == 0 then
             return 0
@@ -7,3 +8,5 @@ function is_prime(N)
     return 1
     end
 end
+
+return tests

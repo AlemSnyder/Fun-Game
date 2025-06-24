@@ -419,7 +419,7 @@ lua_loadtime_test() {
     }
 
     {
-        sol::protected_function is_prime_function = lua["is_prime"];
+        sol::protected_function is_prime_function = lua["tests"]["is_prime"];
 
         LOG_INFO(logging::main_logger, "Got Lua function, calling.");
 
@@ -451,18 +451,11 @@ lua_loadtime_test() {
             std::filesystem::path prime_test_file_path =
                 files::get_resources_path() / "lua" / "is_prime_test.lua";
 
-            auto result = lua.safe_script_file(
-                prime_test_file_path.string(), sol::script_pass_on_error
-            );
 
-            if (!result.valid()) {
-                sol::error err = result; // who designed this?
-                std::string what = err.what();
-                LOG_WARNING(logging::main_logger, "{}", what);
-                return 1;
-            }
+            sol::table biome_library = lua.require_file("is_prime_test", prime_test_file_path.string(), false);
 
-            sol::protected_function is_prime_function = lua["is_prime"];
+            sol::protected_function is_prime_function = biome_library["is_prime"];
+
 
             auto l_end = time_util::get_time_nanoseconds();
             load_times.push_back(l_end - l_start);

@@ -95,20 +95,13 @@ Biome::get_map(MacroDim size) const {
 
     init_lua_interface(lua);
 
-    // TODO Look into require file
-    auto result = lua.safe_script_file(
-        lua_map_generator_file_.string(), sol::script_pass_on_error
-    );
 
-    if (!result.valid()) {
-        sol::error err = result;
-        sol::call_status status = result.status();
-        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
-        return {};
-    }
 
-    sol::protected_function map_function = lua["Base"]["biome_map"]["map"];
+    sol::table biome_library = lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
 
+
+    sol::protected_function map_function = biome_library["biome_map"]["map"];
+    
     if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
         return {};
@@ -179,18 +172,9 @@ Biome::get_plant_map(Dim length) const {
         return {};
     }
 
-    auto result = lua.safe_script_file(
-        lua_map_generator_file_.string(), sol::script_pass_on_error
-    );
+    sol::table biome_library = lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
 
-    if (!result.valid()) {
-        sol::error err = result;
-        sol::call_status status = result.status();
-        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
-        return {};
-    }
-    // TODO change base to biome name (need to save biome name locally.)
-    sol::protected_function plant_map = lua["Base"]["biome_map"]["plants_map"];
+    sol::protected_function plant_map = biome_library["biome_map"]["plants_map"];
 
     if (!plant_map.valid()) {
         LOG_ERROR(logging::lua_logger, "Error with plant_map in {}.", lua_map_generator_file_);

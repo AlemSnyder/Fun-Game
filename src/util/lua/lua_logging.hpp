@@ -68,13 +68,10 @@ setup_lua_logging(sol::state& lua) {
     std::filesystem::path logging_file_path =
         files::get_resources_path() / "lua" / "logging.lua";
 
-    auto result =
-        lua.safe_script_file(logging_file_path.string(), sol::script_pass_on_error);
+    sol::table logging_library = lua.require_file("Logging", logging_file_path.string(), false);
 
-    if (!result.valid()) {
-        sol::error err = result; // who designed this?
-        std::string what = err.what();
-        LOG_WARNING(logging::main_logger, "{}", what);
+    if (!logging_library.valid()) {
+        LOG_WARNING(logging::main_logger, "Logging library did not load correctly.");
     }
 }
 
