@@ -125,7 +125,7 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/generation/land_generator.hpp
      */
-    World(const std::string& biome_name, MapTile_t type, size_t seed);
+    explicit World(const std::string& biome_name, MapTile_t type, size_t seed);
     World(
         const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed
     );
@@ -135,6 +135,8 @@ class World {
 
     // void save(); TODO define save
     //  this would require creating some sort of file type
+
+    void generate_plants();
 
     /**
      * @brief Get the materials that exist in the world
@@ -173,10 +175,10 @@ class World {
      * @brief Marks a single chunk given by a tile in the chunk for update
      */
     void
-    mark_for_update(TerrainDim3 tile_sop) {
+    mark_for_update(TerrainOffset3 tile_sop) {
         if (!terrain_main_.in_range(tile_sop))
             return;
-        ChunkPos chunk_pos = terrain_main_.get_chunk_pos_from_tile(tile_sop);
+        ChunkPos chunk_pos = terrain_main_.get_chunk_from_tile(tile_sop);
         mark_chunk_for_update(chunk_pos);
     }
 
@@ -211,7 +213,7 @@ class World {
      * @param terrain::material_t* material to change to
      * @param ColorId color id to change to
      */
-    void set_tile(Dim pos, const terrain::material_t* mat, ColorId color_id);
+    void set_tile(TerrainOffset3 pos, const terrain::material_t* mat, ColorId color_id);
 
     void spawn_entity(std::string id, glm::vec3 position);
 

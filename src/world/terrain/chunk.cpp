@@ -3,51 +3,214 @@
 #include "material.hpp"
 #include "path/tile_iterators.hpp"
 #include "terrain.hpp"
-#include "terrain_base.hpp"
 #include "tile.hpp"
 
 namespace terrain {
 
 Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
-    ter_(ter), Cx_(chunk_position.x), Cy_(chunk_position.y), Cz_(chunk_position.z) {
-    for (Dim x = SIZE * Cx_; x < SIZE * (1 + Cx_); x++)
-        for (Dim y = SIZE * Cy_; y < SIZE * (1 + Cy_); y++)
-            for (Dim z = SIZE * Cz_; z < SIZE * (1 + Cz_); z++) {
-                if (ter_->can_stand_1(x, y, z)) {
+    ter_(ter), chunk_position_(chunk_position),
+    tiles_(SIZE * SIZE * SIZE, Tile(ter_->get_material(0), 0)) {}
+
+// this is an incredibly cursed function
+// and I'm not going to do anything about it.
+// the reason is that elements_can_stamp may not exist.
+// If it doesn't then only check once.
+// This would require a lot of code duplication.
+void
+Chunk::stamp_tile_region(
+    MaterialId mat, ColorId color_id, std::optional<MaterialGroup> elements_can_stamp,
+    LocalPosition xyz_start, LocalPosition xyz_end
+) {
+    for (TerrainOffset x = xyz_start.x; x < xyz_end.x; x++) {
+        for (TerrainOffset y = xyz_start.y; y < xyz_end.y; y++) {
+            for (TerrainOffset z = xyz_start.z; z < xyz_end.z; z++) {
+                if (in_range(TerrainOffset3(x, y, z))) {
+                    Tile* tile = get_tile(x, y, z);
+                    if (elements_can_stamp.has_value()) {
+                        if (elements_can_stamp->material_in(
+                                tile->get_material_id(), tile->get_color_id()
+                            )) {
+                            tile->set_material(
+                                ter_->get_material(mat),
+                                ter_->natural_color(
+                                    TerrainOffset3(x, y, z) + get_offset(),
+                                    ter_->get_material(mat), color_id
+                                )
+                            );
+                        }
+                    } else {
+                        tile->set_material(
+                            ter_->get_material(mat),
+                            ter_->natural_color(
+                                TerrainOffset3(x, y, z) + get_offset(),
+                                ter_->get_material(mat), color_id
+                            )
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+void
+Chunk::init_nodegroups() {
+    std::unordered_map<LocalPosition, NodeGroup&> temporary_position_to_nodegroup_map({}
+    );
+
+    // for all tiles:
+    // x, y, z
+    //      check 1) tile is not solid 2) tile below is 3) tile is not in map
+    //          if any of the above are false continue
+    //      create a nodegroup for the tile
+    //      add tile to temporary_position_to_nodegroup_map
+    //      recursively add adjacent tiles to the nodegroup if they are open and in this
+    //      chunk
+
+    // initializing a node group on all walkable tiles
+    for (uint8_t x = 0; x < SIZE; x++)
+        for (uint8_t y = 0; y < SIZE; y++)
+            for (uint8_t z = 0; z < SIZE; z++) {
+                LocalPosition local_position(x, y, z);
+                if (ter_->can_stand_1(get_offset() + TerrainOffset3(local_position))) {
+                    if (temporary_position_to_nodegroup_map.contains(local_position)) {
+                        continue;
+                    }
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
                     // look at onePath for more information
-                    NodeGroup group = NodeGroup(ter_->get_tile(x, y, z), 31);
-                    node_groups_.push_back(group);
-                    ter_->add_node_group(&node_groups_.back());
+                    NodeGroup group(chunk_position_, local_position, 31);
+                    node_groups_.push_back(std::move(group));
+                    // ter_->add_node_group(&node_groups_.back());
+                    temporary_position_to_nodegroup_map.emplace(
+                        local_position, node_groups_.back()
+                    );
+
+                    std::unordered_set<TerrainOffset3> adjacent_tiles;
+                    adjacent_tiles.emplace(
+                        get_offset() + TerrainOffset3(local_position)
+                    );
+
+                    while (adjacent_tiles.size() > 0) {
+                        auto iter = adjacent_tiles.begin();
+                        TerrainOffset3 next_position = *iter;
+                        adjacent_tiles.erase(iter);
+                        path::AdjacentIterator it(
+                            *ter_, next_position,
+                            DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+                                | DirectionFlags::VERTICAL | DirectionFlags::UP_AND_OVER
+                                | DirectionFlags::UP_AND_DIAGONAL | DirectionFlags::OPEN
+                        );
+                        for (; !it.end(); it++) {
+                            TerrainOffset3 current_position = it.get_pos();
+                            if (ter_->get_chunk_from_tile(current_position)
+                                != chunk_position_) {
+                                continue;
+                            }
+                            if (!ter_->can_stand_1(current_position)) {
+                                continue;
+                            }
+                            LocalPosition iterator_local_position =
+                                current_position - get_offset();
+                            if (temporary_position_to_nodegroup_map.contains(
+                                    iterator_local_position
+                                )) {
+                                continue;
+                            }
+
+                            node_groups_.back().add_tile(iterator_local_position);
+
+                            temporary_position_to_nodegroup_map.emplace(
+                                iterator_local_position, node_groups_.back()
+                            );
+
+                            adjacent_tiles.insert(current_position);
+                        }
+                    }
                 }
             }
 
-    for (NodeGroup& NG : node_groups_)
-        for (const Tile* tile_main : NG.get_tiles()) {
-            auto it = ter_->get_tile_adjacent_iterator(ter_->pos(tile_main), 31);
-            for (; !it.end(); it++) {
-                if (NodeGroup* to_add = ter_->get_node_group(it.get_pos())) {
-                    // possible to go in both directions
-                    // like add adjacent from above, and below
-                    NG.add_adjacent(to_add, 31);
-                }
-            }
+    // need to lock here
+    // modifying the length of nodegroups
+    {
+        std::unique_lock terrain_lock(ter_->get_nodegroup_mutex());
+        for (auto& [position, node_group] : temporary_position_to_nodegroup_map) {
+            ter_->add_node_group(&node_group);
         }
-
-    auto it = node_groups_.begin();
-    while (it != node_groups_.end()) {
-        // to merge = get_adjacent_map()
-        std::unordered_set<NodeGroup*> to_merge;
-        for (std::pair<NodeGroup* const, UnitPath> other : (it)->get_adjacent_map()) {
-            if (contains_node_group_(other.first)) {
-                to_merge.insert(other.first);
-            }
-        }
-        merge_((*it), std::move(to_merge));
-        ter_->add_node_group(&(*it));
-        it++;
     }
+}
+
+void
+Chunk::add_nodegroup_adjacent_mp() {
+    // add all adjacent nodegroup
+    for (NodeGroup& NG : node_groups_)
+        for (LocalPosition position : NG.get_local_positions()) {
+            if (position.x != SIZE - 1 && position.y != SIZE - 1
+                && position.z != SIZE - 1) {
+                continue;
+            }
+
+            auto it = ter_->get_tile_adjacent_iterator(
+                TerrainOffset3(position) + get_offset(), 31
+            );
+            for (; !it.end(); it++) {
+                TerrainOffset3 iterator_position = it.get_pos();
+                ChunkPos adjacent_chunk = ter_->get_chunk_from_tile(iterator_position);
+
+                ChunkPos relative_position = adjacent_chunk - chunk_position_;
+
+                if (relative_position.x * 4 + relative_position.y * 2
+                        + relative_position.z
+                    <= 0) {
+                    continue;
+                }
+
+                NodeGroup* to_add = ter_->get_node_group(it.get_pos());
+
+                if (!to_add) {
+                    continue;
+                }
+                std::scoped_lock lock{mut_,
+                    ter_->get_chunk(adjacent_chunk)->get_mutex()};
+                NG.add_adjacent(to_add, 31);
+            }
+        }
+}
+
+void
+Chunk::add_nodegroup_adjacent_all() {
+    // add all adjacent nodegroup
+    for (NodeGroup& NG : node_groups_)
+        for (LocalPosition position : NG.get_tiles()) {
+            if (position.x != SIZE - 1 || position.y != SIZE - 1
+                || position.z != SIZE - 1 || position.x != 0 || position.y != 0
+                || position.z != 0) {
+                continue;
+            }
+
+            auto it = ter_->get_tile_adjacent_iterator(
+                TerrainOffset3(position) + get_offset(), 31
+            );
+            for (; !it.end(); it++) {
+                TerrainOffset3 iterator_position = it.get_pos();
+                ChunkPos adjacent_chunk = ter_->get_chunk_from_tile(iterator_position);
+
+                ChunkPos relative_position = adjacent_chunk - chunk_position_;
+
+                if (relative_position == ChunkPos(0)) {
+                    continue;
+                }
+
+                NodeGroup* to_add = ter_->get_node_group(it.get_pos());
+
+                if (!to_add) {
+                    continue;
+                }
+                std::scoped_lock lock{mut_,
+                    ter_->get_chunk(adjacent_chunk)->get_mutex()};
+                NG.add_adjacent(to_add, 31);
+            }
+        }
 }
 
 void
@@ -95,25 +258,21 @@ Chunk::merge_node_group_(NodeGroup& G1, NodeGroup& G2) {
 
 inline bool
 Chunk::contains_node_group_(NodeGroup* NG) {
-    return (
-        NG->get_center_x() >= SIZE * Cx_ && NG->get_center_x() < SIZE * (1 + Cx_)
-        && NG->get_center_y() >= SIZE * Cy_ && NG->get_center_y() < SIZE * (1 + Cy_)
-        && NG->get_center_z() >= SIZE * Cz_ && NG->get_center_z() < SIZE * (1 + Cz_)
-    );
+    return (NG->get_chunk_position() == chunk_position_);
 }
 
 ColorInt
 terrain::Chunk::get_voxel(VoxelDim x, VoxelDim y, VoxelDim z) const {
-    return ter_->get_voxel(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
+    return ter_->get_voxel(get_offset() + VoxelOffset(x, y, z));
 }
 
 MatColorId
 terrain::Chunk::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
-    return ter_->get_voxel_color_id(
-        x + Cx_ * Chunk::SIZE, y + Cy_ * Chunk::SIZE, z + Cz_ * Chunk::SIZE
-    );
+    if (x >= Chunk::SIZE || x < 0 || y >= Chunk::SIZE || y < 0 || z >= Chunk::SIZE
+        || z < 0) [[unlikely]] {
+        return ter_->get_voxel_color_id(get_offset() + VoxelOffset(x, y, z));
+    }
+    return get_tile(x, y, z)->get_mat_color_id();
 }
 
 std::vector<MatColorId>

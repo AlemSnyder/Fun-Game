@@ -72,10 +72,10 @@ MaterialGroup::insert(
     std::optional<std::vector<ColorId>> colors_ov =
         std::visit([](auto&& arg) -> auto { return read_colors(arg); }, color_v);
     if (!colors_ov) {
-        insert_(*materials_ov);
+        insert_(materials_ov.value());
         return false;
     }
-    insert_(*materials_ov, *colors_ov);
+    insert_(materials_ov.value(), colors_ov.value());
     return false;
 }
 
@@ -98,13 +98,13 @@ MaterialGroup::MaterialGroup(const std::vector<generation::material_designation_
 }
 
 void
-MaterialGroup::insert_(std::vector<MaterialId> material_id) {
+MaterialGroup::insert_(const std::vector<MaterialId>& material_id) {
     materials_no_color_requirement_.insert(material_id.begin(), material_id.end());
 }
 
 void
 MaterialGroup::insert_(
-    std::vector<MaterialId> material_id, std::vector<ColorId> color_ids
+    const std::vector<MaterialId>& material_id, const std::vector<ColorId>& color_ids
 ) {
     for (MaterialId id : material_id) {
         materials_with_color_requirement_[id].insert(
