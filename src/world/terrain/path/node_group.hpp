@@ -23,6 +23,7 @@
 #pragma once
 
 #include "../tile.hpp"
+#include "types.hpp"
 #include "unit_path.hpp"
 
 #include <cstdint>
@@ -45,11 +46,12 @@ namespace terrain {
  *
  */
 class NodeGroup {
-    std::unordered_set<const Tile*> tiles;
+    const ChunkPos chunk_position_;
+    UnitPath path_type_; // the path restraints to get form any tile in this Group to
+    std::unordered_set<LocalPosition> tile_positions_;
     std::unordered_map<NodeGroup*, UnitPath> adjacent;
     float center_x, center_y, center_z; // volumetric center, a weighted average
-    UnitPath path_type_; // the path restraints to get form any tile in this Group to
-                         // any other tile
+                                        // any other tile
  public:
     /**
      * @brief Construct a new Node Group object
@@ -62,7 +64,10 @@ class NodeGroup {
      * @param path_type most complex path type used to get from any tile to any other
      * tile in this node group
      */
-    NodeGroup(Tile* tile, UnitPath path_type);
+    NodeGroup(ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type);
+
+    // NodeGroup(std::unordered_set<LocalPosition>, UnitPath path_type);
+
     /**
      * @brief Merge two node groups together
      *
@@ -71,14 +76,25 @@ class NodeGroup {
      */
     std::unordered_map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
 
+    [[nodiscard]] inline const ChunkPos
+    get_chunk_position() {
+        return chunk_position_;
+    }
+
     // !void update(); If I modify terrain path finding should not break
     // this should be in chunk though
     /**
-     * @brief Get set of tiles in this group
+     * @brief Get a set of tile positions for each tile in the group.
      *
-     * @return The set of tiles
+     * @return A set of global tile positions.
      */
-    const std::unordered_set<const Tile*> get_tiles() const;
+    [[nodiscard]] std::unordered_set<TerrainOffset3> get_tiles() const;
+
+    [[nodiscard]] inline const std::unordered_set<LocalPosition>&
+    get_local_positions() const {
+        return tile_positions_;
+    }
+
     /**
      * @brief Add adjacent node group where
      *
@@ -86,31 +102,45 @@ class NodeGroup {
      * @param path_type The path type between the two node groups
      */
     void add_adjacent(NodeGroup* NG, UnitPath path_type);
+
     /**
      * @brief Get adjacent node groups that are compatible with path type
      *
      * @param path_type type of paths that are allowed
      * @return set of adjacent node groups
      */
-    std::unordered_set<const NodeGroup*> get_adjacent_clear(int path_type) const;
+    [[nodiscard]] std::unordered_set<const NodeGroup*>
+    get_adjacent_clear(UnitPath path_type) const;
+
     /**
      * @brief Remove node group from adjacency
      *
      * @param NG node group to remove
      */
     void remove_adjacent(NodeGroup* NG);
+
     /**
      * @brief Get the adjacency map
      *
      * @return std::unordered_map<NodeGroup *, UnitPath>
      */
-    std::unordered_map<NodeGroup*, UnitPath> get_adjacent_map();
+    [[nodiscard]] std::unordered_map<NodeGroup*, UnitPath> get_adjacent_map();
+
     /**
      * @brief Get the adjacency map
      *
      * @return std::unordered_map<const NodeGroup *, UnitPath>
      */
-    std::unordered_map<const NodeGroup*, UnitPath> get_adjacent_map() const;
+    [[nodiscard]] std::unordered_map<const NodeGroup*, UnitPath>
+    get_adjacent_map() const;
+
+    /**
+     * @brief Add a tile to the node_group
+     *
+     * @param LocalPosition tile_position offset from chunk origen of tile
+     */
+    void add_tile(LocalPosition tile_position);
+
     /**
      * @brief Test if two node groups are adjacent
      *
@@ -118,31 +148,16 @@ class NodeGroup {
      * @return true if the node groups are adjacent
      * @return false otherwise
      */
-    bool adjacent_to(NodeGroup* other) const;
-    /**
-     * @brief Get the center in the x direction
-     *
-     * @return float
-     */
-    float get_center_x() const;
-    /**
-     * @brief Get the center in the y direction
-     *
-     * @return float
-     */
-    float get_center_y() const;
-    /**
-     * @brief Get the center in the z direction
-     *
-     * @return float
-     */
-    float get_center_z() const;
+    [[nodiscard]] bool adjacent_to(NodeGroup* other) const;
+
     /**
      * @brief vector to volumetric center
      *
      * @return std::array<float, 3>
      */
-    std::array<float, 3> sop() const;
+    [[nodiscard]] glm::vec3 sop() const;
+
+    [[nodiscard]] TerrainOffset3 unique_position() const;
 
     bool operator==(const NodeGroup& other) const;
     bool operator>(const NodeGroup& other) const;

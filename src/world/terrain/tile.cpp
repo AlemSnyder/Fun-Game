@@ -5,10 +5,9 @@
 
 namespace terrain {
 
-Tile::Tile(TerrainDim3 sop, const terrain::material_t* material, ColorId color_id) :
-    x(sop.x), y(sop.y), z(sop.z), mat_id_(0), color_id_(0), grow_data_high_(0),
-    grow_data_low_(0), grow_sink_(false), grow_source_(false), grass_(false),
-    solid_(false) {
+Tile::Tile(const terrain::material_t* material, ColorId color_id) :
+    mat_id_(0), color_id_(0), grow_data_high_(0), grow_data_low_(0), grow_sink_(false),
+    grow_source_(false), grass_(false), solid_(false) {
     // set material should not fail so if material is bad for some reason
     // tile should still be fine.
     set_material(material, color_id);
@@ -25,8 +24,8 @@ Tile::set_material(const terrain::material_t* const material, ColorId color_id_)
 void
 Tile::set_material(const terrain::material_t* const material) {
     mat_id_ = material->material_id;
-    if (mat_id_ == DIRT_ID) { // being set to dirt
-        color_id_ = (z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
+    if (mat_id_ == DIRT_ID) {  // being set to dirt
+        color_id_ = NUM_GRASS; //(z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
     } else {
         color_id_ = 0;
     }
@@ -39,9 +38,11 @@ Tile::set_color_id(ColorId color_id, const terrain::material_t* const material) 
     if (color_id >= material->color.size()) {
         return;
     }
-    if ((mat_id_ != DIRT_ID) || (color_id < NUM_GRASS && grass_)) {
-        color_id_ = color_id;
-    } // cannot set the color of dirt
+    // if ((mat_id_ != DIRT_ID) || (color_id < NUM_GRASS && grass_)) {
+    color_id_ = color_id;
+    //} // cannot set the color of dirt
+    // now setting to color of dirt
+    // I guess the plan is to change tile to a struct
 }
 
 // Set `grow_data_high` to `num`
@@ -147,21 +148,6 @@ Tile::get_mat_color_id() const {
         return 0;
     }
     return mat_id_ << 8 | color_id_;
-}
-
-bool
-Tile::operator>(const Tile other) const {
-    if (get_x() < other.get_x()) {
-        return true;
-    } else if (get_x() > other.get_x()) {
-        return false;
-    } else if (get_y() < other.get_y()) {
-        return true;
-    } else if (get_y() < other.get_y()) {
-        return false;
-    } else {
-        return get_z() < other.get_z();
-    }
 }
 
 } // namespace terrain

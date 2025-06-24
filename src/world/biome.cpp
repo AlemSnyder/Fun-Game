@@ -66,11 +66,11 @@ Biome::Biome(const std::string& biome_name, size_t seed) :
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
     generate_plants_(biome_data.biome_data.generate_plants),
-    grass_data_(biome_data.materials_data.at("Dirt").gradient), seed_(seed),
+    grass_data_(biome_data.materials_data.at("Dirt").gradient),
     lua_map_generator_file_(
         files::get_data_path() / biome_data.biome_name
         / biome_data.biome_data.map_generator_path
-    ) {
+    ), seed(seed) {
     read_tile_macro_data_(biome_data.biome_data.tile_macros);
 
     read_map_tile_data_(biome_data.biome_data.tile_data);
@@ -160,7 +160,7 @@ Biome::get_map(MacroDim size) const {
             size_t map_index = x * y_map_tiles + y;
             int tile_id = tile_map_map[map_index].get_or<int, int>(0);
             const TileType& tile_type = macro_tile_types_[tile_id];
-            out.emplace_back(tile_type, seed_, x, y);
+            out.emplace_back(tile_type, seed, x, y);
         }
     }
 
@@ -323,7 +323,8 @@ Biome::get_colors_inverse_map() const {
     for (const auto& element : materials_) {
         for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
             materials_inverse.emplace(
-                color_id, MaterialColor{element.second, color_id}
+                element.second.color.at(color_id).hex_color,
+                MaterialColor{element.second, color_id}
             );
         }
     }
