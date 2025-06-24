@@ -1,11 +1,31 @@
-// local context
-// for local lua, and anything else that is local
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software
+ *
+ * Foundation, version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+/**
+ * @file local_context.hpp
+ *
+ * @brief Defines Local Context class
+ * 
+ * @details Creates a local Lua environment. Helpfull for multithreading.
+ *
+ * @ingroup --
+ */
+
 #pragma once
 
-// #include "logging.hpp"
-// #include "global_context.hpp"
 #include <sol/sol.hpp>
-// #include <thread>
 
 class GlobalCnotext;
 
@@ -15,8 +35,10 @@ class LocalContext {
     sol::state lua_state;
 
  public:
-    static LocalContext& get_local_context();
-    static sol::state& get_lua_state();
+    [[nodiscard]] static LocalContext& get_local_context();
+    [[nodiscard]] inline static sol::state& get_lua_state(){
+        return get_local_context().lua_state;
+    }
 
     friend class GlobalContext;
 };

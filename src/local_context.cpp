@@ -14,11 +14,9 @@ LocalContext::LocalContext(/* args */) {
 LocalContext&
 LocalContext::get_local_context() {
     auto thread_id = std::this_thread::get_id();
-    // GlobalContext& context = GlobalContext::instance();
     return GlobalContext::get_local(thread_id);
 }
 
 sol::state&
 LocalContext::get_lua_state() {
-    return get_local_context().lua_state;
 }
