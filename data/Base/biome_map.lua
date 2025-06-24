@@ -6,11 +6,14 @@
 -- Anyway, do something like this and it should work as long as there are
 -- correctly defined tile types and tile macros.
 
-spacing = .8
+Base = Base or {}
+Base.biome_map = Base.biome_map or {}
+
+Base.biome_map.spacing = .8
 
 
 -- Terrain map
-function map(number)
+function Base.biome_map.map(number)
     result = {}
     result.x = number
     result.y = number
@@ -22,7 +25,7 @@ function map(number)
     for x = 0, number-1 do
         for y = 0, number-1 do
             -- sample noise and set a value
-            height = 12 * noise:sample(x * spacing, y * spacing) - 4
+            height = 12 * noise:sample(x * Base.biome_map.spacing, y * Base.biome_map.spacing) - 4
             -- each value must be integers. math.floor changes doubles to ints
             height_map_value = math.floor( height )
             -- This biome only defines tile types between 0, and 6
@@ -44,7 +47,7 @@ end
 -- name should be used in json file
 
 -- terrain_map should be a result from map
-function plants_map(length, terrain_map)
+function Base.biome_map.plants_map(length, terrain_map)
     result = {}
     result.x = length
     result.y = length
@@ -80,4 +83,6 @@ function plants_map(length, terrain_map)
     end
     return result
 end
+
+return Base
 

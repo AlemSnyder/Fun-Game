@@ -385,9 +385,9 @@ int
 lua_log_test() {
     auto& lua = LocalContext::get_lua_state();
 
-    sol::protected_function map_function = lua["LOG_CRITICAL"];
+    sol::protected_function lua_log_critical = lua["Logging"]["LOG_CRITICAL"];
 
-    auto result = map_function.call("Critical message from cpp!!");
+    auto result = lua_log_critical.call("Critical message from cpp!!");
 
     if (!result.valid()) {
         sol::error err = result; // who designed this?
@@ -448,11 +448,11 @@ lua_loadtime_test() {
         for (size_t y = 0; y < 100; y++) {
             auto l_start = time_util::get_time_nanoseconds();
 
-            std::filesystem::path logging_file_path =
+            std::filesystem::path prime_test_file_path =
                 files::get_resources_path() / "lua" / "is_prime_test.lua";
 
             auto result = lua.safe_script_file(
-                logging_file_path.string(), sol::script_pass_on_error
+                prime_test_file_path.string(), sol::script_pass_on_error
             );
 
             if (!result.valid()) {

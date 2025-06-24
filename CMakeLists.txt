@@ -138,4 +138,5 @@ add_test(NAME Logging COMMAND FunGame Test Logging)
 add_test(NAME ChunkDataTest COMMAND FunGame Test ChunkDataTest)
 add_test(NAME LoadManifest COMMAND FunGame Test LoadManifest)
 add_test(NAME PathFinderTest COMMAND FunGame Test PathFinderTest)
+add_test(NAME LuaLogTest COMMAND FunGame Test LuaLogTest)
 
