@@ -53,4 +53,6 @@ end
 
 Logging.LOG_BACKTRACE("Finished lua logging initialization.")
 
-return Logging
+__ = {}
+__.Logging = Logging
+return __

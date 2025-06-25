@@ -84,5 +84,6 @@ function Base.biome_map.plants_map(length, terrain_map)
     return result
 end
 
-return Base
-
+__ = {}
+__.Base = Base
+return __

@@ -9,4 +9,6 @@ function tests.is_prime(N)
     end
 end
 
-return tests
+__ = {}
+__.tests = tests
+return __

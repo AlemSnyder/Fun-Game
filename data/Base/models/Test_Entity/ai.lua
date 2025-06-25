@@ -10,4 +10,6 @@ function Base.entities.Test_Entity.move_direction(this)
     return {0, 0, 0}
 end
 
-return Base
+__ = {}
+__.Base = Base
+return __
