@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include "local_context.hpp"
 #include "logging.hpp"
 
 #define BS_THREAD_POOL_ENABLE_PRIORITY
@@ -52,8 +51,6 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
-    std::unordered_map<std::thread::id, LocalContext> local_thread_contexts;
-
     // Private CTOR as this is a singleton
     GlobalContext();
 
@@ -70,11 +67,6 @@ class GlobalContext {
     instance() {
         static GlobalContext obj;
         return obj;
-    }
-
-    static inline LocalContext&
-    get_local(const std::thread::id& thread_id) {
-        return instance().local_thread_contexts.at(thread_id);
     }
 
     void run_opengl_queue();

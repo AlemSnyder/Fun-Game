@@ -68,7 +68,8 @@ setup_lua_logging(sol::state& lua) {
     std::filesystem::path logging_file_path =
         files::get_resources_path() / "lua" / "logging.lua";
 
-    sol::table logging_library = lua.require_file("Logging", logging_file_path.string(), false);
+    sol::table logging_library =
+        lua.require_file("Logging", logging_file_path.string(), false);
 
     if (!logging_library.valid()) {
         LOG_WARNING(logging::main_logger, "Logging library did not load correctly.");

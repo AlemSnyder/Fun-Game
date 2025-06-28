@@ -12,7 +12,7 @@ LocalContext::LocalContext(/* args */) {
 }
 
 LocalContext&
-LocalContext::get_local_context() {
-    auto thread_id = std::this_thread::get_id();
-    return GlobalContext::get_local(thread_id);
+LocalContext::instance() {
+    static thread_local LocalContext lctx;
+    return lctx;
 }
