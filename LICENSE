@@ -59,9 +59,9 @@ art.
 
 3) Gameplay is licensed under the terms of the Creative Commons Attribution 4.0
 International Public License (CC BY 4.0) included in this repository in the
-LICENSE-GAMEPLAY file. "Gameplay" is defined in definitions.
+LICENSE-GAMEPLAY file.
 
-4) Promotional material. At the moment no promotional material is included in this
+4) Promotional material: At the moment no promotional material is included in this
 repository. Any added promotional material will tentatively be licensed under the
 CC BY 4.0 license. Promotional material will be outside of the /data folder.
 
@@ -69,4 +69,5 @@ CC BY 4.0 license. Promotional material will be outside of the /data folder.
 
 LIMITATIONS
 
-This license does NOT supersede the license of any included code artwork or other material.
+This license does NOT modify the license of any code artwork or other material included from
+another work.
