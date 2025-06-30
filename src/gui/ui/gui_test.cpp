@@ -84,14 +84,6 @@ revised_gui_test() {
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(lighting_environment);
 
-    // shader::UniformsVector sky_render_program_uniforms(
-    //     std::vector<std::shared_ptr<shader::Uniform>>(
-    //         {pixel_projection, matrix_view_inverse_projection,
-    //         light_direction_uniform,
-    //          spectral_light_color_uniform}
-    //     )
-    // );
-
     sky_program.set_uniform(pixel_projection, "pixel_projection");
     sky_program.set_uniform(matrix_view_inverse_projection, "MVIP");
     sky_program.set_uniform(light_direction_uniform, "light_direction");
