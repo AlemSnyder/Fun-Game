@@ -6,10 +6,13 @@
 #include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
+#include "local_context.hpp"
 #include "logging.hpp"
 #include "util/files.hpp"
 #include "util/loading.hpp"
+#include "util/lua/lua_logging.hpp"
 #include "util/png_image.hpp"
+#include "util/time.hpp"
 #include "util/voxel_io.hpp"
 #include "world/biome.hpp"
 #include "world/entity/mesh.hpp"
@@ -52,7 +55,7 @@ save_terrain(terrain::generation::biome_json_data biome_data) {
         Dim terrain_height = 128;
         auto macro_map = biome.single_tile_type_map(i);
         terrain::Terrain ter(
-            map_size, map_size, world::World::macro_tile_size, terrain_height, 5, biome,
+            map_size, map_size, world::World::macro_tile_size, terrain_height, biome,
             macro_map
         );
 
@@ -102,7 +105,7 @@ MacroMap(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
-    cmdl("size", 64) >> size;
+    cmdl("size", 4) >> size;
 
     terrain::generation::Biome biome(biome_name, seed);
 
@@ -145,8 +148,6 @@ image_test(const argh::parser& cmdl) {
         return result;
 
     } else {
-        // TODO need to make a way to use lua that isn't only in the biome
-
         std::string biome_name;
         cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
         size_t seed;
@@ -379,6 +380,131 @@ LogTest() {
     return 0;
 }
 
+int
+lua_log_test() {
+    auto& lua = LocalContext::get_lua_state();
+
+    sol::protected_function lua_log_critical = lua["Logging"]["LOG_CRITICAL"];
+
+    auto result = lua_log_critical.call("Critical message from cpp!!");
+
+    if (!result.valid()) {
+        sol::error err = result; // who designed this?
+        std::string what = err.what();
+        LOG_DEBUG(logging::main_logger, "{}", what);
+    }
+
+    return 0;
+}
+
+int
+lua_loadtime_test() {
+    LOG_INFO(logging::main_logger, "Getting Local Lua State.");
+    auto& lua = LocalContext::get_lua_state();
+    LOG_INFO(logging::main_logger, "Got Local Lua State.");
+    LOG_INFO(logging::main_logger, "Loading Lua File.");
+
+    std::filesystem::path lua_script_path =
+        files::get_resources_path() / "lua" / "is_prime_test.lua";
+
+    sol::table result = lua.require_file("test", lua_script_path.string());
+
+    if (!result.valid()) {
+        LOG_WARNING(logging::main_logger, "is prime test failed to import.");
+        return 1;
+    }
+
+    for (const auto& key : result) {
+        if (key.first.is<std::string>()) {
+            std::string string_key = key.first.as<std::string>();
+            LOG_INFO(logging::main_logger, "{}", string_key);
+        }
+    }
+
+    {
+        sol::protected_function is_prime_function = result["tests"]["is_prime"];
+
+        LOG_INFO(logging::main_logger, "Got Lua function, calling.");
+
+        auto function_result = is_prime_function.call(97);
+
+        if (!function_result.valid()) {
+            sol::error err = function_result;
+            std::string what = err.what();
+            LOG_DEBUG(logging::main_logger, "{}", what);
+            return 1;
+        }
+
+        int is_prime_result = function_result;
+
+        std::string log_value = is_prime_result == 1 ? "correct" : "incorrect";
+        LOG_INFO(
+            logging::main_logger, "Got Lua {} from Lua function. Is {} value.",
+            is_prime_result, log_value
+        );
+    }
+
+    {
+        std::vector<std::chrono::nanoseconds> load_times;
+        std::vector<std::chrono::nanoseconds> run_times;
+
+        for (size_t y = 0; y < 100; y++) {
+            auto l_start = time_util::get_time_nanoseconds();
+
+            std::filesystem::path prime_test_file_path =
+                files::get_resources_path() / "lua" / "is_prime_test.lua";
+
+            sol::table biome_library =
+                lua.require_file("is_prime_test", prime_test_file_path.string(), false);
+
+            sol::protected_function is_prime_function =
+                biome_library["tests"]["is_prime"];
+
+            auto l_end = time_util::get_time_nanoseconds();
+            load_times.push_back(l_end - l_start);
+
+            auto r_start = time_util::get_time_nanoseconds();
+
+            auto function_result = is_prime_function.call(97);
+
+            if (!function_result.valid()) {
+                sol::error err = function_result;
+                std::string what = err.what();
+                LOG_DEBUG(logging::main_logger, "{}", what);
+                return 1;
+            }
+
+            auto r_end = time_util::get_time_nanoseconds();
+
+            run_times.push_back(r_end - r_start);
+        }
+
+        std::chrono::nanoseconds r_mean(0);
+        for (const auto& duration : run_times) {
+            r_mean += duration;
+        }
+        r_mean /= run_times.size();
+
+        std::chrono::nanoseconds l_mean(0);
+        for (const auto& duration : load_times) {
+            l_mean += duration;
+        }
+        l_mean /= run_times.size();
+
+        LOG_INFO(
+            logging::main_logger, "Mean load time of {} samples is {}ns.",
+            load_times.size(), int64_t(l_mean.count())
+        );
+
+        LOG_INFO(
+            logging::main_logger, "Mean execution time of {} samples is {}ns.",
+            run_times.size(), int64_t(r_mean.count())
+        );
+    }
+
+    return 0;
+}
+
 // for tests. Probably should make a bash script to test each test
 inline int
 tests(const argh::parser& cmdl) {
@@ -408,6 +534,10 @@ tests(const argh::parser& cmdl) {
         return util::load_manifest_test();
     } else if (run_function == "EnginTest") {
         return gui::opengl_tests();
+    } else if (run_function == "LuaLogTest") {
+        return lua_log_test();
+    } else if (run_function == "LuaLoadTimeTest") {
+        return lua_loadtime_test();
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

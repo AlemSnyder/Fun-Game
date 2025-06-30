@@ -11,9 +11,7 @@
  * Terrain *
  ***********/
 
-// Tile index in terrain's vector. Also know as pos
-// using TileIndex = size_t;
-// using ChunkIndex = size_t;
+// Tile position within a chunk
 using LocalPosition = glm::u8vec3;
 // Tile position in terrain.
 using Dim = uint16_t;

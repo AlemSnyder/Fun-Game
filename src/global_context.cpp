@@ -1,5 +1,6 @@
 #include "global_context.hpp"
 
+#include "local_context.hpp"
 #include "logging.hpp"
 
 void
@@ -25,11 +26,13 @@ GlobalContext::run_opengl_queue() {
 }
 
 void
-GlobalContext::require_lua_file(const std::string& key, const std::filesystem::path& path, create_global = true) {
+GlobalContext::require_lua_file(const std::string& key, const std::filesystem::path& path, bool create_global) {
     // run this lambda on all threads in the thread pool
     [&key, &path, &create_global](){
         sol::state& lua = LocalContext::get_lua_state();
-        lua.require(key, path.string(), create_global);
-    }
+        lua.require_file(key, path.string(), create_global);
+    };
 }
 
+GlobalContext::GlobalContext() :
+    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}

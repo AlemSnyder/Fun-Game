@@ -1,7 +1,11 @@
 #include "entity.hpp"
 
 #include "logging.hpp"
+#include "local_context.hpp"
 #include "util/files.hpp"
+#include "glm/gtx/transform.hpp"
+
+#include <sol/sol.hpp>
 
 namespace world {
 
@@ -35,14 +39,15 @@ Entity::Entity(
     mesh_and_positions_ =
         std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh);
 
-    if (model_data.ai) {
+    if (object_data.ai) {
         std::filesystem::path ai_path =
-            files::get_data_path() / object_path_copy.remove_filename() / model_data.ai.value();
+            files::get_data_path() / object_path_copy.remove_filename() / object_data.ai.value();
         
         // load into All Lua
-        GlobalContext::require_lua_file(identification_, ai_path);
+        GlobalContext& context = GlobalContext::instance();
+        context.require_lua_file(identification_, ai_path);
 
-        has_id_ = true;
+        has_ai_ = true;
     }
 }
 
@@ -95,7 +100,7 @@ EntityInstance::update() {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         if (entity_type->has_ai()) {
             sol::state& lua = LocalContext::get_lua_state();
-            sol::protected_function update_function = lua[entity_type.identification_]["update"];
+            sol::protected_function update_function = lua[entity_type->identification_]["update"];
             sol::protected_function_result result = update_function();
             
             if (!result.valid()) {
@@ -105,10 +110,11 @@ EntityInstance::update() {
                 return;
             }
 
+            sol::table vector_table = result;
             glm::vec3 position;
-            position.x = result["x"];
-            position.y = result["y"];
-            position.z = result["z"];
+            position.x = vector_table["x"];
+            position.y = vector_table["y"];
+            position.z = vector_table["z"];
             glm::mat4 transformation(1.0);
 
             update(glm::translate(transformation, position));

@@ -32,6 +32,8 @@
 #include <mutex>
 #include <queue>
 #include <set>
+#include <thread>
+#include <unordered_map>
 
 /**
  * @brief Any global context that are needed will go in this class.
@@ -50,8 +52,7 @@ class GlobalContext {
     std::mutex opengl_queue_mutex;
 
     // Private CTOR as this is a singleton
-    GlobalContext() :
-        thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
+    GlobalContext();
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -118,5 +119,5 @@ class GlobalContext {
 
     // Not doing load mode because I don't know what that is
     void
-    require_lua_file(const std::string& key, const std::filesystem::path& path, create_global = true);
+    require_lua_file(const std::string& key, const std::filesystem::path& path, bool create_global = true);
 };

@@ -53,15 +53,15 @@ World::World(
 ) :
     biome_(biome_name, seed),
     terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, seed, biome_,
+        x_tiles, y_tiles, macro_tile_size, height, biome_,
         std::move(biome_.get_map(x_tiles))
     ) {}
 
 World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
-    biome_(biome_name, seed), terrain_main_(
-                                  3, 3, macro_tile_size, height, seed, biome_,
-                                  biome_.single_tile_type_map(tile_type)
-                              ) {}
+    biome_(biome_name, seed),
+    terrain_main_(
+        3, 3, macro_tile_size, height, biome_, biome_.single_tile_type_map(tile_type)
+    ) {}
 
 void
 World::generate_plants() {
@@ -71,7 +71,7 @@ World::generate_plants() {
     // maybe generating each plant position, orientation, and model
     entity::ObjectHandler& object_handler = entity::ObjectHandler::instance();
 
-    std::default_random_engine rand_engine(biome_.seed_ + 1);
+    std::default_random_engine rand_engine(biome_.seed + 1);
     std::uniform_real_distribution uniform_distribution(0.0, 1.0);
     std::uniform_int_distribution rotation_distribution(0, 3);
 
@@ -202,7 +202,6 @@ World::set_tile(
 ) {
     terrain_main_.get_tile(tile_sop)->set_material(mat, color_id);
 
-    //    TerrainDim3 tile_sop = terrain_main_.sop(pos);
     mark_for_update(tile_sop);
 
     // do some math:

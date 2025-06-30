@@ -11,9 +11,11 @@ Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
     ter_(ter), chunk_position_(chunk_position),
     tiles_(SIZE * SIZE * SIZE, Tile(ter_->get_material(0), 0)) {}
 
-// initialize all tiles. this is done above. currently it is wrong.
-
-// TODO this is an incredibly cursed function
+// this is an incredibly cursed function
+// and I'm not going to do anything about it.
+// the reason is that elements_can_stamp may not exist.
+// If it doesn't then only check once.
+// This would require a lot of code duplication.
 void
 Chunk::stamp_tile_region(
     MaterialId mat, ColorId color_id, std::optional<MaterialGroup> elements_can_stamp,
@@ -25,7 +27,7 @@ Chunk::stamp_tile_region(
                 if (in_range(TerrainOffset3(x, y, z))) {
                     Tile* tile = get_tile(x, y, z);
                     if (elements_can_stamp.has_value()) {
-                        if (elements_can_stamp.value().material_in(
+                        if (elements_can_stamp->material_in(
                                 tile->get_material_id(), tile->get_color_id()
                             )) {
                             tile->set_material(
@@ -53,14 +55,15 @@ Chunk::stamp_tile_region(
 
 void
 Chunk::init_nodegroups() {
-    std::unordered_map<LocalPosition, NodeGroup&> map____({});
+    std::unordered_map<LocalPosition, NodeGroup&> temporary_position_to_nodegroup_map({}
+    );
 
     // for all tiles:
     // x, y, z
     //      check 1) tile is not solid 2) tile below is 3) tile is not in map
     //          if any of the above are false continue
     //      create a nodegroup for the tile
-    //      add tile to map____
+    //      add tile to temporary_position_to_nodegroup_map
     //      recursively add adjacent tiles to the nodegroup if they are open and in this
     //      chunk
 
@@ -70,7 +73,7 @@ Chunk::init_nodegroups() {
             for (uint8_t z = 0; z < SIZE; z++) {
                 LocalPosition local_position(x, y, z);
                 if (ter_->can_stand_1(get_offset() + TerrainOffset3(local_position))) {
-                    if (map____.find(local_position) != map____.end()) {
+                    if (temporary_position_to_nodegroup_map.contains(local_position)) {
                         continue;
                     }
                     // the int determines which paths between two tiles are
@@ -79,7 +82,9 @@ Chunk::init_nodegroups() {
                     NodeGroup group(chunk_position_, local_position, 31);
                     node_groups_.push_back(std::move(group));
                     // ter_->add_node_group(&node_groups_.back());
-                    map____.emplace(local_position, node_groups_.back());
+                    temporary_position_to_nodegroup_map.emplace(
+                        local_position, node_groups_.back()
+                    );
 
                     std::unordered_set<TerrainOffset3> adjacent_tiles;
                     adjacent_tiles.emplace(
@@ -107,14 +112,15 @@ Chunk::init_nodegroups() {
                             }
                             LocalPosition iterator_local_position =
                                 current_position - get_offset();
-                            if (map____.find(iterator_local_position)
-                                != map____.end()) {
+                            if (temporary_position_to_nodegroup_map.contains(
+                                    iterator_local_position
+                                )) {
                                 continue;
                             }
 
                             node_groups_.back().add_tile(iterator_local_position);
 
-                            map____.emplace(
+                            temporary_position_to_nodegroup_map.emplace(
                                 iterator_local_position, node_groups_.back()
                             );
 
@@ -126,16 +132,17 @@ Chunk::init_nodegroups() {
 
     // need to lock here
     // modifying the length of nodegroups
-    std::unique_lock terrain_lock(ter_->get_nodegroup_mutex());
-    for (auto& [position, node_group] : map____) {
-        ter_->add_node_group(&node_group);
+    {
+        std::unique_lock terrain_lock(ter_->get_nodegroup_mutex());
+        for (auto& [position, node_group] : temporary_position_to_nodegroup_map) {
+            ter_->add_node_group(&node_group);
+        }
     }
 }
 
 void
 Chunk::add_nodegroup_adjacent_mp() {
     // add all adjacent nodegroup
-    std::unique_lock this_lock{mut_, std::defer_lock};
     for (NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_local_positions()) {
             if (position.x != SIZE - 1 && position.y != SIZE - 1
@@ -163,26 +170,15 @@ Chunk::add_nodegroup_adjacent_mp() {
                 if (!to_add) {
                     continue;
                 }
-                // Don't lock if the nodegroup is already adjacent
-                // this didn't work for me. might want to add a shared lock, but I don't
-                // know if speed will mater here. this_lock.lock(); if
-                // (NG.adjacent_to(to_add)) {
-                //     continue;
-                // }
-                // this_lock.unlock();
-                std::unique_lock next_lock{
-                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
-                std::lock(this_lock, next_lock);
+                std::scoped_lock lock{
+                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()};
                 NG.add_adjacent(to_add, 31);
-                this_lock.unlock();
-                next_lock.unlock(); // not necessary as will unlock on deconstruction
             }
         }
 }
 
 void
 Chunk::add_nodegroup_adjacent_all() {
-    std::unique_lock this_lock{mut_, std::defer_lock};
     // add all adjacent nodegroup
     for (NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_tiles()) {
@@ -210,12 +206,9 @@ Chunk::add_nodegroup_adjacent_all() {
                 if (!to_add) {
                     continue;
                 }
-                std::unique_lock next_lock{
-                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
-                std::lock(this_lock, next_lock);
+                std::scoped_lock lock{
+                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()};
                 NG.add_adjacent(to_add, 31);
-                this_lock.unlock();
-                next_lock.unlock(); // not necessary as will unlock on deconstruction
             }
         }
 }

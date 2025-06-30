@@ -1,5 +1,8 @@
+Base = Base or {}
+Base.entities = Base.entities or {}
+Base.entities.Test_Entity = Base.entities.Test_Entity or {}
 
-function move_direction(this)
+function Base.entities.Test_Entity.move_direction(this)
     -- vec3 = current_position(this)
     if vec3.x < 10 do
         return {1, 0, 0}
@@ -7,7 +10,7 @@ function move_direction(this)
     return {0, 0, 0}
 end
 
-function plan()
+function Base.entities.Test_Entity.plan()
     plan_table
     path = PathFinder:find("base/Flower_Test")
     if path["len"] > 0 then
@@ -22,3 +25,6 @@ end
 --   plan a series of paths and actions with a priority
 --     need set of actions "pickup", "destroy", "place" etc
 --   needs to know when to stop the plan
+__ = {}
+__.Base = Base
+return __

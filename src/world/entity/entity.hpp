@@ -57,7 +57,7 @@ class Entity : public virtual Object {
 
     std::vector<glm::mat4> local_positions_;
 
-    bool has_id_;
+    bool has_ai_;
 
  public:
     Entity(const Mesh& mesh);
