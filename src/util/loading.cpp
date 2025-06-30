@@ -35,8 +35,14 @@ load_manifest() {
             manifest.name, num_biomes, num_entities
         );
         if (manifest.entities) {
+            std::vector<std::future<void>> futures;
+            futures.reserve(manifest.entities->size());
             // iterate through objects in manifest and queue them to be loaded
             for (const manifest::descriptor_t& entity_data : *manifest.entities) {
+                LOG_DEBUG(
+                    logging::main_logger, "Entity \"{}\" begin added to ObjectHandler.",
+                    entity_data.identification
+                );
                 // Will check if path exists
                 GlobalContext& context = GlobalContext::instance();
                 auto future = context.submit_task([entity_data]() {
@@ -44,6 +50,15 @@ load_manifest() {
                         world::entity::ObjectHandler::instance();
                     object_handler.read_object(entity_data);
                 });
+
+                futures.push_back(std::move(future));
+            }
+            LOG_DEBUG(
+                logging::main_logger,
+                "{} Entities should have been added to ObjectHandler.", futures.size()
+            );
+            for (const auto& future : futures) {
+                future.wait();
             }
         }
         // if (manifest.biomes) -> do something else

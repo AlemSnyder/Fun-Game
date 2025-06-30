@@ -170,8 +170,8 @@ Chunk::add_nodegroup_adjacent_mp() {
                 if (!to_add) {
                     continue;
                 }
-                std::scoped_lock lock{mut_,
-                    ter_->get_chunk(adjacent_chunk)->get_mutex()};
+                std::scoped_lock lock{
+                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()};
                 NG.add_adjacent(to_add, 31);
             }
         }
@@ -206,8 +206,8 @@ Chunk::add_nodegroup_adjacent_all() {
                 if (!to_add) {
                     continue;
                 }
-                std::scoped_lock lock{mut_,
-                    ter_->get_chunk(adjacent_chunk)->get_mutex()};
+                std::scoped_lock lock{
+                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()};
                 NG.add_adjacent(to_add, 31);
             }
         }

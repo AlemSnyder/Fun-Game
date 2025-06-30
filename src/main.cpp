@@ -381,7 +381,8 @@ LogTest() {
 
 int
 lua_log_test() {
-    auto& lua = LocalContext::get_lua_state();
+    LocalContext& local_context = LocalContext::get_local_context();
+    sol::state& lua = local_context.get_lua_state();
 
     sol::protected_function lua_log_critical = lua["Logging"]["LOG_CRITICAL"];
 
@@ -399,22 +400,24 @@ lua_log_test() {
 int
 lua_loadtime_test() {
     LOG_INFO(logging::main_logger, "Getting Local Lua State.");
-    auto& lua = LocalContext::get_lua_state();
+    LocalContext& local_context = LocalContext::get_local_context();
+    sol::state& lua = local_context.get_lua_state();
     LOG_INFO(logging::main_logger, "Got Local Lua State.");
     LOG_INFO(logging::main_logger, "Loading Lua File.");
 
     std::filesystem::path lua_script_path =
         files::get_resources_path() / "lua" / "is_prime_test.lua";
 
-    sol::table result = lua.require_file("is_prime_test", lua_script_path.string(), false);
+    sol::table result =
+        lua.require_file("is_prime_test", lua_script_path.string(), false);
 
     if (!result.valid()) {
         LOG_WARNING(logging::main_logger, "is prime test failed to import.");
         return 1;
     }
 
-    for (const auto& key: result) {
-        if (key.first.is<std::string>()){
+    for (const auto& key : result) {
+        if (key.first.is<std::string>()) {
             std::string string_key = key.first.as<std::string>();
             LOG_INFO(logging::main_logger, "{}", string_key);
         }
@@ -453,11 +456,11 @@ lua_loadtime_test() {
             std::filesystem::path prime_test_file_path =
                 files::get_resources_path() / "lua" / "is_prime_test.lua";
 
+            sol::table biome_library =
+                lua.require_file("is_prime_test", prime_test_file_path.string(), false);
 
-            sol::table biome_library = lua.require_file("is_prime_test", prime_test_file_path.string(), false);
-
-            sol::protected_function is_prime_function = biome_library["tests"]["is_prime"];
-
+            sol::protected_function is_prime_function =
+                biome_library["tests"]["is_prime"];
 
             auto l_end = time_util::get_time_nanoseconds();
             load_times.push_back(l_end - l_start);

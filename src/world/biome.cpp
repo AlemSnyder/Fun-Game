@@ -70,8 +70,10 @@ Biome::Biome(biome_json_data biome_data, size_t seed) :
     lua_map_generator_file_(
         files::get_data_path() / biome_data.biome_name
         / biome_data.biome_data.map_generator_path
-    ), name_(biome_data.biome_name), id_name_(biome_data.biome_name), seed(seed) {
-    // TODO make id_name_ add id_name_ to the json, and test if it is a good id (no spaces)
+    ),
+    name_(biome_data.biome_name), id_name_(biome_data.biome_name), seed(seed) {
+    // TODO make id_name_ add id_name_ to the json, and test if it is a good id (no
+    // spaces)
     read_tile_macro_data_(biome_data.biome_data.tile_macros);
 
     read_map_tile_data_(biome_data.biome_data.tile_data);
@@ -89,17 +91,19 @@ TerrainMacroMap
 Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
-    sol::state& lua = LocalContext::get_lua_state();
+    LocalContext& local_context = LocalContext::get_local_context();
+    sol::state& lua = local_context.get_lua_state();
     if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
         return {};
     }
 
     init_lua_interface(lua);
 
-    sol::table biome_library = lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
+    sol::table biome_library =
+        lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
 
     sol::protected_function map_function = biome_library[id_name_]["biome_map"]["map"];
-    
+
     if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
         return {};
@@ -163,25 +167,33 @@ const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;
 
-    sol::state& lua = LocalContext::get_lua_state();
+    LocalContext& local_context = LocalContext::get_local_context();
+    sol::state& lua = local_context.get_lua_state();
 
     if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
         return {};
     }
 
-    sol::table biome_library = lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
+    sol::table biome_library =
+        lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
 
-    sol::protected_function plant_map = biome_library[id_name_]["biome_map"]["plants_map"];
+    sol::protected_function plant_map =
+        biome_library[id_name_]["biome_map"]["plants_map"];
 
     if (!plant_map.valid()) {
-        LOG_ERROR(logging::lua_logger, "Error with plant_map in {}.", lua_map_generator_file_);
+        LOG_ERROR(
+            logging::lua_logger, "Error with plant_map in {}.", lua_map_generator_file_
+        );
         return {};
     }
 
     sol::protected_function map_function = lua["Base"]["biome_map"]["map"];
 
     if (!map_function.valid()) {
-        LOG_ERROR(logging::lua_logger, "Error with map_function in {}.", lua_map_generator_file_);
+        LOG_ERROR(
+            logging::lua_logger, "Error with map_function in {}.",
+            lua_map_generator_file_
+        );
         return {};
     }
 

@@ -17,7 +17,7 @@
  * @file local_context.hpp
  *
  * @brief Defines Local Context class
- * 
+ *
  * @details Creates a local Lua environment. Helpfull for multithreading.
  *
  * @ingroup --
@@ -36,8 +36,10 @@ class LocalContext {
 
  public:
     [[nodiscard]] static LocalContext& get_local_context();
-    [[nodiscard]] inline static sol::state& get_lua_state(){
-        return get_local_context().lua_state;
+
+    [[nodiscard]] inline sol::state&
+    get_lua_state() {
+        return lua_state;
     }
 
     friend class GlobalContext;

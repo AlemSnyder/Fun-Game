@@ -4,14 +4,14 @@ Base.entities.Test_Entity = Base.entities.Test_Entity or {}
 
 function Base.entities.Test_Entity.move_direction(this)
     -- vec3 = current_position(this)
-    if vec3.x < 10 do
+    if vec3.x < 10 then
         return {1, 0, 0}
     end
     return {0, 0, 0}
 end
 
 function Base.entities.Test_Entity.plan()
-    plan_table
+    plan_table = {}
     path = PathFinder:find("base/Flower_Test")
     if path["len"] > 0 then
         plan_table["follow"] = path

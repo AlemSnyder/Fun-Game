@@ -1,9 +1,9 @@
 #include "entity.hpp"
 
-#include "logging.hpp"
-#include "local_context.hpp"
-#include "util/files.hpp"
 #include "glm/gtx/transform.hpp"
+#include "local_context.hpp"
+#include "logging.hpp"
+#include "util/files.hpp"
 
 #include <sol/sol.hpp>
 
@@ -40,9 +40,10 @@ Entity::Entity(
         std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh);
 
     if (object_data.ai) {
-        std::filesystem::path ai_path =
-            files::get_data_path() / object_path_copy.remove_filename() / object_data.ai.value();
-        
+        std::filesystem::path ai_path = files::get_data_path()
+                                        / object_path_copy.remove_filename()
+                                        / object_data.ai.value();
+
         // load into All Lua
         GlobalContext& context = GlobalContext::instance();
         context.require_lua_file(identification_, ai_path);
@@ -99,14 +100,18 @@ void
 EntityInstance::update() {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         if (entity_type->has_ai()) {
-            sol::state& lua = LocalContext::get_lua_state();
-            sol::protected_function update_function = lua[entity_type->identification_]["update"];
+            LocalContext& local_context = LocalContext::get_local_context();
+            sol::state& lua = local_context.get_lua_state();
+            sol::protected_function update_function =
+                lua[entity_type->identification_]["update"];
             sol::protected_function_result result = update_function();
-            
+
             if (!result.valid()) {
                 sol::error err = result;
                 sol::call_status status = result.status();
-                LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
+                LOG_ERROR(
+                    logging::lua_logger, "{}: {}", sol::to_string(status), err.what()
+                );
                 return;
             }
 
@@ -118,7 +123,6 @@ EntityInstance::update() {
             glm::mat4 transformation(1.0);
 
             update(glm::translate(transformation, position));
-
         }
     }
 }
