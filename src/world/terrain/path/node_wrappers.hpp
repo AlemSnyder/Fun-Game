@@ -44,7 +44,8 @@ class NodeGroupWrapper {
         return nodegroup_->unique_position();
     }
 
-    [[nodiscard]] inline ChunkPos get_chunk_position() const {
+    [[nodiscard]] inline ChunkPos
+    get_chunk_position() const {
         return nodegroup_->get_chunk_position();
     }
 

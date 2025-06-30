@@ -215,16 +215,17 @@ class World {
      */
     void set_tile(TerrainOffset3 pos, const terrain::material_t* mat, ColorId color_id);
 
-    //std::shared_ptr<entity::Object>
-    //spawn_object(std::string id, glm::vec3 position);
+    // std::shared_ptr<entity::Object>
+    // spawn_object(std::string id, glm::vec3 position);
 
     std::shared_ptr<entity::EntityInstance>
     spawn_entity(std::string id, glm::vec3 position);
 
     void remove_entity(std::shared_ptr<entity::EntityInstance>);
 
-    [[nodiscard]] std::optional<std::vector<TerrainOffset3>>
-    pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id) const;
+    [[nodiscard]] std::optional<std::vector<TerrainOffset3>> pathfind_to_object(
+        TerrainOffset3 start_position, const std::string& object_id
+    ) const;
 
     /**
      * @brief Save terrain with debug information

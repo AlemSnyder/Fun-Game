@@ -52,7 +52,8 @@ quill::Logger* terrain_logger;  // for terrain, chunk, tile class
 quill::Logger* game_map_logger; // for terrain generation
 quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 quill::Logger* file_io_logger;  // for file io
-quill::Logger* lua_logger;      // for lua
+quill::Logger* lua_logger;      // for lua in cpp
+quill::Logger* lua_runtime_logger;      // for lua in lua
 
 const static std::filesystem::path LOG_FILE = files::get_log_path() / "app.log";
 
@@ -127,7 +128,9 @@ init(bool console, quill::LogLevel log_level) {
     file_io_logger =
         quill::Frontend::create_or_get_logger("file_io", file_sink, LOGLINE_FORMAT);
     lua_logger =
-        quill::Frontend::create_or_get_logger("lua", file_sink, LOGLINE_FORMAT_LUA);
+        quill::Frontend::create_or_get_logger("lua", file_sink, LOGLINE_FORMAT);
+    lua_runtime_logger =
+        quill::Frontend::create_or_get_logger("lua_runtime", file_sink, LOGLINE_FORMAT_LUA);
 
     main_logger->set_log_level(_LOG_LEVEL);
     opengl_logger->set_log_level(_LOG_LEVEL);
@@ -136,6 +139,7 @@ init(bool console, quill::LogLevel log_level) {
     voxel_logger->set_log_level(_LOG_LEVEL);
     file_io_logger->set_log_level(_LOG_LEVEL);
     lua_logger->set_log_level(_LOG_LEVEL);
+    lua_runtime_logger->set_log_level(_LOG_LEVEL);
 
     // initialize backtrace on all loggers
     // is there a better way?
@@ -146,6 +150,7 @@ init(bool console, quill::LogLevel log_level) {
     voxel_logger->init_backtrace(5, quill::LogLevel::Error);
     file_io_logger->init_backtrace(5, quill::LogLevel::Error);
     lua_logger->init_backtrace(5, quill::LogLevel::Error);
+    lua_runtime_logger->init_backtrace(5, quill::LogLevel::Error);
 
     LOG_INFO(main_logger, "Logging initialized!");
 }

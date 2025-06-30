@@ -99,14 +99,15 @@ display_data(world::entity::ObjectHandler& object_handler, bool& show) {
         // Declare columns
         ImGui::TableSetupColumn("ID");
         ImGui::TableSetupColumn("Name");
-//        ImGui::TableSetupColumn("Action");
+        //        ImGui::TableSetupColumn("Action");
         ImGui::TableSetupColumn("Number of models");
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
         for (auto& [id, object] : object_handler) {
             // Display a data item
-            ImGui::PushID(std::hash<std::string>{}(id)); // maybe not grate to call hashes like this
+            ImGui::PushID(std::hash<std::string>{}(id)
+            ); // maybe not grate to call hashes like this
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::Text(id.c_str()); // ID

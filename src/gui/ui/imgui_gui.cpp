@@ -18,8 +18,8 @@
 #include "scene_setup.hpp"
 #include "world/climate.hpp"
 #include "world/entity/mesh.hpp"
-#include "world/world.hpp"
 #include "world/entity/object_handler.hpp"
+#include "world/world.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -154,36 +154,34 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 io.Framerate
             );
             static int breadth_first_search_start[3];
-            ImGui::DragInt3("Start Position", breadth_first_search_start, (1.0F), 0, world.height);
+            ImGui::DragInt3(
+                "Start Position", breadth_first_search_start, (1.0F), 0, world.height
+            );
             static bool path_exists = false;
             static int path_length = 0;
 
             if (ImGui::Button("Breadth First Search")) {
-
-                    for (auto& entity : path_entities) {
-                        
-                        world.remove_entity(entity);
-                        
-                    }
-                    path_entities.clear();
+                for (auto& entity : path_entities) {
+                    world.remove_entity(entity);
+                }
+                path_entities.clear();
                 auto path = world.pathfind_to_object(
                     TerrainOffset3(
-                        breadth_first_search_start[0],
-                        breadth_first_search_start[1],
-                        breadth_first_search_start[2]),
+                        breadth_first_search_start[0], breadth_first_search_start[1],
+                        breadth_first_search_start[2]
+                    ),
                     "base/Flower_Test"
                 );
                 if (path) {
                     path_exists = true;
                     path_length = path.value().size();
 
-                    
-                    //auto test_object = object_handler.get_object("base/Test_Entity");
+                    // auto test_object = object_handler.get_object("base/Test_Entity");
 
                     for (auto position : path.value()) {
+                        auto new_entity =
+                            world.spawn_entity("base/Test_Entity", position);
 
-                        auto new_entity = world.spawn_entity("base/Test_Entity", position);
-                        
                         path_entities.insert(new_entity);
                     }
 
@@ -193,15 +191,13 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 }
             }
             ImGui::Text(
-                "Path found: %s. With length %d.", path_exists ? "true" : "false", path_length
+                "Path found: %s. With length %d.", path_exists ? "true" : "false",
+                path_length
             );
 
             if (ImGui::Button("Clear Breadth First Search")) {
-
                 for (auto& entity : path_entities) {
-                    
                     world.remove_entity(entity);
-                    
                 }
                 path_entities.clear();
             }

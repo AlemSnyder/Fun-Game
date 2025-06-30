@@ -67,7 +67,6 @@ void
 World::generate_plants() {
     auto plant_maps = biome_.get_plant_map(terrain_main_.X_MAX);
 
-
     // This next part can be done in parallel.
     // maybe generating each plant position, orientation, and model
     entity::ObjectHandler& object_handler = entity::ObjectHandler::instance();
@@ -87,8 +86,10 @@ World::generate_plants() {
         );
     }
 
-    for (Dim tile_position_x = 0; tile_position_x < terrain_main_.X_MAX; tile_position_x++) {
-        for (Dim tile_position_y = 0; tile_position_y < terrain_main_.Y_MAX; tile_position_y++) {
+    for (Dim tile_position_x = 0; tile_position_x < terrain_main_.X_MAX;
+         tile_position_x++) {
+        for (Dim tile_position_y = 0; tile_position_y < terrain_main_.Y_MAX;
+             tile_position_y++) {
             for (const terrain::generation::plant_t& plant :
                  biome_.get_generate_plants()) {
                 auto map = plant_maps[plant.map_name];
@@ -108,9 +109,10 @@ World::generate_plants() {
                         tile_position_x, tile_position_y, z_position, rotation, 0
                     );
 
-                    auto tile_object_type = std::dynamic_pointer_cast<entity::TileObject>(
-                        object_handler.get_object(plant.identification)
-                    );
+                    auto tile_object_type =
+                        std::dynamic_pointer_cast<entity::TileObject>(
+                            object_handler.get_object(plant.identification)
+                        );
 
                     if (!tile_object_type) {
                         continue;
@@ -257,8 +259,8 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
     return entity;
 }
 
-void World::remove_entity(std::shared_ptr<entity::EntityInstance> entity) {
-
+void
+World::remove_entity(std::shared_ptr<entity::EntityInstance> entity) {
     if (!entity) {
         LOG_WARNING(logging::main_logger, "Entity is null.");
         return;
@@ -270,23 +272,22 @@ void World::remove_entity(std::shared_ptr<entity::EntityInstance> entity) {
     }
 }
 
-
 std::optional<std::vector<TerrainOffset3>>
-World::pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id) const {
+World::pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id)
+    const {
     entity::ObjectHandler& object_context = entity::ObjectHandler::instance();
     auto object = object_context.get_object(object_id);
     if (!object) {
         LOG_WARNING(logging::terrain_logger, "Object {} not found.", object_id);
         return {};
     }
-    //object->
+    // object->
 
     std::unordered_set<TerrainOffset3> object_positions;
 
-
     // This makes me sad
     // TODO fix the storage mechanism
-    for (const auto& tile_entity: tile_entities_) {
+    for (const auto& tile_entity : tile_entities_) {
         if (tile_entity->get_object() == object) {
             object_positions.insert(tile_entity->get_terrain_position());
         }
@@ -296,6 +297,5 @@ World::pathfind_to_object(TerrainOffset3 start_position, const std::string& obje
 
     return path;
 }
-
 
 } // namespace world

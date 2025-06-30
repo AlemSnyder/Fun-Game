@@ -220,7 +220,8 @@ setup(
 
     auto tile_entity_shadow_pipeline =
         std::make_shared<shader::ShaderProgram_ElementsInstanced>(
-            tile_entity_shadow_program, chunk_render_setup, chunks_render_program_uniforms
+            tile_entity_shadow_program, chunk_render_setup,
+            chunks_render_program_uniforms
         );
 
     auto tile_entity_render_pipeline =

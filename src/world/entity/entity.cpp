@@ -1,5 +1,6 @@
 #include "entity.hpp"
 
+#include "logging.hpp"
 #include "util/files.hpp"
 
 namespace world {
@@ -9,7 +10,12 @@ namespace entity {
 Entity::Entity(const Mesh& mesh) :
     mesh_and_positions_(std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
         mesh, std::vector<glm::mat4>()
-    )) {}
+    )) {
+    LOG_WARNING(
+        logging::main_logger,
+        "Entity constructor Entity(const Mesh& mesh) is depreciated!"
+    );
+}
 
 Entity::Entity(
     const object_t& object_data, const manifest::descriptor_t& identification_data
@@ -28,6 +34,16 @@ Entity::Entity(
 
     mesh_and_positions_ =
         std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh);
+
+    if (model_data.ai) {
+        std::filesystem::path ai_path =
+            files::get_data_path() / object_path_copy.remove_filename() / model_data.ai.value();
+        
+        // load into All Lua
+        GlobalContext::require_lua_file(identification_, ai_path);
+
+        has_id_ = true;
+    }
 }
 
 bool
@@ -71,6 +87,33 @@ EntityInstance::EntityInstance(std::shared_ptr<Entity> entity_type) :
 EntityInstance::~EntityInstance() {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         entity_type->remove(data_position_);
+    }
+}
+
+void
+EntityInstance::update() {
+    if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
+        if (entity_type->has_ai()) {
+            sol::state& lua = LocalContext::get_lua_state();
+            sol::protected_function update_function = lua[entity_type.identification_]["update"];
+            sol::protected_function_result result = update_function();
+            
+            if (!result.valid()) {
+                sol::error err = result;
+                sol::call_status status = result.status();
+                LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
+                return;
+            }
+
+            glm::vec3 position;
+            position.x = result["x"];
+            position.y = result["y"];
+            position.z = result["z"];
+            glm::mat4 transformation(1.0);
+
+            update(glm::translate(transformation, position));
+
+        }
     }
 }
 

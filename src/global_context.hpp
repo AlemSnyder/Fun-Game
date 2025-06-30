@@ -115,4 +115,8 @@ class GlobalContext {
     }
 
     // oh boy time to start wrapping tread_pool
+
+    // Not doing load mode because I don't know what that is
+    void
+    require_lua_file(const std::string& key, const std::filesystem::path& path, create_global = true);
 };

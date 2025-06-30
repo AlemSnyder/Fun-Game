@@ -57,6 +57,8 @@ class Entity : public virtual Object {
 
     std::vector<glm::mat4> local_positions_;
 
+    bool has_id_;
+
  public:
     Entity(const Mesh& mesh);
 
@@ -80,12 +82,19 @@ class Entity : public virtual Object {
 
     virtual void update() override;
 
-    [[nodiscard]] inline virtual const std::string& get_name() const {
+    [[nodiscard]] inline virtual const std::string&
+    get_name() const {
         return name_;
     }
 
-    [[nodiscard]] inline virtual size_t num_models() const {
+    [[nodiscard]] inline virtual size_t
+    num_models() const {
         return 1;
+    }
+
+    [[nodiscard]] inline virtual bool
+    has_ai() const {
+        return has_ai_;
     }
 
  private:

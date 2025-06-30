@@ -164,13 +164,14 @@ Chunk::add_nodegroup_adjacent_mp() {
                     continue;
                 }
                 // Don't lock if the nodegroup is already adjacent
-                // this didn't work for me. might want to add a shared lock, but I don't know if speed will mater here.
-                // this_lock.lock();
-                // if (NG.adjacent_to(to_add)) {
+                // this didn't work for me. might want to add a shared lock, but I don't
+                // know if speed will mater here. this_lock.lock(); if
+                // (NG.adjacent_to(to_add)) {
                 //     continue;
                 // }
                 // this_lock.unlock();
-                std::unique_lock next_lock{ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
+                std::unique_lock next_lock{
+                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
                 std::lock(this_lock, next_lock);
                 NG.add_adjacent(to_add, 31);
                 this_lock.unlock();
@@ -209,7 +210,8 @@ Chunk::add_nodegroup_adjacent_all() {
                 if (!to_add) {
                     continue;
                 }
-                std::unique_lock next_lock{ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
+                std::unique_lock next_lock{
+                    ter_->get_chunk(adjacent_chunk)->get_mutex(), std::defer_lock};
                 std::lock(this_lock, next_lock);
                 NG.add_adjacent(to_add, 31);
                 this_lock.unlock();

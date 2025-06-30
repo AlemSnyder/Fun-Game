@@ -23,3 +23,13 @@ GlobalContext::run_opengl_queue() {
         );
     }
 }
+
+void
+GlobalContext::require_lua_file(const std::string& key, const std::filesystem::path& path, create_global = true) {
+    // run this lambda on all threads in the thread pool
+    [&key, &path, &create_global](){
+        sol::state& lua = LocalContext::get_lua_state();
+        lua.require(key, path.string(), create_global);
+    }
+}
+

@@ -31,6 +31,7 @@ extern quill::Logger* game_map_logger; // for terrain generation
 extern quill::Logger* voxel_logger;    // for voxel logic like mesh creation
 extern quill::Logger* file_io_logger;  // for file io
 extern quill::Logger* lua_logger;      // for lua logging
+extern quill::Logger* lua_runtime_logger;      // for lua logging
 
 inline void
 set_thread_name(std::string name) {
@@ -52,6 +53,7 @@ flush() {
     voxel_logger->flush_log();
     file_io_logger->flush_log();
     lua_logger->flush_log();
+    lua_runtime_logger->flush_log();
 }
 
 } // namespace logging
