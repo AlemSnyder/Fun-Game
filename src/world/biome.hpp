@@ -129,7 +129,7 @@ class Biome {
     const std::string name_;
     // unique identifier name
     const std::string id_name_;
-
+    
  public:
     const size_t seed;
 

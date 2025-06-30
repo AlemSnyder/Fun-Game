@@ -17,7 +17,7 @@
  * @file local_context.hpp
  *
  * @brief Defines Local Context class
- *
+ * 
  * @details Creates a local Lua environment. Helpfull for multithreading.
  *
  * @ingroup --
@@ -27,23 +27,18 @@
 
 #include <sol/sol.hpp>
 
+class GlobalCnotext;
+
 class LocalContext {
  private:
     LocalContext();
     sol::state lua_state;
 
  public:
-    // Delete all CTORs and CTOR-like operators
-    LocalContext(LocalContext&&) = delete;
-    LocalContext(LocalContext const&) = delete;
-
-    void operator=(LocalContext&&) = delete;
-    void operator=(LocalContext const&) = delete;
-
-    [[nodiscard]] static LocalContext& instance();
-
-    [[nodiscard]] inline static sol::state&
-    get_lua_state() {
-        return instance().lua_state;
+    [[nodiscard]] static LocalContext& get_local_context();
+    [[nodiscard]] inline static sol::state& get_lua_state(){
+        return get_local_context().lua_state;
     }
+
+    friend class GlobalContext;
 };

@@ -6,7 +6,6 @@
 #include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
-#include "local_context.hpp"
 #include "logging.hpp"
 #include "util/files.hpp"
 #include "util/loading.hpp"
@@ -407,15 +406,15 @@ lua_loadtime_test() {
     std::filesystem::path lua_script_path =
         files::get_resources_path() / "lua" / "is_prime_test.lua";
 
-    sol::table result = lua.require_file("test", lua_script_path.string());
+    sol::table result = lua.require_file("is_prime_test", lua_script_path.string(), false);
 
     if (!result.valid()) {
         LOG_WARNING(logging::main_logger, "is prime test failed to import.");
         return 1;
     }
 
-    for (const auto& key : result) {
-        if (key.first.is<std::string>()) {
+    for (const auto& key: result) {
+        if (key.first.is<std::string>()){
             std::string string_key = key.first.as<std::string>();
             LOG_INFO(logging::main_logger, "{}", string_key);
         }
@@ -454,11 +453,11 @@ lua_loadtime_test() {
             std::filesystem::path prime_test_file_path =
                 files::get_resources_path() / "lua" / "is_prime_test.lua";
 
-            sol::table biome_library =
-                lua.require_file("is_prime_test", prime_test_file_path.string(), false);
 
-            sol::protected_function is_prime_function =
-                biome_library["tests"]["is_prime"];
+            sol::table biome_library = lua.require_file("is_prime_test", prime_test_file_path.string(), false);
+
+            sol::protected_function is_prime_function = biome_library["tests"]["is_prime"];
+
 
             auto l_end = time_util::get_time_nanoseconds();
             load_times.push_back(l_end - l_start);
