@@ -86,7 +86,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
         model_mesh_(model_mesh, {}),
         model_textures_(vector_data) {}
 
-    ~ModelController() {}
+    inline virtual ~ModelController() {}
 
     inline ModelController(const ModelController& obj) = delete;
     ModelController(ModelController&& other) :

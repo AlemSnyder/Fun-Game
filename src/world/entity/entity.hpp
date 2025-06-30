@@ -74,7 +74,7 @@ class Entity : public virtual Object {
         return mesh_and_positions_;
     }
 
-    virtual std::string identification() const;
+    virtual std::string identification() const override;
 
     virtual void init_render(render_programs_t& programs) const override;
 

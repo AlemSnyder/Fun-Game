@@ -19,7 +19,7 @@ flat out uint ModelTextureID;
 uniform mat4 MVP;
 uniform mat4 view_matrix;
 uniform vec3 light_direction;
-uniform mat4 depth_MVP;
+uniform mat4 depth_texture_projection;
 
 //uniform uint scalr_divisor; // How much to shrink the mesh
 
@@ -49,8 +49,8 @@ main() {
     gl_Position = MVP * vertex_postion_model_space_instanced;
 
     // possibly use the below to get less dotted ness on some surfaes
-    //ShadowCoord = depth_MVP * (vertex_postion_model_space_instanced+vertexNormal_modelspace_rotated/10);
-    ShadowCoord = depth_MVP * (vertex_postion_model_space_instanced + vertexNormal_modelspace_rotated * .5);
+    //ShadowCoord = depth_texture_projection * (vertex_postion_model_space_instanced+vertexNormal_modelspace_rotated/10);
+    ShadowCoord = depth_texture_projection * (vertex_postion_model_space_instanced + vertexNormal_modelspace_rotated * .5);
 
     // Position of the vertex, in worldspace : M * position
     Position_worldspace = (vertex_postion_model_space_instanced).xyz;
