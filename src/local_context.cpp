@@ -92,6 +92,7 @@ LocalContext::set_to_this_lua_state(const std::string& command, sol::object obje
     auto raw_result = lua.get<sol::optional<sol::object>>(key);
     if (!raw_result) {
         lua.set(key, lua.create_table());
+        raw_result = lua.get<sol::optional<sol::object>>(key);
     }
 
     sol::table result;
@@ -105,7 +106,6 @@ LocalContext::set_to_this_lua_state(const std::string& command, sol::object obje
     }
 
     result.set(key, object);
-
 }
 
 bool
@@ -128,36 +128,39 @@ sol::object
 LocalContext::copy(sol::state& lua_state, const sol::object& object) {
     sol::type type = object.get_type();
     switch (type) {
-        case sol::type::number: {
-            double number = object.as<double>();
-            return sol::make_object(lua_state, number);
-        }
-        case sol::type::string: {
-
-            std::string string = object.as<std::string>();
-            return sol::make_object(lua_state, string);
-        }
-        case sol::type::boolean: {
-
-            bool b = object.as<bool>();
-            return sol::make_object(lua_state, b);
-            break;
-        }
-        case sol::type::table: {
-            sol::table table = object.as<sol::table>();
-            sol::table table_copy = lua_state.create_table();
-            for (auto& [key, value] : table) {
-                table_copy.set(copy(lua_state, key), copy(lua_state, value));
+        case sol::type::number:
+            {
+                double number = object.as<double>();
+                return sol::make_object(lua_state, number);
             }
-            return table_copy;
-        }
-        case sol::type::function: {
-
-            sol::protected_function funct = object.as<sol::protected_function>();
-            sol::bytecode target_bc = funct.dump();
-            auto result = lua_state.safe_script(target_bc.as_string_view());
-            return result;
-        }
+        case sol::type::string:
+            {
+                std::string string = object.as<std::string>();
+                return sol::make_object(lua_state, string);
+            }
+        case sol::type::boolean:
+            {
+                bool b = object.as<bool>();
+                return sol::make_object(lua_state, b);
+                break;
+            }
+        case sol::type::table:
+            {
+                sol::table table = object.as<sol::table>();
+                sol::table table_copy = lua_state.create_table();
+                for (auto& [key, value] : table) {
+                    table_copy.set(copy(lua_state, key), copy(lua_state, value));
+                }
+                return table_copy;
+            }
+        case sol::type::function:
+            {
+                sol::protected_function funct = object.as<sol::protected_function>();
+                sol::bytecode target_bc = funct.dump();
+                auto result = lua_state.load(target_bc.as_string_view());
+                sol::protected_function loaded_function = result;
+                return loaded_function;
+            }
         case sol::type::lua_nil:
         case sol::type::none:
             return {};

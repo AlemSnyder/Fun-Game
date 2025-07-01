@@ -86,3 +86,13 @@ GlobalContext::get_from_lua(const std::string& command) {
     // a sol object
     return raw_result.value();
 }
+
+void GlobalContext::load_script_file(const std::filesystem::path& path) {
+    auto result = lua_.safe_script_file(path);
+
+    if (!result.valid()) {
+        sol::error err = result; // who designed this?
+        std::string what = err.what();
+        LOG_ERROR(logging::lua_logger, "{}", what);
+    }
+}
