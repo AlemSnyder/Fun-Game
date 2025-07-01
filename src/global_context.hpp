@@ -27,9 +27,11 @@
 
 #define BS_THREAD_POOL_ENABLE_PRIORITY
 #include <BS_thread_pool.hpp>
+#include <sol/sol.hpp>
 
 #include <functional>
 #include <mutex>
+#include <optional>
 #include <queue>
 #include <set>
 #include <thread>
@@ -51,6 +53,14 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
+    sol::state lua_;
+
+#if DEBUG()
+
+    std::thread::id main_thread_id;
+
+#endif
+
     // Private CTOR as this is a singleton
     GlobalContext();
 
@@ -61,6 +71,26 @@ class GlobalContext {
 
     void operator=(GlobalContext&&) = delete;
     void operator=(GlobalContext const&) = delete;
+
+    inline void
+    set_main_thread() {
+#if DEBUG()
+        assert(
+            main_thread_id == std::thread::id()
+            && "Cannot set main thread id if it is already initialized."
+        );
+        main_thread_id = std::this_thread::get_id();
+#endif
+    }
+
+    inline bool
+    is_main_thread() const {
+#if DEBUG()
+        return main_thread_id == std::this_thread::get_id();
+#else
+        return true;
+#endif
+    }
 
     // Instance accessor
     static inline GlobalContext&
@@ -116,4 +146,8 @@ class GlobalContext {
     }
 
     // oh boy time to start wrapping tread_pool
+
+    void load_script_file(const std::filesystem::path& path);
+
+    std::optional<sol::object> get_from_lua(const std::string& command);
 };

@@ -27,3 +27,62 @@ GlobalContext::run_opengl_queue() {
 
 GlobalContext::GlobalContext() :
     thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
+
+std::optional<sol::object>
+GlobalContext::get_from_lua(const std::string& command) {
+    LOG_BACKTRACE(logging::lua_logger, "Attempting to index {}.", command);
+
+    std::stringstream command_stream(command);
+
+    std::string key;
+
+    std::getline(command_stream, key, '\\');
+
+    auto raw_result = lua_.get<sol::optional<sol::object>>(key);
+
+    if (!raw_result) {
+        LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+        return {};
+    }
+
+    sol::table result;
+
+    while (std::getline(command_stream, key, '\\')) {
+        if (!raw_result->is<sol::table>()) {
+            LOG_WARNING(logging::lua_logger, "{} not index of table.", key);
+            return {};
+        }
+        result = raw_result.value();
+
+        if (!result.valid()) {
+            LOG_WARNING(logging::lua_logger, "Could not find {}.", key);
+            return {};
+        }
+
+        if (result == sol::lua_nil) {
+            LOG_WARNING(
+                logging::lua_logger, "Attempting to index {}. nil value at {}.",
+                command, key
+            );
+            return {};
+        }
+
+        if (!result.is<sol::table>()) {
+            LOG_WARNING(
+                logging::lua_logger, "Attempting to index {}. {} not index of table.",
+                command, key
+            );
+            return {};
+        }
+
+        raw_result = result.get<sol::optional<sol::object>>(key);
+
+        if (!raw_result) {
+            LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+            return {};
+        }
+    }
+
+    // a sol object
+    return raw_result.value();
+}

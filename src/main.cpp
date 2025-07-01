@@ -578,6 +578,12 @@ main(int argc, char** argv) {
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
+    // main thread for opengl and lua loading
+    GlobalContext& context = GlobalContext::instance();
+    context.set_main_thread();
+
+    assert(context.is_main_thread() && "This is not the main thread. Strange :(");
+
     if (argc == 1) {
         return graphics_main();
     } else if (start_type == "Test") {

@@ -32,6 +32,8 @@ class LocalContext {
     LocalContext();
     sol::state lua_state;
 
+    sol::object copy(sol::state& lua, const sol::object& object);
+
  public:
     // Delete all CTORs and CTOR-like operators
     LocalContext(LocalContext&&) = delete;
@@ -46,4 +48,12 @@ class LocalContext {
     get_lua_state() {
         return instance().lua_state;
     }
+
+    std::optional<sol::object> get_from_this_lua_state(std::string command);
+
+    void set_to_this_lua_state(const std::string& command, sol::object object);
+
+    bool load_into_this_lua_state(std::string command);
+
+    std::optional<sol::object> get_from_lua(std::string command);
 };
