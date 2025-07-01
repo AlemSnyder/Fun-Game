@@ -507,6 +507,119 @@ lua_loadtime_test() {
     return 0;
 }
 
+int
+lua_transfertime_test() {
+    LOG_INFO(logging::main_logger, "Loading Lua File.");
+
+    std::filesystem::path lua_script_path =
+        files::get_resources_path() / "lua" / "is_prime_test.lua";
+
+    GlobalContext& context = GlobalContext::instance();
+    context.load_script_file(lua_script_path);
+
+    {
+        std::optional<sol::object> result = context.get_from_lua("tests\\is_prime");
+
+        if (!result) {
+            return 0;
+        }
+        if (!result->is<sol::protected_function>()) {
+            return 0;
+        }
+
+        sol::protected_function is_prime_function =
+            result->as<sol::protected_function>();
+
+        auto function_result = is_prime_function.call(97);
+
+        if (!function_result.valid()) {
+            sol::error err = function_result;
+            std::string what = err.what();
+            LOG_DEBUG(logging::main_logger, "{}", what);
+            return 1;
+        }
+
+        int is_prime_result = function_result;
+
+        std::string log_value = is_prime_result == 1 ? "correct" : "incorrect";
+        LOG_INFO(
+            logging::main_logger, "Got Lua {} from Lua function. Is {} value.",
+            is_prime_result, log_value
+        );
+    }
+
+    std::future<int> future_result = context.submit_task([]() {
+        std::vector<std::chrono::nanoseconds> load_times;
+        std::vector<std::chrono::nanoseconds> run_times;
+
+        for (size_t y = 0; y < 100; y++) {
+            auto l_start = time_util::get_time_nanoseconds();
+
+            LocalContext& local_context = LocalContext::instance();
+
+            std::optional<sol::object> result =
+                local_context.get_from_lua("tests\\is_prime");
+
+            if (!result) {
+                return 0;
+            }
+            if (!result->is<sol::protected_function>()) {
+                return 0;
+            }
+
+            sol::protected_function is_prime_function =
+                result->as<sol::protected_function>();
+
+            auto l_end = time_util::get_time_nanoseconds();
+
+            load_times.push_back(l_end - l_start);
+
+            auto r_start = time_util::get_time_nanoseconds();
+
+            auto function_result = is_prime_function.call(97);
+
+            if (!function_result.valid()) {
+                sol::error err = function_result;
+                std::string what = err.what();
+                LOG_DEBUG(logging::main_logger, "{}", what);
+                return 1;
+            }
+
+            auto r_end = time_util::get_time_nanoseconds();
+
+            run_times.push_back(r_end - r_start);
+        }
+
+        std::chrono::nanoseconds r_mean(0);
+        for (const auto& duration : run_times) {
+            r_mean += duration;
+        }
+        r_mean /= run_times.size();
+
+        std::chrono::nanoseconds l_mean(0);
+        for (const auto& duration : load_times) {
+            l_mean += duration;
+        }
+        l_mean /= run_times.size();
+
+        LOG_INFO(
+            logging::main_logger, "Mean load time of {} samples is {}ns.",
+            load_times.size(), int64_t(l_mean.count())
+        );
+
+        LOG_INFO(
+            logging::main_logger, "Mean execution time of {} samples is {}ns.",
+            run_times.size(), int64_t(r_mean.count())
+        );
+
+        return 0;
+    });
+
+    int subprocess_status = future_result.get();
+
+    return subprocess_status;
+}
+
 // for tests. Probably should make a bash script to test each test
 inline int
 tests(const argh::parser& cmdl) {
@@ -533,7 +646,7 @@ tests(const argh::parser& cmdl) {
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
     } else if (run_function == "LoadManifest") {
-        return util::load_manifest_test();
+        return util::load_manifest_test<false>();
     } else if (run_function == "EnginTest") {
         return gui::opengl_tests();
     } else if (run_function == "LuaLogTest") {

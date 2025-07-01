@@ -42,22 +42,73 @@ GlobalContext::require_lua_file(
 }
 
 GlobalContext::GlobalContext() :
-    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {
-    std::mutex local_context_map_mut;
-    auto future = submit_task([this, &local_context_map_mut]() {
-        auto local_context = LocalContext();
-        std::scoped_lock lock(local_context_map_mut);
-        local_thread_contexts_.insert(
-            {std::this_thread::get_id(), std::move(local_context)}
-        );
-    });
-    auto local_context = LocalContext();
-    {
-        std::scoped_lock lock(local_context_map_mut);
-        local_thread_contexts_.insert(
-            {std::this_thread::get_id(), std::move(local_context)}
-        );
+    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
+
+std::optional<sol::object>
+GlobalContext::get_from_lua(const std::string& command) {
+    LOG_BACKTRACE(logging::lua_logger, "Attempting to index {}.", command);
+
+    std::stringstream command_stream(command);
+
+    std::string key;
+
+    std::getline(command_stream, key, '\\');
+
+    auto raw_result = lua_.get<sol::optional<sol::object>>(key);
+
+    if (!raw_result) {
+        LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+        return {};
     }
 
-    future.wait();
+    sol::table result;
+
+    while (std::getline(command_stream, key, '\\')) {
+        if (!raw_result->is<sol::table>()) {
+            LOG_WARNING(logging::lua_logger, "{} not index of table.", key);
+            return {};
+        }
+        result = raw_result.value();
+
+        if (!result.valid()) {
+            LOG_WARNING(logging::lua_logger, "Could not find {}.", key);
+            return {};
+        }
+
+        if (result == sol::lua_nil) {
+            LOG_WARNING(
+                logging::lua_logger, "Attempting to index {}. nil value at {}.",
+                command, key
+            );
+            return {};
+        }
+
+        if (!result.is<sol::table>()) {
+            LOG_WARNING(
+                logging::lua_logger, "Attempting to index {}. {} not index of table.",
+                command, key
+            );
+            return {};
+        }
+
+        raw_result = result.get<sol::optional<sol::object>>(key);
+
+        if (!raw_result) {
+            LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+            return {};
+        }
+    }
+
+    // a sol object
+    return raw_result.value();
+}
+
+void GlobalContext::load_script_file(const std::filesystem::path& path) {
+    auto result = lua_.safe_script_file(path);
+
+    if (!result.valid()) {
+        sol::error err = result; // who designed this?
+        std::string what = err.what();
+        LOG_ERROR(logging::lua_logger, "{}", what);
+    }
 }
