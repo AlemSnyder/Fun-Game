@@ -51,7 +51,7 @@ class GlobalContext {
 
     // Private CTOR as this is a singleton
     GlobalContext() :
-        thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
+        thread_pool_([](size_t idx) { quill::detail::set_thread_name("BS Thread " + std::to_string(idx)); }) {}
 
  public:
     // Delete all CTORs and CTOR-like operators
