@@ -126,7 +126,12 @@ load_manifest_test() {
                 ided_objects.emplace(identification);
             }
         }
-        // if (manifest.biomes.has_value()) -> do something else
+        if (manifest.biomes.has_value()) {
+            for (manifest::descriptor_t& biome : manifest.biomes*) {
+    auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
+        file::get_data_path() / biome.path;
+    );            }
+        }
     }
     return 0;
 }

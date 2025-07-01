@@ -68,10 +68,21 @@ class ObjectHandler {
 
     /**
      * @brief Load new object from path.
+     * 
+     * @param manifest::descriptor_t object description
      */
     void read_object(const manifest::descriptor_t& object_descriptor);
 
-    std::shared_ptr<Object> get_object(const std::string&);
+    std::shared_ptr<Object> get_object(const std::string& object_id);
+
+    /**
+     * @brief Load new biome from file
+     * 
+     * @param manifest::descriptor_t biome description
+     */
+    void read_biome(const manifest::descriptor_t& biome_descriptor);
+
+    std::shared_ptr<Biome> get_biome(const std::string& biome_id);
 
     [[nodiscard]] inline const auto
     begin() const {
