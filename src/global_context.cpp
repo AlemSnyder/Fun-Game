@@ -87,7 +87,8 @@ GlobalContext::get_from_lua(const std::string& command) {
     return raw_result.value();
 }
 
-void GlobalContext::load_script_file(const std::filesystem::path& path) {
+void
+GlobalContext::load_script_file(const std::filesystem::path& path) {
     auto result = lua_.safe_script_file(path);
 
     if (!result.valid()) {

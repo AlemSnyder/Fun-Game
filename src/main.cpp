@@ -480,25 +480,29 @@ lua_loadtime_test() {
         }
 
         std::chrono::nanoseconds r_mean(0);
-        for (const auto& duration : run_times) {
+        for (int i = 1; i < run_times.size(); i++) {
+            std::chrono::nanoseconds duration = run_times[i];
             r_mean += duration;
         }
-        r_mean /= run_times.size();
+        r_mean /= (run_times.size() - 1);
 
         std::chrono::nanoseconds l_mean(0);
-        for (const auto& duration : load_times) {
+        for (int i = 1; i < load_times.size(); i++) {
+            std::chrono::nanoseconds duration = load_times[i];
             l_mean += duration;
         }
-        l_mean /= run_times.size();
+        l_mean /= (load_times.size() - 1);
 
         LOG_INFO(
-            logging::main_logger, "Mean load time of {} samples is {}ns.",
-            load_times.size(), int64_t(l_mean.count())
+            logging::main_logger,
+            "Mean load time of {} samples is {}ns. First load time is {}ns",
+            (load_times.size() - 1), int64_t(l_mean.count()), load_times[0].count()
         );
 
         LOG_INFO(
-            logging::main_logger, "Mean execution time of {} samples is {}ns.",
-            run_times.size(), int64_t(r_mean.count())
+            logging::main_logger,
+            "Mean execution time of {} samples is {}ns. First execution time is {}ns.",
+            (run_times.size() - 1), int64_t(r_mean.count()), run_times[0].count()
         );
     }
 
@@ -547,70 +551,73 @@ lua_transfertime_test() {
     }
 
     std::future<int> future_result = context.submit_task([]() {
-        
-            std::vector<std::chrono::nanoseconds> load_times;
-            std::vector<std::chrono::nanoseconds> run_times;
+        std::vector<std::chrono::nanoseconds> load_times;
+        std::vector<std::chrono::nanoseconds> run_times;
 
-            for (size_t y = 0; y < 100; y++) {
-                auto l_start = time_util::get_time_nanoseconds();
+        for (size_t y = 0; y < 101; y++) {
+            auto l_start = time_util::get_time_nanoseconds();
 
-                LocalContext& local_context = LocalContext::instance();
+            LocalContext& local_context = LocalContext::instance();
 
-                std::optional<sol::object> result = local_context.get_from_lua("tests\\is_prime");
+            std::optional<sol::object> result =
+                local_context.get_from_lua("tests\\is_prime");
 
-                if (!result) {
-                    return 0;
-                }
-                if (!result->is<sol::protected_function>()) {
-                    return 0;
-                }
-
-                sol::protected_function is_prime_function =
-                    result->as<sol::protected_function>();
-
-
-                auto l_end = time_util::get_time_nanoseconds();
-
-                load_times.push_back(l_end - l_start);
-
-                auto r_start = time_util::get_time_nanoseconds();
-
-                auto function_result = is_prime_function.call(97);
-
-                if (!function_result.valid()) {
-                    sol::error err = function_result;
-                    std::string what = err.what();
-                    LOG_DEBUG(logging::main_logger, "{}", what);
-                    return 1;
-                }
-
-                auto r_end = time_util::get_time_nanoseconds();
-
-                run_times.push_back(r_end - r_start);
+            if (!result) {
+                return 0;
+            }
+            if (!result->is<sol::protected_function>()) {
+                return 0;
             }
 
-            std::chrono::nanoseconds r_mean(0);
-            for (const auto& duration : run_times) {
-                r_mean += duration;
+            sol::protected_function is_prime_function =
+                result->as<sol::protected_function>();
+
+            auto l_end = time_util::get_time_nanoseconds();
+
+            load_times.push_back(l_end - l_start);
+
+            auto r_start = time_util::get_time_nanoseconds();
+
+            auto function_result = is_prime_function.call(97);
+
+            if (!function_result.valid()) {
+                sol::error err = function_result;
+                std::string what = err.what();
+                LOG_DEBUG(logging::main_logger, "{}", what);
+                return 1;
             }
-            r_mean /= run_times.size();
 
-            std::chrono::nanoseconds l_mean(0);
-            for (const auto& duration : load_times) {
-                l_mean += duration;
-            }
-            l_mean /= run_times.size();
+            auto r_end = time_util::get_time_nanoseconds();
 
-            LOG_INFO(
-                logging::main_logger, "Mean load time of {} samples is {}ns.",
-                load_times.size(), int64_t(l_mean.count())
-            );
+            run_times.push_back(r_end - r_start);
+        }
 
-            LOG_INFO(
-                logging::main_logger, "Mean execution time of {} samples is {}ns.",
-                run_times.size(), int64_t(r_mean.count())
-            );
-        
+        std::chrono::nanoseconds r_mean(0);
+        for (int i = 1; i < run_times.size(); i++) {
+            std::chrono::nanoseconds duration = run_times[i];
+            r_mean += duration;
+        }
+        r_mean /= (run_times.size() - 1);
+
+        std::chrono::nanoseconds l_mean(0);
+        for (int i = 1; i < load_times.size(); i++) {
+            std::chrono::nanoseconds duration = load_times[i];
+            l_mean += duration;
+        }
+        l_mean /= (load_times.size() - 1);
+
+        LOG_INFO(
+            logging::main_logger,
+            "Mean load time of {} samples is {}ns. First load time is {}ns",
+            (load_times.size() - 1), int64_t(l_mean.count()), load_times[0].count()
+        );
+
+        LOG_INFO(
+            logging::main_logger,
+            "Mean execution time of {} samples is {}ns. First execution time is {}ns.",
+            (run_times.size() - 1), int64_t(r_mean.count()), run_times[0].count()
+        );
+
         return 0;
     });
 
@@ -619,7 +626,6 @@ lua_transfertime_test() {
     int subprocess_status = future_result.get();
 
     return subprocess_status;
-
 }
 
 // for tests. Probably should make a bash script to test each test
