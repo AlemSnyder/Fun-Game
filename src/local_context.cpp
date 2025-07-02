@@ -5,7 +5,7 @@
 
 // #include <bits/stdc++>
 
-LocalContext::LocalContext(/* args */) {
+LocalContext::LocalContext() {
     lua_state.open_libraries(sol::lib::base);
     lua_state.open_libraries(sol::lib::math);
     lua_state.open_libraries(sol::lib::string);
@@ -20,7 +20,7 @@ LocalContext::instance() {
 }
 
 std::optional<sol::object>
-LocalContext::get_from_this_lua_state(std::string command) {
+LocalContext::get_from_this_lua_state(const std::string& command) {
     LOG_BACKTRACE(logging::lua_logger, "Attempting to index {}.", command);
     sol::state& lua = get_lua_state();
 
@@ -80,7 +80,9 @@ LocalContext::get_from_this_lua_state(std::string command) {
 }
 
 void
-LocalContext::set_to_this_lua_state(const std::string& command, sol::object object) {
+LocalContext::set_to_this_lua_state(
+    const std::string& command, const sol::object& object
+) {
     LOG_BACKTRACE(logging::lua_logger, "Attempting to index {}.", command);
     sol::state& lua = get_lua_state();
 
@@ -95,11 +97,15 @@ LocalContext::set_to_this_lua_state(const std::string& command, sol::object obje
         raw_result = lua.get<sol::optional<sol::object>>(key);
     }
 
-    sol::table result;
+    sol::table result = lua.create_table();
 
     while (std::getline(command_stream, key, '\\')) {
-        result = raw_result.value(); // might throw
-        auto raw_result = lua.get<sol::optional<sol::table>>(key);
+        if (raw_result->is<sol::table>()) {
+            result = raw_result.value(); // might throw
+        } else {
+            LOG_WARNING(logging::lua_logger, "{}", key);
+        }
+        raw_result = result.get<sol::optional<sol::table>>(key);
         if (!raw_result) {
             result.set(key, lua.create_table());
         }
@@ -109,7 +115,7 @@ LocalContext::set_to_this_lua_state(const std::string& command, sol::object obje
 }
 
 bool
-LocalContext::load_into_this_lua_state(std::string command) {
+LocalContext::load_into_this_lua_state(const std::string& command) {
     GlobalContext& context = GlobalContext::instance();
     std::optional<sol::object> object_result = context.get_from_lua(command);
 
@@ -142,7 +148,6 @@ LocalContext::copy(sol::state& lua_state, const sol::object& object) {
             {
                 bool b = object.as<bool>();
                 return sol::make_object(lua_state, b);
-                break;
             }
         case sol::type::table:
             {
@@ -170,7 +175,7 @@ LocalContext::copy(sol::state& lua_state, const sol::object& object) {
 }
 
 std::optional<sol::object>
-LocalContext::get_from_lua(std::string command) {
+LocalContext::get_from_lua(const std::string& command) {
     std::optional<sol::object> in_this_state = get_from_this_lua_state(command);
     if (in_this_state) {
         return in_this_state;
