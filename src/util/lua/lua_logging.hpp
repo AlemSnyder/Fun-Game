@@ -11,48 +11,48 @@ namespace lua_logging {
 inline void
 lua_log_backtrace(std::string file, int line, std::string message) {
     LOG_BACKTRACE(
-        logging::lua_logger, "[{:<18}] - {}", fmtquill::format("{}:{}", file, line),
-        message
+        logging::lua_script_logger, "[{:<18}] - {}",
+        fmtquill::format("{}:{}", file, line), message
     );
 }
 
 inline void
 lua_log_info(std::string file, int line, std::string message) {
     LOG_INFO(
-        logging::lua_logger, "[{:<18}] - {}", fmtquill::format("{}:{}", file, line),
-        message
+        logging::lua_script_logger, "[{:<18}] - {}",
+        fmtquill::format("{}:{}", file, line), message
     );
 }
 
 inline void
 lua_log_debug(std::string file, int line, std::string message) {
     LOG_DEBUG(
-        logging::lua_logger, "[{:<18}] - {}", fmtquill::format("{}:{}", file, line),
-        message
+        logging::lua_script_logger, "[{:<18}] - {}",
+        fmtquill::format("{}:{}", file, line), message
     );
 }
 
 inline void
 lua_log_warning(std::string file, int line, std::string message) {
     LOG_WARNING(
-        logging::lua_logger, "[{:<18}] - {}", fmtquill::format("{}:{}", file, line),
-        message
+        logging::lua_script_logger, "[{:<18}] - {}",
+        fmtquill::format("{}:{}", file, line), message
     );
 }
 
 inline void
 lua_log_error(std::string file, int line, std::string message) {
     LOG_ERROR(
-        logging::lua_logger, "[{:<18}] - {}", fmtquill::format("{}:{}", file, line),
-        message
+        logging::lua_script_logger, "[{:<18}] - {}",
+        fmtquill::format("{}:{}", file, line), message
     );
 }
 
 inline void
 lua_log_critical(std::string file, int line, std::string message) {
     LOG_CRITICAL(
-        logging::lua_logger, "[{:<18}] - {}", fmtquill::format("{}:{}", file, line),
-        message
+        logging::lua_script_logger, "[{:<18}] - {}",
+        fmtquill::format("{}:{}", file, line), message
     );
 }
 

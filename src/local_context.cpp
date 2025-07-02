@@ -33,7 +33,7 @@ LocalContext::get_from_this_lua_state(std::string command) {
     auto raw_result = lua.get<sol::optional<sol::object>>(key);
 
     if (!raw_result) {
-        LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+        LOG_BACKTRACE(logging::lua_logger, "{} not valid.", key);
         return {};
     }
 
@@ -41,18 +41,18 @@ LocalContext::get_from_this_lua_state(std::string command) {
 
     while (std::getline(command_stream, key, '\\')) {
         if (!raw_result->is<sol::table>()) {
-            LOG_WARNING(logging::lua_logger, "{} not index of table.", key);
+            LOG_BACKTRACE(logging::lua_logger, "{} not index of table.", key);
             return {};
         }
         result = raw_result.value();
 
         if (!result.valid()) {
-            LOG_WARNING(logging::lua_logger, "Could not find {}.", key);
+            LOG_BACKTRACE(logging::lua_logger, "Could not find {}.", key);
             return {};
         }
 
         if (result == sol::lua_nil) {
-            LOG_WARNING(
+            LOG_BACKTRACE(
                 logging::lua_logger, "Attempting to index {}. nil value at {}.",
                 command, key
             );
@@ -60,7 +60,7 @@ LocalContext::get_from_this_lua_state(std::string command) {
         }
 
         if (!result.is<sol::table>()) {
-            LOG_WARNING(
+            LOG_BACKTRACE(
                 logging::lua_logger, "Attempting to index {}. {} not index of table.",
                 command, key
             );
@@ -70,7 +70,7 @@ LocalContext::get_from_this_lua_state(std::string command) {
         raw_result = result.get<sol::optional<sol::object>>(key);
 
         if (!raw_result) {
-            LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+            LOG_BACKTRACE(logging::lua_logger, "{} not valid.", key);
             return {};
         }
     }

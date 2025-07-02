@@ -563,10 +563,11 @@ lua_transfertime_test() {
                 local_context.get_from_lua("tests\\is_prime");
 
             if (!result) {
-                return 0;
+                LOG_CRITICAL(logging::lua_logger, "Could not find is_prime.");
+                return 1;
             }
             if (!result->is<sol::protected_function>()) {
-                return 0;
+                return 1;
             }
 
             sol::protected_function is_prime_function =
