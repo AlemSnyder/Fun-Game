@@ -16,14 +16,14 @@ This license is not fixed. As it stands this license prevents the use of "textur
 For this reason, the repository is also licensed under any potential future versions of
 this license.
 
-The purpose of this license is to describe the license for specific material in this
-repository. If not specified it's probably GNU. NOTE: the three license files do not
-necessarily describe all the material in this repository. For example, the vendor
+The purpose of this file is to describe the license for specific material in this
+repository. If not specified it is licensed under GPLv2. NOTE: the three license files do
+not necessarily describe all the material in this repository. For example, the vendor
 subdirectory contains external material that has its own license. In addition there is
 code copied for Stack Overflow. (At the time of writing only two copied sections)
 
 This repository includes many works from many others. The authors can only grant rights
-they themselves have the right to grand. File formats generally have their own
+they themselves have the right to grant. File formats generally have their own
 license. Go check out the JSON license for example.
 
 DEFINITIONS
