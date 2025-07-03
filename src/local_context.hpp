@@ -34,13 +34,21 @@ class LocalContext {
     LocalContext();
     sol::state lua_state;
 
+    sol::object copy(sol::state& lua, const sol::object& object);
+
  public:
-    [[nodiscard]] static LocalContext& get_local_context();
+    [[nodiscard]] static LocalContext& instance();
 
     [[nodiscard]] inline sol::state&
     get_lua_state() {
         return lua_state;
     }
 
-    friend class GlobalContext;
+    std::optional<sol::object> get_from_this_lua_state(const std::string& command);
+
+    void set_to_this_lua_state(const std::string& command, const sol::object& object);
+
+    bool load_into_this_lua_state(const std::string& command);
+
+    std::optional<sol::object> get_from_lua(const std::string& command);
 };

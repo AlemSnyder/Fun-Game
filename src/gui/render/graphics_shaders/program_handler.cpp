@@ -1,13 +1,12 @@
 #include "program_handler.hpp"
 
+#include "gui/render/gl_enums.hpp"
 #include "logging.hpp"
-#include "render_types.hpp"
 
 #include <GL/glew.h>
 
 #include <filesystem>
 #include <fstream>
-#include <regex>
 #include <set>
 #include <string>
 #include <utility>
@@ -41,8 +40,6 @@ Shader::reload() {
         glDeleteShader(shader_ID_);
     }
 
-    found_uniforms_.clear();
-
     std::vector<std::string> source_string;
     std::string shader_type_string = get_shader_string(shader_type_);
 
@@ -64,26 +61,6 @@ Shader::reload() {
         std::string file_text = file_content.value();
 
         source_string.push_back(file_text);
-
-        std::regex uniform_regex("\n[ |\t]{0,}uniform[ |\t]{1,}(\\w*)[ |\t]{1,}(\\w*);"
-        );
-
-        // default constructor = end-of-sequence:
-        std::regex_token_iterator<std::string::iterator> rend;
-
-        std::regex_token_iterator<std::string::iterator> type_iter(
-            file_text.begin(), file_text.end(), uniform_regex, 1
-        );
-
-        std::regex_token_iterator<std::string::iterator> name_iter(
-            file_text.begin(), file_text.end(), uniform_regex, 2
-        );
-        while (type_iter != rend) {
-            auto matched_type = *type_iter++;
-            auto matched_name = *name_iter++;
-
-            found_uniforms_.emplace(std::make_pair(matched_name, matched_type));
-        }
     }
 
     std::vector<const char*> source_char;
@@ -122,7 +99,6 @@ Shader::reload() {
 
 void
 Program::reload() {
-    found_uniforms_.clear();
     uniforms_.clear();
 
     if (vertex_shader_.get_status() != ShaderStatus::OK) [[unlikely]] {
@@ -145,13 +121,6 @@ Program::reload() {
             return;
         }
     }
-
-    found_uniforms_.insert(
-        vertex_shader_.uniform_begin(), vertex_shader_.uniform_end()
-    );
-    found_uniforms_.insert(
-        fragment_shader_.uniform_begin(), fragment_shader_.uniform_end()
-    );
 
     GLint vertex_shader_id = vertex_shader_.get_shader_ID();
     GLint fragment_shader_id = fragment_shader_.get_shader_ID();
@@ -235,9 +204,71 @@ Program::get_status_string() const {
 
 void
 Program::attach_uniforms() {
-    for (const auto& uniform_names : found_uniforms_) {
-        const auto& name = uniform_names.first;
-        uniforms_[name] = new_uniform(name);
+    GLint count;
+    const GLsizei buf_size = 64;
+    GLchar name[buf_size];
+    GLsizei length;
+    GLint size;
+    GLenum type;
+
+    glGetProgramiv(program_ID_, GL_ACTIVE_UNIFORMS, &count);
+
+    for (GLuint uid = 0; uid < static_cast<GLuint>(count); uid++) {
+        glGetActiveUniform(program_ID_, uid, buf_size, &length, &size, &type, name);
+
+        std::string str_name(name);
+
+        if (type >= static_cast<GLenum>(gpu_data::GPUDataType::NUM_TYPES)) {
+            LOG_WARNING(
+                logging::opengl_logger,
+                "Uniform type id: {} ivalid.", type
+            );
+        }
+
+        gpu_data::GPUDataType enum_type =
+            static_cast<gpu_data::GPUDataType>(type);
+        // this probably won't fail
+
+        LOG_INFO(
+            logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}",
+            uid, name, gpu_data::to_string(enum_type)
+        );
+
+        if (length > buf_size - 4) {
+            LOG_WARNING(
+                logging::opengl_logger,
+                "Uniform name might be too long. Check that the name above is the same "
+                "as the name in the source file."
+            );
+        }
+
+        uniforms_.emplace(
+            std::piecewise_construct, std::forward_as_tuple(name),
+            std::forward_as_tuple(name, enum_type, uid)
+        );
+    }
+}
+
+void
+Program::set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_name) {
+    auto found_uniform = uniforms_.find(uniform_name);
+
+    if (found_uniform != uniforms_.end()) {
+        found_uniform->second.set_call_function(uex);
+        auto found_type = found_uniform->second.get_type();
+        auto given_type = uex->get_type();
+        if (given_type != found_type) {
+            LOG_WARNING(
+                logging::opengl_logger,
+                "Uniform types do not match. Given {} to uniform of type {}.",
+                gpu_data::to_string(given_type), gpu_data::to_string(found_type)
+            );
+        }
+    } else {
+        LOG_WARNING(
+            logging::opengl_logger,
+            "Uniform Error. Uniform \"{}\" not found in program.", uniform_name.c_str()
+        );
     }
 }
 

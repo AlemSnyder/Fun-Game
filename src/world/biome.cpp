@@ -91,7 +91,7 @@ TerrainMacroMap
 Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
-    LocalContext& local_context = LocalContext::get_local_context();
+    LocalContext& local_context = LocalContext::instance();
     sol::state& lua = local_context.get_lua_state();
     if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
         return {};
@@ -167,7 +167,7 @@ const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;
 
-    LocalContext& local_context = LocalContext::get_local_context();
+    LocalContext& local_context = LocalContext::instance();
     sol::state& lua = local_context.get_lua_state();
 
     if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {

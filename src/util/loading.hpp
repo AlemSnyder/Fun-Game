@@ -79,9 +79,9 @@ load_manifest_test() {
             }
         }
         if (manifest.biomes.has_value()) {
-            for (manifest::descriptor_t& biome : manifest.biomes*) {
+            for (manifest::descriptor_t& biome : *manifest.biomes) {
                 auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
-                    file::get_data_path() / biome.path;
+                    files::get_data_path() / biome.path
                 );
             }
         }

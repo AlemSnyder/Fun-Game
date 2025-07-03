@@ -25,22 +25,6 @@ GlobalContext::run_opengl_queue() {
     }
 }
 
-void
-GlobalContext::require_lua_file(
-    const std::string& key, const std::filesystem::path& path, bool create_global
-) {
-    // run this lambda on all threads in the thread pool
-    // in reality should only require the file in one lua state, then copy the generated
-    // byte code to all the others this will load onto all states including the one held
-    // by the main thread. yes this should be made thread safe, but so should global
-    // context It will be fixed before it becomes a problem, just not in this pr
-    // (probably Lua-Setup)
-    for (auto& [thread_id, local_context] : local_thread_contexts_) {
-        sol::state& lua = local_context.get_lua_state();
-        lua.require_file(key, path.string(), create_global);
-    };
-}
-
 GlobalContext::GlobalContext() :
     thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
 
@@ -57,7 +41,7 @@ GlobalContext::get_from_lua(const std::string& command) {
     auto raw_result = lua_.get<sol::optional<sol::object>>(key);
 
     if (!raw_result) {
-        LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+        LOG_BACKTRACE(logging::lua_logger, "{} not valid.", key);
         return {};
     }
 
@@ -65,18 +49,18 @@ GlobalContext::get_from_lua(const std::string& command) {
 
     while (std::getline(command_stream, key, '\\')) {
         if (!raw_result->is<sol::table>()) {
-            LOG_WARNING(logging::lua_logger, "{} not index of table.", key);
+            LOG_BACKTRACE(logging::lua_logger, "{} not index of table.", key);
             return {};
         }
         result = raw_result.value();
 
         if (!result.valid()) {
-            LOG_WARNING(logging::lua_logger, "Could not find {}.", key);
+            LOG_BACKTRACE(logging::lua_logger, "Could not find {}.", key);
             return {};
         }
 
         if (result == sol::lua_nil) {
-            LOG_WARNING(
+            LOG_BACKTRACE(
                 logging::lua_logger, "Attempting to index {}. nil value at {}.",
                 command, key
             );
@@ -84,7 +68,7 @@ GlobalContext::get_from_lua(const std::string& command) {
         }
 
         if (!result.is<sol::table>()) {
-            LOG_WARNING(
+            LOG_BACKTRACE(
                 logging::lua_logger, "Attempting to index {}. {} not index of table.",
                 command, key
             );
@@ -94,7 +78,7 @@ GlobalContext::get_from_lua(const std::string& command) {
         raw_result = result.get<sol::optional<sol::object>>(key);
 
         if (!raw_result) {
-            LOG_WARNING(logging::lua_logger, "{} not valid.", key);
+            LOG_BACKTRACE(logging::lua_logger, "{} not valid.", key);
             return {};
         }
     }
@@ -103,7 +87,8 @@ GlobalContext::get_from_lua(const std::string& command) {
     return raw_result.value();
 }
 
-void GlobalContext::load_script_file(const std::filesystem::path& path) {
+void
+GlobalContext::load_script_file(const std::filesystem::path& path) {
     auto result = lua_.safe_script_file(path);
 
     if (!result.valid()) {

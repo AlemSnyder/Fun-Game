@@ -30,6 +30,7 @@
 #include "position_synchronizer.hpp"
 #include "tile_object.hpp"
 #include "util/files.hpp"
+#include "world/biome.hpp"
 
 #include <memory>
 #include <mutex>
@@ -143,7 +144,7 @@ class ObjectHandler {
      */
     void read_biome(const manifest::descriptor_t& biome_descriptor);
 
-    std::shared_ptr<Biome> get_biome(const std::string& biome_id);
+    std::shared_ptr<terrain::generation::Biome> get_biome(const std::string& biome_id);
 
     [[nodiscard]] inline const auto
     begin() const {

@@ -342,7 +342,7 @@ path_finder_test() {
     return 0;
 }
 
-inline int
+int
 LogTest() {
     LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 1);
     LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 2);
@@ -381,7 +381,7 @@ LogTest() {
 
 int
 lua_log_test() {
-    LocalContext& local_context = LocalContext::get_local_context();
+    LocalContext& local_context = LocalContext::instance();
     sol::state& lua = local_context.get_lua_state();
 
     sol::protected_function lua_log_critical = lua["Logging"]["LOG_CRITICAL"];
@@ -400,7 +400,7 @@ lua_log_test() {
 int
 lua_loadtime_test() {
     LOG_INFO(logging::main_logger, "Getting Local Lua State.");
-    LocalContext& local_context = LocalContext::get_local_context();
+    LocalContext& local_context = LocalContext::instance();
     sol::state& lua = local_context.get_lua_state();
     LOG_INFO(logging::main_logger, "Got Local Lua State.");
     LOG_INFO(logging::main_logger, "Loading Lua File.");
@@ -482,25 +482,29 @@ lua_loadtime_test() {
         }
 
         std::chrono::nanoseconds r_mean(0);
-        for (const auto& duration : run_times) {
+        for (size_t i = 1; i < run_times.size(); i++) {
+            std::chrono::nanoseconds duration = run_times[i];
             r_mean += duration;
         }
-        r_mean /= run_times.size();
+        r_mean /= (run_times.size() - 1);
 
         std::chrono::nanoseconds l_mean(0);
-        for (const auto& duration : load_times) {
+        for (size_t i = 1; i < load_times.size(); i++) {
+            std::chrono::nanoseconds duration = load_times[i];
             l_mean += duration;
         }
-        l_mean /= run_times.size();
+        l_mean /= (load_times.size() - 1);
 
         LOG_INFO(
-            logging::main_logger, "Mean load time of {} samples is {}ns.",
-            load_times.size(), int64_t(l_mean.count())
+            logging::main_logger,
+            "Mean load time of {} samples is {}ns. First load time is {}ns",
+            (load_times.size() - 1), int64_t(l_mean.count()), load_times[0].count()
         );
 
         LOG_INFO(
-            logging::main_logger, "Mean execution time of {} samples is {}ns.",
-            run_times.size(), int64_t(r_mean.count())
+            logging::main_logger,
+            "Mean execution time of {} samples is {}ns. First execution time is {}ns.",
+            (run_times.size() - 1), int64_t(r_mean.count()), run_times[0].count()
         );
     }
 
@@ -552,7 +556,7 @@ lua_transfertime_test() {
         std::vector<std::chrono::nanoseconds> load_times;
         std::vector<std::chrono::nanoseconds> run_times;
 
-        for (size_t y = 0; y < 100; y++) {
+        for (size_t y = 0; y < 101; y++) {
             auto l_start = time_util::get_time_nanoseconds();
 
             LocalContext& local_context = LocalContext::instance();
@@ -561,10 +565,11 @@ lua_transfertime_test() {
                 local_context.get_from_lua("tests\\is_prime");
 
             if (!result) {
-                return 0;
+                LOG_CRITICAL(logging::lua_logger, "Could not find is_prime.");
+                return 1;
             }
             if (!result->is<sol::protected_function>()) {
-                return 0;
+                return 1;
             }
 
             sol::protected_function is_prime_function =
@@ -591,25 +596,29 @@ lua_transfertime_test() {
         }
 
         std::chrono::nanoseconds r_mean(0);
-        for (const auto& duration : run_times) {
+        for (size_t i = 1; i < run_times.size(); i++) {
+            std::chrono::nanoseconds duration = run_times[i];
             r_mean += duration;
         }
-        r_mean /= run_times.size();
+        r_mean /= (run_times.size() - 1);
 
         std::chrono::nanoseconds l_mean(0);
-        for (const auto& duration : load_times) {
+        for (size_t i = 1; i < load_times.size(); i++) {
+            std::chrono::nanoseconds duration = load_times[i];
             l_mean += duration;
         }
-        l_mean /= run_times.size();
+        l_mean /= (load_times.size() - 1);
 
         LOG_INFO(
-            logging::main_logger, "Mean load time of {} samples is {}ns.",
-            load_times.size(), int64_t(l_mean.count())
+            logging::main_logger,
+            "Mean load time of {} samples is {}ns. First load time is {}ns",
+            (load_times.size() - 1), int64_t(l_mean.count()), load_times[0].count()
         );
 
         LOG_INFO(
-            logging::main_logger, "Mean execution time of {} samples is {}ns.",
-            run_times.size(), int64_t(r_mean.count())
+            logging::main_logger,
+            "Mean execution time of {} samples is {}ns. First execution time is {}ns.",
+            (run_times.size() - 1), int64_t(r_mean.count()), run_times[0].count()
         );
 
         return 0;
@@ -618,6 +627,78 @@ lua_transfertime_test() {
     int subprocess_status = future_result.get();
 
     return subprocess_status;
+}
+
+int
+lua_load_tests() {
+    // load is_prime_test.lua
+    LOG_INFO(logging::main_logger, "Loading Lua File.");
+
+    std::filesystem::path lua_script_path =
+        files::get_resources_path() / "lua" / "is_prime_test.lua";
+
+    GlobalContext& context = GlobalContext::instance();
+    context.load_script_file(lua_script_path);
+
+    // this should work
+    std::future<int> future_1 = context.submit_task([]() {
+        LocalContext& local_context = LocalContext::instance();
+        bool return_status = local_context.load_into_this_lua_state("tests");
+        // true when no erro -> 0 (!true)
+        return static_cast<int>(!return_status);
+    });
+
+    int value_1 = future_1.get();
+    if (value_1 != 0) {
+        LOG_ERROR(logging::lua_logger, "load_into_this_lua_state failed");
+        return 1;
+    }
+
+    // this should also work
+    std::future<int> future_2 = context.submit_task([]() {
+        LocalContext& local_context = LocalContext::instance();
+        bool return_status = local_context.load_into_this_lua_state("tests");
+        if (!return_status) {
+            return 1;
+        }
+        std::optional<sol::object> is_prime_function =
+            local_context.get_from_this_lua_state("tests\\is_prime");
+        if (!is_prime_function) {
+            LOG_ERROR(logging::lua_logger, "Could not load tests table.");
+            return 0;
+        }
+        local_context.set_to_this_lua_state(
+            "tests\\is_not_not_prime", is_prime_function.value()
+        );
+        return 0;
+    });
+
+    int value_2 = future_2.get();
+    if (value_2 != 0) {
+        LOG_ERROR(logging::lua_logger, "get from and set to this lua state failed");
+        return 1;
+    }
+    return 0;
+}
+
+int
+lua_tests(const argh::parser& cmdl) {
+    std::string run_function = cmdl(3).str();
+
+    if (run_function == "Map") {
+        return MacroMap(cmdl);
+    } else if (run_function == "Logging") {
+        return lua_log_test();
+    } else if (run_function == "LoadTime") {
+        return lua_loadtime_test();
+    } else if (run_function == "LoadScript") {
+        return lua_load_tests();
+    } else if (run_function == "TransferScript") {
+        return lua_transfertime_test();
+    } else {
+        std::cout << "No known command" << std::endl;
+        return 1;
+    }
 }
 
 // for tests. Probably should make a bash script to test each test
@@ -629,7 +710,7 @@ tests(const argh::parser& cmdl) {
         return TerrainTypes(cmdl);
     } else if (run_function == "GenerateTerrain") {
         return GenerateTerrain(cmdl);
-    } else if (run_function == "MacroMap" || run_function == "LuaTest") {
+    } else if (run_function == "MacroMap") {
         return MacroMap(cmdl);
     } else if (run_function == "NoiseTest") {
         return NoiseTest();
@@ -649,10 +730,8 @@ tests(const argh::parser& cmdl) {
         return util::load_manifest_test<false>();
     } else if (run_function == "EnginTest") {
         return gui::opengl_tests();
-    } else if (run_function == "LuaLogTest") {
-        return lua_log_test();
-    } else if (run_function == "LuaLoadTimeTest") {
-        return lua_loadtime_test();
+    } else if (run_function == "Lua") {
+        return lua_tests(cmdl);
     } else {
         std::cout << "No known command" << std::endl;
         return 1;
@@ -692,6 +771,12 @@ main(int argc, char** argv) {
 
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
+
+    // main thread for opengl and lua loading
+    GlobalContext& context = GlobalContext::instance();
+    context.set_main_thread();
+
+    assert(context.is_main_thread() && "This is not the main thread. Strange :(");
 
     if (argc == 1) {
         return graphics_main();

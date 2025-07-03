@@ -45,8 +45,9 @@ Entity::Entity(
                                         / object_data.ai.value();
 
         // load into All Lua
+        // need access control
         GlobalContext& context = GlobalContext::instance();
-        context.require_lua_file(identification_, ai_path);
+        context.load_script_file(ai_path);
 
         has_ai_ = true;
     }
@@ -100,7 +101,7 @@ void
 EntityInstance::update() {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         if (entity_type->has_ai()) {
-            LocalContext& local_context = LocalContext::get_local_context();
+            LocalContext& local_context = LocalContext::instance();
             sol::state& lua = local_context.get_lua_state();
             sol::protected_function update_function =
                 lua[entity_type->identification_]["update"];
