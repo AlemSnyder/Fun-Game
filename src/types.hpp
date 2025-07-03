@@ -11,7 +11,7 @@
  * Terrain *
  ***********/
 
- // Tile position within a chunk
+// Tile position within a chunk
 using LocalPosition = glm::u8vec3;
 // Tile position in terrain.
 using Dim = uint16_t;

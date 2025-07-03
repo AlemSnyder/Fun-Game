@@ -98,7 +98,7 @@ Terrain::Terrain(
         });
 
     auto futures = map_tile_async_status.get();
-    for (const auto& sub_future : futures){
+    for (const auto& sub_future : futures) {
         for (const auto& sub_sub_future : sub_future) {
             sub_sub_future.wait();
         }
@@ -381,7 +381,7 @@ Terrain::init_area(generation::MapTile& map_tile, generation::LandGenerator gen)
         // might need to be moved
         // area_async_status.insert(async_status.begin(), async_status.end());
 
-        for (auto& future: async_status) {
+        for (auto& future : async_status) {
             area_async_status.push_back(std::move(future));
         }
 

@@ -132,10 +132,14 @@ configure_file(src/config.h.in config.h)
 
 enable_testing()
 
-add_test(NAME LuaTest COMMAND FunGame Test LuaTest)
 add_test(NAME NoiseTest COMMAND FunGame Test NoiseTest)
 add_test(NAME Logging COMMAND FunGame Test Logging)
 add_test(NAME ChunkDataTest COMMAND FunGame Test ChunkDataTest)
 add_test(NAME LoadManifest COMMAND FunGame Test LoadManifest)
 add_test(NAME PathFinderTest COMMAND FunGame Test PathFinderTest)
+add_test(NAME LuaMap COMMAND FunGame Test Lua Map)
+add_test(NAME LuaLogging COMMAND FunGame Test Lua Logging)
+add_test(NAME LuaLoadTime COMMAND FunGame Test Lua LoadTime)
+add_test(NAME LuaLoadScript COMMAND FunGame Test Lua LoadScript)
+add_test(NAME LuaTransferScript COMMAND FunGame Test Lua TransferScript)
 
