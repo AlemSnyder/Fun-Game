@@ -27,8 +27,6 @@
 
 #include <sol/sol.hpp>
 
-class GlobalCnotext;
-
 class LocalContext {
  private:
     LocalContext();

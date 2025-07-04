@@ -304,8 +304,6 @@ class Biome {
     // read data to generate the add to top after affect
     void read_add_to_top_data_(const std::vector<layer_effects_t>& biome_data);
 
-    void init_lua_state_(const std::filesystem::path& lua_map_generator_file);
-
     /**
      * @brief Load materials from json data
      *

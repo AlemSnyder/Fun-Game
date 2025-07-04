@@ -289,7 +289,7 @@ class VertexBufferObject {
         return size_;
     }
 
-    ~VertexBufferObject() { glDeleteBuffers(1, &buffer_ID_); }
+    inline virtual ~VertexBufferObject() { glDeleteBuffers(1, &buffer_ID_); }
 
     /**
      * @brief Attach to the given index.

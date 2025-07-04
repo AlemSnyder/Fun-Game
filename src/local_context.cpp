@@ -2,6 +2,7 @@
 
 #include "global_context.hpp"
 #include "util/lua/lua_logging.hpp"
+#include "world/terrain/generation/lua_interface.hpp"
 
 // #include <bits/stdc++>
 
@@ -11,6 +12,7 @@ LocalContext::LocalContext() {
     lua_state.open_libraries(sol::lib::string);
     lua_state.open_libraries(sol::lib::debug);
     lua_logging::setup_lua_logging(lua_state);
+    terrain::generation::init_lua_interface(lua_state);
 }
 
 LocalContext&
@@ -73,6 +75,7 @@ LocalContext::get_from_this_lua_state(const std::string& command) {
             LOG_BACKTRACE(logging::lua_logger, "{} not valid.", key);
             return {};
         }
+        LOG_BACKTRACE(logging::lua_logger, "{} valid.", key);
     }
 
     // a sol object
@@ -101,13 +104,14 @@ LocalContext::set_to_this_lua_state(
 
     while (std::getline(command_stream, key, '\\')) {
         if (raw_result->is<sol::table>()) {
-            result = raw_result.value(); // might throw
+            result = raw_result.value();
         } else {
-            LOG_WARNING(logging::lua_logger, "{}", key);
+            LOG_BACKTRACE(logging::lua_logger, "{} is not a table", key);
         }
         raw_result = result.get<sol::optional<sol::table>>(key);
         if (!raw_result) {
             result.set(key, lua.create_table());
+            raw_result = result.get<sol::optional<sol::table>>(key);
         }
     }
 
@@ -155,6 +159,9 @@ LocalContext::copy(sol::state& lua_state, const sol::object& object) {
                 sol::table table_copy = lua_state.create_table();
                 for (auto& [key, value] : table) {
                     table_copy.set(copy(lua_state, key), copy(lua_state, value));
+                }
+                for (auto& [key, value] : table_copy) {
+                    LOG_DEBUG(logging::lua_logger, "key: {}", key.as<std::string>());
                 }
                 return table_copy;
             }

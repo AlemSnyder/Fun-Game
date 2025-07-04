@@ -60,6 +60,8 @@ load_manifest_test() {
         int num_biomes = manifest.biomes ? (*manifest.biomes).size() : 0;
         int num_entities = manifest.entities ? (*manifest.entities).size() : 0;
 
+        GlobalContext& context = GlobalContext::instance();
+
         LOG_DEBUG(
             logging::file_io_logger, "Loading manifest {} with {} biomes, {} entities.",
             manifest.name, num_biomes, num_entities
@@ -68,7 +70,7 @@ load_manifest_test() {
             // iterate through objects in manifest and queue them to be loaded
             for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                 // Will check if path exists
-                GlobalContext& context = GlobalContext::instance();
+
                 auto future = context.submit_task([entity_data]() {
                     world::entity::ObjectHandler& object_handler =
                         world::entity::ObjectHandler::instance();
@@ -83,6 +85,11 @@ load_manifest_test() {
                 auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
                     files::get_data_path() / biome.path
                 );
+                if (!biome_data.has_value()) {
+                    continue;
+                }
+
+                context.load_script_file(files::get_data_path() / biome.path.remove_filename() / biome_data->map_generator_path);
             }
         }
     }

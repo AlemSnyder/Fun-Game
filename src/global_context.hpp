@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include "local_context.hpp"
 #include "logging.hpp"
 
 #define BS_THREAD_POOL_ENABLE_PRIORITY
