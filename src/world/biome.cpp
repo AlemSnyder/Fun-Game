@@ -179,8 +179,8 @@ const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;
 
-    GlobalContext& context = GlobalContext::instance();
-    auto biome_map_query = context.get_from_lua(id_name_+"\\biome_map");
+    LocalContext& local_context = LocalContext::instance();
+    auto biome_map_query = local_context.get_from_lua(id_name_+"\\biome_map");
 
     if (!biome_map_query) {
         LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
@@ -206,7 +206,7 @@ Biome::get_plant_map(Dim length) const {
         return {};
     }
 
-    auto biome_plant_map_function = biome_map.get<sol::optional<sol::protected_function>>("plant_map");
+    auto biome_plant_map_function = biome_map.get<sol::optional<sol::protected_function>>("plants_map");
 
     if (!biome_plant_map_function) {
         LOG_ERROR(logging::lua_logger, "map does not exists");
