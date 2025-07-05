@@ -10,6 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  */
+#pragma once
 
 /**
  * @file object_handler.hpp
@@ -20,10 +21,16 @@
  *
  */
 
+#pragma once
+
+#include "entity.hpp"
 #include "gui/render/structures/model.hpp"
 #include "manifest.hpp"
 #include "object.hpp"
 #include "position_synchronizer.hpp"
+#include "tile_object.hpp"
+#include "util/files.hpp"
+#include "world/biome.hpp"
 
 #include <memory>
 #include <mutex>
@@ -67,10 +74,77 @@ class ObjectHandler {
 
     /**
      * @brief Load new object from path.
+     * 
+     * @param manifest::descriptor_t object description
      */
-    void read_object(const manifest::descriptor_t& object_descriptor);
+    template <bool opengl = true>
+    int
+    read_object(const manifest::descriptor_t& descriptor) {
+        // read contents from path
+        auto object_data = files::read_json_from_file<object_t>(
+            files::get_data_path() / descriptor.path
+        );
 
-    std::shared_ptr<Object> get_object(const std::string&);
+        if (!object_data) {
+            LOG_ERROR(
+                logging::file_io_logger, "Failed to load {} from {}.",
+                descriptor.identification, descriptor.path
+            );
+            return 1;
+        }
+
+        std::lock_guard<std::mutex> lock(this->map_mutex_);
+
+        // check identification
+        std::string identification = descriptor.identification;
+        if (ided_objects.find(identification) != ided_objects.end()) {
+            LOG_WARNING(
+                logging::file_io_logger, "Duplicate Identification \"{}\" found.",
+                identification
+            );
+            return 1;
+        }
+
+        if constexpr (opengl) {
+            switch (object_data->type) {
+                case OBJECT_TYPE::TILE_OBJECT:
+                    {
+                        std::shared_ptr<TileObject> new_object =
+                            std::make_shared<TileObject>(*object_data, descriptor);
+
+                        // when objects are initalized data is sent to the gpu.
+                        // we want to run the mesher async, but need to send the data to
+                        // the gpu on the main thread
+                        ided_objects[identification] =
+                            static_pointer_cast<Object>(new_object);
+                    }
+                    break;
+                case OBJECT_TYPE::ENTITY:
+                    {
+                        std::shared_ptr<Entity> new_object =
+                            std::make_shared<Entity>(*object_data, descriptor);
+                        ided_objects[identification] =
+                            static_pointer_cast<Object>(new_object);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        return 0;
+    }
+
+    std::shared_ptr<Object> get_object(const std::string& object_id);
+
+    /**
+     * @brief Load new biome from file
+     * 
+     * @param manifest::descriptor_t biome description
+     */
+    void read_biome(const manifest::descriptor_t& biome_descriptor);
+
+    std::shared_ptr<terrain::generation::Biome> get_biome(const std::string& biome_id);
 
     [[nodiscard]] inline const auto
     begin() const {
