@@ -86,36 +86,59 @@ void
 LocalContext::set_to_this_lua_state(
     const std::string& command, const sol::object& object
 ) {
+    if (command.length() == 0) {
+        LOG_WARNING(logging::lua_logger, "Cannot set table with no name.");
+        return;
+    }
     LOG_BACKTRACE(logging::lua_logger, "Attempting to index {}.", command);
     sol::state& lua = get_lua_state();
 
     std::stringstream command_stream(command);
     std::string key;
 
-    std::getline(command_stream, key, '\\');
-
-    auto raw_result = lua.get<sol::optional<sol::object>>(key);
-    if (!raw_result) {
-        lua.set(key, lua.create_table());
-        raw_result = lua.get<sol::optional<sol::object>>(key);
-    }
-
-    sol::table result = lua.create_table();
+    sol::optional<sol::object> raw_result;
 
     while (std::getline(command_stream, key, '\\')) {
-        if (raw_result->is<sol::table>()) {
-            result = raw_result.value();
-        } else {
-            LOG_BACKTRACE(logging::lua_logger, "{} is not a table", key);
+        LOG_BACKTRACE(logging::lua_logger, "Locking up {}.", key);
+        // if last part of command
+        if (command_stream.tellg() == -1) {
+            if (raw_result) {
+                if (raw_result->is<sol::table>()) {
+                    sol::table result = raw_result.value();
+                    result.set(key, object);
+                } else {
+                    LOG_ERROR(logging::lua_logger, "Object at {} is not a table.", key);
+                }
+
+            } else {
+                lua.set(key, object);
+            }
+            continue;
+            // will return here
         }
-        raw_result = result.get<sol::optional<sol::table>>(key);
+        if (raw_result) {
+            if (raw_result->is<sol::table>()) {
+                sol::table result = raw_result.value();
+                raw_result = result.get<sol::optional<sol::table>>(key);
+                if (!raw_result) {
+                    result.set(key, lua.create_table());
+                    raw_result = result.get<sol::optional<sol::table>>(key);
+                }
+            } else {
+                LOG_ERROR(logging::lua_logger, "Object at {} is not a table.", key);
+            }
+        } else {
+            raw_result = lua.get<sol::optional<sol::object>>(key);
+            if (!raw_result) {
+                lua.set(key, lua.create_table());
+                raw_result = lua.get<sol::optional<sol::table>>(key);
+            }
+        }
         if (!raw_result) {
-            result.set(key, lua.create_table());
-            raw_result = result.get<sol::optional<sol::table>>(key);
+            LOG_ERROR(logging::lua_logger, "Could not find key {}", key);
+            return;
         }
     }
-
-    result.set(key, object);
 }
 
 bool
@@ -129,6 +152,16 @@ LocalContext::load_into_this_lua_state(const std::string& command) {
     }
 
     sol::object object_this_state = copy(lua_state, object_result.value());
+
+#if DEBUG()
+    if (object_this_state.is<sol::table>()) {
+        sol::table table_copy = object_this_state;
+        
+        for (auto& [key, value] : table_copy) {
+            LOG_DEBUG(logging::lua_logger, "key: {}", key.as<std::string>());
+        }
+    }
+#endif
 
     set_to_this_lua_state(command, object_this_state);
     return true;
@@ -159,9 +192,6 @@ LocalContext::copy(sol::state& lua_state, const sol::object& object) {
                 sol::table table_copy = lua_state.create_table();
                 for (auto& [key, value] : table) {
                     table_copy.set(copy(lua_state, key), copy(lua_state, value));
-                }
-                for (auto& [key, value] : table_copy) {
-                    LOG_DEBUG(logging::lua_logger, "key: {}", key.as<std::string>());
                 }
                 return table_copy;
             }
