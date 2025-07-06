@@ -8,6 +8,9 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <chrono>
+#include "util/time.hpp"
+
 namespace gui {
 
 // add model attach functions.
@@ -19,11 +22,19 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // context.wait_for_tasks();
     // not doing this they will just run in the background
     // run all opengl calls
+    std::chrono::nanoseconds then = time_util::get_time_nanoseconds();
     context.run_opengl_queue();
 
+    queue_time = time_util::get_time_nanoseconds() - then;
+
+    then = time_util::get_time_nanoseconds();
     shadow_map_.update();
     environment_->update();
     render::PixelProjection::update(width, height);
+
+    update_time = time_util::get_time_nanoseconds() - then;
+
+    then = time_util::get_time_nanoseconds();
 
     FrameBufferHandler::instance().bind_fbo(shadow_map_.get_frame_buffer_id());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -34,6 +45,10 @@ Scene::update(screen_size_t width, screen_size_t height) {
             shadow_map_.get_frame_buffer_id()
         );
     }
+
+    shadow_render_time = time_util::get_time_nanoseconds() - then;
+
+    then = time_util::get_time_nanoseconds();
 
     FrameBufferHandler::instance().bind_fbo(
         frame_buffer_multisample_.get_frame_buffer_id()
@@ -46,6 +61,11 @@ Scene::update(screen_size_t width, screen_size_t height) {
             width, height, frame_buffer_multisample_.get_depth_buffer_name()
         );
     }
+
+    background_render_time = time_util::get_time_nanoseconds() - then;
+
+    then = time_util::get_time_nanoseconds();
+
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // mid ground
@@ -55,6 +75,11 @@ Scene::update(screen_size_t width, screen_size_t height) {
         );
     }
 
+    mid_ground_render_time = time_util::get_time_nanoseconds() - then;
+
+    then = time_util::get_time_nanoseconds();
+
+
     glClear(GL_DEPTH_BUFFER_BIT);
     // foreground
     for (const auto& render : foreground_frame_buffer_) {
@@ -62,6 +87,9 @@ Scene::update(screen_size_t width, screen_size_t height) {
             width, height, frame_buffer_multisample_.get_depth_buffer_name()
         );
     }
+
+    foreground_render_time = time_util::get_time_nanoseconds() - then;
+
 }
 
 } // namespace gui

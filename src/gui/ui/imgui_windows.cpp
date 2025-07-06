@@ -54,7 +54,7 @@ void
 display_windows::display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
     glm::vec3 light_direction = helio->get_light_direction();
 
-    ImGui::Begin("Scene Data", &show);
+    ImGui::Begin("Environment Data", &show);
 
     bool& manual_light_direction = helio->control_lighting();
     ImGui::Checkbox("Manually set light direction", &manual_light_direction);
@@ -86,5 +86,21 @@ display_windows::display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
 
     ImGui::End();
 }
+
+void
+display_windows::display_data(const gui::Scene& scene, bool& show) {
+    ImGui::Begin("Render Time Data", &show);
+
+    ImGui::Text("Queue Time: %ld", static_cast<int64_t>(scene.get_queue_time().count()));
+    ImGui::Text("Update Time: %ld", static_cast<int64_t>(scene.get_update_time().count()));
+    ImGui::Text("Shadow Render Time: %ld", static_cast<int64_t>(scene.get_shadow_render_time().count()));
+    ImGui::Text("Background Render Time: %ld", static_cast<int64_t>(scene.get_background_render_time().count()));
+    ImGui::Text("Mid Ground Render Time: %ld", static_cast<int64_t>(scene.get_mid_ground_render_time().count()));
+    ImGui::Text("Foreground Render Time: %ld", static_cast<int64_t>(scene.get_foreground_render_time().count()));
+
+    ImGui::End();
+
+}
+
 
 } // namespace gui

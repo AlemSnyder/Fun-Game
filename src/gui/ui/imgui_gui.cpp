@@ -69,6 +69,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     bool show_another_window = false;
     bool show_light_controls = false;
     bool show_shadow_map = false;
+    bool show_render_timing = false;
 
     shader::ShaderHandler shader_handler;
 
@@ -141,6 +142,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             ImGui::Checkbox("Another Window", &show_another_window);
             ImGui::Checkbox("Show Light Controls", &show_light_controls);
             ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
+            ImGui::Checkbox("Show Render Times", &show_render_timing);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
@@ -168,6 +170,13 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 main_scene.get_lighting_environment(), show_light_controls
             );
         }
+
+        if (show_render_timing) {
+            display_windows::display_data(
+                main_scene, show_render_timing
+            );
+        }
+
 
         display_windows::display_data(shader_handler.get_programs());
 

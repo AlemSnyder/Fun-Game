@@ -30,6 +30,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <chrono>
+
 #define SAMPLES 4
 
 namespace gui {
@@ -58,6 +60,13 @@ class Scene {
     std::vector<std::shared_ptr<render_to::FrameBuffer>> mid_ground_shadow_;
 
     // other
+
+    std::chrono::nanoseconds queue_time;
+    std::chrono::nanoseconds update_time;
+    std::chrono::nanoseconds shadow_render_time;
+    std::chrono::nanoseconds background_render_time;
+    std::chrono::nanoseconds mid_ground_render_time;
+    std::chrono::nanoseconds foreground_render_time;
 
  public:
     /**
@@ -263,6 +272,37 @@ class Scene {
             GL_COLOR_BUFFER_BIT, GL_NEAREST           // copy the color
         );
     }
+
+    [[nodiscard]] inline std::chrono::nanoseconds
+    get_queue_time() const {
+        return queue_time; 
+    }
+
+    [[nodiscard]] inline std::chrono::nanoseconds
+    get_update_time() const {
+        return update_time; 
+    }
+
+    [[nodiscard]] inline std::chrono::nanoseconds
+    get_shadow_render_time() const {
+        return shadow_render_time; 
+    }
+
+    [[nodiscard]] inline std::chrono::nanoseconds
+    get_background_render_time() const {
+        return background_render_time; 
+    }
+
+    [[nodiscard]] inline std::chrono::nanoseconds
+    get_mid_ground_render_time() const {
+        return mid_ground_render_time; 
+    }
+
+    [[nodiscard]] inline std::chrono::nanoseconds
+    get_foreground_render_time() const {
+        return foreground_render_time; 
+    }
+
 };
 
 } // namespace gui
