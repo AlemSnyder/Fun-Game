@@ -18,6 +18,11 @@ class EntityInstance : public virtual ObjectInstance {
     std::weak_ptr<Entity> entity_type_;
 
     size_t data_position_; // like a id
+
+    glm::vec3 position_;
+
+    void set_position(glm::vec3 position);
+
  public:
     EntityInstance(std::shared_ptr<Entity> entity_type);
 
@@ -57,6 +62,8 @@ class Entity : public virtual Object {
 
     std::vector<glm::mat4> local_positions_;
 
+    bool has_ai_;
+
  public:
     Entity(const Mesh& mesh);
 
@@ -79,6 +86,21 @@ class Entity : public virtual Object {
     virtual void init_render(render_programs_t& programs) const override;
 
     virtual void update() override;
+
+    [[nodiscard]] inline virtual const std::string&
+    get_name() const {
+        return name_;
+    }
+
+    [[nodiscard]] inline virtual size_t
+    num_models() const {
+        return 1;
+    }
+
+    [[nodiscard]] inline virtual bool
+    has_ai() const {
+        return has_ai_;
+    }
 
  private:
     inline size_t

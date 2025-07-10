@@ -61,6 +61,9 @@ class Object {
 
     virtual std::string identification() const = 0;
 
+    virtual const std::string& get_name() const = 0;
+    virtual size_t num_models() const = 0;
+
     // one for each mesh
     //    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
     //    renderable_data() const = 0;

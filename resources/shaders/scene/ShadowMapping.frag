@@ -59,7 +59,7 @@ main() {
     float visibility = 1.0;
 
     // TODO Fixed bias
-    float bias = 0.005 * cosTheta;
+    float bias = 0; //0.005 * cosTheta;
 
     // Sample the shadow map 4 times
     for (int i = 0; i < 4; i++) {
