@@ -12,9 +12,11 @@ namespace world {
 namespace entity {
 
 Entity::Entity(const Mesh& mesh) :
-    mesh_and_positions_(std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
-        mesh, std::vector<glm::mat4>()
-    )) {
+    mesh_and_positions_(
+        std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
+            mesh, std::vector<glm::mat4>()
+        )
+    ) {
     LOG_WARNING(
         logging::main_logger,
         "Entity constructor Entity(const Mesh& mesh) is depreciated!"
@@ -23,9 +25,7 @@ Entity::Entity(const Mesh& mesh) :
 
 Entity::Entity(
     const object_t& object_data, const manifest::descriptor_t& identification_data
-) :
-    name_(object_data.name),
-    identification_(identification_data.identification) {
+) : name_(object_data.name), identification_(identification_data.identification) {
     const auto& model_data = object_data.models[0];
     // read mesh from path
     std::filesystem::path object_path_copy = identification_data.path;
@@ -102,9 +102,31 @@ EntityInstance::update() {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         if (entity_type->has_ai()) {
             LocalContext& local_context = LocalContext::instance();
-            sol::state& lua = local_context.get_lua_state();
-            sol::protected_function update_function =
-                lua[entity_type->identification_]["update"];
+            std::optional<sol::object> update_function_query =
+                local_context.get_from_lua(entity_type->identification_ + "\\update");
+            if (!update_function_query) {
+                LOG_ERROR(
+                    logging::lua_logger,
+                    "Could not find Update function for entity {}.",
+                    entity_type->identification()
+                );
+                return;
+            } else if (!update_function_query->is<sol::protected_function>()) {
+                LOG_ERROR(
+                    logging::lua_logger, "Update is not a function for entity {}.",
+                    entity_type->identification()
+                );
+                return;
+            }
+
+            sol::protected_function update_function = update_function_query.value();
+            if (!update_function.valid()) {
+                LOG_ERROR(
+                    logging::lua_logger, "Update function for entity {} not valid.",
+                    entity_type->identification()
+                );
+                return;
+            }
             sol::protected_function_result result = update_function();
 
             if (!result.valid()) {
@@ -121,9 +143,8 @@ EntityInstance::update() {
             position.x = vector_table["x"];
             position.y = vector_table["y"];
             position.z = vector_table["z"];
-            glm::mat4 transformation(1.0);
 
-            update(glm::translate(transformation, position));
+            set_position(position);
         }
     }
 }
@@ -146,11 +167,20 @@ EntityInstance::destroy() {
 glm::vec3
 EntityInstance::get_position() const {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
-        // entity_type->;
-        return {1, 1, 1};
+        return position_;
     }
 
     return {0, 0, 0};
+}
+
+void
+EntityInstance::set_position(glm::vec3 position) {
+    if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
+        position_ = position;
+        glm::mat4 transformation(1.0);
+        glm::mat4 data = glm::translate(transformation, position);
+        entity_type->assign(data_position_, data);
+    }
 }
 
 std::shared_ptr<Object>

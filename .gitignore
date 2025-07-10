@@ -48,6 +48,9 @@
 # Built Visual Studio Code Extensions
 *.vsix
 
+# Vim cashe
+.cache/*
+
 # imgui file
 *.ini
 
