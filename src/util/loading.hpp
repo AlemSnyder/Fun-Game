@@ -82,14 +82,18 @@ load_manifest_test() {
         }
         if (manifest.biomes.has_value()) {
             for (manifest::descriptor_t& biome : *manifest.biomes) {
-                auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
-                    files::get_data_path() / biome.path
-                );
+                auto biome_data =
+                    files::read_json_from_file<terrain::generation::biome_data_t>(
+                        files::get_data_path() / biome.path
+                    );
                 if (!biome_data.has_value()) {
                     continue;
                 }
 
-                context.load_script_file(files::get_data_path() / biome.path.remove_filename() / biome_data->map_generator_path);
+                context.load_script_file(
+                    files::get_data_path() / biome.path.remove_filename()
+                    / biome_data->map_generator_path
+                );
             }
         }
     }

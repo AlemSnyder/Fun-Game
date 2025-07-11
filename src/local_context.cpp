@@ -156,7 +156,7 @@ LocalContext::load_into_this_lua_state(const std::string& command) {
 #if DEBUG()
     if (object_this_state.is<sol::table>()) {
         sol::table table_copy = object_this_state;
-        
+
         for (auto& [key, value] : table_copy) {
             LOG_DEBUG(logging::lua_logger, "key: {}", key.as<std::string>());
         }

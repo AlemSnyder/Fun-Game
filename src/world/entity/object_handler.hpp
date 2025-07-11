@@ -74,7 +74,7 @@ class ObjectHandler {
 
     /**
      * @brief Load new object from path.
-     * 
+     *
      * @param manifest::descriptor_t object description
      */
     template <bool opengl = true>
@@ -139,7 +139,7 @@ class ObjectHandler {
 
     /**
      * @brief Load new biome from file
-     * 
+     *
      * @param manifest::descriptor_t biome description
      */
     void read_biome(const manifest::descriptor_t& biome_descriptor);

@@ -12,11 +12,9 @@ namespace world {
 namespace entity {
 
 Entity::Entity(const Mesh& mesh) :
-    mesh_and_positions_(
-        std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
-            mesh, std::vector<glm::mat4>()
-        )
-    ) {
+    mesh_and_positions_(std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
+        mesh, std::vector<glm::mat4>()
+    )) {
     LOG_WARNING(
         logging::main_logger,
         "Entity constructor Entity(const Mesh& mesh) is depreciated!"
@@ -25,7 +23,9 @@ Entity::Entity(const Mesh& mesh) :
 
 Entity::Entity(
     const object_t& object_data, const manifest::descriptor_t& identification_data
-) : name_(object_data.name), identification_(identification_data.identification) {
+) :
+    name_(object_data.name),
+    identification_(identification_data.identification) {
     const auto& model_data = object_data.models[0];
     // read mesh from path
     std::filesystem::path object_path_copy = identification_data.path;

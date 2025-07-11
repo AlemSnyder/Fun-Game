@@ -6,8 +6,7 @@ namespace terrain {
 
 namespace generation {
 
-void
-init_lua_interface(sol::state& lua);
+void init_lua_interface(sol::state& lua);
 
 } // namespace generation
 
