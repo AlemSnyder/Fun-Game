@@ -1,7 +1,7 @@
 #include "input.hpp"
 
-#include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/imgui.h>
 
 namespace gui {
 
@@ -26,7 +26,9 @@ InputHandler::set_window(GLFWwindow* window) {
 
 void
 InputHandler::forward_inputs_to(std::shared_ptr<Inputs> forward_to) {
-    assert(window_ != nullptr && "Window must be set befor you can forward things from it.");
+    assert(
+        window_ != nullptr && "Window must be set befor you can forward things from it."
+    );
 
     if (forward_inputs_) {
         forward_inputs_->cleanup(window_);
@@ -43,13 +45,8 @@ InputHandler::forward_inputs_to(std::shared_ptr<Inputs> forward_to) {
 
 bool
 InputHandler::imgui_capture() {
-//#ifdef DEBUG() // might want to add this idk
     ImGuiIO& io = ImGui::GetIO();
-    if (io.WantCaptureKeyboard || io.WantCaptureKeyboard || io.WantCaptureMouse) {
-        return true;
-    }
-//#endif
-    return false;
+    return (io.WantCaptureKeyboard || io.WantCaptureMouse || io.WantTextInput);
 }
 
 // after the sixth function I began to ask my self "Is this to many pointer
@@ -66,6 +63,7 @@ InputHandler::handle_key_event(
     if (imgui_capture()) {
         return;
     }
+    // always forward escape to the global InputHandler
     if (key == GLFW_KEY_ESCAPE) {
         if (action == GLFW_PRESS) {
             escape_pressed_ = true;
@@ -73,9 +71,7 @@ InputHandler::handle_key_event(
             escape_pressed_ = false;
         }
     }
-    forward_inputs_->handle_key_event_input(
-        window, key, scancode, action, mods
-    );
+    forward_inputs_->handle_key_event_input(window, key, scancode, action, mods);
 }
 
 void
@@ -109,9 +105,7 @@ InputHandler::handle_mouse_button(
     if (imgui_capture()) {
         return;
     }
-    forward_inputs_->handle_mouse_button_input(
-        window, button, action, mods
-    );
+    forward_inputs_->handle_mouse_button_input(window, button, action, mods);
 }
 
 void
@@ -146,6 +140,6 @@ InputHandler::handle_pooled_inputs(GLFWwindow* window) {
     forward_inputs_->handle_pooled_inputs(window);
 }
 
-}
+} // namespace scene
 
-}
+} // namespace gui

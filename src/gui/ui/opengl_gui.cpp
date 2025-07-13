@@ -59,7 +59,7 @@ opengl_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
-        controller->handle_pooled_inputs(window);
+        scene::InputHandler::handle_pooled_inputs(window);
 
     } // Check if the ESC key was pressed or the window was closed
     while (!scene::InputHandler::escape() && glfwWindowShouldClose(window) == 0);

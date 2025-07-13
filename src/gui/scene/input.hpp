@@ -9,7 +9,6 @@ class GlobalContext;
 
 namespace gui {
 
-
 namespace scene {
 
 class Inputs {
@@ -17,7 +16,8 @@ class Inputs {
     void
     handle_key_event_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int key,
-        [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods
+        [[maybe_unused]] int scancode, [[maybe_unused]] int action,
+        [[maybe_unused]] int mods
     ) {}
 
     /**
@@ -28,8 +28,9 @@ class Inputs {
      */
 
     virtual void
-    handle_text_input_input([[maybe_unused]] GLFWwindow* window,
-        [[maybe_unused]] unsigned int codepoint) {}
+    handle_text_input_input(
+        [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] unsigned int codepoint
+    ) {}
 
     /**
      * @brief Handle mouse movement events.
@@ -39,8 +40,10 @@ class Inputs {
      * @param double ypos y position in window coordinates.
      */
     virtual void
-    handle_mouse_event_input([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xpos,
-        [[maybe_unused]] double ypos) {}
+    handle_mouse_event_input(
+        [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xpos,
+        [[maybe_unused]] double ypos
+    ) {}
 
     /**
      * @brief Handle mouse enter window events
@@ -49,7 +52,9 @@ class Inputs {
      * @param int entered 1 if the curser entered the window, 0 if it exited.
      */
     virtual void
-    handle_mouse_enter_input([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int entered) {}
+    handle_mouse_enter_input(
+        [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int entered
+    ) {}
 
     /**
      * @brief Handle mouse enter window events
@@ -60,9 +65,10 @@ class Inputs {
      * @param int mods
      */
     virtual void
-    handle_mouse_button_input([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int button,
-        [[maybe_unused]] int action, [[maybe_unused]] int mods)
-     {}
+    handle_mouse_button_input(
+        [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int button,
+        [[maybe_unused]] int action, [[maybe_unused]] int mods
+    ) {}
 
     /**
      * @brief Handle mouse scroll events
@@ -72,9 +78,10 @@ class Inputs {
      * @param double yoffset y offset (usually 0)
      */
     virtual void
-    handle_mouse_scroll_input([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset,
-        [[maybe_unused]] double yoffset)
-     {}
+    handle_mouse_scroll_input(
+        [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset,
+        [[maybe_unused]] double yoffset
+    ) {}
 
     /**
      * @brief Handle joystick event
@@ -93,8 +100,10 @@ class Inputs {
      * @param const char** paths file paths
      */
     virtual void
-    handle_file_drop_input([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int count,
-        [[maybe_unused]] const char** paths) {}
+    handle_file_drop_input(
+        [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int count,
+        [[maybe_unused]] const char** paths
+    ) {}
 
     /**
      * @brief Handle all pooled inputs
@@ -142,8 +151,6 @@ class InputHandler {
     static void handle_joystick(int jid, int event);
     static void handle_file_drop(GLFWwindow* window, int count, const char** paths);
 
-    static void handle_pooled_inputs(GLFWwindow* window);
-
     static bool imgui_capture();
 
     // inline InputHandler() : window_(0);
@@ -158,7 +165,10 @@ class InputHandler {
 
     static void forward_inputs_to(std::shared_ptr<Inputs> forward_to);
 
-    inline static bool escape() {
+    static void handle_pooled_inputs(GLFWwindow* window);
+
+    inline static bool
+    escape() {
         return escape_pressed_;
     }
 
@@ -176,6 +186,6 @@ class InputHandler {
 // define mouse scroll handler
 // define an update that moves the position even if there is no call back
 
-} // namespace controls
+} // namespace scene
 
-}
+} // namespace gui

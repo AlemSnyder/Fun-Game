@@ -103,7 +103,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // Generally you may always pass all inputs to dear imgui, and hide them from
         // your application based on those two flags.
         glfwPollEvents();
-        controller->handle_pooled_inputs(window);
+        scene::InputHandler::handle_pooled_inputs(window);
 
         if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
 #if !DEBUG()
@@ -233,15 +233,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
         }
 
-        if (controller->show_shadow_map()) {
-            show_shadow_map = true;
-        }
-
         if (show_shadow_map) {
             ImGui::Begin("Shadow Depth Texture", &show_shadow_map);
-            if (controller->show_shadow_map()) {
-                ImGui::SetWindowFocus();
-            }
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
                 ImVec2(

@@ -53,8 +53,6 @@ class Controls : public Inputs {
     float speed_; // units / second
     float mouse_speed_;
 
-    bool shadow_map_;
-
     double glfw_previous_time_;
 
  public:
@@ -112,17 +110,6 @@ class Controls : public Inputs {
     [[nodiscard]] inline glm::mat4
     get_inverse_view_projection() const {
         return glm::inverse(projection_matrix_ * view_matrix_);
-    }
-
-    /**
-     * @brief True if the shadow map should be shown
-     *
-     * @return true the shadow map should be shown
-     * @return false the shadow map should not be shown
-     */
-    [[nodiscard]] inline bool
-    show_shadow_map() const {
-        return shadow_map_;
     }
 };
 
