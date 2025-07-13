@@ -23,194 +23,109 @@
 
 #pragma once
 
+#include "input.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 #include <memory>
 
-class GlobalContext;
+namespace gui {
 
-namespace controls {
+namespace scene {
+class Controls : public Inputs {
+ protected:
+    glm::mat4 view_matrix_;
+    glm::mat4 projection_matrix_;
 
-/**
- * @brief Computes the view, and projection matrix using the size of the given
- * window
- *
- * @param window The current OpenGL window
- */
-void computeMatricesFromInputs(GLFWwindow* window);
+    int width_;
+    int height_;
+    // Initial position : on +Z
+    glm::vec3 position_;
+    // Initial horizontal angle : toward -Z
+    float horizontal_angle_;
+    // Initial vertical angle : none
+    float vertical_angle_;
+    // Initial Field of View
+    float field_of_view_;
 
-/**
- * @brief Get the view matrix
- *
- * @return glm::mat4 projection of world space to camera space
- */
-glm::mat4 get_view_matrix();
+    float speed_; // units / second
+    float mouse_speed_;
 
-/**
- * @brief Get the projection matrix
- *
- * @return glm::mat4 homographic projection of world onto view depending on the
- * FOV
- */
-glm::mat4 get_projection_matrix();
+    bool shadow_map_;
 
-/**
- * @brief Get the position vector
- *
- * @return glm::vec3 camera position in world
- */
-glm::vec3 get_position_vector();
+    double glfw_previous_time_;
 
-/**
- * @brief True if the shadow map should be shown
- *
- * @param window current window
- * @return true the shadow map should be shown
- * @return false the shadow map should not be shown
- */
-inline bool
-show_shadow_map(GLFWwindow* window) {
-    return glfwGetKey(window, GLFW_KEY_TAB);
-}
-
-class KeyEventCallback {
  public:
-    KeyEventCallback();
-    virtual ~KeyEventCallback();
+    Controls(/* key map */) :
+        width_(1), height_(1), position_(glm::vec3(80, 80, 80)),
+        horizontal_angle_(3.14), vertical_angle_(1.57), field_of_view_(45.0),
+        speed_(10), mouse_speed_(0.005) {}
 
-    virtual void
-    handle_input(GLFWwindow* window, int key, int scancode, int action, int mods) const;
-
- private:
-};
-
-// want a text input mode
-//
-
-class TextInputCallback {
- public:
-    TextInputCallback();
-    virtual ~TextInputCallback();
     /**
-     * @brief handle text input
+     * @brief Computes the view, and projection matrix using the size of the given
+     * window
      *
-     * @param GLFWwindow* window window to listen on
-     * @param unsigned int codepoint unicode 32 charicter.
+     * @param window The current OpenGL window
      */
-    virtual bool handle_input(GLFWwindow* window, unsigned int codepoint) const;
+    virtual void handle_pooled_inputs(GLFWwindow* window);
 
- private:
-};
-
-class MouseEventCallback {
- public:
-    MouseEventCallback();
-    virtual ~MouseEventCallback();
-    virtual void handle_input(GLFWwindow* window, double xpos, double ypos) const;
-};
-
-class MouseEnterCallback {
- public:
-    MouseEnterCallback();
-    virtual ~MouseEnterCallback();
-    virtual void handle_input(GLFWwindow* window, int entered) const;
-};
-
-class MouseButtonCallback {
- public:
-    MouseButtonCallback();
-    virtual ~MouseButtonCallback();
     virtual void
-    handle_input(GLFWwindow* window, int button, int action, int mods) const;
+    handle_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
+
+    virtual void setup(GLFWwindow* window);
+
+    virtual void cleanup(GLFWwindow* window);
+
+    /**
+     * @brief Get the view matrix
+     *
+     * @return glm::mat4 projection of world space to camera space
+     */
+    [[nodiscard]] inline glm::mat4
+    get_view_matrix() const {
+        return view_matrix_;
+    }
+
+    /**
+     * @brief Get the projection matrix
+     *
+     * @return glm::mat4 homographic projection of world onto view depending on the
+     * FOV
+     */
+    [[nodiscard]] inline glm::mat4
+    get_projection_matrix() const {
+        return projection_matrix_;
+    }
+
+    /**
+     * @brief Get the position vector
+     *
+     * @return glm::vec3 camera position in world
+     */
+    [[nodiscard]] inline glm::vec3
+    get_position() const {
+        return position_;
+    }
+
+    [[nodiscard]] inline glm::mat4
+    get_inverse_view_projection() const {
+        return glm::inverse(projection_matrix_ * view_matrix_);
+    }
+
+    /**
+     * @brief True if the shadow map should be shown
+     *
+     * @return true the shadow map should be shown
+     * @return false the shadow map should not be shown
+     */
+    [[nodiscard]] inline bool
+    show_shadow_map() const {
+        return shadow_map_;
+    }
 };
 
-class MouseScrollCallback {
- public:
-    MouseScrollCallback();
-    virtual ~MouseScrollCallback();
-    virtual void handle_input(GLFWwindow* window, double xoffset, double yoffset) const;
-};
+} // namespace scene
 
-class JoystickCallback {
- public:
-    JoystickCallback();
-    virtual ~JoystickCallback();
-    virtual void handle_input(int jid, int event) const;
-};
-
-class FileDropCallback {
- public:
-    virtual ~FileDropCallback();
-    virtual void handle_input(GLFWwindow* window, int count, const char** paths) const;
-};
-
-class PooledInputEvents {
- public:
-    virtual ~PooledInputEvents();
-    virtual void handle_input(GLFWwindow* windown) const;
-};
-
-class Inputs {
- protected:
-    std::string name_;
-
- public:
-    virtual std::shared_ptr<const KeyEventCallback> get_key_event_handler() const;
-    virtual std::shared_ptr<const TextInputCallback> get_text_input_handler() const;
-    virtual std::shared_ptr<const MouseEventCallback> get_mouse_event_handler() const;
-    virtual std::shared_ptr<const MouseEnterCallback> get_mouse_enter_handler() const;
-    virtual std::shared_ptr<const MouseButtonCallback> get_mouse_button_handler() const;
-    virtual std::shared_ptr<const MouseScrollCallback> get_mouse_scroll_handler() const;
-    virtual std::shared_ptr<const JoystickCallback> get_joystick_handler() const;
-    virtual std::shared_ptr<const FileDropCallback> get_file_drop_handler() const;
-
-    virtual std::shared_ptr<const PooledInputEvents> get_pooled_inputs_handler() const;
-
-    virtual void setup(GLFWwindow* window) const;
-    virtual void cleanup(GLFWwindow* window) const;
-};
-
-// how is this different from a namespace?
-class InputHandler {
-    friend GlobalContext;
-
- protected:
-    // so realistically we would have a unordered map that maps the window
-    static GLFWwindow* window_;
-    static std::shared_ptr<const Inputs> forward_inputs_;
-    static void
-    handle_key_event(GLFWwindow* window, int key, int scancode, int action, int mods);
-    static void handle_text_input(GLFWwindow* window, unsigned int codepoint);
-    static void handle_mouse_event(GLFWwindow* window, double xpos, double ypos);
-    static void handle_mouse_enter(GLFWwindow* window, int enter);
-    static void
-    handle_mouse_button(GLFWwindow* window, int button, int action, int mods);
-    static void handle_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
-    static void handle_joystick(int jid, int event);
-    static void handle_file_drop(GLFWwindow* window, int count, const char** paths);
-
-    static void handle_pooled_inputs(GLFWwindow* window);
-
-    static bool imgui_capture();
-
-    // inline InputHandler() : window_(0);
- public:
-    InputHandler(InputHandler&&) = delete;
-    InputHandler(const InputHandler&) = delete;
-    InputHandler& operator=(InputHandler&&) = delete;
-    InputHandler& operator=(const InputHandler&) = delete;
-    ~InputHandler();
-
-    static inline void set_window(GLFWwindow* window);
-
-    static void forward_inputs_to(std::shared_ptr<const Inputs> forward_to);
-
- private:
-};
-
-// want a way to send general input
-// is there anything else?
-
-} // namespace controls
+} // namespace gui

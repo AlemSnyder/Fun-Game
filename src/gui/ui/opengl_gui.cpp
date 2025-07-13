@@ -5,6 +5,7 @@
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
+#include "gui/scene/input.hpp"
 #include "logging.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
@@ -37,18 +38,20 @@ opengl_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         "Quad Renderer", files::get_resources_path() / "shaders" / "Passthrough.vert",
         files::get_resources_path() / "shaders" / "overlay" / "SimpleTexture.frag"
     );
+    std::shared_ptr<scene::Controls> controller = std::make_shared<scene::Controls>();
+    scene::InputHandler::set_window(window);
+    scene::InputHandler::forward_inputs_to(controller);
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-    Scene main_scene(mode->width, mode->height, shadow_map_size);
+    Scene main_scene(mode->width, mode->height, shadow_map_size, controller);
     setup(main_scene, shader_handler, world, climate);
 
     do {
-        controls::computeMatricesFromInputs(window);
+        //        controls::computeMatricesFromInputs(window);
         glfwGetWindowSize(window, &window_width, &window_height);
 
-        main_scene.update_light_direction();
         main_scene.update(window_width, window_width);
 
         main_scene.copy_to_window(window_width, window_height);
@@ -56,10 +59,10 @@ opengl_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
+        controller->handle_pooled_inputs(window);
 
     } // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-           && glfwWindowShouldClose(window) == 0);
+    while (!scene::InputHandler::escape() && glfwWindowShouldClose(window) == 0);
 
     glfwDestroyWindow(window);
 

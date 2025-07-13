@@ -22,6 +22,7 @@
  */
 #pragma once
 
+#include "controls.hpp"
 #include "gui/render/gpu_data/frame_buffer_multisample.hpp"
 #include "gui/render/gpu_data/shadow_map.hpp"
 #include "gui/render/graphics_shaders/render_types.hpp"
@@ -41,6 +42,7 @@ class Scene {
  private:
     gpu_data::FrameBufferMultisample frame_buffer_multisample_;
     std::shared_ptr<scene::Helio> environment_;
+    std::shared_ptr<scene::Controls> inputs_;
     gpu_data::ShadowMap shadow_map_;
 
     gpu_data::ScreenData screen_data_;
@@ -69,11 +71,27 @@ class Scene {
      */
     inline Scene(
         screen_size_t window_width, screen_size_t window_height,
-        uint32_t shadow_map_width_height
+        uint32_t shadow_map_width_height, std::shared_ptr<scene::Controls> inputs
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
-        environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)),
+        environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)), inputs_(inputs),
         shadow_map_(shadow_map_width_height, shadow_map_width_height) {}
+
+    /**
+     * @deprecated
+     */
+    [[nodiscard]] inline std::shared_ptr<scene::Controls>
+    get_inputs() {
+        return inputs_;
+    }
+
+    /**
+     * @brief Get position of camera
+     */
+    [[nodiscard]] inline glm::vec3
+    get_viewer_position() const {
+        return inputs_->get_position();
+    }
 
     /**
      * @brief Get scene shadow mat depth texture id
@@ -248,7 +266,7 @@ class Scene {
         set_shadow_light_direction(light_direction);
     }
 
-    /*
+    /**
      * @brief Copy the framebuffer to the screen.
      *
      * @details Only a screen-sized portion of this framebuffer is rendered to.

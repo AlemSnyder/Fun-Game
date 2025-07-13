@@ -21,7 +21,10 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // run all opengl calls
     context.run_opengl_queue();
 
-    shadow_map_.update();
+    update_light_direction();
+
+    shadow_map_.set_inverse_view_projection(inputs_->get_inverse_view_projection());
+    shadow_map_.update_depth_projection_matrix();
     environment_->update();
     render::PixelProjection::update(width, height);
 

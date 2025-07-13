@@ -120,10 +120,10 @@ setup(
     ///////////////////////////////////////////////////////////////////////////
 
     auto matrix_view_projection_uniform =
-        std::make_shared<render::MatrixViewProjection>();
+        std::make_shared<render::MatrixViewProjection>(scene.get_inputs());
 
     auto view_matrix_uniform =
-        std::make_shared<render::ViewMatrix>();
+        std::make_shared<render::ViewMatrix>(scene.get_inputs());
 
     auto light_depth_projection_uniform =
         std::make_shared<render::LightDepthProjection>(&scene.get_shadow_map());
@@ -150,7 +150,7 @@ setup(
         std::make_shared<render::LightDirection>(scene.get_lighting_environment());
 
     auto matrix_view_inverse_projection =
-        std::make_shared<render::MatrixViewInverseProjection>();
+        std::make_shared<render::MatrixViewInverseProjection>(scene.get_inputs());
 
     auto pixel_projection =
         std::make_shared<render::PixelProjection>();
