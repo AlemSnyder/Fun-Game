@@ -2,16 +2,16 @@
 
 #include "exceptions.hpp"
 
-#include <glaze/glaze.hpp>
-
 #include <GLFW/glfw3.h>
+
+#include <glaze/glaze.hpp>
 
 #include <string>
 #include <unordered_map>
 
 namespace gui {
 
-enum class Key : int{
+enum class Key : int {
     SPACE = GLFW_KEY_SPACE,
     APOSTROPHE = GLFW_KEY_APOSTROPHE,
     COMMA = GLFW_KEY_COMMA,
@@ -64,129 +64,130 @@ enum class Key : int{
     WORLD_2 = GLFW_KEY_WORLD_2
 };
 
-constexpr inline std::string to_string(const Key& key) {
+constexpr inline std::string
+to_string(const Key& key) {
     switch (key) {
         case Key::SPACE:
-        return "SPACE";
+            return "SPACE";
         case Key::APOSTROPHE:
-        return "APOSTROPHE";
+            return "APOSTROPHE";
         case Key::COMMA:
-        return "COMMA";
+            return "COMMA";
         case Key::MINUS:
-        return "MINUS";
+            return "MINUS";
         case Key::PERIOD:
-        return "PERIOD";
+            return "PERIOD";
         case Key::SLASH:
-        return "SLASH";
+            return "SLASH";
         case Key::KEY_0:
-        return "0";
+            return "0";
         case Key::KEY_1:
-        return "1";
+            return "1";
         case Key::KEY_2:
-        return "2";
+            return "2";
         case Key::KEY_3:
-        return "3";
+            return "3";
         case Key::KEY_4:
-        return "4";
+            return "4";
         case Key::KEY_5:
-        return "5";
+            return "5";
         case Key::KEY_6:
-        return "6";
+            return "6";
         case Key::KEY_7:
-        return "7";
+            return "7";
         case Key::KEY_8:
-        return "8";
+            return "8";
         case Key::KEY_9:
-        return "9";
+            return "9";
         case Key::SEMICOLON:
-        return "SEMICOLON";
+            return "SEMICOLON";
         case Key::EQUAL:
-        return "EQUAL";
+            return "EQUAL";
         case Key::A:
-        return "A";
+            return "A";
         case Key::B:
-        return "B";
+            return "B";
         case Key::C:
-        return "C";
+            return "C";
         case Key::D:
-        return "D";
+            return "D";
         case Key::E:
-        return "E";
+            return "E";
         case Key::F:
-        return "F";
+            return "F";
         case Key::G:
-        return "G";
+            return "G";
         case Key::H:
-        return "H";
+            return "H";
         case Key::I:
-        return "I";
+            return "I";
         case Key::J:
-        return "J";
+            return "J";
         case Key::K:
-        return "K";
+            return "K";
         case Key::L:
-        return "L";
+            return "L";
         case Key::M:
-        return "M";
+            return "M";
         case Key::N:
-        return "N";
+            return "N";
         case Key::O:
-        return "O";
+            return "O";
         case Key::P:
-        return "P";
+            return "P";
         case Key::Q:
-        return "Q";
+            return "Q";
         case Key::R:
-        return "R";
+            return "R";
         case Key::S:
-        return "S";
+            return "S";
         case Key::T:
-        return "T";
+            return "T";
         case Key::U:
-        return "U";
+            return "U";
         case Key::V:
-        return "V";
+            return "V";
         case Key::W:
-        return "W";
+            return "W";
         case Key::X:
-        return "X";
+            return "X";
         case Key::Y:
-        return "Y";
+            return "Y";
         case Key::Z:
-        return "Z";
+            return "Z";
         case Key::LEFT_BRACKET:
-        return "LEFT_BRACKET";
+            return "LEFT_BRACKET";
         case Key::BACKSLASH:
-        return "BACKSLASH";
+            return "BACKSLASH";
         case Key::RIGHT_BRACKET:
-        return "RIGHT_BRACKET";
+            return "RIGHT_BRACKET";
         case Key::GRAVE_ACCENT:
-        return "GRAVE_ACCENT";
+            return "GRAVE_ACCENT";
         case Key::WORLD_1:
-        return "WORLD_1";
+            return "WORLD_1";
         case Key::WORLD_2:
-        return "WORLD_2";
+            return "WORLD_2";
         default:
-                    throw exc::not_implemented_error("Given Key is not implemented.");
+            throw exc::not_implemented_error("Given Key is not implemented.");
     }
-
 }
-
 
 namespace scene {
 
-    enum class Action {
-        FORWARD,
-        BACKWARD,
-        LEFT,
-        RIGHT,
-        PRIMARY_INTERACT,
-        SECONDARY_INTERACT,
-        //...
-    };
+enum class Action {
+    __NO_ACTION__ = 0, // not a real action, cant be red from file
+    FORWARD,
+    BACKWARD,
+    LEFT,
+    RIGHT,
+    PRIMARY_INTERACT,
+    SECONDARY_INTERACT,
+    //...
+};
 
-constexpr inline std::string to_string(const Action& action) {
-    switch(action) {
+constexpr inline std::string
+to_string(const Action& action) {
+    switch (action) {
         case Action::FORWARD:
             return "FORWARD";
         case Action::BACKWARD:
@@ -199,29 +200,39 @@ constexpr inline std::string to_string(const Action& action) {
             return "PRIMARY_INTERACT";
         case Action::SECONDARY_INTERACT:
             return "SECONDARY_INTERACT";
-        default: 
+        default:
             throw exc::not_implemented_error("Given Action is not implemented.");
     }
 }
 
-    
-    class KeyMapping
-    {
-        private:
-        std::unordered_map<Key, Action> key_mapping_map_;
-        public:
-        KeyMapping();
-        KeyMapping(std::unordered_map<Action, Key> key_mapping_map);
+class KeyMapping {
+ private:
+    std::unordered_map<Key, Action> key_mapping_map_;
 
-        [[nodiscard]] Action operator[](Key key) const;
-    };
-}
+ public:
+    KeyMapping();
+    KeyMapping(std::unordered_map<Action, Key> key_mapping_map);
+
+    [[nodiscard]] Action operator[](Key key) const;
+};
+} // namespace scene
 
 } // namespace gui
 
 template <>
 struct glz::meta<gui::Key> {
     using enum gui::Key;
-    static constexpr auto value = enumerate(SPACE, APOSTROPHE, COMMA, MINUS, PERIOD, SLASH, KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, SEMICOLON, EQUAL, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, LEFT_BRACKET, BACKSLASH, RIGHT_BRACKET, GRAVE_ACCENT, WORLD_1, WORLD_2);
+    static constexpr auto value = enumerate(
+        SPACE, APOSTROPHE, COMMA, MINUS, PERIOD, SLASH, KEY_0, KEY_1, KEY_2, KEY_3,
+        KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, SEMICOLON, EQUAL, A, B, C, D, E, F, G,
+        H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, LEFT_BRACKET,
+        BACKSLASH, RIGHT_BRACKET, GRAVE_ACCENT, WORLD_1, WORLD_2
+    );
 };
 
+template <>
+struct glz::meta<gui::scene::Action> {
+    using enum gui::scene::Action;
+    static constexpr auto value =
+        enumerate(FORWARD, BACKWARD, LEFT, RIGHT, PRIMARY_INTERACT, SECONDARY_INTERACT);
+};
