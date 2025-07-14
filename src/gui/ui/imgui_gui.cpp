@@ -73,7 +73,15 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     glm::vec3 position;
 
     std::unordered_set<std::shared_ptr<world::entity::EntityInstance>> path_entities;
-    std::shared_ptr<scene::Controls> controller = std::make_shared<scene::Controls>();
+    auto key_map =
+        files::read_json_from_file<std::unordered_map<gui::scene::Action, gui::Key>>(
+            files::get_data_path() / "keymapping.json"
+        );
+    gui::scene::KeyMapping key_mapping = key_map.has_value()
+                                             ? gui::scene::KeyMapping(key_map.value())
+                                             : gui::scene::KeyMapping();
+    std::shared_ptr<scene::Controls> controller =
+        std::make_shared<scene::Controls>(key_mapping);
     scene::InputHandler::set_window(window);
     scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
     ));

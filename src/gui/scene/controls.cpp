@@ -57,27 +57,27 @@ Controls::handle_pooled_inputs(GLFWwindow* window) {
     // speed boost
     speed_boost = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 10.0f : 1.0f;
     // Move forward
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if (glfwGetKey(window, static_cast<int>(forward_key_)) == GLFW_PRESS) {
         position_ += direction * deltaTime * speed_ * speed_boost;
     }
     // Move backward
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if (glfwGetKey(window, static_cast<int>(backward_key_)) == GLFW_PRESS) {
         position_ -= direction * deltaTime * speed_ * speed_boost;
     }
     // Strafe right
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if (glfwGetKey(window, static_cast<int>(right_key_)) == GLFW_PRESS) {
         position_ += screen_right * deltaTime * speed_ * speed_boost;
     }
     // Strafe left
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if (glfwGetKey(window, static_cast<int>(left_key_)) == GLFW_PRESS) {
         position_ -= screen_right * deltaTime * speed_ * speed_boost;
     }
     // Strafe up
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+    if (glfwGetKey(window, static_cast<int>(up_key_)) == GLFW_PRESS) {
         position_ += screen_up * deltaTime * speed_ * speed_boost;
     }
     // Strafe down
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+    if (glfwGetKey(window, static_cast<int>(fast_key_)) == GLFW_PRESS) {
         position_ -= screen_up * deltaTime * speed_ * speed_boost;
     }
 
