@@ -145,6 +145,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
             if (scene::InputHandler::escape()) {
                 ImGui::SetWindowFocus();
+                // the lifting of the escape key will not be capture because imgui will be focused
+                scene::InputHandler::clear_escape();
             }
 
             ImGui::Text("This is some useful text."
