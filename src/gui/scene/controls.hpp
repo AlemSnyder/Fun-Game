@@ -15,9 +15,9 @@
  *
  * @author @AlemSnyder
  *
- * @brief Defines functions to get game position from inputs
+ * @brief Defines Controls class that handles any sort of user input.
  *
- * @ingroup CONTROLS
+ * @ingroup GUI SCENE
  *
  */
 
@@ -35,6 +35,10 @@
 namespace gui {
 
 namespace scene {
+
+/**
+ * @brief Defines changes to be taken because of user input
+ */
 class Controls : public Inputs {
  protected:
     // KeyMapping key_map_;
@@ -60,22 +64,34 @@ class Controls : public Inputs {
     KeyMapping key_map_;
 
  public:
+    /**
+     * @brief Construct a new Controls object
+     * 
+     * @param KeyMapping key_map map from keyboard keys to actions.
+     */
     Controls(KeyMapping key_map) :
         width_(1), height_(1), position_(glm::vec3(80, 80, 80)),
         horizontal_angle_(3.14), vertical_angle_(1.57), field_of_view_(45.0),
         speed_(10), mouse_speed_(0.005), key_map_(key_map) {}
 
     /**
-     * @brief Computes the view, and projection matrix using the size of the given
-     * window
+     * @brief Updates the scene based on all user inputs.
      *
      * @param window The current OpenGL window
      */
-    virtual void handle_pooled_inputs(GLFWwindow* window);
+    virtual void handle_pooled_inputs(GLFWwindow* window) override;
 
+    /**
+     * @brief Handle Mouse Wheel Scroll Events
+     */
     virtual void
-    handle_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
+    handle_mouse_scroll_input(GLFWwindow* window, double xoffset, double yoffset) override;
 
+    /**
+     * @brief To be called when controls are bound. (hide curser etc)
+     * 
+     * @warning Won't play nice with ImGUI
+     */
     virtual void setup(GLFWwindow* window);
 
     virtual void cleanup(GLFWwindow* window);
@@ -111,6 +127,11 @@ class Controls : public Inputs {
         return position_;
     }
 
+    /**
+     * @brief Get view inverse projection
+     * 
+     * @details Used for star projection
+     */
     [[nodiscard]] inline glm::mat4
     get_inverse_view_projection() const {
         return glm::inverse(projection_matrix_ * view_matrix_);

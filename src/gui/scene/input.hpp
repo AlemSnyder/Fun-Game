@@ -1,3 +1,25 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file input.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines Inputs and InputHandler classes
+ *
+ * @ingroup GUI SCENE
+ *
+ */
 #pragma once
 
 #include <GL/glew.h>
@@ -5,7 +27,7 @@
 
 #include <memory>
 
-class GlobalContext;
+//class GlobalContext;
 
 namespace gui {
 
@@ -13,6 +35,15 @@ namespace scene {
 
 class Inputs {
  public:
+    /**
+     * @brief Handle key input including mouse keys
+     * 
+     * @param GLFWwindow* window window event came from
+     * @param int key GLFW key enum
+     * @param int scancode GLFW scancode enum
+     * @param int action GLFW action one of GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
+     * @param int mods GLFW mods enum
+     */
     void
     handle_key_event_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int key,
@@ -130,66 +161,77 @@ class Inputs {
     cleanup([[maybe_unused]] GLFWwindow* window) {}
 };
 
-// how is this different from a namespace?
+/**
+ * @brief Class that contains static functions to bind to glfw callbacks.
+ */
 class InputHandler {
-    friend GlobalContext;
+//    friend GlobalContext;
+// somehow the plan was to only let GlobalContext set the window
 
  protected:
     // so realistically we would have a unordered map that maps the window
-    static GLFWwindow* window_;
-    static std::shared_ptr<Inputs> forward_inputs_;
-    static bool escape_pressed_;
+    // but im not making multiple windows
+    static GLFWwindow* window_; // pointer to main window
+    static std::shared_ptr<Inputs> forward_inputs_; // Inputs object to forward keyboard inputs to
+    static bool escape_pressed_;    // flag to test if the escape key has peen pressed
 
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void
     handle_key_event(GLFWwindow* window, int key, int scancode, int action, int mods);
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void handle_text_input(GLFWwindow* window, unsigned int codepoint);
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void handle_mouse_event(GLFWwindow* window, double xpos, double ypos);
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void handle_mouse_enter(GLFWwindow* window, int enter);
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void
     handle_mouse_button(GLFWwindow* window, int button, int action, int mods);
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void handle_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void handle_joystick(int jid, int event);
+    // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void handle_file_drop(GLFWwindow* window, int count, const char** paths);
 
+    // tests if the ImGui overlay wants to capture any inputs
     static bool imgui_capture();
 
     // inline InputHandler() : window_(0);
  public:
+    // force static on class methods and variables
     InputHandler(InputHandler&&) = delete;
     InputHandler(const InputHandler&) = delete;
     InputHandler& operator=(InputHandler&&) = delete;
     InputHandler& operator=(const InputHandler&) = delete;
-    ~InputHandler();
 
+    // sets window to the given window
     static void set_window(GLFWwindow* window);
 
+    /**
+     * @brief Forward user inputs to given Inputs interface
+     */
     static void forward_inputs_to(std::shared_ptr<Inputs> forward_to);
 
+    /**
+     * @brief Handle currently pressed keys
+     * 
+     * @param GLFWwindow* window window to handle events from
+     */
     static void handle_pooled_inputs(GLFWwindow* window);
 
+    // Tests if the escape key has been pressed
     inline static bool
     escape() {
         return escape_pressed_;
     }
 
+    // need because escaping moves to imgui which won't forward the release of escape
     inline static void
     clear_escape() {
         escape_pressed_ = false;
     }
-
- private:
 };
-
-// class world space controls : virtual Inputs
-// owns a bunch of glm objects describing where we are
-// owns start times for the important keys
-// constructor from maybe a file of keymaps
-// define set up, and cleanup
-// define key event
-// define mouse event (movement)
-// define mouse button handler
-// define mouse scroll handler
-// define an update that moves the position even if there is no call back
 
 } // namespace scene
 

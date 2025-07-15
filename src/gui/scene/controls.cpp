@@ -32,9 +32,9 @@ Controls::handle_pooled_inputs(GLFWwindow* window) {
     glfwSetCursorPos(window, width_ / 2, height_ / 2);
 
     // Compute new orientation
-    horizontal_angle_ -= mouse_speed_ * float(width_ / 2 - xpos);
+    horizontal_angle_ -= mouse_speed_ * float(width_ / 2 - xpos) * field_of_view_ / 45;
 
-    vertical_angle_ -= mouse_speed_ * float(height_ / 2 - ypos);
+    vertical_angle_ -= mouse_speed_ * float(height_ / 2 - ypos) * field_of_view_ / 45;
     if (vertical_angle_ < 1.6)
         vertical_angle_ = 1.6; // no going up-side-down
     if (vertical_angle_ > 4.4)
@@ -105,12 +105,17 @@ Controls::handle_pooled_inputs(GLFWwindow* window) {
 }
 
 void
-Controls::handle_mouse_scroll(
-    [[maybe_unused]] GLFWwindow* window, double xoffset, [[maybe_unused]] double yoffset
+Controls::handle_mouse_scroll_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset
 ) {
-    LOG_DEBUG(logging::opengl_logger, "Mouse scroll amount: {}", xoffset);
+    //LOG_DEBUG(logging::opengl_logger, "Mouse scroll amount: {}", yoffset);
     // set up call back to allow for scrolling to see things
-    field_of_view_ *= (10 + xoffset) / 10;
+    field_of_view_ *= (10 + yoffset) / 10;
+    if (field_of_view_ < 0.1) {
+        field_of_view_ = 0.1;
+    } else if (field_of_view_ > 60) {
+        field_of_view_ = 60;
+    } 
 }
 
 void
