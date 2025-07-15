@@ -35,6 +35,8 @@ class TileObjectInstance : public virtual ObjectInstance {
 
     uint8_t model_id_;
 
+    // should also be a uint8_t texture id
+
     std::weak_ptr<TileObject> object_type_;
 
  public:
@@ -73,6 +75,11 @@ class TileObjectInstance : public virtual ObjectInstance {
 
     virtual glm::vec3
     get_position() const {
+        return {placement_.x, placement_.y, placement_.z};
+    }
+
+    [[nodiscard]] virtual TerrainOffset3
+    get_terrain_position() const {
         return {placement_.x, placement_.y, placement_.z};
     }
 
@@ -127,7 +134,7 @@ class TileObject : public virtual Object {
      *
      * @return size_t the number of models
      */
-    [[nodiscard]] size_t num_models() const noexcept;
+    [[nodiscard]] virtual size_t num_models() const noexcept;
 
     /**
      * @brief Iterator to first model
@@ -156,9 +163,14 @@ class TileObject : public virtual Object {
      */
     virtual void update();
 
-    virtual std::string
+    [[nodiscard]] inline virtual std::string
     identification() const {
         return identification_;
+    }
+
+    [[nodiscard]] inline virtual const std::string&
+    get_name() const {
+        return name_;
     }
 
     virtual void init_render(render_programs_t& programs) const override;
