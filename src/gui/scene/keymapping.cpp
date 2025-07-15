@@ -8,16 +8,16 @@ namespace gui {
 
 namespace scene {
 
-KeyMapping::KeyMapping() : key_mapping_map_() {
+KeyMapping::KeyMapping() {
     // TODO redo this when interent
-    key_mapping_map_.insert_or_assign(Action::FORWARD, Key::W);
-    key_mapping_map_.insert_or_assign(Action::LEFT, Key::A);
-    key_mapping_map_.insert_or_assign(Action::BACKWARD, Key::S);
-    key_mapping_map_.insert_or_assign(Action::RIGHT, Key::D);
-    key_mapping_map_.insert_or_assign(Action::PRIMARY_INTERACT, Key::MOUSE_LEFT);
-    key_mapping_map_.insert_or_assign(Action::SECONDARY_INTERACT, Key::MOUSE_RIGHT);
-    key_mapping_map_.insert_or_assign(Action::UP, Key::SPACE);
-    key_mapping_map_.insert_or_assign(Action::FAST, Key::LEFT_SHIFT);
+    array_map_[Action::FORWARD] = Key::W;
+    array_map_[Action::LEFT] = Key::A;
+    array_map_[Action::BACKWARD] = Key::S;
+    array_map_[Action::RIGHT] = Key::D;
+    array_map_[Action::PRIMARY_INTERACT] = Key::MOUSE_LEFT;
+    array_map_[Action::SECONDARY_INTERACT] = Key::MOUSE_RIGHT;
+    array_map_[Action::UP] = Key::SPACE;
+    array_map_[Action::FAST] = Key::LEFT_SHIFT;
 }
 
 KeyMapping::KeyMapping(std::unordered_map<Action, Key> key_mapping_map) : KeyMapping() {
@@ -26,18 +26,20 @@ KeyMapping::KeyMapping(std::unordered_map<Action, Key> key_mapping_map) : KeyMap
 
     // all actions must be unique
 
-    auto temp_map = key_mapping_map_;
+    auto temp_map = array_map_;
 
     // all actions must be covered
     // all actions are already covered
     for (const auto& [a, k] : key_mapping_map) {
-        temp_map.insert_or_assign(a, k);
+        temp_map[a] = k;
     }
 
     bool remapping_ok = true;
 
     std::unordered_map<Key, Action> keys_mapped;
-    for (const auto& [a, k] : temp_map) {
+    for (Action a = Action::FORWARD; a < Action::__NO_ACTION__;
+         a = static_cast<Action>(a + 1)) {
+        const auto k = temp_map[a];
         auto result = keys_mapped.insert(std::make_pair(k, a));
         if (!result.second) {
             LOG_ERROR(
@@ -51,7 +53,7 @@ KeyMapping::KeyMapping(std::unordered_map<Action, Key> key_mapping_map) : KeyMap
     }
 
     if (remapping_ok) {
-        key_mapping_map_ = temp_map;
+        array_map_ = temp_map;
     } else {
         LOG_ERROR(logging::main_logger, "Remapping not set because of errors.");
     }
@@ -59,9 +61,8 @@ KeyMapping::KeyMapping(std::unordered_map<Action, Key> key_mapping_map) : KeyMap
 
 Key
 KeyMapping::operator[](Action action) const {
-    const auto& iterator = key_mapping_map_.find(action);
-    if (iterator != key_mapping_map_.end()) {
-        return iterator->second;
+    if (action < Action::__NO_ACTION__) {
+        return array_map_[action];
     } else {
         return Key::NOT_BOUND;
     }

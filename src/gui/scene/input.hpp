@@ -171,7 +171,7 @@ class InputHandler {
     escape() {
         return escape_pressed_;
     }
-    
+
     inline static void
     clear_escape() {
         escape_pressed_ = false;

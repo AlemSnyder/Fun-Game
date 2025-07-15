@@ -6,20 +6,21 @@
 
 #include <glaze/glaze.hpp>
 
+#include <array>
 #include <string>
 #include <unordered_map>
 
 namespace gui {
 
 enum class Key : int {
-    MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT,     //      GLFW_MOUSE_BUTTON_1
-    MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,   //     GLFW_MOUSE_BUTTON_2
-    MOUSE_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE, //    GLFW_MOUSE_BUTTON_3
-    MOUSE_4 = GLFW_MOUSE_BUTTON_4,           //         3
-    MOUSE_5 = GLFW_MOUSE_BUTTON_5,           //         4
-    MOUSE_6 = GLFW_MOUSE_BUTTON_6,           //         5
-    MOUSE_7 = GLFW_MOUSE_BUTTON_7,           //         6
-    MOUSE_8 = GLFW_MOUSE_BUTTON_8,           //         7
+    MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT,     // GLFW_MOUSE_BUTTON_1
+    MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,   // GLFW_MOUSE_BUTTON_2
+    MOUSE_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE, // GLFW_MOUSE_BUTTON_3
+    MOUSE_4 = GLFW_MOUSE_BUTTON_4,           // 3
+    MOUSE_5 = GLFW_MOUSE_BUTTON_5,           // 4
+    MOUSE_6 = GLFW_MOUSE_BUTTON_6,           // 5
+    MOUSE_7 = GLFW_MOUSE_BUTTON_7,           // 6
+    MOUSE_8 = GLFW_MOUSE_BUTTON_8,           // 7
     //    MOUSE_LAST = GLFW_MOUSE_BUTTON_LAST, //      GLFW_MOUSE_BUTTON_8
 
     SPACE = GLFW_KEY_SPACE,
@@ -416,8 +417,7 @@ to_string(const Key& key) {
 
 namespace scene {
 
-enum class Action {
-    __NO_ACTION__ = 0, // not a real action, cant be red from file
+enum Action : int {
     FORWARD,
     BACKWARD,
     LEFT,
@@ -425,8 +425,10 @@ enum class Action {
     PRIMARY_INTERACT,
     SECONDARY_INTERACT,
     UP,
+    DOWN,
     FAST,
     //...
+    __NO_ACTION__, // not a real action, cant be red from file
 };
 
 constexpr inline std::string
@@ -446,6 +448,8 @@ to_string(const Action& action) {
             return "SECONDARY_INTERACT";
         case Action::UP:
             return "UP";
+        case Action::DOWN:
+            return "DOWN";
         case Action::FAST:
             return "FAST";
         default:
@@ -455,7 +459,7 @@ to_string(const Action& action) {
 
 class KeyMapping {
  private:
-    std::unordered_map<Action, Key> key_mapping_map_;
+    std::array<Key, Action::__NO_ACTION__> array_map_;
 
  public:
     KeyMapping();

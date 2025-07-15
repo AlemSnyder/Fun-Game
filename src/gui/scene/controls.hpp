@@ -57,25 +57,13 @@ class Controls : public Inputs {
 
     double glfw_previous_time_;
 
-    Key forward_key_;
-    Key backward_key_;
-    Key left_key_;
-    Key right_key_;
-    Key primary_interact_key_;
-    Key secondary_interact_key_;
-    Key up_key_;
-    Key fast_key_;
+    KeyMapping key_map_;
 
  public:
     Controls(KeyMapping key_map) :
         width_(1), height_(1), position_(glm::vec3(80, 80, 80)),
         horizontal_angle_(3.14), vertical_angle_(1.57), field_of_view_(45.0),
-        speed_(10), mouse_speed_(0.005), forward_key_(key_map[Action::FORWARD]),
-        backward_key_(key_map[Action::BACKWARD]), left_key_(key_map[Action::LEFT]),
-        right_key_(key_map[Action::RIGHT]),
-        primary_interact_key_(key_map[Action::PRIMARY_INTERACT]),
-        secondary_interact_key_(key_map[Action::SECONDARY_INTERACT]),
-        up_key_(key_map[Action::UP]), fast_key_(key_map[Action::FAST]) {}
+        speed_(10), mouse_speed_(0.005), key_map_(key_map) {}
 
     /**
      * @brief Computes the view, and projection matrix using the size of the given
