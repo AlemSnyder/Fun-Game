@@ -42,7 +42,7 @@ revised_gui_test() {
     GLFWwindow* window = opt_window.value();
     setup_opengl_logging();
 
-    controls::computeMatricesFromInputs(window);
+    std::shared_ptr<scene::Controls> controls;
 
     shader::ShaderHandler shader_handler;
 
@@ -76,7 +76,7 @@ revised_gui_test() {
     pixel_projection->update(window_width, window_height);
 
     auto matrix_view_inverse_projection =
-        std::make_shared<render::MatrixViewInverseProjection>();
+        std::make_shared<render::MatrixViewInverseProjection>(controls);
 
     auto light_direction_uniform =
         std::make_shared<render::LightDirection>(lighting_environment);
@@ -244,7 +244,7 @@ stars_test() {
     GLFWwindow* window = opt_window.value();
     setup_opengl_logging();
 
-    controls::computeMatricesFromInputs(window);
+    std::shared_ptr<scene::Controls> controls;
 
     shader::ShaderHandler shader_handler;
 
@@ -278,7 +278,7 @@ stars_test() {
     pixel_projection->update(window_width, window_height);
 
     auto matrix_view_inverse_projection =
-        std::make_shared<render::MatrixViewInverseProjection>();
+        std::make_shared<render::MatrixViewInverseProjection>(controls);
 
     auto light_direction_uniform =
         std::make_shared<render::LightDirection>(lighting_environment);
@@ -287,7 +287,7 @@ stars_test() {
         std::make_shared<render::SpectralLight>(lighting_environment);
 
     auto matrix_view_projection_uniform =
-        std::make_shared<render::MatrixViewProjection>();
+        std::make_shared<render::MatrixViewProjection>(controls);
 
     auto star_rotation_uniform =
         std::make_shared<render::StarRotationUniform>(lighting_environment);

@@ -89,7 +89,11 @@ GlobalContext::get_from_lua(const std::string& command) {
 
 void
 GlobalContext::load_script_file(const std::filesystem::path& path) {
-    auto result = lua_.safe_script_file(path);
+    if (!std::filesystem::exists(path)) {
+        LOG_WARNING(logging::file_io_logger, "File {} does not exists.", path);
+        return;
+    }
+    auto result = lua_.safe_script_file(path.lexically_normal().string());
 
     if (!result.valid()) {
         sol::error err = result; // who designed this?

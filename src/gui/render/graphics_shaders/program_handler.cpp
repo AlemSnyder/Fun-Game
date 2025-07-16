@@ -219,14 +219,10 @@ Program::attach_uniforms() {
         std::string str_name(name);
 
         if (type >= static_cast<GLenum>(gpu_data::GPUDataType::NUM_TYPES)) {
-            LOG_WARNING(
-                logging::opengl_logger,
-                "Uniform type id: {} ivalid.", type
-            );
+            LOG_WARNING(logging::opengl_logger, "Uniform type id: {} ivalid.", type);
         }
 
-        gpu_data::GPUDataType enum_type =
-            static_cast<gpu_data::GPUDataType>(type);
+        gpu_data::GPUDataType enum_type = static_cast<gpu_data::GPUDataType>(type);
         // this probably won't fail
 
         LOG_INFO(
@@ -260,14 +256,17 @@ Program::set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_n
         if (given_type != found_type) {
             LOG_WARNING(
                 logging::opengl_logger,
-                "Uniform types do not match. Given {} to uniform of type {}.",
-                gpu_data::to_string(given_type), gpu_data::to_string(found_type)
+                "Uniform types do not match. Uniform {} given {} but has type {}.",
+                uniform_name, gpu_data::to_string(given_type),
+                gpu_data::to_string(found_type)
             );
         }
     } else {
         LOG_WARNING(
             logging::opengl_logger,
-            "Uniform Error. Uniform \"{}\" not found in program.", uniform_name.c_str()
+            "The Uniform given \"{}\" does not match the name of any uniform found in "
+            "program \"{}\".",
+            uniform_name, name_
         );
     }
 }

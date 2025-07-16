@@ -38,6 +38,7 @@ graphics_main(const argh::parser& cmdl) {
         return 1;
     }
     GLFWwindow* window = opt_window.value();
+    // check documentation. do options of null evaluate to false?
     gui::setup_opengl_logging();
 
     GLuint VertexArrayID;

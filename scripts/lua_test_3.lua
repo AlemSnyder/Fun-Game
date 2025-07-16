@@ -9,32 +9,31 @@
 spacing = 2
 
 function map(number)
-    result = {}
-    result.x = number
-    result.y = number
-    result["map"] = {}
+	local result = {}
+	result.x = number
+	result.y = number
+	result["map"] = {}
 
-    noise = AlternativeWorleyNoise:new(64, 0.5, 64)
+	local noise = AlternativeWorleyNoise:new(64, 0.5, 64)
 
-    for x = 0, number-1 do
-        for y = 0, number-1 do
-            -- sample noise and set a value
-            height = noise:sample(x * spacing, y * spacing)
-            -- each value must be integers. math.floor changes doubles to ints
+	for x = 0, number - 1 do
+		for y = 0, number - 1 do
+			-- sample noise and set a value
+			local height = noise:sample(x * spacing, y * spacing)
+			-- each value must be integers. math.floor changes doubles to ints
 
-            if height <= 0 then
-                height_map_value = 1
-            else
-                height_map_value = 255
-            end
+			local height_map_value = 0
+			if height <= 0 then
+				height_map_value = 1
+			else
+				height_map_value = 255
+			end
 
-            -- assign tile type to index in map
-            result["map"][x * number + y] = height_map_value
-        end
-    end
-    return result
+			-- assign tile type to index in map
+			result["map"][x * number + y] = height_map_value
+		end
+	end
+	return result
 end
-
-
 
 --return result

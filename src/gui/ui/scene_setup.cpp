@@ -67,6 +67,12 @@ setup(
         files::get_resources_path() / "shaders" / "scene" / "TileEntity.frag"
     );
 
+    shader::Program& tile_entity_shadow_program = shader_handler.load_program(
+        "Tile Entity Render",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTTEntity.vert",
+        files::get_resources_path() / "shaders" / "scene" / "DepthRTT.frag"
+    );
+
     // Renders the objects (trees)
     shader::Program& object_render_program = shader_handler.load_program(
         "Instanced Render",
@@ -114,10 +120,10 @@ setup(
     ///////////////////////////////////////////////////////////////////////////
 
     auto matrix_view_projection_uniform =
-        std::make_shared<render::MatrixViewProjection>();
+        std::make_shared<render::MatrixViewProjection>(scene.get_inputs());
 
     auto view_matrix_uniform =
-        std::make_shared<render::ViewMatrix>();
+        std::make_shared<render::ViewMatrix>(scene.get_inputs());
 
     auto light_depth_projection_uniform =
         std::make_shared<render::LightDepthProjection>(&scene.get_shadow_map());
@@ -144,7 +150,7 @@ setup(
         std::make_shared<render::LightDirection>(scene.get_lighting_environment());
 
     auto matrix_view_inverse_projection =
-        std::make_shared<render::MatrixViewInverseProjection>();
+        std::make_shared<render::MatrixViewInverseProjection>(scene.get_inputs());
 
     auto pixel_projection =
         std::make_shared<render::PixelProjection>();
@@ -186,6 +192,17 @@ setup(
     object_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
 
     object_shadow_program.set_uniform(light_depth_projection_uniform, "depth_MVP");
+
+    entity_render_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    // these will be added back when a more complete entity graphics program is written
+    // entity_render_program.set_uniform(view_matrix_uniform, "view_matrix");
+    // entity_render_program.set_uniform(light_direction_uniform, "light_direction");
+    // entity_render_program.set_uniform(light_depth_texture_projection_uniform, "depth_texture_projection");
+    // entity_render_program.set_uniform(shadow_texture_uniform, "shadow_texture");
+    // entity_render_program.set_uniform(material_color_texture_uniform, "material_color_texture");
+    // entity_render_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
+    // entity_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
+
 
     sky_program.set_uniform(matrix_view_inverse_projection, "MVIP");
     sky_program.set_uniform(light_direction_uniform, "light_direction");
@@ -241,8 +258,12 @@ setup(
         object_render_program, chunk_render_setup
     );
 
-    auto entity_shadow_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+    auto object_shadow_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
         object_shadow_program, chunk_render_setup
+    );
+
+    auto tile_entity_shadow_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
+        tile_entity_shadow_program, chunk_render_setup
     );
 
     auto tile_entity_render_pipeline = std::make_shared<shader::ShaderProgram_ElementsInstanced>(
@@ -301,10 +322,11 @@ setup(
 
     // attach program to scene
     scene.shadow_attach(chunks_shadow_pipeline);
-    scene.shadow_attach(entity_shadow_pipeline);
+    scene.shadow_attach(object_shadow_pipeline);
+    scene.shadow_attach(tile_entity_shadow_pipeline);
 
     scene.add_mid_ground_renderer(chunks_render_pipeline);
-    //    scene.add_mid_ground_renderer(entity_render_pipeline); this seems wrong
+    scene.add_mid_ground_renderer(object_render_pipeline);
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
     scene.add_mid_ground_renderer(entity_render_pipeline);
 

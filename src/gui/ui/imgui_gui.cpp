@@ -11,6 +11,7 @@
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
+#include "gui/scene/input.hpp"
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
 #include "logging.hpp"
@@ -18,6 +19,7 @@
 #include "scene_setup.hpp"
 #include "world/climate.hpp"
 #include "world/entity/mesh.hpp"
+#include "world/entity/object_handler.hpp"
 #include "world/world.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
@@ -61,25 +63,40 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
     const char* glsl_version = "#version 450";
 
+    // Our state
+    bool show_position_window = false;
+    bool show_light_controls = false;
+    bool show_shadow_map = false;
+    bool show_programs_window = false;
+    bool show_entity_window = false;
+
+    glm::vec3 position;
+
+    std::unordered_set<std::shared_ptr<world::entity::EntityInstance>> path_entities;
+    auto key_map =
+        files::read_json_from_file<std::unordered_map<gui::scene::Action, gui::Key>>(
+            files::get_data_path() / "keymapping.json"
+        );
+    gui::scene::KeyMapping key_mapping = key_map.has_value()
+                                             ? gui::scene::KeyMapping(key_map.value())
+                                             : gui::scene::KeyMapping();
+    std::shared_ptr<scene::Controls> controller =
+        std::make_shared<scene::Controls>(key_mapping);
+    scene::InputHandler::set_window(window);
+    scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
+    ));
+
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-
-    // Our state
-    bool show_another_window = false;
-    bool show_light_controls = false;
-    bool show_shadow_map = false;
 
     shader::ShaderHandler shader_handler;
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-    // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
-    Scene main_scene(mode->width, mode->height, shadow_map_size);
+    Scene main_scene(mode->width, mode->height, shadow_map_size, controller);
     setup(main_scene, shader_handler, world, climate);
-
-    glm::vec3 position;
 
     //! Main loop
 
@@ -94,15 +111,13 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // Generally you may always pass all inputs to dear imgui, and hide them from
         // your application based on those two flags.
         glfwPollEvents();
+        scene::InputHandler::handle_pooled_inputs(window);
 
         if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
 #if !DEBUG()
             // Disable the mouse so it doesn't appear while playing
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 #endif
-
-            // Process inputs
-            controls::computeMatricesFromInputs(window);
         } else {
             // Show the mouse for use with IMGUI
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -110,11 +125,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         glfwGetWindowSize(window, &window_width, &window_height);
 
-        main_scene.update_light_direction();
-
         main_scene.update(window_width, window_height);
-
-        position = controls::get_position_vector();
 
         // "render" scene to the screen
         main_scene.copy_to_window(window_width, window_height);
@@ -132,34 +143,86 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             ImGui::Begin("Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
 
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            if (scene::InputHandler::escape()) {
                 ImGui::SetWindowFocus();
+                // the lifting of the escape key will not be capture because imgui will
+                // be focused
+                scene::InputHandler::clear_escape();
             }
 
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Another Window", &show_another_window);
+            ImGui::Checkbox("Position Window", &show_position_window);
             ImGui::Checkbox("Show Light Controls", &show_light_controls);
             ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
+            ImGui::Checkbox("Show Programs", &show_programs_window);
+            ImGui::Checkbox("Show Entities", &show_entity_window);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
                 io.Framerate
             );
+            static int breadth_first_search_start[3];
+            ImGui::DragInt3(
+                "Start Position", breadth_first_search_start, (1.0F), 0, world.height
+            );
+            static bool path_exists = false;
+            static int path_length = 0;
+
+            if (ImGui::Button("Breadth First Search")) {
+                for (auto& entity : path_entities) {
+                    world.remove_entity(entity);
+                }
+                path_entities.clear();
+                auto path = world.pathfind_to_object(
+                    TerrainOffset3(
+                        breadth_first_search_start[0], breadth_first_search_start[1],
+                        breadth_first_search_start[2]
+                    ),
+                    "base/Flower_Test"
+                );
+                if (path) {
+                    path_exists = true;
+                    path_length = path.value().size();
+
+                    // auto test_object = object_handler.get_object("base/Test_Entity");
+
+                    for (auto position : path.value()) {
+                        auto new_entity =
+                            world.spawn_entity("base/Test_Entity", position);
+
+                        path_entities.insert(new_entity);
+                    }
+
+                } else {
+                    path_exists = false;
+                    path_length = 0;
+                }
+            }
+            ImGui::Text(
+                "Path found: %s. With length %d.", path_exists ? "true" : "false",
+                path_length
+            );
+
+            if (ImGui::Button("Clear Breadth First Search")) {
+                for (auto& entity : path_entities) {
+                    world.remove_entity(entity);
+                }
+                path_entities.clear();
+            }
             ImGui::End();
         }
 
         // 3. Show another simple window.
-        if (show_another_window) {
+        if (show_position_window) {
+            position = main_scene.get_viewer_position();
             ImGui::Begin(
-                "Another Window", &show_another_window
+                "Position Window", &show_position_window
             ); // Pass a pointer to our bool variable (the window will have a closing
                // button that will clear the bool when clicked)
             ImGui::Text(
                 "position <%.3f, %.3f, %.3f>", position.x, position.y, position.z
             );
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
             ImGui::End();
         }
 
@@ -169,17 +232,20 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
         }
 
-        display_windows::display_data(shader_handler.get_programs());
+        if (show_programs_window) {
+            display_windows::display_data(
+                shader_handler.get_programs(), show_programs_window
+            );
+        }
 
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-            show_shadow_map = true;
+        if (show_entity_window) {
+            display_windows::display_data(
+                world::entity::ObjectHandler::instance(), show_entity_window
+            );
         }
 
         if (show_shadow_map) {
             ImGui::Begin("Shadow Depth Texture", &show_shadow_map);
-            if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-                ImGui::SetWindowFocus();
-            }
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
                 ImVec2(
