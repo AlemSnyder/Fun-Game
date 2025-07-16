@@ -108,14 +108,12 @@ void
 Controls::handle_mouse_scroll_input(
     [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset
 ) {
-    //LOG_DEBUG(logging::opengl_logger, "Mouse scroll amount: {}", yoffset);
-    // set up call back to allow for scrolling to see things
     field_of_view_ *= (10 + yoffset) / 10;
     if (field_of_view_ < 0.1) {
         field_of_view_ = 0.1;
     } else if (field_of_view_ > 60) {
         field_of_view_ = 60;
-    } 
+    }
 }
 
 void

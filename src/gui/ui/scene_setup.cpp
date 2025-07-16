@@ -194,13 +194,14 @@ setup(
     object_shadow_program.set_uniform(light_depth_projection_uniform, "depth_MVP");
 
     entity_render_program.set_uniform(matrix_view_projection_uniform, "MVP");
-    entity_render_program.set_uniform(view_matrix_uniform, "view_matrix");
-    entity_render_program.set_uniform(light_direction_uniform, "light_direction");
-    entity_render_program.set_uniform(light_depth_texture_projection_uniform, "depth_texture_projection");
-    entity_render_program.set_uniform(shadow_texture_uniform, "shadow_texture");
-    entity_render_program.set_uniform(material_color_texture_uniform, "material_color_texture");
-    entity_render_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
-    entity_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
+    // these will be added back when a more complete entity graphics program is written
+    // entity_render_program.set_uniform(view_matrix_uniform, "view_matrix");
+    // entity_render_program.set_uniform(light_direction_uniform, "light_direction");
+    // entity_render_program.set_uniform(light_depth_texture_projection_uniform, "depth_texture_projection");
+    // entity_render_program.set_uniform(shadow_texture_uniform, "shadow_texture");
+    // entity_render_program.set_uniform(material_color_texture_uniform, "material_color_texture");
+    // entity_render_program.set_uniform(spectral_light_color_uniform, "direct_light_color");
+    // entity_render_program.set_uniform(diffuse_light_color_uniform, "diffuse_light_color");
 
 
     sky_program.set_uniform(matrix_view_inverse_projection, "MVIP");

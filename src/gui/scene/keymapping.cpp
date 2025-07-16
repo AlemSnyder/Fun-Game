@@ -22,20 +22,20 @@ KeyMapping::KeyMapping() {
 
 KeyMapping::KeyMapping(std::unordered_map<Action, Key> key_mapping_map) : KeyMapping() {
     // all keys must be unique
-    // product of map architecture
+    // I think we test for this
 
     // all actions must be unique
-
+    // all actions must be covered
+    // product of fixed length array
     auto temp_map = array_map_;
 
-    // all actions must be covered
-    // all actions are already covered
+    // just write keybindings into the array. well test if they are ok later
     for (const auto& [a, k] : key_mapping_map) {
         temp_map[a] = k;
     }
 
+    // test if the new state is ok
     bool remapping_ok = true;
-
     std::unordered_map<Key, Action> keys_mapped;
     for (Action a = Action::FORWARD; a < Action::__NO_ACTION__;
          a = static_cast<Action>(a + 1)) {
@@ -52,9 +52,9 @@ KeyMapping::KeyMapping(std::unordered_map<Action, Key> key_mapping_map) : KeyMap
         }
     }
 
-    if (remapping_ok) {
+    if (remapping_ok) { // the new state is ok
         array_map_ = temp_map;
-    } else {
+    } else { // the new state is not ok (do not change key map)
         LOG_ERROR(logging::main_logger, "Remapping not set because of errors.");
     }
 }

@@ -167,8 +167,9 @@ ShaderProgram_ElementsInstanced::render(
     static bool has_logged = false;
     if (data.size() == 0 && !has_logged) {
         LOG_WARNING(
-            logging::opengl_logger, "Nothing to be rendered. Program id {}",
-            opengl_program_.get_program_ID()
+            logging::opengl_logger,
+            "Nothing to be rendered. Program id {}, and name {}",
+            opengl_program_.get_program_ID(), opengl_program_.get_name()
         );
         has_logged = true;
     }

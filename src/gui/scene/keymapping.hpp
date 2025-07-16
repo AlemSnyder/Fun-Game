@@ -13,7 +13,7 @@
 namespace gui {
 
 /**
- * @brief Class to represent GLFW keys 
+ * @brief Class to represent GLFW keys
  */
 enum class Key : int {
     MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT,     // GLFW_MOUSE_BUTTON_1
@@ -153,7 +153,7 @@ enum class Key : int {
 
 /**
  * @brief Convert a key to a string representation.
- * 
+ *
  * @param key keyboard key or mouse button
  * @return std::string GLFW name of key
  */
@@ -442,7 +442,7 @@ enum Action : int {
 
 /**
  * @brief Convert game action to string representation.
- * 
+ *
  * @param action action to be taken
  * @return std::string name of action
  */
@@ -474,7 +474,7 @@ to_string(const Action& action) {
 
 /**
  * @brief Control key mapping between inputs and actions
- * 
+ *
  * @details Literally just an array that maps keys to actions.
  */
 class KeyMapping {
@@ -514,6 +514,7 @@ template <>
 struct glz::meta<gui::scene::Action> {
     using enum gui::scene::Action;
     static constexpr auto value = enumerate(
-        FORWARD, BACKWARD, LEFT, RIGHT, PRIMARY_INTERACT, SECONDARY_INTERACT, UP, DOWN, FAST
+        FORWARD, BACKWARD, LEFT, RIGHT, PRIMARY_INTERACT, SECONDARY_INTERACT, UP, DOWN,
+        FAST
     );
 };

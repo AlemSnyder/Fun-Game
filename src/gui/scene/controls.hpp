@@ -66,7 +66,7 @@ class Controls : public Inputs {
  public:
     /**
      * @brief Construct a new Controls object
-     * 
+     *
      * @param KeyMapping key_map map from keyboard keys to actions.
      */
     Controls(KeyMapping key_map) :
@@ -84,12 +84,13 @@ class Controls : public Inputs {
     /**
      * @brief Handle Mouse Wheel Scroll Events
      */
-    virtual void
-    handle_mouse_scroll_input(GLFWwindow* window, double xoffset, double yoffset) override;
+    virtual void handle_mouse_scroll_input(
+        GLFWwindow* window, double xoffset, double yoffset
+    ) override;
 
     /**
      * @brief To be called when controls are bound. (hide curser etc)
-     * 
+     *
      * @warning Won't play nice with ImGUI
      */
     virtual void setup(GLFWwindow* window);
@@ -129,7 +130,7 @@ class Controls : public Inputs {
 
     /**
      * @brief Get view inverse projection
-     * 
+     *
      * @details Used for star projection
      */
     [[nodiscard]] inline glm::mat4

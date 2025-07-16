@@ -13,7 +13,7 @@ bool InputHandler::escape_pressed_ = false;
 
 void
 InputHandler::set_window(GLFWwindow* window) {
-    // assert(window_ == 0 && "You're doing it wrong!!!!!!!");
+    assert(window_ == nullptr && "Cannot change bound window");
     window_ = window;
     glfwSetKeyCallback(window_, handle_key_event);
     glfwSetCharCallback(window_, handle_text_input);

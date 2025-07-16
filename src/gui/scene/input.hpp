@@ -27,8 +27,6 @@
 
 #include <memory>
 
-//class GlobalContext;
-
 namespace gui {
 
 namespace scene {
@@ -37,7 +35,7 @@ class Inputs {
  public:
     /**
      * @brief Handle key input including mouse keys
-     * 
+     *
      * @param GLFWwindow* window window event came from
      * @param int key GLFW key enum
      * @param int scancode GLFW scancode enum
@@ -165,15 +163,15 @@ class Inputs {
  * @brief Class that contains static functions to bind to glfw callbacks.
  */
 class InputHandler {
-//    friend GlobalContext;
-// somehow the plan was to only let GlobalContext set the window
+    // somehow the plan was to only let GlobalContext set the window
 
  protected:
     // so realistically we would have a unordered map that maps the window
     // but im not making multiple windows
     static GLFWwindow* window_; // pointer to main window
-    static std::shared_ptr<Inputs> forward_inputs_; // Inputs object to forward keyboard inputs to
-    static bool escape_pressed_;    // flag to test if the escape key has peen pressed
+    static std::shared_ptr<Inputs>
+        forward_inputs_;         // Inputs object to forward keyboard inputs to
+    static bool escape_pressed_; // flag to test if the escape key has peen pressed
 
     // takes input from GLFW and forwards it to Inputs. Dont call this directly.
     static void
@@ -215,7 +213,7 @@ class InputHandler {
 
     /**
      * @brief Handle currently pressed keys
-     * 
+     *
      * @param GLFWwindow* window window to handle events from
      */
     static void handle_pooled_inputs(GLFWwindow* window);
