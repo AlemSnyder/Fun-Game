@@ -1,0 +1,10 @@
+def prime_test(int x) : x > 0 {
+    for (var n = 2; n < x; ++n) {
+        if (x % n == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+prime_test;

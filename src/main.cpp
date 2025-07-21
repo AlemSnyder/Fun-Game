@@ -19,6 +19,7 @@
 #include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
+#include "util/chai_script_test.hpp"
 
 #include <argh.h>
 
@@ -701,6 +702,18 @@ lua_tests(const argh::parser& cmdl) {
     }
 }
 
+inline int
+ChaiScript_test(const argh::parser& cmdl) {
+    std::string run_function = cmdl(3).str();
+    if (run_function == "General") {
+        return chai_script_test();
+    } else if (run_function == "Reload") {
+        return chai_script_reload_test();
+    } else if (run_function == "Multiprocess") {
+        return chai_script_mp_test();
+    }
+}
+
 // for tests. Probably should make a bash script to test each test
 inline int
 tests(const argh::parser& cmdl) {
@@ -732,6 +745,8 @@ tests(const argh::parser& cmdl) {
         return gui::opengl_tests();
     } else if (run_function == "Lua") {
         return lua_tests(cmdl);
+    } else if (run_function == "ChaiScript") {
+        return ChaiScript_test(cmdl);
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

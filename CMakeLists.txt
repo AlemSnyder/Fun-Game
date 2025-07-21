@@ -83,6 +83,7 @@ target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
 
 # Add include dirs
 target_include_directories(FunGame PRIVATE "vendor/whereami/src")
+target_include_directories(FunGame PRIVATE "vendor/ChaiScript/include")
 target_include_directories(FunGame PRIVATE "vendor/argh")
 target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
 target_include_directories(FunGame PRIVATE "vendor/glaze/include")

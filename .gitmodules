@@ -19,3 +19,6 @@
 [submodule "vendor/whereami"]
 	path = vendor/whereami
 	url = https://github.com/gpakosz/whereami.git
+[submodule "vendor/ChaiScript"]
+	path = vendor/ChaiScript
+	url = https://github.com/ChaiScript/ChaiScript.git
