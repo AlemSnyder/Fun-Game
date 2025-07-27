@@ -58,8 +58,10 @@ namespace shader {
  */
 inline void
 log_uniforms(
-    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>> want_uniforms,
-    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>> has_uniforms
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>>
+        want_uniforms,
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>>
+        has_uniforms
 ) {
 #if DEBUG()
 
@@ -115,7 +117,8 @@ class Render_Base {
         opengl_program_(shader_program),
         setup_(setup_commands) {
         LOG_DEBUG(
-            logging::opengl_logger, "Program ID: {}", opengl_program_.get_program_ID()
+            logging::opengl_logger, "Program ID: {}, Name: {}",
+            opengl_program_.get_program_ID(), opengl_program_.get_name()
         );
         // LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
         // log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());

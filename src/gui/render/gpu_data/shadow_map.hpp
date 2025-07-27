@@ -50,6 +50,7 @@ class ShadowMap {
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_;       // convert a point in world space
                                         // to depth in light direction
+    glm::mat4 inverse_view_projection_;
 
  public:
     /**
@@ -110,6 +111,8 @@ class ShadowMap {
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
 
+    void set_inverse_view_projection(glm::mat4 inverse_view_projection);
+
     /**
      * @brief Get the light direction used for this shadow map
      *
@@ -160,24 +163,11 @@ class ShadowMap {
     }
 
     /**
-     * @brief Update the shadow map
+     * @brief Updates the depth projection matrix from saved values.
      *
-     * @details Changes the shadow map depth matrix. This allows the shadow map
-     * to move with the camera.
      */
-    void update();
 
-    /**
-     * @brief Update the light direction and depth projection matrix by using the given
-     * light direction.
-     *
-     * @param glm::vec3 light_direction
-     */
-    void
-    update(glm::vec3 light_direction) {
-        set_light_direction(light_direction);
-        update();
-    };
+    void update_depth_projection_matrix();
 };
 
 } // namespace gpu_data

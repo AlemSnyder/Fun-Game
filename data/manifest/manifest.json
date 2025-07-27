@@ -12,8 +12,8 @@
     ],
     "biomes": [
         {
-            "identification": "Base",
-            "path": "base"
+            "identification": "base/Test_Biome",
+            "path": "Base/biomes/Test_Biome.json"
         }
     ]
 }

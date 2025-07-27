@@ -1,5 +1,7 @@
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/helio.hpp"
+#include "world/entity/object_handler.hpp"
+#include "gui/scene/scene.hpp"
 
 #include <imgui/imgui.h>
 
@@ -16,8 +18,11 @@ namespace display_windows {
  *
  * @param std::map<const shader::ProgramData, shader::Program>& programs
  * programs map
+ * @param bool& show reference to close window
  */
-void display_data(std::map<const shader::ProgramData, shader::Program>& programs);
+void display_data(
+    std::map<const shader::ProgramData, shader::Program>& programs, bool& show
+);
 
 /**
  * @brief Display solar system data
@@ -27,6 +32,10 @@ void display_data(std::map<const shader::ProgramData, shader::Program>& programs
  * @param bool& show bool reference to close window
  */
 void display_data(std::shared_ptr<scene::Helio> helio, bool& show);
+
+void display_data(world::entity::ObjectHandler& object_handler, bool& show);
+
+void display_data(Scene& scene, bool& show);
 
 } // namespace display_windows
 

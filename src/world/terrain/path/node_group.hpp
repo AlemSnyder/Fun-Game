@@ -77,7 +77,7 @@ class NodeGroup {
     std::unordered_map<NodeGroup*, UnitPath> merge_groups(NodeGroup other);
 
     [[nodiscard]] inline const ChunkPos
-    get_chunk_position() {
+    get_chunk_position() const {
         return chunk_position_;
     }
 
