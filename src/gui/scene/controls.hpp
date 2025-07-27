@@ -143,6 +143,16 @@ class Controls : public Inputs {
     get_inverse_view_projection() const {
         return glm::inverse(projection_matrix_ * view_matrix_);
     }
+
+    [[nodiscard]] inline int
+    get_width() const {
+        return width_;
+    }
+    
+    [[nodiscard]] inline int
+    get_height() const {
+        return height_;
+    }
 };
 
 } // namespace scene

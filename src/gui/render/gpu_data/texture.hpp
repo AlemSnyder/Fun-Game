@@ -83,6 +83,8 @@ class Texture2D {
     inline Texture2D(const std::vector<std::vector<ColorFloat>>& color_data) :
         Texture2D(pad_color_data(color_data)) {}
 
+    Texture2D(uint width, uint height);
+
     ~Texture2D() { glDeleteTextures(1, &texture_ID_); }
 
     /**

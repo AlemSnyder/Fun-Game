@@ -46,7 +46,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // background
     for (const auto& render : background_frame_buffer_) {
         render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
+            width, height, frame_buffer_multisample_.get_frame_buffer_id()
         );
     }
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -54,15 +54,22 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // mid ground
     for (const auto& render : mid_ground_frame_buffer_) {
         render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
+            width, height, frame_buffer_multisample_.get_frame_buffer_id()
         );
     }
+    glBlitNamedFramebuffer(
+        frame_buffer_multisample_.get_frame_buffer_id(), frame_buffer_mg_.get_frame_buffer_id(), 0, 0, width, height, 0, 0, width, height, // region of framebuffer
+        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST           // copy the color
+    );
 
+    FrameBufferHandler::instance().bind_fbo(
+        frame_buffer_multisample_.get_frame_buffer_id()
+    );
     glClear(GL_DEPTH_BUFFER_BIT);
     // foreground
     for (const auto& render : foreground_frame_buffer_) {
         render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
+            width, height, frame_buffer_multisample_.get_frame_buffer_id()
         );
     }
 }
