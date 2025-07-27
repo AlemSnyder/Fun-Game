@@ -69,6 +69,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     bool show_shadow_map = false;
     bool show_programs_window = false;
     bool show_entity_window = false;
+    bool show_scene_depth_interact_window = false;
 
     glm::vec3 position;
 
@@ -83,8 +84,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     std::shared_ptr<scene::Controls> controller =
         std::make_shared<scene::Controls>(key_mapping);
     scene::InputHandler::set_window(window);
-    scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
-    ));
+    scene::InputHandler::forward_inputs_to(
+        static_pointer_cast<scene::Inputs>(controller)
+    );
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -140,7 +142,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
         {
-            ImGui::Begin("Hello, world!"
+            ImGui::Begin(
+                "Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
 
             if (scene::InputHandler::escape()) {
@@ -150,13 +153,15 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 scene::InputHandler::clear_escape();
             }
 
-            ImGui::Text("This is some useful text."
+            ImGui::Text(
+                "This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Position Window", &show_position_window);
             ImGui::Checkbox("Show Light Controls", &show_light_controls);
             ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
             ImGui::Checkbox("Show Programs", &show_programs_window);
             ImGui::Checkbox("Show Entities", &show_entity_window);
+            ImGui::Checkbox("Scene", &show_scene_depth_interact_window);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
@@ -256,6 +261,10 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
 
             ImGui::End();
+        }
+
+        if (show_scene_depth_interact_window) {
+            display_windows::display_data(main_scene, show_scene_depth_interact_window);
         }
 
         // Rendering

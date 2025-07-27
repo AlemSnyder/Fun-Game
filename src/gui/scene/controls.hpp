@@ -88,6 +88,12 @@ class Controls : public Inputs {
         GLFWwindow* window, double xoffset, double yoffset
     ) override;
 
+    virtual void
+    handle_mouse_button_input(
+        GLFWwindow* window, int button,
+        int action, int mods
+    );
+
     /**
      * @brief To be called when controls are bound. (hide curser etc)
      *

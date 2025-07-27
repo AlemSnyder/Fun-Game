@@ -117,6 +117,22 @@ Controls::handle_mouse_scroll_input(
 }
 
 void
+Controls::handle_mouse_button_input(
+    GLFWwindow* window, int button,
+    int action, int mods
+) {
+    if (static_cast<Key>(button) == Key::MOUSE_LEFT && action == GLFW_PRESS) {
+        double xpos;
+        double ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        LOG_DEBUG(logging::main_logger, "Mouse Position: [{}, {}]", xpos, ypos);
+        int xpos_int = floor(xpos);
+        int ypos_int = floor(ypos);
+    }
+    
+}
+
+void
 Controls::setup([[maybe_unused]] GLFWwindow* window) {
     // want to call this
     // at least reset periodically

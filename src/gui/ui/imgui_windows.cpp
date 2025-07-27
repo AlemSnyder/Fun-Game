@@ -1,5 +1,7 @@
 #include "imgui_windows.hpp"
 
+#include "gui/render/gl_enums.hpp"
+#include "imgui.h"
 #include "world/entity/object_handler.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -106,7 +108,8 @@ display_data(world::entity::ObjectHandler& object_handler, bool& show) {
 
         for (auto& [id, object] : object_handler) {
             // Display a data item
-            ImGui::PushID(std::hash<std::string>{}(id)
+            ImGui::PushID(
+                std::hash<std::string>{}(id)
             ); // maybe not grate to call hashes like this
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -120,6 +123,23 @@ display_data(world::entity::ObjectHandler& object_handler, bool& show) {
         }
         ImGui::EndTable();
     }
+    ImGui::End();
+}
+
+void
+display_data(Scene& scene, bool& show) {
+    ImGui::Begin("Scene Data", &show);
+
+    scene.get_depth_texture();
+
+    static int xy[2];
+
+    ImGui::DragInt2("Sample Position", xy, 1.0, 0, 2000);
+
+    int dt = scene.get_depth_texture();
+    double value;
+    glGetNamedBufferSubData(dt, 5, 1, &value);
+    ImGui::Text("Depth %.3f", value);
     ImGui::End();
 }
 
