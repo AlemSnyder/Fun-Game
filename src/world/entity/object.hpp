@@ -34,6 +34,7 @@ struct remapping_t {
 enum class OBJECT_TYPE {
     ENTITY,
     TILE_OBJECT,
+    IMPLEMENTED_ENTITY,
 };
 
 struct model_t {
@@ -60,6 +61,9 @@ class Object {
     //    virtual void render()
 
     virtual std::string identification() const = 0;
+
+    virtual const std::string& get_name() const = 0;
+    virtual size_t num_models() const = 0;
 
     // one for each mesh
     //    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
@@ -91,7 +95,7 @@ class ObjectInstance {
 template <>
 struct glz::meta<world::entity::OBJECT_TYPE> {
     using enum world::entity::OBJECT_TYPE;
-    static constexpr auto value = enumerate(ENTITY, TILE_OBJECT);
+    static constexpr auto value = enumerate(ENTITY, TILE_OBJECT, IMPLEMENTED_ENTITY);
 };
 
 template <>

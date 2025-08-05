@@ -67,16 +67,6 @@ void
 World::generate_plants() {
     auto plant_maps = biome_.get_plant_map(terrain_main_.X_MAX);
 
-    std::unordered_map<int, glm::ivec2> ordered_tiles;
-    for (Dim x = 0; x < terrain_main_.X_MAX; x++) {
-        for (Dim y = 0; y < terrain_main_.Y_MAX; y++) {
-            size_t tile_hash = biome_.seed;
-            utils::hash_combine(tile_hash, x);
-            utils::hash_combine(tile_hash, y);
-            ordered_tiles[tile_hash] = glm::vec2(x, y);
-        }
-    }
-
     // This next part can be done in parallel.
     // maybe generating each plant position, orientation, and model
     entity::ObjectHandler& object_handler = entity::ObjectHandler::instance();
@@ -96,42 +86,44 @@ World::generate_plants() {
         );
     }
 
-    for (const auto& tile_position_pair : ordered_tiles) {
-        glm::vec2 tile_position = tile_position_pair.second;
-        for (const terrain::generation::plant_t& plant : biome_.get_generate_plants()) {
-            auto map = plant_maps[plant.map_name];
+    for (Dim tile_position_x = 0; tile_position_x < terrain_main_.X_MAX;
+         tile_position_x++) {
+        for (Dim tile_position_y = 0; tile_position_y < terrain_main_.Y_MAX;
+             tile_position_y++) {
+            for (const terrain::generation::plant_t& plant :
+                 biome_.get_generate_plants()) {
+                auto map = plant_maps[plant.map_name];
 
-            float chance = map.get_tile(tile_position.x, tile_position.y);
+                float chance = map.get_tile(tile_position_x, tile_position_y);
 
-            if (uniform_distribution(rand_engine) < chance) {
-                uint rotation = rotation_distribution(rand_engine) % 4;
+                if (uniform_distribution(rand_engine) < chance) {
+                    uint rotation = rotation_distribution(rand_engine) % 4;
 
-                uint z_position =
-                    terrain_main_.get_Z_solid(tile_position.x, tile_position.y) + 1;
+                    uint z_position =
+                        terrain_main_.get_Z_solid(tile_position_x, tile_position_y) + 1;
 
-                // zero is for one of the models should be random number between 0, and
-                // num meshes
-                //                entity::ModelController& model =
-                //                object_type->get_model(0);
+                    auto object = object_handler.get_object(plant.identification);
 
-                // position, then rotation, and texture
-                gui::Placement placement(
-                    tile_position.x, tile_position.y, z_position, rotation, 0
-                );
+                    // position, then rotation, and texture
+                    gui::Placement placement(
+                        tile_position_x, tile_position_y, z_position, rotation, 0
+                    );
 
-                auto tile_object_type = std::dynamic_pointer_cast<entity::TileObject>(
-                    object_handler.get_object(plant.identification)
-                );
+                    auto tile_object_type =
+                        std::dynamic_pointer_cast<entity::TileObject>(
+                            object_handler.get_object(plant.identification)
+                        );
 
-                if (!tile_object_type) {
-                    continue;
+                    if (!tile_object_type) {
+                        continue;
+                    }
+
+                    auto new_object = std::make_shared<entity::TileObjectInstance>(
+                        tile_object_type, uint8_t(0), placement
+                    );
+
+                    tile_entities_.insert(new_object);
                 }
-
-                auto new_object = std::make_shared<entity::TileObjectInstance>(
-                    tile_object_type, uint8_t(0), placement
-                );
-
-                tile_entities_.insert(new_object);
             }
         }
     }
@@ -233,7 +225,7 @@ World::set_tile(
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z + 1});
 }
 
-void
+std::shared_ptr<entity::EntityInstance>
 World::spawn_entity(std::string identification, glm::vec3 position) {
     auto& object_handler = entity::ObjectHandler::instance();
     auto object_type = object_handler.get_object(identification);
@@ -242,7 +234,7 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
         LOG_ERROR(
             logging::main_logger, "Identification {} does not exists", identification
         );
-        return;
+        return {};
     }
 
     auto entity_type = std::dynamic_pointer_cast<entity::Entity>(object_type);
@@ -252,16 +244,57 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
             logging::main_logger, "Identification {} is not an entity type",
             identification
         );
-        return;
+        return {};
     }
 
-    auto entity = std::make_shared<entity::EntityInstance>(entity_type);
+    auto entity = std::make_shared<entity::EntityInstance>(entity_type, position);
 
     glm::mat4 transformation(1.0);
 
     entity->update(glm::translate(transformation, position));
 
     entities_.insert(entity);
+
+    return entity;
+}
+
+void
+World::remove_entity(std::shared_ptr<entity::EntityInstance> entity) {
+    if (!entity) {
+        LOG_WARNING(logging::main_logger, "Entity is null.");
+        return;
+    }
+    entity->destroy();
+    size_t erased = entities_.erase(entity);
+    if (!erased) {
+        LOG_WARNING(logging::main_logger, "Entity not found in World.");
+    }
+}
+
+std::optional<std::vector<TerrainOffset3>>
+World::pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id)
+    const {
+    entity::ObjectHandler& object_context = entity::ObjectHandler::instance();
+    auto object = object_context.get_object(object_id);
+    if (!object) {
+        LOG_WARNING(logging::terrain_logger, "Object {} not found.", object_id);
+        return {};
+    }
+    // object->
+
+    std::unordered_set<TerrainOffset3> object_positions;
+
+    // This makes me sad
+    // TODO fix the storage mechanism
+    for (const auto& tile_entity : tile_entities_) {
+        if (tile_entity->get_object() == object) {
+            object_positions.insert(tile_entity->get_terrain_position());
+        }
+    }
+
+    auto path = terrain_main_.get_path_breadth_first(start_position, object_positions);
+
+    return path;
 }
 
 } // namespace world

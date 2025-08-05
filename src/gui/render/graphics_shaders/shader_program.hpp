@@ -58,8 +58,10 @@ namespace shader {
  */
 inline void
 log_uniforms(
-    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>> want_uniforms,
-    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>> has_uniforms
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>>
+        want_uniforms,
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>>
+        has_uniforms
 ) {
 #if DEBUG()
 
