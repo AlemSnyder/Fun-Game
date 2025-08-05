@@ -27,3 +27,9 @@ once per frame some chunks get their entities copied into the big entity
 No entity ID entity doesn't know where entity instances are, the instances do.
 
 fundamentally very different from tile objects which don't move as much.
+
+# TODO:
+
+Need to call update function
+
+Setup backend (sending information to gpu)

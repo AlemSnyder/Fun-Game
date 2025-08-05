@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cognition.hpp"
 #include "gui/render/structures/floating_instanced_i_mesh.hpp"
 #include "manifest.hpp"
 #include "mesh.hpp"
@@ -26,6 +27,10 @@ class EntityInstance : public virtual ObjectInstance {
  public:
     EntityInstance(std::shared_ptr<Entity> entity_type);
 
+    EntityInstance(std::shared_ptr<Entity> entity_type, glm::vec3 position) : EntityInstance(entity_type){
+        set_position(position);
+    }
+
     ~EntityInstance();
 
     void update();
@@ -49,7 +54,7 @@ class EntityInstance : public virtual ObjectInstance {
     virtual std::shared_ptr<const Object> get_object() const;
 };
 
-class Entity : public virtual Object {
+class Entity : public virtual Object, public virtual Cognition {
     friend EntityInstance;
 
  private:
@@ -81,7 +86,7 @@ class Entity : public virtual Object {
         return mesh_and_positions_;
     }
 
-    virtual std::string identification() const override;
+    [[nodiscard]] virtual std::string identification() const override;
 
     virtual void init_render(render_programs_t& programs) const override;
 
@@ -92,9 +97,22 @@ class Entity : public virtual Object {
         return name_;
     }
 
+    [[nodiscard]] virtual glm::vec3 decision(EntityInstance* entity_instance) override;
+
+    inline virtual void
+    execute_plan([[maybe_unused]] EntityInstance* entity_instance) override {}
+
+    inline virtual void
+    make_plan([[maybe_unused]] EntityInstance* entity_instance) override {}
+
     [[nodiscard]] inline virtual size_t
     num_models() const {
         return 1;
+    }
+
+    [[nodiscard]] inline size_t
+    num_objects() const {
+        return local_positions_.size();
     }
 
     [[nodiscard]] inline virtual bool

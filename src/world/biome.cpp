@@ -1,12 +1,12 @@
 #include "biome.hpp"
 
 #include "entity/object_handler.hpp"
+#include "global_context.hpp"
+#include "local_context.hpp"
 #include "logging.hpp"
 #include "terrain/generation/lua_interface.hpp"
 #include "terrain/generation/noise.hpp"
 #include "terrain/generation/worley_noise.hpp"
-#include "global_context.hpp"
-#include "local_context.hpp"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
@@ -94,7 +94,7 @@ Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
     LocalContext& local_context = LocalContext::instance();
-    auto biome_map_query = local_context.get_from_lua(id_name_+"\\biome_map");
+    auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
 
     if (!biome_map_query) {
         LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
@@ -107,7 +107,8 @@ Biome::get_map(MacroDim size) const {
 
     sol::table biome_map = biome_map_query.value();
 
-    auto biome_map_function = biome_map.get<sol::optional<sol::protected_function>>("map");
+    auto biome_map_function =
+        biome_map.get<sol::optional<sol::protected_function>>("map");
 
     if (!biome_map_function) {
         LOG_ERROR(logging::lua_logger, "map does not exists");
@@ -180,7 +181,7 @@ Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;
 
     LocalContext& local_context = LocalContext::instance();
-    auto biome_map_query = local_context.get_from_lua(id_name_+"\\biome_map");
+    auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
 
     if (!biome_map_query) {
         LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
@@ -192,7 +193,8 @@ Biome::get_plant_map(Dim length) const {
     }
     sol::table biome_map = biome_map_query.value();
 
-    auto biome_map_function = biome_map.get<sol::optional<sol::protected_function>>("map");
+    auto biome_map_function =
+        biome_map.get<sol::optional<sol::protected_function>>("map");
 
     if (!biome_map_function) {
         LOG_ERROR(logging::lua_logger, "map does not exists");
@@ -206,7 +208,8 @@ Biome::get_plant_map(Dim length) const {
         return {};
     }
 
-    auto biome_plant_map_function = biome_map.get<sol::optional<sol::protected_function>>("plants_map");
+    auto biome_plant_map_function =
+        biome_map.get<sol::optional<sol::protected_function>>("plants_map");
 
     if (!biome_plant_map_function) {
         LOG_ERROR(logging::lua_logger, "map does not exists");
@@ -216,9 +219,7 @@ Biome::get_plant_map(Dim length) const {
     sol::protected_function plant_map = biome_plant_map_function.value();
 
     if (!plant_map.valid()) {
-        LOG_ERROR(
-            logging::lua_logger, "Error with plant_map in {}.", id_name_
-        );
+        LOG_ERROR(logging::lua_logger, "Error with plant_map in {}.", id_name_);
         return {};
     }
 

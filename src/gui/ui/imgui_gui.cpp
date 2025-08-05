@@ -119,6 +119,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         main_scene.update(window_width, window_height);
 
+        world.update_entities();
+
         position = controls::get_position_vector();
 
         // "render" scene to the screen

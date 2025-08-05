@@ -1,7 +1,7 @@
 #pragma once
 
-#include "logging.hpp"
 #include "exceptions.hpp"
+#include "logging.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -142,8 +142,8 @@ enum class GPUDataType : GLenum {
     UNSIGNED_INT_IMAGE_2D_MULTISAMPLE =
         GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE, // 	uimage2DMS
     UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY =
-        GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,              // 	uimage2DMSArray
-    UNSIGNED_INT_ATOMIC_COUNTER = GL_UNSIGNED_INT_ATOMIC_COUNTER,//
+        GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,               // 	uimage2DMSArray
+    UNSIGNED_INT_ATOMIC_COUNTER = GL_UNSIGNED_INT_ATOMIC_COUNTER, //
     NUM_TYPES
 };
 
@@ -403,7 +403,10 @@ to_string(const GPUDataType& data_type) {
         case GPUDataType::UNSIGNED_INT_ATOMIC_COUNTER:
             return "GL_UNSIGNED_INT_ATOMIC_COUNTER"; //
         default:
-            LOG_CRITICAL(logging::opengl_logger, "GPUDataType with value {} is not implemented.", static_cast<GLenum>(data_type));
+            LOG_CRITICAL(
+                logging::opengl_logger, "GPUDataType with value {} is not implemented.",
+                static_cast<GLenum>(data_type)
+            );
             throw exc::not_implemented_error("Given GPUDataType is not implemented.");
     }
 }
@@ -517,7 +520,7 @@ get_size(const GPUDataType& data_type) {
         case GPUDataType::DOUBLE_VEC3:
         case GPUDataType::FLOAT_MAT2x3:
         case GPUDataType::FLOAT_MAT3x2:
-        return 24;
+            return 24;
         case GPUDataType::DOUBLE_VEC4:
         case GPUDataType::FLOAT_MAT2x4:
         case GPUDataType::FLOAT_MAT4x2:
@@ -542,7 +545,10 @@ get_size(const GPUDataType& data_type) {
         case GPUDataType::DOUBLE_MAT4:
             return 128;
         default:
-            LOG_CRITICAL(logging::opengl_logger, "GPUDataType with value {} is not implemented.", static_cast<GLenum>(data_type));
+            LOG_CRITICAL(
+                logging::opengl_logger, "GPUDataType with value {} is not implemented.",
+                static_cast<GLenum>(data_type)
+            );
             throw exc::not_implemented_error("Given GPUDataType is not implemented.");
     }
 }

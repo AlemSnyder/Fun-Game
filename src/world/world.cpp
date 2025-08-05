@@ -247,7 +247,7 @@ World::spawn_entity(std::string identification, glm::vec3 position) {
         return {};
     }
 
-    auto entity = std::make_shared<entity::EntityInstance>(entity_type);
+    auto entity = std::make_shared<entity::EntityInstance>(entity_type, position);
 
     glm::mat4 transformation(1.0);
 

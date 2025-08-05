@@ -25,6 +25,7 @@
 
 #include "entity.hpp"
 #include "gui/render/structures/model.hpp"
+#include "implemented_entity.hpp"
 #include "manifest.hpp"
 #include "object.hpp"
 #include "position_synchronizer.hpp"
@@ -74,7 +75,7 @@ class ObjectHandler {
 
     /**
      * @brief Load new object from path.
-     * 
+     *
      * @param manifest::descriptor_t object description
      */
     template <bool opengl = true>
@@ -128,6 +129,15 @@ class ObjectHandler {
                     }
                     break;
 
+                case OBJECT_TYPE::IMPLEMENTED_ENTITY:
+                    {
+                        std::shared_ptr<ImplementedEntity> new_object =
+                            std::make_shared<ImplementedEntity>(*object_data, descriptor);
+                        ided_objects[identification] =
+                            static_pointer_cast<Object>(new_object);
+                    }
+                    break;
+
                 default:
                     break;
             }
@@ -139,7 +149,7 @@ class ObjectHandler {
 
     /**
      * @brief Load new biome from file
-     * 
+     *
      * @param manifest::descriptor_t biome description
      */
     void read_biome(const manifest::descriptor_t& biome_descriptor);

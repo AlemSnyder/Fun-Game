@@ -6,6 +6,7 @@
 #include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
+#include "local_context.hpp"
 #include "logging.hpp"
 #include "util/files.hpp"
 #include "util/loading.hpp"
@@ -18,7 +19,6 @@
 #include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
-#include "local_context.hpp"
 
 #include <argh.h>
 
@@ -74,7 +74,7 @@ TerrainTypes(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
-    
+
     util::load_manifest_test<false>();
 
     biome_data =
@@ -118,7 +118,10 @@ MacroMap(const argh::parser& cmdl) {
     // test terrain generation
     auto map = biome.get_map(size);
 
-    assert(map.get_width() == size && map.get_width() == size && "Size should match the width and height.");
+    assert(
+        map.get_width() == size && map.get_width() == size
+        && "Size should match the width and height."
+    );
 
     std::vector<TileMacro_t> int_map;
     for (const auto& map_tile : map) {
@@ -169,7 +172,10 @@ image_test(const argh::parser& cmdl) {
 
         auto map = biome.get_map(size);
 
-        assert(map.get_width() == size && map.get_width() == size && "Size should match the width and height.");
+        assert(
+            map.get_width() == size && map.get_width() == size
+            && "Size should match the width and height."
+        );
 
         std::filesystem::path png_save_path = files::get_argument_path(cmdl(3).str());
 
@@ -379,13 +385,14 @@ LogTest() {
     });
 
     LOG_INFO(
-        logging::lua_script_logger, "Using Lua logger. The lua logger should not log the cpp "
-                             "file, but instead the lua file."
+        logging::lua_script_logger,
+        "Using Lua logger. The lua logger should not log the cpp "
+        "file, but instead the lua file."
     );
 
     LOG_INFO(
-        logging::lua_script_logger, "[{}.lua:{}] - This is what a lua log should look like.",
-        "example_file", 37
+        logging::lua_script_logger,
+        "[{}.lua:{}] - This is what a lua log should look like.", "example_file", 37
     );
 
     future.wait();
@@ -685,7 +692,6 @@ lua_load_tests() {
                 }
             }
         }
-
 
         std::optional<sol::object> is_prime_function =
             local_context.get_from_this_lua_state("tests\\is_prime");

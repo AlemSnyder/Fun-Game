@@ -34,6 +34,7 @@ struct remapping_t {
 enum class OBJECT_TYPE {
     ENTITY,
     TILE_OBJECT,
+    IMPLEMENTED_ENTITY,
 };
 
 struct model_t {
@@ -94,7 +95,7 @@ class ObjectInstance {
 template <>
 struct glz::meta<world::entity::OBJECT_TYPE> {
     using enum world::entity::OBJECT_TYPE;
-    static constexpr auto value = enumerate(ENTITY, TILE_OBJECT);
+    static constexpr auto value = enumerate(ENTITY, TILE_OBJECT, IMPLEMENTED_ENTITY);
 };
 
 template <>

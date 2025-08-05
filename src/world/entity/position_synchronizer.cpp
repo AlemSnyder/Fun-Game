@@ -3,7 +3,7 @@
 #include <chrono>
 
 // TODO this should be set dynamically by the framerate
-constexpr std::chrono::milliseconds sleep_time(200);
+constexpr std::chrono::milliseconds sleep_time(20);
 
 namespace world {
 

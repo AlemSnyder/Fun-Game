@@ -223,6 +223,15 @@ class World {
 
     void remove_entity(std::shared_ptr<entity::EntityInstance>);
 
+    inline void update_entities() {
+        /*for (auto& object : tile_entities_) {
+            object->update();
+        }*/
+        for (auto& object : entities_) {
+            object->update();
+        }
+    }
+
     [[nodiscard]] std::optional<std::vector<TerrainOffset3>> pathfind_to_object(
         TerrainOffset3 start_position, const std::string& object_id
     ) const;

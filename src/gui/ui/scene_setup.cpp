@@ -329,7 +329,6 @@ setup(
     scene.add_mid_ground_renderer(tile_entity_render_pipeline);
     scene.add_mid_ground_renderer(entity_render_pipeline);
 
-
     scene.add_background_ground_renderer(sky_pipeline);
     scene.add_background_ground_renderer(star_pipeline);
     scene.add_background_ground_renderer(sun_pipeline);
