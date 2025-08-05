@@ -27,7 +27,8 @@ class EntityInstance : public virtual ObjectInstance {
  public:
     EntityInstance(std::shared_ptr<Entity> entity_type);
 
-    EntityInstance(std::shared_ptr<Entity> entity_type, glm::vec3 position) : EntityInstance(entity_type){
+    EntityInstance(std::shared_ptr<Entity> entity_type, glm::vec3 position) :
+        EntityInstance(entity_type) {
         set_position(position);
     }
 

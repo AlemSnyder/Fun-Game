@@ -223,7 +223,8 @@ class World {
 
     void remove_entity(std::shared_ptr<entity::EntityInstance>);
 
-    inline void update_entities() {
+    inline void
+    update_entities() {
         /*for (auto& object : tile_entities_) {
             object->update();
         }*/

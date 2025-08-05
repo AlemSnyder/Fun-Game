@@ -132,7 +132,9 @@ class ObjectHandler {
                 case OBJECT_TYPE::IMPLEMENTED_ENTITY:
                     {
                         std::shared_ptr<ImplementedEntity> new_object =
-                            std::make_shared<ImplementedEntity>(*object_data, descriptor);
+                            std::make_shared<ImplementedEntity>(
+                                *object_data, descriptor
+                            );
                         ided_objects[identification] =
                             static_pointer_cast<Object>(new_object);
                     }
