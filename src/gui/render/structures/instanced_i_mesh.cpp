@@ -1,7 +1,7 @@
 #include "instanced_i_mesh.hpp"
 
 #include "types.hpp"
-#include "world/entity/mesh.hpp"
+#include "util/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,7 +14,7 @@ namespace gui {
 namespace gpu_data {
 
 InstancedIMeshGPU::InstancedIMeshGPU(
-    const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+    const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
 ) :
     IMeshGPU(mesh, false),
     transforms_array_(model_transforms, 1), num_models_(model_transforms.size()) {

@@ -14,6 +14,8 @@
 
 namespace world {
 
+namespace object {
+
 namespace entity {
 
 class TileObject;
@@ -177,6 +179,8 @@ class TileObject : public virtual Object {
 };
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world
 

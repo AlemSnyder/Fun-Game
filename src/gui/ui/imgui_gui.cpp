@@ -14,11 +14,11 @@
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "util/mesh.hpp"
 #include "world/climate.hpp"
-#include "world/entity/mesh.hpp"
-#include "world/entity/object_handler.hpp"
 #include "world/world.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
@@ -75,7 +75,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
     glm::vec3 position;
 
-    std::unordered_set<std::shared_ptr<world::entity::EntityInstance>> path_entities;
+    std::unordered_set<std::shared_ptr<world::object::entity::EntityInstance>> path_entities;
 
     shader::ShaderHandler shader_handler;
 
@@ -232,7 +232,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         if (show_entity_window) {
             display_windows::display_data(
-                world::entity::ObjectHandler::instance(), show_entity_window
+                *world.get_object_handler(), show_entity_window
             );
         }
 

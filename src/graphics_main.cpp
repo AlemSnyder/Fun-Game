@@ -7,7 +7,7 @@
 #include "gui/ui/opengl_setup.hpp"
 #include "logging.hpp"
 #include "types.hpp"
-#include "util/loading.hpp"
+//#include "util/loading.hpp"
 #include "world/climate.hpp"
 #include "world/world.hpp"
 
@@ -52,7 +52,11 @@ graphics_main(const argh::parser& cmdl) {
     // then send those things back to main thread
     // the main thread loads meshes onto gpu and renders to screen
     // Read manifest
-    util::load_manifest();
+//    util::load_manifest();
+
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<true>();
 
     // generate options either from command line inputs
     // or from gui
@@ -65,7 +69,7 @@ graphics_main(const argh::parser& cmdl) {
     std::string biome_name;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
 
-    world::World world(biome_name, size, size, seed);
+    world::World world(&object_handler, biome_name, size, size, seed);
     world.generate_plants();
 
     world::Climate climate;

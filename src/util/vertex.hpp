@@ -28,9 +28,7 @@
 
 #include <functional>
 
-namespace world {
-
-namespace entity {
+namespace util {
 
 /**
  * @brief Position in mesh
@@ -57,12 +55,10 @@ struct Vertex {
 
 } // namespace entity
 
-} // namespace world
-
 template <>
-struct std::hash<world::entity::Vertex> {
+struct std::hash<util::Vertex> {
     size_t
-    operator()(const world::entity::Vertex& vertex) const {
+    operator()(const util::Vertex& vertex) const {
         size_t result = 0;
 
         // Position

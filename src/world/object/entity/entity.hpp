@@ -2,13 +2,15 @@
 
 #include "cognition.hpp"
 #include "gui/render/structures/floating_instanced_i_mesh.hpp"
-#include "manifest.hpp"
-#include "mesh.hpp"
+#include "manifest/manifest.hpp"
 #include "object.hpp"
+#include "util/mesh.hpp"
 
 #include <memory>
 
 namespace world {
+
+namespace object {
 
 namespace entity {
 
@@ -71,7 +73,7 @@ class Entity : public virtual Object, public virtual Cognition {
     bool has_ai_;
 
  public:
-    Entity(const Mesh& mesh);
+    Entity(const util::Mesh& mesh);
 
     Entity(const object_t& object_data, const manifest::descriptor_t& model_path);
 
@@ -139,5 +141,7 @@ class Entity : public virtual Object, public virtual Cognition {
 };
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

@@ -1,6 +1,9 @@
 #include <glm/glm.hpp>
 
 namespace world {
+
+namespace object {
+
 namespace entity {
 
 class EntityInstance;
@@ -15,5 +18,7 @@ class Cognition {
 };
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

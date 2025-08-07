@@ -1,6 +1,9 @@
 #include "implemented_entity.hpp"
 
 namespace world {
+
+namespace object {
+
 namespace entity {
 glm::vec3
 ImplementedEntity::decision(EntityInstance* entity_instance) {
@@ -11,5 +14,7 @@ ImplementedEntity::decision(EntityInstance* entity_instance) {
     return position + glm::vec3(0, 0, 0.01);
 }
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

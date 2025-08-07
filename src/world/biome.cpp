@@ -1,9 +1,9 @@
 #include "biome.hpp"
 
-#include "entity/object_handler.hpp"
 #include "global_context.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
 #include "terrain/generation/lua_interface.hpp"
 #include "terrain/generation/noise.hpp"
 #include "terrain/generation/worley_noise.hpp"

@@ -1,6 +1,6 @@
 #include "imgui_windows.hpp"
 
-#include "world/entity/object_handler.hpp"
+#include "manifest/object_handler.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -92,7 +92,7 @@ display_data(std::shared_ptr<scene::Helio> helio, bool& show) {
 }
 
 void
-display_data(world::entity::ObjectHandler& object_handler, bool& show) {
+display_data(const manifest::ObjectHandler& object_handler, bool& show) {
     ImGui::Begin("Shader Objects", &show);
 
     if (ImGui::BeginTable("table_sorting", 3, 0, ImVec2(0.0f, 24 * 15), 0.0f)) {

@@ -46,7 +46,7 @@ struct coalesced_data {
     std::vector<size_t> elements_offsets;
     std::vector<GLint> base_vertex;
 
-    coalesced_data(const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map);
+    coalesced_data(const std::unordered_map<ChunkPos, util::Mesh> mesh_map);
 };
 
 } // namespace detail
@@ -112,9 +112,9 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
      */
     virtual void attach_all();
 
-    size_t push_back(const world::entity::Mesh& mesh);
+    size_t push_back(const util::Mesh& mesh);
 
-    void replace(size_t index, const world::entity::Mesh& mesh);
+    void replace(size_t index, const util::Mesh& mesh);
 
     void remove(size_t index);
 
@@ -184,7 +184,7 @@ class TerrainMesh : public virtual IMeshMultiGPU {
         color_texture_(color_texture_id){};
 
     inline TerrainMesh(
-        const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map,
+        const std::unordered_map<ChunkPos, util::Mesh> mesh_map,
         Texture1D& color_texture_id
     ) :
         IMeshMultiGPU(detail::coalesced_data(mesh_map), true),
@@ -208,9 +208,9 @@ class TerrainMesh : public virtual IMeshMultiGPU {
         shadow_texture_ = shadow_texture;
     }
 
-    void push_back(ChunkPos position, const world::entity::Mesh& mesh);
+    void push_back(ChunkPos position, const util::Mesh& mesh);
 
-    void replace(ChunkPos position, const world::entity::Mesh& mesh);
+    void replace(ChunkPos position, const util::Mesh& mesh);
 
     void remove(ChunkPos ChunkPos);
 

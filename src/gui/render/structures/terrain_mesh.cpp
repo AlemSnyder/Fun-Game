@@ -7,7 +7,7 @@ namespace gpu_data {
 namespace detail {
 
 coalesced_data::coalesced_data(
-    const std::unordered_map<ChunkPos, world::entity::Mesh> mesh_map
+    const std::unordered_map<ChunkPos, util::Mesh> mesh_map
 ) {
     size_t total_size = 0;
     size_t total_elements_size = 0;
@@ -93,7 +93,7 @@ IMeshMultiGPU::initialize() {
 }
 
 size_t
-IMeshMultiGPU::push_back(const world::entity::Mesh& mesh) {
+IMeshMultiGPU::push_back(const util::Mesh& mesh) {
     // update base_vertex_
     if (base_vertex_.size() > 0) {
         base_vertex_.push_back(vertex_array_.size());
@@ -113,7 +113,7 @@ IMeshMultiGPU::push_back(const world::entity::Mesh& mesh) {
 }
 
 void
-IMeshMultiGPU::replace(size_t index, const world::entity::Mesh& mesh) {
+IMeshMultiGPU::replace(size_t index, const util::Mesh& mesh) {
     assert(index < num_vertices_.size() && "Something Something this will break");
     size_t start = 0;
     for (size_t id = 0; id < index; id++) {
@@ -188,12 +188,12 @@ IMeshMultiGPU::remove(size_t index) {
 }
 
 void
-TerrainMesh::push_back(ChunkPos position, const world::entity::Mesh& mesh) {
+TerrainMesh::push_back(ChunkPos position, const util::Mesh& mesh) {
     world_position_to_index_[position] = IMeshMultiGPU::push_back(mesh);
 }
 
 void
-TerrainMesh::replace(ChunkPos position, const world::entity::Mesh& mesh) {
+TerrainMesh::replace(ChunkPos position, const util::Mesh& mesh) {
     IMeshMultiGPU::replace(world_position_to_index_[position], mesh);
 }
 

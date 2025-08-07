@@ -3,6 +3,9 @@
 #include "entity.hpp"
 
 namespace world {
+
+namespace object {
+
 namespace entity {
 class ImplementedEntity : public virtual Entity {
  public:
@@ -15,5 +18,7 @@ class ImplementedEntity : public virtual Entity {
 };
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

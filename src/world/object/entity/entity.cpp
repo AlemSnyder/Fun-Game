@@ -9,9 +9,11 @@
 
 namespace world {
 
+namespace object {
+
 namespace entity {
 
-Entity::Entity(const Mesh& mesh) :
+Entity::Entity(const util::Mesh& mesh) :
     mesh_and_positions_(std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
         mesh, std::vector<glm::mat4>()
     )) {
@@ -34,7 +36,7 @@ Entity::Entity(
         files::get_data_path() / object_path_copy.remove_filename() / model_data.path
     );
 
-    auto mesh = ambient_occlusion_mesher(model);
+    auto mesh = util::ambient_occlusion_mesher(model);
 
     mesh_and_positions_ =
         std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh);
@@ -194,5 +196,7 @@ EntityInstance::get_object() const {
 }
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

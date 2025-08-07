@@ -7,8 +7,8 @@
 #include "../render/structures/static_mesh.hpp"
 #include "../render/structures/uniform_types.hpp"
 #include "gui/render/structures/floating_instanced_i_mesh.hpp"
+#include "manifest/object_handler.hpp"
 #include "render_programs.hpp"
-#include "world/entity/object_handler.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -309,15 +309,14 @@ setup(
         .tile_object_render_program = tile_entity_render_pipeline};
 
     // attach the world objects to the render program
-    world::entity::ObjectHandler& object_handler =
-        world::entity::ObjectHandler::instance();
-    for (auto& [id, object] : object_handler) {
-        if (!object) {
-            continue;
-        }
+    // TODO entity controller
+    // for (auto& [id, object] : world.get_object_handler()) {
+    //     if (!object) {
+    //         continue;
+    //     }
 
-        object->init_render(object_render_programs);
-    }
+    //     object->init_render(object_render_programs);
+    // }
 
     // attach program to scene
     scene.shadow_attach(chunks_shadow_pipeline);
@@ -332,8 +331,6 @@ setup(
     scene.add_background_ground_renderer(sky_pipeline);
     scene.add_background_ground_renderer(star_pipeline);
     scene.add_background_ground_renderer(sun_pipeline);
-
-    object_handler.start_update();
 }
 
 } // namespace gui
