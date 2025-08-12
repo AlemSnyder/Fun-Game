@@ -9,10 +9,9 @@
 #include "local_context.hpp"
 #include "logging.hpp"
 #include "util/files.hpp"
-//#include "util/loading.hpp"
+#include "manifest/object_handler.hpp"
 #include "util/lua/lua_logging.hpp"
 #include "util/mesh.hpp"
-#include "manifest/object_handler.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
 #include "util/voxel_io.hpp"
@@ -94,7 +93,7 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    
+
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
@@ -116,7 +115,6 @@ MacroMap(const argh::parser& cmdl) {
     size_t size;
     cmdl("size", 4) >> size;
 
-    
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
@@ -173,10 +171,8 @@ image_test(const argh::parser& cmdl) {
         size_t size;
         cmdl("size", 64) >> size;
 
-        
         manifest::ObjectHandler object_handler;
         object_handler.load_all_manifests<false>();
-
 
         terrain::generation::Biome biome(biome_name, seed);
 
@@ -209,7 +205,6 @@ image_test(const argh::parser& cmdl) {
 // reimplement
 int
 ChunkDataTest() {
-    
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
@@ -284,7 +279,7 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    
+
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
@@ -308,7 +303,7 @@ path_finder_test(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
-    
+
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
@@ -356,7 +351,7 @@ path_finder_test() {
 
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
-    
+
     world::World world(&object_handler, BIOME_BASE_NAME, 4, 4, SEED);
 
     TerrainOffset3 start(20, 20, world.get_terrain_main().get_Z_solid(20, 20) + 1);

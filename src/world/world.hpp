@@ -34,9 +34,9 @@
 
 #include <glm/glm.hpp>
 
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
-#include <memory>
 #include <vector>
 
 // forward declaration of util::Mesh
@@ -61,8 +61,6 @@ class World {
 
     // terrain in the world
     terrain::Terrain terrain_main_;
-
-    manifest::ObjectHandler* object_handler_;
 
     object::EntityController controller_;
 
@@ -112,7 +110,7 @@ class World {
      */
     const auto
     get_object_handler() const {
-        return object_handler_;
+        return controller_.get_object_handler();
     }
 
     /**
@@ -120,7 +118,7 @@ class World {
      */
     auto
     get_object_handler() {
-        return object_handler_;
+        return controller_.get_object_handler();
     }
 
     /**
@@ -258,16 +256,9 @@ class World {
 
     inline void
     update_entities() {
-        controller_.update_entities();
-        /*for (auto& object : tile_entities_) {
-            object->update();
-        }*/
-        // for (auto& chunk : terrain_main_.get_chunks()) {
-        //     chunk.update_entities();
-        // }
-        // for (auto& object : entities_) {
-        //     object->update();
-        // }
+        // todo need to pass the current MVP
+        controller_.update_entities(glm::mat4(1.0));
+        controller_.load_to_gup();
     }
 
     [[nodiscard]] std::optional<std::vector<TerrainOffset3>> pathfind_to_object(

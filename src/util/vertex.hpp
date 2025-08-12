@@ -53,7 +53,7 @@ struct Vertex {
     }
 };
 
-} // namespace entity
+} // namespace util
 
 template <>
 struct std::hash<util::Vertex> {

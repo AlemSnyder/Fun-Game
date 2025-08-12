@@ -6,8 +6,7 @@ namespace gpu_data {
 
 namespace detail {
 
-coalesced_data::coalesced_data(
-    const std::unordered_map<ChunkPos, util::Mesh> mesh_map
+coalesced_data::coalesced_data(const std::unordered_map<ChunkPos, util::Mesh> mesh_map
 ) {
     size_t total_size = 0;
     size_t total_elements_size = 0;

@@ -26,7 +26,6 @@
 #include "i_mesh.hpp"
 #include "logging.hpp"
 #include "types.hpp"
-#include "util/chunk_hash.hpp"
 #include "world/terrain/material.hpp"
 
 namespace gui {

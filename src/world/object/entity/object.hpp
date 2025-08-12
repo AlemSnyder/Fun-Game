@@ -73,7 +73,7 @@ class Object {
 
     virtual void init_render(render_programs_t& programs) const = 0;
 
-    virtual void update() = 0;
+    virtual void sync_data_to_gpu() = 0;
 };
 
 class ObjectInstance {

@@ -24,4 +24,4 @@ Mesh::change_color_indexing(
     }
 }
 
-} // namespace world
+} // namespace util

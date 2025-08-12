@@ -108,7 +108,9 @@ class ObjectHandler {
                         // we want to run the mesher async, but need to send the data to
                         // the gpu on the main thread
                         ided_objects[identification] =
-                            static_pointer_cast<world::object::entity::Object>(new_object);
+                            static_pointer_cast<world::object::entity::Object>(
+                                new_object
+                            );
                     }
                     break;
                 case world::object::entity::OBJECT_TYPE::ENTITY:
@@ -118,18 +120,23 @@ class ObjectHandler {
                                 *object_data, descriptor
                             );
                         ided_objects[identification] =
-                            static_pointer_cast<world::object::entity::Object>(new_object);
+                            static_pointer_cast<world::object::entity::Object>(
+                                new_object
+                            );
                     }
                     break;
 
                 case world::object::entity::OBJECT_TYPE::IMPLEMENTED_ENTITY:
                     {
-                        std::shared_ptr<world::object::entity::ImplementedEntity> new_object =
-                            std::make_shared<world::object::entity::ImplementedEntity>(
+                        std::shared_ptr<world::object::entity::ImplementedEntity>
+                            new_object = std::make_shared<
+                                world::object::entity::ImplementedEntity>(
                                 *object_data, descriptor
                             );
                         ided_objects[identification] =
-                            static_pointer_cast<world::object::entity::Object>(new_object);
+                            static_pointer_cast<world::object::entity::Object>(
+                                new_object
+                            );
                     }
                     break;
 

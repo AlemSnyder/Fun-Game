@@ -75,7 +75,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
     glm::vec3 position;
 
-    std::unordered_set<std::shared_ptr<world::object::entity::EntityInstance>> path_entities;
+    std::unordered_set<std::shared_ptr<world::object::entity::EntityInstance>>
+        path_entities;
 
     shader::ShaderHandler shader_handler;
 

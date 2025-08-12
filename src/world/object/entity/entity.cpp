@@ -55,26 +55,6 @@ Entity::Entity(
     }
 }
 
-bool
-Entity::remove(size_t index) {
-    if (index >= local_positions_.size()) [[unlikely]] {
-        return false;
-    }
-    local_positions_.erase(local_positions_.begin() + index);
-    // for (){}
-    //  TODO update entity data_position
-    return true;
-}
-
-bool
-Entity::assign(size_t index, glm::mat4& data) {
-    if (index >= local_positions_.size()) [[unlikely]] {
-        return false;
-    }
-    local_positions_[index] = data;
-    return true;
-}
-
 std::string
 Entity::identification() const {
     return identification_;
@@ -85,9 +65,11 @@ Entity::init_render(render_programs_t& programs) const {
     programs.entity_render_program->data.push_back(mesh_and_positions_.get());
 }
 
+// might want to shrink to fit some times
 void
-Entity::update() {
+Entity::sync_data_to_gpu() {
     mesh_and_positions_->update_transforms_array(local_positions_, 0);
+    local_positions_.clear();
 }
 
 glm::vec3
@@ -134,36 +116,27 @@ Entity::decision(EntityInstance* entity_instance) {
     return position;
 }
 
-EntityInstance::EntityInstance(std::shared_ptr<Entity> entity_type) :
-    entity_type_(entity_type), data_position_(entity_type->add()) {}
-
-EntityInstance::~EntityInstance() {
-    if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
-        entity_type->remove(data_position_);
-    }
+void
+Entity::add_position(glm::mat4 position) const {
+    local_positions_.push_back(position);
 }
 
+EntityInstance::EntityInstance(std::shared_ptr<Entity> entity_type) :
+    entity_type_(entity_type) {}
+
+EntityInstance::~EntityInstance() {}
+
 void
-EntityInstance::update() {
+EntityInstance::operate(std::chrono::milliseconds delta_time, bool show) {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         glm::vec3 position = entity_type->decision(this);
-        set_position(position);
+        position_ = position;
+        if (show) {
+            glm::mat4 transformation(1.0);
+            glm::mat4 data = glm::translate(transformation, position_);
+            entity_type->add_position(data);
+        }
     }
-}
-
-void
-EntityInstance::update(glm::mat4&& data) {
-    if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
-        entity_type->assign(data_position_, data);
-    }
-}
-
-void
-EntityInstance::destroy() {
-    if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
-        entity_type->remove(data_position_);
-    }
-    data_position_ = -1; // ya I know assigning -1 to size_t
 }
 
 glm::vec3
@@ -179,11 +152,14 @@ void
 EntityInstance::set_position(glm::vec3 position) {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         position_ = position;
-        glm::mat4 transformation(1.0);
-        glm::mat4 data = glm::translate(transformation, position);
-        entity_type->assign(data_position_, data);
+        //        glm::mat4 transformation(1.0);
+        //        glm::mat4 data = glm::translate(transformation, position);
+        //        entity_type->add_position(data);
     }
 }
+
+void
+EntityInstance::destroy() {}
 
 std::shared_ptr<Object>
 EntityInstance::get_object() {
@@ -192,6 +168,16 @@ EntityInstance::get_object() {
 
 std::shared_ptr<const Object>
 EntityInstance::get_object() const {
+    return entity_type_.lock();
+}
+
+std::shared_ptr<Entity>
+EntityInstance::get_entity() {
+    return entity_type_.lock();
+}
+
+std::shared_ptr<const Entity>
+EntityInstance::get_entity() const {
     return entity_type_.lock();
 }
 

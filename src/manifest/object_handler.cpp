@@ -20,12 +20,12 @@ ObjectHandler::get_object(const std::string& id) const {
     return ided_objects.at(id);
 }
 
-void ObjectHandler::read_biome(const descriptor_t& biome_descriptor) {
+void
+ObjectHandler::read_biome(const descriptor_t& biome_descriptor) {
     GlobalContext& context = GlobalContext::instance();
-    auto biome_data =
-        files::read_json_from_file<terrain::generation::biome_data_t>(
-            files::get_data_path() / biome_descriptor.path
-        );
+    auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
+        files::get_data_path() / biome_descriptor.path
+    );
     if (!biome_data.has_value()) {
         return;
     }

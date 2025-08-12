@@ -5,6 +5,7 @@ namespace world {
 namespace object {
 
 namespace entity {
+
 glm::vec3
 ImplementedEntity::decision(EntityInstance* entity_instance) {
     glm::vec3 position = entity_instance->get_position();
