@@ -36,7 +36,7 @@ class EntityController {
     void remove_entity(std::shared_ptr<entity::EntityInstance> entity_instance);
 
     std::shared_ptr<entity::TileObjectInstance> spawn_tile_object(
-        std::string identification, uint8_t texture, gui::Placement placement
+        std::string identification, uint8_t model_id, gui::Placement placement
     );
 
     void remove_tile_object(std::shared_ptr<entity::TileObjectInstance> entity_instance

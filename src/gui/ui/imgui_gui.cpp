@@ -118,9 +118,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         main_scene.update_light_direction();
 
-        main_scene.update(window_width, window_height);
-
         world.update_entities();
+
+        main_scene.update(window_width, window_height);
 
         position = controls::get_position_vector();
 

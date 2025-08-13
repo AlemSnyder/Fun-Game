@@ -46,9 +46,18 @@ EntityController::spawn_entity(std::string identification, glm::vec3 position) {
     // get position
     ChunkPos chunk_position = util::position::chunk_pos_from_vec(position);
 
+    if (!entity_instances_.contains(chunk_position)) {
+        entity_instances_.emplace(
+            std::piecewise_construct, std::make_tuple(chunk_position), std::make_tuple()
+        );
+    }
+
     // entity_instances_.at(position).insert(object);
-    entity_instances_.at(chunk_position)
-        .insert(std::make_shared<entity::EntityInstance>(entity_type, position));
+    auto inserted =
+        entity_instances_.at(chunk_position)
+            .insert(std::make_shared<entity::EntityInstance>(entity_type, position));
+
+    return *inserted.first;
 }
 
 void
@@ -63,7 +72,7 @@ EntityController::remove_entity(std::shared_ptr<entity::EntityInstance> entity_i
 
 std::shared_ptr<entity::TileObjectInstance>
 EntityController::spawn_tile_object(
-    std::string identification, uint8_t texture, gui::Placement placement
+    std::string identification, uint8_t model_id, gui::Placement placement
 ) {
     // get object
     auto object_type = object_handler_->get_object(identification);
@@ -90,11 +99,19 @@ EntityController::spawn_tile_object(
         glm::vec3(placement.x, placement.y, placement.z)
     );
 
-    // tile_object_instances_.at(position).insert(object);
-    object_instances_.at(chunk_position)
-        .insert(
-            std::make_shared<entity::TileObjectInstance>(tile_object_type, 0, placement)
+    if (!object_instances_.contains(chunk_position)) {
+        object_instances_.emplace(
+            std::piecewise_construct, std::make_tuple(chunk_position), std::make_tuple()
         );
+    }
+
+    // tile_object_instances_.at(position).insert(object);
+    auto inserted = object_instances_.at(chunk_position)
+                        .insert(std::make_shared<entity::TileObjectInstance>(
+                            tile_object_type, model_id, placement
+                        ));
+
+    return *inserted.first;
 }
 
 void

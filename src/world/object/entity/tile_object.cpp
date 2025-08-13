@@ -92,6 +92,13 @@ TileObject::init_render(render_programs_t& programs) const {
     }
 }
 
+void
+TileObject::sync_data_to_gpu() {
+    for (auto& mesh : model_meshes_) {
+        mesh.update();
+    }
+}
+
 } // namespace entity
 
 } // namespace object

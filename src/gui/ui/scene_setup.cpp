@@ -309,14 +309,13 @@ setup(
         .tile_object_render_program = tile_entity_render_pipeline};
 
     // attach the world objects to the render program
-    // TODO entity controller
-    // for (auto& [id, object] : world.get_object_handler()) {
-    //     if (!object) {
-    //         continue;
-    //     }
+    for (auto& [id, object] : *world.get_object_handler()) {
+        if (!object) {
+            continue;
+        }
 
-    //     object->init_render(object_render_programs);
-    // }
+        object->init_render(object_render_programs);
+    }
 
     // attach program to scene
     scene.shadow_attach(chunks_shadow_pipeline);

@@ -177,7 +177,7 @@ class TileObject : public virtual Object {
 
     virtual void init_render(render_programs_t& programs) const override;
 
-    inline virtual void sync_data_to_gpu(){};
+    virtual void sync_data_to_gpu();
 };
 
 } // namespace entity
