@@ -518,13 +518,13 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     void remove_node_group(NodeGroup* NG);
 
-    inline ChunkPos
-    get_chunk_from_tile(TerrainOffset3 tile_sop) const {
+    static inline ChunkPos
+    get_chunk_from_tile(TerrainOffset3 tile_sop) {
         return get_chunk_from_tile(tile_sop.x, tile_sop.y, tile_sop.z);
     }
 
-    ChunkPos
-    get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const;
+    static ChunkPos
+    get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z);
 
     [[nodiscard]] inline size_t
     num_chunks() const {

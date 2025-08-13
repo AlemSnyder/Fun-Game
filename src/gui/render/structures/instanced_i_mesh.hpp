@@ -24,7 +24,7 @@
 #include "gui/render/gpu_data/data_types.hpp"
 #include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "i_mesh.hpp"
-#include "world/entity/mesh.hpp"
+#include "util/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -70,7 +70,7 @@ class InstancedIMeshGPU :
      * @param const std::vector<glm::ivec4>& model_transforms
      */
     InstancedIMeshGPU(
-        const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+        const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     );
 
     inline virtual ~InstancedIMeshGPU() {}

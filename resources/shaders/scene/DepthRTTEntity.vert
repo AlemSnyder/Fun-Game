@@ -15,7 +15,7 @@
  *
  * @author @AlemSnyder
  *
- * @brief Render depth to texture from instanced model
+ * @brief Render depth to texture from eneity model with size 1/16
  *
  * @ingroup SHADERS SCENE
  *
@@ -30,13 +30,15 @@ layout(location = 3) in ivec3 model_matrix_transform;
 // Values that stay constant for the whole mesh.
 uniform mat4 depth_MVP;
 
+uint scalr_divisor = 16;
+
 mat4 rotate =
     mat4(vec4(0, -1, 0, 0), vec4(1, 0, 0, 0), vec4(0, 0, 1, 0), vec4(0, 0, 0, 0));
 
 void
 main() {
     vec4 vertex_position_modelspace_rotated =
-        rotate * vec4(vertex_position_modelspace - vec3(.5, .5, 0), 1)
+        rotate * vec4(vertex_position_modelspace / scalr_divisor - vec3(.5, .5, 0), 1)
         + vec4(.5, .5, 0, 0);
 
     vec4 vertex_postion_worldspace =

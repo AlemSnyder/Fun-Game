@@ -2,8 +2,8 @@
 
 #include "../handler.hpp"
 #include "logging.hpp"
-#include "world/entity/mesh.hpp"
-#include "world/entity/object_handler.hpp"
+#include "manifest/object_handler.hpp"
+#include "util/mesh.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

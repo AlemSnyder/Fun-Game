@@ -8,14 +8,14 @@
 #include "gui/ui/opengl_gui.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
 #include "util/files.hpp"
-#include "util/loading.hpp"
 #include "util/lua/lua_logging.hpp"
+#include "util/mesh.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
 #include "util/voxel_io.hpp"
 #include "world/biome.hpp"
-#include "world/entity/mesh.hpp"
 #include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
@@ -74,6 +74,10 @@ TerrainTypes(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
     biome_data =
         terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
 
@@ -89,7 +93,11 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    world::World world(BIOME_BASE_NAME, size, size, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, size, size, seed);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
 
@@ -107,10 +115,18 @@ MacroMap(const argh::parser& cmdl) {
     size_t size;
     cmdl("size", 4) >> size;
 
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
     terrain::generation::Biome biome(biome_name, seed);
 
     // test terrain generation
     auto map = biome.get_map(size);
+
+    assert(
+        map.get_width() == size && map.get_width() == size
+        && "Size should match the width and height."
+    );
 
     std::vector<TileMacro_t> int_map;
     for (const auto& map_tile : map) {
@@ -155,9 +171,17 @@ image_test(const argh::parser& cmdl) {
         size_t size;
         cmdl("size", 64) >> size;
 
+        manifest::ObjectHandler object_handler;
+        object_handler.load_all_manifests<false>();
+
         terrain::generation::Biome biome(biome_name, seed);
 
         auto map = biome.get_map(size);
+
+        assert(
+            map.get_width() == size && map.get_width() == size
+            && "Size should match the width and height."
+        );
 
         std::filesystem::path png_save_path = files::get_argument_path(cmdl(3).str());
 
@@ -181,7 +205,10 @@ image_test(const argh::parser& cmdl) {
 // reimplement
 int
 ChunkDataTest() {
-    world::World world(BIOME_BASE_NAME, 6, 6);
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, 6, 6);
 
     const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
 
@@ -252,8 +279,11 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    util::load_manifest();
-    world::World world(BIOME_BASE_NAME, path_in, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -273,8 +303,11 @@ path_finder_test(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
-    util::load_manifest();
-    world::World world(biome_name, path_in, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, biome_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -316,8 +349,10 @@ int
 path_finder_test() {
     quill::Logger* logger = logging::main_logger;
 
-    // util::load_manifest();
-    world::World world(BIOME_BASE_NAME, 4, 4, SEED);
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, 4, 4, SEED);
 
     TerrainOffset3 start(20, 20, world.get_terrain_main().get_Z_solid(20, 20) + 1);
     TerrainOffset3 end(90, 90, world.get_terrain_main().get_Z_solid(90, 90) + 1);
@@ -366,13 +401,14 @@ LogTest() {
     });
 
     LOG_INFO(
-        logging::lua_logger, "Using Lua logger. The lua logger should not log the cpp "
-                             "file, but instead the lua file."
+        logging::lua_script_logger,
+        "Using Lua logger. The lua logger should not log the cpp "
+        "file, but instead the lua file."
     );
 
     LOG_INFO(
-        logging::lua_logger, "[{}.lua:{}] - This is what a lua log should look like.",
-        "example_file", 37
+        logging::lua_script_logger,
+        "[{}.lua:{}] - This is what a lua log should look like.", "example_file", 37
     );
 
     future.wait();
@@ -382,7 +418,8 @@ LogTest() {
 
 int
 lua_log_test() {
-    auto& lua = LocalContext::get_lua_state();
+    LocalContext& local_context = LocalContext::instance();
+    sol::state& lua = local_context.get_lua_state();
 
     sol::protected_function lua_log_critical = lua["Logging"]["LOG_CRITICAL"];
 
@@ -400,14 +437,16 @@ lua_log_test() {
 int
 lua_loadtime_test() {
     LOG_INFO(logging::main_logger, "Getting Local Lua State.");
-    auto& lua = LocalContext::get_lua_state();
+    LocalContext& local_context = LocalContext::instance();
+    sol::state& lua = local_context.get_lua_state();
     LOG_INFO(logging::main_logger, "Got Local Lua State.");
     LOG_INFO(logging::main_logger, "Loading Lua File.");
 
     std::filesystem::path lua_script_path =
         files::get_resources_path() / "lua" / "is_prime_test.lua";
 
-    sol::table result = lua.require_file("test", lua_script_path.string());
+    sol::table result =
+        lua.require_file("is_prime_test", lua_script_path.string(), false);
 
     if (!result.valid()) {
         LOG_WARNING(logging::main_logger, "is prime test failed to import.");
@@ -523,10 +562,10 @@ lua_transfertime_test() {
         std::optional<sol::object> result = context.get_from_lua("tests\\is_prime");
 
         if (!result) {
-            return 0;
+            return 1;
         }
         if (!result->is<sol::protected_function>()) {
-            return 0;
+            return 1;
         }
 
         sol::protected_function is_prime_function =
@@ -622,8 +661,6 @@ lua_transfertime_test() {
         return 0;
     });
 
-    future_result.wait();
-
     int subprocess_status = future_result.get();
 
     return subprocess_status;
@@ -661,11 +698,22 @@ lua_load_tests() {
         if (!return_status) {
             return 1;
         }
+        std::optional<sol::object> tests_table =
+            local_context.get_from_this_lua_state("tests");
+        if (tests_table) {
+            if (tests_table->is<sol::table>()) {
+                sol::table tests_table_table = tests_table.value();
+                for (auto& [key, value] : tests_table_table) {
+                    LOG_INFO(logging::lua_logger, "key: {}", key.as<std::string>());
+                }
+            }
+        }
+
         std::optional<sol::object> is_prime_function =
             local_context.get_from_this_lua_state("tests\\is_prime");
         if (!is_prime_function) {
             LOG_ERROR(logging::lua_logger, "Could not load tests table.");
-            return 0;
+            return 1;
         }
         local_context.set_to_this_lua_state(
             "tests\\is_not_not_prime", is_prime_function.value()
@@ -727,8 +775,10 @@ tests(const argh::parser& cmdl) {
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
     } else if (run_function == "LoadManifest") {
-        return util::load_manifest_test();
-    } else if (run_function == "EngineTest") {
+        manifest::ObjectHandler object_handler;
+        return object_handler.load_all_manifests<false>();
+
+    } else if (run_function == "EnginTest") {
         return gui::opengl_tests();
     } else if (run_function == "Lua") {
         return lua_tests(cmdl);

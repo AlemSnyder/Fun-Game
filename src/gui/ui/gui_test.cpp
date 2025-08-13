@@ -12,8 +12,8 @@
 #include "../scene/scene.hpp"
 #include "logging.hpp"
 #include "opengl_setup.hpp"
+#include "util/mesh.hpp"
 #include "world/climate.hpp"
-#include "world/entity/mesh.hpp"
 #include "world/world.hpp"
 
 #include <GLFW/glfw3.h>

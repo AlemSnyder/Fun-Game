@@ -14,10 +14,11 @@
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "util/mesh.hpp"
 #include "world/climate.hpp"
-#include "world/entity/mesh.hpp"
 #include "world/world.hpp"
 
 #include <imgui/backends/imgui_impl_glfw.h>
@@ -66,9 +67,16 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Our state
-    bool show_another_window = false;
+    bool show_position_window = false;
     bool show_light_controls = false;
     bool show_shadow_map = false;
+    bool show_programs_window = false;
+    bool show_entity_window = false;
+
+    glm::vec3 position;
+
+    std::unordered_set<std::shared_ptr<world::object::entity::EntityInstance>>
+        path_entities;
 
     shader::ShaderHandler shader_handler;
 
@@ -78,8 +86,6 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     Scene main_scene(mode->width, mode->height, shadow_map_size);
     setup(main_scene, shader_handler, world, climate);
-
-    glm::vec3 position;
 
     //! Main loop
 
@@ -112,6 +118,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         main_scene.update_light_direction();
 
+        world.update_entities();
+
         main_scene.update(window_width, window_height);
 
         position = controls::get_position_vector();
@@ -138,28 +146,76 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
             ImGui::Text("This is some useful text."
             ); // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Another Window", &show_another_window);
+            ImGui::Checkbox("Position Window", &show_position_window);
             ImGui::Checkbox("Show Light Controls", &show_light_controls);
             ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
+            ImGui::Checkbox("Show Programs", &show_programs_window);
+            ImGui::Checkbox("Show Entities", &show_entity_window);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
                 io.Framerate
             );
+            static int breadth_first_search_start[3];
+            ImGui::DragInt3(
+                "Start Position", breadth_first_search_start, (1.0F), 0, world.height
+            );
+            static bool path_exists = false;
+            static int path_length = 0;
+
+            if (ImGui::Button("Breadth First Search")) {
+                for (auto& entity : path_entities) {
+                    world.remove_entity(entity);
+                }
+                path_entities.clear();
+                auto path = world.pathfind_to_object(
+                    TerrainOffset3(
+                        breadth_first_search_start[0], breadth_first_search_start[1],
+                        breadth_first_search_start[2]
+                    ),
+                    "base/Flower_Test"
+                );
+                if (path) {
+                    path_exists = true;
+                    path_length = path.value().size();
+
+                    // auto test_object = object_handler.get_object("base/Test_Entity");
+
+                    for (auto position : path.value()) {
+                        auto new_entity =
+                            world.spawn_entity("base/Test_Entity", position);
+
+                        path_entities.insert(new_entity);
+                    }
+
+                } else {
+                    path_exists = false;
+                    path_length = 0;
+                }
+            }
+            ImGui::Text(
+                "Path found: %s. With length %d.", path_exists ? "true" : "false",
+                path_length
+            );
+
+            if (ImGui::Button("Clear Breadth First Search")) {
+                for (auto& entity : path_entities) {
+                    world.remove_entity(entity);
+                }
+                path_entities.clear();
+            }
             ImGui::End();
         }
 
         // 3. Show another simple window.
-        if (show_another_window) {
+        if (show_position_window) {
             ImGui::Begin(
-                "Another Window", &show_another_window
+                "Position Window", &show_position_window
             ); // Pass a pointer to our bool variable (the window will have a closing
                // button that will clear the bool when clicked)
             ImGui::Text(
                 "position <%.3f, %.3f, %.3f>", position.x, position.y, position.z
             );
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
             ImGui::End();
         }
 
@@ -169,7 +225,17 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
         }
 
-        display_windows::display_data(shader_handler.get_programs());
+        if (show_programs_window) {
+            display_windows::display_data(
+                shader_handler.get_programs(), show_programs_window
+            );
+        }
+
+        if (show_entity_window) {
+            display_windows::display_data(
+                *world.get_object_handler(), show_entity_window
+            );
+        }
 
         if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
             show_shadow_map = true;
