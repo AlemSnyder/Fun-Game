@@ -64,15 +64,6 @@ class World {
 
     object::EntityController controller_;
 
-    //   ^
-    //   |
-    // TileObjects
-    //    std::unordered_set<std::shared_ptr<entity::TileObjectInstance>>
-    //    tile_entities_;
-
-    // Entities
-    //    std::unordered_set<std::shared_ptr<entity::EntityInstance>> entities_;
-
     // TerrainMesh for all terrain
     std::shared_ptr<gui::gpu_data::TerrainMesh> terrain_mesh_;
     // chunks_mesh like attorneys general
