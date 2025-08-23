@@ -1,8 +1,9 @@
 #include "biome.hpp"
 
-#include "entity/object_handler.hpp"
+#include "global_context.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
 #include "terrain/generation/lua_interface.hpp"
 #include "terrain/generation/noise.hpp"
 #include "terrain/generation/worley_noise.hpp"
@@ -92,17 +93,29 @@ TerrainMacroMap
 Biome::get_map(MacroDim size) const {
     std::vector<MapTile> out;
 
-    sol::state& lua = LocalContext::get_lua_state();
-    if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
+    LocalContext& local_context = LocalContext::instance();
+    auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
+
+    if (!biome_map_query) {
+        LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
+        return {};
+    }
+    if (!biome_map_query->is<sol::table>()) {
+        LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
         return {};
     }
 
-    init_lua_interface(lua);
+    sol::table biome_map = biome_map_query.value();
 
-    sol::table biome_library =
-        lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
+    auto biome_map_function =
+        biome_map.get<sol::optional<sol::protected_function>>("map");
 
-    sol::protected_function map_function = biome_library[id_name_]["biome_map"]["map"];
+    if (!biome_map_function) {
+        LOG_ERROR(logging::lua_logger, "map does not exists");
+        return {};
+    }
+
+    sol::protected_function map_function = biome_map_function.value();
 
     if (!map_function.valid()) [[unlikely]] {
         LOG_ERROR(logging::lua_logger, "Function map not defined.");
@@ -167,45 +180,62 @@ const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;
 
-    sol::state& lua = LocalContext::get_lua_state();
+    LocalContext& local_context = LocalContext::instance();
+    auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
 
-    if (!std::filesystem::exists(lua_map_generator_file_)) [[unlikely]] {
+    if (!biome_map_query) {
+        LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
+        return {};
+    }
+    if (!biome_map_query->is<sol::table>()) {
+        LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
+        return {};
+    }
+    sol::table biome_map = biome_map_query.value();
+
+    auto biome_map_function =
+        biome_map.get<sol::optional<sol::protected_function>>("map");
+
+    if (!biome_map_function) {
+        LOG_ERROR(logging::lua_logger, "map does not exists");
         return {};
     }
 
-    sol::table biome_library =
-        lua.require_file("Base_Biome", lua_map_generator_file_.string(), false);
+    sol::protected_function map_function = biome_map_function.value();
 
-    sol::protected_function plant_map =
-        biome_library[id_name_]["biome_map"]["plants_map"];
+    if (!map_function.valid()) [[unlikely]] {
+        LOG_ERROR(logging::lua_logger, "Function map not defined.");
+        return {};
+    }
+
+    auto biome_plant_map_function =
+        biome_map.get<sol::optional<sol::protected_function>>("plants_map");
+
+    if (!biome_plant_map_function) {
+        LOG_ERROR(logging::lua_logger, "map does not exists");
+        return {};
+    }
+
+    sol::protected_function plant_map = biome_plant_map_function.value();
 
     if (!plant_map.valid()) {
-        LOG_ERROR(
-            logging::lua_logger, "Error with plant_map in {}.", lua_map_generator_file_
-        );
+        LOG_ERROR(logging::lua_logger, "Error with plant_map in {}.", id_name_);
         return {};
     }
 
-    sol::protected_function map_function = lua["Base"]["biome_map"]["map"];
+    sol::protected_function_result macro_map = map_function(length);
 
-    if (!map_function.valid()) {
-        LOG_ERROR(
-            logging::lua_logger, "Error with map_function in {}.",
-            lua_map_generator_file_
-        );
-        return {};
-    }
-
-    sol::protected_function_result macor_map = map_function(length);
-
-    if (!macor_map.valid()) {
-        sol::error err = macor_map;
-        sol::call_status status = macor_map.status();
+    if (!macro_map.valid()) {
+        sol::error err = macro_map;
+        sol::call_status status = macro_map.status();
         LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
         return {};
+    } else if (macro_map.get_type() != sol::type::table) {
+        LOG_WARNING(logging::lua_logger, "map function result is not a table.");
+        return {};
     }
 
-    sol::table macro_map_table = macor_map;
+    sol::table macro_map_table = macro_map;
 
     sol::table map = plant_map(length, macro_map_table);
 

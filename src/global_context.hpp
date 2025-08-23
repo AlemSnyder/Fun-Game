@@ -55,6 +55,8 @@ class GlobalContext {
 
     sol::state lua_;
 
+    std::mutex global_lua_mutex_;
+
 #if DEBUG()
 
     std::thread::id main_thread_id;

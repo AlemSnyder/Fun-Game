@@ -24,7 +24,7 @@
 #include "gui/render/gpu_data/data_types.hpp"
 #include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "i_mesh.hpp"
-#include "world/entity/mesh.hpp"
+#include "util/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -59,11 +59,11 @@ class FloatingInstancedIMeshGPU :
     inline FloatingInstancedIMeshGPU& operator=(FloatingInstancedIMeshGPU&& other
     ) = default;
 
-    inline FloatingInstancedIMeshGPU(const world::entity::Mesh& mesh) :
+    inline FloatingInstancedIMeshGPU(const util::Mesh& mesh) :
         FloatingInstancedIMeshGPU(mesh, {}) {}
 
     FloatingInstancedIMeshGPU(
-        const world::entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
+        const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
     );
 
     inline virtual ~FloatingInstancedIMeshGPU() {}

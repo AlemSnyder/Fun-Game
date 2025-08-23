@@ -4,7 +4,7 @@
 #include "gui/placement.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
 #include "gui/render/gpu_data/vertex_buffer_object.hpp"
-#include "manifest.hpp"
+#include "manifest/manifest.hpp"
 #include "static_mesh.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
@@ -76,11 +76,11 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     /**
      * @brief Construct new ModelController
      *
-     * @param const world::entity::Mesh& Mesh data
+     * @param const util::Mesh& Mesh data
      * @param const std::vector<std::vector<ColorFloat>>& color map data
      */
     inline ModelController(
-        const world::entity::Mesh& model_mesh,
+        const util::Mesh& model_mesh,
         const std::vector<std::vector<ColorFloat>>& vector_data
     ) noexcept :
         model_mesh_(model_mesh, {}),

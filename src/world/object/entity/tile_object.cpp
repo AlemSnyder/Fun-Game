@@ -5,6 +5,8 @@
 
 namespace world {
 
+namespace object {
+
 namespace entity {
 
 TileObjectInstance::TileObjectInstance(
@@ -59,7 +61,7 @@ TileObject::TileObject(
         voxel_utility::VoxelObject model(files::get_data_path() / file_path);
 
         // generate a mesh from the model
-        auto mesh = ambient_occlusion_mesher(model);
+        auto mesh = util::ambient_occlusion_mesher(model);
         std::vector<std::vector<ColorFloat>> color_data(
             {color::convert_color_data(mesh.get_color_map())}
         );
@@ -90,6 +92,15 @@ TileObject::init_render(render_programs_t& programs) const {
     }
 }
 
+void
+TileObject::sync_data_to_gpu() {
+    for (auto& mesh : model_meshes_) {
+        mesh.update();
+    }
+}
+
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

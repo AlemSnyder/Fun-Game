@@ -24,7 +24,7 @@ IMeshGPU::initialize() {
 }
 
 void
-IMeshGPU::update(const world::entity::Mesh& mesh) {
+IMeshGPU::update(const util::Mesh& mesh) {
     num_vertices_ = mesh.get_indices().size();
     do_render_ = (num_vertices_ != 0);
 

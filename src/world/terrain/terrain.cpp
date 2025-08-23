@@ -653,7 +653,7 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
 }
 
 ChunkPos
-Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
+Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) {
     if (x < 0) {
         x -= Chunk::SIZE - 1;
     }
@@ -917,8 +917,8 @@ Terrain::get_path_breadth_first(
     auto node_path = get_path_breadth_first(start_node, goal_nodes);
     if (!node_path)
         return {};
-    NodeGroupWrapper end = node_path.value().back();
-    ChunkPos chunk_position = get_chunk_from_tile(end.unique_position());
+    NodeGroupWrapper end = node_path.value().front();
+    ChunkPos chunk_position = end.get_chunk_position();
 
     std::unordered_set<PositionWrapper> goal({});
     for (const TerrainOffset3 g : goal_) {

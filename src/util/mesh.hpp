@@ -20,11 +20,11 @@
  */
 #pragma once
 
-#include "../terrain/material.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
 #include "util/voxel.hpp"
 #include "vertex.hpp"
+#include "world/terrain/material.hpp"
 
 #include <glm/glm.hpp>
 
@@ -34,9 +34,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace world {
-
-namespace entity {
+namespace util {
 
 /**
  * @brief Holds data that describes now an object is loaded by the shader
@@ -384,6 +382,4 @@ ambient_occlusion_mesher(T voxel_object) {
     );
 }
 
-} // namespace entity
-
-} // namespace world
+} // namespace util

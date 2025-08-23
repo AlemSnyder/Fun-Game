@@ -1,14 +1,12 @@
 #include "mesh.hpp"
 
-#include "../terrain/material.hpp"
 #include "types.hpp"
+#include "world/terrain/material.hpp"
 
 #include <map>
 #include <unordered_map>
 
-namespace world {
-
-namespace entity {
+namespace util {
 
 void
 Mesh::change_color_indexing(
@@ -26,6 +24,4 @@ Mesh::change_color_indexing(
     }
 }
 
-} // namespace entity
-
-} // namespace world
+} // namespace util
