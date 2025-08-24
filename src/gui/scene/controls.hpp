@@ -89,10 +89,7 @@ class Controls : public Inputs {
     ) override;
 
     virtual void
-    handle_mouse_button_input(
-        GLFWwindow* window, int button,
-        int action, int mods
-    );
+    handle_mouse_button_input(GLFWwindow* window, int button, int action, int mods);
 
     /**
      * @brief To be called when controls are bound. (hide curser etc)
@@ -148,7 +145,7 @@ class Controls : public Inputs {
     get_width() const {
         return width_;
     }
-    
+
     [[nodiscard]] inline int
     get_height() const {
         return height_;

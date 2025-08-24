@@ -118,8 +118,7 @@ Controls::handle_mouse_scroll_input(
 
 void
 Controls::handle_mouse_button_input(
-    GLFWwindow* window, int button,
-    int action, int mods
+    GLFWwindow* window, int button, int action, int mods
 ) {
     if (static_cast<Key>(button) == Key::MOUSE_LEFT && action == GLFW_PRESS) {
         double xpos;
@@ -129,7 +128,6 @@ Controls::handle_mouse_button_input(
         int xpos_int = floor(xpos);
         int ypos_int = floor(ypos);
     }
-    
 }
 
 void

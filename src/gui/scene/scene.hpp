@@ -23,8 +23,8 @@
 #pragma once
 
 #include "controls.hpp"
-#include "gui/render/gpu_data/frame_buffer_multisample.hpp"
 #include "gui/render/gpu_data/frame_buffer.hpp"
+#include "gui/render/gpu_data/frame_buffer_multisample.hpp"
 #include "gui/render/gpu_data/shadow_map.hpp"
 #include "gui/render/graphics_shaders/render_types.hpp"
 #include "gui/render/structures/screen_data.hpp"
@@ -47,7 +47,6 @@ class Scene {
     gpu_data::ShadowMap shadow_map_;
     gpu_data::FrameBuffer frame_buffer_mg_; // mid ground
     // gpu_data::Texture2D depth_texture_fg; // foreground
-
 
     gpu_data::ScreenData screen_data_;
 
@@ -79,7 +78,10 @@ class Scene {
     ) :
         frame_buffer_multisample_(window_width, window_height, SAMPLES),
         environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)), inputs_(inputs),
-        shadow_map_(shadow_map_width_height, shadow_map_width_height), frame_buffer_mg_(window_width, window_height /*These should be the screen size*/) {}
+        shadow_map_(shadow_map_width_height, shadow_map_width_height),
+        frame_buffer_mg_(
+            window_width, window_height /*These should be the screen size*/
+        ) {}
 
     /**
      * @deprecated
@@ -168,11 +170,13 @@ class Scene {
         return frame_buffer_multisample_;
     }
 
-    inline GLuint get_mid_ground_framebuffer_id() {
+    inline GLuint
+    get_mid_ground_framebuffer_id() {
         return frame_buffer_mg_.get_frame_buffer_id();
     }
 
-    inline gpu_data::FrameBuffer& get_mid_ground_framebuffer() {
+    inline gpu_data::FrameBuffer&
+    get_mid_ground_framebuffer() {
         return frame_buffer_mg_;
     }
 

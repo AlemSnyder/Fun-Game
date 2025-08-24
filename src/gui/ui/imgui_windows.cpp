@@ -108,8 +108,7 @@ display_data(world::entity::ObjectHandler& object_handler, bool& show) {
 
         for (auto& [id, object] : object_handler) {
             // Display a data item
-            ImGui::PushID(
-                std::hash<std::string>{}(id)
+            ImGui::PushID(std::hash<std::string>{}(id)
             ); // maybe not grate to call hashes like this
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -142,48 +141,46 @@ display_data(Scene& scene, bool& show) {
     const auto& frame_buffer = scene.get_frame_buffer();
 
     _Float16 value;
-//    glGetTextureImage(dt, 0, GL_DEPTH_COMPONENT, 1, &value);
+    //    glGetTextureImage(dt, 0, GL_DEPTH_COMPONENT, 1, &value);
 
     FrameBufferHandler& fbh = FrameBufferHandler::instance();
     fbh.bind_fbo(dt);
 
     glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_HALF_FLOAT, &value);
-    
 
     ImGui::Text("Depth 16 %f", value);
-
 
     float value_2;
 
     glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &value_2);
-    
 
     ImGui::Text("Depth 32 %f", value_2);
 
-//    _Float32 value_3;
+    //    _Float32 value_3;
 
-//    glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24, &value_3);
-    
+    //    glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
+    //    &value_3);
+
     fbh.bind_fbo(0);
 
-//    ImGui::Text("Depth 24 %f", value_3);
+    //    ImGui::Text("Depth 24 %f", value_3);
 
     ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_depth_buffer_name()),
         ImVec2(
             mid_ground.get_width() / 8,
             mid_ground.get_height() / 8
-        )//,
-        //ImVec2(0, 1), ImVec2(1, 0)
+        ) //,
+        // ImVec2(0, 1), ImVec2(1, 0)
     );
 
-                ImGui::Image(
+    ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_texture_name()),
         ImVec2(
             mid_ground.get_width() / 8,
             mid_ground.get_height() / 8
-        )//,
-        //ImVec2(0, 1), ImVec2(1, 0)
+        ) //,
+        // ImVec2(0, 1), ImVec2(1, 0)
     );
 
     ImGui::Image(
@@ -191,26 +188,51 @@ display_data(Scene& scene, bool& show) {
         ImVec2(
             mid_ground.get_width() / 8,
             mid_ground.get_height() / 8
-        )//,
-        //ImVec2(0, 1), ImVec2(1, 0)
+        ) //,
+        // ImVec2(0, 1), ImVec2(1, 0)
     );
 
     const auto controls = scene.get_inputs();
     glm::mat4 inverse_view_projection = controls->get_inverse_view_projection();
-    glm::vec4 screen_position(static_cast<float>(xy[0])/static_cast<float>(controls->get_width()) * 2 - 1, static_cast<float>(xy[1])/static_cast<float>(controls->get_height()) * 2 - 1, value_2, 1);
+    glm::vec4 screen_position(
+        static_cast<float>(xy[0]) / static_cast<float>(controls->get_width()) * 2 - 1,
+        static_cast<float>(xy[1]) / static_cast<float>(controls->get_height()) * 2 - 1,
+        value_2, 1
+    );
 
     glm::vec4 world_position = inverse_view_projection * screen_position;
     world_position = world_position / world_position.w;
 
-    ImGui::Text("Screen position [%f, %f, %f, %f]", screen_position.x, screen_position.y, screen_position.z, screen_position.w);
+    ImGui::Text(
+        "Screen position [%f, %f, %f, %f]", screen_position.x, screen_position.y,
+        screen_position.z, screen_position.w
+    );
 
-    ImGui::Text("inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[0][0], inverse_view_projection[0][1], inverse_view_projection[0][2], inverse_view_projection[0][3]);
-    ImGui::Text("inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[1][0], inverse_view_projection[1][1], inverse_view_projection[1][2], inverse_view_projection[1][3]);
-    ImGui::Text("inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[2][0], inverse_view_projection[2][1], inverse_view_projection[2][2], inverse_view_projection[2][3]);
-    ImGui::Text("inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[3][0], inverse_view_projection[3][1], inverse_view_projection[3][2], inverse_view_projection[3][3]);
+    ImGui::Text(
+        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[0][0],
+        inverse_view_projection[0][1], inverse_view_projection[0][2],
+        inverse_view_projection[0][3]
+    );
+    ImGui::Text(
+        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[1][0],
+        inverse_view_projection[1][1], inverse_view_projection[1][2],
+        inverse_view_projection[1][3]
+    );
+    ImGui::Text(
+        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[2][0],
+        inverse_view_projection[2][1], inverse_view_projection[2][2],
+        inverse_view_projection[2][3]
+    );
+    ImGui::Text(
+        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[3][0],
+        inverse_view_projection[3][1], inverse_view_projection[3][2],
+        inverse_view_projection[3][3]
+    );
 
-
-    ImGui::Text("World position [%f, %f, %f, %f]", world_position.x, world_position.y, world_position.z, world_position.w);
+    ImGui::Text(
+        "World position [%f, %f, %f, %f]", world_position.x, world_position.y,
+        world_position.z, world_position.w
+    );
 
     ImGui::End();
 }
