@@ -653,7 +653,7 @@ Terrain::get_G_cost(const T tile, const Node<const T> node) {
 }
 
 ChunkPos
-Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) const {
+Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) {
     if (x < 0) {
         x -= Chunk::SIZE - 1;
     }

@@ -1,13 +1,18 @@
 #pragma once
 
+#include "cognition.hpp"
 #include "gui/render/structures/floating_instanced_i_mesh.hpp"
-#include "manifest.hpp"
-#include "mesh.hpp"
+#include "manifest/manifest.hpp"
 #include "object.hpp"
+#include "types.hpp"
+#include "util/mesh.hpp"
 
+#include <chrono>
 #include <memory>
 
 namespace world {
+
+namespace object {
 
 namespace entity {
 
@@ -17,7 +22,7 @@ class EntityInstance : public virtual ObjectInstance {
  private:
     std::weak_ptr<Entity> entity_type_;
 
-    size_t data_position_; // like a id
+    //    size_t data_position_; // like a id
 
     glm::vec3 position_;
 
@@ -26,11 +31,16 @@ class EntityInstance : public virtual ObjectInstance {
  public:
     EntityInstance(std::shared_ptr<Entity> entity_type);
 
+    EntityInstance(std::shared_ptr<Entity> entity_type, glm::vec3 position) :
+        EntityInstance(entity_type) {
+        set_position(position);
+    }
+
     ~EntityInstance();
 
-    void update();
+    void operate(std::chrono::milliseconds delta_time, bool show);
 
-    void update(glm::mat4&& data);
+    //    void update(glm::mat4&& data);
 
     virtual void destroy();
 
@@ -47,9 +57,13 @@ class EntityInstance : public virtual ObjectInstance {
     virtual std::shared_ptr<Object> get_object();
 
     virtual std::shared_ptr<const Object> get_object() const;
+
+    virtual std::shared_ptr<Entity> get_entity();
+
+    virtual std::shared_ptr<const Entity> get_entity() const;
 };
 
-class Entity : public virtual Object {
+class Entity : public virtual Object, public virtual Cognition {
     friend EntityInstance;
 
  private:
@@ -60,19 +74,19 @@ class Entity : public virtual Object {
     std::string name_;
     std::string identification_;
 
-    std::vector<glm::mat4> local_positions_;
+    mutable std::vector<glm::mat4> local_positions_;
 
     bool has_ai_;
 
  public:
-    Entity(const Mesh& mesh);
+    Entity(const util::Mesh& mesh);
 
     Entity(const object_t& object_data, const manifest::descriptor_t& model_path);
 
     virtual ~Entity(){};
 
     inline void
-    reserve(size_t size) {
+    reserve(size_t size) const {
         local_positions_.resize(size);
     }
 
@@ -81,20 +95,33 @@ class Entity : public virtual Object {
         return mesh_and_positions_;
     }
 
-    virtual std::string identification() const override;
+    [[nodiscard]] virtual std::string identification() const override;
 
     virtual void init_render(render_programs_t& programs) const override;
 
-    virtual void update() override;
+    virtual void sync_data_to_gpu() override;
 
     [[nodiscard]] inline virtual const std::string&
     get_name() const {
         return name_;
     }
 
+    [[nodiscard]] virtual glm::vec3 decision(EntityInstance* entity_instance) override;
+
+    inline virtual void
+    execute_plan([[maybe_unused]] EntityInstance* entity_instance) override {}
+
+    inline virtual void
+    make_plan([[maybe_unused]] EntityInstance* entity_instance) override {}
+
     [[nodiscard]] inline virtual size_t
     num_models() const {
         return 1;
+    }
+
+    [[nodiscard]] inline size_t
+    num_objects() const {
+        return local_positions_.size();
     }
 
     [[nodiscard]] inline virtual bool
@@ -102,23 +129,11 @@ class Entity : public virtual Object {
         return has_ai_;
     }
 
- private:
-    inline size_t
-    add() {
-        insert(glm::mat4());
-        return local_positions_.size() - 1;
-    }
-
-    inline void
-    insert(glm::mat4&& data) {
-        local_positions_.push_back(data);
-    }
-
-    bool remove(size_t index);
-
-    bool assign(size_t index, glm::mat4& data);
+    void add_position(glm::mat4 position) const;
 };
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

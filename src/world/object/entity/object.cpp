@@ -4,6 +4,8 @@
 
 namespace world {
 
+namespace object {
+
 namespace entity {
 
 void
@@ -27,5 +29,7 @@ remapping_t::write_map() const {
 }
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world

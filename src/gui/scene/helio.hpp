@@ -27,7 +27,12 @@ class Helio : public render::LightEnvironment, public render::StarRotation {
     glm::vec3 light_direction_;
     glm::vec3 sunlight_color_;
 
-    bool manual_light_direction_ = false;
+    bool manual_light_direction_ =
+#if DEBUG()
+        true;
+#else
+        false;
+#endif
 
  public:
     // gives a slight insight to the internal workings

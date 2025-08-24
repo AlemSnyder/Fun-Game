@@ -23,25 +23,28 @@
 #pragma once
 
 #include "biome.hpp"
-#include "entity/entity.hpp"
-#include "entity/tile_object.hpp"
 #include "gui/render/structures/terrain_mesh.hpp"
+#include "manifest/object_handler.hpp"
+#include "object/entity/entity.hpp"
+#include "object/entity/tile_object.hpp"
+#include "object/entity_controller.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "types.hpp"
 
 #include <glm/glm.hpp>
 
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-namespace world {
-
-// forward declaration of entity::Mesh
-namespace entity {
+// forward declaration of util::Mesh
+namespace util {
 class Mesh;
 }
+
+namespace world {
 
 /**
  * @brief Holds information regarding terrain, entities, objects, and items
@@ -59,6 +62,8 @@ class World {
     // terrain in the world
     terrain::Terrain terrain_main_;
 
+    object::EntityController controller_;
+
     // TerrainMesh for all terrain
     std::shared_ptr<gui::gpu_data::TerrainMesh> terrain_mesh_;
     // chunks_mesh like attorneys general
@@ -69,16 +74,10 @@ class World {
 
     // Set of meshes that need to be sent to gpu. These meshes should be sent
     // once per frame.
-    std::unordered_map<ChunkPos, entity::Mesh> meshes_to_update_;
+    std::unordered_map<ChunkPos, util::Mesh> meshes_to_update_;
     // Multiple threads are writing to this map concurrently so this is its
     // mutex
     std::mutex meshes_to_update_mutex_;
-
-    // TileObjects
-    std::unordered_set<std::shared_ptr<entity::TileObjectInstance>> tile_entities_;
-
-    // Entities
-    std::unordered_set<std::shared_ptr<entity::EntityInstance>> entities_;
 
  public:
     /**
@@ -95,6 +94,22 @@ class World {
     auto&
     get_terrain_main() {
         return terrain_main_;
+    }
+
+    /**
+     * @brief Get object handler
+     */
+    const auto
+    get_object_handler() const {
+        return controller_.get_object_handler();
+    }
+
+    /**
+     * @brief Get object handler
+     */
+    auto
+    get_object_handler() {
+        return controller_.get_object_handler();
     }
 
     /**
@@ -116,7 +131,10 @@ class World {
      * @param path
      * where world was saved
      */
-    World(const std::string& biome_name, const std::string& path, size_t seed);
+    World(
+        manifest::ObjectHandler* object_handler, const std::string& biome_name,
+        const std::string& path, size_t seed
+    );
     /**
      * @brief Construct a new World object to test biome generation.
      *
@@ -125,9 +143,13 @@ class World {
      * (see) data/biome_data.json > `biome` > Tile_Data
      * (see) src/terrain/generation/land_generator.hpp
      */
-    explicit World(const std::string& biome_name, MapTile_t type, size_t seed);
+    explicit World(
+        manifest::ObjectHandler* object_handler, const std::string& biome_name,
+        MapTile_t type, size_t seed
+    );
     World(
-        const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed
+        manifest::ObjectHandler* object_handler, const std::string& biome_name,
+        MacroDim x_tiles, MacroDim y_tiles, size_t seed
     );
 
     constexpr static int macro_tile_size = 32;
@@ -218,10 +240,17 @@ class World {
     // std::shared_ptr<entity::Object>
     // spawn_object(std::string id, glm::vec3 position);
 
-    std::shared_ptr<entity::EntityInstance>
+    std::shared_ptr<object::entity::EntityInstance>
     spawn_entity(std::string id, glm::vec3 position);
 
-    void remove_entity(std::shared_ptr<entity::EntityInstance>);
+    void remove_entity(std::shared_ptr<object::entity::EntityInstance>);
+
+    inline void
+    update_entities() {
+        // todo need to pass the current MVP
+        controller_.update_entities(glm::mat4(1.0));
+        controller_.load_to_gup();
+    }
 
     [[nodiscard]] std::optional<std::vector<TerrainOffset3>> pathfind_to_object(
         TerrainOffset3 start_position, const std::string& object_id

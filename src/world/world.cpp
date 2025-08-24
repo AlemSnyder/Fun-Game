@@ -22,16 +22,16 @@
 
 #include "world.hpp"
 
-#include "entity/mesh.hpp"
-#include "entity/object_handler.hpp"
-#include "entity/tile_object.hpp"
 #include "glm/gtx/transform.hpp"
 #include "global_context.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
+#include "object/entity/tile_object.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
 #include "util/files.hpp"
+#include "util/mesh.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -45,23 +45,33 @@ World::get_material(MaterialId material_id) const {
     return &biome_.get_materials().at(material_id);
 }
 
-World::World(const std::string& biome_name, const std::string& path, size_t seed) :
-    biome_(biome_name, seed), terrain_main_(path, biome_) {}
+World::World(
+    manifest::ObjectHandler* object_handler, const std::string& biome_name,
+    const std::string& path, size_t seed
+) :
+    biome_(biome_name, seed),
+    terrain_main_(path, biome_), controller_(object_handler) {}
 
 World::World(
-    const std::string& biome_name, MacroDim x_tiles, MacroDim y_tiles, size_t seed
+    manifest::ObjectHandler* object_handler, const std::string& biome_name,
+    MacroDim x_tiles, MacroDim y_tiles, size_t seed
 ) :
     biome_(biome_name, seed),
     terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, biome_,
         std::move(biome_.get_map(x_tiles))
-    ) {}
+    ),
+    controller_(object_handler) {}
 
-World::World(const std::string& biome_name, MapTile_t tile_type, size_t seed) :
+World::World(
+    manifest::ObjectHandler* object_handler, const std::string& biome_name,
+    MapTile_t tile_type, size_t seed
+) :
     biome_(biome_name, seed),
     terrain_main_(
         3, 3, macro_tile_size, height, biome_, biome_.single_tile_type_map(tile_type)
-    ) {}
+    ),
+    controller_(object_handler) {}
 
 void
 World::generate_plants() {
@@ -69,7 +79,6 @@ World::generate_plants() {
 
     // This next part can be done in parallel.
     // maybe generating each plant position, orientation, and model
-    entity::ObjectHandler& object_handler = entity::ObjectHandler::instance();
 
     std::default_random_engine rand_engine(biome_.seed + 1);
     std::uniform_real_distribution uniform_distribution(0.0, 1.0);
@@ -102,42 +111,28 @@ World::generate_plants() {
                     uint z_position =
                         terrain_main_.get_Z_solid(tile_position_x, tile_position_y) + 1;
 
-                    auto object = object_handler.get_object(plant.identification);
-
                     // position, then rotation, and texture
                     gui::Placement placement(
                         tile_position_x, tile_position_y, z_position, rotation, 0
                     );
-
-                    auto tile_object_type =
-                        std::dynamic_pointer_cast<entity::TileObject>(
-                            object_handler.get_object(plant.identification)
-                        );
-
-                    if (!tile_object_type) {
-                        continue;
-                    }
-
-                    auto new_object = std::make_shared<entity::TileObjectInstance>(
-                        tile_object_type, uint8_t(0), placement
+                    // id, model, then placement with texture id.
+                    controller_.spawn_tile_object(
+                        plant.identification, uint8_t(0), placement
                     );
-
-                    tile_entities_.insert(new_object);
                 }
             }
         }
     }
 }
 
-// Should not be called except by lambda function
+// Should not be called om main thread
 void
 World::update_single_mesh(ChunkPos chunk_pos) {
     const auto chunk = terrain_main_.get_chunk(chunk_pos);
     if (!chunk) {
         return;
     }
-    entity::Mesh chunk_mesh =
-        entity::ambient_occlusion_mesher(terrain::ChunkData(*chunk));
+    util::Mesh chunk_mesh = util::ambient_occlusion_mesher(terrain::ChunkData(*chunk));
 
     chunk_mesh.change_color_indexing(
         biome_.get_materials(), terrain::TerrainColorMapping::get_colors_inverse_map()
@@ -225,57 +220,20 @@ World::set_tile(
         mark_for_update({tile_sop.x, tile_sop.y, tile_sop.z + 1});
 }
 
-std::shared_ptr<entity::EntityInstance>
+std::shared_ptr<object::entity::EntityInstance>
 World::spawn_entity(std::string identification, glm::vec3 position) {
-    auto& object_handler = entity::ObjectHandler::instance();
-    auto object_type = object_handler.get_object(identification);
-
-    if (!object_type) {
-        LOG_ERROR(
-            logging::main_logger, "Identification {} does not exists", identification
-        );
-        return {};
-    }
-
-    auto entity_type = std::dynamic_pointer_cast<entity::Entity>(object_type);
-
-    if (!entity_type) {
-        LOG_ERROR(
-            logging::main_logger, "Identification {} is not an entity type",
-            identification
-        );
-        return {};
-    }
-
-    auto entity = std::make_shared<entity::EntityInstance>(entity_type);
-
-    glm::mat4 transformation(1.0);
-
-    entity->update(glm::translate(transformation, position));
-
-    entities_.insert(entity);
-
-    return entity;
+    return controller_.spawn_entity(identification, position);
 }
 
 void
-World::remove_entity(std::shared_ptr<entity::EntityInstance> entity) {
-    if (!entity) {
-        LOG_WARNING(logging::main_logger, "Entity is null.");
-        return;
-    }
-    entity->destroy();
-    size_t erased = entities_.erase(entity);
-    if (!erased) {
-        LOG_WARNING(logging::main_logger, "Entity not found in World.");
-    }
+World::remove_entity(std::shared_ptr<object::entity::EntityInstance> entity) {
+    controller_.remove_entity(entity);
 }
 
 std::optional<std::vector<TerrainOffset3>>
 World::pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id)
     const {
-    entity::ObjectHandler& object_context = entity::ObjectHandler::instance();
-    auto object = object_context.get_object(object_id);
+    auto object = get_object_handler()->get_object(object_id);
     if (!object) {
         LOG_WARNING(logging::terrain_logger, "Object {} not found.", object_id);
         return {};
@@ -286,11 +244,11 @@ World::pathfind_to_object(TerrainOffset3 start_position, const std::string& obje
 
     // This makes me sad
     // TODO fix the storage mechanism
-    for (const auto& tile_entity : tile_entities_) {
-        if (tile_entity->get_object() == object) {
-            object_positions.insert(tile_entity->get_terrain_position());
-        }
-    }
+    // for (const auto& tile_entity : controller_) {
+    //     if (tile_entity->get_object() == object) {
+    //         object_positions.insert(tile_entity->get_terrain_position());
+    //     }
+    // }
 
     auto path = terrain_main_.get_path_breadth_first(start_position, object_positions);
 

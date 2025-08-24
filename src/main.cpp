@@ -8,14 +8,14 @@
 #include "gui/ui/opengl_gui.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
 #include "util/files.hpp"
-#include "util/loading.hpp"
 #include "util/lua/lua_logging.hpp"
+#include "util/mesh.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
 #include "util/voxel_io.hpp"
 #include "world/biome.hpp"
-#include "world/entity/mesh.hpp"
 #include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
@@ -75,7 +75,8 @@ TerrainTypes(const argh::parser& cmdl) {
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
 
-    util::load_manifest_test<false>();
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
 
     biome_data =
         terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
@@ -92,8 +93,11 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    util::load_manifest_test<false>();
-    world::World world(BIOME_BASE_NAME, size, size, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, size, size, seed);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
 
@@ -111,7 +115,8 @@ MacroMap(const argh::parser& cmdl) {
     size_t size;
     cmdl("size", 4) >> size;
 
-    util::load_manifest_test<false>();
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
 
     terrain::generation::Biome biome(biome_name, seed);
 
@@ -166,7 +171,8 @@ image_test(const argh::parser& cmdl) {
         size_t size;
         cmdl("size", 64) >> size;
 
-        util::load_manifest_test<false>();
+        manifest::ObjectHandler object_handler;
+        object_handler.load_all_manifests<false>();
 
         terrain::generation::Biome biome(biome_name, seed);
 
@@ -199,8 +205,10 @@ image_test(const argh::parser& cmdl) {
 // reimplement
 int
 ChunkDataTest() {
-    util::load_manifest_test<false>();
-    world::World world(BIOME_BASE_NAME, 6, 6);
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, 6, 6);
 
     const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
 
@@ -271,8 +279,11 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    util::load_manifest_test<false>();
-    world::World world(BIOME_BASE_NAME, path_in, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -292,8 +303,11 @@ path_finder_test(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
-    util::load_manifest_test<false>();
-    world::World world(biome_name, path_in, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, biome_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -335,8 +349,10 @@ int
 path_finder_test() {
     quill::Logger* logger = logging::main_logger;
 
-    util::load_manifest_test<false>();
-    world::World world(BIOME_BASE_NAME, 4, 4, SEED);
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, 4, 4, SEED);
 
     TerrainOffset3 start(20, 20, world.get_terrain_main().get_Z_solid(20, 20) + 1);
     TerrainOffset3 end(90, 90, world.get_terrain_main().get_Z_solid(90, 90) + 1);
@@ -759,7 +775,9 @@ tests(const argh::parser& cmdl) {
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
     } else if (run_function == "LoadManifest") {
-        return util::load_manifest_test<false>();
+        manifest::ObjectHandler object_handler;
+        return object_handler.load_all_manifests<false>();
+
     } else if (run_function == "EnginTest") {
         return gui::opengl_tests();
     } else if (run_function == "Lua") {

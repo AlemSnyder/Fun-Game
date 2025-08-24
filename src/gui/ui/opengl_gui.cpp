@@ -10,8 +10,8 @@
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 #include "util/files.hpp"
+#include "util/mesh.hpp"
 #include "world/climate.hpp"
-#include "world/entity/mesh.hpp"
 #include "world/world.hpp"
 
 #include <GL/glew.h>

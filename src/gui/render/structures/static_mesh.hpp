@@ -40,10 +40,10 @@ class StaticMesh : public virtual InstancedIMeshGPU {
     Texture1D color_texture_;
 
  public:
-    inline StaticMesh(const world::entity::Mesh& mesh) : StaticMesh(mesh, {}) {}
+    inline StaticMesh(const util::Mesh& mesh) : StaticMesh(mesh, {}) {}
 
     inline StaticMesh(
-        const world::entity::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+        const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
     ) :
         InstancedIMeshGPU(mesh, model_transforms) {}
 

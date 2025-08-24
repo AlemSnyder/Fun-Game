@@ -14,6 +14,8 @@
 
 namespace world {
 
+namespace object {
+
 namespace entity {
 
 class TileObject;
@@ -174,9 +176,13 @@ class TileObject : public virtual Object {
     }
 
     virtual void init_render(render_programs_t& programs) const override;
+
+    virtual void sync_data_to_gpu();
 };
 
 } // namespace entity
+
+} // namespace object
 
 } // namespace world
 

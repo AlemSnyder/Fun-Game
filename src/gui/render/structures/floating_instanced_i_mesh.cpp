@@ -1,7 +1,7 @@
 #include "floating_instanced_i_mesh.hpp"
 
 #include "types.hpp"
-#include "world/entity/mesh.hpp"
+#include "util/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,7 +14,7 @@ namespace gui {
 namespace gpu_data {
 
 FloatingInstancedIMeshGPU::FloatingInstancedIMeshGPU(
-    const world::entity::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
+    const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
 ) :
     IMeshGPU(mesh, false),
     transforms_array_(model_transforms, 1) {

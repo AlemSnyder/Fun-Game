@@ -144,3 +144,18 @@ struct std::hash<glm::u8vec3> {
         return result;
     }
 };
+
+/**
+ * @brief Create hash from position of object.
+ */
+template <>
+struct std::hash<ChunkPos> {
+    size_t
+    operator()(const ChunkPos& pos) const noexcept {
+        size_t result = 0;
+        utils::hash_combine(result, pos.x);
+        utils::hash_combine(result, pos.y);
+        utils::hash_combine(result, pos.z);
+        return result;
+    }
+};
