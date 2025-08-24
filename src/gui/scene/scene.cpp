@@ -21,7 +21,10 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // run all opengl calls
     context.run_opengl_queue();
 
-    shadow_map_.update();
+    update_light_direction();
+
+    shadow_map_.set_inverse_view_projection(inputs_->get_inverse_view_projection());
+    shadow_map_.update_depth_projection_matrix();
     environment_->update();
     render::PixelProjection::update(width, height);
 
@@ -42,25 +45,28 @@ Scene::update(screen_size_t width, screen_size_t height) {
 
     // background
     for (const auto& render : background_frame_buffer_) {
-        render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
-        );
+        render->render(width, height, frame_buffer_multisample_.get_frame_buffer_id());
     }
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // mid ground
     for (const auto& render : mid_ground_frame_buffer_) {
-        render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
-        );
+        render->render(width, height, frame_buffer_multisample_.get_frame_buffer_id());
     }
+    glBlitNamedFramebuffer(
+        frame_buffer_multisample_.get_frame_buffer_id(),
+        frame_buffer_mg_.get_frame_buffer_id(), 0, 0, width, height, 0, 0, width,
+        height,                                               // region of framebuffer
+        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST // copy the color
+    );
 
+    FrameBufferHandler::instance().bind_fbo(
+        frame_buffer_multisample_.get_frame_buffer_id()
+    );
     glClear(GL_DEPTH_BUFFER_BIT);
     // foreground
     for (const auto& render : foreground_frame_buffer_) {
-        render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
-        );
+        render->render(width, height, frame_buffer_multisample_.get_frame_buffer_id());
     }
 }
 

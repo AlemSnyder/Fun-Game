@@ -1,5 +1,6 @@
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/helio.hpp"
+#include "gui/scene/scene.hpp"
 #include "manifest/object_handler.hpp"
 
 #include <imgui/imgui.h>
@@ -33,6 +34,8 @@ void display_data(
 void display_data(std::shared_ptr<scene::Helio> helio, bool& show);
 
 void display_data(const manifest::ObjectHandler& object_handler, bool& show);
+
+void display_data(Scene& scene, bool& show);
 
 } // namespace display_windows
 

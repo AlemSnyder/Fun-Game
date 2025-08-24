@@ -15,60 +15,143 @@
  *
  * @author @AlemSnyder
  *
- * @brief Defines functions to get game position from inputs
+ * @brief Defines Controls class that handles any sort of user input.
  *
- * @ingroup CONTROLS
+ * @ingroup GUI SCENE
  *
  */
 
 #pragma once
 
+#include "input.hpp"
+#include "keymapping.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-namespace controls {
+#include <memory>
+
+namespace gui {
+
+namespace scene {
 
 /**
- * @brief Computes the view, and projection matrix using the size of the given
- * window
- *
- * @param window The current OpenGL window
+ * @brief Defines changes to be taken because of user input
  */
-void computeMatricesFromInputs(GLFWwindow* window);
+class Controls : public Inputs {
+ protected:
+    // KeyMapping key_map_;
+    glm::mat4 view_matrix_;
+    glm::mat4 projection_matrix_;
 
-/**
- * @brief Get the view matrix
- *
- * @return glm::mat4 projection of world space to camera space
- */
-glm::mat4 get_view_matrix();
+    int width_;
+    int height_;
+    // Initial position : on +Z
+    glm::vec3 position_;
+    // Initial horizontal angle : toward -Z
+    float horizontal_angle_;
+    // Initial vertical angle : none
+    float vertical_angle_;
+    // Initial Field of View
+    float field_of_view_;
 
-/**
- * @brief Get the projection matrix
- *
- * @return glm::mat4 homographic projection of world onto view depending on the
- * FOV
- */
-glm::mat4 get_projection_matrix();
+    float speed_; // units / second
+    float mouse_speed_;
 
-/**
- * @brief Get the position vector
- *
- * @return glm::vec3 camera position in world
- */
-glm::vec3 get_position_vector();
+    double glfw_previous_time_;
 
-/**
- * @brief True if the shadow map should be shown
- *
- * @param window current window
- * @return true the shadow map should be shown
- * @return false the shadow map should not be shown
- */
-inline bool
-show_shadow_map(GLFWwindow* window) {
-    return glfwGetKey(window, GLFW_KEY_TAB);
-}
+    KeyMapping key_map_;
 
-} // namespace controls
+ public:
+    /**
+     * @brief Construct a new Controls object
+     *
+     * @param KeyMapping key_map map from keyboard keys to actions.
+     */
+    Controls(KeyMapping key_map) :
+        width_(1), height_(1), position_(glm::vec3(80, 80, 80)),
+        horizontal_angle_(3.14), vertical_angle_(1.57), field_of_view_(45.0),
+        speed_(10), mouse_speed_(0.005), key_map_(key_map) {}
+
+    /**
+     * @brief Updates the scene based on all user inputs.
+     *
+     * @param window The current OpenGL window
+     */
+    virtual void handle_pooled_inputs(GLFWwindow* window) override;
+
+    /**
+     * @brief Handle Mouse Wheel Scroll Events
+     */
+    virtual void handle_mouse_scroll_input(
+        GLFWwindow* window, double xoffset, double yoffset
+    ) override;
+
+    virtual void
+    handle_mouse_button_input(GLFWwindow* window, int button, int action, int mods);
+
+    /**
+     * @brief To be called when controls are bound. (hide curser etc)
+     *
+     * @warning Won't play nice with ImGUI
+     */
+    virtual void setup(GLFWwindow* window);
+
+    virtual void cleanup(GLFWwindow* window);
+
+    /**
+     * @brief Get the view matrix
+     *
+     * @return glm::mat4 projection of world space to camera space
+     */
+    [[nodiscard]] inline glm::mat4
+    get_view_matrix() const {
+        return view_matrix_;
+    }
+
+    /**
+     * @brief Get the projection matrix
+     *
+     * @return glm::mat4 homographic projection of world onto view depending on the
+     * FOV
+     */
+    [[nodiscard]] inline glm::mat4
+    get_projection_matrix() const {
+        return projection_matrix_;
+    }
+
+    /**
+     * @brief Get the position vector
+     *
+     * @return glm::vec3 camera position in world
+     */
+    [[nodiscard]] inline glm::vec3
+    get_position() const {
+        return position_;
+    }
+
+    /**
+     * @brief Get view inverse projection
+     *
+     * @details Used for star projection
+     */
+    [[nodiscard]] inline glm::mat4
+    get_inverse_view_projection() const {
+        return glm::inverse(projection_matrix_ * view_matrix_);
+    }
+
+    [[nodiscard]] inline int
+    get_width() const {
+        return width_;
+    }
+
+    [[nodiscard]] inline int
+    get_height() const {
+        return height_;
+    }
+};
+
+} // namespace scene
+
+} // namespace gui

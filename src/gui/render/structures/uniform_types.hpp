@@ -111,15 +111,18 @@ class SpectralLight : public shader::UniformExecutor {
 };
 
 class MatrixViewProjection : public shader::UniformExecutor {
+    std::shared_ptr<scene::Controls> controller_;
+
  public:
-    MatrixViewProjection() : UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    MatrixViewProjection(std::shared_ptr<scene::Controls> controller) :
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), controller_(controller) {}
 
     virtual ~MatrixViewProjection(){};
 
     inline virtual void
     bind(GLint uniform_ID) const override {
-        const glm::mat4 view_matrix = controls::get_view_matrix();
-        const glm::mat4 projection_matrix = controls::get_projection_matrix();
+        const glm::mat4 view_matrix = controller_->get_view_matrix();
+        const glm::mat4 projection_matrix = controller_->get_projection_matrix();
 
         glm::mat4 MVP = projection_matrix * view_matrix;
 
@@ -132,14 +135,17 @@ class MatrixViewProjection : public shader::UniformExecutor {
 };
 
 class ViewMatrix : public shader::UniformExecutor {
+    std::shared_ptr<scene::Controls> controller_;
+
  public:
-    ViewMatrix() : UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    ViewMatrix(std::shared_ptr<scene::Controls> controller) :
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), controller_(controller) {}
 
     virtual ~ViewMatrix(){};
 
     inline virtual void
     bind(GLint uniform_ID) const override {
-        const glm::mat4 view_matrix = controls::get_view_matrix();
+        const glm::mat4 view_matrix = controller_->get_view_matrix();
 
         LOG_BACKTRACE(
             logging::opengl_logger, "Uniform {}, being initialized.", uniform_ID
@@ -238,17 +244,19 @@ class TextureUniform : public shader::UniformExecutor {
 };
 
 class MatrixViewInverseProjection : public shader::UniformExecutor {
+    std::shared_ptr<scene::Controls> controller_;
+
  public:
-    MatrixViewInverseProjection() :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    MatrixViewInverseProjection(std::shared_ptr<scene::Controls> controller) :
+        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), controller_(controller) {}
 
     virtual ~MatrixViewInverseProjection() {}
 
     inline virtual void
     bind(GLint uniform_ID) const override {
         // Compute the MVP matrix from keyboard and mouse input
-        glm::mat4 projection_matrix = controls::get_projection_matrix();
-        glm::mat4 view_matrix = controls::get_view_matrix();
+        glm::mat4 projection_matrix = controller_->get_projection_matrix();
+        glm::mat4 view_matrix = controller_->get_view_matrix();
         glm::mat4 MVP = projection_matrix * view_matrix; // Model View Projection
 
         glm::mat4 sky_rotation = glm::inverse(MVP);

@@ -1,5 +1,5 @@
 
-#include "frame_buffer_multisample.hpp"
+#include "frame_buffer.hpp"
 
 #include "gui/handler.hpp"
 #include "logging.hpp"
@@ -9,14 +9,10 @@ namespace gui {
 
 namespace gpu_data {
 
-FrameBufferMultisample::FrameBufferMultisample(
-    screen_size_t width, screen_size_t height, uint32_t samples
-) {
+FrameBuffer::FrameBuffer(screen_size_t width, screen_size_t height) {
     // Set the frame buffer and texture width and height
     width_ = width;
     height_ = height;
-    // set the number of samples used at each pixel
-    samples_ = samples;
 
     // generates a frame buffer, screen texture, and and a depth buffer
 
@@ -27,25 +23,25 @@ FrameBufferMultisample::FrameBufferMultisample(
 
     // texture
     glGenTextures(1, &render_texture);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, render_texture);
-    glTexImage2DMultisample(
-        GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB8, width_, height_, GL_TRUE
+    glBindTexture(GL_TEXTURE_2D, render_texture);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA32F, width_, height_, 0, GL_RGBA, GL_FLOAT, 0
     );
 
     // depth buffer (how far thins are from the screen for depth)
     glGenTextures(1, &depth_buffer);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, depth_buffer);
-    glTexImage2DMultisample(
-        GL_TEXTURE_2D_MULTISAMPLE, samples, GL_DEPTH_COMPONENT, width_, height_, GL_TRUE
+    glBindTexture(GL_TEXTURE_2D, depth_buffer);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width_, height_, 0, GL_DEPTH_COMPONENT,
+        GL_FLOAT, 0
     );
     // connect the render buffer to the frame buffer
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, depth_buffer, 0
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_buffer, 0
     );
     // connect the texture to the frame buffer
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, render_texture,
-        0
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_texture, 0
     );
 
     GLuint framebuffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);

@@ -256,14 +256,17 @@ Program::set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_n
         if (given_type != found_type) {
             LOG_WARNING(
                 logging::opengl_logger,
-                "Uniform types do not match. Given {} to uniform of type {}.",
-                gpu_data::to_string(given_type), gpu_data::to_string(found_type)
+                "Uniform types do not match. Uniform {} given {} but has type {}.",
+                uniform_name, gpu_data::to_string(given_type),
+                gpu_data::to_string(found_type)
             );
         }
     } else {
         LOG_WARNING(
             logging::opengl_logger,
-            "Uniform Error. Uniform \"{}\" not found in program.", uniform_name.c_str()
+            "The Uniform given \"{}\" does not match the name of any uniform found in "
+            "program \"{}\".",
+            uniform_name, name_
         );
     }
 }

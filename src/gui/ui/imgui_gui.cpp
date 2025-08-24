@@ -11,6 +11,7 @@
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
+#include "gui/scene/input.hpp"
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
 #include "logging.hpp"
@@ -62,19 +63,32 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
     const char* glsl_version = "#version 450";
 
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
     // Our state
     bool show_position_window = false;
     bool show_light_controls = false;
     bool show_shadow_map = false;
     bool show_programs_window = false;
     bool show_entity_window = false;
+    bool show_scene_depth_interact_window = false;
 
     glm::vec3 position;
 
+    auto key_map =
+        files::read_json_from_file<std::unordered_map<gui::scene::Action, gui::Key>>(
+            files::get_data_path() / "keymapping.json"
+        );
+    gui::scene::KeyMapping key_mapping = key_map.has_value()
+                                             ? gui::scene::KeyMapping(key_map.value())
+                                             : gui::scene::KeyMapping();
+    std::shared_ptr<scene::Controls> controller =
+        std::make_shared<scene::Controls>(key_mapping);
+    scene::InputHandler::set_window(window);
+    scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
+    ));
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
     std::unordered_set<std::shared_ptr<world::object::entity::EntityInstance>>
         path_entities;
 
@@ -83,8 +97,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-    // VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
-    Scene main_scene(mode->width, mode->height, shadow_map_size);
+    Scene main_scene(mode->width, mode->height, shadow_map_size, controller);
     setup(main_scene, shader_handler, world, climate);
 
     //! Main loop
@@ -100,15 +113,13 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // Generally you may always pass all inputs to dear imgui, and hide them from
         // your application based on those two flags.
         glfwPollEvents();
+        scene::InputHandler::handle_pooled_inputs(window);
 
         if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
 #if !DEBUG()
             // Disable the mouse so it doesn't appear while playing
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 #endif
-
-            // Process inputs
-            controls::computeMatricesFromInputs(window);
         } else {
             // Show the mouse for use with IMGUI
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -121,8 +132,6 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         world.update_entities();
 
         main_scene.update(window_width, window_height);
-
-        position = controls::get_position_vector();
 
         // "render" scene to the screen
         main_scene.copy_to_window(window_width, window_height);
@@ -140,8 +149,11 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             ImGui::Begin("Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
 
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            if (scene::InputHandler::escape()) {
                 ImGui::SetWindowFocus();
+                // the lifting of the escape key will not be capture because imgui will
+                // be focused
+                scene::InputHandler::clear_escape();
             }
 
             ImGui::Text("This is some useful text."
@@ -151,6 +163,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             ImGui::Checkbox("Show Shadow Map", &show_shadow_map);
             ImGui::Checkbox("Show Programs", &show_programs_window);
             ImGui::Checkbox("Show Entities", &show_entity_window);
+            ImGui::Checkbox("Scene", &show_scene_depth_interact_window);
 
             ImGui::Text(
                 "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
@@ -209,6 +222,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         // 3. Show another simple window.
         if (show_position_window) {
+            position = main_scene.get_viewer_position();
             ImGui::Begin(
                 "Position Window", &show_position_window
             ); // Pass a pointer to our bool variable (the window will have a closing
@@ -237,15 +251,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
         }
 
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-            show_shadow_map = true;
-        }
-
         if (show_shadow_map) {
             ImGui::Begin("Shadow Depth Texture", &show_shadow_map);
-            if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-                ImGui::SetWindowFocus();
-            }
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(main_scene.get_depth_texture()),
                 ImVec2(
@@ -256,6 +263,10 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
 
             ImGui::End();
+        }
+
+        if (show_scene_depth_interact_window) {
+            display_windows::display_data(main_scene, show_scene_depth_interact_window);
         }
 
         // Rendering
