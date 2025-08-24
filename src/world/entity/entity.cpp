@@ -17,7 +17,7 @@ Entity::Entity(const Mesh& mesh) :
     )) {
     LOG_WARNING(
         logging::main_logger,
-        "Entity constructor Entity(const Mesh& mesh) is depreciated!"
+        "Entity constructor Entity(const Mesh& mesh) is deprecated!"
     );
 }
 
