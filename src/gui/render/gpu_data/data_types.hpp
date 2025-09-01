@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "types.hpp"
 #include "vertex_buffer_object.hpp"
 
 #include <stdint.h>
@@ -80,6 +81,19 @@ class GPUDataElementsMulti {
     virtual const std::vector<size_t>& get_elements_position() const = 0;
 
     virtual const std::vector<GLint>& get_base_vertex() const = 0;
+};
+
+// for textures, depth textures, and render buffers.
+
+class GPUDataRenderBuffer {
+ public:
+    virtual GLuint value() const = 0;
+
+    virtual void connect_texture(GLuint framebuffer_ID, uint8_t texture_attachment) = 0;
+
+    virtual void connect_depth_texture(GLuint framebuffer_ID) = 0;
+
+    // download image, and upload image
 };
 
 } // namespace gpu_data

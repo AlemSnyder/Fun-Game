@@ -23,6 +23,9 @@
 
 #pragma once
 
+#include "data_types.hpp"
+#include "render_buffer.hpp"
+#include "texture.hpp"
 #include "types.hpp"
 
 #include <GL/glew.h>
@@ -32,6 +35,11 @@ namespace gui {
 
 namespace gpu_data {
 
+struct FrameBufferSettings {
+    uint8_t samples;
+
+};
+
 /**
  * @brief Multisample Framebuffer object
  *
@@ -39,14 +47,14 @@ namespace gpu_data {
  * and depth texture.
  *
  */
-class FrameBufferMultisample {
- private:
-    GLuint frame_buffer;
-    GLuint render_texture;
-    GLuint depth_buffer;
+class FrameBuffer{
+ protected:
     screen_size_t width_;
     screen_size_t height_;
-    uint32_t samples_;
+    FrameBufferSettings settings_;
+    GLuint frame_buffer;
+    std::shared_ptr<GPUDataRenderBuffer> depth_buffer_;
+    std::unordered_map<uint8_t, std::shared_ptr<GPUDataRenderBuffer>> render_texture_;
 
  public:
     /**
@@ -55,10 +63,10 @@ class FrameBufferMultisample {
      * @details This is effectively a pointer. Copping this will delete the framebuffer
      * and leave the class in an invalid state.
      *
-     * @param FrameBufferMultisample
+     * @param FrameBuffer
      */
-    FrameBufferMultisample(const FrameBufferMultisample& obj) = delete;
-    FrameBufferMultisample& operator=(const FrameBufferMultisample& obj) = delete;
+    FrameBuffer(const FrameBuffer& obj) = delete;
+    FrameBuffer& operator=(const FrameBuffer& obj) = delete;
 
     /**
      * @brief Move constructors
@@ -66,10 +74,10 @@ class FrameBufferMultisample {
      * @details Move constructors are valid because the deconstructor will not be
      * called.
      *
-     * @param FrameBufferMultisample
+     * @param FrameBuffer
      */
-    FrameBufferMultisample(FrameBufferMultisample&& obj) = default;
-    FrameBufferMultisample& operator=(FrameBufferMultisample&& obj) = default;
+    FrameBuffer(FrameBuffer&& obj) = default;
+    FrameBuffer& operator=(FrameBuffer&& obj) = default;
 
     /**
      * @brief Delete constructor method
@@ -77,13 +85,9 @@ class FrameBufferMultisample {
      * @param screen_size_t width of frame buffer
      * @param screen_size_t height of frame buffer
      */
-    FrameBufferMultisample(screen_size_t width, screen_size_t height, uint32_t samples);
+    FrameBuffer(screen_size_t width, screen_size_t height, FrameBufferSettings settings);
 
-    ~FrameBufferMultisample() {
-        glDeleteRenderbuffers(1, &depth_buffer);
-        glDeleteTextures(1, &render_texture);
-        glDeleteFramebuffers(1, &frame_buffer);
-    }
+    ~FrameBuffer() { glDeleteFramebuffers(1, &frame_buffer); }
 
     /**
      * @brief Get width of frame buffer
@@ -112,7 +116,7 @@ class FrameBufferMultisample {
      */
     [[nodiscard]] inline GLuint
     get_num_samples() {
-        return samples_;
+        return settings_.samples;
     }
 
     /**
@@ -130,9 +134,9 @@ class FrameBufferMultisample {
      *
      * @return GLuint render texture id
      */
-    [[nodiscard]] inline GLuint
-    get_texture_name() const {
-        return render_texture;
+    [[nodiscard]] inline const std::shared_ptr<GPUDataRenderBuffer>
+    get_texture(uint8_t id) const {
+        return render_texture_.at(id);
     }
 
     /**
@@ -140,10 +144,46 @@ class FrameBufferMultisample {
      *
      * @return GLuint depth buffer id
      */
-    [[nodiscard]] inline GLuint
-    get_depth_buffer_name() const {
-        return depth_buffer;
+    [[nodiscard]] inline std::shared_ptr<GPUDataRenderBuffer>
+    get_depth_buffer() const {
+        return depth_buffer_;
     }
+
+    inline void
+    connect_depth_texture(std::shared_ptr<GPUDataRenderBuffer> depth_texture) {
+        depth_buffer_ = depth_texture;
+        depth_texture->connect_depth_texture(frame_buffer);
+    }
+
+    inline void
+    connect_render_texture(
+        std::shared_ptr<GPUDataRenderBuffer> texture, uint8_t texture_attachment
+    ) {
+        render_texture_[texture_attachment] = texture;
+        texture->connect_texture(frame_buffer, texture_attachment);
+    }
+
+    inline bool
+    status_check() {
+        GLuint framebuffer_status =
+            glCheckNamedFramebufferStatus(GL_FRAMEBUFFER, frame_buffer);
+
+        if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
+            // log some error
+            LOG_CRITICAL(
+                logging::opengl_logger, "Framebuffer Incomplete with code {}",
+                framebuffer_status
+            );
+            return false;
+        }
+        return true;
+    }
+};
+
+class FrameBufferMultisample : public FrameBuffer {
+ public:
+    FrameBufferMultisample(screen_size_t width, screen_size_t height, FrameBufferSettings settings);
+
 };
 
 } // namespace gpu_data

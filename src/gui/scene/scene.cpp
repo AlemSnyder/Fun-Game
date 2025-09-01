@@ -30,7 +30,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
 
     for (const auto& shadow : mid_ground_shadow_) {
         shadow->render(
-            shadow_map_.get_shadow_width(), shadow_map_.get_shadow_height(),
+            shadow_map_.get_width(), shadow_map_.get_height(),
             shadow_map_.get_frame_buffer_id()
         );
     }
@@ -43,7 +43,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // background
     for (const auto& render : background_frame_buffer_) {
         render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
+            width, height, frame_buffer_multisample_.get_depth_buffer()->value()
         );
     }
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -51,7 +51,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // mid ground
     for (const auto& render : mid_ground_frame_buffer_) {
         render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
+            width, height, frame_buffer_multisample_.get_depth_buffer()->value()
         );
     }
 
@@ -59,7 +59,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
     // foreground
     for (const auto& render : foreground_frame_buffer_) {
         render->render(
-            width, height, frame_buffer_multisample_.get_depth_buffer_name()
+            width, height, frame_buffer_multisample_.get_depth_buffer()->value()
         );
     }
 }

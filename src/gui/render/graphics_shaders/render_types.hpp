@@ -34,7 +34,7 @@ namespace render_to {
 /**
  * @brief Defines virtual classes for rendering to frame buffer
  *
- * @details Class with render_frame_buffer method that renders to a frame
+ * @details Class with render method that renders to a frame
  * buffer.
  */
 class FrameBuffer {
@@ -44,6 +44,14 @@ class FrameBuffer {
 };
 
 // blume
+
+/**
+ * @brief Defines virtual classes for writing data to object
+ */
+class WriteTo {
+ public:
+    virtual void attach(FrameBuffer* framebuffer, GLenum attachment) = 0;
+};
 
 } // namespace render_to
 
