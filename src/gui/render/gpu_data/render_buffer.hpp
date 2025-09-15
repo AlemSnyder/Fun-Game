@@ -1,5 +1,5 @@
-#include "types.hpp"
 #include "data_types.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -19,26 +19,37 @@ class RenderBuffer : virtual public GPUDataRenderBuffer {
     screen_size_t width_;
     RenderBufferSettings settings_;
     GLuint buffer_ID_;
+
  public:
     inline RenderBuffer(RenderBufferSettings settings = {}) : settings_(settings) {
         glGenRenderbuffers(1, &buffer_ID_);
     }
 
-
-    inline RenderBuffer(screen_size_t width, screen_size_t height, RenderBufferSettings settings = {.internalformat = GL_DEPTH_ATTACHMENT}) : RenderBuffer(settings) {
+    inline RenderBuffer(
+        screen_size_t width, screen_size_t height,
+        RenderBufferSettings settings = {.internalformat = GL_DEPTH_ATTACHMENT}
+    ) :
+        RenderBuffer(settings) {
         bind();
         if (settings_.multisample) {
-            glRenderbufferStorageMultisample(GL_RENDERBUFFER, settings_.samples, settings_.internalformat, width, height);
+            glRenderbufferStorageMultisample(
+                GL_RENDERBUFFER, settings_.samples, settings_.internalformat, width,
+                height
+            );
         } else {
-            assert(settings_.samples == 1 && "Not multisampled. Samples should be one.");
-            glRenderbufferStorage(GL_RENDERBUFFER, settings_.internalformat, width, height);
+            assert(
+                settings_.samples == 1 && "Not multisampled. Samples should be one."
+            );
+            glRenderbufferStorage(
+                GL_RENDERBUFFER, settings_.internalformat, width, height
+            );
         }
     }
-    inline virtual ~RenderBuffer() {
-        glDeleteRenderbuffers(1, &buffer_ID_);
-    }
 
-    inline virtual GLuint value() const {
+    inline virtual ~RenderBuffer() { glDeleteRenderbuffers(1, &buffer_ID_); }
+
+    inline virtual GLuint
+    value() const {
         return buffer_ID_;
     }
 
@@ -47,14 +58,13 @@ class RenderBuffer : virtual public GPUDataRenderBuffer {
     virtual void connect_depth_texture(GLuint framebuffer_ID);
 
  private:
-    inline void bind() {
+    inline void
+    bind() {
         // TODO create binder
         glBindRenderbuffer(GL_RENDERBUFFER, buffer_ID_);
     }
 };
 
+} // namespace gpu_data
 
-
-}
-
-}
+} // namespace gui

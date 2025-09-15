@@ -11,8 +11,9 @@ namespace gpu_data {
 
 FrameBuffer::FrameBuffer(
     screen_size_t width, screen_size_t height, FrameBufferSettings settings
-) : width_(width), height_(height), settings_(settings) {
-
+) :
+    width_(width),
+    height_(height), settings_(settings) {
     // frame buffer (the container for the other two)
     // -----------------
     glGenFramebuffers(1, &frame_buffer);
@@ -20,14 +21,28 @@ FrameBuffer::FrameBuffer(
 }
 
 FrameBufferMultisample::FrameBufferMultisample(
-        screen_size_t width, screen_size_t height, FrameBufferSettings settings
-) : FrameBuffer(width, height, settings){
-
-    connect_depth_texture(std::make_shared<RenderBuffer>(width_, height_, RenderBufferSettings{.samples = settings_.samples, .multisample = settings_.samples != 1, .internalformat = GL_DEPTH_COMPONENT} ));
-    connect_render_texture(std::make_shared<Texture2D>(width_, height_, TextureSettings{.samples = settings.samples, .multisample = (settings_.samples != 1), .internalformat = GL_RGB8}), 0 );
+    screen_size_t width, screen_size_t height, FrameBufferSettings settings
+) :
+    FrameBuffer(width, height, settings) {
+    connect_depth_texture(std::make_shared<RenderBuffer>(
+        width_, height_,
+        RenderBufferSettings{
+            .samples = settings_.samples,
+            .multisample = settings_.samples != 1,
+            .internalformat = GL_DEPTH_COMPONENT}
+    ));
+    connect_render_texture(
+        std::make_shared<Texture2D>(
+            width_, height_,
+            TextureSettings{
+                .samples = settings.samples,
+                .multisample = (settings_.samples != 1),
+                .internalformat = GL_RGB8}
+        ),
+        0
+    );
 
     status_check();
-
 }
 
 } // namespace gpu_data

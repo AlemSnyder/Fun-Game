@@ -294,7 +294,8 @@ setup(
     star_pipeline->data.push_back(star_data);
     sun_pipeline->data.push_back(star_shape);
 
-    terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_buffer()->value());
+    terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_buffer()->value()
+    );
     chunks_render_pipeline->data.push_back(terrain_mesh.get());
     chunks_shadow_pipeline->data.push_back(terrain_mesh.get());
 

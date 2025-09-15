@@ -71,7 +71,10 @@ class Scene {
         screen_size_t window_width, screen_size_t window_height,
         uint32_t shadow_map_width_height
     ) :
-        frame_buffer_multisample_(window_width, window_height, gpu_data::FrameBufferSettings({.samples = SAMPLES})),
+        frame_buffer_multisample_(
+            window_width, window_height,
+            gpu_data::FrameBufferSettings({.samples = SAMPLES})
+        ),
         environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)),
         shadow_map_(shadow_map_width_height, shadow_map_width_height) {}
 

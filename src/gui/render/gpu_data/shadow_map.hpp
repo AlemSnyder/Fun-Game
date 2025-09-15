@@ -22,8 +22,8 @@
 #pragma once
 
 #include "data_types.hpp"
-#include "types.hpp"
 #include "frame_buffer_multisample.hpp"
+#include "types.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -65,7 +65,7 @@ class ShadowMap : public FrameBuffer {
     inline void
     bind(uint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
-        
+
         glBindTexture(GL_TEXTURE_2D, depth_buffer_->value());
     }
 

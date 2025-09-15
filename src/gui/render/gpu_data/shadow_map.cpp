@@ -17,11 +17,17 @@ namespace gui {
 
 namespace gpu_data {
 
-ShadowMap::ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings settings) : FrameBuffer(w, h, settings) {
+ShadowMap::ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings settings) :
+    FrameBuffer(w, h, settings) {
+    TextureSettings depth_texture_settings{
+        .internalformat = GL_DEPTH_COMPONENT16,
+        .format = GL_DEPTH_COMPONENT,
+        .type = GL_HALF_FLOAT,
+        .min_filter = GL_LINEAR};
 
-    TextureSettings depth_texture_settings{.internalformat = GL_DEPTH_COMPONENT16, .format = GL_DEPTH_COMPONENT, .type = GL_HALF_FLOAT, .min_filter = GL_LINEAR};
-
-    connect_depth_texture(std::make_shared<Texture2D>(width_, height_, depth_texture_settings));
+    connect_depth_texture(
+        std::make_shared<Texture2D>(width_, height_, depth_texture_settings)
+    );
 
     // No color output in the bound framebuffer, only depth.
     glNamedFramebufferDrawBuffer(frame_buffer, GL_NONE);

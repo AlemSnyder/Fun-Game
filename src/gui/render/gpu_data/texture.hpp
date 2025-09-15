@@ -66,7 +66,7 @@ struct texture2D_data_t {
 struct TextureSettings {
     uint8_t samples = 1;
     bool multisample = false;
-    
+
     GLenum internalformat = GL_RGBA32F;
     GLenum format = GL_RGBA;
     GLenum type = GL_FLOAT;
@@ -98,18 +98,20 @@ class Texture2D : virtual public GPUDataRenderBuffer {
 
     Texture2D(const texture2D_data_t& color_data, TextureSettings settings = {});
 
-    
-    public:
+ public:
     /**
      * @brief Construct a new Texture2D from a vector of vectors of colors
      *
      * @param const std::vector<std::vector<ColorFloat>>& color_data
      */
-    inline Texture2D(const std::vector<std::vector<ColorFloat>>& color_data, TextureSettings settings = {}) :
-    Texture2D(pad_color_data(color_data), settings) {}
-    
+    inline Texture2D(
+        const std::vector<std::vector<ColorFloat>>& color_data,
+        TextureSettings settings = {}
+    ) :
+        Texture2D(pad_color_data(color_data), settings) {}
+
     Texture2D(screen_size_t width, screen_size_t height, TextureSettings settings = {});
-    
+
     ~Texture2D() { glDeleteTextures(1, &texture_ID_); }
 
     /**
@@ -137,7 +139,8 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     inline void
     bind(GLuint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
-        GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+        GLenum target =
+            settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
         glBindTexture(target, texture_ID_);
     }
 };

@@ -37,7 +37,6 @@ namespace gpu_data {
 
 struct FrameBufferSettings {
     uint8_t samples;
-
 };
 
 /**
@@ -47,7 +46,7 @@ struct FrameBufferSettings {
  * and depth texture.
  *
  */
-class FrameBuffer{
+class FrameBuffer {
  protected:
     screen_size_t width_;
     screen_size_t height_;
@@ -85,7 +84,9 @@ class FrameBuffer{
      * @param screen_size_t width of frame buffer
      * @param screen_size_t height of frame buffer
      */
-    FrameBuffer(screen_size_t width, screen_size_t height, FrameBufferSettings settings);
+    FrameBuffer(
+        screen_size_t width, screen_size_t height, FrameBufferSettings settings
+    );
 
     ~FrameBuffer() { glDeleteFramebuffers(1, &frame_buffer); }
 
@@ -171,8 +172,8 @@ class FrameBuffer{
         if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
             // log some error
             LOG_CRITICAL(
-                logging::opengl_logger, "Framebuffer {} Incomplete with code {}", frame_buffer,
-                framebuffer_status
+                logging::opengl_logger, "Framebuffer {} Incomplete with code {}",
+                frame_buffer, framebuffer_status
             );
             return false;
         }
@@ -182,8 +183,9 @@ class FrameBuffer{
 
 class FrameBufferMultisample : public FrameBuffer {
  public:
-    FrameBufferMultisample(screen_size_t width, screen_size_t height, FrameBufferSettings settings);
-
+    FrameBufferMultisample(
+        screen_size_t width, screen_size_t height, FrameBufferSettings settings
+    );
 };
 
 } // namespace gpu_data
