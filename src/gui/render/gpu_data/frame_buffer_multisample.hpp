@@ -164,14 +164,14 @@ class FrameBuffer{
     }
 
     inline bool
-    status_check() {
+    status_check() const {
         GLuint framebuffer_status =
-            glCheckNamedFramebufferStatus(GL_FRAMEBUFFER, frame_buffer);
+            glCheckNamedFramebufferStatus(frame_buffer, GL_FRAMEBUFFER);
 
         if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
             // log some error
             LOG_CRITICAL(
-                logging::opengl_logger, "Framebuffer Incomplete with code {}",
+                logging::opengl_logger, "Framebuffer {} Incomplete with code {}", frame_buffer,
                 framebuffer_status
             );
             return false;

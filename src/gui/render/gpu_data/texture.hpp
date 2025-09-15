@@ -64,11 +64,11 @@ struct texture2D_data_t {
 };
 
 struct TextureSettings {
-    bool multisample = false;
     uint8_t samples = 1;
+    bool multisample = false;
     
     GLenum internalformat = GL_RGBA32F;
-    GLenum format = GL_RGB;
+    GLenum format = GL_RGBA;
     GLenum type = GL_FLOAT;
 
     GLenum wrap_s = GL_CLAMP_TO_EDGE;
@@ -137,7 +137,8 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     inline void
     bind(GLuint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
-        glBindTexture(GL_TEXTURE_2D, texture_ID_);
+        GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+        glBindTexture(target, texture_ID_);
     }
 };
 

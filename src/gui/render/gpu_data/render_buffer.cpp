@@ -10,15 +10,15 @@ void
 RenderBuffer::connect_texture(GLuint framebuffer_ID, uint8_t texture_attachment) {
     LOG_BACKTRACE(logging::opengl_logger, "Attaching {} to depth texture.", buffer_ID_);
     FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + texture_attachment, GL_RENDERBUFFER, buffer_ID_, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + texture_attachment, GL_RENDERBUFFER, buffer_ID_);
 }
 
 void
 RenderBuffer::connect_depth_texture(GLuint framebuffer_ID) {
     // lots of ways to mess this up
-    LOG_BACKTRACE(logging::opengl_logger, "Attaching {} to depth texture.", buffer_ID_);
+    LOG_BACKTRACE(logging::opengl_logger, "Attaching {} to depth texture of framebuffer {}.", buffer_ID_, framebuffer_ID);
     FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buffer_ID_, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buffer_ID_);
 
 }
 

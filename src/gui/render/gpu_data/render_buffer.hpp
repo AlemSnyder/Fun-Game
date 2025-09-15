@@ -25,7 +25,7 @@ class RenderBuffer : virtual public GPUDataRenderBuffer {
     }
 
 
-    inline RenderBuffer(screen_size_t width, screen_size_t height, RenderBufferSettings settings = {}) : RenderBuffer(settings) {
+    inline RenderBuffer(screen_size_t width, screen_size_t height, RenderBufferSettings settings = {.internalformat = GL_DEPTH_ATTACHMENT}) : RenderBuffer(settings) {
         bind();
         if (settings_.multisample) {
             glRenderbufferStorageMultisample(GL_RENDERBUFFER, settings_.samples, settings_.internalformat, width, height);

@@ -52,15 +52,19 @@ Texture2D::connect_depth_texture(GLuint framebuffer_ID) {
 
 Texture2D::Texture2D(int width, int height, TextureSettings settings) : width_(width), height_(height), settings_(settings) {
 
+    GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
     glGenTextures(1, &texture_ID_);
-    glBindTexture(GL_TEXTURE_2D, texture_ID_);
+    glBindTexture(target, texture_ID_);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, settings_.wrap_s);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, settings_.wrap_t);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, settings_.min_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, settings_.mag_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, settings_.compare_funct);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, settings_.compare_mode);
+    if (!settings_.multisample) {
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, settings_.wrap_s);
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, settings_.wrap_t);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, settings_.min_filter);
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, settings_.mag_filter);
+        glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, settings_.compare_funct);
+        glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, settings_.compare_mode);
+    }
     // set other paremeters
 
 
@@ -78,16 +82,52 @@ Texture2D::Texture2D(int width, int height, TextureSettings settings) : width_(w
     }
 }
 
-Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings settings) : Texture2D(color_data.width, color_data.height, settings) {
+Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings settings) {
     GlobalContext& context = GlobalContext::instance();
     context.push_opengl_task([this, color_data]() {
-        // create one texture and save the id to color_texture_
-        // load and generate the texture
-        glTexImage2D(
-            GL_TEXTURE_2D, 0, settings_.internalformat, color_data.width,
-            color_data.height, 0, settings_.format, settings_.type, color_data.data.data()
+
+        width_ = color_data.width;
+        height_ = color_data.height;
+    
+    GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
+    glGenTextures(1, &texture_ID_);
+    glBindTexture(target, texture_ID_);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    if (!settings_.multisample) {
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, settings_.wrap_s);
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, settings_.wrap_t);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, settings_.min_filter);
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, settings_.mag_filter);
+        glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, settings_.compare_funct);
+        glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, settings_.compare_mode);
+    }
+    // set other paremeters
+
+
+
+    if (settings_.multisample) {
+        glTexImage2DMultisample(
+            GL_TEXTURE_2D_MULTISAMPLE, settings_.samples, settings_.internalformat, width_, height_,
+            GL_TRUE
         );
-        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, settings_.internalformat, width_, height_, 0,
+            settings_.format, settings_.type, nullptr
+        );
+    }
+
+        if (settings_.multisample) {
+            LOG_ERROR(logging::opengl_logger, "Cannot write data to multisample texture");
+        } else {
+            glBindTexture(GL_TEXTURE_2D, texture_ID_);
+            glTexImage2D(
+                GL_TEXTURE_2D, 0, settings_.internalformat, width_,
+                height_, 0, settings_.format, settings_.type, color_data.data.data()
+            );
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
     });
 }
 
