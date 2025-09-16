@@ -95,7 +95,7 @@ GlobalContext::load_script_file(const std::filesystem::path& path) {
     }
     // i think you also want this on the result valid but it might not matter
     std::scoped_lock lock(global_lua_mutex_);
-    auto result = lua_.safe_script_file(path);
+    auto result = lua_.safe_script_file(path.lexically_normal().string());
 
     if (!result.valid()) {
         sol::error err = result; // who designed this?

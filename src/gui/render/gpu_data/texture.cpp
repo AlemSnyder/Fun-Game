@@ -81,7 +81,7 @@ Texture2D::Texture2D(int width, int height, TextureSettings settings) :
     }
 }
 
-Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings settings) {
+Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings settings) : settings_(settings) {
     GlobalContext& context = GlobalContext::instance();
     context.push_opengl_task([this, color_data]() {
         width_ = color_data.width;

@@ -49,11 +49,12 @@ ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 }
 
 void
-ShadowMap::update() {
-    glm::mat4 view_matrix = controls::get_view_matrix();
-    glm::mat4 projection_matrix = controls::get_projection_matrix();
-    glm::mat4 inverse_view_projection = glm::inverse(projection_matrix * view_matrix);
+ShadowMap::set_inverse_view_projection(glm::mat4 inverse_view_projection) {
+    inverse_view_projection_ = std::move(inverse_view_projection);
+}
 
+void
+ShadowMap::update_depth_projection_matrix() {
     // world space positions of back corners of view field.
     std::vector<glm::vec4> shadow_range_corners;
     // Average position of four corners
@@ -65,7 +66,7 @@ ShadowMap::update() {
                 // corner in camera space
                 glm::vec4 corner = {x, y, z, 1}; // w = 1
                 // direction in world space
-                glm::vec4 direction = inverse_view_projection * corner;
+                glm::vec4 direction = inverse_view_projection_ * corner;
                 direction = direction / direction.w;
                 shadow_range_corners.emplace_back(direction);
                 center = +direction;
