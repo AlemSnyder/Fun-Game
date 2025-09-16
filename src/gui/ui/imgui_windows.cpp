@@ -194,10 +194,11 @@ display_data(Scene& scene, bool& show) {
 
     const auto controls = scene.get_inputs();
     glm::mat4 inverse_view_projection = controls->get_inverse_view_projection();
+    // For reference: https://www.songho.ca/opengl/gl_viewport.html
     glm::vec4 screen_position(
         static_cast<float>(xy[0]) / static_cast<float>(controls->get_width()) * 2 - 1,
         static_cast<float>(xy[1]) / static_cast<float>(controls->get_height()) * 2 - 1,
-        value_2, 1
+        value_2 * 2 -1, 1
     );
 
     glm::vec4 world_position = inverse_view_projection * screen_position;
