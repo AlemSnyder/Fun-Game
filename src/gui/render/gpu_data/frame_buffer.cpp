@@ -27,8 +27,6 @@ FrameBuffer::FrameBuffer(
     connect_depth_texture(std::make_shared<Texture2D>(
         width_, height_,
         TextureSettings{
-            .samples = 1,
-            .multisample = false,
             .internalformat = GL_DEPTH_COMPONENT,
             .format = GL_DEPTH_COMPONENT,
             .type = GL_FLOAT}
@@ -37,14 +35,25 @@ FrameBuffer::FrameBuffer(
         std::make_shared<Texture2D>(
             width_, height_,
             TextureSettings{
-                .samples = 1,
-                .multisample = false,
                 .internalformat = GL_RGB8}
         ),
         0
     );
 
     status_check();
+}
+
+void
+FrameBufferBase::copy_to(
+    FrameBufferBase* other, GLbitfield mask, GLenum filter,
+    std::array<screen_size_t, 8> params
+) const {
+    glBlitNamedFramebuffer(
+        get_frame_buffer_id(), other->get_frame_buffer_id(),
+        params[0], params[1], params[2], params[3],
+        params[4], params[5], params[6], params[7], // region of framebuffer
+        mask, filter // copy the color
+    );
 }
 
 } // namespace gpu_data

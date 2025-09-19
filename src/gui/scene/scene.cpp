@@ -30,6 +30,7 @@ Scene::update(screen_size_t width, screen_size_t height) {
 
     FrameBufferHandler::instance().bind_fbo(shadow_map_.get_frame_buffer_id());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // TODO want to get rid of glClear ie move them into the framebuffer
 
     for (const auto& shadow : mid_ground_shadow_) {
         shadow->render(
@@ -57,12 +58,9 @@ Scene::update(screen_size_t width, screen_size_t height) {
             width, height, frame_buffer_multisample_.get_depth_buffer()->value()
         );
     }
-    glBlitNamedFramebuffer(
-        frame_buffer_multisample_.get_frame_buffer_id(),
-        frame_buffer_mg_.get_frame_buffer_id(), 0, 0, width, height, 0, 0, width,
-        height,                                               // region of framebuffer
-        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST // copy the color
-    );
+
+    frame_buffer_multisample_.copy_to(&frame_buffer_mg_,
+        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST, width, height);
 
     FrameBufferHandler::instance().bind_fbo(
         frame_buffer_multisample_.get_frame_buffer_id()

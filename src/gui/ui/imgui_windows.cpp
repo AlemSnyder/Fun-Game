@@ -126,70 +126,47 @@ display_data(const manifest::ObjectHandler& object_handler, bool& show) {
 }
 
 void
-display_data(Scene& scene, bool& show) {
+display_data(Scene& scene, bool& show, screen_size_t window_width, screen_size_t window_height) {
     ImGui::Begin("Scene Data", &show);
 
-    scene.get_depth_texture();
+    // scene.get_depth_texture();
 
     static int xy[2];
-
     ImGui::DragInt2("Sample Position", xy, 1.0, 0, 2000);
-
-    int dt = scene.get_mid_ground_framebuffer_id(); // read from screen?
-
+    
     const auto& mid_ground = scene.get_mid_ground_framebuffer();
     const auto& frame_buffer = scene.get_frame_buffer();
+    
+    int dt = mid_ground.get_frame_buffer_id();
 
-    _Float16 value;
-    //    glGetTextureImage(dt, 0, GL_DEPTH_COMPONENT, 1, &value);
-
+    float depth_value;
     FrameBufferHandler& fbh = FrameBufferHandler::instance();
     fbh.bind_fbo(dt);
-
-    glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_HALF_FLOAT, &value);
-
-    ImGui::Text("Depth 16 %f", value);
-
-    float value_2;
-
-    glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &value_2);
-
-    ImGui::Text("Depth 32 %f", value_2);
-
-    //    _Float32 value_3;
-
-    //    glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
-    //    &value_3);
-
+    glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth_value);
     fbh.bind_fbo(0);
 
-    //    ImGui::Text("Depth 24 %f", value_3);
-
+    ImGui::Text("Depth 32 %f", depth_value);
+    
+    ImGui::Text("Texture ID %i", mid_ground.get_depth_buffer()->value());
     ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_depth_buffer()->value()),
         ImVec2(
             mid_ground.get_width() / 8,
-            mid_ground.get_height() / 8
-        ) //,
-        // ImVec2(0, 1), ImVec2(1, 0)
+            mid_ground.get_width() / 8 * window_height / window_width
+        ),
+        ImVec2(0, float(window_width) / float(mid_ground.get_width()) ),
+        ImVec2( float(window_height) / float(mid_ground.get_height()), 0)
     );
 
+    ImGui::Text("Texture ID %i", mid_ground.get_texture(0)->value());
     ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_texture(0)->value()),
         ImVec2(
             mid_ground.get_width() / 8,
-            mid_ground.get_height() / 8
-        ) //,
-        // ImVec2(0, 1), ImVec2(1, 0)
-    );
-
-    ImGui::Image(
-        reinterpret_cast<ImTextureID>(frame_buffer.get_texture(0)->value()),
-        ImVec2(
-            mid_ground.get_width() / 8,
-            mid_ground.get_height() / 8
-        ) //,
-        // ImVec2(0, 1), ImVec2(1, 0)
+            mid_ground.get_width() / 8 * window_height / window_width
+        ),
+        ImVec2(0, float(window_height) / float(mid_ground.get_height()) ),
+        ImVec2( float(window_width) / float(mid_ground.get_width()), 0)
     );
 
     const auto controls = scene.get_inputs();
@@ -198,7 +175,7 @@ display_data(Scene& scene, bool& show) {
     glm::vec4 screen_position(
         static_cast<float>(xy[0]) / static_cast<float>(controls->get_width()) * 2 - 1,
         static_cast<float>(xy[1]) / static_cast<float>(controls->get_height()) * 2 - 1,
-        value_2 * 2 -1, 1
+        depth_value * 2 - 1, 1
     );
 
     glm::vec4 world_position = inverse_view_projection * screen_position;

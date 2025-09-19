@@ -266,7 +266,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         }
 
         if (show_scene_depth_interact_window) {
-            display_windows::display_data(main_scene, show_scene_depth_interact_window);
+            display_windows::display_data(main_scene, show_scene_depth_interact_window, window_width, window_height);
         }
 
         // Rendering

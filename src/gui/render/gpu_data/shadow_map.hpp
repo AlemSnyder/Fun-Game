@@ -49,6 +49,7 @@ class ShadowMap : public FrameBuffer {
     glm::mat4 depth_view_matrix_;       // convert a point in world space
                                         // to depth in light direction
     glm::mat4 inverse_view_projection_;
+
  public:
     /**
      * @brief Construct a new Shadow Map object

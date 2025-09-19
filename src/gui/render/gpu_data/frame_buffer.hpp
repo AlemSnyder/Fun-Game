@@ -24,10 +24,10 @@
 #pragma once
 
 #include "data_types.hpp"
+#include "logging.hpp"
 #include "render_buffer.hpp"
 #include "texture.hpp"
 #include "types.hpp"
-#include "logging.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -180,6 +180,28 @@ class FrameBufferBase {
         }
         return true;
     }
+
+    inline void
+    copy_to(FrameBufferBase* other, GLbitfield mask, GLenum filter)
+        const {
+        copy_to(other, mask, filter, other->get_width(), other->get_height());
+    }
+
+    inline void
+    copy_to(
+        FrameBufferBase* other, GLbitfield mask, GLenum filter,
+        screen_size_t width, screen_size_t height
+    ) const {
+        copy_to(
+            other, mask, filter,
+            std::array<screen_size_t, 8>({0, 0, width, height, 0, 0, width, height})
+        );
+    }
+
+    void copy_to(
+        FrameBufferBase* other, GLbitfield mask, GLenum filter,
+        std::array<screen_size_t, 8> params
+    ) const;
 };
 
 class FrameBuffer : public FrameBufferBase {
@@ -188,7 +210,6 @@ class FrameBuffer : public FrameBufferBase {
         screen_size_t width, screen_size_t height, FrameBufferSettings settings = {}
     );
 };
-
 
 } // namespace gpu_data
 

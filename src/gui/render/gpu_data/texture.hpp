@@ -73,7 +73,7 @@ struct TextureSettings {
 
     GLenum wrap_s = GL_CLAMP_TO_EDGE;
     GLenum wrap_t = GL_CLAMP_TO_EDGE;
-    GLenum min_filter = GL_LINEAR_MIPMAP_LINEAR;
+    GLenum min_filter = GL_LINEAR;
     GLenum mag_filter = GL_LINEAR;
 
     GLenum compare_funct = GL_LEQUAL;
