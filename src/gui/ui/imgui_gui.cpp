@@ -282,9 +282,6 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         glfwSwapBuffers(window);
     }
 
-    // Cleanup VBO and shader
-    // glDeleteVertexArrays(1, &VertexArrayID);
-
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
