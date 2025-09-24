@@ -28,9 +28,12 @@
 #include "render_buffer.hpp"
 #include "texture.hpp"
 #include "types.hpp"
+#include "util/image.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#define DEPTH_COMPONENT_ID -1
 
 namespace gui {
 
@@ -182,15 +185,14 @@ class FrameBufferBase {
     }
 
     inline void
-    copy_to(FrameBufferBase* other, GLbitfield mask, GLenum filter)
-        const {
+    copy_to(FrameBufferBase* other, GLbitfield mask, GLenum filter) const {
         copy_to(other, mask, filter, other->get_width(), other->get_height());
     }
 
     inline void
     copy_to(
-        FrameBufferBase* other, GLbitfield mask, GLenum filter,
-        screen_size_t width, screen_size_t height
+        FrameBufferBase* other, GLbitfield mask, GLenum filter, screen_size_t width,
+        screen_size_t height
     ) const {
         copy_to(
             other, mask, filter,
@@ -201,6 +203,14 @@ class FrameBufferBase {
     void copy_to(
         FrameBufferBase* other, GLbitfield mask, GLenum filter,
         std::array<screen_size_t, 8> params
+    ) const;
+
+    std::shared_ptr<util::image::Image>
+    read_data(int8_t color_component = DEPTH_COMPONENT_ID) const;
+
+    std::shared_ptr<util::image::Image> read_data(
+        screen_size_t start_w, screen_size_t start_h, screen_size_t image_w,
+        screen_size_t image_h, int8_t color_component = DEPTH_COMPONENT_ID
     ) const;
 };
 

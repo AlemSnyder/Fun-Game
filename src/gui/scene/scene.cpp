@@ -59,8 +59,10 @@ Scene::update(screen_size_t width, screen_size_t height) {
         );
     }
 
-    frame_buffer_multisample_.copy_to(&frame_buffer_mg_,
-        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST, width, height);
+    frame_buffer_multisample_.copy_to(
+        &frame_buffer_mg_, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST, width,
+        height
+    );
 
     FrameBufferHandler::instance().bind_fbo(
         frame_buffer_multisample_.get_frame_buffer_id()

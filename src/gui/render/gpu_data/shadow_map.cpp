@@ -20,9 +20,9 @@ namespace gpu_data {
 ShadowMap::ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings settings) :
     FrameBuffer(w, h, settings) {
     TextureSettings depth_texture_settings{
-        .internalformat = GL_DEPTH_COMPONENT16,
-        .format = GL_DEPTH_COMPONENT,
-        .type = GL_HALF_FLOAT,
+        .internal_format = GPUPixelStorageFormat::DEPTH_16,
+        .read_format = GPUPixelReadFormat::DEPTH_COMPONENT,
+        .type = GPUPixelType::HALF_FLOAT,
         .min_filter = GL_LINEAR};
 
     connect_depth_texture(

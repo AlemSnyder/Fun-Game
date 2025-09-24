@@ -140,9 +140,9 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     /**
      * @brief Get they data buffer type.
      *
-     * @return gui::gpu_data::GPUDataType data buffer type
+     * @return gui::gpu_data::GPUArayType data buffer type
      */
-    [[nodiscard]] inline gui::gpu_data::GPUDataType
+    [[nodiscard]] inline gui::gpu_data::GPUArayType
     get_element_type() const override {
         return model_mesh_.get_element_type();
     }

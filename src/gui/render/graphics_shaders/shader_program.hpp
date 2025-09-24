@@ -53,22 +53,22 @@ namespace shader {
 /**
  * @brief Logs needed and unneeded uniforms.
  *
- * @param std::set<std::pair<std::string,gpu_data::GPUDataType>> want_uniforms
- * @param std::set<std::pair<std::string,gpu_data::GPUDataType>> has_uniforms
+ * @param std::set<std::pair<std::string,gpu_data::GPUArayType>> want_uniforms
+ * @param std::set<std::pair<std::string,gpu_data::GPUArayType>> has_uniforms
  */
 inline void
 log_uniforms(
-    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>>
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUArayType>>
         want_uniforms,
-    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUDataType>>
+    [[maybe_unused]] std::set<std::pair<std::string, gpu_data::GPUArayType>>
         has_uniforms
 ) {
 #if DEBUG()
 
     // Literally just a set compare.
 
-    std::set<std::pair<std::string, gpu_data::GPUDataType>> uniforms_needed;
-    std::set<std::pair<std::string, gpu_data::GPUDataType>> uniforms_not_needed;
+    std::set<std::pair<std::string, gpu_data::GPUArayType>> uniforms_needed;
+    std::set<std::pair<std::string, gpu_data::GPUArayType>> uniforms_not_needed;
 
     std::set_difference(
         want_uniforms.begin(), want_uniforms.end(), has_uniforms.begin(),

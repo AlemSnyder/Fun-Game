@@ -67,9 +67,9 @@ struct TextureSettings {
     uint8_t samples = 1;
     bool multisample = false;
 
-    GLenum internalformat = GL_RGBA32F;
-    GLenum format = GL_RGBA;
-    GLenum type = GL_FLOAT;
+    GPUPixelStorageFormat internal_format = GPUPixelStorageFormat::RGBA;
+    GPUPixelReadFormat read_format = GPUPixelReadFormat::RGBA;
+    GPUPixelType type = GPUPixelType::FLOAT;
 
     GLenum wrap_s = GL_CLAMP_TO_EDGE;
     GLenum wrap_t = GL_CLAMP_TO_EDGE;
@@ -128,6 +128,16 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     connect_texture(GLuint framebuffer_ID, uint8_t texture_attachment) override;
 
     virtual void connect_depth_texture(GLuint framebuffer_ID) override;
+
+    inline virtual GPUPixelType
+    get_type() const {
+        return settings_.type;
+    }
+
+    inline virtual GPUPixelStorageFormat
+    get_format() const {
+        return settings_.internal_format;
+    }
 
     /**
      * @brief Bind texture to given texture index

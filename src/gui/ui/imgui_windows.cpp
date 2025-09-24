@@ -126,27 +126,23 @@ display_data(const manifest::ObjectHandler& object_handler, bool& show) {
 }
 
 void
-display_data(Scene& scene, bool& show, screen_size_t window_width, screen_size_t window_height) {
+display_data(
+    Scene& scene, bool& show, screen_size_t window_width, screen_size_t window_height
+) {
     ImGui::Begin("Scene Data", &show);
-
-    // scene.get_depth_texture();
 
     static int xy[2];
     ImGui::DragInt2("Sample Position", xy, 1.0, 0, 2000);
-    
-    const auto& mid_ground = scene.get_mid_ground_framebuffer();
-    const auto& frame_buffer = scene.get_frame_buffer();
-    
-    int dt = mid_ground.get_frame_buffer_id();
 
-    float depth_value;
+    const auto& mid_ground = scene.get_mid_ground_framebuffer();
+    std::shared_ptr<util::image::Image> read_data =
+        mid_ground.read_data(xy[0], xy[1], 1, 1);
+    auto float_data =
+        std::dynamic_pointer_cast<util::image::FloatMonochromeImage>(read_data);
+
     FrameBufferHandler& fbh = FrameBufferHandler::instance();
-    fbh.bind_fbo(dt);
-    glReadPixels(xy[0], xy[1], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth_value);
     fbh.bind_fbo(0);
 
-    ImGui::Text("Depth 32 %f", depth_value);
-    
     ImGui::Text("Texture ID %i", mid_ground.get_depth_buffer()->value());
     ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_depth_buffer()->value()),
@@ -154,8 +150,8 @@ display_data(Scene& scene, bool& show, screen_size_t window_width, screen_size_t
             mid_ground.get_width() / 8,
             mid_ground.get_width() / 8 * window_height / window_width
         ),
-        ImVec2(0, float(window_width) / float(mid_ground.get_width()) ),
-        ImVec2( float(window_height) / float(mid_ground.get_height()), 0)
+        ImVec2(0, float(window_width) / float(mid_ground.get_width())),
+        ImVec2(float(window_height) / float(mid_ground.get_height()), 0)
     );
 
     ImGui::Text("Texture ID %i", mid_ground.get_texture(0)->value());
@@ -165,52 +161,42 @@ display_data(Scene& scene, bool& show, screen_size_t window_width, screen_size_t
             mid_ground.get_width() / 8,
             mid_ground.get_width() / 8 * window_height / window_width
         ),
-        ImVec2(0, float(window_height) / float(mid_ground.get_height()) ),
-        ImVec2( float(window_width) / float(mid_ground.get_width()), 0)
+        ImVec2(0, float(window_height) / float(mid_ground.get_height())),
+        ImVec2(float(window_width) / float(mid_ground.get_width()), 0)
     );
 
-    const auto controls = scene.get_inputs();
-    glm::mat4 inverse_view_projection = controls->get_inverse_view_projection();
-    // For reference: https://www.songho.ca/opengl/gl_viewport.html
-    glm::vec4 screen_position(
-        static_cast<float>(xy[0]) / static_cast<float>(controls->get_width()) * 2 - 1,
-        static_cast<float>(xy[1]) / static_cast<float>(controls->get_height()) * 2 - 1,
-        depth_value * 2 - 1, 1
-    );
+    if (!float_data) {
+        ImGui::Text("Cannot display depth. Something went wrong.");
 
-    glm::vec4 world_position = inverse_view_projection * screen_position;
-    world_position = world_position / world_position.w;
+    } else {
+        float depth_value = float_data->get_data(0, 0);
 
-    ImGui::Text(
-        "Screen position [%f, %f, %f, %f]", screen_position.x, screen_position.y,
-        screen_position.z, screen_position.w
-    );
+        ImGui::Text("Depth 32 %f", depth_value);
 
-    ImGui::Text(
-        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[0][0],
-        inverse_view_projection[0][1], inverse_view_projection[0][2],
-        inverse_view_projection[0][3]
-    );
-    ImGui::Text(
-        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[1][0],
-        inverse_view_projection[1][1], inverse_view_projection[1][2],
-        inverse_view_projection[1][3]
-    );
-    ImGui::Text(
-        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[2][0],
-        inverse_view_projection[2][1], inverse_view_projection[2][2],
-        inverse_view_projection[2][3]
-    );
-    ImGui::Text(
-        "inverse_view_projection [%f, %f, %f, %f]", inverse_view_projection[3][0],
-        inverse_view_projection[3][1], inverse_view_projection[3][2],
-        inverse_view_projection[3][3]
-    );
+        const auto controls = scene.get_inputs();
+        glm::mat4 inverse_view_projection = controls->get_inverse_view_projection();
+        // For reference: https://www.songho.ca/opengl/gl_viewport.html
+        glm::vec4 screen_position(
+            static_cast<float>(xy[0]) / static_cast<float>(controls->get_width()) * 2
+                - 1,
+            static_cast<float>(xy[1]) / static_cast<float>(controls->get_height()) * 2
+                - 1,
+            depth_value * 2 - 1, 1
+        );
 
-    ImGui::Text(
-        "World position [%f, %f, %f, %f]", world_position.x, world_position.y,
-        world_position.z, world_position.w
-    );
+        glm::vec4 world_position = inverse_view_projection * screen_position;
+        world_position = world_position / world_position.w;
+
+        ImGui::Text(
+            "Screen position [%f, %f, %f, %f]", screen_position.x, screen_position.y,
+            screen_position.z, screen_position.w
+        );
+
+        ImGui::Text(
+            "World position [%f, %f, %f, %f]", world_position.x, world_position.y,
+            world_position.z, world_position.w
+        );
+    }
 
     ImGui::End();
 }

@@ -70,13 +70,14 @@ Texture2D::Texture2D(int width, int height, TextureSettings settings) :
 
     if (settings_.multisample) {
         glTexImage2DMultisample(
-            GL_TEXTURE_2D_MULTISAMPLE, settings_.samples, settings_.internalformat,
-            width, height, GL_TRUE
+            GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
+            static_cast<GLenum>(settings_.internal_format), width, height, GL_TRUE
         );
     } else {
         glTexImage2D(
-            GL_TEXTURE_2D, 0, settings_.internalformat, width, height, 0,
-            settings_.format, settings_.type, nullptr
+            GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format), width,
+            height, 0, static_cast<GLenum>(settings_.read_format),
+            static_cast<GLenum>(settings_.type), nullptr
         );
     }
 }
@@ -106,13 +107,14 @@ Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings setting
 
         if (settings_.multisample) {
             glTexImage2DMultisample(
-                GL_TEXTURE_2D_MULTISAMPLE, settings_.samples, settings_.internalformat,
-                width_, height_, GL_TRUE
+                GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
+                static_cast<GLenum>(settings_.internal_format), width_, height_, GL_TRUE
             );
         } else {
             glTexImage2D(
-                GL_TEXTURE_2D, 0, settings_.internalformat, width_, height_, 0,
-                settings_.format, settings_.type, nullptr
+                GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
+                width_, height_, 0, static_cast<GLenum>(settings_.read_format),
+                static_cast<GLenum>(settings_.type), nullptr
             );
         }
 
@@ -123,8 +125,9 @@ Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings setting
         } else {
             glBindTexture(GL_TEXTURE_2D, texture_ID_);
             glTexImage2D(
-                GL_TEXTURE_2D, 0, settings_.internalformat, width_, height_, 0,
-                settings_.format, settings_.type, color_data.data.data()
+                GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
+                width_, height_, 0, static_cast<GLenum>(settings_.read_format),
+                static_cast<GLenum>(settings_.type), color_data.data.data()
             );
             glGenerateMipmap(GL_TEXTURE_2D);
         }

@@ -17,16 +17,16 @@ FrameBufferMultisample::FrameBufferMultisample(
         width_, height_,
         RenderBufferSettings{
             .samples = settings_.samples,
-            .multisample = settings_.samples != 1,
-            .internalformat = GL_DEPTH_COMPONENT}
+            .multisample = settings_.samples > 1,
+            .internal_format = GPUPixelStorageFormat::DEPTH}
     ));
     connect_render_texture(
         std::make_shared<Texture2D>(
             width_, height_,
             TextureSettings{
                 .samples = settings.samples,
-                .multisample = (settings_.samples != 1),
-                .internalformat = GL_RGB8}
+                .multisample = (settings_.samples > 1),
+                .internal_format = GPUPixelStorageFormat::RGB8}
         ),
         0
     );
