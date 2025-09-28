@@ -28,12 +28,13 @@ FrameBuffer::FrameBuffer(
         width_, height_,
         TextureSettings{
             .internal_format = GPUPixelStorageFormat::DEPTH,
-            .read_format = GPUPixelReadFormat::DEPTH_COMPONENT}
+            .read_format = GPUPixelReadFormat::DEPTH_COMPONENT},
+        false
     ));
     connect_render_texture(
         std::make_shared<Texture2D>(
             width_, height_,
-            TextureSettings{.internal_format = GPUPixelStorageFormat::RGB8}
+            TextureSettings{.internal_format = GPUPixelStorageFormat::RGB8}, false
         ),
         0
     );

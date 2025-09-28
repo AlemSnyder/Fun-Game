@@ -51,8 +51,9 @@ Texture2D::connect_depth_texture(GLuint framebuffer_ID) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, target, texture_ID_, 0);
 }
 
-Texture2D::Texture2D(int width, int height, TextureSettings settings) :
-    width_(width), height_(height), settings_(settings) {
+void
+Texture2D::setup(std::shared_ptr<util::image::Image> image) {
+    // must set width and height before calling this function.
     GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 
     glGenTextures(1, &texture_ID_);
@@ -68,43 +69,9 @@ Texture2D::Texture2D(int width, int height, TextureSettings settings) :
     }
     // set other paremeters
 
-    if (settings_.multisample) {
-        glTexImage2DMultisample(
-            GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
-            static_cast<GLenum>(settings_.internal_format), width, height, GL_TRUE
-        );
+    if (image) {
+        load_data(image);
     } else {
-        glTexImage2D(
-            GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format), width,
-            height, 0, static_cast<GLenum>(settings_.read_format),
-            static_cast<GLenum>(settings_.type), nullptr
-        );
-    }
-}
-
-Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings settings) :
-    settings_(settings) {
-    GlobalContext& context = GlobalContext::instance();
-    context.push_opengl_task([this, color_data]() {
-        width_ = color_data.width;
-        height_ = color_data.height;
-
-        GLenum target =
-            settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-
-        glGenTextures(1, &texture_ID_);
-        glBindTexture(target, texture_ID_);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        if (!settings_.multisample) {
-            glTexParameteri(target, GL_TEXTURE_WRAP_S, settings_.wrap_s);
-            glTexParameteri(target, GL_TEXTURE_WRAP_T, settings_.wrap_t);
-            glTexParameteri(target, GL_TEXTURE_MIN_FILTER, settings_.min_filter);
-            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, settings_.mag_filter);
-            glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, settings_.compare_funct);
-            glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, settings_.compare_mode);
-        }
-        // set other paremeters
-
         if (settings_.multisample) {
             glTexImage2DMultisample(
                 GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
@@ -117,46 +84,58 @@ Texture2D::Texture2D(const texture2D_data_t& color_data, TextureSettings setting
                 static_cast<GLenum>(settings_.type), nullptr
             );
         }
-
-        if (settings_.multisample) {
-            LOG_ERROR(
-                logging::opengl_logger, "Cannot write data to multisample texture"
-            );
-        } else {
-            glBindTexture(GL_TEXTURE_2D, texture_ID_);
-            glTexImage2D(
-                GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
-                width_, height_, 0, static_cast<GLenum>(settings_.read_format),
-                static_cast<GLenum>(settings_.type), color_data.data.data()
-            );
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-    });
+    }
 }
 
-texture2D_data_t
-Texture2D::pad_color_data(const std::vector<std::vector<ColorFloat>>& vector_data) {
-    uint width = 0;
-    uint height = vector_data.size();
-
-    for (const auto& row : vector_data) {
-        if (row.size() > width) {
-            width = row.size();
-        }
+Texture2D::Texture2D(
+    screen_size_t width, screen_size_t height, TextureSettings settings, bool differed
+) :
+    width_(width), height_(height), settings_(settings) {
+    if (differed) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this]() { setup(nullptr); });
+    } else {
+        setup(nullptr);
     }
+}
 
-    std::vector<ColorFloat> data;
-
-    for (const auto& row : vector_data) {
-        for (const auto& color : row) {
-            data.push_back(color);
-        }
-        for (size_t i = 0; i < width - row.size(); i++) {
-            data.push_back(color::black);
-        }
+Texture2D::Texture2D(
+    std::shared_ptr<util::image::Image> image, TextureSettings settings, bool differed
+) :
+    settings_(settings) {
+    if (!image) {
+        return;
     }
+    width_ = image->get_width();
+    height_ = image->get_height();
 
-    return texture2D_data_t(std::move(data), width, height);
+    if (differed) {
+        GlobalContext& context = GlobalContext::instance();
+        context.push_opengl_task([this, image]() { setup(image); });
+    } else {
+        setup(image);
+    }
+}
+
+void
+Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
+    // TODO lots of checks
+    if (settings_.multisample) {
+        LOG_ERROR(logging::opengl_logger, "Cannot write data to multisample texture");
+        return;
+    }
+    if (settings_.internal_format == gpu_data::GPUPixelStorageFormat::DEPTH) {
+        //
+    }
+    width_ = image->get_width();
+    height_ = image->get_height();
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
+        image->get_width(), image->get_height(), 0,
+        static_cast<GLenum>(settings_.read_format), static_cast<GLenum>(settings_.type),
+        image->data()
+    );
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 } // namespace gpu_data

@@ -18,7 +18,7 @@ namespace gui {
 namespace gpu_data {
 
 ShadowMap::ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings settings) :
-    FrameBuffer(w, h, settings) {
+    FrameBufferBase(w, h, settings) {
     TextureSettings depth_texture_settings{
         .internal_format = GPUPixelStorageFormat::DEPTH_16,
         .read_format = GPUPixelReadFormat::DEPTH_COMPONENT,
@@ -26,7 +26,7 @@ ShadowMap::ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings setti
         .min_filter = GL_LINEAR};
 
     connect_depth_texture(
-        std::make_shared<Texture2D>(width_, height_, depth_texture_settings)
+        std::make_shared<Texture2D>(width_, height_, depth_texture_settings, false)
     );
 
     // No color output in the bound framebuffer, only depth.

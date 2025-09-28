@@ -6,6 +6,7 @@
 #include "logging.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
+#include "util/image.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -57,12 +58,6 @@ class Texture1D {
     }
 };
 
-struct texture2D_data_t {
-    std::vector<ColorFloat> data;
-    uint width;
-    uint height;
-};
-
 struct TextureSettings {
     uint8_t samples = 1;
     bool multisample = false;
@@ -88,29 +83,23 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     screen_size_t width_;
     screen_size_t height_;
     TextureSettings settings_;
+    // TODO make settings static
     GLuint texture_ID_;
 
-    [[nodiscard]] texture2D_data_t static pad_color_data(
-        const std::vector<std::vector<ColorFloat>>& vector_data
-    );
-
-    Texture2D();
-
-    Texture2D(const texture2D_data_t& color_data, TextureSettings settings = {});
+    void setup(std::shared_ptr<util::image::Image> image);
 
  public:
-    /**
-     * @brief Construct a new Texture2D from a vector of vectors of colors
-     *
-     * @param const std::vector<std::vector<ColorFloat>>& color_data
-     */
-    inline Texture2D(
-        const std::vector<std::vector<ColorFloat>>& color_data,
-        TextureSettings settings = {}
-    ) :
-        Texture2D(pad_color_data(color_data), settings) {}
+    Texture2D(
+        screen_size_t width, screen_size_t height, TextureSettings settings = {},
+        bool differed = true
+    );
 
-    Texture2D(screen_size_t width, screen_size_t height, TextureSettings settings = {});
+    Texture2D(
+        std::shared_ptr<util::image::Image> Image, TextureSettings settings = {},
+        bool differed = true
+    );
+
+    void load_data(std::shared_ptr<util::image::Image> image);
 
     ~Texture2D() { glDeleteTextures(1, &texture_ID_); }
 

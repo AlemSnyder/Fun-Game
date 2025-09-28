@@ -26,7 +26,8 @@ FrameBufferMultisample::FrameBufferMultisample(
             TextureSettings{
                 .samples = settings.samples,
                 .multisample = (settings_.samples > 1),
-                .internal_format = GPUPixelStorageFormat::RGB8}
+                .internal_format = GPUPixelStorageFormat::RGB8},
+            false
         ),
         0
     );

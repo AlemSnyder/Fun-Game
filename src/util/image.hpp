@@ -1,16 +1,23 @@
 #pragma once
 
-#include <png.h>
-#include <memory>
-
 #include "types.hpp"
+#include "util/color.hpp"
+
+#include <png.h>
+
+#include <memory>
 
 namespace util {
 
 namespace image {
 
+struct FloatPolychromeAlphaImage_data_t {
+    std::shared_ptr<char[]> data;
+    screen_size_t width;
+    screen_size_t height;
+};
 
-template<class T, int datum_number>
+template <class T, int datum_number>
 std::array<png_byte, datum_number>
 read_data(std::shared_ptr<char[]> data, size_t offset) {
     size_t bit_offset = offset * sizeof(T) * datum_number;
@@ -24,7 +31,7 @@ read_data(std::shared_ptr<char[]> data, size_t offset) {
     return out;
 }
 
-template<class T, int datum_number>
+template <class T, int datum_number>
 std::array<float, datum_number>
 read_data_float(std::shared_ptr<char[]> data, size_t offset) {
     size_t bit_offset = offset * sizeof(T) * datum_number;
@@ -37,7 +44,6 @@ read_data_float(std::shared_ptr<char[]> data, size_t offset) {
     return out;
 }
 
-
 class Image {
     // some data
  protected:
@@ -47,15 +53,27 @@ class Image {
     std::shared_ptr<char[]> data_;
 
  public:
-    virtual size_t get_width() const {
+    inline virtual size_t
+    get_width() const {
         return width_;
     }
-    virtual size_t get_height() const {
+
+    inline virtual size_t
+    get_height() const {
         return height_;
     }
-    inline Image(std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size)
-        : width_(width), height_(height), data_size_(data_size), data_(data)
-        {};
+
+    inline virtual void*
+    data() const {
+        return data_.get();
+    }
+
+    inline Image(
+        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
+    ) :
+        width_(width),
+        height_(height), data_size_(data_size), data_(data){};
+
     virtual ~Image() {}
 };
 
@@ -69,9 +87,8 @@ class MonochromeImage : public virtual Image {
 class PolychromeImage : public virtual Image {
  public:
     virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const = 0;
-    
-    inline virtual ~PolychromeImage() {}
 
+    inline virtual ~PolychromeImage() {}
 };
 
 class PolychromeAlphaImage : public virtual Image {
@@ -79,7 +96,6 @@ class PolychromeAlphaImage : public virtual Image {
     virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const = 0;
 
     inline virtual ~PolychromeAlphaImage() {}
-
 };
 
 // FLOAT
@@ -88,61 +104,84 @@ class FloatMonochromeImage : public virtual MonochromeImage {
     virtual png_byte get_color(size_t i, size_t j) const override;
 
     virtual float get_data(size_t i, size_t j) const;
-    
-    FloatMonochromeImage(std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size) :
-        Image(data, width, height, data_size){}
-    
-    inline virtual size_t get_width() const {
+
+    FloatMonochromeImage(
+        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
+    ) :
+        Image(data, width, height, data_size) {}
+
+    inline virtual size_t
+    get_width() const {
         return width_;
     }
-    inline virtual size_t get_height() const {
+
+    inline virtual size_t
+    get_height() const {
         return height_;
     }
+
     inline virtual ~FloatMonochromeImage() {}
-
-
 };
 
 class FloatPolychromeImage : public virtual PolychromeImage {
  public:
     virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const override;
-    
+
     virtual std::array<float, 3> get_data(size_t i, size_t j) const;
 
-    FloatPolychromeImage(std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size) : 
-        Image(data, width, height, data_size){}
-    
-    inline virtual size_t get_width() const {
+    FloatPolychromeImage(
+        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
+    ) :
+        Image(data, width, height, data_size) {}
+
+    inline virtual size_t
+    get_width() const {
         return width_;
     }
-    inline virtual size_t get_height() const {
+
+    inline virtual size_t
+    get_height() const {
         return height_;
     }
+
     inline virtual ~FloatPolychromeImage() {}
-
 };
-
 
 class FloatPolychromeAlphaImage : public virtual PolychromeAlphaImage {
+ private:
+    static FloatPolychromeAlphaImage_data_t
+    pad_color_data(const std::vector<std::vector<ColorFloat>>& vector_data);
+
+    FloatPolychromeAlphaImage(FloatPolychromeAlphaImage_data_t data) :
+        Image(data.data, data.width, data.height, sizeof(ColorFloat)) {}
+
  public:
     virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const override;
-    
+
     virtual std::array<float, 4> get_data(size_t i, size_t j) const;
 
-    FloatPolychromeAlphaImage(std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size) : 
-        Image(data, width, height, data_size){}
-    
-    inline virtual size_t get_width() const {
+    FloatPolychromeAlphaImage(
+        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
+    ) :
+        Image(data, width, height, data_size) {}
+
+    FloatPolychromeAlphaImage(std::vector<std::vector<ColorFloat>> data) :
+        FloatPolychromeAlphaImage(pad_color_data(data)) {}
+
+    inline virtual size_t
+    get_width() const {
         return width_;
     }
-    inline virtual size_t get_height() const {
+
+    inline virtual size_t
+    get_height() const {
         return height_;
     }
-    inline virtual ~FloatPolychromeAlphaImage() {}
 
+    inline virtual ~FloatPolychromeAlphaImage() {}
 };
 
-# if __HAVE_FLOAT16
+#if __HAVE_FLOAT16
 // HALF FLOAT
 class HALFFloatMonochromeImage : public virtual MonochromeImage {
  public:
@@ -152,17 +191,14 @@ class HALFFloatMonochromeImage : public virtual MonochromeImage {
 class HALFFloatPolychromeImage : public virtual PolychromeImage {
  public:
     virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const;
-
 };
 
 class HALFFloatPolychromeAlphaImage : public virtual PolychromeAlphaImage {
  public:
     virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const;
-
 };
 #endif
 
-}
-
+} // namespace image
 
 } // namespace util

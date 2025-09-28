@@ -41,7 +41,7 @@ namespace gpu_data {
  * @details ShadowMap holds the depth texture. When added to a scene object
  * shadows are cast to this depth texture, and used when rendering the scene.
  */
-class ShadowMap : public FrameBuffer {
+class ShadowMap : public FrameBufferBase {
  private:
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sunlight
