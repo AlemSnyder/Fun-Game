@@ -9,7 +9,6 @@
 
 namespace manifest {
 
-// TODO change to return a pointer (could be null)
 std::shared_ptr<world::object::entity::Object>
 ObjectHandler::get_object(const std::string& id) {
     return ided_objects.at(id);

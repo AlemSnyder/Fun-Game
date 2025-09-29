@@ -131,8 +131,6 @@ class Render_Base {
     inline virtual ~Render_Base() {}
 };
 
-// TODO each of these should use the glMulti... version of the given command
-
 /**
  * @brief No elements No instancing
  */

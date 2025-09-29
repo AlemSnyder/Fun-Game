@@ -9,7 +9,6 @@ namespace gui {
 namespace scene {
 
 KeyMapping::KeyMapping() {
-    // TODO redo this when interent
     array_map_[Action::FORWARD] = Key::W;
     array_map_[Action::LEFT] = Key::A;
     array_map_[Action::BACKWARD] = Key::S;

@@ -300,8 +300,6 @@ setup(
     chunks_render_pipeline->data.push_back(terrain_mesh.get());
     chunks_shadow_pipeline->data.push_back(terrain_mesh.get());
 
-    // TODO send terrain_mesh to a render program
-
     auto z = world.get_terrain_main().get_Z_solid(5, 5, 50);
 
     world.spawn_entity("base/Test_Entity", {5, 5, z + 1});

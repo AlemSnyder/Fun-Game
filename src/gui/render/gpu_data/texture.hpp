@@ -82,8 +82,7 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     // static const size_t height = 2;
     screen_size_t width_;
     screen_size_t height_;
-    TextureSettings settings_;
-    // TODO make settings static
+    const TextureSettings settings_;
     GLuint texture_ID_;
 
     void setup(std::shared_ptr<util::image::Image> image);
