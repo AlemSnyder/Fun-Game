@@ -34,6 +34,16 @@ Texture1D::Texture1D(const std::vector<ColorFloat>& color_data) {
 
 void
 Texture2D::connect_texture(GLuint framebuffer_ID, uint8_t texture_attachment) {
+#if DEBUG()
+    GlobalContext& context = GlobalContext::instance();
+    if (!context.is_main_thread()) {
+        LOG_CRITICAL(
+            logging::opengl_logger,
+            "Opengl interface calls must be done on the main thread."
+        );
+    }
+#endif
+
     FrameBufferHandler& handler = FrameBufferHandler::instance();
     handler.bind_fbo(framebuffer_ID);
     GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
@@ -45,6 +55,16 @@ Texture2D::connect_texture(GLuint framebuffer_ID, uint8_t texture_attachment) {
 
 void
 Texture2D::connect_depth_texture(GLuint framebuffer_ID) {
+#if DEBUG()
+    GlobalContext& context = GlobalContext::instance();
+    if (!context.is_main_thread()) {
+        LOG_CRITICAL(
+            logging::opengl_logger,
+            "Opengl interface calls must be done on the main thread."
+        );
+    }
+#endif
+
     FrameBufferHandler& handler = FrameBufferHandler::instance();
     handler.bind_fbo(framebuffer_ID);
     GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
@@ -53,6 +73,16 @@ Texture2D::connect_depth_texture(GLuint framebuffer_ID) {
 
 void
 Texture2D::setup(std::shared_ptr<util::image::Image> image) {
+#if DEBUG()
+    GlobalContext& context = GlobalContext::instance();
+    if (!context.is_main_thread()) {
+        LOG_CRITICAL(
+            logging::opengl_logger,
+            "Opengl interface calls must be done on the main thread."
+        );
+    }
+#endif
+
     // must set width and height before calling this function.
     GLenum target = settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 
