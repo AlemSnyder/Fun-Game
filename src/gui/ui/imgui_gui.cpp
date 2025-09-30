@@ -266,7 +266,10 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         }
 
         if (show_scene_depth_interact_window) {
-            display_windows::display_data(main_scene, show_scene_depth_interact_window);
+            display_windows::display_data(
+                main_scene, show_scene_depth_interact_window, window_width,
+                window_height
+            );
         }
 
         // Rendering
@@ -278,9 +281,6 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         glfwSwapBuffers(window);
     }
-
-    // Cleanup VBO and shader
-    // glDeleteVertexArrays(1, &VertexArrayID);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

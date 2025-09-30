@@ -44,7 +44,7 @@ TileType::TileType(
     }
 
     if (layer_effect_material_id == DIRT_ID) {
-        layer_effect_color_id = 0; // TODO this is the wrong glass color
+        layer_effect_color_id = 0; // TODO this is the wrong grass color
     }
 
     top_color_ = materials.at(stamp_material_id).color[stamp_color_id].hex_color;

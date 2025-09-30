@@ -35,7 +35,9 @@ void display_data(std::shared_ptr<scene::Helio> helio, bool& show);
 
 void display_data(const manifest::ObjectHandler& object_handler, bool& show);
 
-void display_data(Scene& scene, bool& show);
+void display_data(
+    Scene& scene, bool& show, screen_size_t window_width, screen_size_t window_height
+);
 
 } // namespace display_windows
 

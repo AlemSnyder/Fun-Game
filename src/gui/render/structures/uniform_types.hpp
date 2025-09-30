@@ -37,7 +37,7 @@ class LightDirection : public shader::UniformExecutor {
 
  public:
     LightDirection(std::shared_ptr<LightEnvironment> lighting) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~LightDirection(){};
 
@@ -64,7 +64,7 @@ class DiffuseLight : public shader::UniformExecutor {
 
  public:
     DiffuseLight(std::shared_ptr<LightEnvironment> lighting) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~DiffuseLight(){};
 
@@ -91,7 +91,7 @@ class SpectralLight : public shader::UniformExecutor {
 
  public:
     SpectralLight(std::shared_ptr<LightEnvironment> lighting) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_VEC3), lighting_(lighting) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
     virtual ~SpectralLight(){};
 
@@ -115,7 +115,7 @@ class MatrixViewProjection : public shader::UniformExecutor {
 
  public:
     MatrixViewProjection(std::shared_ptr<scene::Controls> controller) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), controller_(controller) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), controller_(controller) {}
 
     virtual ~MatrixViewProjection(){};
 
@@ -139,7 +139,7 @@ class ViewMatrix : public shader::UniformExecutor {
 
  public:
     ViewMatrix(std::shared_ptr<scene::Controls> controller) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), controller_(controller) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), controller_(controller) {}
 
     virtual ~ViewMatrix(){};
 
@@ -161,7 +161,7 @@ class LightDepthProjection : public shader::UniformExecutor {
 
  public:
     LightDepthProjection(const gpu_data::ShadowMap* shadow_map) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthProjection() {}
 
@@ -188,7 +188,7 @@ class LightDepthTextureProjection : public shader::UniformExecutor {
 
  public:
     LightDepthTextureProjection(const gpu_data::ShadowMap* shadow_map) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), shadow_map_(shadow_map) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), shadow_map_(shadow_map) {}
 
     virtual ~LightDepthTextureProjection() {}
 
@@ -227,7 +227,7 @@ class TextureUniform : public shader::UniformExecutor {
     uint8_t texture_location_;
 
  public:
-    TextureUniform(gpu_data::GPUDataType texture_type, uint8_t texture_location) :
+    TextureUniform(gpu_data::GPUArayType texture_type, uint8_t texture_location) :
         UniformExecutor(texture_type), texture_location_(texture_location) {}
 
     inline virtual ~TextureUniform() {}
@@ -248,7 +248,7 @@ class MatrixViewInverseProjection : public shader::UniformExecutor {
 
  public:
     MatrixViewInverseProjection(std::shared_ptr<scene::Controls> controller) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), controller_(controller) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), controller_(controller) {}
 
     virtual ~MatrixViewInverseProjection() {}
 
@@ -275,7 +275,7 @@ class PixelProjection : public shader::UniformExecutor {
     inline static screen_size_t height_;
 
  public:
-    PixelProjection() : UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4) {}
+    PixelProjection() : UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4) {}
 
     virtual ~PixelProjection() {}
 
@@ -310,7 +310,7 @@ class StarRotationUniform : public shader::UniformExecutor {
 
  public:
     StarRotationUniform(std::shared_ptr<render::StarRotation> rotation) :
-        UniformExecutor(gpu_data::GPUDataType::FLOAT_MAT4), rotation_(rotation) {}
+        UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), rotation_(rotation) {}
 
     virtual ~StarRotationUniform() {}
 

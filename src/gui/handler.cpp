@@ -1,5 +1,7 @@
 #include "handler.hpp"
 
+#include "logging.hpp"
+
 namespace gui {
 
 void
@@ -11,6 +13,9 @@ FrameBufferHandler::bind_fbo(GLuint new_fbo) {
         fbo_id = new_fbo;
         glBindFramebuffer(GL_FRAMEBUFFER, new_fbo);
     }
+    LOG_BACKTRACE(
+        logging::opengl_logger, "Framebuffer {} bound to GL_FRAMEBUFFER", fbo_id
+    );
 }
 
 void

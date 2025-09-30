@@ -15,7 +15,7 @@
  *
  * @author @AlemSnyder
  *
- * @brief Defines FrameBuffer
+ * @brief Defines FrameBufferBase
  *
  * @ingroup GUI  GPU_DATA
  *
@@ -23,29 +23,41 @@
 
 #pragma once
 
+#include "data_types.hpp"
+#include "logging.hpp"
+#include "render_buffer.hpp"
+#include "texture.hpp"
 #include "types.hpp"
+#include "util/image.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#define DEPTH_COMPONENT_ID -1
 
 namespace gui {
 
 namespace gpu_data {
 
+struct FrameBufferSettings {
+    uint8_t samples;
+};
+
 /**
- * @brief  Framebuffer object
+ * @brief Multisample Framebuffer object
  *
  * @details Creates and handles a GPU frame buffer. Creates color texture,
  * and depth texture.
  *
  */
-class FrameBuffer {
- private:
-    GLuint frame_buffer;
-    GLuint render_texture;
-    GLuint depth_buffer;
+class FrameBufferBase {
+ protected:
     screen_size_t width_;
     screen_size_t height_;
+    FrameBufferSettings settings_;
+    GLuint frame_buffer;
+    std::shared_ptr<GPUDataRenderBuffer> depth_buffer_;
+    std::unordered_map<uint8_t, std::shared_ptr<GPUDataRenderBuffer>> render_texture_;
 
  public:
     /**
@@ -54,10 +66,10 @@ class FrameBuffer {
      * @details This is effectively a pointer. Copping this will delete the framebuffer
      * and leave the class in an invalid state.
      *
-     * @param FrameBuffer
+     * @param FrameBufferBase
      */
-    FrameBuffer(const FrameBuffer& obj) = delete;
-    FrameBuffer& operator=(const FrameBuffer& obj) = delete;
+    FrameBufferBase(const FrameBufferBase& obj) = delete;
+    FrameBufferBase& operator=(const FrameBufferBase& obj) = delete;
 
     /**
      * @brief Move constructors
@@ -65,24 +77,22 @@ class FrameBuffer {
      * @details Move constructors are valid because the deconstructor will not be
      * called.
      *
-     * @param FrameBuffer
+     * @param FrameBufferBase
      */
-    FrameBuffer(FrameBuffer&& obj) = default;
-    FrameBuffer& operator=(FrameBuffer&& obj) = default;
+    FrameBufferBase(FrameBufferBase&& obj) = default;
+    FrameBufferBase& operator=(FrameBufferBase&& obj) = default;
 
     /**
-     * @brief constructor method
+     * @brief Delete constructor method
      *
      * @param screen_size_t width of frame buffer
      * @param screen_size_t height of frame buffer
      */
-    FrameBuffer(screen_size_t width, screen_size_t height);
+    FrameBufferBase(
+        screen_size_t width, screen_size_t height, FrameBufferSettings settings = {}
+    );
 
-    ~FrameBuffer() {
-        glDeleteTextures(1, &depth_buffer);
-        glDeleteTextures(1, &render_texture);
-        glDeleteFramebuffers(1, &frame_buffer);
-    }
+    ~FrameBufferBase() { glDeleteFramebuffers(1, &frame_buffer); }
 
     /**
      * @brief Get width of frame buffer
@@ -105,6 +115,16 @@ class FrameBuffer {
     }
 
     /**
+     * @brief Get the number of samples in each pixel
+     *
+     * @return GLuint number of samples
+     */
+    [[nodiscard]] inline GLuint
+    get_num_samples() {
+        return settings_.samples;
+    }
+
+    /**
      * @brief Get id of frame buffer
      *
      * @return GLuint frame buffer id
@@ -115,13 +135,13 @@ class FrameBuffer {
     }
 
     /**
-     * @brief Get id of  image texture
+     * @brief Get id of multisample image texture
      *
      * @return GLuint render texture id
      */
-    [[nodiscard]] inline GLuint
-    get_texture_name() const {
-        return render_texture;
+    [[nodiscard]] inline const std::shared_ptr<GPUDataRenderBuffer>
+    get_texture(uint8_t id) const {
+        return render_texture_.at(id);
     }
 
     /**
@@ -129,10 +149,76 @@ class FrameBuffer {
      *
      * @return GLuint depth buffer id
      */
-    [[nodiscard]] inline GLuint
-    get_depth_buffer_name() const {
-        return depth_buffer;
+    [[nodiscard]] inline std::shared_ptr<GPUDataRenderBuffer>
+    get_depth_buffer() const {
+        return depth_buffer_;
     }
+
+    inline void
+    connect_depth_texture(std::shared_ptr<GPUDataRenderBuffer> depth_texture) {
+        depth_buffer_ = depth_texture;
+        depth_texture->connect_depth_texture(frame_buffer);
+    }
+
+    inline void
+    connect_render_texture(
+        std::shared_ptr<GPUDataRenderBuffer> texture, uint8_t texture_attachment
+    ) {
+        render_texture_[texture_attachment] = texture;
+        texture->connect_texture(frame_buffer, texture_attachment);
+    }
+
+    inline bool
+    status_check() const {
+        GLuint framebuffer_status =
+            glCheckNamedFramebufferStatus(frame_buffer, GL_FRAMEBUFFER);
+
+        if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
+            // log some error
+            LOG_CRITICAL(
+                logging::opengl_logger, "Framebuffer {} Incomplete with code {}",
+                frame_buffer, framebuffer_status
+            );
+            return false;
+        }
+        return true;
+    }
+
+    inline void
+    copy_to(FrameBufferBase* other, GLbitfield mask, GLenum filter) const {
+        copy_to(other, mask, filter, other->get_width(), other->get_height());
+    }
+
+    inline void
+    copy_to(
+        FrameBufferBase* other, GLbitfield mask, GLenum filter, screen_size_t width,
+        screen_size_t height
+    ) const {
+        copy_to(
+            other, mask, filter,
+            std::array<screen_size_t, 8>({0, 0, width, height, 0, 0, width, height})
+        );
+    }
+
+    void copy_to(
+        FrameBufferBase* other, GLbitfield mask, GLenum filter,
+        std::array<screen_size_t, 8> params
+    ) const;
+
+    std::shared_ptr<util::image::Image>
+    read_data(int8_t color_component = DEPTH_COMPONENT_ID) const;
+
+    std::shared_ptr<util::image::Image> read_data(
+        screen_size_t start_w, screen_size_t start_h, screen_size_t image_w,
+        screen_size_t image_h, int8_t color_component = DEPTH_COMPONENT_ID
+    ) const;
+};
+
+class FrameBuffer : public FrameBufferBase {
+ public:
+    FrameBuffer(
+        screen_size_t width, screen_size_t height, FrameBufferSettings settings = {}
+    );
 };
 
 } // namespace gpu_data

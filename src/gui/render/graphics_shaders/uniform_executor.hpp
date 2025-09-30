@@ -10,16 +10,16 @@ namespace shader {
 
 class UniformExecutor {
  protected:
-    const gpu_data::GPUDataType data_type_;
+    const gpu_data::GPUArayType data_type_;
 
  public:
-    UniformExecutor(gpu_data::GPUDataType data_type) : data_type_(data_type) {}
+    UniformExecutor(gpu_data::GPUArayType data_type) : data_type_(data_type) {}
 
     virtual inline ~UniformExecutor() {}
 
     virtual void bind(GLint uid) const = 0;
 
-    inline gpu_data::GPUDataType
+    inline gpu_data::GPUArayType
     get_type() const {
         return data_type_;
     }

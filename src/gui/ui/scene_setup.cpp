@@ -132,13 +132,13 @@ setup(
         std::make_shared<render::LightDepthTextureProjection>(&scene.get_shadow_map());
 
     auto shadow_texture_uniform =
-        std::make_shared<render::TextureUniform>(gpu_data::GPUDataType::SAMPLER_2D_SHADOW, 1);
+        std::make_shared<render::TextureUniform>(gpu_data::GPUArayType::SAMPLER_2D_SHADOW, 1);
 
     auto material_color_texture_uniform =
-        std::make_shared<render::TextureUniform>(gpu_data::GPUDataType::SAMPLER_1D, 0);
+        std::make_shared<render::TextureUniform>(gpu_data::GPUArayType::SAMPLER_1D, 0);
 
     auto entity_color_texture_uniform =
-        std::make_shared<render::TextureUniform>(gpu_data::GPUDataType::SAMPLER_2D, 0);
+        std::make_shared<render::TextureUniform>(gpu_data::GPUArayType::SAMPLER_2D, 0);
 
     auto spectral_light_color_uniform =
         std::make_shared<render::SpectralLight>(scene.get_lighting_environment());
@@ -295,11 +295,10 @@ setup(
     star_pipeline->data.push_back(star_data);
     sun_pipeline->data.push_back(star_shape);
 
-    terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_texture());
+    terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_buffer()->value()
+    );
     chunks_render_pipeline->data.push_back(terrain_mesh.get());
     chunks_shadow_pipeline->data.push_back(terrain_mesh.get());
-
-    // TODO send terrain_mesh to a render program
 
     auto z = world.get_terrain_main().get_Z_solid(5, 5, 50);
 

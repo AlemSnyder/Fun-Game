@@ -147,7 +147,7 @@ class IMeshGPU : virtual public GPUDataElements {
         return num_vertices_;
     }
 
-    [[nodiscard]] inline GPUDataType
+    [[nodiscard]] inline GPUArayType
     get_element_type() const noexcept override {
         return element_array_.get_opengl_numeric_type();
     }

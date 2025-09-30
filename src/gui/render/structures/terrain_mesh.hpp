@@ -137,7 +137,7 @@ class IMeshMultiGPU : public virtual GPUDataElementsMulti {
         return num_vertices_;
     }
 
-    inline virtual GPUDataType
+    inline virtual GPUArayType
     get_element_type() const override {
         return element_array_.get_opengl_numeric_type();
     }

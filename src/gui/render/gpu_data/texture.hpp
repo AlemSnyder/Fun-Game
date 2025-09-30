@@ -1,9 +1,12 @@
 
 #pragma once
 
+#include "data_types.hpp"
 #include "global_context.hpp"
 #include "logging.hpp"
 #include "types.hpp"
+#include "util/color.hpp"
+#include "util/image.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -55,35 +58,47 @@ class Texture1D {
     }
 };
 
-struct texture2D_data_t {
-    std::vector<ColorFloat> data;
-    uint width;
-    uint height;
+struct TextureSettings {
+    uint8_t samples = 1;
+    bool multisample = false;
+
+    GPUPixelStorageFormat internal_format = GPUPixelStorageFormat::RGBA;
+    GPUPixelReadFormat read_format = GPUPixelReadFormat::RGBA;
+    GPUPixelType type = GPUPixelType::FLOAT;
+
+    GLenum wrap_s = GL_CLAMP_TO_EDGE;
+    GLenum wrap_t = GL_CLAMP_TO_EDGE;
+    GLenum min_filter = GL_LINEAR;
+    GLenum mag_filter = GL_LINEAR;
+
+    GLenum compare_funct = GL_LEQUAL;
+    GLenum compare_mode = GL_COMPARE_R_TO_TEXTURE;
 };
 
-class Texture2D {
+class Texture2D : virtual public GPUDataRenderBuffer {
  private:
     // four for the color (RGBA)
     // then four more for the reflection ambient, diffuse, metallic/specular, and glow
     // static const size_t height = 2;
+    screen_size_t width_;
+    screen_size_t height_;
+    const TextureSettings settings_;
     GLuint texture_ID_;
 
-    [[nodiscard]] texture2D_data_t static pad_color_data(
-        const std::vector<std::vector<ColorFloat>>& vector_data
-    );
-
-    Texture2D(const texture2D_data_t& color_data);
+    void setup(std::shared_ptr<util::image::Image> image);
 
  public:
-    /**
-     * @brief Construct a new Texture2D from a vector of vectors of colors
-     *
-     * @param const std::vector<std::vector<ColorFloat>>& color_data
-     */
-    inline Texture2D(const std::vector<std::vector<ColorFloat>>& color_data) :
-        Texture2D(pad_color_data(color_data)) {}
+    Texture2D(
+        screen_size_t width, screen_size_t height, TextureSettings settings = {},
+        bool differed = true
+    );
 
-    Texture2D(uint width, uint height);
+    Texture2D(
+        std::shared_ptr<util::image::Image> Image, TextureSettings settings = {},
+        bool differed = true
+    );
+
+    void load_data(std::shared_ptr<util::image::Image> image);
 
     ~Texture2D() { glDeleteTextures(1, &texture_ID_); }
 
@@ -93,19 +108,38 @@ class Texture2D {
      * @return GLuint the texture id
      */
     [[nodiscard]] inline GLuint
-    value() const {
+    value() const override {
         return texture_ID_;
+    }
+
+    virtual void
+    connect_texture(GLuint framebuffer_ID, uint8_t texture_attachment) override;
+
+    virtual void connect_depth_texture(GLuint framebuffer_ID) override;
+
+    inline virtual GPUPixelType
+    get_type() const {
+        return settings_.type;
+    }
+
+    inline virtual GPUPixelStorageFormat
+    get_format() const {
+        return settings_.internal_format;
     }
 
     /**
      * @brief Bind texture to given texture index
+     *
+     * I think this is to read from.
      *
      * @param texture_index
      */
     inline void
     bind(GLuint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
-        glBindTexture(GL_TEXTURE_2D, texture_ID_);
+        GLenum target =
+            settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+        glBindTexture(target, texture_ID_);
     }
 };
 

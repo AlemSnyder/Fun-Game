@@ -223,7 +223,6 @@ revised_gui_test() {
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteBuffers(1, &VBO);
-    // glDeleteProgram(shaderProgram);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

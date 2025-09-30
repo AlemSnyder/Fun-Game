@@ -48,7 +48,7 @@ namespace shader {
 class Uniform {
  protected:
     const std::string name_;           // name used in shader program
-    const gpu_data::GPUDataType type_; // glsl type as stirng
+    const gpu_data::GPUArayType type_; // glsl type as stirng
 
     const GLint uid_;
 
@@ -68,9 +68,9 @@ class Uniform {
     /**
      * @brief Get the glsl type as a string
      *
-     * @return const GPUDataType type
+     * @return const GPUArayType type
      */
-    inline const gpu_data::GPUDataType&
+    inline const gpu_data::GPUArayType&
     get_type() const noexcept {
         return type_;
     }
@@ -111,9 +111,9 @@ class Uniform {
      * @brief Construct a new Uniform object
      *
      * @param std::string name name of uniform used in shader program
-     * @param gpu_data::GPUDataType type
+     * @param gpu_data::GPUArayType type
      */
-    inline Uniform(std::string name, gpu_data::GPUDataType type, GLuint uid) :
+    inline Uniform(std::string name, gpu_data::GPUArayType type, GLuint uid) :
         name_(name), type_(type), uid_(uid) {}
 };
 

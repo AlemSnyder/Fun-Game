@@ -76,7 +76,10 @@ class Scene {
         screen_size_t window_width, screen_size_t window_height,
         uint32_t shadow_map_width_height, std::shared_ptr<scene::Controls> inputs
     ) :
-        frame_buffer_multisample_(window_width, window_height, SAMPLES),
+        frame_buffer_multisample_(
+            window_width, window_height,
+            gpu_data::FrameBufferSettings({.samples = SAMPLES})
+        ),
         environment_(std::make_shared<scene::Helio>(.3, 5, 60, .3)), inputs_(inputs),
         shadow_map_(shadow_map_width_height, shadow_map_width_height),
         frame_buffer_mg_(
@@ -106,7 +109,7 @@ class Scene {
      */
     inline GLuint
     get_depth_texture() {
-        return shadow_map_.get_depth_texture();
+        return shadow_map_.get_depth_buffer()->value();
     }
 
     /**
@@ -115,8 +118,8 @@ class Scene {
      * @return screen_size_t width
      */
     inline screen_size_t
-    get_shadow_width() {
-        return shadow_map_.get_shadow_width();
+    get_shadow_width() const {
+        return shadow_map_.get_width();
     }
 
     /**
@@ -126,7 +129,7 @@ class Scene {
      */
     inline screen_size_t
     get_shadow_height() {
-        return shadow_map_.get_shadow_height();
+        return shadow_map_.get_height();
     }
 
     /**
