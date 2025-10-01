@@ -2,10 +2,7 @@
 #pragma once
 
 #include "data_types.hpp"
-#include "global_context.hpp"
-#include "logging.hpp"
 #include "types.hpp"
-#include "util/color.hpp"
 #include "util/image.hpp"
 
 #include <GL/glew.h>
@@ -118,12 +115,12 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     virtual void connect_depth_texture(GLuint framebuffer_ID) override;
 
     inline virtual GPUPixelType
-    get_type() const {
+    get_type() const override {
         return settings_.type;
     }
 
     inline virtual GPUPixelStorageFormat
-    get_format() const {
+    get_format() const override {
         return settings_.internal_format;
     }
 

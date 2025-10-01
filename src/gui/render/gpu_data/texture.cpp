@@ -1,7 +1,7 @@
 #include "texture.hpp"
 
 #include "gui/handler.hpp"
-#include "util/color.hpp"
+#include "logging.hpp"
 
 namespace gui {
 
