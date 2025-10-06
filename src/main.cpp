@@ -711,7 +711,10 @@ ChaiScript_test(const argh::parser& cmdl) {
         return chai_script_reload_test();
     } else if (run_function == "Multiprocess") {
         return chai_script_mp_test();
+    } else if (run_function == "Namespaces") {
+        return chai_script_namespace_test();
     }
+    return 1;
 }
 
 // for tests. Probably should make a bash script to test each test

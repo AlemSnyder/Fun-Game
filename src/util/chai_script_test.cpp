@@ -34,7 +34,11 @@ int chai_script_reload_test() {
 
     chai.eval_file(files::get_root_path() / "scripts" / "chaiscript_test_2a.chai");
 
-    std::function<int()>  get_1 = chai.eval<std::function<int()>>("return_a_number");
+    chaiscript::dispatch::Dynamic_Object a = chai.eval<chaiscript::dispatch::Dynamic_Object>("a");
+
+    std::function<int()>  get_1 = a.get_attr("return_a_number");
+    
+    //chai.eval<std::function<int()>>("a.return_a_number");
 
     LOG_INFO(logging::main_logger, "Got vale {}, expecting 1", get_1());
 
@@ -133,5 +137,14 @@ int chai_script_mp_test() {
     });
 
 
+    return 0;
+}
+
+
+int
+chai_script_namespace_test() {
+    chaiscript::ChaiScript chai;
+
+    chai.eval_file(files::get_root_path() / "scripts" / "chaiscript_test_3.chai");
     return 0;
 }

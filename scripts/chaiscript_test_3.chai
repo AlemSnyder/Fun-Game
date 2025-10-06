@@ -1,0 +1,19 @@
+namespace("parent")
+namespace("child")
+
+child.x = 3.0
+parent.child = child
+parent.child.x = 5.0
+
+class Vector {
+  var x;
+}
+
+parent.child.Vector = Vector 
+
+class parent.child.Array = {
+  var x;
+  var y;
+}
+
+
