@@ -22,8 +22,6 @@ class EntityInstance : public virtual ObjectInstance {
  private:
     std::weak_ptr<Entity> entity_type_;
 
-    //    size_t data_position_; // like a id
-
     glm::vec3 position_;
 
     void set_position(glm::vec3 position);

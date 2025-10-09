@@ -120,7 +120,8 @@ Texture2D::setup(std::shared_ptr<util::image::Image> image) {
 Texture2D::Texture2D(
     screen_size_t width, screen_size_t height, TextureSettings settings, bool differed
 ) :
-    width_(width), height_(height), settings_(settings) {
+    width_(width),
+    height_(height), settings_(settings) {
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { setup(nullptr); });

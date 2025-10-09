@@ -1,7 +1,9 @@
 #include "local_context.hpp"
 
 #include "global_context.hpp"
+#include "util/lua/lua_interface.hpp"
 #include "util/lua/lua_logging.hpp"
+#include "world/object/lua_interface.hpp"
 #include "world/terrain/generation/lua_interface.hpp"
 
 // #include <bits/stdc++>
@@ -11,8 +13,11 @@ LocalContext::LocalContext() {
     lua_state.open_libraries(sol::lib::math);
     lua_state.open_libraries(sol::lib::string);
     lua_state.open_libraries(sol::lib::debug);
+    // I'm not sure how I feel about this
     lua_logging::setup_lua_logging(lua_state);
     terrain::generation::init_lua_interface(lua_state);
+    world::object::init_lua_interface(lua_state);
+    util::lua::init_lua_interface(lua_state);
 }
 
 LocalContext&

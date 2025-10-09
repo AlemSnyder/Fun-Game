@@ -1,7 +1,7 @@
 #include "opengl_setup.hpp"
 
-#include "../../logging.hpp"
 #include "global_context.hpp"
+#include "logging.hpp"
 
 #include <optional>
 
