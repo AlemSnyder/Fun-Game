@@ -53,7 +53,7 @@ struct object_t {
     // like on drop etc
     // maybe it has a health
     std::optional<std::string> listeners;
-    std::optional<std::filesystem::path> ai;
+    std::optional<std::string> ai; // I couldn't get a path to work; changed to string
 };
 
 class Object {

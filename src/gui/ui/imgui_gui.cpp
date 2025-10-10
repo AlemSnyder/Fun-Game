@@ -186,17 +186,17 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                         breadth_first_search_start[0], breadth_first_search_start[1],
                         breadth_first_search_start[2]
                     ),
-                    "base/Flower_Test"
+                    "Base/entities/Flower_Test"
                 );
                 if (path) {
                     path_exists = true;
                     path_length = path.value().size();
 
-                    // auto test_object = object_handler.get_object("base/Test_Entity");
+                    // auto test_object = object_handler.get_object("Base/entities/Test_Entity");
 
                     for (auto position : path.value()) {
                         auto new_entity =
-                            world.spawn_entity("base/Test_Entity", position);
+                            world.spawn_entity("Base/entities/Test_Entity", position);
 
                         path_entities.insert(new_entity);
                     }

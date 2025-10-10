@@ -385,10 +385,10 @@ lua_object_test() {
     manifest::ObjectHandler handler;
     handler.load_all_manifests<true>();
     global_context.wait_for_tasks();
-    auto object = handler.get_object("base/Test_Entity");
+    auto object = handler.get_object("Base/entities/Test_Entity");
 
     if (!object) {
-        LOG_CRITICAL(logging::main_logger, "Could not find base/Test_Entity");
+        LOG_CRITICAL(logging::main_logger, "Could not find Base/entities/Test_Entity");
         return 1;
     }
 

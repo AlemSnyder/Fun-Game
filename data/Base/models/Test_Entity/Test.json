@@ -1,6 +1,6 @@
 {
     "name": "Test Object",
-    "type": "IMPLEMENTED_ENTITY",
+    "type": "ENTITY",
     "models": [
         {
             "path": "./Test.qb",
@@ -16,6 +16,6 @@
             }
         }
     ],
-    "listeners":"",
-    "ai":"ai.lua"
+    "listeners": "",
+    "ai": "ai.lua"
 }

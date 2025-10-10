@@ -2,17 +2,17 @@
     "name": "base",
     "entities": [
         {
-            "identification": "base/Flower_Test",
+            "identification": "Base\\entities\\Flower_Test",
             "path": "Base/models/Flower_Test/Flower_Test.json"
         },
         {
-            "identification": "base/Test_Entity",
+            "identification": "Base\\entities\\Test_Entity",
             "path": "Base/models/Test_Entity/Test.json"
         }
     ],
     "biomes": [
         {
-            "identification": "base/Test_Biome",
+            "identification": "base\\Test_Biome",
             "path": "Base/biomes/Test_Biome.json"
         }
     ]

@@ -302,7 +302,7 @@ setup(
 
     auto z = world.get_terrain_main().get_Z_solid(5, 5, 50);
 
-    world.spawn_entity("base/Test_Entity", {5, 5, z + 1});
+    world.spawn_entity("Base\\entities\\Test_Entity", {5, 5, z + 1});
 
     render_programs_t object_render_programs{
         .entity_render_program = entity_render_pipeline,

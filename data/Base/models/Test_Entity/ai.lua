@@ -2,9 +2,9 @@ Base = Base or {}
 Base.entities = Base.entities or {}
 Base.entities.Test_Entity = Base.entities.Test_Entity or {}
 
-function Base.entities.Test_Entity.move_direction(this)
+function Base.entities.Test_Entity.update(this)
     local position = this:get_position()
-    if position.z < 60 then
+    if position.z > 60 then
         return vec3(position.x, position.y, 30.0)
     end
     return vec3(position.x, position.y, position.z + 0.01)
@@ -12,7 +12,7 @@ end
 
 function Base.entities.Test_Entity.plan(this)
     plan_table = {}
-    path = PathFinder:find("base/Flower_Test")
+    path = PathFinder:find("Base/entities/Flower_Test")
     if path["len"] > 0 then
         plan_table["follow"] = path
         plan_table["action"] = "destroy"
