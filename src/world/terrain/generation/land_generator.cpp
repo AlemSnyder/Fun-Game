@@ -27,6 +27,8 @@
 #include <random>
 #include <string>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -250,3 +252,5 @@ AddToTop::get_final_height(Dim height) const {
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

@@ -3,6 +3,8 @@
 #include "gui/render/gpu_data/texture.hpp"
 #include "logging.hpp"
 
+namespace world {
+
 namespace terrain {
 
 // color id to color for all materials
@@ -114,3 +116,5 @@ MaterialGroup::insert_(
 }
 
 } // namespace terrain
+
+} // namespace world

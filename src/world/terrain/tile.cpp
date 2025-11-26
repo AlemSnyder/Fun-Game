@@ -3,6 +3,8 @@
 #include "material.hpp"
 #include "terrain.hpp"
 
+namespace world {
+
 namespace terrain {
 
 Tile::Tile(const terrain::material_t* material, ColorId color_id) :
@@ -151,3 +153,5 @@ Tile::get_mat_color_id() const {
 }
 
 } // namespace terrain
+
+} // namespace world

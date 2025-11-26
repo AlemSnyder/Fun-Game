@@ -121,8 +121,11 @@ Entity::add_position(glm::mat4 position) const {
     local_positions_.push_back(position);
 }
 
-EntityInstance::EntityInstance(std::shared_ptr<Entity> entity_type) :
-    entity_type_(entity_type) {}
+EntityInstance::EntityInstance(
+    std::shared_ptr<Entity> entity_type, std::shared_ptr<terrain::Terrain> terr
+) :
+    entity_type_(entity_type),
+    terrain_(terr) {}
 
 EntityInstance::~EntityInstance() {}
 

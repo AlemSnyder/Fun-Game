@@ -3,6 +3,7 @@
 #include "gui/render/gpu_data/data_types.hpp"
 #include "gui/ui/render_programs.hpp"
 #include "types.hpp"
+#include "world/terrain/terrain.hpp"
 
 #include <glaze/glaze.hpp>
 
@@ -84,6 +85,7 @@ class ObjectInstance {
     virtual size_t get_health() const = 0;
     virtual void take_damage(size_t damage) = 0;
     virtual glm::vec3 get_position() const = 0;
+    virtual const std::shared_ptr<terrain::Terrain> get_terrain() const = 0;
 
     virtual std::shared_ptr<Object> get_object() = 0;
 

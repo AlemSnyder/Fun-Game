@@ -7,6 +7,16 @@ Terrain generation
         towns       probably not
         plants      probably not
 
+Terrain
+    need to redo tile positions
+        want 12 bit (2 bytes) to describe local position,
+        and ints to describe chunks
+    then need to create path object and expose this to lua
+    then paths go into path tasks
+    then tasks make up entity AI
+
+    also need to update much of the namespaces in terrain
+
 GUI
     in sky
         maybe other planets
@@ -17,4 +27,5 @@ GUI
 
     make trees function like entities   # here
         same shader etc
+    
 

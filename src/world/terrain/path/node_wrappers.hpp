@@ -2,7 +2,11 @@
 #include "node_group.hpp"
 #include "types.hpp"
 
+namespace world {
+
 namespace terrain {
+
+namespace path {
 
 class PositionWrapper {
     TerrainOffset3 position_;
@@ -67,21 +71,25 @@ class NodeGroupWrapper {
     }
 };
 
+} // namespace path
+
 } // namespace terrain
 
+} // namespace world
+
 template <>
-struct std::hash<terrain::PositionWrapper> {
+struct std::hash<world::terrain::path::PositionWrapper> {
     inline size_t
-    operator()(const terrain::PositionWrapper& position) const noexcept {
+    operator()(const world::terrain::path::PositionWrapper& position) const noexcept {
         std::hash<TerrainOffset3> hasher;
         return hasher(position.unique_position());
     }
 };
 
 template <>
-struct std::hash<terrain::NodeGroupWrapper> {
+struct std::hash<world::terrain::path::NodeGroupWrapper> {
     inline size_t
-    operator()(const terrain::NodeGroupWrapper& position) const noexcept {
+    operator()(const world::terrain::path::NodeGroupWrapper& position) const noexcept {
         std::hash<TerrainOffset3> hasher;
         return hasher(position.unique_position());
     }

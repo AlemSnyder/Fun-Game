@@ -11,14 +11,33 @@ function Base.entities.Test_Entity.update(this)
 end
 
 function Base.entities.Test_Entity.plan(this)
-    plan_table = {}
-    path = PathFinder:find("Base/entities/Flower_Test")
+    plan = Plan()
+--    plan_table = {}
+    terrain = this.get_terrain()
+    path_finder = PathFinder(terrain)
+    path = path_finder:find("Base/entities/Flower_Test")
     if path["len"] > 0 then
-        plan_table["follow"] = path
-        plan_table["action"] = "destroy"
+        plan.add_task(path.path)
+--        plan_table["follow"] = path
+--        plan_table["action"] = "destroy"
+        plan.add_task(path.object, "destroy")
         return plan_table
     end
     return nil
+end
+
+function xx(this)
+    if (this.plan.completed()) then
+        -- make new plan
+        bf_find = find this.foods();
+
+        PathTask path_task(bf_find.path)
+
+        InteractTask interact_task(bf_find.object)
+
+        -- follow path then do interact
+        Plan plan([path_task, interact_task]);
+    end
 end
 
 function Base.entities.Test_Entity.take_damage(this, damage)

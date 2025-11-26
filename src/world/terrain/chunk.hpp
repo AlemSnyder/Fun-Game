@@ -28,6 +28,8 @@
 #include <mutex>
 #include <unordered_set>
 
+namespace world {
+
 namespace terrain {
 
 class Terrain;
@@ -52,7 +54,7 @@ class Chunk : public voxel_utility::VoxelBase {
     // vector of voxels in terrain
     std::vector<Tile> tiles_;
 
-    std::list<NodeGroup> node_groups_;
+    std::list<path::NodeGroup> node_groups_;
 
  public:
     static const Dim SIZE = 16; // number of tiles in each direction
@@ -92,7 +94,7 @@ class Chunk : public voxel_utility::VoxelBase {
      *
      * @param out a set that gets the node groups in this chunk added to it
      */
-    void add_nodes_to(std::unordered_set<const NodeGroup*>& out) const;
+    void add_nodes_to(std::unordered_set<const path::NodeGroup*>& out) const;
 
     /**
      * @brief Chunk position relative to other chunks
@@ -211,10 +213,10 @@ class Chunk : public voxel_utility::VoxelBase {
     }
 
  private:
-    void delete_node_group_(NodeGroup& NG);
-    void merge_node_group_(NodeGroup& g1, NodeGroup& g2);
-    bool contains_node_group_(NodeGroup*);
-    void merge_(NodeGroup& g1, std::unordered_set<NodeGroup*> to_merge);
+    void delete_node_group_(path::NodeGroup& NG);
+    void merge_node_group_(path::NodeGroup& g1, path::NodeGroup& g2);
+    bool contains_node_group_(path::NodeGroup*);
+    void merge_(path::NodeGroup& g1, std::unordered_set<path::NodeGroup*> to_merge);
 };
 
 /**
@@ -311,3 +313,5 @@ class ChunkData : public voxel_utility::VoxelBase {
 };
 
 } // namespace terrain
+
+} // namespace world

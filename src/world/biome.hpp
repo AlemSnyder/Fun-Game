@@ -33,9 +33,7 @@
 
 #pragma once
 
-namespace terrain {
-
-namespace generation {
+namespace world {
 /**
  * @brief Contains Json data from a biome file.
  */
@@ -44,9 +42,9 @@ struct biome_json_data {
     // Name of biome. Used both for file name and display name
     std::string biome_name;
     // Json data that describes biome
-    biome_data_t biome_data;
+    terrain::generation::biome_data_t biome_data;
     // Json data that describes materials
-    all_materials_t materials_data;
+    terrain::all_materials_t materials_data;
 };
 
 /**
@@ -67,9 +65,9 @@ class GrassData {
      *
      * @param json_grass_data Json data that describes grass gradient
      */
-    GrassData(const grass_data_t& json_grass_data);
+    GrassData(const terrain::grass_data_t& json_grass_data);
 
-    GrassData(const std::optional<grass_data_t>& json_grass_data);
+    GrassData(const std::optional<terrain::grass_data_t>& json_grass_data);
 
     /**
      * @brief Get the grass gradient length
@@ -109,12 +107,12 @@ class Biome {
  private:
     //  vector of const data for creating land generators for every tile
     // create a map of TileMacro_t -> LandGenerator
-    std::vector<generation::LandGenerator> land_generators_;
+    std::vector<terrain::generation::LandGenerator> land_generators_;
 
     // map of MapTile_t -> vector of TileMacro_t
-    std::vector<TileType> macro_tile_types_;
+    std::vector<terrain::generation::TileType> macro_tile_types_;
 
-    std::vector<AddToTop> add_to_top_generators_;
+    std::vector<terrain::generation::AddToTop> add_to_top_generators_;
 
     // materials that exist
     const std::unordered_map<MaterialId, const terrain::material_t> materials_;
@@ -154,7 +152,7 @@ class Biome {
      *
      * @return 2D map of map tiles
      */
-    [[nodiscard]] TerrainMacroMap get_map(MacroDim length) const;
+    [[nodiscard]] terrain::generation::TerrainMacroMap get_map(MacroDim length) const;
 
     /**
      * @brief Get plant map
@@ -163,11 +161,11 @@ class Biome {
      *
      * @return 2D map of plant percentages
      */
-    [[nodiscard]] const std::unordered_map<std::string, PlantMap>
+    [[nodiscard]] const std::unordered_map<std::string, terrain::generation::PlantMap>
     get_plant_map(MacroDim length) const;
 
     // TODO pass seed
-    inline TerrainMacroMap
+    inline terrain::generation::TerrainMacroMap
     single_tile_type_map(MapTile_t type) {
         std::vector<terrain::generation::MapTile> out;
         out.reserve(9);
@@ -184,7 +182,7 @@ class Biome {
         out.emplace_back(get_macro_ids(0), 0, 2, 1);
         out.emplace_back(get_macro_ids(0), 0, 2, 2);
 
-        return TerrainMacroMap(out, 3, 3);
+        return terrain::generation::TerrainMacroMap(out, 3, 3);
     }
 
     /**
@@ -192,7 +190,7 @@ class Biome {
      *
      * @return land_generator
      */
-    [[nodiscard]] inline const LandGenerator&
+    [[nodiscard]] inline const terrain::generation::LandGenerator&
     get_generator(TileMacro_t tile_macro_id) const {
         return land_generators_.at(tile_macro_id);
     }
@@ -202,7 +200,7 @@ class Biome {
      *
      * @return vector of TileMacro_t used to generate terrain on given MapTile_t
      */
-    [[nodiscard]] inline const TileType&
+    [[nodiscard]] inline const terrain::generation::TileType&
     get_macro_ids(MapTile_t tile_id_type) const {
         return macro_tile_types_[tile_id_type];
     }
@@ -212,7 +210,7 @@ class Biome {
      *
      * @return add_to_top_generators_
      */
-    [[nodiscard]] const std::vector<AddToTop>
+    [[nodiscard]] const std::vector<terrain::generation::AddToTop>
     get_top_generators() const {
         return add_to_top_generators_;
     }
@@ -284,10 +282,10 @@ class Biome {
      *
      * @return map from ColorInt to pair of material pointer and color id
      */
-    [[nodiscard]] std::unordered_map<ColorInt, MaterialColor>
+    [[nodiscard]] std::unordered_map<ColorInt, terrain::MaterialColor>
     get_colors_inverse_map() const;
 
-    static TerrainMacroMap map_generation_test(
+    static terrain::generation::TerrainMacroMap map_generation_test(
         const std::filesystem::path& lua_map_generator_file, size_t size
     );
 
@@ -296,13 +294,19 @@ class Biome {
 
  private:
     // read data to create generator component
-    void read_tile_macro_data_(const std::vector<tile_macros_t>& biome_data);
+    void read_tile_macro_data_(
+        const std::vector<terrain::generation::tile_macros_t>& biome_data
+    );
 
     // read data to generate tile components for each macro map tile
-    void read_map_tile_data_(const std::vector<tile_data_t>& biome_data);
+    void
+    read_map_tile_data_(const std::vector<terrain::generation::tile_data_t>& biome_data
+    );
 
     // read data to generate the add to top after affect
-    void read_add_to_top_data_(const std::vector<layer_effects_t>& biome_data);
+    void read_add_to_top_data_(
+        const std::vector<terrain::generation::layer_effects_t>& biome_data
+    );
 
     /**
      * @brief Load materials from json data
@@ -310,11 +314,9 @@ class Biome {
      * @param material_data data to load from (see) data/materials.json
      */
     [[nodiscard]] std::unordered_map<MaterialId, const terrain::material_t>
-    init_materials_(const all_materials_t& material_data);
+    init_materials_(const terrain::all_materials_t& material_data);
 
     [[nodiscard]] biome_json_data get_json_data_(const std::string& biome_name);
 };
 
-} // namespace generation
-
-} // namespace terrain
+} // namespace world

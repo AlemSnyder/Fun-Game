@@ -10,12 +10,12 @@
 #include <compare>
 #include <string>
 
-namespace terrain {
-
-namespace generation {
+namespace world {
 
 /**
  * @brief Plant identification for biome generation.
+ *
+ * not 100% sure how this is different from then entity.
  */
 // read from json
 struct plant_t {
@@ -32,14 +32,12 @@ struct plant_t {
     ) const = default;
 };
 
-} // namespace generation
-
-} // namespace terrain
+} // namespace world
 
 template <>
-struct std::hash<terrain::generation::plant_t> {
+struct std::hash<world::plant_t> {
     size_t
-    operator()(const terrain::generation::plant_t& plant) const {
+    operator()(const world::plant_t& plant) const {
         std::hash<std::string> hasher;
         return hasher(plant.identification);
     }

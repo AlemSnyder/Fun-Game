@@ -30,7 +30,11 @@
 #include <list>
 #include <unordered_map>
 
+namespace world {
+
 namespace terrain {
+
+namespace path {
 
 /**
  * @brief Group of tiles; used for path finding
@@ -163,4 +167,8 @@ class NodeGroup {
     bool operator>(const NodeGroup& other) const;
 };
 
+} // namespace path
+
 } // namespace terrain
+
+} // namespace world

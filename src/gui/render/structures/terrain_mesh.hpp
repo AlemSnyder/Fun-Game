@@ -177,7 +177,7 @@ class TerrainMesh : public virtual IMeshMultiGPU {
 
  public:
     inline TerrainMesh() :
-        color_texture_(terrain::TerrainColorMapping::get_color_texture()){};
+        color_texture_(world::terrain::TerrainColorMapping::get_color_texture()){};
 
     inline TerrainMesh(Texture1D& color_texture_id) :
         color_texture_(color_texture_id){};

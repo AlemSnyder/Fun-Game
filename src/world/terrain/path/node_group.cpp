@@ -4,7 +4,11 @@
 
 #include <cstdint>
 
+namespace world {
+
 namespace terrain {
+
+namespace path {
 
 NodeGroup::NodeGroup(
     ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type
@@ -127,4 +131,8 @@ NodeGroup::unique_position() const {
 //     return ((**tile_positions_.begin()) > **(other.tile_positions_.begin()));
 // }
 
+} // namespace path
+
 } // namespace terrain
+
+} // namespace world

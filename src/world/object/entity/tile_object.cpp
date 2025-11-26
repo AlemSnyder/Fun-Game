@@ -10,7 +10,9 @@ namespace object {
 namespace entity {
 
 TileObjectInstance::TileObjectInstance(
-    std::shared_ptr<TileObject> object_type, uint8_t model_id, gui::Placement placement
+
+    std::shared_ptr<TileObject> object_type, uint8_t model_id, gui::Placement placement,
+    std::shared_ptr<terrain::Terrain> terr_
 ) :
     placement_(placement),
     model_id_(model_id), object_type_(object_type) {

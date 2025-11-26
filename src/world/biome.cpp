@@ -21,11 +21,9 @@
 #include <string>
 #include <vector>
 
-namespace terrain {
+namespace world {
 
-namespace generation {
-
-GrassData::GrassData(const grass_data_t& grass_data) {
+GrassData::GrassData(const terrain::grass_data_t& grass_data) {
     ColorId grass_mid_color_id = grass_data.midpoint;
 
     // Should be much lower than a Dim
@@ -55,8 +53,8 @@ GrassData::GrassData(const grass_data_t& grass_data) {
     grass_grad_length_ = grass_colors_.size();
 }
 
-GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
-    GrassData(grass_data.value_or(grass_data_t())) {
+GrassData::GrassData(const std::optional<terrain::grass_data_t>& grass_data) :
+    GrassData(grass_data.value_or(terrain::grass_data_t())) {
     if (!grass_data) {
         LOG_WARNING(logging::terrain_logger, "Grass Data Empty");
     }
@@ -89,9 +87,9 @@ Biome::Biome(biome_json_data biome_data, size_t seed) :
     }
 }
 
-TerrainMacroMap
+terrain::generation::TerrainMacroMap
 Biome::get_map(MacroDim size) const {
-    std::vector<MapTile> out;
+    std::vector<terrain::generation::MapTile> out;
 
     LocalContext& local_context = LocalContext::instance();
     auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
@@ -168,17 +166,17 @@ Biome::get_map(MacroDim size) const {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             size_t map_index = x * y_map_tiles + y;
             int tile_id = tile_map_map[map_index].get_or<int, int>(0);
-            const TileType& tile_type = macro_tile_types_[tile_id];
+            const terrain::generation::TileType& tile_type = macro_tile_types_[tile_id];
             out.emplace_back(tile_type, seed, x, y);
         }
     }
 
-    return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
+    return terrain::generation::TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
-const std::unordered_map<std::string, PlantMap>
+const std::unordered_map<std::string, terrain::generation::PlantMap>
 Biome::get_plant_map(Dim length) const {
-    std::unordered_map<std::string, PlantMap> out;
+    std::unordered_map<std::string, terrain::generation::PlantMap> out;
 
     LocalContext& local_context = LocalContext::instance();
     auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
@@ -278,7 +276,7 @@ Biome::get_plant_map(Dim length) const {
 
         std::string type_as_string = flora_type.as<std::string>();
 
-        out.emplace(std::make_pair<std::string, PlantMap>(
+        out.emplace(std::make_pair<std::string, terrain::generation::PlantMap>(
             std::move(type_as_string), {type_map, x_map_tiles, y_map_tiles}
         ));
     }
@@ -287,21 +285,25 @@ Biome::get_plant_map(Dim length) const {
 }
 
 void
-Biome::read_tile_macro_data_(const std::vector<tile_macros_t>& tile_macros) {
+Biome::read_tile_macro_data_(
+    const std::vector<terrain::generation::tile_macros_t>& tile_macros
+) {
     // for tile macro in data biome
-    for (const tile_macros_t& tile_macro : tile_macros) {
+    for (const terrain::generation::tile_macros_t& tile_macro : tile_macros) {
         // create a land generator for each tile macro
-        generation::LandGenerator gen(tile_macro.generation_data);
+        terrain::generation::LandGenerator gen(tile_macro.generation_data);
         land_generators_.push_back(gen);
     }
 }
 
 void
-Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
+Biome::read_map_tile_data_(
+    const std::vector<terrain::generation::tile_data_t>& biome_data
+) {
     // add tile macro to tiles
     MapTile_t type_id = 0;
-    for (const tile_data_t& tile_type : biome_data) {
-        std::unordered_set<const LandGenerator*> tile_macros;
+    for (const terrain::generation::tile_data_t& tile_type : biome_data) {
+        std::unordered_set<const terrain::generation::LandGenerator*> tile_macros;
         for (TileMacro_t tile_macro : tile_type.used_tile_macros) {
             if (tile_macro >= land_generators_.size()) [[unlikely]] {
                 LOG_WARNING(
@@ -325,14 +327,16 @@ Biome::read_map_tile_data_(const std::vector<tile_data_t>& biome_data) {
 }
 
 void
-Biome::read_add_to_top_data_(const std::vector<layer_effects_t>& after_effects_data) {
-    for (const layer_effects_t& add_data : after_effects_data) {
+Biome::read_add_to_top_data_(
+    const std::vector<terrain::generation::layer_effects_t>& after_effects_data
+) {
+    for (const terrain::generation::layer_effects_t& add_data : after_effects_data) {
         add_to_top_generators_.emplace_back(add_data);
     }
 }
 
 std::unordered_map<MaterialId, const terrain::material_t>
-Biome::init_materials_(const all_materials_t& material_data) {
+Biome::init_materials_(const terrain::all_materials_t& material_data) {
     std::unordered_map<MaterialId, const terrain::material_t> out;
     for (const auto& key : material_data) {
         out.insert(std::make_pair(key.second.material_id, key.second));
@@ -340,14 +344,14 @@ Biome::init_materials_(const all_materials_t& material_data) {
     return out;
 }
 
-std::unordered_map<ColorInt, MaterialColor>
+std::unordered_map<ColorInt, terrain::MaterialColor>
 Biome::get_colors_inverse_map() const {
-    std::unordered_map<ColorInt, MaterialColor> materials_inverse;
+    std::unordered_map<ColorInt, terrain::MaterialColor> materials_inverse;
     for (const auto& element : materials_) {
         for (ColorId color_id = 0; color_id < element.second.color.size(); color_id++) {
             materials_inverse.emplace(
                 element.second.color.at(color_id).hex_color,
-                MaterialColor{element.second, color_id}
+                terrain::MaterialColor{element.second, color_id}
             );
         }
     }
@@ -364,7 +368,7 @@ Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
         return {};
     }
 
-    auto materials = files::read_json_from_file<all_materials_t>(
+    auto materials = files::read_json_from_file<terrain::all_materials_t>(
         biome_folder_path / "materials.json"
     );
 
@@ -372,12 +376,8 @@ Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
         return {};
     }
 
-    terrain::generation::biome_json_data data(
-        biome_data->name, *biome_data, *materials
-    );
+    biome_json_data data(biome_data->name, *biome_data, *materials);
     return data;
 }
 
-} // namespace generation
-
-} // namespace terrain
+} // namespace world

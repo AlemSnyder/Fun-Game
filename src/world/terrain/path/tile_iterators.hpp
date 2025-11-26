@@ -37,6 +37,8 @@
 // find the number of cubes at are near it. Not just touching (6), but all of
 // of them
 
+namespace world {
+
 namespace terrain {
 
 class Terrain;
@@ -89,3 +91,5 @@ class AdjacentIterator {
 } // namespace path
 
 } // namespace terrain
+
+} // namespace world

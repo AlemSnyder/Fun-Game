@@ -29,7 +29,11 @@
 
 #include <unordered_set>
 
+namespace world {
+
 namespace terrain {
+
+namespace path {
 
 /**
  * @brief A node used to find a path with the A* or breadth first algorithm
@@ -151,4 +155,8 @@ class Node {            // Used to find paths.
     }
 };
 
+} // namespace path
+
 } // namespace terrain
+
+} // namespace world

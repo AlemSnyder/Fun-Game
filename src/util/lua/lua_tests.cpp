@@ -396,7 +396,7 @@ lua_object_test() {
         std::dynamic_pointer_cast<world::object::entity::Entity>(object);
 
     world::object::entity::EntityInstance entity(
-        entity_object_type, glm::vec3{0, 0, 0}
+        entity_object_type, nullptr, glm::vec3{0, 0, 0}
     );
 
     auto function_result = takes_object_function.call(entity);

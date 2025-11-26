@@ -85,7 +85,8 @@ World::generate_plants() {
     std::uniform_int_distribution rotation_distribution(0, 3);
 
     // just debug
-    for (const terrain::generation::plant_t& plant : biome_.get_generate_plants()) {
+    for (const world::plant_t& plant :
+         biome_.get_generate_plants()) {
         auto map = plant_maps[plant.map_name];
         LOG_DEBUG(logging::terrain_logger, "Plant map name: {}.", plant.map_name);
 
@@ -99,7 +100,7 @@ World::generate_plants() {
          tile_position_x++) {
         for (Dim tile_position_y = 0; tile_position_y < terrain_main_.Y_MAX;
              tile_position_y++) {
-            for (const terrain::generation::plant_t& plant :
+            for (const world::plant_t& plant :
                  biome_.get_generate_plants()) {
                 auto map = plant_maps[plant.map_name];
 

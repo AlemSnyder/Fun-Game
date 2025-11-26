@@ -25,7 +25,11 @@
 
 #include <cstdint>
 
+namespace world {
+
 namespace terrain {
+
+namespace path {
 
 /**
  * @brief enum class defining possible directions between two tiles
@@ -195,4 +199,7 @@ class UnitPath {
     }
 };
 
+} // namespace path
+
 } // namespace terrain
+} // namespace world

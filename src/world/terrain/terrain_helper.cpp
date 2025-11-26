@@ -4,7 +4,10 @@
 
 #include <unordered_set>
 
+namespace world {
+
 namespace terrain {
+
 namespace helper {
 
 // grow_grass_recursive(set, int height)
@@ -43,7 +46,7 @@ grow_grass_inner(
     std::unordered_set<TerrainOffset3> next_grass_tiles;
     for (TerrainOffset3 tile : in_grass) {
         auto it = ter.get_tile_adjacent_iterator(
-            tile, DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+            tile, path::DirectionFlags::HORIZONTAL1 | path::DirectionFlags::HORIZONTAL2
         );
         for (; !it.end(); it++) {
             auto pos = it.get_pos();
@@ -92,7 +95,7 @@ grow_grass_recursive(Terrain& ter, std::unordered_set<TerrainOffset3> all_grass)
         // is the tile and edge
         bool is_source = false;
         auto it = ter.get_tile_adjacent_iterator(
-            tile, DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
+            tile, path::DirectionFlags::HORIZONTAL1 | path::DirectionFlags::HORIZONTAL2
         );
         for (; !it.end(); it++) {
             Tile* adjacent_tile = ter.get_tile(it.get_pos());
@@ -119,3 +122,5 @@ grow_grass_recursive(Terrain& ter, std::unordered_set<TerrainOffset3> all_grass)
 } // namespace helper
 
 } // namespace terrain
+
+} // namespace world

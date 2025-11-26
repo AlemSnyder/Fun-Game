@@ -57,7 +57,7 @@ namespace world {
  */
 class World {
     // Biome of the world. Will contain the materials, and grass data
-    terrain::generation::Biome biome_;
+    Biome biome_;
 
     // terrain in the world
     terrain::Terrain terrain_main_;

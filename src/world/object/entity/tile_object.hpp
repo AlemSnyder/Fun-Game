@@ -41,6 +41,8 @@ class TileObjectInstance : public virtual ObjectInstance {
 
     std::weak_ptr<TileObject> object_type_;
 
+    std::weak_ptr<terrain::Terrain> terrain_; // should this be a week ptr to world?
+
  public:
     /**
      * @brief Construct a new TileObject
@@ -50,7 +52,7 @@ class TileObjectInstance : public virtual ObjectInstance {
      */
     TileObjectInstance(
         std::shared_ptr<TileObject> object_type, uint8_t model_id,
-        gui::Placement placement
+        gui::Placement placement, std::shared_ptr<terrain::Terrain> terr_
     );
     virtual ~TileObjectInstance();
 
@@ -83,6 +85,13 @@ class TileObjectInstance : public virtual ObjectInstance {
     [[nodiscard]] virtual TerrainOffset3
     get_terrain_position() const {
         return {placement_.x, placement_.y, placement_.z};
+    }
+
+    inline virtual const std::shared_ptr<terrain::Terrain>
+    get_terrain() const override {
+        if (std::shared_ptr<terrain::Terrain> terr = terrain_.lock()) {
+            return terr;
+        };
     }
 
     virtual std::shared_ptr<Object> get_object();

@@ -132,7 +132,8 @@ class Mesh {
      * @param map
      */
     void change_color_indexing(
-        const std::unordered_map<MaterialId, const terrain::material_t>& materials,
+        const std::unordered_map<MaterialId, const world::terrain::material_t>&
+            materials,
         const std::unordered_map<ColorInt, uint16_t>& mapping
     );
 

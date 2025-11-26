@@ -7,6 +7,8 @@
 #include <cmath>
 #include <numbers>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -86,3 +88,5 @@ generation::FractalNoise::interpolated_noise_(
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

@@ -11,6 +11,8 @@
 #include <variant>
 #include <vector>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -131,37 +133,39 @@ struct biome_data_t {
 
 } // namespace terrain
 
+} // namespace world
+
 template <>
-struct glz::meta<terrain::generation::generation_stamp_type> {
-    using enum terrain::generation::generation_stamp_type;
+struct glz::meta<world::terrain::generation::generation_stamp_type> {
+    using enum world::terrain::generation::generation_stamp_type;
     static constexpr auto value = enumerate(GRID, RADIUS, POSITION);
 };
 
 template <>
-struct glz::meta<terrain::generation::layer_effect_add> {
-    using enum terrain::generation::layer_effect_add;
+struct glz::meta<world::terrain::generation::layer_effect_add> {
+    using enum world::terrain::generation::layer_effect_add;
     static constexpr auto value = enumerate(NONE, TO, ADD);
 };
 
 // error with glaze
 // when using optional glaze causes compiler errors and this suppresses those errors
 template <>
-inline glz::detail::any_t::operator terrain::generation::stamp_generation_grid_data_t(
-) const {
+inline glz::detail::any_t::operator world::terrain::generation::
+    stamp_generation_grid_data_t() const {
     assert(false && "Not Implemented");
     return {};
 }
 
 template <>
-inline glz::detail::any_t::operator terrain::generation::
+inline glz::detail::any_t::operator world::terrain::generation::
     stamp_generation_position_data_t() const {
     assert(false && "Not Implemented");
     return {};
 }
 
 template <>
-inline glz::detail::any_t::operator terrain::generation::stamp_generation_radius_data_t(
-) const {
+inline glz::detail::any_t::operator world::terrain::generation::
+    stamp_generation_radius_data_t() const {
     assert(false && "Not Implemented");
     return {};
 }

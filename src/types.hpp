@@ -30,6 +30,9 @@ static_assert(sizeof(ChunkPos) == 3 * sizeof(ChunkDim));
 // Macro tile position in macro map.
 using MacroDim = uint16_t;
 
+using LocalFloatPosition = glm::vec3; // want to make this smaller, but idk
+// maybe just don't save lots to these.
+
 /***************
  * Pathfinding *
  ***************/

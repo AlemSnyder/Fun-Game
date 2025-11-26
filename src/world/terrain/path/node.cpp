@@ -3,7 +3,11 @@
 #include "../tile.hpp"
 #include "node_group.hpp"
 
+namespace world {
+
 namespace terrain {
+
+namespace path {
 
 template <class T>
 void
@@ -31,4 +35,7 @@ Node<T>::explore() { // explore as start
     explored_ = true;
 }
 
+} // namespace path
+
 } // namespace terrain
+} // namespace world

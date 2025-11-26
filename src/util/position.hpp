@@ -14,16 +14,17 @@ chunk_pos_from_vec(glm::vec3 position) {
     int y = std::floor(position.y);
     int z = std::floor(position.z);
     if (x < 0) {
-        x -= terrain::Chunk::SIZE - 1;
+        x -= world::terrain::Chunk::SIZE - 1;
     }
     if (y < 0) {
-        y -= terrain::Chunk::SIZE - 1;
+        y -= world::terrain::Chunk::SIZE - 1;
     }
     if (z < 0) {
-        z -= terrain::Chunk::SIZE - 1;
+        z -= world::terrain::Chunk::SIZE - 1;
     }
     ChunkPos chunk_position(
-        x / terrain::Chunk::SIZE, y / terrain::Chunk::SIZE, z / terrain::Chunk::SIZE
+        x / world::terrain::Chunk::SIZE, y / world::terrain::Chunk::SIZE,
+        z / world::terrain::Chunk::SIZE
     );
 
     return chunk_position;

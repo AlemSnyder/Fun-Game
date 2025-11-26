@@ -5,6 +5,8 @@
 #include "terrain.hpp"
 #include "tile.hpp"
 
+namespace world {
+
 namespace terrain {
 
 Chunk::Chunk(TerrainDim3 chunk_position, Terrain* ter) :
@@ -55,8 +57,8 @@ Chunk::stamp_tile_region(
 
 void
 Chunk::init_nodegroups() {
-    std::unordered_map<LocalPosition, NodeGroup&> temporary_position_to_nodegroup_map({}
-    );
+    std::unordered_map<LocalPosition, path::NodeGroup&>
+        temporary_position_to_nodegroup_map({});
 
     // for all tiles:
     // x, y, z
@@ -79,7 +81,7 @@ Chunk::init_nodegroups() {
                     // the int determines which paths between two tiles are
                     // compliant 31 means anything that is not opposite corner.
                     // look at onePath for more information
-                    NodeGroup group(chunk_position_, local_position, 31);
+                    path::NodeGroup group(chunk_position_, local_position, 31);
                     node_groups_.push_back(std::move(group));
                     // ter_->add_node_group(&node_groups_.back());
                     temporary_position_to_nodegroup_map.emplace(
@@ -97,9 +99,12 @@ Chunk::init_nodegroups() {
                         adjacent_tiles.erase(iter);
                         path::AdjacentIterator it(
                             *ter_, next_position,
-                            DirectionFlags::HORIZONTAL1 | DirectionFlags::HORIZONTAL2
-                                | DirectionFlags::VERTICAL | DirectionFlags::UP_AND_OVER
-                                | DirectionFlags::UP_AND_DIAGONAL | DirectionFlags::OPEN
+                            path::DirectionFlags::HORIZONTAL1
+                                | path::DirectionFlags::HORIZONTAL2
+                                | path::DirectionFlags::VERTICAL
+                                | path::DirectionFlags::UP_AND_OVER
+                                | path::DirectionFlags::UP_AND_DIAGONAL
+                                | path::DirectionFlags::OPEN
                         );
                         for (; !it.end(); it++) {
                             TerrainOffset3 current_position = it.get_pos();
@@ -143,7 +148,7 @@ Chunk::init_nodegroups() {
 void
 Chunk::add_nodegroup_adjacent_mp() {
     // add all adjacent nodegroup
-    for (NodeGroup& NG : node_groups_)
+    for (path::NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_local_positions()) {
             if (position.x != SIZE - 1 && position.y != SIZE - 1
                 && position.z != SIZE - 1) {
@@ -165,7 +170,7 @@ Chunk::add_nodegroup_adjacent_mp() {
                     continue;
                 }
 
-                NodeGroup* to_add = ter_->get_node_group(it.get_pos());
+                path::NodeGroup* to_add = ter_->get_node_group(it.get_pos());
 
                 if (!to_add) {
                     continue;
@@ -180,7 +185,7 @@ Chunk::add_nodegroup_adjacent_mp() {
 void
 Chunk::add_nodegroup_adjacent_all() {
     // add all adjacent nodegroup
-    for (NodeGroup& NG : node_groups_)
+    for (path::NodeGroup& NG : node_groups_)
         for (LocalPosition position : NG.get_tiles()) {
             if (position.x != SIZE - 1 || position.y != SIZE - 1
                 || position.z != SIZE - 1 || position.x != 0 || position.y != 0
@@ -201,7 +206,7 @@ Chunk::add_nodegroup_adjacent_all() {
                     continue;
                 }
 
-                NodeGroup* to_add = ter_->get_node_group(it.get_pos());
+                path::NodeGroup* to_add = ter_->get_node_group(it.get_pos());
 
                 if (!to_add) {
                     continue;
@@ -214,15 +219,16 @@ Chunk::add_nodegroup_adjacent_all() {
 }
 
 void
-Chunk::merge_(NodeGroup& G1, std::unordered_set<NodeGroup*> to_merge) {
+Chunk::merge_(path::NodeGroup& G1, std::unordered_set<path::NodeGroup*> to_merge) {
     if (to_merge.size() == 0) {
         return;
     }
     while (to_merge.size() > 0) {
         auto G2 = to_merge.begin();
-        std::unordered_map<NodeGroup*, UnitPath> to_add = G1.merge_groups(**(G2));
+        std::unordered_map<path::NodeGroup*, path::UnitPath> to_add =
+            G1.merge_groups(**(G2));
         delete_node_group_(**G2);
-        for (std::pair<NodeGroup* const, UnitPath> NG : to_add) {
+        for (std::pair<path::NodeGroup* const, path::UnitPath> NG : to_add) {
             if (contains_node_group_(NG.first) && &G1 != NG.first) {
                 to_merge.insert(NG.first);
             }
@@ -232,7 +238,7 @@ Chunk::merge_(NodeGroup& G1, std::unordered_set<NodeGroup*> to_merge) {
 }
 
 void
-Chunk::add_nodes_to(std::unordered_set<const NodeGroup*>& out) const {
+Chunk::add_nodes_to(std::unordered_set<const path::NodeGroup*>& out) const {
     for (auto it = node_groups_.begin(); it != node_groups_.end(); it++) {
         auto& elem = *it;
         out.insert(&elem); // Ptr to element
@@ -240,24 +246,25 @@ Chunk::add_nodes_to(std::unordered_set<const NodeGroup*>& out) const {
 }
 
 void
-Chunk::delete_node_group_(NodeGroup& NG) {
+Chunk::delete_node_group_(path::NodeGroup& NG) {
     // remove form ter. tile to group map
     ter_->remove_node_group(&NG);
-    for (std::pair<NodeGroup* const, UnitPath>& adjacent : NG.get_adjacent_map()) {
+    for (std::pair<path::NodeGroup* const, path::UnitPath>& adjacent :
+         NG.get_adjacent_map()) {
         adjacent.first->remove_adjacent(&NG);
     }
     node_groups_.remove(NG);
 }
 
 void
-Chunk::merge_node_group_(NodeGroup& G1, NodeGroup& G2) {
+Chunk::merge_node_group_(path::NodeGroup& G1, path::NodeGroup& G2) {
     G1.merge_groups(G2);
     delete_node_group_(G2);
     ter_->add_node_group(&G1);
 }
 
 inline bool
-Chunk::contains_node_group_(NodeGroup* NG) {
+Chunk::contains_node_group_(path::NodeGroup* NG) {
     return (NG->get_chunk_position() == chunk_position_);
 }
 
@@ -312,3 +319,5 @@ ChunkData::get_voxel_color_id(VoxelDim x, VoxelDim y, VoxelDim z) const {
 }
 
 } // namespace terrain
+
+} // namespace world

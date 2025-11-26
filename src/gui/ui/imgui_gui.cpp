@@ -192,7 +192,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                     path_exists = true;
                     path_length = path.value().size();
 
-                    // auto test_object = object_handler.get_object("Base/entities/Test_Entity");
+                    // auto test_object =
+                    // object_handler.get_object("Base/entities/Test_Entity");
 
                     for (auto position : path.value()) {
                         auto new_entity =

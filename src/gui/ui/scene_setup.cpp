@@ -29,7 +29,7 @@ setup(
 ) {
     // assign map from all color ids to each color
     // to package as a texture
-    terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
+    world::terrain::TerrainColorMapping::assign_color_mapping(world.get_materials());
     // send color texture to gpu
     // terrain::TerrainColorMapping::assign_color_texture();
     // parallel program to generate a mesh for each chunk

@@ -5,8 +5,12 @@
 
 #include <sol/sol.hpp>
 
+namespace world {
+
 namespace terrain {
+
 namespace generation {
+
 void
 init_lua_interface(sol::state& lua) {
     lua.new_usertype<FractalNoise>(
@@ -86,5 +90,9 @@ init_lua_interface(sol::state& lua) {
         "sample", &AlternativeWorleyNoise::get_noise
     );
 }
+
 } // namespace generation
+
 } // namespace terrain
+
+} // namespace world

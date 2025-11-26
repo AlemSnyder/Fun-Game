@@ -15,7 +15,7 @@ LocalContext::LocalContext() {
     lua_state.open_libraries(sol::lib::debug);
     // I'm not sure how I feel about this
     lua_logging::setup_lua_logging(lua_state);
-    terrain::generation::init_lua_interface(lua_state);
+    world::terrain::generation::init_lua_interface(lua_state);
     world::object::init_lua_interface(lua_state);
     util::lua::init_lua_interface(lua_state);
 }

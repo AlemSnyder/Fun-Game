@@ -32,6 +32,8 @@
 
 #include <set>
 
+namespace world {
+
 namespace terrain {
 
 // implementations of start of iteration
@@ -53,3 +55,5 @@ template void helper::grow_grass_inner<helper::getter_high, helper::setter_high>
 );
 
 } // namespace terrain
+
+} // namespace world

@@ -29,6 +29,8 @@
 #include <cstdint>
 #include <utility>
 
+namespace world {
+
 namespace terrain {
 
 namespace path {
@@ -107,3 +109,5 @@ AdjacentIterator::iterate_to_next_available() {
 } // namespace path
 
 } // namespace terrain
+
+} // namespace world

@@ -2,7 +2,10 @@
 
 #include "map_tile.hpp"
 
+namespace world {
+
 namespace terrain {
+
 namespace generation {
 
 /**
@@ -152,3 +155,5 @@ class TerrainMapRepresentation {
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

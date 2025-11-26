@@ -29,6 +29,8 @@
 #include <cstdint>
 #include <set>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -128,3 +130,5 @@ class AlternativeWorleyNoise : public WorleyNoise {
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

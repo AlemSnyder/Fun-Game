@@ -27,6 +27,8 @@
 #include <optional>
 #include <set>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -51,9 +53,11 @@ struct TileStamp {
     MaterialId mat;   // Material that tiles will be set to.
     ColorId color_id; // color that tiles will be set to.
     // set of <material ID, color ID> determines what tiles types can be changed.
-    std::optional<MaterialGroup> elements_can_stamp;
+    std::optional<world::terrain::MaterialGroup> elements_can_stamp;
 };
 
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

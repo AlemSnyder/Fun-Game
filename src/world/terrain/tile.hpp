@@ -32,6 +32,8 @@
 #include <map>
 #include <set>
 
+namespace world {
+
 namespace terrain {
 
 /**
@@ -199,3 +201,5 @@ class Tile {
 };
 
 } // namespace terrain
+
+} // namespace world

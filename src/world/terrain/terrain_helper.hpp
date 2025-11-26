@@ -27,7 +27,10 @@
 
 #include <unordered_set>
 
+namespace world {
+
 namespace terrain {
+
 namespace helper {
 
 /**
@@ -60,3 +63,5 @@ void grow_grass_recursive(Terrain& ter, std::unordered_set<TerrainOffset3> all_g
 } // namespace helper
 
 } // namespace terrain
+
+} // namespace world

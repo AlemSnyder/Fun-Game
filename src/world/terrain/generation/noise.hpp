@@ -18,6 +18,8 @@
 #include <cmath>
 #include <cstdint>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -106,3 +108,5 @@ class FractalNoise : protected Noise {
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

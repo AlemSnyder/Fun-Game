@@ -53,6 +53,8 @@
 #include <unordered_set>
 #include <vector>
 
+namespace world {
+
 namespace terrain {
 
 namespace helper {
@@ -104,12 +106,12 @@ class Terrain : public voxel_utility::VoxelBase {
     // size of terrain generation tile (see terrain generation)
     const TerrainOffset area_size_;
     // mat of material id to material that describes materials in this terrain
-    const generation::Biome& biome_;
+    const Biome& biome_;
 
     mutable std::mutex nodegroup_mutex_;
 
     std::unordered_map<TerrainOffset3, Chunk> chunks_;
-    std::unordered_map<TerrainOffset3, NodeGroup*> tile_to_group_;
+    std::unordered_map<TerrainOffset3, path::NodeGroup*> tile_to_group_;
 
  public:
     // length in the x direction
@@ -350,21 +352,21 @@ class Terrain : public voxel_utility::VoxelBase {
     std::pair<TerrainOffset3, TerrainOffset3> get_start_end_test() const;
 
     /**
-     * @brief Get the UnitPath defined by the path type between two tiles
+     * @brief Get the path::UnitPath defined by the path type between two tiles
      * @param xs X start
      * @param ys Y start
      * @param zs Z start
      * @param xf X end
      * @param yf Y end
      * @param zf Z end
-     * @return const UnitPath path type between the two tile positions
+     * @return const path::UnitPath path type between the two tile positions
      */
-    [[nodiscard]] const UnitPath get_path_type(
+    [[nodiscard]] const path::UnitPath get_path_type(
         TerrainOffset xs, TerrainOffset ys, TerrainOffset zs, TerrainOffset xf,
         TerrainOffset yf, TerrainOffset zf
     ) const;
 
-    [[nodiscard]] inline const UnitPath
+    [[nodiscard]] inline const path::UnitPath
     get_path_type(TerrainOffset3 start_position, TerrainOffset3 final_position) const {
         return get_path_type(
             start_position.x, start_position.y, start_position.z, final_position.x,
@@ -399,7 +401,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return float time required
      */
     template <class T>
-    [[nodiscard]] static float get_G_cost(const T tile, const Node<const T> node);
+    [[nodiscard]] static float get_G_cost(const T tile, const path::Node<const T> node);
 
     /**
      * @brief Construct a new Terrain object
@@ -416,8 +418,7 @@ class Terrain : public voxel_utility::VoxelBase {
      */
     Terrain(
         TerrainOffset x_tiles, TerrainOffset y_tiles, TerrainOffset area_size_,
-        TerrainOffset z_tiles, const generation::Biome& biome,
-        generation::TerrainMacroMap macro_map
+        TerrainOffset z_tiles, const Biome& biome, generation::TerrainMacroMap macro_map
     );
     /**
      * @brief Construct a new Terrain object
@@ -425,7 +426,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param path path to saved terrain
      * @param material materials of the world
      */
-    Terrain(const std::string& path, const generation::Biome& biome);
+    Terrain(const std::string& path, const Biome& biome);
 
     /**
      * @brief Construct a new Terrain Base object from qb data
@@ -437,7 +438,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param grass_mid position in grass gradient data that denotes the middle
      * @param data qb_data_t read from file
      */
-    Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data);
+    Terrain(const Biome& biome, voxel_utility::qb_data_t data);
 
     [[nodiscard]] inline const terrain::material_t*
     get_material(MaterialId mat_id) const {
@@ -452,12 +453,13 @@ class Terrain : public voxel_utility::VoxelBase {
      * @brief Get a tile iterator to adjacent tiles
      *
      * @param pos position of
-     * @param path_type UnitPath defining acceptable paths
+     * @param path_type path::UnitPath defining acceptable paths
      *
      * @return iterator
      */
     [[nodiscard]] inline iterator
-    get_tile_adjacent_iterator(TerrainOffset3 pos, UnitPath path_type = 127U) const {
+    get_tile_adjacent_iterator(TerrainOffset3 pos, path::UnitPath path_type = 127U)
+        const {
         return iterator(*this, pos, path_type);
     }
 
@@ -467,11 +469,13 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param node node to find the adjacent of
      * @param nodes nodes that can be passed through
      * @param type path type allowed
-     * @return std::unordered_set<Node<const T> *> adjacent nodes
+     * @return std::unordered_set<path::Node<const T> *> adjacent nodes
      */
-    [[nodiscard]] std::unordered_set<Node<const NodeGroupWrapper>*> get_adjacent_nodes(
-        const Node<const NodeGroupWrapper>* const node,
-        std::unordered_map<TerrainOffset3, Node<const NodeGroupWrapper>>& nodes,
+    [[nodiscard]] std::unordered_set<path::Node<const path::NodeGroupWrapper>*>
+    get_adjacent_nodes(
+        const path::Node<const path::NodeGroupWrapper>* const node,
+        std::unordered_map<TerrainOffset3, path::Node<const path::NodeGroupWrapper>>&
+            nodes,
         path_t type
     ) const;
 
@@ -481,11 +485,13 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param node node to find the adjacent of
      * @param nodes nodes that can be passed through
      * @param type path type allowed
-     * @return std::unordered_set<Node<const T> *> adjacent nodes
+     * @return std::unordered_set<path::Node<const T> *> adjacent nodes
      */
-    [[nodiscard]] std::unordered_set<Node<const PositionWrapper>*> get_adjacent_nodes(
-        const Node<const PositionWrapper>* const node,
-        std::unordered_map<TerrainOffset3, Node<const PositionWrapper>>& nodes,
+    [[nodiscard]] std::unordered_set<path::Node<const path::PositionWrapper>*>
+    get_adjacent_nodes(
+        const path::Node<const path::PositionWrapper>* const node,
+        std::unordered_map<TerrainOffset3, path::Node<const path::PositionWrapper>>&
+            nodes,
         path_t type
     ) const;
 
@@ -493,30 +499,30 @@ class Terrain : public voxel_utility::VoxelBase {
      * @brief Get the node group from tile index
      *
      * @param xyz tile index in vector tiles
-     * @return NodeGroup* NodeGroup tile is in
+     * @return path::NodeGroup* path::NodeGroup tile is in
      */
-    [[nodiscard]] NodeGroup* get_node_group(TerrainOffset3 xyz);
+    [[nodiscard]] path::NodeGroup* get_node_group(TerrainOffset3 xyz);
 
     /**
      * @brief Get the node group from tile index
      *
      * @param xyz tile index in vector tiles
-     * @return NodeGroup* NodeGroup tile is in
+     * @return path::NodeGroup* path::NodeGroup tile is in
      */
-    [[nodiscard]] const NodeGroup* get_node_group(TerrainOffset3 xyz) const;
+    [[nodiscard]] const path::NodeGroup* get_node_group(TerrainOffset3 xyz) const;
 
     /**
      * @brief Add a node group to possible node groups
      *
-     * @param NG NodeGroup to add
+     * @param NG path::NodeGroup to add
      */
-    void add_node_group(NodeGroup* NG);
+    void add_node_group(path::NodeGroup* NG);
     /**
      * @brief Remove a node group
      *
-     * @param NG NodeGroup to remove
+     * @param NG path::NodeGroup to remove
      */
-    void remove_node_group(NodeGroup* NG);
+    void remove_node_group(path::NodeGroup* NG);
 
     static inline ChunkPos
     get_chunk_from_tile(TerrainOffset3 tile_sop) {
@@ -697,9 +703,10 @@ class Terrain : public voxel_utility::VoxelBase {
     /**
      * @brief get all nod groups
      *
-     * @return std::unordered_set<const NodeGroup> set of all NodeGroups
+     * @return std::unordered_set<const path::NodeGroup> set of all path::NodeGroups
      */
-    [[nodiscard]] std::unordered_set<const NodeGroup*> get_all_node_groups() const;
+    [[nodiscard]] std::unordered_set<const path::NodeGroup*>
+    get_all_node_groups() const;
 
     /**
      * @brief Get a path between start, and goal using the A* algorithm
@@ -714,12 +721,12 @@ class Terrain : public voxel_utility::VoxelBase {
     /**
      * @brief Get a path between start, and goal using the A* algorithm
      *
-     * @param start start NodeGroup
-     * @param goal end NodeGroup
-     * @return std::optional<std::vector<const NodeGroup*>> path
+     * @param start start path::NodeGroup
+     * @param goal end path::NodeGroup
+     * @return std::optional<std::vector<const path::NodeGroup*>> path
      */
-    [[nodiscard]] std::optional<std::vector<NodeGroupWrapper>>
-    get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const;
+    [[nodiscard]] std::optional<std::vector<path::NodeGroupWrapper>>
+    get_path_Astar(const path::NodeGroup* start, const path::NodeGroup* goal) const;
 
     /**
      * @brief Get a path between start, and any goal using the breadth first
@@ -737,12 +744,14 @@ class Terrain : public voxel_utility::VoxelBase {
      * @brief Get a path between start, and any goal using the breadth first
      * algorithm
      *
-     * @param start start NodeGroup
+     * @param start start path::NodeGroup
      * @param goal set of excitable goals
-     * @return std::optional<std::vector<const NodeGroup*>> path to closest goal
+     * @return std::optional<std::vector<const path::NodeGroup*>> path to closest goal
      */
-    [[nodiscard]] std::optional<std::vector<NodeGroupWrapper>> get_path_breadth_first(
-        const NodeGroupWrapper start, const std::unordered_set<NodeGroupWrapper> goal
+    [[nodiscard]] std::optional<std::vector<path::NodeGroupWrapper>>
+    get_path_breadth_first(
+        const path::NodeGroupWrapper start,
+        const std::unordered_set<path::NodeGroupWrapper> goal
     ) const;
 
     /**
@@ -755,7 +764,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param compare way to sort best path
      * @return std::vector<const T *> path optimized by compare
      */
-    template <class T, bool compare(Node<const T>*, Node<const T>*)>
+    template <class T, bool compare(path::Node<const T>*, path::Node<const T>*)>
     [[nodiscard]] std::optional<std::vector<T>> get_path(
         const T start, const std::unordered_set<T> goal,
         const std::unordered_set<T> search_through
@@ -795,7 +804,8 @@ class Terrain : public voxel_utility::VoxelBase {
     // trace nodes through parents to reach start
     template <class T>
     void
-    get_path_through_nodes(Node<const T>* node, std::vector<T>& out, T start) const {
+    get_path_through_nodes(path::Node<const T>* node, std::vector<T>& out, T start)
+        const {
         out.push_back(*node->get_tile());
         if (start == *node->get_tile()) {
             return;
@@ -805,3 +815,5 @@ class Terrain : public voxel_utility::VoxelBase {
 };
 
 } // namespace terrain
+
+} // namespace world

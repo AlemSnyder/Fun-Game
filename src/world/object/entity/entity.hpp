@@ -24,13 +24,21 @@ class EntityInstance : public virtual ObjectInstance {
 
     glm::vec3 position_;
 
+    std::weak_ptr<terrain::Terrain> terrain_; // should this be a week ptr to world?
+
     void set_position(glm::vec3 position);
 
  public:
-    EntityInstance(std::shared_ptr<Entity> entity_type);
+    EntityInstance(
+        std::shared_ptr<Entity> entity_type, std::shared_ptr<terrain::Terrain> terr_
+    );
 
-    EntityInstance(std::shared_ptr<Entity> entity_type, glm::vec3 position) :
-        EntityInstance(entity_type) {
+    EntityInstance(
+        std::shared_ptr<Entity> entity_type, std::shared_ptr<terrain::Terrain> terr_,
+        glm::vec3 position
+    ) :
+        entity_type_(entity_type),
+        terrain_(terr_) {
         set_position(position);
     }
 
@@ -51,6 +59,14 @@ class EntityInstance : public virtual ObjectInstance {
     take_damage([[maybe_unused]] size_t damage) {}
 
     virtual glm::vec3 get_position() const;
+
+    inline virtual const std::shared_ptr<terrain::Terrain>
+    get_terrain() const override {
+        if (std::shared_ptr<terrain::Terrain> terr = terrain_.lock()) {
+            return terr;
+        };
+        return nullptr;
+    }
 
     virtual std::shared_ptr<Object> get_object();
 

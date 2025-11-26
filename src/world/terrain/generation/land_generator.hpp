@@ -36,6 +36,8 @@
 #include <random>
 #include <string>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -351,3 +353,5 @@ class AddToTop {
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

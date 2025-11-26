@@ -40,7 +40,8 @@
 #include <unordered_set>
 #include <vector>
 
-// TODO this is not the correct namespace. Should be world::terrain
+namespace world {
+
 namespace terrain {
 
 struct material_color_t {
@@ -330,9 +331,11 @@ class MaterialGroup {
 
 } // namespace terrain
 
+} // namespace world
+
 template <>
-struct glz::meta<terrain::material_color_t> {
-    using T = terrain::material_color_t;
+struct glz::meta<world::terrain::material_color_t> {
+    using T = world::terrain::material_color_t;
     // clang-format off
     static constexpr auto value = object(
         "hex_color",  custom<&T::read_hex_color, &T::write_hex_color>,
@@ -342,7 +345,7 @@ struct glz::meta<terrain::material_color_t> {
 };
 
 template <>
-inline glz::detail::any_t::operator terrain::grass_data_t() const {
+inline glz::detail::any_t::operator world::terrain::grass_data_t() const {
     assert(false && "Not Implemented");
     return {};
 }

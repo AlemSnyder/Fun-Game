@@ -108,7 +108,7 @@ EntityController::spawn_tile_object(
     // tile_object_instances_.at(position).insert(object);
     auto inserted = object_instances_.at(chunk_position)
                         .insert(std::make_shared<entity::TileObjectInstance>(
-                            tile_object_type, model_id, placement
+                            tile_object_type, model_id, placement, nullptr
                         ));
 
     return *inserted.first;

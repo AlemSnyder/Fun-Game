@@ -1,6 +1,8 @@
 #include "map_tile.hpp"
 #include "util/color.hpp"
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -68,3 +70,5 @@ TileType::TileType(
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

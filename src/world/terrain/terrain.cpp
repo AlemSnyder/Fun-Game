@@ -23,28 +23,30 @@
 #include <string>
 #include <vector>
 
+namespace world {
+
 namespace terrain {
 
 namespace helper {
 
 template <class T>
 inline bool
-astar_compare(Node<T>* lhs, Node<T>* rhs) {
+astar_compare(path::Node<T>* lhs, path::Node<T>* rhs) {
     return lhs->get_total_predicted_cost() > rhs->get_total_predicted_cost();
 }
 
 template <class T>
 inline bool
-breadth_first_compare(Node<T>* lhs, Node<T>* rhs) {
+breadth_first_compare(path::Node<T>* lhs, path::Node<T>* rhs) {
     return lhs->get_time_cost() > rhs->get_time_cost();
 }
 
 } // namespace helper
 
-Terrain::Terrain(const std::string& path, const generation::Biome& biome) :
+Terrain::Terrain(const std::string& path, const Biome& biome) :
     Terrain(biome, voxel_utility::from_qb(path)) {}
 
-Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) :
+Terrain::Terrain(const Biome& biome, voxel_utility::qb_data_t data) :
     area_size_(32), biome_(biome), X_MAX(data.size.x), Y_MAX(data.size.y),
     Z_MAX(data.size.z) {
     LOG_INFO(logging::terrain_logger, "Start of read from qb.");
@@ -79,8 +81,7 @@ Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) 
 
 Terrain::Terrain(
     TerrainOffset x_map_tiles, TerrainOffset y_map_tiles, TerrainOffset area_size_,
-    TerrainOffset z, const generation::Biome& biome,
-    generation::TerrainMacroMap macro_map
+    TerrainOffset z, const Biome& biome, generation::TerrainMacroMap macro_map
 ) :
     area_size_(area_size_),
     biome_(biome), X_MAX(x_map_tiles * area_size_), Y_MAX(y_map_tiles * area_size_),
@@ -170,7 +171,7 @@ Terrain::qb_read(
                         size_t index = tile_position.x * Y_MAX * Z_MAX
                                        + tile_position.y * Z_MAX + tile_position.z;
                         ColorInt color = data[index];
-                        const terrain::MaterialColor* mat_color;
+                        const world::terrain::MaterialColor* mat_color;
                         if (color == 0) { // if the qb voxel is transparent.
                             mat_color =
                                 &materials_inverse.at(0); // set the materials to air
@@ -647,7 +648,7 @@ Terrain::get_H_cost(TerrainOffset3 position1, TerrainOffset3 position2) {
 
 template <class T>
 float
-Terrain::get_G_cost(const T tile, const Node<const T> node) {
+Terrain::get_G_cost(const T tile, const path::Node<const T> node) {
     return node.get_time_cost()
            + get_H_cost(tile.average_position(), node.get_tile()->average_position());
 }
@@ -668,14 +669,14 @@ Terrain::get_chunk_from_tile(TerrainOffset x, TerrainOffset y, TerrainOffset z) 
     return chunk_position;
 }
 
-std::unordered_set<Node<const NodeGroupWrapper>*>
+std::unordered_set<path::Node<const path::NodeGroupWrapper>*>
 Terrain::get_adjacent_nodes(
-    const Node<const NodeGroupWrapper>* const node,
-    std::unordered_map<TerrainOffset3, Node<const NodeGroupWrapper>>& nodes,
+    const path::Node<const path::NodeGroupWrapper>* const node,
+    std::unordered_map<TerrainOffset3, path::Node<const path::NodeGroupWrapper>>& nodes,
     path_t path_type
 ) const {
-    std::unordered_set<Node<const NodeGroupWrapper>*> out;
-    for (const NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
+    std::unordered_set<path::Node<const path::NodeGroupWrapper>*> out;
+    for (const path::NodeGroup* t : node->get_tile()->get_adjacent_clear(path_type)) {
         auto adj_node = nodes.find(t->unique_position());
         if (adj_node != nodes.end()) {
             out.emplace(&adj_node->second);
@@ -684,13 +685,13 @@ Terrain::get_adjacent_nodes(
     return out;
 }
 
-std::unordered_set<Node<const PositionWrapper>*>
+std::unordered_set<path::Node<const path::PositionWrapper>*>
 Terrain::get_adjacent_nodes(
-    const Node<const PositionWrapper>* node,
-    std::unordered_map<TerrainOffset3, Node<const PositionWrapper>>& nodes,
+    const path::Node<const path::PositionWrapper>* node,
+    std::unordered_map<TerrainOffset3, path::Node<const path::PositionWrapper>>& nodes,
     path_t path_type
 ) const {
-    std::unordered_set<Node<const PositionWrapper>*> out;
+    std::unordered_set<path::Node<const path::PositionWrapper>*> out;
     auto tile_it =
         get_tile_adjacent_iterator(node->get_tile()->unique_position(), path_type);
     while (!tile_it.end()) {
@@ -704,9 +705,9 @@ Terrain::get_adjacent_nodes(
 }
 
 // this feels like it's wrong
-// it's fine NodeGroup*s are stored in a linked list. Shouldn't move
+// it's fine path::NodeGroup*s are stored in a linked list. Shouldn't move
 // idk seams like there could be a better way to do this.
-NodeGroup*
+path::NodeGroup*
 Terrain::get_node_group(TerrainOffset3 xyz) {
     auto node_group = tile_to_group_.find(xyz);
     if (node_group == tile_to_group_.end()) {
@@ -715,7 +716,7 @@ Terrain::get_node_group(TerrainOffset3 xyz) {
     return node_group->second;
 }
 
-const NodeGroup*
+const path::NodeGroup*
 Terrain::get_node_group(TerrainOffset3 xyz) const {
     auto out = tile_to_group_.find(xyz);
     if (out == tile_to_group_.end()) {
@@ -725,7 +726,7 @@ Terrain::get_node_group(TerrainOffset3 xyz) const {
 }
 
 void
-Terrain::add_node_group(NodeGroup* NG) {
+Terrain::add_node_group(path::NodeGroup* NG) {
     auto positions = NG->get_tiles();
     for (const auto t : positions) {
         tile_to_group_[t] = NG;
@@ -733,14 +734,14 @@ Terrain::add_node_group(NodeGroup* NG) {
 }
 
 void
-Terrain::remove_node_group(NodeGroup* NG) {
+Terrain::remove_node_group(path::NodeGroup* NG) {
     auto positions = NG->get_tiles();
     for (const auto t : positions) {
         tile_to_group_.erase(t);
     }
 }
 
-const UnitPath
+const path::UnitPath
 Terrain::get_path_type(
     TerrainOffset xs, TerrainOffset ys, TerrainOffset zs, TerrainOffset xf,
     TerrainOffset yf, TerrainOffset zf
@@ -767,20 +768,21 @@ Terrain::get_path_type(
     // VH2 VH1  V H2 H1 O
     path_t horizontal_direction = (x_diff + y_diff) << (1 + 3 * z_diff);
     path_t vertical_direction = z_diff << 3;
-    UnitPath type;
+    path::UnitPath type;
     if (horizontal_direction == 0)
         type = vertical_direction;
     else
         type = horizontal_direction;
 
     bool path_open = false;
-    if (type == DirectionFlags::HORIZONTAL1 || type == DirectionFlags::VERTICAL) {
+    if (type == path::DirectionFlags::HORIZONTAL1
+        || type == path::DirectionFlags::VERTICAL) {
         // up / down or side to side
         // in this case the two tiles are bordering
         // same lever so the only thing that maters if the entity can stand on
         // both tiles
         path_open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy);
-    } else if (type == DirectionFlags::HORIZONTAL2) {
+    } else if (type == path::DirectionFlags::HORIZONTAL2) {
         // still the same level
         // this test if the start and final locations are open,
         // and if the two between them are open
@@ -788,7 +790,7 @@ Terrain::get_path_type(
         // O F
         path_open = can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz, dxy)
                     && can_stand(xs, yf, zs, dz, dxy) && can_stand(xf, ys, zf, dz, dxy);
-    } else if (type == DirectionFlags::UP_AND_OVER) {
+    } else if (type == path::DirectionFlags::UP_AND_OVER) {
         if (zf > zs) {
             // going up, and over
             path_open =
@@ -799,7 +801,7 @@ Terrain::get_path_type(
                 can_stand(xs, ys, zs, dz, dxy) && can_stand(xf, yf, zf, dz + 1, dxy);
         }
 
-    } else if (type == DirectionFlags::UP_AND_DIAGONAL) {
+    } else if (type == path::DirectionFlags::UP_AND_DIAGONAL) {
         if (zf > zs) {
             // going up, and diagonal
             path_open = can_stand(xs, ys, zs, dz + 1, dxy)
@@ -819,36 +821,38 @@ Terrain::get_path_type(
         }
     }
 
-    return type | UnitPath(path_open);
+    return type | path::UnitPath(path_open);
 }
 
-std::unordered_set<const NodeGroup*>
+std::unordered_set<const path::NodeGroup*>
 Terrain::get_all_node_groups() const {
-    std::unordered_set<const NodeGroup*> out;
+    std::unordered_set<const path::NodeGroup*> out;
     for (const auto& [position, chunk] : chunks_) {
         chunk.add_nodes_to(out);
     }
     return out;
 }
 
-std::optional<std::vector<NodeGroupWrapper>>
-Terrain::get_path_Astar(const NodeGroup* start, const NodeGroup* goal) const {
-    std::unordered_set<const NodeGroup*> search_through = get_all_node_groups();
+std::optional<std::vector<path::NodeGroupWrapper>>
+Terrain::get_path_Astar(const path::NodeGroup* start, const path::NodeGroup* goal)
+    const {
+    std::unordered_set<const path::NodeGroup*> search_through = get_all_node_groups();
 
-    std::unordered_set<NodeGroupWrapper> search_through_wrapped({});
+    std::unordered_set<path::NodeGroupWrapper> search_through_wrapped({});
     for (const auto& node : search_through) {
         search_through_wrapped.emplace(node);
     }
 
-    return get_path<NodeGroupWrapper, helper::astar_compare>(
-        NodeGroupWrapper(start), {NodeGroupWrapper(goal)}, search_through_wrapped
+    return get_path<path::NodeGroupWrapper, helper::astar_compare>(
+        path::NodeGroupWrapper(start), {path::NodeGroupWrapper(goal)},
+        search_through_wrapped
     );
 }
 
 std::optional<std::vector<TerrainOffset3>>
 Terrain::get_path_Astar(TerrainOffset3 start, TerrainOffset3 goal) const {
-    const NodeGroup* goal_node;
-    const NodeGroup* start_node;
+    const path::NodeGroup* goal_node;
+    const path::NodeGroup* start_node;
 
     if (!(goal_node = get_node_group(goal)))
         return {};
@@ -859,14 +863,14 @@ Terrain::get_path_Astar(TerrainOffset3 start, TerrainOffset3 goal) const {
     if (!node_path.has_value())
         return {};
 
-    std::unordered_set<PositionWrapper> search_through({});
+    std::unordered_set<path::PositionWrapper> search_through({});
     for (const auto NG : node_path.value()) {
         auto tiles = NG.get_tiles();
         search_through.insert(tiles.begin(), tiles.end());
     }
 
-    auto wrapped_path = get_path<PositionWrapper, helper::astar_compare>(
-        PositionWrapper(start), {PositionWrapper(goal)}, search_through
+    auto wrapped_path = get_path<path::PositionWrapper, helper::astar_compare>(
+        path::PositionWrapper(start), {path::PositionWrapper(goal)}, search_through
     );
 
     if (!wrapped_path) {
@@ -879,17 +883,18 @@ Terrain::get_path_Astar(TerrainOffset3 start, TerrainOffset3 goal) const {
     return path;
 }
 
-std::optional<std::vector<NodeGroupWrapper>>
+std::optional<std::vector<path::NodeGroupWrapper>>
 Terrain::get_path_breadth_first(
-    const NodeGroupWrapper start, const std::unordered_set<NodeGroupWrapper> goal
+    const path::NodeGroupWrapper start,
+    const std::unordered_set<path::NodeGroupWrapper> goal
 ) const {
-    std::unordered_set<const NodeGroup*> search_through = get_all_node_groups();
+    std::unordered_set<const path::NodeGroup*> search_through = get_all_node_groups();
 
-    std::unordered_set<NodeGroupWrapper> search_through_wrapped({});
+    std::unordered_set<path::NodeGroupWrapper> search_through_wrapped({});
     for (const auto& node : search_through) {
         search_through_wrapped.emplace(node);
     }
-    return get_path<NodeGroupWrapper, helper::breadth_first_compare>(
+    return get_path<path::NodeGroupWrapper, helper::breadth_first_compare>(
         start, goal, search_through_wrapped
     );
 }
@@ -898,12 +903,12 @@ std::optional<std::vector<TerrainOffset3>>
 Terrain::get_path_breadth_first(
     const TerrainOffset3 start, const std::unordered_set<TerrainOffset3> goal_
 ) const {
-    std::unordered_set<NodeGroupWrapper> goal_nodes({});
+    std::unordered_set<path::NodeGroupWrapper> goal_nodes({});
     bool no_goal = true;
     for (const TerrainOffset3 g : goal_) {
         if (can_stand_1(g)) {
             no_goal = false;
-            const NodeGroup* goal_node = get_node_group(g);
+            const path::NodeGroup* goal_node = get_node_group(g);
             goal_nodes.insert(goal_node);
         }
     }
@@ -917,10 +922,10 @@ Terrain::get_path_breadth_first(
     auto node_path = get_path_breadth_first(start_node, goal_nodes);
     if (!node_path)
         return {};
-    NodeGroupWrapper end = node_path.value().front();
+    path::NodeGroupWrapper end = node_path.value().front();
     ChunkPos chunk_position = end.get_chunk_position();
 
-    std::unordered_set<PositionWrapper> goal({});
+    std::unordered_set<path::PositionWrapper> goal({});
     for (const TerrainOffset3 g : goal_) {
         if (get_chunk_from_tile(g) == chunk_position) {
             if (end.contains(g)) {
@@ -930,13 +935,13 @@ Terrain::get_path_breadth_first(
     }
     if (goal.size() == 0)
         return {};
-    std::unordered_set<PositionWrapper> search_through({});
-    for (const NodeGroupWrapper& group : node_path.value()) {
+    std::unordered_set<path::PositionWrapper> search_through({});
+    for (const path::NodeGroupWrapper& group : node_path.value()) {
         auto tiles = group.get_tiles();
         search_through.insert(tiles.begin(), tiles.end());
     }
 
-    auto wrapped_path = get_path<PositionWrapper, helper::breadth_first_compare>(
+    auto wrapped_path = get_path<path::PositionWrapper, helper::breadth_first_compare>(
         start, goal, search_through
     );
 
@@ -950,33 +955,34 @@ Terrain::get_path_breadth_first(
     return path;
 }
 
-template <class T, bool compare(Node<const T>*, Node<const T>*)>
+template <class T, bool compare(path::Node<const T>*, path::Node<const T>*)>
 std::optional<std::vector<T>>
 Terrain::get_path(
     const T start, const std::unordered_set<T> goal,
     const std::unordered_set<T> search_through
 ) const {
-    std::priority_queue<Node<const T>*, std::vector<Node<const T>*>, decltype(compare)>
+    std::priority_queue<
+        path::Node<const T>*, std::vector<path::Node<const T>*>, decltype(compare)>
         openNodes(compare);
 
-    std::unordered_map<TerrainOffset3, Node<const T>>
+    std::unordered_map<TerrainOffset3, path::Node<const T>>
         nodes; // The nodes that can be walked through
     for (const T& t : search_through) {
-        nodes[t.unique_position()] = Node<const T>(
+        nodes[t.unique_position()] = path::Node<const T>(
             &t, get_H_cost(t.average_position(), (*goal.begin()).average_position())
         );
     }
-    Node<const T> start_node = nodes[start.unique_position()];
+    path::Node<const T> start_node = nodes[start.unique_position()];
     openNodes.push(&start_node); // gotta start somewhere
     start_node.explore();
 
     while (!openNodes.empty()) {
-        Node<const T>* choice = openNodes.top();
+        path::Node<const T>* choice = openNodes.top();
         openNodes.pop(); // Remove the chosen node from openNodes
         // Expand openNodes around the best choice
-        std::unordered_set<Node<const T>*> adjacent_nodes =
+        std::unordered_set<path::Node<const T>*> adjacent_nodes =
             get_adjacent_nodes(choice, nodes, 31);
-        for (Node<const T>* n : adjacent_nodes) {
+        for (path::Node<const T>* n : adjacent_nodes) {
             // if can stand on the tile    and the tile is not explored
             // get_adjacent should only give open nodes
 
@@ -994,8 +1000,8 @@ Terrain::get_path(
 
                     // will update open nodes if the fastest path has changed.
                     std::make_heap(
-                        const_cast<Node<const T>**>(&openNodes.top()),
-                        const_cast<Node<const T>**>(&openNodes.top())
+                        const_cast<path::Node<const T>**>(&openNodes.top()),
+                        const_cast<path::Node<const T>**>(&openNodes.top())
                             + openNodes.size(),
                         compare
                     );
@@ -1013,9 +1019,9 @@ Terrain::qb_save_debug(const std::string path) {
     // used to determine a debug color for each node group
     size_t debug_color = 0;
     for (auto& [pos, c] : chunks_) {
-        std::unordered_set<const NodeGroup*> node_groups;
+        std::unordered_set<const path::NodeGroup*> node_groups;
         c.add_nodes_to(node_groups);
-        for (const NodeGroup* NG : node_groups) {
+        for (const path::NodeGroup* NG : node_groups) {
             for (const TerrainOffset3& t : NG->get_tiles()) {
                 // Terrain owns the tile so this is fine
 
@@ -1063,3 +1069,5 @@ Terrain::get_start_end_test() const {
 }
 
 } // namespace terrain
+
+} // namespace world

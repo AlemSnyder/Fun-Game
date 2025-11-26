@@ -2,6 +2,8 @@
 
 #include "util/color.hpp"
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -50,3 +52,5 @@ TerrainMapRepresentation::get_color(size_t i, size_t j) const {
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

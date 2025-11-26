@@ -44,18 +44,18 @@
 #include <string>
 
 void
-save_terrain(terrain::generation::biome_json_data biome_data) {
+save_terrain(world::biome_json_data biome_data) {
     quill::Logger* logger = logging::main_logger;
 
     LOG_INFO(logger, "Saving {} tile types", biome_data.biome_data.tile_data.size());
 
     for (MapTile_t i = 0; i < biome_data.biome_data.tile_data.size(); i++) {
-        terrain::generation::Biome biome(biome_data, 5);
+        world::Biome biome(biome_data, 5);
 
         MacroDim map_size = 3;
         Dim terrain_height = 128;
         auto macro_map = biome.single_tile_type_map(i);
-        terrain::Terrain ter(
+        world::terrain::Terrain ter(
             map_size, map_size, world::World::macro_tile_size, terrain_height, biome,
             macro_map
         );
@@ -71,7 +71,7 @@ save_terrain(terrain::generation::biome_json_data biome_data) {
 
 int
 TerrainTypes(const argh::parser& cmdl) {
-    terrain::generation::biome_json_data biome_data;
+    world::biome_json_data biome_data;
 
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
@@ -79,8 +79,7 @@ TerrainTypes(const argh::parser& cmdl) {
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
-    biome_data =
-        terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
+    biome_data = world::Biome::get_json_data(files::get_data_path() / biome_name);
 
     save_terrain(biome_data);
 
@@ -119,7 +118,7 @@ MacroMap(const argh::parser& cmdl) {
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
-    terrain::generation::Biome biome(biome_name, seed);
+    world::Biome biome(biome_name, seed);
 
     // test terrain generation
     auto map = biome.get_map(size);
@@ -175,7 +174,7 @@ image_test(const argh::parser& cmdl) {
         manifest::ObjectHandler object_handler;
         object_handler.load_all_manifests<false>();
 
-        terrain::generation::Biome biome(biome_name, seed);
+        world::Biome biome(biome_name, seed);
 
         auto map = biome.get_map(size);
 
@@ -191,7 +190,7 @@ image_test(const argh::parser& cmdl) {
             return 1;
         }
 
-        auto map_rep = terrain::generation::TerrainMapRepresentation(map);
+        auto map_rep = world::terrain::generation::TerrainMapRepresentation(map);
 
         image::write_result_t result = image::write_image(map_rep, png_save_path);
 
@@ -211,16 +210,16 @@ ChunkDataTest() {
 
     world::World world(&object_handler, BIOME_BASE_NAME, 6, 6);
 
-    const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
+    const world::terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
 
     if (!chunk)
         return 1;
 
-    terrain::ChunkData chunk_data(*chunk);
+    world::terrain::ChunkData chunk_data(*chunk);
 
-    for (VoxelDim x = -1; x < terrain::Chunk::SIZE; x++) {
-        for (VoxelDim y = -1; y < terrain::Chunk::SIZE; y++) {
-            for (VoxelDim z = -1; z < terrain::Chunk::SIZE; z++) {
+    for (VoxelDim x = -1; x < world::terrain::Chunk::SIZE; x++) {
+        for (VoxelDim y = -1; y < world::terrain::Chunk::SIZE; y++) {
+            for (VoxelDim z = -1; z < world::terrain::Chunk::SIZE; z++) {
                 MatColorId chunk_mat_color = chunk->get_voxel_color_id(x, y, z);
                 MatColorId chunk_data_mat_color_id =
                     chunk_data.get_voxel_color_id(x, y, z);
@@ -238,7 +237,7 @@ int
 NoiseTest() {
     quill::Logger* logger = logging::main_logger;
 
-    terrain::generation::FractalNoise noise(1, 1, 3);
+    world::terrain::generation::FractalNoise noise(1, 1, 3);
 
     LOG_INFO(logger, "Noise double: {}", noise.get_noise(1, 1));
     LOG_INFO(logger, "Noise double again: {}", noise.get_noise(1, 1));
@@ -247,25 +246,32 @@ NoiseTest() {
     LOG_INFO(logger, "Noise double: {}", noise.get_noise(4, 1));
 
     LOG_INFO(
-        logger, "Random double: {}", terrain::generation::Noise::get_double(1, 3, 3)
+        logger, "Random double: {}",
+        world::terrain::generation::Noise::get_double(1, 3, 3)
     );
     LOG_INFO(
-        logger, "Random double: {}", terrain::generation::Noise::get_double(2, 3, 3)
+        logger, "Random double: {}",
+        world::terrain::generation::Noise::get_double(2, 3, 3)
     );
     LOG_INFO(
-        logger, "Random double: {}", terrain::generation::Noise::get_double(3, 3, 3)
+        logger, "Random double: {}",
+        world::terrain::generation::Noise::get_double(3, 3, 3)
     );
     LOG_INFO(
-        logger, "Random double: {}", terrain::generation::Noise::get_double(4, 3, 3)
+        logger, "Random double: {}",
+        world::terrain::generation::Noise::get_double(4, 3, 3)
     );
     LOG_INFO(
-        logger, "Random double: {}", terrain::generation::Noise::get_double(5, 3, 3)
+        logger, "Random double: {}",
+        world::terrain::generation::Noise::get_double(5, 3, 3)
     );
     LOG_INFO(
-        logger, "Random double: {}", terrain::generation::Noise::get_double(6, 3, 3)
+        logger, "Random double: {}",
+        world::terrain::generation::Noise::get_double(6, 3, 3)
     );
     LOG_INFO(
-        logger, "Random double: {}", terrain::generation::Noise::get_double(7, 3, 3)
+        logger, "Random double: {}",
+        world::terrain::generation::Noise::get_double(7, 3, 3)
     );
 
     return 0;
@@ -336,7 +342,7 @@ path_finder_test(const argh::parser& cmdl) {
     }
 
     constexpr ColorId path_color_id = 5;
-    const terrain::material_t* path_mat = world.get_material(DEBUG_MATERIAL);
+    const world::terrain::material_t* path_mat = world.get_material(DEBUG_MATERIAL);
     for (const TerrainOffset3 tile : tile_path.value()) {
         world.get_terrain_main().get_tile(tile)->set_material(path_mat, path_color_id);
     }

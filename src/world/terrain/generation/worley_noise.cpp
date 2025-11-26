@@ -2,6 +2,8 @@
 
 #include <numbers>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -98,3 +100,5 @@ AlternativeWorleyNoise::modified_cos_(
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world

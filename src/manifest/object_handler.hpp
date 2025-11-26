@@ -219,7 +219,7 @@ class ObjectHandler {
      */
     void read_biome(const manifest::descriptor_t& biome_descriptor);
 
-    std::shared_ptr<terrain::generation::Biome> get_biome(const std::string& biome_id);
+    std::shared_ptr<world::Biome> get_biome(const std::string& biome_id);
 
     [[nodiscard]] inline const auto
     begin() const {

@@ -31,6 +31,8 @@
 #include <unordered_set>
 #include <vector>
 
+namespace world {
+
 namespace terrain {
 
 namespace generation {
@@ -295,3 +297,5 @@ class PlantMap {
 } // namespace generation
 
 } // namespace terrain
+
+} // namespace world
