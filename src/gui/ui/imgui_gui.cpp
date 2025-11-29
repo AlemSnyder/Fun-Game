@@ -11,6 +11,7 @@
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
+#include "../the_buttons/user_interface.hpp"
 #include "gui/scene/input.hpp"
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
@@ -18,6 +19,7 @@
 #include "manifest/object_handler.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "user_interface_setup.hpp"
 #include "util/mesh.hpp"
 #include "world/climate.hpp"
 #include "world/world.hpp"
@@ -100,6 +102,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     Scene main_scene(mode->width, mode->height, shadow_map_size, controller);
     setup(main_scene, shader_handler, world, climate);
 
+    the_buttons::UserInterface main_interface(shader_handler);
+    setup(main_interface);
+
     //! Main loop
 
     while (!glfwWindowShouldClose(window)) {
@@ -135,6 +140,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
         // "render" scene to the screen
         main_scene.copy_to_window(window_width, window_height);
+
+        // render interface to screen
+        main_interface.update(window_width, window_height);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();

@@ -28,6 +28,7 @@
 #include "gui/render/gpu_data/shadow_map.hpp"
 #include "gui/render/graphics_shaders/render_types.hpp"
 #include "gui/render/structures/screen_data.hpp"
+#include "gui/the_buttons/bordered_window.hpp"
 #include "helio.hpp"
 
 #include <GLFW/glfw3.h>

@@ -42,7 +42,7 @@ class Inputs {
      * @param int action GLFW action one of GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
      * @param int mods GLFW mods enum
      */
-    void
+    virtual void
     handle_key_event_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int key,
         [[maybe_unused]] int scancode, [[maybe_unused]] int action,
