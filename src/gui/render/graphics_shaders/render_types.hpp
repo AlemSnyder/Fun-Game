@@ -43,6 +43,14 @@ class FrameBuffer {
     render(screen_size_t width, screen_size_t height, GLuint frame_buffer) = 0;
 };
 
+class ScreenSection {
+ public:
+    virtual void render(
+        screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+        screen_size_t height, GLuint frame_buffer, gpu_data::GPUData* data
+    ) = 0;
+};
+
 // blume
 
 /**

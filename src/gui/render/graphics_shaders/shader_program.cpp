@@ -31,19 +31,45 @@ namespace gui {
 namespace shader {
 
 void
-Render_Base::render(screen_size_t width, screen_size_t height, GLuint framebuffer_ID) {
+Render_Base::render(
+    screen_size_t width, screen_size_t height, GLuint framebuffer_ID,
+    screen_size_t x_start, screen_size_t y_start
+) {
     // Render to the screen
     gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
 
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
-    glViewport(0, 0, width, height);
+    glViewport(x_start, y_start, width, height);
 
     opengl_program_.use_program();
 
     setup_();
 
     opengl_program_.bind_uniforms();
+}
+
+void
+ShaderProgram_Windows::render(
+    screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+    screen_size_t height, GLuint framebuffer_ID, gpu_data::GPUData* data
+) {
+    Render_Base::render(width, height, framebuffer_ID, x_start, y_start);
+
+    if (!data->do_render()) {
+        return;
+    }
+
+    data->bind();
+
+    // Draw the triangles !
+    glDrawArrays(
+        GL_TRIANGLE_STRIP,       // mode
+        0,                       // start
+        data->get_num_vertices() // number of vertices
+    );
+
+    data->release();
 }
 
 void

@@ -125,10 +125,28 @@ class Render_Base {
     }
 
     void virtual render(
-        screen_size_t width, screen_size_t height, GLuint framebuffer_ID
+        screen_size_t width, screen_size_t height, GLuint framebuffer_ID,
+        screen_size_t x_start = 0, screen_size_t y_start = 0
     );
 
     inline virtual ~Render_Base() {}
+};
+
+class ShaderProgram_Windows :
+    public virtual Render_Base,
+    public virtual render_to::ScreenSection {
+ public:
+    inline ShaderProgram_Windows(
+        shader::Program& shader_program, const std::function<void()> setup_commands
+    ) :
+        Render_Base(shader_program, setup_commands) {}
+
+    inline virtual ~ShaderProgram_Windows() {}
+
+    void virtual render(
+        screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+        screen_size_t height, GLuint framebuffer_ID, gpu_data::GPUData* data
+    ) override;
 };
 
 /**

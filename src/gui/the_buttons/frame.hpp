@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../render/gpu_data/data_types.hpp"
 #include "gui/scene/input.hpp"
 #include "types.hpp"
 
@@ -12,7 +13,7 @@ namespace gui {
 
 namespace the_buttons {
 
-class Frame : public virtual scene::Inputs {
+class Frame : public virtual scene::Inputs, public virtual gpu_data::GPUData {
  private:
     screen_size_t x_position;
     screen_size_t y_position;
@@ -38,6 +39,7 @@ class Frame : public virtual scene::Inputs {
     void on_select();
 
     void on_end_select();
+    virtual std::array<screen_size_t, 4> get_bounding_box() const = 0;
 
     /**
      * @brief Handle key input including mouse keys
@@ -154,12 +156,12 @@ class Frame : public virtual scene::Inputs {
     cleanup([[maybe_unused]] GLFWwindow* window) {}
 };
 
-class UI_Text : public virtual Frame {
- private:
-    std::string text_;
-};
+// class UI_Text : public virtual Frame {
+//  private:
+//     std::string text_;
+// };
 
-class Button : public virtual Frame {};
+// class Button : public virtual Frame {};
 
 } // namespace the_buttons
 
