@@ -10,7 +10,8 @@
 namespace gui {
 namespace the_buttons {
 
-UserInterface::UserInterface(shader::ShaderHandler& shader_handler) {
+UserInterface::UserInterface(shader::ShaderHandler& shader_handler) :
+    frame_size_uniform_(std::make_shared<render::FrameSizeUniform>()) {
     shader::Program& window_render_program = shader_handler.load_program(
         "Windows", files::get_resources_path() / "shaders" / "overlay" / "Widget.vert",
         files::get_resources_path() / "shaders" / "overlay" / "FramedWindow.frag"
@@ -27,6 +28,7 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler) {
 
     // uniforms
     // stars_program.set_uniform(matrix_view_projection_uniform, "MVP");
+    window_render_program.set_uniform(frame_size_uniform_, "frame_size");
 
     // windows
     window_pipeline_ = std::make_shared<shader::ShaderProgram_Windows>(
@@ -48,6 +50,9 @@ UserInterface::update(screen_size_t width, screen_size_t height) {
         }
         // frame->update_position();
         const auto bounding_box = frame->get_bounding_box();
+        frame_size_uniform_->set_frame_size(glm::ivec2(
+            bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1]
+        ));
         window_pipeline_->render(
             bounding_box[0], bounding_box[1], bounding_box[2], bounding_box[3], 0,
             frame.get()

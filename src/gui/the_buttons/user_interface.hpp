@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../render/graphics_shaders/shader_program.hpp"
+#include "../render/structures/uniform_types.hpp"
 #include "frame.hpp"
 #include "gui/render/structures/uniform_types.hpp"
 
@@ -13,6 +14,7 @@ namespace the_buttons {
 class UserInterface {
  private:
     // uniform
+    std::shared_ptr<render::FrameSizeUniform> frame_size_uniform_;
 
     // widget renderer
     std::shared_ptr<shader::ShaderProgram_Windows> window_pipeline_;

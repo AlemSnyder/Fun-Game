@@ -54,11 +54,10 @@ ShaderProgram_Windows::render(
     screen_size_t x_start, screen_size_t y_start, screen_size_t width,
     screen_size_t height, GLuint framebuffer_ID, gpu_data::GPUData* data
 ) {
-    Render_Base::render(width, height, framebuffer_ID, x_start, y_start);
-
     if (!data->do_render()) {
         return;
     }
+    Render_Base::render(width, height, framebuffer_ID, x_start, y_start);
 
     data->bind();
 

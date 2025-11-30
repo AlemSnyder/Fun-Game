@@ -327,6 +327,32 @@ class StarRotationUniform : public shader::UniformExecutor {
     }
 };
 
+class FrameSizeUniform : public shader::UniformExecutor {
+ private:
+    glm::ivec2 frame_size_;
+
+ public:
+    FrameSizeUniform() :
+        UniformExecutor(gpu_data::GPUArayType::INT_VEC2), frame_size_(0, 0) {}
+
+    inline void
+    set_frame_size(glm::ivec2 frame_size) {
+        frame_size_ = frame_size;
+    }
+
+    inline virtual ~FrameSizeUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, value {}, {} being initialized.",
+            uniform_ID, frame_size_.x, frame_size_.y
+        );
+
+        glUniform2i(uniform_ID, frame_size_.x, frame_size_.y);
+    }
+};
+
 } // namespace render
 
 } // namespace gui
