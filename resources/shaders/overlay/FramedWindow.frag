@@ -5,6 +5,7 @@ layout(location = 0) out vec3 color;
 
 in vec2 UV; // in pixels
 uniform ivec2 frame_size;
+uniform sampler2D window_texture;
 
 void
 main(){

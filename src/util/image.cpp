@@ -98,6 +98,24 @@ HALFFloatPolychromeAlphaImage::get_color(size_t i, size_t j) const {
 }
 #endif
 
+png_byte
+ByteMonochromeImage::get_color(size_t i, size_t j) const {
+    assert(i < width_ && j < height_ && "Position must be within image.");
+    return read_data_byte<png_byte, 1>(data_, i * height_ + j)[0];
+}
+
+std::array<png_byte, 3>
+BytePolychromeImage::get_color(size_t i, size_t j) const {
+    assert(i < width_ && j < height_ && "Position must be within image.");
+    return read_data_byte<png_byte, 3>(data_, i * height_ + j);
+}
+
+std::array<png_byte, 4>
+BytePolychromeAlphaImage::get_color(size_t i, size_t j) const {
+    assert(i < width_ && j < height_ && "Position must be within image.");
+    return read_data_byte<png_byte, 4>(data_, i * height_ + j);
+}
+
 } // namespace image
 
 } // namespace util

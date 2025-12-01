@@ -353,6 +353,56 @@ class FrameSizeUniform : public shader::UniformExecutor {
     }
 };
 
+class UIScaleUniform : public shader::UniformExecutor {
+ private:
+    uint8_t ui_scale_;
+
+ public:
+    UIScaleUniform(uint8_t scale) :
+        UniformExecutor(gpu_data::GPUArayType::UNSIGNED_BYTE), ui_scale_(scale) {}
+
+    inline void
+    set_ui_scale(uint8_t ui_scale) {
+        ui_scale_ = ui_scale;
+    }
+
+    inline virtual ~UIScaleUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, value {} being initialized.",
+            uniform_ID, ui_scale_
+        );
+
+        glUniform1i(uniform_ID, ui_scale_);
+    }
+};
+
+class TextureRegionsUniform : public shader::UniformExecutor {
+ private:
+    std::array<int, 36> texture_location_;
+
+ public:
+    TextureRegionsUniform() : UniformExecutor(gpu_data::GPUArayType::UNSIGNED_BYTE) {}
+
+    inline void
+    set_texture_regions(std::array<int, 36> texture_location) {
+        texture_location_ = texture_location;
+    }
+
+    inline virtual ~TextureRegionsUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform1iv(uniform_ID, 36, texture_location_.data());
+    }
+};
+
 } // namespace render
 
 } // namespace gui

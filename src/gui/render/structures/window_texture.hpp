@@ -5,6 +5,7 @@
 #include "gui/render/gpu_data/vertex_array_object.hpp"
 #include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "screen_data.hpp"
+#include "util/image.hpp"
 
 #include <filesystem>
 
@@ -23,6 +24,8 @@ class WindowTexture : public virtual gpu_data::GPUData {
     gpu_data::VertexBufferObject<glm::vec3> gl_positions_;
     gpu_data::VertexBufferObject<glm::vec2> screen_positions_;
     unsigned int num_vertices_;
+
+    gpu_data::Texture2D border_texture_;
 
  public:
     /**
@@ -49,7 +52,7 @@ class WindowTexture : public virtual gpu_data::GPUData {
      * @brief Construct a new Screen Data object, default constructor
      *
      */
-    WindowTexture();
+    WindowTexture(std::shared_ptr<util::image::Image> image);
 
     inline virtual ~WindowTexture() {}
 
@@ -66,6 +69,7 @@ class WindowTexture : public virtual gpu_data::GPUData {
     inline virtual void
     bind() const {
         vertex_array_object_.bind();
+        border_texture_.bind(0);
     };
 
     inline virtual void

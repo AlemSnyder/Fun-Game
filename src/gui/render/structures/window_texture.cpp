@@ -1,6 +1,8 @@
 #include "window_texture.hpp"
 
 #include "logging.hpp"
+#include "util/files.hpp"
+#include "util/png_image.hpp"
 
 #include <glm/glm.hpp>
 
@@ -10,7 +12,7 @@ namespace gui {
 
 namespace render {
 
-WindowTexture::WindowTexture() :
+WindowTexture::WindowTexture(std::shared_ptr<util::image::Image> image) :
     // clang-format off
     gl_positions_{
         glm::vec3(-1, -1, 0),
@@ -24,7 +26,7 @@ WindowTexture::WindowTexture() :
         glm::vec2(1, -1),
         glm::vec2(0, 0)},
     // clang-format on
-    num_vertices_(4) {
+    num_vertices_(4), border_texture_(image) {
     LOG_DEBUG(logging::main_logger, "Initializing a WindowTexture");
     GlobalContext& context = GlobalContext::instance();
     context.push_opengl_task([this]() {
