@@ -26,7 +26,16 @@ WindowTexture::WindowTexture(std::shared_ptr<util::image::Image> image) :
         glm::vec2(1, -1),
         glm::vec2(0, 0)},
     // clang-format on
-    num_vertices_(4), border_texture_(image) {
+    num_vertices_(4),
+    border_texture_(
+        image,
+        gui::gpu_data::TextureSettings{
+            .internal_format = gui::gpu_data::GPUPixelStorageFormat::RGBA8UI,
+            .read_format = gui::gpu_data::GPUPixelReadFormat::RGBA_INTEGER,
+            .type = gui::gpu_data::GPUPixelType::UNSIGNED_BYTE,
+            .min_filter = GL_NEAREST,
+            .mag_filter = GL_NEAREST}
+    ) {
     LOG_DEBUG(logging::main_logger, "Initializing a WindowTexture");
     GlobalContext& context = GlobalContext::instance();
     context.push_opengl_task([this]() {

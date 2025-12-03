@@ -166,7 +166,10 @@ Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
         static_cast<GLenum>(settings_.read_format), static_cast<GLenum>(settings_.type),
         image->data()
     );
-    glGenerateMipmap(GL_TEXTURE_2D);
+    if (settings_.type == GPUPixelType::FLOAT
+        || settings_.type == GPUPixelType::HALF_FLOAT) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
 }
 
 } // namespace gpu_data

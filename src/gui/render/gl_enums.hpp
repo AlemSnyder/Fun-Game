@@ -150,7 +150,9 @@ enum class GPUArayType : GLenum {
 enum class GPUPixelType : GLenum {
     FLOAT = GL_FLOAT,           // float (32)
     HALF_FLOAT = GL_HALF_FLOAT, // float16
-    NONE = 0,                   // render buffers have no internal type
+    UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
+    NONE = 0, // render buffers have no internal type
+
 };
 
 enum class GPUPixelStorageFormat : GLenum {
@@ -161,7 +163,12 @@ enum class GPUPixelStorageFormat : GLenum {
     DEPTH_32 = GL_DEPTH_COMPONENT32,
     RGB = GL_RGB,
     RGB8 = GL_RGB8,
-    RGBA = GL_RGBA
+    RGBA = GL_RGBA,
+    RGBA8 = GL_RGBA8,
+
+    RGBA8I = GL_RGBA8I,
+    RGBA8UI = GL_RGBA8UI,
+    //    RGBA8I = GL_RGBA8I
 };
 
 enum class GPUPixelReadFormat : GLenum {
@@ -176,6 +183,7 @@ enum class GPUPixelReadFormat : GLenum {
     RGBA = GL_RGBA,
     BGRA = GL_BGRA,
 
+    RGBA_INTEGER = GL_RGBA_INTEGER,
 };
 
 /**

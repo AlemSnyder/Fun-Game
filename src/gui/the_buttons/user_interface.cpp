@@ -8,14 +8,15 @@
 #include "manifest/object_handler.hpp"
 
 namespace gui {
+
 namespace the_buttons {
 
 UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_scale) :
     frame_size_uniform_(std::make_shared<render::FrameSizeUniform>()),
     ui_scale_uniform_(std::make_shared<render::UIScaleUniform>(ui_scale)),
-    frame_texture_uniform_(
-        std::make_shared<render::TextureUniform>(gpu_data::GPUArayType::SAMPLER_2D, 0)
-    ),
+    frame_texture_uniform_(std::make_shared<render::TextureUniform>(
+        gpu_data::GPUArayType::UNSIGNED_INT_SAMPLER_2D, 0
+    )),
     texture_regions_(std::make_shared<render::TextureRegionsUniform>()) {
     shader::Program& window_render_program = shader_handler.load_program(
         "Windows", files::get_resources_path() / "shaders" / "overlay" / "Widget.vert",
@@ -47,7 +48,7 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     // stars_program.set_uniform(matrix_view_projection_uniform, "MVP");
     window_render_program.set_uniform(frame_size_uniform_, "frame_size");
     window_render_program.set_uniform(ui_scale_uniform_, "ui_scale");
-    window_render_program.set_uniform(frame_texture_uniform_, "texture");
+    window_render_program.set_uniform(frame_texture_uniform_, "window_texture");
     window_render_program.set_uniform(texture_regions_, "texture_locations");
 
     // windows
