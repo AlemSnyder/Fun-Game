@@ -359,7 +359,7 @@ class UIScaleUniform : public shader::UniformExecutor {
 
  public:
     UIScaleUniform(uint8_t scale) :
-        UniformExecutor(gpu_data::GPUArayType::UNSIGNED_BYTE), ui_scale_(scale) {}
+        UniformExecutor(gpu_data::GPUArayType::INT), ui_scale_(scale) {}
 
     inline void
     set_ui_scale(uint8_t ui_scale) {
@@ -375,7 +375,7 @@ class UIScaleUniform : public shader::UniformExecutor {
             uniform_ID, ui_scale_
         );
 
-        glUniform1i(uniform_ID, ui_scale_);
+        glUniform1i(uniform_ID, int(ui_scale_));
     }
 };
 
@@ -384,7 +384,7 @@ class TextureRegionsUniform : public shader::UniformExecutor {
     std::array<int, 36> texture_location_;
 
  public:
-    TextureRegionsUniform() : UniformExecutor(gpu_data::GPUArayType::UNSIGNED_BYTE) {}
+    TextureRegionsUniform() : UniformExecutor(gpu_data::GPUArayType::INT) {}
 
     inline void
     set_texture_regions(std::array<int, 36> texture_location) {

@@ -62,7 +62,7 @@ class BorderedWindow : public virtual Frame {
 
     inline virtual std::array<screen_size_t, 4>
     get_bounding_box() const {
-        return {70, 70, 120, 120};
+        return {70, 70, 230, 230};
     }
 };
 

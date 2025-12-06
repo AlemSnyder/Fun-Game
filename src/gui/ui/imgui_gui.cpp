@@ -102,7 +102,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     Scene main_scene(mode->width, mode->height, shadow_map_size, controller);
     setup(main_scene, shader_handler, world, climate);
 
-    the_buttons::UserInterface main_interface(shader_handler, 8);
+    the_buttons::UserInterface main_interface(shader_handler, 4);
     setup(main_interface);
 
     //! Main loop
