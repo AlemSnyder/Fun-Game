@@ -84,6 +84,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                                              : gui::scene::KeyMapping();
     std::shared_ptr<scene::Controls> controller =
         std::make_shared<scene::Controls>(key_mapping);
+    scene::InputHandler::imgui_active = true;
     scene::InputHandler::set_window(window);
     scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
     ));

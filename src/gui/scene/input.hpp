@@ -165,6 +165,9 @@ class Inputs {
 class InputHandler {
     // somehow the plan was to only let GlobalContext set the window
 
+ public:
+    static bool imgui_active;
+
  protected:
     // so realistically we would have a unordered map that maps the window
     // but im not making multiple windows

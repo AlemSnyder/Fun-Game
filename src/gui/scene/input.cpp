@@ -10,6 +10,7 @@ namespace scene {
 GLFWwindow* InputHandler::window_ = nullptr;
 std::shared_ptr<Inputs> InputHandler::forward_inputs_ = nullptr;
 bool InputHandler::escape_pressed_ = false;
+bool InputHandler::imgui_active = false;
 
 void
 InputHandler::set_window(GLFWwindow* window) {
@@ -45,6 +46,9 @@ InputHandler::forward_inputs_to(std::shared_ptr<Inputs> forward_to) {
 
 bool
 InputHandler::imgui_capture() {
+    if (!imgui_active) {
+        return false;
+    }
     ImGuiIO& io = ImGui::GetIO();
     return (io.WantCaptureKeyboard || io.WantCaptureMouse || io.WantTextInput);
 }

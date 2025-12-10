@@ -30,8 +30,69 @@ struct background_result {
     std::unique_ptr<world::Climate> climate;
 };
 
+// read settings from command line
 int
 graphics_main(const argh::parser& cmdl) {
+    size_t seed;
+    cmdl("seed", SEED) >> seed;
+    size_t size;
+    cmdl("size", STRESS_TEST_SIZE) >> size;
+    std::string biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
+    bool imgui_debug = cmdl[{"-g", "--imgui"}];
+
+    intro_scene::result new_game_settings = intro_scene::NewGame{
+        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug};
+
+    return graphics_main(new_game_settings);
+}
+
+int
+graphics_main(intro_scene::result result) {
+    LOG_WARNING(logging::main_logger, "Only kinda implemented");
+
+    // global context and logging are already initalized.
+
+    // read commands from file
+    // Things like screen size
+    // full screen
+    // all graphics/audio settings
+    // not that bad, make a settings header and define structures in there.
+
+    //    intro_scene::result result = intro_scene::IntroPage();
+
+    while (true) {
+        switch (result.index()) {
+            case 0: // exiting
+                return std::get<intro_scene::Exit>(result).status;
+            case 1: // intro page
+                result = intro_window();
+                break;
+            case 2: // new world with settings
+                {
+                    // auto settings = std::get<intro_scene::NewGame>(result);
+                    result = start_game(result);
+                }
+                break;
+            case 3: // from save with file path
+                {
+                    // auto path = std::get<intro_scene::LoadGame>(result);
+                    result = start_game(result);
+                }
+                break;
+            default:
+                LOG_WARNING(
+                    logging::main_logger, "NOT IMPLEMENTED/Something went wrong"
+                );
+                break;
+        }
+    }
+
+    return 1;
+}
+
+intro_scene::result
+start_game(intro_scene::result result) {
     // add window width and height?
 
     screen_size_t window_width = 1280;
@@ -44,7 +105,7 @@ graphics_main(const argh::parser& cmdl) {
         gui::setup_opengl(window_width, window_height);
     if (!opt_window) {
         LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
-        return 1;
+        return intro_scene::Exit(1);
     }
     GLFWwindow* window = opt_window.value();
     gui::setup_opengl_logging();
@@ -79,48 +140,46 @@ graphics_main(const argh::parser& cmdl) {
     splash_screen_pipeline->data.push_back(screen_data.get());
 
     // background task {
-
-    // Think about this later
-    // need to read biomes from manifest
-    // then in background need to mesh things
-    // then send those things back to main thread
-    // the main thread loads meshes onto gpu and renders to screen
-    // Read manifest
-    //    util::load_manifest();
-
     GlobalContext& global_context = GlobalContext::instance();
-
     // don't forget ot load ScreenData onto gpu
     global_context.run_opengl_queue();
-
-    size_t seed;
-    cmdl("seed", SEED) >> seed;
-    size_t size;
-    cmdl("size", STRESS_TEST_SIZE) >> size;
-    std::string biome_name;
-    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
-
     manifest::ObjectHandler object_handler;
-    auto load_manifests_future =
-        global_context.submit_task([&object_handler, biome_name, size, seed]() {
-            background_result result;
 
-            int manifest_result = object_handler.load_all_manifests<true>();
+    std::future<background_result> load_manifests_future;
+    bool imgui_debug;
 
-            result.result = manifest_result;
+    if (result.index() == 2) { // new game
+        std::string biome_name = std::get<intro_scene::NewGame>(result).biome;
+        size_t size = std::get<intro_scene::NewGame>(result).size;
+        size_t seed = std::get<intro_scene::NewGame>(result).seed;
+        imgui_debug = std::get<intro_scene::NewGame>(result).DearIMGUI;
 
-            if (result.result == 1) {
+        load_manifests_future =
+            global_context.submit_task([&object_handler, biome_name, size, seed]() {
+                background_result result;
+
+                int manifest_result = object_handler.load_all_manifests<true>();
+
+                result.result = manifest_result;
+
+                if (result.result == 1) {
+                    return result;
+                }
+
+                result.world = std::make_unique<world::World>(
+                    &object_handler, biome_name, size, size, seed
+                );
+                result.world->generate_plants();
+                result.climate = std::make_unique<world::Climate>();
+
                 return result;
-            }
+            });
 
-            result.world = std::make_unique<world::World>(
-                &object_handler, biome_name, size, size, seed
-            );
-            result.world->generate_plants();
-            result.climate = std::make_unique<world::Climate>();
-
-            return result;
-        });
+    } else if (result.index() == 2) { // load game
+        LOG_ERROR(logging::main_logger, "Loading World Not Implemented (yet*)");
+        return intro_scene::IntroPage();
+        // not implemented
+    }
 
     // generate options either from command line inputs
     // or from gui
@@ -149,66 +208,89 @@ graphics_main(const argh::parser& cmdl) {
 
     if (future_value.result == 1) {
         LOG_ERROR(logging::main_logger, "Error Loading. Exiting.");
-        return 1;
+        return intro_scene::Exit(1);
     }
 
     world::World& world = *future_value.world;
     world::Climate& climate = *future_value.climate;
 
     // if need gui start gui
-    bool imgui_debug = cmdl[{"-g", "--imgui"}];
     if (imgui_debug) {
-        return gui::imgui_entry(window, world, climate);
+        int gui_result = gui::imgui_entry(window, world, climate);
+        return intro_scene::Exit(gui_result);
     } else {
         // if don't then strate to opengl
-        return gui::opengl_entry(window, world, climate);
+        int gui_result = gui::opengl_entry(window, world, climate);
+        return intro_scene::Exit(gui_result);
     }
 
     glDeleteVertexArrays(1, &VertexArrayID);
 
-    return 0;
+    return intro_scene::Exit(0);
 }
 
-int
-graphics_main() {
-    LOG_WARNING(logging::main_logger, "Only kinda implemented");
+intro_scene::result
+intro_window() {
+    screen_size_t window_width = 1280;
+    screen_size_t window_height = 800;
 
-    // global context and logging are already initalized.
+    screen_size_t display_w, display_h;
+    // init graphics
 
-    // read commands from file
-    // Things like screen size
-    // full screen
-    // all graphics/audio settings
-    // not that bad, make a settings header and define structures in there.
+    std::optional<GLFWwindow*> opt_window =
+        gui::setup_opengl(window_width, window_height);
+    if (!opt_window) {
+        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
+        return intro_scene::Exit(1);
+    }
+    GLFWwindow* window = opt_window.value();
+    gui::setup_opengl_logging();
 
-    intro_scene::result result = intro_scene::IntroPage();
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    gui::VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
-    while (true) {
-        switch (result.index()) {
-            case 0: // intro page
-                result = intro_window();
-                break;
-            case 1: // new world with settings
-                {
-                    auto settings = std::get<intro_scene::NewGame>(result);
-                    result = graphics_main(settings);
-                }
-                break;
-            case 2: // from save with file path
-                {
-                    auto path = std::get<intro_scene::LoadGame>(result);
-                    result = graphics_main(path);
-                }
-                break;
-            case 3: // exiting
-                return std::get<intro_scene::Exit>(result).status;
-            default:
-                LOG_WARNING(
-                    logging::main_logger, "NOT IMPLEMENTED/Something went wrong"
-                );
-                break;
-        }
+    // Start Splash screen
+    gui::shader::ShaderHandler temp_handler;
+    gui::shader::Program& splash_screen_program = temp_handler.load_program(
+        "Splash Screen", files::get_resources_path() / "shaders" / "Passthrough.vert",
+        files::get_resources_path() / "shaders" / "Blue.frag"
+    );
+
+    std::function<void()> splash_screen_setup = []() {
+        // Draw over everything
+        glDisable(GL_CULL_FACE);
+        // The sky has no depth
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+    };
+
+    auto splash_screen_pipeline = std::make_shared<gui::shader::ShaderProgram_Standard>(
+        splash_screen_program, splash_screen_setup
+    );
+
+    auto screen_data = std::make_shared<gui::gpu_data::ScreenData>();
+
+    splash_screen_pipeline->data.push_back(screen_data.get());
+
+    // background task {
+    GlobalContext& global_context = GlobalContext::instance();
+    // don't forget ot load ScreenData onto gpu
+    global_context.run_opengl_queue();
+
+    while (!glfwWindowShouldClose(window)) {
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+
+        // gui::FrameBufferHandler::instance().bind_fbo(0);
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // glViewport(0, 0, display_w, display_h);
+
+        splash_screen_pipeline->render(display_w, display_h, 0);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
-    return 1;
+    return intro_scene::Exit(0);
 }

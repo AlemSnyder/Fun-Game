@@ -23,6 +23,7 @@
 
 #include <argh.h>
 
+#include <filesystem>
 #include <variant>
 
 /**
@@ -31,13 +32,6 @@
  * @param const argh::parser& cmdl command line arguments
  */
 int graphics_main(const argh::parser& cmdl);
-
-/**
- * @brief Start Graphics window
- *
- * @warning NOT IMPLEMENTED
- */
-int graphics_main();
 
 namespace intro_scene {
 
@@ -56,15 +50,18 @@ struct IntroPage {};
 
 struct NewGame {
     std::string biome;
-    int seed;
+    size_t seed;
+    size_t size;
     // map location;
     // starting something
     // difficulty etc
     // int difficulty;
+    bool DearIMGUI;
 };
 
 struct LoadGame {
     std::filesystem::path game_file_path;
+    bool DearIMGUI;
 };
 
 using result = std::variant<Exit, IntroPage, NewGame, LoadGame>;
@@ -73,6 +70,14 @@ using result = std::variant<Exit, IntroPage, NewGame, LoadGame>;
 
 intro_scene::result intro_window();
 
-intro_scene::result graphics_main(intro_scene::NewGame);
+// should this be templated who knows?
+intro_scene::result start_game(intro_scene::result);
 
-intro_scene::result graphics_main(intro_scene::LoadGame);
+// intro_scene::result graphics_main(intro_scene::LoadGame);
+
+/**
+ * @brief Start Graphics window
+ *
+ *
+ */
+int graphics_main(intro_scene::result result = intro_scene::IntroPage());
