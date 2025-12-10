@@ -80,8 +80,8 @@ UserInterface::update(screen_size_t width, screen_size_t height) {
             bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1]
         ));
         window_pipeline_->render(
-            bounding_box[0], bounding_box[1], bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0,
-            frame.get()
+            bounding_box[0], bounding_box[1], bounding_box[2] - bounding_box[0],
+            bounding_box[3] - bounding_box[1], 0, frame.get()
         );
     }
 }

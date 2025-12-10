@@ -23,6 +23,8 @@
 
 #include <argh.h>
 
+#include <variant>
+
 /**
  * @brief Start Graphics window
  *
@@ -36,3 +38,41 @@ int graphics_main(const argh::parser& cmdl);
  * @warning NOT IMPLEMENTED
  */
 int graphics_main();
+
+namespace intro_scene {
+
+enum return_to {
+    EXIT,
+    INTRO_SCENE,
+    NEW_GAME,
+    LOAD_GAME,
+};
+
+struct Exit {
+    int status = 0;
+};
+
+struct IntroPage {};
+
+struct NewGame {
+    std::string biome;
+    int seed;
+    // map location;
+    // starting something
+    // difficulty etc
+    // int difficulty;
+};
+
+struct LoadGame {
+    std::filesystem::path game_file_path;
+};
+
+using result = std::variant<Exit, IntroPage, NewGame, LoadGame>;
+
+} // namespace intro_scene
+
+intro_scene::result intro_window();
+
+intro_scene::result graphics_main(intro_scene::NewGame);
+
+intro_scene::result graphics_main(intro_scene::LoadGame);
