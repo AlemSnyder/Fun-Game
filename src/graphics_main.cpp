@@ -42,8 +42,7 @@ graphics_main(const argh::parser& cmdl) {
     bool imgui_debug = cmdl[{"-g", "--imgui"}];
 
     intro_scene::result new_game_settings = intro_scene::NewGame{
-        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug
-    };
+        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug};
 
     return graphics_main(new_game_settings);
 }

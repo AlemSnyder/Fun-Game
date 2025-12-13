@@ -145,7 +145,7 @@ class ShaderProgram_Windows :
 
     void virtual render(
         screen_size_t x_start, screen_size_t y_start, screen_size_t width,
-        screen_size_t height, GLuint framebuffer_ID, gpu_data::GPUData* data
+        screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUData* data
     ) override;
 };
 

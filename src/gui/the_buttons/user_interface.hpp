@@ -11,7 +11,7 @@
 namespace gui {
 namespace the_buttons {
 
-class UserInterface {
+class UserInterface : public virtual scene::Inputs {
  private:
     // uniform
     std::shared_ptr<render::FrameSizeUniform> frame_size_uniform_;
@@ -23,6 +23,13 @@ class UserInterface {
     std::shared_ptr<shader::ShaderProgram_Windows> window_pipeline_;
 
     std::list<std::shared_ptr<Frame>> frames_;
+
+    std::shared_ptr<Frame> selected_frame_; // widget?
+
+    [[nodiscard]] std::pair<const std::shared_ptr<Frame>, const std::shared_ptr<Frame>>
+    get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y) const;
+
+    void reselect_frame(GLFWwindow* window);
 
  public:
     UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_scale);
@@ -39,6 +46,110 @@ class UserInterface {
         auto pos = frames_.begin();
         frames_.insert(pos, frame);
     }
+
+    void render_frame(
+        const Frame& frame, screen_size_t x_frame_position,
+        screen_size_t y_frame_position
+    ) const;
+
+    /**
+     * @brief Handle key input including mouse keys
+     *
+     * @param GLFWwindow* window window event came from
+     * @param int key GLFW key enum
+     * @param int scancode GLFW scancode enum
+     * @param int action GLFW action one of GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
+     * @param int mods GLFW mods enum
+     */
+    virtual void handle_key_event_input(
+        GLFWwindow* window, int key, int scancode, int action, int mods
+    );
+
+    /**
+     * @brief Handle text input
+     *
+     * @param GLFWwindow* window window to listen on
+     * @param unsigned int codepoint unicode 32 character.
+     */
+
+    virtual void handle_text_input_input(GLFWwindow* window, unsigned int codepoint);
+
+    /**
+     * @brief Handle mouse movement events.
+     *
+     * @param GLFWwindow* window window to listen on
+     * @param double xpos x position in window coordinates
+     * @param double ypos y position in window coordinates.
+     */
+    virtual void handle_mouse_event_input(GLFWwindow* window, double xpos, double ypos);
+
+    /**
+     * @brief Handle mouse enter window events
+     *
+     * @param GLFWwindow* window window to listen on
+     * @param int entered 1 if the curser entered the window, 0 if it exited.
+     */
+    virtual void handle_mouse_enter_input(GLFWwindow* window, int entered);
+
+    /**
+     * @brief Handle mouse enter window events
+     *
+     * @param GLFWwindow* window window to listen on
+     * @param int button
+     * @param int action
+     * @param int mods
+     */
+    virtual void
+    handle_mouse_button_input(GLFWwindow* window, int button, int action, int mods);
+
+    /**
+     * @brief Handle mouse scroll events
+     *
+     * @param GLFWwindow* window window to listen on
+     * @param double xoffset x offset
+     * @param double yoffset y offset (usually 0)
+     */
+    virtual void
+    handle_mouse_scroll_input(GLFWwindow* window, double xoffset, double yoffset);
+
+    /**
+     * @brief Handle joystick event
+     *
+     * @param int jid joystick id
+     * @param int event
+     */
+    virtual void handle_joystick_input(int jid, int event);
+
+    /**
+     * @brief Handle file drop event
+     *
+     * @param GLFWwindow* window window to listen on
+     * @param int count number of files passed
+     * @param const char** paths file paths
+     */
+    virtual void
+    handle_file_drop_input(GLFWwindow* window, int count, const char** paths);
+
+    /**
+     * @brief Handle all pooled inputs
+     *
+     * @param GLFWwindow* window window
+     */
+    virtual void handle_pooled_inputs(GLFWwindow* window);
+
+    /**
+     * @brief Setup so this objects handles inputs correctly
+     *
+     * @param GLFWwindow* window window
+     */
+    virtual void setup(GLFWwindow* window);
+
+    /**
+     * @brief Cleanup to original state
+     *
+     * @param GLFWwindow* window window
+     */
+    virtual void cleanup(GLFWwindow* window);
 };
 
 } // namespace the_buttons

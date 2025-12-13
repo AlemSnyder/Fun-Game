@@ -66,25 +66,177 @@ UserInterface::update(screen_size_t width, screen_size_t height) {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     for (const auto& frame : frames_) {
-        if (!frame->do_render()) {
-            continue;
-        }
-        // frame->update_position();
+        render_frame(*frame, 0, 0);
+    }
+}
 
-        texture_regions_->set_texture_regions({0, 0, 5, 5, 0, 5, 5, 1, 0, 6, 5, 1,
-                                               5, 0, 1, 5, 5, 5, 1, 1, 6, 5, 5, 1,
-                                               6, 0, 5, 5, 6, 5, 5, 1, 6, 6, 5, 5});
+void
+UserInterface::render_frame(
+    const Frame& frame, screen_size_t x_frame_position, screen_size_t y_frame_position
+) const {
+    if (!frame.do_render()) {
+        return;
+    }
 
-        const auto bounding_box = frame->get_bounding_box();
-        frame_size_uniform_->set_frame_size(glm::ivec2(
-            bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1]
-        ));
-        window_pipeline_->render(
-            bounding_box[0], bounding_box[1], bounding_box[2] - bounding_box[0],
-            bounding_box[3] - bounding_box[1], 0, frame.get()
+    texture_regions_->set_texture_regions({0, 0, 5, 5, 0, 5, 5, 1, 0, 6, 5, 1,
+                                           5, 0, 1, 5, 5, 5, 1, 1, 6, 5, 5, 1,
+                                           6, 0, 5, 5, 6, 5, 5, 1, 6, 6, 5, 5});
+
+    const auto bounding_box = frame.get_bounding_box();
+    // add offset
+    frame_size_uniform_->set_frame_size(
+        glm::ivec2(bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1])
+    );
+    window_pipeline_->render(
+        bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
+        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0,
+        static_cast<const gpu_data::GPUData*>(&frame)
+    );
+
+    for (const auto& frame_child : frame) {
+        render_frame(
+            *frame_child, frame_child->get_x_position() + x_frame_position,
+            frame_child->get_y_position() + y_frame_position
         );
     }
 }
+
+std::pair<const std::shared_ptr<Frame>, const std::shared_ptr<Frame>>
+UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y)
+    const {
+    // iterate from back to front
+    auto frame_outer = frames_.end();
+    do {
+        frame_outer--;
+        if ((*frame_outer)->is_interior(mouse_position_x, mouse_position_y)) {
+            break;
+        }
+    } while (frame_outer != frames_.begin());
+
+    auto x_offset = (*frame_outer)->get_x_position();
+    auto y_offset = (*frame_outer)->get_y_position();
+
+    const std::shared_ptr<Frame> frame_inner = (*frame_outer)->get_frame_at_position(mouse_position_x - x_offset, mouse_position_y - y_offset);
+
+    const std::shared_ptr<Frame> new_frame_outer = *frame_outer;
+
+    return std::make_pair<const std::shared_ptr<Frame>, const std::shared_ptr<Frame>>(
+        std::move(new_frame_outer),
+        std::move(frame_inner)
+    );
+}
+
+void
+UserInterface::reselect_frame(GLFWwindow* window) {
+    // forward to
+    double xpos;
+    double ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    auto selected_frames = get_frame(screen_size_t(xpos), screen_size_t(ypos));
+
+    if (selected_frames.first) {
+        // move to back
+        if (!selected_frames.first->is_fixed()) {
+            frames_.remove(selected_frames.first);
+            frames_.push_back(selected_frames.first);
+        }
+    }
+
+    if (selected_frames.second) {
+        selected_frame_ = selected_frames.second;
+    } else {
+        selected_frame_ = nullptr;
+    }
+}
+
+void
+UserInterface::handle_key_event_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int key,
+    [[maybe_unused]] int scancode, [[maybe_unused]] int action,
+    [[maybe_unused]] int mods
+) {
+    if (selected_frame_) {
+        selected_frame_->handle_key_event_input(window, key, scancode, action, mods);
+    }
+}
+
+void
+UserInterface::handle_text_input_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] unsigned int codepoint
+) {
+    if (selected_frame_) {
+        selected_frame_->handle_text_input_input(window, codepoint);
+    }
+}
+
+void
+UserInterface::handle_mouse_event_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xpos,
+    [[maybe_unused]] double ypos
+) {
+    if (selected_frame_) {
+        selected_frame_->handle_mouse_event_input(window, xpos, ypos);
+    }
+}
+
+void
+UserInterface::handle_mouse_enter_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int entered
+) {} // don't bother
+
+void
+UserInterface::handle_mouse_button_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int button,
+    [[maybe_unused]] int action, [[maybe_unused]] int mods
+) {
+    reselect_frame(window);
+    if (selected_frame_) {
+        handle_mouse_button_input(window, button, action, mods);
+    }
+}
+
+void
+UserInterface::handle_mouse_scroll_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset,
+    [[maybe_unused]] double yoffset
+) {
+    // possibly forward
+    if (selected_frame_) {
+        selected_frame_->handle_mouse_scroll_input(window, xoffset, yoffset);
+    }
+    // forward to top
+    // selected position then forward
+}
+
+void
+UserInterface::handle_joystick_input(
+    [[maybe_unused]] int jid, [[maybe_unused]] int event
+) {}
+
+void
+UserInterface::handle_file_drop_input(
+    [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int count,
+    [[maybe_unused]] const char** paths
+) {
+    // drop onto mouse position
+    reselect_frame(window);
+    if (selected_frame_) {
+        selected_frame_->handle_file_drop_input(window, count, paths);
+    }
+}
+
+void
+UserInterface::handle_pooled_inputs([[maybe_unused]] GLFWwindow* window) {
+    if (selected_frame_) {
+        selected_frame_->handle_pooled_inputs(window);
+    }
+}
+
+void
+UserInterface::setup([[maybe_unused]] GLFWwindow* window) {}
+
+void
+UserInterface::cleanup([[maybe_unused]] GLFWwindow* window) {}
 
 } // namespace the_buttons
 

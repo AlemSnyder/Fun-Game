@@ -21,18 +21,27 @@ class Frame : public virtual scene::Inputs, public virtual gpu_data::GPUData {
 
     Frame* parent;
     std::unordered_set<Frame*> children;
+    bool fixed_; // fixed position in render queue
     /* data */
     void exterior_changed(); // need to change exterior for parent.
 
     bool is_selected;
 
  public:
-    Frame(/* args */){};
+    Frame(/* args */) : parent(nullptr){};
     inline virtual ~Frame(){}; // kill children
 
     bool is_interior(screen_size_t x, screen_size_t y) const;
 
+
+    const std::shared_ptr<Frame> get_frame_at_position(screen_size_t x, screen_size_t y) const;
+
     bool check_children();
+
+    inline bool
+    is_fixed() const {
+        return fixed_;
+    }
 
     bool is_visible();
 
@@ -40,6 +49,26 @@ class Frame : public virtual scene::Inputs, public virtual gpu_data::GPUData {
 
     void on_end_select();
     virtual std::array<screen_size_t, 4> get_bounding_box() const = 0;
+
+    [[nodiscard]] inline screen_size_t
+    get_x_position() const {
+        return x_position;
+    }
+
+    [[nodiscard]] inline screen_size_t
+    get_y_position() const {
+        return y_position;
+    }
+
+    [[nodiscard]] inline const auto
+    begin() const {
+        return children.begin();
+    }
+
+    [[nodiscard]] inline const auto
+    end() const {
+        return children.end();
+    }
 
     /**
      * @brief Handle key input including mouse keys
