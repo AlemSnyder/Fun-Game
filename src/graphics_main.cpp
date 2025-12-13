@@ -42,7 +42,8 @@ graphics_main(const argh::parser& cmdl) {
     bool imgui_debug = cmdl[{"-g", "--imgui"}];
 
     intro_scene::result new_game_settings = intro_scene::NewGame{
-        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug};
+        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug
+    };
 
     return graphics_main(new_game_settings);
 }
@@ -59,6 +60,23 @@ graphics_main(intro_scene::result result) {
     // all graphics/audio settings
     // not that bad, make a settings header and define structures in there.
 
+    screen_size_t window_width = 1280;
+    screen_size_t window_height = 800;
+    // init graphics
+
+    std::optional<GLFWwindow*> opt_window =
+        gui::setup_opengl(window_width, window_height);
+    if (!opt_window) {
+        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
+        return 1;
+    }
+    // TODO stream line this part and make sure to clean things up correctly
+    GLFWwindow* window = opt_window.value();
+    gui::setup_opengl_logging();
+
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    gui::VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
     //    intro_scene::result result = intro_scene::IntroPage();
 
     while (true) {
@@ -66,18 +84,18 @@ graphics_main(intro_scene::result result) {
             case 0: // exiting
                 return std::get<intro_scene::Exit>(result).status;
             case 1: // intro page
-                result = intro_window();
+                result = intro_window(window);
                 break;
             case 2: // new world with settings
                 {
                     // auto settings = std::get<intro_scene::NewGame>(result);
-                    result = start_game(result);
+                    result = start_game(result, window);
                 }
                 break;
             case 3: // from save with file path
                 {
                     // auto path = std::get<intro_scene::LoadGame>(result);
-                    result = start_game(result);
+                    result = start_game(result, window);
                 }
                 break;
             default:
@@ -88,31 +106,15 @@ graphics_main(intro_scene::result result) {
         }
     }
 
+    glDeleteVertexArrays(1, &VertexArrayID);
     return 1;
 }
 
 intro_scene::result
-start_game(intro_scene::result result) {
+start_game(intro_scene::result result, GLFWwindow* window) {
     // add window width and height?
 
-    screen_size_t window_width = 1280;
-    screen_size_t window_height = 800;
-
     screen_size_t display_w, display_h;
-    // init graphics
-
-    std::optional<GLFWwindow*> opt_window =
-        gui::setup_opengl(window_width, window_height);
-    if (!opt_window) {
-        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
-        return intro_scene::Exit(1);
-    }
-    GLFWwindow* window = opt_window.value();
-    gui::setup_opengl_logging();
-
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    gui::VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
     // Start Splash screen
     gui::shader::ShaderHandler temp_handler;
@@ -124,7 +126,6 @@ start_game(intro_scene::result result) {
     std::function<void()> splash_screen_setup = []() {
         // Draw over everything
         glDisable(GL_CULL_FACE);
-        // The sky has no depth
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
     };
@@ -139,7 +140,7 @@ start_game(intro_scene::result result) {
 
     splash_screen_pipeline->data.push_back(screen_data.get());
 
-    // background task {
+    // background task
     GlobalContext& global_context = GlobalContext::instance();
     // don't forget ot load ScreenData onto gpu
     global_context.run_opengl_queue();
@@ -181,22 +182,11 @@ start_game(intro_scene::result result) {
         // not implemented
     }
 
-    // generate options either from command line inputs
-    // or from gui
-    // struct Options
-
-    //}
-
     // can't cancel a task after it has been started run.
 
     while (load_manifests_future.wait_for(std::chrono::seconds(0))
            != std::future_status::ready) {
         glfwGetFramebufferSize(window, &display_w, &display_h);
-
-        // gui::FrameBufferHandler::instance().bind_fbo(0);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // glViewport(0, 0, display_w, display_h);
 
         splash_screen_pipeline->render(display_w, display_h, 0);
 
@@ -224,31 +214,13 @@ start_game(intro_scene::result result) {
         return intro_scene::Exit(gui_result);
     }
 
-    glDeleteVertexArrays(1, &VertexArrayID);
-
     return intro_scene::Exit(0);
 }
 
+// TODO move to separate file
 intro_scene::result
-intro_window() {
-    screen_size_t window_width = 1280;
-    screen_size_t window_height = 800;
-
+intro_window(GLFWwindow* window) {
     screen_size_t display_w, display_h;
-    // init graphics
-
-    std::optional<GLFWwindow*> opt_window =
-        gui::setup_opengl(window_width, window_height);
-    if (!opt_window) {
-        LOG_CRITICAL(logging::opengl_logger, "No Window, Exiting.");
-        return intro_scene::Exit(1);
-    }
-    GLFWwindow* window = opt_window.value();
-    gui::setup_opengl_logging();
-
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    gui::VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
 
     // Start Splash screen
     gui::shader::ShaderHandler temp_handler;
@@ -260,7 +232,6 @@ intro_window() {
     std::function<void()> splash_screen_setup = []() {
         // Draw over everything
         glDisable(GL_CULL_FACE);
-        // The sky has no depth
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
     };
@@ -273,18 +244,12 @@ intro_window() {
 
     splash_screen_pipeline->data.push_back(screen_data.get());
 
-    // background task {
     GlobalContext& global_context = GlobalContext::instance();
     // don't forget ot load ScreenData onto gpu
     global_context.run_opengl_queue();
 
     while (!glfwWindowShouldClose(window)) {
         glfwGetFramebufferSize(window, &display_w, &display_h);
-
-        // gui::FrameBufferHandler::instance().bind_fbo(0);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // glViewport(0, 0, display_w, display_h);
 
         splash_screen_pipeline->render(display_w, display_h, 0);
 

@@ -23,6 +23,9 @@
 
 #include <argh.h>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include <filesystem>
 #include <variant>
 
@@ -68,10 +71,10 @@ using result = std::variant<Exit, IntroPage, NewGame, LoadGame>;
 
 } // namespace intro_scene
 
-intro_scene::result intro_window();
+intro_scene::result intro_window(GLFWwindow* window);
 
 // should this be templated who knows?
-intro_scene::result start_game(intro_scene::result);
+intro_scene::result start_game(intro_scene::result, GLFWwindow* window);
 
 // intro_scene::result graphics_main(intro_scene::LoadGame);
 

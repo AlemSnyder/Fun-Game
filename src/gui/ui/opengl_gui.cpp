@@ -1,6 +1,5 @@
 #include "opengl_gui.hpp"
 
-#include "../gui_logging.hpp"
 #include "../handler.hpp"
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../scene/controls.hpp"
@@ -10,7 +9,6 @@
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
 #include "util/files.hpp"
-#include "util/mesh.hpp"
 #include "world/climate.hpp"
 #include "world/world.hpp"
 
@@ -20,7 +18,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <cstdlib>
-#include <vector>
 
 namespace gui {
 
