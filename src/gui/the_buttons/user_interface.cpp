@@ -39,7 +39,6 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     std::function<void()> render_setup = []() {
         // Draw over everything
         glDisable(GL_CULL_FACE);
-        // The sky has no depth
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
     };
@@ -116,13 +115,17 @@ UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_pos
     auto x_offset = (*frame_outer)->get_x_position();
     auto y_offset = (*frame_outer)->get_y_position();
 
+    std::weak_ptr<const Frame> new_frame_outer = *frame_outer;
     std::weak_ptr<const Frame> frame_inner =
         (*frame_outer)
             ->get_child_at_position(
                 mouse_position_x - x_offset, mouse_position_y - y_offset
             );
 
-    std::weak_ptr<const Frame> new_frame_outer = *frame_outer;
+    // if there are no children then set to parent.
+    if (frame_inner.expired()) {
+        frame_inner = new_frame_outer;
+    }
 
     return std::make_pair<std::weak_ptr<const Frame>, std::weak_ptr<const Frame>>(
         std::move(new_frame_outer), std::move(frame_inner)
@@ -192,9 +195,11 @@ UserInterface::handle_mouse_button_input(
     [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int button,
     [[maybe_unused]] int action, [[maybe_unused]] int mods
 ) {
-    reselect_frame(window);
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        reselect_frame(window);
+    }
     if (selected_frame_) {
-        handle_mouse_button_input(window, button, action, mods);
+        selected_frame_->handle_mouse_button_input(window, button, action, mods);
     }
 }
 

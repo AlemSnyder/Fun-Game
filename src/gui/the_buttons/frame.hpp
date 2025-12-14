@@ -50,7 +50,7 @@ class Frame : public virtual scene::Inputs, public virtual gpu_data::GPUData {
     bool check_children();
 
     // private:
-    //bool add_child(std::shared_ptr<Frame> child_frame);
+    // bool add_child(std::shared_ptr<Frame> child_frame);
 
     // might want to make it such that after a child has been added
     // nothing else can be added to it.

@@ -4,9 +4,12 @@
 #include "config.h"
 #include "gui/handler.hpp"
 #include "gui/render/structures/screen_data.hpp"
+#include "gui/scene/input.hpp"
+#include "gui/the_buttons/user_interface.hpp"
 #include "gui/ui/imgui_gui.hpp"
 #include "gui/ui/opengl_gui.hpp"
 #include "gui/ui/opengl_setup.hpp"
+#include "gui/ui/user_interface_setup.hpp"
 #include "logging.hpp"
 #include "types.hpp"
 #include "world/climate.hpp"
@@ -15,6 +18,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+#include <memory>
 
 // create structure to pass game start data either from command line or from gui
 /*
@@ -245,12 +250,27 @@ intro_window(GLFWwindow* window) {
 
     GlobalContext& global_context = GlobalContext::instance();
     // don't forget ot load ScreenData onto gpu
+
+    // gui::the_buttons::UserInterface main_interface(temp_handler, 4);
+    // gui::setup(main_interface);
+
+    auto main_interface =
+        std::make_shared<gui::the_buttons::UserInterface>(temp_handler, 4);
+    gui::setup(*main_interface);
+
+    gui::scene::InputHandler::imgui_active = false;
+    gui::scene::InputHandler::set_window(window);
+    gui::scene::InputHandler::forward_inputs_to(
+        std::static_pointer_cast<gui::scene::Inputs>(main_interface)
+    );
     global_context.run_opengl_queue();
 
     while (!glfwWindowShouldClose(window)) {
         glfwGetFramebufferSize(window, &display_w, &display_h);
 
         splash_screen_pipeline->render(display_w, display_h, 0);
+
+        main_interface->update(display_w, display_h);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

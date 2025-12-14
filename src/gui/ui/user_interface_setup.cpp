@@ -25,7 +25,17 @@ setup(the_buttons::UserInterface& user_interface) {
             glm::ivec2(70, 70), glm::ivec2(230, 230)
         );
 
+    std::shared_ptr<the_buttons::BorderedWindow> a_second_window =
+        std::make_shared<the_buttons::BorderedWindow>(
+            std::make_shared<render::WindowTexture>(image),
+
+            glm::ivec2(200, 200), glm::ivec2(400, 600)
+        );
+
+
     user_interface.add(a_window);
+    user_interface.add(a_second_window);
+
 
     // window_pipeline->data.push_back(scene.a_window.get());
 

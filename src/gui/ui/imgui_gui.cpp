@@ -86,8 +86,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         std::make_shared<scene::Controls>(key_mapping);
     scene::InputHandler::imgui_active = true;
     scene::InputHandler::set_window(window);
-    scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
-    ));
+    scene::InputHandler::forward_inputs_to(
+        std::static_pointer_cast<scene::Inputs>(controller)
+    );
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
