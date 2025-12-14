@@ -2,7 +2,6 @@
 
 #include "../the_buttons/bordered_window.hpp"
 #include "../the_buttons/user_interface.hpp"
-#include "gui/render/gpu_data/texture.hpp"
 #include "util/files.hpp"
 #include "util/png_image.hpp"
 
@@ -21,7 +20,9 @@ setup(the_buttons::UserInterface& user_interface) {
 
     std::shared_ptr<the_buttons::BorderedWindow> a_window =
         std::make_shared<the_buttons::BorderedWindow>(
-            std::make_shared<render::WindowTexture>(image)
+            std::make_shared<render::WindowTexture>(image),
+
+            glm::ivec2(70, 70), glm::ivec2(230, 230)
         );
 
     user_interface.add(a_window);

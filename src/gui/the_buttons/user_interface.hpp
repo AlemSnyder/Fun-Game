@@ -26,8 +26,17 @@ class UserInterface : public virtual scene::Inputs {
 
     std::shared_ptr<Frame> selected_frame_; // widget?
 
-    [[nodiscard]] std::pair<const std::shared_ptr<Frame>, const std::shared_ptr<Frame>>
+    [[nodiscard]] std::pair<std::weak_ptr<const Frame>, std::weak_ptr<const Frame>>
     get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y) const;
+
+    [[nodiscard]] inline std::pair<std::weak_ptr<Frame>, std::weak_ptr<Frame>>
+    get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y) {
+        auto got_frames = get_frame(mouse_position_x, mouse_position_y);
+        return std::make_pair<std::weak_ptr<Frame>, std::weak_ptr<Frame>>(
+            std::const_pointer_cast<Frame>(got_frames.first.lock()),
+            std::const_pointer_cast<Frame>(got_frames.second.lock())
+        );
+    }
 
     void reselect_frame(GLFWwindow* window);
 

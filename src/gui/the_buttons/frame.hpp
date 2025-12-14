@@ -4,9 +4,8 @@
 #include "gui/scene/input.hpp"
 #include "types.hpp"
 
-#include <string>
+#include <memory>
 #include <unordered_set>
-#include <utility>
 #include <vector>
 
 namespace gui {
@@ -14,29 +13,50 @@ namespace gui {
 namespace the_buttons {
 
 class Frame : public virtual scene::Inputs, public virtual gpu_data::GPUData {
- private:
-    screen_size_t x_position;
-    screen_size_t y_position;
-    std::vector<std::pair<screen_size_t, screen_size_t>> exterior_points;
+ protected:
+    glm::ivec2 position_;
+    glm::ivec2 frame_size_;
+    std::vector<glm::ivec2> exterior_points_;
 
-    Frame* parent;
-    std::unordered_set<Frame*> children;
+    Frame* parent_;
     bool fixed_; // fixed position in render queue
-    /* data */
+    std::unordered_set<std::shared_ptr<Frame>> children;
     void exterior_changed(); // need to change exterior for parent.
 
     bool is_selected;
 
  public:
-    Frame(/* args */) : parent(nullptr){};
+    Frame(
+        glm::ivec2 position, glm::ivec2 frame_size,
+        std::vector<glm::ivec2> exterior_points, Frame* parent = nullptr,
+        bool fixed = false
+    ) :
+        position_(position),
+        frame_size_(frame_size), exterior_points_(exterior_points), parent_(parent),
+        fixed_(fixed){};
+
     inline virtual ~Frame(){}; // kill children
 
     bool is_interior(screen_size_t x, screen_size_t y) const;
 
+    std::weak_ptr<const Frame>
+    get_child_at_position(screen_size_t x, screen_size_t y) const;
 
-    const std::shared_ptr<Frame> get_frame_at_position(screen_size_t x, screen_size_t y) const;
+    [[nodiscard]] inline bool
+    has_children() const {
+        return !children.empty();
+    }
 
     bool check_children();
+
+    // private:
+    //bool add_child(std::shared_ptr<Frame> child_frame);
+
+    // might want to make it such that after a child has been added
+    // nothing else can be added to it.
+    // This will prevent circular references.
+    // do this be checking if parent is set.
+    // could also do the opposite and require that initialized with parent.
 
     inline bool
     is_fixed() const {
@@ -52,20 +72,20 @@ class Frame : public virtual scene::Inputs, public virtual gpu_data::GPUData {
 
     [[nodiscard]] inline screen_size_t
     get_x_position() const {
-        return x_position;
+        return position_.x;
     }
 
     [[nodiscard]] inline screen_size_t
     get_y_position() const {
-        return y_position;
+        return position_.y;
     }
 
-    [[nodiscard]] inline const auto
+    [[nodiscard]] inline auto
     begin() const {
         return children.begin();
     }
 
-    [[nodiscard]] inline const auto
+    [[nodiscard]] inline auto
     end() const {
         return children.end();
     }

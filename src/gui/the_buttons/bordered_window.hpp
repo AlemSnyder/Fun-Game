@@ -1,7 +1,6 @@
 #pragma once
 
 #include "frame.hpp"
-#include "gui/render/structures/screen_data.hpp"
 #include "gui/render/structures/window_texture.hpp"
 
 #include <memory>
@@ -36,7 +35,10 @@ class BorderedWindow : public virtual Frame {
      */
     BorderedWindow& operator=(BorderedWindow&& obj) = default;
 
-    BorderedWindow(std::shared_ptr<render::WindowTexture> data);
+    BorderedWindow(
+        std::shared_ptr<render::WindowTexture> data, glm::ivec2 position,
+        glm::ivec2 size
+    );
 
     inline virtual ~BorderedWindow(){};
 
@@ -62,7 +64,7 @@ class BorderedWindow : public virtual Frame {
 
     inline virtual std::array<screen_size_t, 4>
     get_bounding_box() const {
-        return {70, 70, 230, 230};
+        return {position_.x, position_.y, frame_size_.x, frame_size_.y};
     }
 };
 

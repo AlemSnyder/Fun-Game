@@ -101,7 +101,7 @@ UserInterface::render_frame(
     }
 }
 
-std::pair<const std::shared_ptr<Frame>, const std::shared_ptr<Frame>>
+std::pair<std::weak_ptr<const Frame>, std::weak_ptr<const Frame>>
 UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y)
     const {
     // iterate from back to front
@@ -116,13 +116,16 @@ UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_pos
     auto x_offset = (*frame_outer)->get_x_position();
     auto y_offset = (*frame_outer)->get_y_position();
 
-    const std::shared_ptr<Frame> frame_inner = (*frame_outer)->get_frame_at_position(mouse_position_x - x_offset, mouse_position_y - y_offset);
+    std::weak_ptr<const Frame> frame_inner =
+        (*frame_outer)
+            ->get_child_at_position(
+                mouse_position_x - x_offset, mouse_position_y - y_offset
+            );
 
-    const std::shared_ptr<Frame> new_frame_outer = *frame_outer;
+    std::weak_ptr<const Frame> new_frame_outer = *frame_outer;
 
-    return std::make_pair<const std::shared_ptr<Frame>, const std::shared_ptr<Frame>>(
-        std::move(new_frame_outer),
-        std::move(frame_inner)
+    return std::make_pair<std::weak_ptr<const Frame>, std::weak_ptr<const Frame>>(
+        std::move(new_frame_outer), std::move(frame_inner)
     );
 }
 
@@ -134,16 +137,16 @@ UserInterface::reselect_frame(GLFWwindow* window) {
     glfwGetCursorPos(window, &xpos, &ypos);
     auto selected_frames = get_frame(screen_size_t(xpos), screen_size_t(ypos));
 
-    if (selected_frames.first) {
+    if (std::shared_ptr<Frame> outer_frame = selected_frames.first.lock()) {
         // move to back
-        if (!selected_frames.first->is_fixed()) {
-            frames_.remove(selected_frames.first);
-            frames_.push_back(selected_frames.first);
+        if (!outer_frame->is_fixed()) {
+            frames_.remove(outer_frame);
+            frames_.push_back(outer_frame);
         }
     }
 
-    if (selected_frames.second) {
-        selected_frame_ = selected_frames.second;
+    if (std::shared_ptr<Frame> inner_frame = selected_frames.second.lock()) {
+        selected_frame_ = inner_frame;
     } else {
         selected_frame_ = nullptr;
     }
