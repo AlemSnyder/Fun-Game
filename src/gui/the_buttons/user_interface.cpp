@@ -105,12 +105,19 @@ UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_pos
     const {
     // iterate from back to front
     auto frame_outer = frames_.end();
+    // might be able to do this with control flow
+    bool found_frame_at_mouse_position = false;
     do {
         frame_outer--;
         if ((*frame_outer)->is_interior(mouse_position_x, mouse_position_y)) {
+            found_frame_at_mouse_position = true;
             break;
         }
     } while (frame_outer != frames_.begin());
+
+    if (!found_frame_at_mouse_position) {
+        return {};
+    }
 
     auto x_offset = (*frame_outer)->get_x_position();
     auto y_offset = (*frame_outer)->get_y_position();
@@ -138,11 +145,15 @@ UserInterface::reselect_frame(GLFWwindow* window) {
     double xpos;
     double ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
-    auto selected_frames = get_frame(screen_size_t(xpos), screen_size_t(ypos));
+
+    screen_size_t height;
+    glfwGetFramebufferSize(window, nullptr, &height);
+
+    auto selected_frames = get_frame(screen_size_t(floor(xpos)), screen_size_t(height - floor(ypos)));
 
     if (std::shared_ptr<Frame> outer_frame = selected_frames.first.lock()) {
         // move to back
-        if (!outer_frame->is_fixed()) {
+        if (outer_frame != frames_.back() && !outer_frame->is_fixed()) {
             frames_.remove(outer_frame);
             frames_.push_back(outer_frame);
         }

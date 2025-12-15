@@ -23,7 +23,7 @@ Frame::get_child_at_position(screen_size_t x, screen_size_t y) const {
         }
     }
 
-    LOG_WARNING(logging::main_logger, "Faailed to find frame.");
+    LOG_WARNING(logging::main_logger, "Failed to find frame.");
     return {};
 }
 
@@ -31,8 +31,8 @@ bool
 Frame::is_interior(screen_size_t x, screen_size_t y) const {
     const auto bounding_box = get_bounding_box();
     if (x < bounding_box[0] || y < bounding_box[1]
-        || x > bounding_box[0] + bounding_box[2]
-        || y > bounding_box[1] + bounding_box[3]) {
+        || x > bounding_box[2]
+        || y > bounding_box[3]) {
         return false;
     }
 
