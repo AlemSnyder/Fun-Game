@@ -379,15 +379,87 @@ class UIScaleUniform : public shader::UniformExecutor {
     }
 };
 
-class TextureRegionsUniform : public shader::UniformExecutor {
+class FrameBorderSizeUniform : public shader::UniformExecutor {
  private:
-    std::array<int, 36> texture_location_;
+    glm::ivec4 border_size_;
 
  public:
-    TextureRegionsUniform() : UniformExecutor(gpu_data::GPUArayType::INT) {}
+    FrameBorderSizeUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC4) {}
 
     inline void
-    set_texture_regions(std::array<int, 36> texture_location) {
+    set_border_size(glm::ivec4 border_size) {
+        border_size_ = border_size;
+    }
+
+    inline virtual ~FrameBorderSizeUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform4iv(uniform_ID, 1, &border_size_[0]);
+    }
+};
+
+class FrameSideLengthsUniform : public shader::UniformExecutor {
+ private:
+    glm::ivec4 side_length_;
+
+ public:
+    FrameSideLengthsUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC4) {}
+
+    inline void
+    set_side_lengths(glm::ivec4 side_length) {
+        side_length_ = side_length;
+    }
+
+    inline virtual ~FrameSideLengthsUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform4iv(uniform_ID, 1, &side_length_[0]);
+    }
+};
+
+class InnerPatternSizeUniform : public shader::UniformExecutor {
+ private:
+    glm::ivec2 pattern_size_;
+
+ public:
+    InnerPatternSizeUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC2) {}
+
+    inline void
+    set_inner_pattern_size(glm::ivec2 pattern_size) {
+        pattern_size_ = pattern_size;
+    }
+
+    inline virtual ~InnerPatternSizeUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform2iv(uniform_ID, 1, &pattern_size_[0]);
+    }
+};
+
+class TextureRegionsUniform : public shader::UniformExecutor {
+ private:
+    std::array<glm::ivec2, 9> texture_location_;
+
+ public:
+    TextureRegionsUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC2) {}
+
+    inline void
+    set_texture_regions(std::array<glm::ivec2, 9> texture_location) {
         texture_location_ = texture_location;
     }
 
@@ -399,7 +471,7 @@ class TextureRegionsUniform : public shader::UniformExecutor {
             logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
         );
 
-        glUniform1iv(uniform_ID, 36, texture_location_.data());
+        glUniform2iv(uniform_ID, 9, &(*texture_location_.data())[0]);
     }
 };
 

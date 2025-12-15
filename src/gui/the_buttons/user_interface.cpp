@@ -17,6 +17,9 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     frame_texture_uniform_(std::make_shared<render::TextureUniform>(
         gpu_data::GPUArayType::UNSIGNED_INT_SAMPLER_2D, 0
     )),
+    border_sizes_(std::make_shared<render::FrameBorderSizeUniform>()),
+    side_lengths_(std::make_shared<render::FrameSideLengthsUniform>()),
+    inner_pattern_size_(std::make_shared<render::InnerPatternSizeUniform>()),
     texture_regions_(std::make_shared<render::TextureRegionsUniform>()) {
     shader::Program& window_render_program = shader_handler.load_program(
         "Windows", files::get_resources_path() / "shaders" / "overlay" / "Widget.vert",
@@ -48,7 +51,10 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     window_render_program.set_uniform(frame_size_uniform_, "frame_size");
     window_render_program.set_uniform(ui_scale_uniform_, "ui_scale");
     window_render_program.set_uniform(frame_texture_uniform_, "window_texture");
-    window_render_program.set_uniform(texture_regions_, "texture_locations");
+    window_render_program.set_uniform(border_sizes_, "border_size");
+    window_render_program.set_uniform(side_lengths_, "side_lengths");
+    window_render_program.set_uniform(inner_pattern_size_, "inner_pattern_size");
+    window_render_program.set_uniform(texture_regions_, "positions[0]");
 
     // windows
     window_pipeline_ = std::make_shared<shader::ShaderProgram_Windows>(
@@ -77,9 +83,12 @@ UserInterface::render_frame(
         return;
     }
 
-    texture_regions_->set_texture_regions({0, 0, 5, 5, 0, 5, 5, 1, 0, 6, 5, 1,
-                                           5, 0, 1, 5, 5, 5, 1, 1, 6, 5, 5, 1,
-                                           6, 0, 5, 5, 6, 5, 5, 1, 6, 6, 5, 5});
+    border_sizes_->set_border_size(glm::ivec4(5,5,5,5));
+    side_lengths_->set_side_lengths(glm::ivec4(1,1,1,1));
+    inner_pattern_size_->set_inner_pattern_size(glm::ivec2(1,1));
+    texture_regions_->set_texture_regions({glm::ivec2(0, 0), glm::ivec2(5, 0), glm::ivec2(6, 0),
+                                           glm::ivec2(0, 5), glm::ivec2(5, 5), glm::ivec2(6, 5),
+                                           glm::ivec2(0, 6), glm::ivec2(5, 6), glm::ivec2(6, 6)});
 
     const auto bounding_box = frame.get_bounding_box();
     // add offset

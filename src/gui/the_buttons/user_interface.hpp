@@ -17,6 +17,9 @@ class UserInterface : public virtual scene::Inputs {
     std::shared_ptr<render::FrameSizeUniform> frame_size_uniform_;
     std::shared_ptr<render::UIScaleUniform> ui_scale_uniform_;
     std::shared_ptr<render::TextureUniform> frame_texture_uniform_;
+    std::shared_ptr<render::FrameBorderSizeUniform> border_sizes_;
+    std::shared_ptr<render::FrameSideLengthsUniform> side_lengths_;
+    std::shared_ptr<render::InnerPatternSizeUniform> inner_pattern_size_;
     std::shared_ptr<render::TextureRegionsUniform> texture_regions_;
 
     // widget renderer
