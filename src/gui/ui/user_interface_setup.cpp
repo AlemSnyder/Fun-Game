@@ -1,5 +1,6 @@
 #include "user_interface_setup.hpp"
 
+#include "../the_buttons/bordered_widget.hpp"
 #include "../the_buttons/bordered_window.hpp"
 #include "../the_buttons/user_interface.hpp"
 #include "util/files.hpp"
@@ -32,10 +33,15 @@ setup(the_buttons::UserInterface& user_interface) {
             glm::ivec2(200, 200), glm::ivec2(400, 600)
         );
 
+    std::shared_ptr<the_buttons::BorderedWidget> a_widget =
+        a_second_window->make<the_buttons::BorderedWidget>(
+            std::make_shared<render::WindowTexture>(image),
+
+            glm::ivec2(20, 20), glm::ivec2(180, 300)
+        );
 
     user_interface.add(a_window);
     user_interface.add(a_second_window);
-
 
     // window_pipeline->data.push_back(scene.a_window.get());
 

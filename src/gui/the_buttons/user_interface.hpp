@@ -25,19 +25,24 @@ class UserInterface : public virtual scene::Inputs {
     // widget renderer
     std::shared_ptr<shader::ShaderProgram_Windows> window_pipeline_;
 
-    std::list<std::shared_ptr<Frame>> frames_;
+    std::list<std::shared_ptr<FrameInterface>> frames_;
 
-    std::shared_ptr<Frame> selected_frame_; // widget?
+    std::shared_ptr<WidgetInterface> selected_frame_; // widget?
 
-    [[nodiscard]] std::pair<std::weak_ptr<const Frame>, std::weak_ptr<const Frame>>
+    [[nodiscard]] std::pair<
+        std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>
     get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y) const;
 
-    [[nodiscard]] inline std::pair<std::weak_ptr<Frame>, std::weak_ptr<Frame>>
+    [[nodiscard]] inline std::pair<
+        std::weak_ptr<FrameInterface>, std::weak_ptr<WidgetInterface>>
     get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y) {
-        auto got_frames = const_cast<const UserInterface*>(this)->get_frame(mouse_position_x, mouse_position_y);
-        return std::make_pair<std::weak_ptr<Frame>, std::weak_ptr<Frame>>(
-            std::const_pointer_cast<Frame>(got_frames.first.lock()),
-            std::const_pointer_cast<Frame>(got_frames.second.lock())
+        auto got_frames = const_cast<const UserInterface*>(this)->get_frame(
+            mouse_position_x, mouse_position_y
+        );
+        return std::make_pair<
+            std::weak_ptr<FrameInterface>, std::weak_ptr<WidgetInterface>>(
+            std::const_pointer_cast<FrameInterface>(got_frames.first.lock()),
+            std::const_pointer_cast<WidgetInterface>(got_frames.second.lock())
         );
     }
 
@@ -54,13 +59,19 @@ class UserInterface : public virtual scene::Inputs {
     }
 
     inline void
-    add(std::shared_ptr<Frame> frame) {
+    add(std::shared_ptr<FrameInterface> frame) {
         auto pos = frames_.begin();
         frames_.insert(pos, frame);
     }
 
     void render_frame(
-        const Frame& frame, screen_size_t x_frame_position,
+        const std::shared_ptr<FrameInterface> frame, screen_size_t x_frame_position,
+        screen_size_t y_frame_position
+    ) const;
+
+    // one of these for each
+    void render_frame(
+        const std::shared_ptr<WidgetInterface> widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 

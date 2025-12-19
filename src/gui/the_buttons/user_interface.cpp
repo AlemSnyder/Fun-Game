@@ -6,6 +6,7 @@
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/structures/uniform_types.hpp"
 #include "manifest/object_handler.hpp"
+#include "widget.hpp"
 
 namespace gui {
 
@@ -71,26 +72,35 @@ UserInterface::update(screen_size_t width, screen_size_t height) {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     for (const auto& frame : frames_) {
-        render_frame(*frame, 0, 0);
+        render_frame(frame, 0, 0);
     }
 }
 
+// maybe visitor pattern
+// double dispatch on render frames
+// render_border
+// render_text
+// render image
+// etc
 void
 UserInterface::render_frame(
-    const Frame& frame, screen_size_t x_frame_position, screen_size_t y_frame_position
+    const std::shared_ptr<FrameInterface> frame, screen_size_t x_frame_position,
+    screen_size_t y_frame_position
 ) const {
-    if (!frame.do_render()) {
+    if (!frame->do_render()) {
         return;
     }
 
-    border_sizes_->set_border_size(glm::ivec4(5,5,5,5));
-    side_lengths_->set_side_lengths(glm::ivec4(1,1,1,1));
-    inner_pattern_size_->set_inner_pattern_size(glm::ivec2(1,1));
-    texture_regions_->set_texture_regions({glm::ivec2(0, 0), glm::ivec2(5, 0), glm::ivec2(6, 0),
-                                           glm::ivec2(0, 5), glm::ivec2(5, 5), glm::ivec2(6, 5),
-                                           glm::ivec2(0, 6), glm::ivec2(5, 6), glm::ivec2(6, 6)});
+    border_sizes_->set_border_size(glm::ivec4(5, 5, 5, 5));
+    side_lengths_->set_side_lengths(glm::ivec4(1, 1, 1, 1));
+    inner_pattern_size_->set_inner_pattern_size(glm::ivec2(1, 1));
+    texture_regions_->set_texture_regions(
+        {glm::ivec2(0, 0), glm::ivec2(5, 0), glm::ivec2(6, 0), glm::ivec2(0, 5),
+         glm::ivec2(5, 5), glm::ivec2(6, 5), glm::ivec2(0, 6), glm::ivec2(5, 6),
+         glm::ivec2(6, 6)}
+    );
 
-    const auto bounding_box = frame.get_bounding_box();
+    const auto bounding_box = frame->get_bounding_box();
     // add offset
     frame_size_uniform_->set_frame_size(
         glm::ivec2(bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1])
@@ -98,18 +108,41 @@ UserInterface::render_frame(
     window_pipeline_->render(
         bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
         bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0,
-        static_cast<const gpu_data::GPUData*>(&frame)
+        std::static_pointer_cast<gpu_data::GPUData>(frame).get()
     );
 
-    for (const auto& frame_child : frame) {
-        render_frame(
-            *frame_child, frame_child->get_x_position() + x_frame_position,
-            frame_child->get_y_position() + y_frame_position
-        );
-    }
+    frame->render_children(this /*add position*/);
 }
 
-std::pair<std::weak_ptr<const Frame>, std::weak_ptr<const Frame>>
+void
+UserInterface::render_frame(
+    const std::shared_ptr<WidgetInterface> widget, screen_size_t x_frame_position,
+    screen_size_t y_frame_position
+) const {
+    border_sizes_->set_border_size(glm::ivec4(5, 5, 5, 5));
+    side_lengths_->set_side_lengths(glm::ivec4(1, 1, 1, 1));
+    inner_pattern_size_->set_inner_pattern_size(glm::ivec2(1, 1));
+    texture_regions_->set_texture_regions(
+        {glm::ivec2(0, 0), glm::ivec2(5, 0), glm::ivec2(6, 0), glm::ivec2(0, 5),
+         glm::ivec2(5, 5), glm::ivec2(6, 5), glm::ivec2(0, 6), glm::ivec2(5, 6),
+         glm::ivec2(6, 6)}
+    );
+
+    const auto bounding_box = widget->get_bounding_box();
+    // add offset
+    frame_size_uniform_->set_frame_size(
+        glm::ivec2(bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1])
+    );
+    window_pipeline_->render(
+        bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
+        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0,
+        std::static_pointer_cast<gpu_data::GPUData>(widget).get()
+    );
+
+    widget->render_children(this /*add position*/);
+}
+
+std::pair<std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>
 UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y)
     const {
     // iterate from back to front
@@ -128,22 +161,20 @@ UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_pos
         return {};
     }
 
-    auto x_offset = (*frame_outer)->get_x_position();
-    auto y_offset = (*frame_outer)->get_y_position();
+    //    auto x_offset = (*frame_outer)->get_x_position();
+    //    auto y_offset = (*frame_outer)->get_y_position();
 
-    std::weak_ptr<const Frame> new_frame_outer = *frame_outer;
-    std::weak_ptr<const Frame> frame_inner =
-        (*frame_outer)
-            ->get_child_at_position(
-                mouse_position_x - x_offset, mouse_position_y - y_offset
-            );
+    std::weak_ptr<const FrameInterface> new_frame_outer = *frame_outer;
+    std::weak_ptr<const WidgetInterface> frame_inner =
+        (*frame_outer)->get_child_at_position(mouse_position_x, mouse_position_y);
 
     // if there are no children then set to parent.
     if (frame_inner.expired()) {
         frame_inner = new_frame_outer;
     }
 
-    return std::make_pair<std::weak_ptr<const Frame>, std::weak_ptr<const Frame>>(
+    return std::make_pair<
+        std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>(
         std::move(new_frame_outer), std::move(frame_inner)
     );
 }
@@ -158,9 +189,11 @@ UserInterface::reselect_frame(GLFWwindow* window) {
     screen_size_t height;
     glfwGetFramebufferSize(window, nullptr, &height);
 
-    auto selected_frames = get_frame(screen_size_t(floor(xpos)), screen_size_t(height - floor(ypos)));
+    auto selected_frames =
+        get_frame(screen_size_t(floor(xpos)), screen_size_t(height - floor(ypos)));
 
-    if (std::shared_ptr<Frame> outer_frame = selected_frames.first.lock()) {
+    if (const std::shared_ptr<FrameInterface> outer_frame =
+            selected_frames.first.lock()) {
         // move to back
         if (outer_frame != frames_.back() && !outer_frame->is_fixed()) {
             frames_.remove(outer_frame);
@@ -168,7 +201,7 @@ UserInterface::reselect_frame(GLFWwindow* window) {
         }
     }
 
-    if (std::shared_ptr<Frame> inner_frame = selected_frames.second.lock()) {
+    if (std::shared_ptr<WidgetInterface> inner_frame = selected_frames.second.lock()) {
         selected_frame_ = inner_frame;
     } else {
         selected_frame_ = nullptr;
@@ -215,7 +248,7 @@ UserInterface::handle_mouse_button_input(
     [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int button,
     [[maybe_unused]] int action, [[maybe_unused]] int mods
 ) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         reselect_frame(window);
     }
     if (selected_frame_) {

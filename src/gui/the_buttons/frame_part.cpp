@@ -1,36 +1,13 @@
-#include "frame.hpp"
+#include "frame_part.hpp"
 
-#include "logging.hpp"
-#include "types.hpp"
 #include "user_interface.hpp"
-#include "widget.hpp"
-
-#include <glm/fwd.hpp>
-
-#include <memory>
 
 namespace gui {
 
 namespace the_buttons {
 
-std::weak_ptr<const WidgetInterface>
-FrameBase::get_child_at_position(screen_size_t x, screen_size_t y) const {
-    for (const auto& child : children) {
-        if (child->is_interior(x, y)) {
-            if (child->has_children()) {
-                return child->get_child_at_position(x - position_.x, y - position_.y);
-            } else {
-                return child;
-            }
-        }
-    }
-
-    LOG_WARNING(logging::main_logger, "Failed to find frame.");
-    return {};
-}
-
 bool
-FrameBase::is_interior(screen_size_t x, screen_size_t y) const {
+WidgetBase::is_interior(screen_size_t x, screen_size_t y) const {
     const auto bounding_box = get_bounding_box();
     if (x < bounding_box[0] || y < bounding_box[1] || x > bounding_box[2]
         || y > bounding_box[3]) {
@@ -75,12 +52,34 @@ FrameBase::is_interior(screen_size_t x, screen_size_t y) const {
 }
 
 void
-FrameBase::render_children(const UserInterface* user_interface /* need position*/)
+WidgetBase::render_children(const UserInterface* user_interface /* need position*/)
     const {
     for (const auto& child : children) {
         user_interface->render_frame(child, position_.x, position_.y);
     }
 }
 
+bool
+WidgetBase::has_children() const {
+    return !children.empty();
+}
+
+std::weak_ptr<const WidgetInterface>
+WidgetBase::get_child_at_position(screen_size_t x, screen_size_t y) const {
+    for (const auto& child : children) {
+        if (child->is_interior(x, y)) {
+            if (child->has_children()) {
+                return child->get_child_at_position(x - position_.x, y - position_.y);
+            } else {
+                return child;
+            }
+        }
+    }
+
+    LOG_WARNING(logging::main_logger, "Failed to find frame.");
+    return {};
+}
+
 } // namespace the_buttons
+
 } // namespace gui

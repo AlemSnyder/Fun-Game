@@ -9,7 +9,7 @@ namespace gui {
 
 namespace the_buttons {
 
-class BorderedWindow : public virtual Frame {
+class BorderedWindow : public virtual FrameBase {
  private:
     std::shared_ptr<render::WindowTexture> data_;
 
