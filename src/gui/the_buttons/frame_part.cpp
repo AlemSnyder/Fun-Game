@@ -51,18 +51,6 @@ WidgetBase::is_interior(screen_size_t x, screen_size_t y) const {
     return interior_flag;
 }
 
-void
-WidgetBase::render_children(
-    const UserInterface* user_interface, screen_size_t x_position,
-    screen_size_t y_position
-) const {
-    for (const auto& child : children) {
-        user_interface->render_frame(
-            child, x_position + position_.x, y_position + position_.y
-        );
-    }
-}
-
 bool
 WidgetBase::has_children() const {
     return !children.empty();

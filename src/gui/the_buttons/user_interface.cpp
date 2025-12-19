@@ -5,6 +5,8 @@
 #include "../render/graphics_shaders/program_handler.hpp"
 #include "../render/graphics_shaders/shader_program.hpp"
 #include "../render/structures/uniform_types.hpp"
+#include "bordered_widget.hpp"
+#include "bordered_window.hpp"
 #include "manifest/object_handler.hpp"
 #include "widget.hpp"
 
@@ -72,7 +74,7 @@ UserInterface::update(screen_size_t width, screen_size_t height) {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     for (const auto& frame : frames_) {
-        render_frame(frame, 0, 0);
+        frame->user_interface_render(this, 0, 0);
     }
 }
 
@@ -84,7 +86,7 @@ UserInterface::update(screen_size_t width, screen_size_t height) {
 // etc
 void
 UserInterface::render_frame(
-    const std::shared_ptr<FrameInterface> frame, screen_size_t x_frame_position,
+    const BorderedWindow* frame, screen_size_t x_frame_position,
     screen_size_t y_frame_position
 ) const {
     if (!frame->do_render()) {
@@ -107,26 +109,22 @@ UserInterface::render_frame(
     );
     window_pipeline_->render(
         bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
-        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0,
-        std::static_pointer_cast<gpu_data::GPUData>(frame).get()
+        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0, frame
     );
 
-    frame->render_children(this, x_frame_position, y_frame_position);
+    //    frame->render_children(this, x_frame_position, y_frame_position);
 }
 
 void
 UserInterface::render_frame(
-    const std::shared_ptr<WidgetInterface> widget, screen_size_t x_frame_position,
+    const BorderedWidget* widget, screen_size_t x_frame_position,
     screen_size_t y_frame_position
 ) const {
-    border_sizes_->set_border_size(glm::ivec4(5, 5, 5, 5));
-    side_lengths_->set_side_lengths(glm::ivec4(1, 1, 1, 1));
-    inner_pattern_size_->set_inner_pattern_size(glm::ivec2(1, 1));
-    texture_regions_->set_texture_regions(
-        {glm::ivec2(0, 0), glm::ivec2(5, 0), glm::ivec2(6, 0), glm::ivec2(0, 5),
-         glm::ivec2(5, 5), glm::ivec2(6, 5), glm::ivec2(0, 6), glm::ivec2(5, 6),
-         glm::ivec2(6, 6)}
-    );
+    // TODO
+    border_sizes_->set_border_size(widget->get_border_size());
+    side_lengths_->set_side_lengths(widget->get_side_lengths());
+    inner_pattern_size_->set_inner_pattern_size(widget->get_inner_pattern_size());
+    texture_regions_->set_texture_regions(widget->get_texture_regions());
 
     const auto bounding_box = widget->get_bounding_box();
     // add offset
@@ -135,11 +133,10 @@ UserInterface::render_frame(
     );
     window_pipeline_->render(
         bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
-        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0,
-        std::static_pointer_cast<gpu_data::GPUData>(widget).get()
+        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0, widget
     );
 
-    widget->render_children(this, x_frame_position, y_frame_position);
+    //    widget->render_children(this, x_frame_position, y_frame_position);
 }
 
 std::pair<std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>

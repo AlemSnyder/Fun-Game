@@ -11,6 +11,9 @@
 namespace gui {
 namespace the_buttons {
 
+class BorderedWidget;
+class BorderedWindow;
+
 class UserInterface : public virtual scene::Inputs {
  private:
     // uniform
@@ -65,13 +68,13 @@ class UserInterface : public virtual scene::Inputs {
     }
 
     void render_frame(
-        const std::shared_ptr<FrameInterface> frame, screen_size_t x_frame_position,
+        const BorderedWindow* frame, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 
     // one of these for each
     void render_frame(
-        const std::shared_ptr<WidgetInterface> widget, screen_size_t x_frame_position,
+        const BorderedWidget* widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 

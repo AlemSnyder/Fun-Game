@@ -66,6 +66,11 @@ class BorderedWindow : public virtual FrameBase {
     get_bounding_box() const {
         return {position_.x, position_.y, frame_size_.x, frame_size_.y};
     }
+
+    virtual void user_interface_render(
+        const UserInterface* user_interface, screen_size_t x_position,
+        screen_size_t y_position
+    ) const override;
 };
 
 } // namespace the_buttons

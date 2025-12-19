@@ -16,10 +16,15 @@ class WidgetInterface : public virtual scene::Inputs, public virtual gpu_data::G
 
     virtual bool is_interior(screen_size_t x, screen_size_t y) const = 0;
 
-    inline virtual void render_children(
+    virtual void user_interface_render(
         const UserInterface* user_interface, screen_size_t x_position,
         screen_size_t y_position
     ) const = 0;
+
+    // inline virtual void render_children(
+    //     const UserInterface* user_interface, screen_size_t x_position,
+    //     screen_size_t y_position
+    // ) const = 0;
 
     virtual bool has_children() const = 0;
 

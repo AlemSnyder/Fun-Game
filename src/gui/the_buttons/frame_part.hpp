@@ -65,10 +65,10 @@ class WidgetBase : public virtual WidgetInterface {
 
     virtual bool is_interior(screen_size_t x, screen_size_t y) const override;
 
-    virtual void render_children(
-        const UserInterface* user_interface, screen_size_t x_position,
-        screen_size_t y_position
-    ) const override;
+    // virtual void user_interface_render(
+    //     const UserInterface* user_interface, screen_size_t x_position,
+    //     screen_size_t y_position
+    // ) const override;
 
     [[nodiscard]] virtual bool has_children() const;
 
