@@ -188,7 +188,10 @@ class FrameBase : public virtual FrameInterface {
 
     inline virtual void on_end_select() override{};
 
-    virtual void render_children(const UserInterface* user_interface) const;
+    virtual void render_children(
+        const UserInterface* user_interface, screen_size_t x_position,
+        screen_size_t y_position
+    ) const;
 
     [[nodiscard]] inline screen_size_t
     get_x_position() const {

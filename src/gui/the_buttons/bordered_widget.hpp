@@ -54,7 +54,9 @@ class BorderedWidget : public virtual WidgetBase {
         //     false
         // )
 
-        data_(data) {}
+        data_(data) {
+        data_->update_position(get_bounding_box());
+    }
 
     inline virtual ~BorderedWidget(){};
 

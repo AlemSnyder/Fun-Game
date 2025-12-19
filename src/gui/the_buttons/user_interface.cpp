@@ -111,7 +111,7 @@ UserInterface::render_frame(
         std::static_pointer_cast<gpu_data::GPUData>(frame).get()
     );
 
-    frame->render_children(this /*add position*/);
+    frame->render_children(this, x_frame_position, y_frame_position);
 }
 
 void
@@ -139,7 +139,7 @@ UserInterface::render_frame(
         std::static_pointer_cast<gpu_data::GPUData>(widget).get()
     );
 
-    widget->render_children(this /*add position*/);
+    widget->render_children(this, x_frame_position, y_frame_position);
 }
 
 std::pair<std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>
