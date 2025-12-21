@@ -29,6 +29,11 @@ todo:
  - want to reduce the amount of code duplications
  - want to start making buttons and other things
  - text rendering
+ - mouse click enums
+   + in fact the top level inputs should handle keybinding
+   + everything else should take enums, and maybe screen coordinates
+ - widget needs a get global position function.
+ - need a seconds inputs template that uses the types I created
 
  object has the frame
     each interaction with the widgets get forwarded to the object.

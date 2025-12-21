@@ -4,25 +4,18 @@
 layout(location = 0) out vec3 color;
 
 in vec2 UV; // in pixels
-uniform ivec2 frame_size; // error
+uniform ivec2 frame_size;
 uniform usampler2D window_texture;
-//uniform int texture_locations[36]; // error
 uniform int ui_scale;
 
 // uniform 
-uniform ivec4 border_size; // done
+uniform ivec4 border_size;
 uniform ivec4 side_lengths;
 uniform ivec2 inner_pattern_size;
-uniform ivec2 positions[9]; // doesn't work
-// need four border sizes
-// need for side lengths
-// need size if inner pattern
-// need 9 positions
+uniform ivec2 positions[9];
 
 void
 main(){
-
-    //int border_size = 5;
 
     ivec2 position_1 = positions[0];
     ivec2 position_2 = positions[1];
@@ -86,17 +79,17 @@ main(){
     }
     else if ((frame_size_px.x - ui_position.x) <= border_size[3]) { // 6
 
-        ivec2 local_position = ivec2(border_size[2] - frame_size_px.x + ui_position.x, ui_position.y - border_size);
+        ivec2 local_position = ivec2(border_size[2] - frame_size_px.x + ui_position.x, ui_position.y - border_size[3]);
         local_position.y = local_position.y % height_6;
 
         texture_offset = local_position + position_6;
     }
     else if ((frame_size_px.y - ui_position.y) <= border_size[3]) { // 8 idk
 
-        ivec2 local_position = ivec2(ui_position.x - border_size[2], frame_size_px.y - ui_position.y-1);
+        ivec2 local_position = ivec2(ui_position.x - border_size[2], ui_position.y - frame_size_px.y + border_size[3]);
         local_position.x = local_position.x % width_8;
 
-        texture_offset = local_position + position_2;
+        texture_offset = local_position + position_8;
     } else { // 5
         ivec2 local_position = ivec2(ui_position.x - border_size[0], ui_position.y - border_size[1]);
         local_position.x = local_position.x % width_5;

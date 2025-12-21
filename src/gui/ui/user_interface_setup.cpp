@@ -95,7 +95,7 @@ setup(the_buttons::UserInterface& user_interface) {
         a_widget->make<the_buttons::ButtonWidget>(
             std::make_shared<render::WindowTexture>(image_3, texture_data_3.value()),
 
-            glm::ivec2(20, 20), glm::ivec2(140, 100),
+            glm::ivec2(20, 28), glm::ivec2(140, 80),
             std::function<void()>([](){
                 LOG_INFO(logging::main_logger, "Button Was Pressed");
             })
