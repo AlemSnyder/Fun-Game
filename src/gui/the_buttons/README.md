@@ -21,25 +21,14 @@ Intro screen
 
 # Child Parent Frame Relationship
 
-widgets have parents, but frames don't
-widget value = frame.make<inherited_from_widget>(args);
-
-could this work? 
-probably.
-
 todo:
- - frame
-   - widget adds parent?
+ - do all TODOs in the buttons
+ - need to rename "the buttons"
+ - need to refactor all the file names and what not
+   + could make widow base that widget and frame inherit from.
+ - want to reduce the amount of code duplications
+ - want to start making buttons and other things
+ - text rendering
 
-make frame and widget virtual class / interface classes
-
-could make widow base that widget and frame inherit from.
-widget adds parent things
-frame adds the ability to fixed
-
-don't render frames? 
-probably a good idea.
-maybe not worth it
-will needless add another level of rendering and pointer dereferencing.
-
-
+ object has the frame
+    each interaction with the widgets get forwarded to the object.

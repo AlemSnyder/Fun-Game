@@ -12,7 +12,11 @@ namespace gui {
 
 namespace render {
 
-WindowTexture::WindowTexture(std::shared_ptr<util::image::Image> image) :
+WindowTexture::WindowTexture(
+    std::shared_ptr<util::image::Image> image, glm::ivec4 border_size,
+    glm::ivec4 side_lengths, glm::ivec2 inner_pattern_size,
+    std::array<glm::ivec2, 9> texture_regions
+) :
     // clang-format off
     gl_positions_{
         glm::vec3(-1, -1, 0),
@@ -35,7 +39,9 @@ WindowTexture::WindowTexture(std::shared_ptr<util::image::Image> image) :
             .type = gui::gpu_data::GPUPixelType::UNSIGNED_BYTE,
             .min_filter = GL_NEAREST,
             .mag_filter = GL_NEAREST}
-    ) {
+    ),
+    border_size_(border_size), side_lengths_(side_lengths),
+    inner_pattern_size_(inner_pattern_size), texture_regions_(texture_regions) {
     LOG_DEBUG(logging::main_logger, "Initializing a WindowTexture");
     GlobalContext& context = GlobalContext::instance();
     context.push_opengl_task([this]() {
@@ -45,6 +51,12 @@ WindowTexture::WindowTexture(std::shared_ptr<util::image::Image> image) :
         vertex_array_object_.release();
     });
 }
+
+WindowTexture::WindowTexture(std::shared_ptr<util::image::Image> image,const window_texture_data_t& texture_data) :
+    WindowTexture(
+        image, texture_data.border_size,
+        texture_data.side_lengths, texture_data.inner_pattern_size, texture_data.texture_regions
+    ) {}
 
 } // namespace render
 

@@ -47,13 +47,6 @@ class BorderedWidget : public virtual WidgetBase {
             {position, glm::ivec2(position.x + widget_size.x, position.y),
              position + widget_size, glm::ivec2(position.x, position.y + widget_size.y)}
         ),
-        // Frame(
-        //     position, widget_size,
-        //     {position, glm::ivec2(position.x + widget_size.x, position.y),
-        //      position + widget_size,
-        //      glm::ivec2(position.x, position.y + widget_size.y)},
-        //     false
-        // )
 
         data_(data) {
         data_->update_position(get_bounding_box());
@@ -97,24 +90,22 @@ class BorderedWidget : public virtual WidgetBase {
 
     [[nodiscard]] inline virtual glm::ivec4
     get_border_size() const {
-        return {5, 5, 5, 5};
+        return data_->get_border_size();
     }
 
     [[nodiscard]] inline virtual glm::ivec4
     get_side_lengths() const {
-        return {1, 1, 1, 1};
+        return data_->get_side_lengths();
     }
 
     [[nodiscard]] inline virtual glm::ivec2
     get_inner_pattern_size() const {
-        return {1, 1};
+        return data_->get_inner_pattern_size();
     }
 
     [[nodiscard]] inline virtual std::array<glm::ivec2, 9>
     get_texture_regions() const {
-        return {glm::ivec2(0, 0), glm::ivec2(5, 0), glm::ivec2(6, 0),
-                glm::ivec2(0, 5), glm::ivec2(5, 5), glm::ivec2(6, 5),
-                glm::ivec2(0, 6), glm::ivec2(5, 6), glm::ivec2(6, 6)};
+        return data_->get_texture_regions();
     }
 };
 
