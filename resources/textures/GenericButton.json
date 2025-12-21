@@ -1,0 +1,9 @@
+{
+    "texture_file" : "./GenericButton.png",
+"border_size" : [5,5,5,5],
+"side_lengths" : [1,1,1,1],
+"inner_pattern_size" : [1,1],
+"texture_regions" : [[0, 0], [5, 0], [6, 0],
+                [0, 5], [5, 5], [6, 5],
+                [0, 6], [5, 6], [6, 6]]
+}

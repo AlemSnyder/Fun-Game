@@ -13,6 +13,7 @@ namespace the_buttons {
 
 class BorderedWidget;
 class BorderedWindow;
+class ButtonWidget;
 
 class UserInterface : public virtual scene::Inputs {
  private:
@@ -77,6 +78,13 @@ class UserInterface : public virtual scene::Inputs {
         const BorderedWidget* widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
+
+    // one of these for each
+    void render_frame(
+        const ButtonWidget* widget, screen_size_t x_frame_position,
+        screen_size_t y_frame_position
+    ) const;
+
 
     /**
      * @brief Handle key input including mouse keys

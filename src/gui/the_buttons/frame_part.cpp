@@ -59,7 +59,7 @@ WidgetBase::has_children() const {
 std::weak_ptr<const WidgetInterface>
 WidgetBase::get_child_at_position(screen_size_t x, screen_size_t y) const {
     for (const auto& child : children) {
-        if (child->is_interior(x, y)) {
+        if (child->is_interior(x - position_.x, y - position_.y)) {
             if (child->has_children()) {
                 return child->get_child_at_position(x - position_.x, y - position_.y);
             } else {

@@ -7,6 +7,7 @@
 #include "../render/structures/uniform_types.hpp"
 #include "bordered_widget.hpp"
 #include "bordered_window.hpp"
+#include "button_widget.hpp"
 #include "manifest/object_handler.hpp"
 #include "widget.hpp"
 
@@ -118,6 +119,30 @@ UserInterface::render_frame(
 void
 UserInterface::render_frame(
     const BorderedWidget* widget, screen_size_t x_frame_position,
+    screen_size_t y_frame_position
+) const {
+    // TODO
+    border_sizes_->set_border_size(widget->get_border_size());
+    side_lengths_->set_side_lengths(widget->get_side_lengths());
+    inner_pattern_size_->set_inner_pattern_size(widget->get_inner_pattern_size());
+    texture_regions_->set_texture_regions(widget->get_texture_regions());
+
+    const auto bounding_box = widget->get_bounding_box();
+    // add offset
+    frame_size_uniform_->set_frame_size(
+        glm::ivec2(bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1])
+    );
+    window_pipeline_->render(
+        bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
+        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0, widget
+    );
+
+    //    widget->render_children(this, x_frame_position, y_frame_position);
+}
+
+void
+UserInterface::render_frame(
+    const ButtonWidget* widget, screen_size_t x_frame_position,
     screen_size_t y_frame_position
 ) const {
     // TODO

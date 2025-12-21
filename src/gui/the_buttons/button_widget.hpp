@@ -6,41 +6,44 @@
 #include "types.hpp"
 #include "widget.hpp"
 
+#include <functional>
 #include <memory>
 
 namespace gui {
 
 namespace the_buttons {
 
-class BorderedWidget : public virtual WidgetBase {
+class ButtonWidget : public virtual WidgetBase {
  private:
     std::shared_ptr<render::WindowTexture> data_;
 
+    std::function<void()> button_function_;
+
  public:
-    BorderedWidget() = delete;
+    ButtonWidget() = delete;
     /**
      * @brief Deleted copy constructor
      */
-    BorderedWidget(const BorderedWidget& obj) = delete;
+    ButtonWidget(const ButtonWidget& obj) = delete;
 
     /**
      * @brief Deleted copy operator
      */
-    BorderedWidget& operator=(const BorderedWidget& obj) = delete;
+    ButtonWidget& operator=(const ButtonWidget& obj) = delete;
 
     /**
      * @brief Default move constructor
      */
-    BorderedWidget(BorderedWidget&& obj) = default;
+    ButtonWidget(ButtonWidget&& obj) = default;
 
     /**
      * @brief Default move constructor
      */
-    BorderedWidget& operator=(BorderedWidget&& obj) = default;
+    ButtonWidget& operator=(ButtonWidget&& obj) = default;
 
-    BorderedWidget(
+    ButtonWidget(
         WidgetInterface* parent, std::shared_ptr<render::WindowTexture> data,
-        glm::ivec2 position, glm::ivec2 widget_size
+        glm::ivec2 position, glm::ivec2 widget_size, std::function<void()> button_function
     ) :
         WidgetBase(
             parent, position, widget_size,
@@ -48,11 +51,11 @@ class BorderedWidget : public virtual WidgetBase {
              position + widget_size, glm::ivec2(position.x, position.y + widget_size.y)}
         ),
 
-        data_(data) {
+        data_(data), button_function_(button_function) {
         data_->update_position(get_bounding_box());
     }
 
-    inline virtual ~BorderedWidget(){};
+    inline virtual ~ButtonWidget(){};
 
     inline unsigned int
     get_num_vertices() const {
@@ -106,6 +109,22 @@ class BorderedWidget : public virtual WidgetBase {
     [[nodiscard]] inline virtual std::array<glm::ivec2, 9>
     get_texture_regions() const {
         return data_->get_texture_regions();
+    }
+
+    // rn this may work, but...
+    // want to separate between has clickable and renderable children.
+    inline bool has_children() const {
+        return false;
+    }
+
+    inline virtual void
+    handle_mouse_button_input(
+        [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int button,
+        [[maybe_unused]] int action, [[maybe_unused]] int mods
+    ) {
+        if (action == GLFW_PRESS) {
+            button_function_();
+        }
     }
 };
 
