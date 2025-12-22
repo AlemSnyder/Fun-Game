@@ -118,7 +118,7 @@ Controls::handle_mouse_scroll_input(
 
 void
 Controls::handle_mouse_button_input(
-    GLFWwindow* window, int button, int action, int mods
+    GLFWwindow* window, int button, int action, [[maybe_unused]] int mods
 ) {
     if (static_cast<Key>(button) == Key::MOUSE_LEFT && action == GLFW_PRESS) {
         double xpos;

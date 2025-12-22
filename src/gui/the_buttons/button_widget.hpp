@@ -31,15 +31,17 @@ class ButtonWidget : public virtual WidgetBase {
      */
     ButtonWidget& operator=(const ButtonWidget& obj) = delete;
 
+    // TODO reimplement
+    // https://stackoverflow.com/questions/64325516/move-assignment-operator-and-virtual-inheritance/64326111#64326111
     /**
      * @brief Default move constructor
      */
-    ButtonWidget(ButtonWidget&& obj) = default;
+    ButtonWidget(ButtonWidget&& obj) = delete; 
 
     /**
      * @brief Default move constructor
      */
-    ButtonWidget& operator=(ButtonWidget&& obj) = default;
+    ButtonWidget& operator=(ButtonWidget&& obj) = delete;
 
     ButtonWidget(
         WidgetInterface* parent, std::shared_ptr<render::WindowTexture> data,

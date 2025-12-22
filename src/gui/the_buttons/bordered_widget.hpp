@@ -31,12 +31,12 @@ class BorderedWidget : public virtual WidgetBase {
     /**
      * @brief Default move constructor
      */
-    BorderedWidget(BorderedWidget&& obj) = default;
+    BorderedWidget(BorderedWidget&& obj) = delete;
 
     /**
      * @brief Default move constructor
      */
-    BorderedWidget& operator=(BorderedWidget&& obj) = default;
+    BorderedWidget& operator=(BorderedWidget&& obj) = delete;
 
     BorderedWidget(
         WidgetInterface* parent, std::shared_ptr<render::WindowTexture> data,

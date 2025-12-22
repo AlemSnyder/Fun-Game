@@ -77,7 +77,7 @@ set_imgui_style() {
     ImGuiIO& io = ImGui::GetIO();
 
     std::filesystem::path mono_font =
-        files::get_root_path() / "vendor" / "fonts" / "UbuntuMono-Regular.ttf";
+        files::get_root_path() / "vendor" / "fonts" / "UbuntuMono" / "UbuntuMono-Regular.ttf";
 
     // - If no fonts are loaded, dear imgui will use the default font. You can also load
     // multiple fonts and use ImGui::PushFont()/PopFont() to select them.

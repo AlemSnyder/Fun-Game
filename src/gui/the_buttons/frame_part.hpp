@@ -31,6 +31,7 @@ class WidgetBase : public virtual WidgetInterface {
         position_(position), frame_size_(frame_size),
         exterior_points_(exterior_points){};
 
+    WidgetBase() = delete;
     /**
      * @brief Deleted copy constructor
      */

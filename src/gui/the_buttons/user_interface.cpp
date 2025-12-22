@@ -67,7 +67,7 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
 }
 
 void
-UserInterface::update(screen_size_t width, screen_size_t height) {
+UserInterface::update([[maybe_unused]] screen_size_t width, [[maybe_unused]] screen_size_t height) {
     // cascade update frames using width and height
 
     FrameBufferHandler::instance().bind_fbo(0); // the screen

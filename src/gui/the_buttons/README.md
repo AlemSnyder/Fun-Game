@@ -26,13 +26,20 @@ todo:
  - need to rename "the buttons"
  - need to refactor all the file names and what not
    + could make widow base that widget and frame inherit from.
- - want to reduce the amount of code duplications
+   + want to reduce the amount of code duplications
  - want to start making buttons and other things
- - text rendering
+   = buttons
+   - text
+   - radio buttons
+   - enums
+   - key select (for keybinding)
+   - toggle button
+   
+ > text rendering
  - mouse click enums
    + in fact the top level inputs should handle keybinding
    + everything else should take enums, and maybe screen coordinates
- - widget needs a get global position function.
+ > widget needs a get global position function.
  - need a seconds inputs template that uses the types I created
 
  object has the frame
