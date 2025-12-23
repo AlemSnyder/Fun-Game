@@ -91,6 +91,16 @@ class Image {
         width_(width),
         height_(height), data_size_(data_size), data_(data){};
 
+    Image(
+        void* data, size_t width, size_t height, size_t data_size
+    );
+
+
+    Image(
+        size_t width, size_t height, size_t data_size
+    );
+
+
     virtual ~Image() {}
 };
 
@@ -238,6 +248,31 @@ class ByteMonochromeImage : public virtual MonochromeImage {
         );
     }
 
+    ByteMonochromeImage(
+        void* data, size_t width, size_t height, size_t data_size
+    ) :
+        Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    ByteMonochromeImage(
+        size_t width, size_t height, size_t data_size
+    ) :
+        Image(width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    void draw_at(const ByteMonochromeImage& other, size_t position_x, size_t position_y);
+
+    void set_color(png_byte color, size_t i, size_t j) {
+        data_[i * height_ + j] = color;
+    }
+
+
     inline virtual size_t
     get_width() const {
         return width_;
@@ -261,6 +296,24 @@ class BytePolychromeImage : public virtual PolychromeImage {
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
     ) :
         Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeImage(
+        void* data, size_t width, size_t height, size_t data_size
+    ) :
+        Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeImage(
+        size_t width, size_t height, size_t data_size
+    ) :
+        Image(width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
@@ -298,6 +351,24 @@ class BytePolychromeAlphaImage : public virtual PolychromeAlphaImage {
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
     ) :
         Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeAlphaImage(
+        void* data, size_t width, size_t height, size_t data_size
+    ) :
+        Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeAlphaImage(
+        size_t width, size_t height, size_t data_size
+    ) :
+        Image(width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );

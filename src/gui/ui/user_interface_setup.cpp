@@ -7,6 +7,7 @@
 #include "util/files.hpp"
 #include "util/png_image.hpp"
 #include "../the_buttons/button_widget.hpp"
+#include "gui/render/structures/font.hpp"
 
 namespace gui {
 
@@ -106,6 +107,8 @@ setup(the_buttons::UserInterface& user_interface) {
     user_interface.add(a_second_window);
 
     // window_pipeline->data.push_back(scene.a_window.get());
+
+    auto my_font = render::structures::FontTexture(files::get_root_path() / "vendor" / "fonts" / "pixel_font" / "Pixelated_7_10.ttf");
 
     return;
 }

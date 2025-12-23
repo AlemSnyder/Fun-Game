@@ -1,10 +1,29 @@
 #include "image.hpp"
 
 #include "util/color.hpp"
+#include <cstring>
 
 namespace util {
 
 namespace image {
+
+
+     Image::Image(
+        void* data, size_t width, size_t height, size_t data_size
+    ) :
+        width_(width),
+        height_(height), data_size_(data_size), data_(new char[width * height * data_size]){
+            std::memcpy(data_.get(), data, width * height * data_size);
+        };
+
+
+     Image::Image(
+        size_t width, size_t height, size_t data_size
+    ) :
+        width_(width),
+        height_(height), data_size_(data_size), data_(new char[width * height * data_size]) {
+            std::memset(data_.get(), char(0), width * height * data_size);
+        };
 
 png_byte
 FloatMonochromeImage::get_color(size_t i, size_t j) const {
@@ -114,6 +133,15 @@ std::array<png_byte, 4>
 BytePolychromeAlphaImage::get_color(size_t i, size_t j) const {
     assert(i < width_ && j < height_ && "Position must be within image.");
     return read_data_byte<png_byte, 4>(data_, i * height_ + j);
+}
+
+void
+ByteMonochromeImage::draw_at(const ByteMonochromeImage& other, size_t position_x, size_t position_y) {
+    for (size_t i = 0; i < other.get_width(); i++) {
+        for (size_t j = 0; j < other.get_height(); j++) {
+            set_color(other.get_color(i,j), i + position_x, j + position_y);
+        }
+    }
 }
 
 } // namespace image
