@@ -48,7 +48,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         return;
     }
 
-    FT_Set_Pixel_Sizes(font_face, 0, 10);
+    FT_Set_Pixel_Sizes(font_face, 0, 20);
 
     if (FT_Load_Char(font_face, 'a', FT_LOAD_RENDER)) {
         LOG_WARNING(logging::main_logger, "Failed to load \"{}\" from font.", 'a');
@@ -68,7 +68,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     std::unordered_map<char, util::image::ByteMonochromeImage> images;
 
     for (unsigned char c = 0; c < 128; c++) {
-        if (FT_Load_Char(font_face, c, FT_LOAD_RENDER)) {
+        if (FT_Load_Char(font_face, c, FT_LOAD_RENDER | FT_LOAD_MONOCHROME)) {
             LOG_WARNING(logging::main_logger, "Failed to load \"{}\" from font.", c);
             return;
         }
@@ -77,9 +77,25 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         auto char_position = glm::uvec2(font_face->glyph->bitmap_left, font_face->glyph->bitmap_top);
         //auto char_texture = gpu_data::Texture2D(char_size.x, char_size.y, settings);
 
-        images.emplace(c, util::image::ByteMonochromeImage(font_face->glyph->bitmap.buffer, char_size.x, char_size.y, sizeof(char)));
+        
+        std::vector<png_byte> data;
+        data.resize(char_size.x * char_size.y);
+        for (size_t i = 0; i < font_face->glyph->bitmap.width; i++){
+            for (size_t j=0; j < font_face->glyph->bitmap.rows; j++) {
 
-        image::write_image(images.at(c), files::get_log_path() / ("font_as_image_" + std::string(1, c) + ".png"));
+                png_byte font_bit = font_face->glyph->bitmap.buffer[j * font_face->glyph->bitmap.pitch + i / 8];
+                uint8_t one = 1;
+                uint8_t value = font_bit >> (7 - i % 8);
+                data[j * font_face->glyph->bitmap.width + i] = (value & one) * 255;
+            }
+        }
+//        if (c == 'a' || c == 'b') {
+//            LOG_DEBUG(logging::main_logger, "{}", data);
+//        }
+
+        images.emplace(c, util::image::ByteMonochromeImage(data.data(), char_size.y, char_size.x, sizeof(char)));
+        
+//        image::write_image(images.at(c), files::get_log_path() / ("font_as_image_" + std::string(1, c) + ".png"));
 
 
         font_textures_.emplace(c, Character{
@@ -96,10 +112,10 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
 
     // std::shared_ptr<char> image(new char[max_height * total_width]);
 
-    auto image = std::make_shared<util::image::ByteMonochromeImage>(total_width, max_height, sizeof(char));
+    auto image = std::make_shared<util::image::ByteMonochromeImage>(max_height, total_width, sizeof(char));
 
     for (unsigned char c = 0; c < 128; c++) {
-        image->draw_at(images.at(c), font_textures_[c].position_in_texture.x, font_textures_[c].position_in_texture.y);
+        image->draw_at(images.at(c), font_textures_[c].position_in_texture.y, font_textures_[c].position_in_texture.x);
     }
 
     LOG_DEBUG(logging::main_logger, "saving fonts to file.");

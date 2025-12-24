@@ -269,7 +269,7 @@ class ByteMonochromeImage : public virtual MonochromeImage {
     void draw_at(const ByteMonochromeImage& other, size_t position_x, size_t position_y);
 
     void set_color(png_byte color, size_t i, size_t j) {
-        data_[i * height_ + j] = color;
+        reinterpret_cast<png_byte*>(data_.get())[i * height_ + j] = color;
     }
 
 

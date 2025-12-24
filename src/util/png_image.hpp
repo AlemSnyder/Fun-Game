@@ -171,7 +171,7 @@ write_image_base(T image, const std::filesystem::path& path/*other settings*/) {
 
     // set information about our image
     png_set_IHDR(
-        png_ptr, info_ptr, WIDTH, HEIGHT, 8, color_type,
+        png_ptr, info_ptr, HEIGHT, WIDTH, 8, color_type,
         PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT
     );
 
