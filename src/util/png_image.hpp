@@ -97,18 +97,20 @@ class ImageTest {
 namespace {
 
 template <class T, size_t n>
-auto to_array(std::array<T, n> array) {
+auto
+to_array(std::array<T, n> array) {
     return array;
 }
 
 template <class T>
-auto to_array(T value) {
+auto
+to_array(T value) {
     return std::array<T, 1>({value});
 }
 
 template <class T, unsigned int n>
 [[nodiscard]] write_result_t
-write_image_base(T image, const std::filesystem::path& path/*other settings*/) {
+write_image_base(T image, const std::filesystem::path& path /*other settings*/) {
     // Keep track of if we succeeded or not
     write_result_t status = WR_OK;
 
@@ -162,7 +164,7 @@ write_image_base(T image, const std::filesystem::path& path/*other settings*/) {
     if constexpr (n == 1) {
         color_type = PNG_COLOR_TYPE_GRAY;
     } else if constexpr (n == 3) {
-       color_type = PNG_COLOR_TYPE_RGB;
+        color_type = PNG_COLOR_TYPE_RGB;
     } else if constexpr (n == 4) {
         color_type = PNG_COLOR_TYPE_RGB_ALPHA;
     } else {
@@ -171,8 +173,8 @@ write_image_base(T image, const std::filesystem::path& path/*other settings*/) {
 
     // set information about our image
     png_set_IHDR(
-        png_ptr, info_ptr, HEIGHT, WIDTH, 8, color_type,
-        PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT
+        png_ptr, info_ptr, HEIGHT, WIDTH, 8, color_type, PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT
     );
 
     // Set metadata about the PNG file
@@ -198,7 +200,7 @@ write_image_base(T image, const std::filesystem::path& path/*other settings*/) {
     png_bytep row;
 
     // allocate data for row
-    row = new (std::nothrow) png_byte[n * WIDTH];
+    row = new (std::nothrow) png_byte[n * HEIGHT];
     if (!row) {
         status = WR_ROW_MALLOC_FAILED;
         goto row_malloc_failed;
@@ -208,10 +210,8 @@ write_image_base(T image, const std::filesystem::path& path/*other settings*/) {
     for (i = 0; i < WIDTH; i++) {
         // set row data
         for (j = 0; j < HEIGHT; j++) {
-
             const std::array<png_byte, n> pixel_color = to_array(image.get_color(i, j));
-            for (unsigned int channel = 0; channel < n; channel ++) {
-
+            for (unsigned int channel = 0; channel < n; channel++) {
                 row[n * j + channel] = pixel_color[channel];
             }
         }
@@ -243,7 +243,7 @@ fopen_failed:
     return status;
 }
 
-}
+} // namespace
 
 template <ImageBW T>
 [[nodiscard]] write_result_t

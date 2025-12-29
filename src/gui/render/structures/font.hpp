@@ -1,16 +1,15 @@
 #pragma once
 
 #include "../gpu_data/texture.hpp"
-#include <vector>
-#include <memory>
 
+#include <memory>
+#include <vector>
 
 namespace gui {
-    
+
 namespace render {
 
 namespace structures {
-
 
 struct Character {
     glm::ivec2 size;
@@ -21,7 +20,6 @@ struct Character {
 
 class FontTexture {
  private:
-
     std::shared_ptr<gpu_data::Texture2D> texture_;
 
     std::unordered_map<char, Character> font_textures_;
@@ -29,21 +27,14 @@ class FontTexture {
  public:
     FontTexture(std::filesystem::path font_file);
 
-
+    inline virtual void
+    bind(GLuint texture_index) const {
+        texture_->bind(texture_index);
+    }
 };
 
+} // namespace structures
 
-
-
-class FontHandler {
-    FontHandler(std::filesystem::path font_file);
-};
-
-
-
-
-}
-
-}
+} // namespace render
 
 } // namespace gui

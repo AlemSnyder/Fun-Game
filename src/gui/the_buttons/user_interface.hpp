@@ -14,6 +14,7 @@ namespace the_buttons {
 class BorderedWidget;
 class BorderedWindow;
 class ButtonWidget;
+class TextWidget;
 
 class UserInterface : public virtual scene::Inputs {
  private:
@@ -28,6 +29,7 @@ class UserInterface : public virtual scene::Inputs {
 
     // widget renderer
     std::shared_ptr<shader::ShaderProgram_Windows> window_pipeline_;
+    std::shared_ptr<shader::ShaderProgram_Windows> text_pipeline_;
 
     std::list<std::shared_ptr<FrameInterface>> frames_;
 
@@ -68,23 +70,26 @@ class UserInterface : public virtual scene::Inputs {
         frames_.insert(pos, frame);
     }
 
+    // one of these for each
     void render_frame(
         const BorderedWindow* frame, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 
-    // one of these for each
     void render_frame(
         const BorderedWidget* widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 
-    // one of these for each
     void render_frame(
         const ButtonWidget* widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 
+    void render_frame(
+        const TextWidget* widget, screen_size_t x_frame_position,
+        screen_size_t y_frame_position
+    ) const;
 
     /**
      * @brief Handle key input including mouse keys

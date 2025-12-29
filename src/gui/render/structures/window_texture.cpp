@@ -52,10 +52,12 @@ WindowTexture::WindowTexture(
     });
 }
 
-WindowTexture::WindowTexture(std::shared_ptr<util::image::Image> image,const window_texture_data_t& texture_data) :
+WindowTexture::WindowTexture(
+    std::shared_ptr<util::image::Image> image, const window_texture_data_t& texture_data
+) :
     WindowTexture(
-        image, texture_data.border_size,
-        texture_data.side_lengths, texture_data.inner_pattern_size, texture_data.texture_regions
+        image, texture_data.border_size, texture_data.side_lengths,
+        texture_data.inner_pattern_size, texture_data.texture_regions
     ) {}
 
 } // namespace render

@@ -91,15 +91,9 @@ class Image {
         width_(width),
         height_(height), data_size_(data_size), data_(data){};
 
-    Image(
-        void* data, size_t width, size_t height, size_t data_size
-    );
+    Image(void* data, size_t width, size_t height, size_t data_size);
 
-
-    Image(
-        size_t width, size_t height, size_t data_size
-    );
-
+    Image(size_t width, size_t height, size_t data_size);
 
     virtual ~Image() {}
 };
@@ -248,30 +242,27 @@ class ByteMonochromeImage : public virtual MonochromeImage {
         );
     }
 
-    ByteMonochromeImage(
-        void* data, size_t width, size_t height, size_t data_size
-    ) :
+    ByteMonochromeImage(void* data, size_t width, size_t height, size_t data_size) :
         Image(data, width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
     }
 
-    ByteMonochromeImage(
-        size_t width, size_t height, size_t data_size
-    ) :
+    ByteMonochromeImage(size_t width, size_t height, size_t data_size) :
         Image(width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
     }
 
-    void draw_at(const ByteMonochromeImage& other, size_t position_x, size_t position_y);
+    void
+    draw_at(const ByteMonochromeImage& other, size_t position_x, size_t position_y);
 
-    void set_color(png_byte color, size_t i, size_t j) {
+    void
+    set_color(png_byte color, size_t i, size_t j) {
         reinterpret_cast<png_byte*>(data_.get())[i * height_ + j] = color;
     }
-
 
     inline virtual size_t
     get_width() const {
@@ -301,18 +292,14 @@ class BytePolychromeImage : public virtual PolychromeImage {
         );
     }
 
-    BytePolychromeImage(
-        void* data, size_t width, size_t height, size_t data_size
-    ) :
+    BytePolychromeImage(void* data, size_t width, size_t height, size_t data_size) :
         Image(data, width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
     }
 
-    BytePolychromeImage(
-        size_t width, size_t height, size_t data_size
-    ) :
+    BytePolychromeImage(size_t width, size_t height, size_t data_size) :
         Image(width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
@@ -365,9 +352,7 @@ class BytePolychromeAlphaImage : public virtual PolychromeAlphaImage {
         );
     }
 
-    BytePolychromeAlphaImage(
-        size_t width, size_t height, size_t data_size
-    ) :
+    BytePolychromeAlphaImage(size_t width, size_t height, size_t data_size) :
         Image(width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"

@@ -1,22 +1,20 @@
 #include "font.hpp"
-//#include "../render/texture.hpp"
+// #include "../render/texture.hpp"
 #include "logging.hpp"
 #include "util/files.hpp"
 #include "util/png_image.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
 // ^ what type of mad man write this?
-// 
+//
 
 namespace gui {
-    
+
 namespace render {
 
 namespace structures {
-
-
-
 
 // FontHandler::FontHandler () {
 //     FT_Library ft;
@@ -27,12 +25,9 @@ namespace structures {
 //     }
 // }
 
-
-/// 
-
+///
 
 FontTexture::FontTexture(std::filesystem::path font_file) {
-
     FT_Library ft;
 
     if (FT_Init_FreeType(&ft)) {
@@ -40,10 +35,8 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         return;
     }
 
-        FT_Face font_face;
-    if (FT_New_Face(ft,
-                font_file.c_str(),
-                0, &font_face) ) {
+    FT_Face font_face;
+    if (FT_New_Face(ft, font_file.c_str(), 0, &font_face)) {
         LOG_WARNING(logging::main_logger, "Could not load Pixelated Font");
         return;
     }
@@ -55,12 +48,12 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         return;
     }
 
-
-    auto settings = gpu_data::TextureSettings{.internal_format = gpu_data::GPUPixelStorageFormat::R,
-                                              .read_format = gpu_data::GPUPixelReadFormat::RED,
-                                              .type = gpu_data::GPUPixelType::UNSIGNED_BYTE,
-                                              .min_filter = GL_NEAREST,
-                                              .mag_filter = GL_NEAREST};
+    auto settings = gpu_data::TextureSettings{
+        .internal_format = gpu_data::GPUPixelStorageFormat::RED,
+        .read_format = gpu_data::GPUPixelReadFormat::RED,
+        .type = gpu_data::GPUPixelType::UNSIGNED_BYTE,
+        .min_filter = GL_NEAREST,
+        .mag_filter = GL_NEAREST};
 
     unsigned int max_height = 0;
     unsigned int total_width = 0;
@@ -73,36 +66,46 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
             return;
         }
 
-        auto char_size = glm::uvec2(font_face->glyph->bitmap.width, font_face->glyph->bitmap.rows);
-        auto char_position = glm::uvec2(font_face->glyph->bitmap_left, font_face->glyph->bitmap_top);
-        //auto char_texture = gpu_data::Texture2D(char_size.x, char_size.y, settings);
+        auto char_size =
+            glm::uvec2(font_face->glyph->bitmap.width, font_face->glyph->bitmap.rows);
+        auto char_position =
+            glm::uvec2(font_face->glyph->bitmap_left, font_face->glyph->bitmap_top);
+        // auto char_texture = gpu_data::Texture2D(char_size.x, char_size.y, settings);
 
-        
         std::vector<png_byte> data;
         data.resize(char_size.x * char_size.y);
-        for (size_t i = 0; i < font_face->glyph->bitmap.width; i++){
-            for (size_t j=0; j < font_face->glyph->bitmap.rows; j++) {
-
-                png_byte font_bit = font_face->glyph->bitmap.buffer[j * font_face->glyph->bitmap.pitch + i / 8];
+        for (size_t i = 0; i < font_face->glyph->bitmap.width; i++) {
+            for (size_t j = 0; j < font_face->glyph->bitmap.rows; j++) {
+                png_byte font_bit =
+                    font_face->glyph->bitmap
+                        .buffer[j * font_face->glyph->bitmap.pitch + i / 8];
                 uint8_t one = 1;
                 uint8_t value = font_bit >> (7 - i % 8);
                 data[j * font_face->glyph->bitmap.width + i] = (value & one) * 255;
             }
         }
-//        if (c == 'a' || c == 'b') {
-//            LOG_DEBUG(logging::main_logger, "{}", data);
-//        }
+        //        if (c == 'a' || c == 'b') {
+        //            LOG_DEBUG(logging::main_logger, "{}", data);
+        //        }
 
-        images.emplace(c, util::image::ByteMonochromeImage(data.data(), char_size.y, char_size.x, sizeof(char)));
-        
-//        image::write_image(images.at(c), files::get_log_path() / ("font_as_image_" + std::string(1, c) + ".png"));
+        images.emplace(
+            c, util::image::ByteMonochromeImage(
+                   data.data(), char_size.y, char_size.x, sizeof(char)
+               )
+        );
 
+        //        image::write_image(images.at(c), files::get_log_path() /
+        //        ("font_as_image_" + std::string(1, c) + ".png"));
 
-        font_textures_.emplace(c, Character{
-            .size = char_size,
-            .bearing = char_position,
-            .advance = static_cast<unsigned int>(font_face->glyph->advance.x),
-            .position_in_texture = glm::ivec4(total_width, 0, total_width + char_size.x, char_size.y)});
+        font_textures_.emplace(
+            c,
+            Character{
+                .size = char_size,
+                .bearing = char_position,
+                .advance = static_cast<unsigned int>(font_face->glyph->advance.x),
+                .position_in_texture =
+                    glm::ivec4(total_width, 0, total_width + char_size.x, char_size.y)}
+        );
 
         total_width += char_size.x;
         if (char_size.y > max_height) {
@@ -112,10 +115,15 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
 
     // std::shared_ptr<char> image(new char[max_height * total_width]);
 
-    auto image = std::make_shared<util::image::ByteMonochromeImage>(max_height, total_width, sizeof(char));
+    auto image = std::make_shared<util::image::ByteMonochromeImage>(
+        max_height, total_width, sizeof(char)
+    );
 
     for (unsigned char c = 0; c < 128; c++) {
-        image->draw_at(images.at(c), font_textures_[c].position_in_texture.y, font_textures_[c].position_in_texture.x);
+        image->draw_at(
+            images.at(c), font_textures_[c].position_in_texture.y,
+            font_textures_[c].position_in_texture.x
+        );
     }
 
     LOG_DEBUG(logging::main_logger, "saving fonts to file.");
@@ -123,11 +131,8 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     texture_ = std::make_shared<gui::gpu_data::Texture2D>(image, settings);
 }
 
+} // namespace structures
 
-}
-
-}
+} // namespace render
 
 } // namespace gui
-
-

@@ -36,7 +36,7 @@ class ButtonWidget : public virtual WidgetBase {
     /**
      * @brief Default move constructor
      */
-    ButtonWidget(ButtonWidget&& obj) = delete; 
+    ButtonWidget(ButtonWidget&& obj) = delete;
 
     /**
      * @brief Default move constructor
@@ -45,7 +45,8 @@ class ButtonWidget : public virtual WidgetBase {
 
     ButtonWidget(
         WidgetInterface* parent, std::shared_ptr<render::WindowTexture> data,
-        glm::ivec2 position, glm::ivec2 widget_size, std::function<void()> button_function
+        glm::ivec2 position, glm::ivec2 widget_size,
+        std::function<void()> button_function
     ) :
         WidgetBase(
             parent, position, widget_size,
@@ -115,7 +116,8 @@ class ButtonWidget : public virtual WidgetBase {
 
     // rn this may work, but...
     // want to separate between has clickable and renderable children.
-    inline bool has_children() const {
+    inline bool
+    has_children() const {
         return false;
     }
 

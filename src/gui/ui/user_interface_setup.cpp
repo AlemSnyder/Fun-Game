@@ -2,12 +2,13 @@
 
 #include "../the_buttons/bordered_widget.hpp"
 #include "../the_buttons/bordered_window.hpp"
+#include "../the_buttons/button_widget.hpp"
+#include "../the_buttons/text_widget.hpp"
 #include "../the_buttons/user_interface.hpp"
+#include "gui/render/structures/font.hpp"
 #include "gui/render/structures/window_texture.hpp"
 #include "util/files.hpp"
 #include "util/png_image.hpp"
-#include "../the_buttons/button_widget.hpp"
-#include "gui/render/structures/font.hpp"
 
 namespace gui {
 
@@ -63,15 +64,12 @@ setup(the_buttons::UserInterface& user_interface) {
     }
     std::shared_ptr<util::image::Image> image_2 = image_result_2.value();
 
-        
     std::shared_ptr<the_buttons::BorderedWidget> a_widget =
         a_second_window->make<the_buttons::BorderedWidget>(
             std::make_shared<render::WindowTexture>(image_2, texture_data_2.value()),
 
             glm::ivec2(20, 20), glm::ivec2(180, 300)
         );
-
-
 
     auto texture_data_3 = files::read_json_from_file<render::window_texture_data_t>(
         files::get_resources_path() / "textures" / "GenericButton.json"
@@ -91,24 +89,27 @@ setup(the_buttons::UserInterface& user_interface) {
     }
     std::shared_ptr<util::image::Image> image_3 = image_result_3.value();
 
+    auto a_button = a_widget->make<the_buttons::ButtonWidget>(
+        std::make_shared<render::WindowTexture>(image_3, texture_data_3.value()),
 
-    auto a_button =
-        a_widget->make<the_buttons::ButtonWidget>(
-            std::make_shared<render::WindowTexture>(image_3, texture_data_3.value()),
-
-            glm::ivec2(20, 28), glm::ivec2(140, 80),
-            std::function<void()>([](){
-                LOG_INFO(logging::main_logger, "Button Was Pressed");
-            })
-        );
-
+        glm::ivec2(20, 28), glm::ivec2(140, 80), std::function<void()>([]() {
+            LOG_INFO(logging::main_logger, "Button Was Pressed");
+        })
+    );
 
     user_interface.add(a_window);
     user_interface.add(a_second_window);
 
     // window_pipeline->data.push_back(scene.a_window.get());
 
-    auto my_font = render::structures::FontTexture(files::get_root_path() / "vendor" / "fonts" / "pixel_font" / "Pixelated_7_10.ttf");
+    auto my_font = std::make_shared<render::structures::FontTexture>(
+        files::get_root_path() / "vendor" / "fonts" / "pixel_font"
+        / "Pixelated_7_10.ttf"
+    );
+
+    auto text_widget = a_widget->make<the_buttons::TextWidget>(
+        my_font, glm::ivec2(20, 100), glm::ivec2(140, 140), "Hello World", true
+    );
 
     return;
 }

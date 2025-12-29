@@ -16,9 +16,14 @@ class VertexArrayObject {
     /**
      * @brief construct a new VertexArrayObject
      */
-    inline VertexArrayObject() {
-        GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this]() { glGenVertexArrays(1, &vertex_array_); });
+    inline VertexArrayObject(bool differed = true) {
+        if (differed) {
+            GlobalContext& context = GlobalContext::instance();
+            context.push_opengl_task([this]() { glGenVertexArrays(1, &vertex_array_); }
+            );
+        } else {
+            glGenVertexArrays(1, &vertex_array_);
+        }
     };
 
     // copy and move constructor

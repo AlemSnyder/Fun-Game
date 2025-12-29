@@ -2,6 +2,8 @@
 
 #include "bordered_widget.hpp"
 #include "frame_part.hpp"
+#include "global_context.hpp"
+#include "gui/render/gpu_data/vertex_buffer_object.hpp"
 #include "gui/render/structures/font.hpp"
 #include "types.hpp"
 #include "widget.hpp"
@@ -14,9 +16,16 @@ namespace the_buttons {
 
 class TextWidget : public virtual WidgetBase {
  private:
-    //std::shared_ptr<render::WindowTexture> data_;
-    std::shared_ptr<render::Font> data_;
+    gpu_data::VertexArrayObject vertex_array_object_;
+
+    std::shared_ptr<render::structures::FontTexture> font_;
+    gpu_data::VertexBufferObject<glm::uvec4> text_data_;
     std::string text_;
+    uint32_t num_characters_;
+
+    void update_text_data(bool differed = true);
+
+    void initialize();
 
  public:
     TextWidget() = delete;
@@ -40,75 +49,64 @@ class TextWidget : public virtual WidgetBase {
      */
     TextWidget& operator=(TextWidget&& obj) = delete;
 
-    TextWidget(
-        WidgetInterface* parent, std::shared_ptr<render::WindowTexture> data,
-        glm::ivec2 position, glm::ivec2 widget_size
+    inline TextWidget(
+        WidgetInterface* parent, std::shared_ptr<render::structures::FontTexture> font,
+        glm::ivec2 position, glm::ivec2 widget_size, std::string text = std::string(""),
+        bool differed = true
     ) :
         WidgetBase(
             parent, position, widget_size,
             {position, glm::ivec2(position.x + widget_size.x, position.y),
              position + widget_size, glm::ivec2(position.x, position.y + widget_size.y)}
         ),
+        vertex_array_object_(differed),
 
-        data_(data) {
-        data_->update_position(get_bounding_box());
+        font_(font), text_(text), num_characters_(text_.length()) {
+        if (differed) {
+            GlobalContext& context = GlobalContext::instance();
+            context.push_opengl_task([this]() { initialize(); });
+        } else {
+            initialize();
+        }
+        update_text_data();
     }
 
     inline virtual ~TextWidget(){};
 
+    void attach_all();
+
+    inline void
+    set_text(std::string&& text) {
+        text_ = text;
+        update_text_data();
+    }
+
     inline unsigned int
     get_num_vertices() const {
-        return data_->get_num_vertices();
+        //        return num_characters_ * 4; // four vertices per character
+        return 4;
     }
 
     inline virtual void
     bind() const {
-        data_->bind();
+        //        text_data_.attach_to_vertex_attribute(0);
+        vertex_array_object_.bind();
     };
 
     inline virtual void
     release() const {
-        data_->release();
+        vertex_array_object_.release();
     }
 
     inline virtual bool
     do_render() const {
-        return data_->do_render();
+        return true;
     };
 
-    inline void
-    user_interface_render(
+    void user_interface_render(
         const UserInterface* user_interface, screen_size_t x_position,
         screen_size_t y_position
-    ) const override {
-        user_interface->render_frame(this, x_position, y_position);
-
-        for (const auto& child : children) {
-            child->user_interface_render(
-                user_interface, x_position + position_.x, y_position + position_.y
-            );
-        }
-    }
-
-    [[nodiscard]] inline virtual glm::ivec4
-    get_border_size() const {
-        return data_->get_border_size();
-    }
-
-    [[nodiscard]] inline virtual glm::ivec4
-    get_side_lengths() const {
-        return data_->get_side_lengths();
-    }
-
-    [[nodiscard]] inline virtual glm::ivec2
-    get_inner_pattern_size() const {
-        return data_->get_inner_pattern_size();
-    }
-
-    [[nodiscard]] inline virtual std::array<glm::ivec2, 9>
-    get_texture_regions() const {
-        return data_->get_texture_regions();
-    }
+    ) const override;
 };
 
 } // namespace the_buttons

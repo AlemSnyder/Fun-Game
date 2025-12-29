@@ -156,7 +156,7 @@ enum class GPUPixelType : GLenum {
 };
 
 enum class GPUPixelStorageFormat : GLenum {
-    R = GL_R,
+    RED = GL_RED,
     DEPTH = GL_DEPTH_COMPONENT,
     DEPTH_16 = GL_DEPTH_COMPONENT16,
     DEPTH_24 = GL_DEPTH_COMPONENT24,
@@ -622,7 +622,7 @@ get_size(const GPUPixelReadFormat& data_format) {
 constexpr inline size_t
 get_size(const GPUPixelStorageFormat& data_format) {
     switch (data_format) {
-        case GPUPixelStorageFormat::R:
+        case GPUPixelStorageFormat::RED:
         case GPUPixelStorageFormat::DEPTH:
             return 1;
         case GPUPixelStorageFormat::RGB:

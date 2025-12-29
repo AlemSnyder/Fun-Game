@@ -38,7 +38,7 @@ class BorderedWidget : public virtual WidgetBase {
      */
     BorderedWidget& operator=(BorderedWidget&& obj) = delete;
 
-    BorderedWidget(
+    inline BorderedWidget(
         WidgetInterface* parent, std::shared_ptr<render::WindowTexture> data,
         glm::ivec2 position, glm::ivec2 widget_size
     ) :
@@ -74,19 +74,10 @@ class BorderedWidget : public virtual WidgetBase {
         return data_->do_render();
     };
 
-    inline void
-    user_interface_render(
+    void user_interface_render(
         const UserInterface* user_interface, screen_size_t x_position,
         screen_size_t y_position
-    ) const override {
-        user_interface->render_frame(this, x_position, y_position);
-
-        for (const auto& child : children) {
-            child->user_interface_render(
-                user_interface, x_position + position_.x, y_position + position_.y
-            );
-        }
-    }
+    ) const override;
 
     [[nodiscard]] inline virtual glm::ivec4
     get_border_size() const {

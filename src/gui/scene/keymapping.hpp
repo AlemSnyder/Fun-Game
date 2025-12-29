@@ -4,9 +4,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include <fmt/core.h>
 #include <glaze/glaze.hpp>
 
-#include <fmt/core.h>
 #include <array>
 #include <string>
 #include <unordered_map>
@@ -425,11 +425,7 @@ to_string(const Key& key) {
     }
 }
 
-enum KeyAction {
-    PRESS = GLFW_PRESS,
-    RELEASE = GLFW_RELEASE,
-    REPEAT = GLFW_REPEAT
-};
+enum KeyAction { PRESS = GLFW_PRESS, RELEASE = GLFW_RELEASE, REPEAT = GLFW_REPEAT };
 
 constexpr inline std::string
 to_string(const KeyAction& key) {
@@ -453,12 +449,13 @@ enum KeyModifier {
     CAPS_LOCK = GLFW_MOD_CAPS_LOCK,
     NUM_LOCK = GLFW_MOD_NUM_LOCK
 };
+
 /*
 // TODO want to make this constexpr
 // ftm::join and fmt format are not cont expr
 inline std::string
 to_string(const KeyModifier& key) {
-    
+
 std::vector<std::string> mods;
 //    std::string mods = "";
 if (key | KeyModifier::SHIFT) {

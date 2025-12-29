@@ -9,6 +9,7 @@
 #include "bordered_window.hpp"
 #include "button_widget.hpp"
 #include "manifest/object_handler.hpp"
+#include "text_widget.hpp"
 #include "widget.hpp"
 
 namespace gui {
@@ -30,6 +31,12 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
         files::get_resources_path() / "shaders" / "overlay" / "FramedWindow.frag"
     );
 
+    shader::Program& text_render_program = shader_handler.load_program(
+        "Windows",
+        files::get_resources_path() / "shaders" / "overlay" / "TextWindow.vert",
+        files::get_resources_path() / "shaders" / "overlay" / "TextWindow.frag"
+    );
+
     // auto image_result = image::read_image(files::get_resources_path() / "textures" /
     // "GenericBorder.png"); if (!image_result.has_value()) {
     //     LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
@@ -39,8 +46,6 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
 
     // gpu_data::Texture2D border_texture(image, gui::gpu_data::TextureSettings{},
     // false);
-
-    // frame_texture_uniform_ = std::make_shared<>();
 
     // Overwrites anything that was there before
     std::function<void()> render_setup = []() {
@@ -60,14 +65,24 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     window_render_program.set_uniform(inner_pattern_size_, "inner_pattern_size");
     window_render_program.set_uniform(texture_regions_, "positions[0]");
 
+    text_render_program.set_uniform(frame_texture_uniform_, "font_texture");
+    // vec3 font color_uniform
+    // vec2 position
+
     // windows
     window_pipeline_ = std::make_shared<shader::ShaderProgram_Windows>(
         window_render_program, render_setup
     );
+
+    text_pipeline_ = std::make_shared<shader::ShaderProgram_Windows>(
+        text_render_program, render_setup
+    );
 }
 
 void
-UserInterface::update([[maybe_unused]] screen_size_t width, [[maybe_unused]] screen_size_t height) {
+UserInterface::update(
+    [[maybe_unused]] screen_size_t width, [[maybe_unused]] screen_size_t height
+) {
     // cascade update frames using width and height
 
     FrameBufferHandler::instance().bind_fbo(0); // the screen
@@ -162,6 +177,20 @@ UserInterface::render_frame(
     );
 
     //    widget->render_children(this, x_frame_position, y_frame_position);
+}
+
+void
+UserInterface::render_frame(
+    const TextWidget* widget, screen_size_t x_frame_position,
+    screen_size_t y_frame_position
+) const {
+    const auto bounding_box = widget->get_bounding_box();
+
+    // set uniforms
+    text_pipeline_->render(
+        bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
+        bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0, widget
+    );
 }
 
 std::pair<std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>
