@@ -65,6 +65,7 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     window_render_program.set_uniform(inner_pattern_size_, "inner_pattern_size");
     window_render_program.set_uniform(texture_regions_, "positions[0]");
 
+    text_render_program.set_uniform(frame_size_uniform_, "frame_size");
     text_render_program.set_uniform(frame_texture_uniform_, "font_texture");
     // vec3 font color_uniform
     // vec2 position
@@ -186,6 +187,11 @@ UserInterface::render_frame(
 ) const {
     const auto bounding_box = widget->get_bounding_box();
 
+
+    frame_size_uniform_->set_frame_size(
+        glm::ivec2(bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1])
+    );
+    
     // set uniforms
     text_pipeline_->render(
         bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
