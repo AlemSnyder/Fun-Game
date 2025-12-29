@@ -8,10 +8,10 @@ void
 TextWidget::update_text_data(bool differed) {
     std::vector<glm::uvec4> data;
 
-    data.push_back(glm::ivec4(10, 10, 100, 15));
-    data.push_back(glm::ivec4(10, 40, 100, 0));
-    data.push_back(glm::ivec4(110, 10, 115, 15));
-    data.push_back(glm::ivec4(110, 40, 115, 0));
+    data.push_back(glm::ivec4(2, 2, 100, 15));
+    data.push_back(glm::ivec4(2, 10, 100, 0));
+    data.push_back(glm::ivec4(28, 2, 115, 15));
+    data.push_back(glm::ivec4(28, 10, 115, 0));
 
     text_data_.insert(data, 0, text_data_.size());
 }

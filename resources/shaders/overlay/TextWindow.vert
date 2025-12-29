@@ -7,6 +7,7 @@ layout(location = 0) in ivec4 pos;
 // this is the size of the view 
 // then switch to division
 uniform ivec2 frame_size;
+uniform int ui_scale;
 
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
@@ -16,7 +17,7 @@ main() {
 
     //vec2 projection_matrix = vec2(1/250, 1/250);
 
-    gl_Position = vec4( 2 * pos.xy / vec2(frame_size) - 1, 1, 1);
+    gl_Position = vec4(ui_scale * 2 * pos.xy / vec2(frame_size) - 1, 1, 1);
     UV = pos.zw;
 }
 
