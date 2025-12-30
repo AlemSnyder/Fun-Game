@@ -108,7 +108,7 @@ setup(the_buttons::UserInterface& user_interface) {
     );
 
     auto text_widget = a_widget->make<the_buttons::TextWidget>(
-        my_font, glm::ivec2(20, 100), glm::ivec2(140, 140), "Hello World", true
+        my_font, glm::ivec2(20, 100), glm::ivec2(140, 240), "Hello World", true
     );
 
     return;

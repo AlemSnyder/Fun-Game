@@ -107,6 +107,8 @@ class TextWidget : public virtual WidgetBase {
         const UserInterface* user_interface, screen_size_t x_position,
         screen_size_t y_position
     ) const override;
+
+    [[nodiscard]] std::vector<glm::uvec4> generate_data() const;
 };
 
 } // namespace the_buttons
