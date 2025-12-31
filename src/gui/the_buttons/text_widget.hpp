@@ -90,6 +90,7 @@ class TextWidget : public virtual WidgetBase {
     inline virtual void
     bind() const {
         //        text_data_.attach_to_vertex_attribute(0);
+        font_->bind(0);
         vertex_array_object_.bind();
     };
 

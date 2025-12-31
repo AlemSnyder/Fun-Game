@@ -60,10 +60,10 @@ std::vector<glm::uvec4> TextWidget::generate_data() const {
         glm::ivec2 bearing = character_data->bearing;
         glm::ivec2 size = character_data->size;
 
-        data.push_back(glm::ivec4(bearing.x, line_advance - bearing.y + size.y, position_in_texture.x, position_in_texture.z));
+        data.push_back(glm::ivec4(bearing.x, line_advance - bearing.y + size.y, position_in_texture.x, position_in_texture.y));
         data.push_back(glm::ivec4(bearing.x, line_advance - bearing.y, position_in_texture.x, position_in_texture.w));
-        data.push_back(glm::ivec4(bearing.x + size.x, line_advance - bearing.y + size.y, position_in_texture.y, position_in_texture.z));
-        data.push_back(glm::ivec4(bearing.x + size.x, line_advance - bearing.y, position_in_texture.y, position_in_texture.w));
+        data.push_back(glm::ivec4(bearing.x + size.x, line_advance - bearing.y + size.y, position_in_texture.z, position_in_texture.y));
+        data.push_back(glm::ivec4(bearing.x + size.x, line_advance - bearing.y, position_in_texture.z, position_in_texture.w));
 
 
         advance += character_data->advance;

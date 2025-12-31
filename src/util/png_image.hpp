@@ -173,7 +173,7 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
 
     // set information about our image
     png_set_IHDR(
-        png_ptr, info_ptr, HEIGHT, WIDTH, 8, color_type, PNG_INTERLACE_NONE,
+        png_ptr, info_ptr, WIDTH, HEIGHT, 8, color_type, PNG_INTERLACE_NONE,
         PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT
     );
 
@@ -200,17 +200,17 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
     png_bytep row;
 
     // allocate data for row
-    row = new (std::nothrow) png_byte[n * HEIGHT];
+    row = new (std::nothrow) png_byte[n * WIDTH];
     if (!row) {
         status = WR_ROW_MALLOC_FAILED;
         goto row_malloc_failed;
     }
 
     // write row data
-    for (i = 0; i < WIDTH; i++) {
+    for (i = 0; i < HEIGHT; i++) {
         // set row data
-        for (j = 0; j < HEIGHT; j++) {
-            const std::array<png_byte, n> pixel_color = to_array(image.get_color(i, j));
+        for (j = 0; j < WIDTH; j++) {
+            const std::array<png_byte, n> pixel_color = to_array(image.get_color(j, i));
             for (unsigned int channel = 0; channel < n; channel++) {
                 row[n * j + channel] = pixel_color[channel];
             }

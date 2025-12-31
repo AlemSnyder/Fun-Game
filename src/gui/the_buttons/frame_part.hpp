@@ -18,9 +18,10 @@ class WidgetBase : public virtual WidgetInterface {
     std::vector<glm::ivec2> exterior_points_;
 
     std::unordered_set<std::shared_ptr<WidgetInterface>> children;
-    void exterior_changed(); // need to change exterior for parent.
-
+    
     bool is_selected;
+    
+    void exterior_changed(); // need to change exterior for parent.
 
  public:
     WidgetBase(

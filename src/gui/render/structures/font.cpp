@@ -81,7 +81,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
                         .buffer[j * font_face->glyph->bitmap.pitch + i / 8];
                 uint8_t one = 1;
                 uint8_t value = font_bit >> (7 - i % 8);
-                data[j * font_face->glyph->bitmap.width + i] = (value & one) * 255;
+                data[i * font_face->glyph->bitmap.rows + j] = (value & one) * 255;
             }
         }
         //        if (c == 'a' || c == 'b') {
@@ -90,7 +90,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
 
         images.emplace(
             c, util::image::ByteMonochromeImage(
-                   data.data(), char_size.y, char_size.x, sizeof(char)
+                   data.data(), char_size.x, char_size.y, sizeof(char)
                )
         );
 
@@ -116,13 +116,13 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     // std::shared_ptr<char> image(new char[max_height * total_width]);
 
     auto image = std::make_shared<util::image::ByteMonochromeImage>(
-        max_height, total_width, sizeof(char)
+        total_width, max_height, sizeof(char)
     );
 
     for (unsigned char c = 0; c < 128; c++) {
         image->draw_at(
-            images.at(c), font_textures_[c].position_in_texture.y,
-            font_textures_[c].position_in_texture.x
+            images.at(c), font_textures_[c].position_in_texture.x,
+            font_textures_[c].position_in_texture.y
         );
     }
 
