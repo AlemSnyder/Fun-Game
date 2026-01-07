@@ -648,6 +648,8 @@ get_size(const GPUPixelType type) {
             return 4;
         case GPUPixelType::HALF_FLOAT:
             return 2;
+        case GPUPixelType::UNSIGNED_BYTE:
+            return 1;
         default:
             LOG_CRITICAL(
                 logging::opengl_logger,

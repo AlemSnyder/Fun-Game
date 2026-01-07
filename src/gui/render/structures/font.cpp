@@ -128,7 +128,23 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
 
     LOG_DEBUG(logging::main_logger, "saving fonts to file.");
     image::write_image(*image, files::get_log_path() / "font_as_image.png");
+    image->transpose();
     texture_ = std::make_shared<gui::gpu_data::Texture2D>(image, settings);
+
+    GlobalContext& global_context = GlobalContext::instance();
+    global_context.run_opengl_queue();
+
+    auto font_image_from_gpu = texture_->get_image();
+
+    if (auto font_image_from_gpu_typed =
+            std::dynamic_pointer_cast<util::image::ByteMonochromeImage>(
+                font_image_from_gpu
+            )) {
+                font_image_from_gpu_typed->transpose();
+        image::write_image(
+            *font_image_from_gpu_typed, files::get_log_path() / "font_as_image_from_texture.png"
+        );
+    }
 }
 
 } // namespace structures

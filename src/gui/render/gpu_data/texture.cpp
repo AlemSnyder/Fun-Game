@@ -172,6 +172,97 @@ Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
     }
 }
 
+std::shared_ptr<util::image::Image>
+Texture2D::get_image() const {
+    // width_
+    // height_
+
+    std::shared_ptr<char[]> data = std::make_shared<char[]>(
+        width_ * height_ * get_size(settings_.type) * get_size(settings_.read_format)
+    );
+
+    if (settings_.multisample) {
+        LOG_ERROR(logging::opengl_logger, "Cannot load multisample texture to image.");
+        return nullptr;
+    }
+    glBindTexture(GL_TEXTURE_2D, texture_ID_);
+
+    glGetTexImage(
+        GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.read_format),
+        static_cast<GLenum>(settings_.type), data.get()
+    );
+
+    switch (settings_.type) {
+        case GPUPixelType::FLOAT:
+        case GPUPixelType::HALF_FLOAT:
+            switch (settings_.read_format) {
+                case GPUPixelReadFormat::DEPTH_COMPONENT:
+                case GPUPixelReadFormat::DEPTH_STENCIL:
+                case GPUPixelReadFormat::RED:
+                case GPUPixelReadFormat::GREEN:
+                case GPUPixelReadFormat::BLUE:
+                    return std::make_shared<util::image::FloatMonochromeImage>(
+                        data, width_, height_, get_size(settings_.type)
+                    );
+                case GPUPixelReadFormat::RGB:
+                case GPUPixelReadFormat::BGR:
+                    return std::make_shared<util::image::FloatPolychromeImage>(
+                        data, width_, height_, get_size(settings_.type)
+                    );
+
+                case GPUPixelReadFormat::RGBA:
+                case GPUPixelReadFormat::BGRA:
+                    return std::make_shared<util::image::FloatPolychromeAlphaImage>(
+                        data, width_, height_, get_size(settings_.type)
+                    );
+
+                default:
+                    LOG_ERROR(
+                        logging::opengl_logger,
+                        "Cannot load image. Unknown read_format {}.",
+                        static_cast<GLenum>(settings_.read_format)
+                    );
+                    return nullptr;
+            }
+        case GPUPixelType::UNSIGNED_BYTE:
+            switch (settings_.read_format) {
+                case GPUPixelReadFormat::DEPTH_COMPONENT:
+                case GPUPixelReadFormat::DEPTH_STENCIL:
+                case GPUPixelReadFormat::RED:
+                case GPUPixelReadFormat::GREEN:
+                case GPUPixelReadFormat::BLUE:
+                    return std::make_shared<util::image::ByteMonochromeImage>(
+                        data, width_, height_, get_size(settings_.type)
+                    );
+                case GPUPixelReadFormat::RGB:
+                case GPUPixelReadFormat::BGR:
+                    return std::make_shared<util::image::BytePolychromeImage>(
+                        data, width_, height_, get_size(settings_.type)
+                    );
+
+                case GPUPixelReadFormat::RGBA:
+                case GPUPixelReadFormat::BGRA:
+                    return std::make_shared<util::image::BytePolychromeAlphaImage>(
+                        data, width_, height_, get_size(settings_.type)
+                    );
+
+                default:
+                    LOG_ERROR(
+                        logging::opengl_logger,
+                        "Cannot load image. Unknown read_format {}.",
+                        static_cast<GLenum>(settings_.read_format)
+                    );
+                    return nullptr;
+            }
+        default:
+            LOG_ERROR(
+                logging::opengl_logger, "Cannot load image. Unknown type {}.",
+                static_cast<GLenum>(settings_.type)
+            );
+            return nullptr;
+    }
+}
+
 } // namespace gpu_data
 
 } // namespace gui

@@ -32,7 +32,8 @@ class FontTexture {
         texture_->bind(texture_index);
     }
 
-    [[nodiscard]] inline const Character* get_character(char character) const {
+    [[nodiscard]] inline const Character*
+    get_character(char character) const {
         const auto data = font_textures_.find(character);
         if (data != font_textures_.end()) {
             return &data->second;

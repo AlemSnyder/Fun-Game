@@ -138,6 +138,8 @@ class Texture2D : virtual public GPUDataRenderBuffer {
             settings_.multisample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
         glBindTexture(target, texture_ID_);
     }
+
+    [[nodiscard]] std::shared_ptr<util::image::Image> get_image() const;
 };
 
 } // namespace gpu_data
