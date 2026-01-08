@@ -1,11 +1,19 @@
 #include "text_widget.hpp"
 
+#include "global_context.hpp"
 #include "user_interface.hpp"
 
 namespace gui {
 namespace the_buttons {
 void
 TextWidget::update_text_data(bool differed) {
+    if (differed) {
+        GlobalContext& context = GlobalContext::instance();
+        context.submit_task([this]() {
+            std::vector<glm::uvec4> data = generate_data();
+            text_data_.insert(data, 0, text_data_.size());
+        });
+    }
     std::vector<glm::uvec4> data = generate_data();
 
     // data.push_back(glm::ivec4(2, 2, 100, 15));

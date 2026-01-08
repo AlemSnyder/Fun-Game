@@ -127,7 +127,9 @@ EntityInstance::EntityInstance(std::shared_ptr<Entity> entity_type) :
 EntityInstance::~EntityInstance() {}
 
 void
-EntityInstance::operate(std::chrono::milliseconds delta_time, bool show) {
+EntityInstance::operate(
+    [[maybe_unused]] std::chrono::milliseconds delta_time, bool show
+) {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         glm::vec3 position = entity_type->decision(this);
         position_ = position;

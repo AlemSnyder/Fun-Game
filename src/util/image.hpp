@@ -264,7 +264,8 @@ class ByteMonochromeImage : public virtual MonochromeImage {
         reinterpret_cast<png_byte*>(data_.get())[i * height_ + j] = color;
     }
 
-    inline void transpose() {
+    inline void
+    transpose() {
         auto temp = width_;
         width_ = height_;
         height_ = temp;

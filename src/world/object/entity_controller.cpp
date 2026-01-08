@@ -10,7 +10,7 @@ namespace object {
 // then check that update entities is correctly called.
 
 void
-EntityController::update_entities(glm::mat4 transforms_matrix) {
+EntityController::update_entities([[maybe_unused]] glm::mat4 transforms_matrix) {
     // maybe multi-processes
     for (auto& region : entity_instances_) {
         if (true) {

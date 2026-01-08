@@ -125,8 +125,8 @@ Controls::handle_mouse_button_input(
         double ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         LOG_DEBUG(logging::main_logger, "Mouse Position: [{}, {}]", xpos, ypos);
-        int xpos_int = floor(xpos);
-        int ypos_int = floor(ypos);
+        // int xpos_int = floor(xpos);
+        // int ypos_int = floor(ypos);
     }
 }
 
