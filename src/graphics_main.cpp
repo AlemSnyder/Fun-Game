@@ -86,7 +86,8 @@ graphics_main(intro_scene::result result) {
     while (true) {
         switch (result.index()) {
             case 0: // exiting
-                return std::get<intro_scene::Exit>(result).status;
+                goto exit;
+                break;
             case 1: // intro page
                 result = intro_window(window);
                 break;
@@ -109,9 +110,13 @@ graphics_main(intro_scene::result result) {
                 break;
         }
     }
+exit:
+    gui::scene::InputHandler::forward_inputs_to(nullptr); // this removes an object from static storage
+    GlobalContext& context = GlobalContext::instance();
+    context.run_opengl_queue(); // this should clean up anything left in the queue
 
     glDeleteVertexArrays(1, &VertexArrayID);
-    return 1;
+    return std::get<intro_scene::Exit>(result).status;
 }
 
 intro_scene::result

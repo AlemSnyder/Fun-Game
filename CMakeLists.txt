@@ -106,6 +106,11 @@ endif()
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   set(DEBUG 1)
   message(" Debug build, data will be loaded from repo root ")
+# TODO
+# This NEEDS to be committed into main but it breaks some (4) tests
+# checks memory leaks
+#  target_compile_options(FunGame PUBLIC -fsanitize=address)
+#  target_link_options(FunGame PUBLIC -fsanitize=address)
 else()
   set(DEBUG 0)
   message(" Debug build, data will be loaded from subdirs ")

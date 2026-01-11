@@ -174,11 +174,12 @@ Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
 
 std::shared_ptr<util::image::Image>
 Texture2D::get_image() const {
-    // width_
-    // height_
+    // multiplying by 2 fixes the memory error, but that can't possibly be correct.
+    // TODO needs more investigation
+    size_t data_size = width_ * height_ * get_size(settings_.type) * get_size(settings_.read_format) * 2;
 
     std::shared_ptr<char[]> data = std::make_shared<char[]>(
-        width_ * height_ * get_size(settings_.type) * get_size(settings_.read_format)
+        data_size
     );
 
     if (settings_.multisample) {
@@ -186,6 +187,26 @@ Texture2D::get_image() const {
         return nullptr;
     }
     glBindTexture(GL_TEXTURE_2D, texture_ID_);
+
+#if DEBUG()
+    int width;
+    int height;
+    int opengl_type;
+
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,  GL_TEXTURE_INTERNAL_FORMAT, &opengl_type);
+
+    if (width != width_ || height != height_) {
+        LOG_WARNING(logging::opengl_logger, "Width or Height don't match correct value. Actual {}, {}, Saved {}, {}.", width, height, width_, height_);
+    }
+
+    if (gui::gpu_data::GPUPixelStorageFormat(opengl_type) != settings_.internal_format ) {
+        LOG_WARNING(logging::opengl_logger, "Type sizes don't match. Actual {}, Given {}.",
+            get_size(gui::gpu_data::GPUPixelStorageFormat(opengl_type)), get_size(settings_.internal_format));
+    }
+
+#endif
 
     glGetTexImage(
         GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.read_format),
