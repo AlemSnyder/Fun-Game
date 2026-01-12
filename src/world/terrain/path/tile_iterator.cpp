@@ -47,6 +47,7 @@ static uint8_t offsets[26] = {
 
 glm::i8vec3
 get_indexed_offsets(uint8_t index) {
+    assert(index < 26 && "Index out of range.");
     uint8_t offset_type = offsets[index];
     glm::i8vec3 out(
         offset_type & int8_t(3), offset_type >> 2 & int8_t(3),
