@@ -175,7 +175,7 @@ Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
 std::shared_ptr<util::image::Image>
 Texture2D::get_image() const {
     // multiplying by 2 fixes the memory error, but that can't possibly be correct.
-    // TODO needs more investigation
+    // TODO GL_PACK_ALIGNMENT
     size_t data_size = width_ * height_ * get_size(settings_.type) * get_size(settings_.read_format) * 2;
 
     std::shared_ptr<char[]> data = std::make_shared<char[]>(

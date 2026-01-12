@@ -38,7 +38,6 @@ InputHandler::forward_inputs_to(std::shared_ptr<Inputs> forward_to) {
     if (forward_to == nullptr) {
         // somehow prevent forwarding
         // this is ostensibly not a good idea
-        assert(forward_to != nullptr && "Must forward inputs to valid Inputs object.");
     } else {
         forward_inputs_->setup(window_);
     }
@@ -75,6 +74,7 @@ InputHandler::handle_key_event(
             escape_pressed_ = false;
         }
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_key_event_input(window, key, scancode, action, mods);
 }
 
@@ -83,6 +83,7 @@ InputHandler::handle_text_input(GLFWwindow* window, unsigned int codepoint) {
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_text_input_input(window, codepoint);
 }
 
@@ -91,6 +92,7 @@ InputHandler::handle_mouse_event(GLFWwindow* window, double xpos, double ypos) {
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_mouse_event_input(window, xpos, ypos);
 }
 
@@ -99,6 +101,7 @@ InputHandler::handle_mouse_enter(GLFWwindow* window, int enter) {
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_mouse_enter_input(window, enter);
 }
 
@@ -109,6 +112,7 @@ InputHandler::handle_mouse_button(
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_mouse_button_input(window, button, action, mods);
 }
 
@@ -117,6 +121,7 @@ InputHandler::handle_mouse_scroll(GLFWwindow* window, double xoffset, double yof
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_mouse_scroll_input(window, xoffset, yoffset);
 }
 
@@ -125,6 +130,7 @@ InputHandler::handle_joystick(int jid, int event) {
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_joystick_input(jid, event);
 }
 
@@ -133,6 +139,7 @@ InputHandler::handle_file_drop(GLFWwindow* window, int count, const char** paths
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_file_drop_input(window, count, paths);
 }
 
@@ -141,6 +148,7 @@ InputHandler::handle_pooled_inputs(GLFWwindow* window) {
     if (imgui_capture()) {
         return;
     }
+    assert(forward_inputs_ != nullptr && "Must forward inputs to valid Inputs object.");
     forward_inputs_->handle_pooled_inputs(window);
 }
 
