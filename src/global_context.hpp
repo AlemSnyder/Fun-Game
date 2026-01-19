@@ -101,6 +101,12 @@ class GlobalContext {
         return obj;
     }
 
+    // this must be run before exit if lua has been initialized on thread local
+    // 
+    inline void close_threads() {
+        thread_pool_.reset(0);
+    }
+
     void run_opengl_queue();
 
     /**
