@@ -66,6 +66,7 @@ TextWidget::generate_data() const {
     int line_advance = frame_size_.y/4 - line_spacing;
 
     for (char character : text_) {
+        // if character == "\n"
         const render::structures::Character* character_data =
             font_->get_character(character);
         if (!character_data) {
@@ -77,8 +78,12 @@ TextWidget::generate_data() const {
             );
         }
 
+        // TODO
         // if (advance + character_data->advance > frame width or character is new_line)
         // { advance = 0; line_advance += line_spacing}
+        // need to check for word
+        // then break on word
+        // but also need to break within a word of the world is too long
 
         glm::ivec4 position_in_texture = character_data->position_in_texture;
 
