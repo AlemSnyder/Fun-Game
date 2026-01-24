@@ -14,12 +14,13 @@ namespace gui {
 
 namespace the_buttons {
 
-class TextWidget : public virtual WidgetBase {
+class TextWidget : public virtual WidgetBase, public virtual gpu_data::GPUDataElements {
  private:
     gpu_data::VertexArrayObject vertex_array_object_;
 
     std::shared_ptr<render::structures::FontTexture> font_;
     gpu_data::VertexBufferObject<glm::uvec4> text_data_;
+    gpu_data::VertexBufferObject<uint16_t, gpu_data::BindingTarget::ELEMENT_ARRAY_BUFFER> element_array_;
     std::string text_;
     uint32_t num_characters_;
 
@@ -78,20 +79,25 @@ class TextWidget : public virtual WidgetBase {
     inline void
     set_text(std::string&& text) {
         text_ = text;
+        num_characters_ = text_.length();
         update_text_data();
     }
 
     inline unsigned int
     get_num_vertices() const {
-        //        return num_characters_ * 4; // four vertices per character
-        return 4;
+        return num_characters_ * 6; // four vertices per character
+        //return 12;
+    }
+
+    virtual gpu_data::GPUArayType get_element_type() const {
+        return element_array_.get_opengl_numeric_type();
     }
 
     inline virtual void
     bind() const {
-        //        text_data_.attach_to_vertex_attribute(0);
         font_->bind(0);
         vertex_array_object_.bind();
+        element_array_.bind();
     };
 
     inline virtual void

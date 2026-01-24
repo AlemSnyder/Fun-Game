@@ -124,7 +124,7 @@ class Render_Base {
         // log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
-    void virtual render(
+    void render(
         screen_size_t width, screen_size_t height, GLuint framebuffer_ID,
         screen_size_t x_start = 0, screen_size_t y_start = 0
     );
@@ -147,6 +147,22 @@ class ShaderProgram_Windows :
         screen_size_t x_start, screen_size_t y_start, screen_size_t width,
         screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUData* data
     ) override;
+};
+
+class ShaderProgramElements_Windows :
+    public virtual Render_Base {
+ public:
+    inline ShaderProgramElements_Windows(
+        shader::Program& shader_program, const std::function<void()> setup_commands
+    ) :
+        Render_Base(shader_program, setup_commands) {}
+
+    inline virtual ~ShaderProgramElements_Windows() {}
+
+    void virtual render(
+        screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+        screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUDataElements* data
+    );
 };
 
 /**

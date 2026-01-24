@@ -76,7 +76,7 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
         window_render_program, render_setup
     );
 
-    text_pipeline_ = std::make_shared<shader::ShaderProgram_Windows>(
+    text_pipeline_ = std::make_shared<shader::ShaderProgramElements_Windows>(
         text_render_program, render_setup
     );
 }

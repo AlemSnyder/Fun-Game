@@ -22,6 +22,18 @@ TextWidget::update_text_data(bool differed) {
     // data.push_back(glm::ivec4(28, 10, 115, 0));
 
     text_data_.insert(data, 0, text_data_.size());
+
+    std::vector<uint16_t> elements_data;
+    for (size_t i = 0; i < num_characters_; i++) {
+        elements_data.push_back(4 * i + 0);
+        elements_data.push_back(4 * i + 1);
+        elements_data.push_back(4 * i + 2);
+        elements_data.push_back(4 * i + 2);
+        elements_data.push_back(4 * i + 1);
+        elements_data.push_back(4 * i + 3);
+    }
+
+    element_array_.insert(elements_data, 0, element_array_.size());
 }
 
 void
@@ -50,8 +62,8 @@ TextWidget::generate_data() const {
 
     int advance = 0;
 
-    int line_spacing = 25; // eed to read this from the font
-    int line_advance = line_spacing;
+    int line_spacing = 25; // need to read this from the font
+    int line_advance = frame_size_.y/4 - line_spacing;
 
     for (char character : text_) {
         const render::structures::Character* character_data =
@@ -73,24 +85,30 @@ TextWidget::generate_data() const {
         glm::ivec2 bearing = character_data->bearing;
         glm::ivec2 size = character_data->size;
 
+        // up is 
         data.push_back(glm::ivec4(
-            bearing.x, line_advance - bearing.y + size.y, position_in_texture.x,
+            advance + bearing.x, line_advance + bearing.y, position_in_texture.x,
             position_in_texture.y
         ));
         data.push_back(glm::ivec4(
-            bearing.x, line_advance - bearing.y, position_in_texture.x,
+            advance + bearing.x, line_advance + bearing.y - size.y, position_in_texture.x,
             position_in_texture.w
         ));
         data.push_back(glm::ivec4(
-            bearing.x + size.x, line_advance - bearing.y + size.y,
+            advance + bearing.x + size.x, line_advance + bearing.y,
             position_in_texture.z, position_in_texture.y
         ));
         data.push_back(glm::ivec4(
-            bearing.x + size.x, line_advance - bearing.y, position_in_texture.z,
+            advance + bearing.x + size.x, line_advance + bearing.y - size.y, position_in_texture.z,
             position_in_texture.w
         ));
 
-        advance += character_data->advance;
+//        LOG_DEBUG(logging::main_logger, "Advance {}", character_data->advance);
+
+        LOG_DEBUG(logging::main_logger, "Bearing {}, {}", bearing.x, bearing.y);
+
+
+        advance += size.x;
     }
 
     return data;

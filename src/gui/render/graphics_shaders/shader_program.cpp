@@ -72,6 +72,38 @@ ShaderProgram_Windows::render(
 }
 
 void
+ShaderProgramElements_Windows::render(
+    screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+    screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUDataElements* data
+) {
+
+    Render_Base::render(width, height, framebuffer_ID, x_start, y_start);
+
+    if (!data->do_render()) {
+        return;
+    }
+
+    data->bind();
+
+    // test if T inherits from Instancing or not
+
+    auto num_vertices = data->get_num_vertices();
+    auto element_type = data->get_element_type();
+
+    // Draw the triangles !
+    glDrawElements(
+        GL_TRIANGLES,                      // mode
+        num_vertices,                      // count
+        static_cast<GLenum>(element_type), // type
+        (void*)0                           // element array buffer offset
+    );
+
+    data->release();
+    
+}
+
+
+void
 ShaderProgram_Standard::render(
     screen_size_t width, screen_size_t height, GLuint framebuffer_ID
 ) {

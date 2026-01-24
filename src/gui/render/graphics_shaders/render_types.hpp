@@ -42,7 +42,7 @@ class FrameBuffer {
     virtual void
     render(screen_size_t width, screen_size_t height, GLuint frame_buffer) = 0;
 };
-
+// TODO remove this class
 class ScreenSection {
  public:
     virtual void render(

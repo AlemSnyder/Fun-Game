@@ -30,7 +30,7 @@ class UserInterface : public virtual scene::Inputs {
 
     // widget renderer
     std::shared_ptr<shader::ShaderProgram_Windows> window_pipeline_;
-    std::shared_ptr<shader::ShaderProgram_Windows> text_pipeline_;
+    std::shared_ptr<shader::ShaderProgramElements_Windows> text_pipeline_;
 
     std::list<std::shared_ptr<FrameInterface>> frames_;
 

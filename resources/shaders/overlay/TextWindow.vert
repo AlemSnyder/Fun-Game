@@ -17,7 +17,7 @@ main() {
 
     //vec2 projection_matrix = vec2(1/250, 1/250);
 
-    gl_Position = vec4(ui_scale * 2 * (vec2(pos.xy) / vec2(frame_size)) - 1, 1, 1);
+    gl_Position = vec4(ui_scale * (vec2(pos.xy) / vec2(frame_size)) - 1, 1, 1);
     UV = vec2(pos.w, pos.z);
     //UV = vec2((pos.z - 304) * 20, pos.w * 2);
 }
