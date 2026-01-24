@@ -205,10 +205,10 @@ class FrameBufferBase {
         std::array<screen_size_t, 8> params
     ) const;
 
-    std::shared_ptr<util::image::Image>
+    util::image::ImageVariant
     read_data(int8_t color_component = DEPTH_COMPONENT_ID) const;
 
-    std::shared_ptr<util::image::Image> read_data(
+    util::image::ImageVariant read_data(
         screen_size_t start_w, screen_size_t start_h, screen_size_t image_w,
         screen_size_t image_h, int8_t color_component = DEPTH_COMPONENT_ID
     ) const;

@@ -72,7 +72,7 @@ Texture2D::connect_depth_texture(GLuint framebuffer_ID) {
 }
 
 void
-Texture2D::setup(std::shared_ptr<util::image::Image> image) {
+Texture2D::setup(util::image::ImageVariant image) {
 #if DEBUG()
     GlobalContext& context = GlobalContext::instance();
     if (!context.is_main_thread()) {
@@ -130,7 +130,7 @@ Texture2D::Texture2D(
 }
 
 Texture2D::Texture2D(
-    std::shared_ptr<util::image::Image> image, TextureSettings settings, bool differed
+    util::image::ImageVariant image, TextureSettings settings, bool differed
 ) :
     settings_(settings) {
     if (!image) {
@@ -148,7 +148,7 @@ Texture2D::Texture2D(
 }
 
 void
-Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
+Texture2D::load_data(util::image::ImageVariant image) {
     // TODO lots of checks
     if (settings_.multisample) {
         LOG_ERROR(logging::opengl_logger, "Cannot write data to multisample texture");

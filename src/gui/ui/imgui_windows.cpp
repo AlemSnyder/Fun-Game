@@ -135,7 +135,7 @@ display_data(
     ImGui::DragInt2("Sample Position", xy, 1.0, 0, 2000);
 
     const auto& mid_ground = scene.get_mid_ground_framebuffer();
-    std::shared_ptr<util::image::Image> read_data =
+    util::image::ImageVariant read_data =
         mid_ground.read_data(xy[0], xy[1], 1, 1);
     auto float_data =
         std::dynamic_pointer_cast<util::image::FloatMonochromeImage>(read_data);

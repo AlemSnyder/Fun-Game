@@ -5,11 +5,102 @@
 
 #include <png.h>
 
-#include <memory>
+//#include <memory>
+#include <vector>
+#include <variant>
 
 namespace util {
 
 namespace image {
+
+/*
+Image
+v
+different types, byte float [0, 1)
+
+get_width, get_height, get_pixel(), and finally a settings struct
+
+byte and float have get_data() which returns a byte of float
+
+
+*/
+
+struct ImageSettings {
+    size_t data_size;
+    size_t width_bit_alignment; // 1, 2, 4, 8
+    // anything else
+    // image type
+};
+
+namespace {
+
+
+template<typename T>
+class ImageImplementation {
+ protected:
+    ImageSettings settings_;
+    size_t width_;
+    size_t height_;
+    size_t data_width_; // width with padding
+    size_t width_bit_alignment_; // 1, 2, 4, 8
+
+
+    std::vector<T> data_;
+
+ public:
+    template<typename T>
+    ImageImplementation(size_t width, size_t height, std::vector<T> data, size_t width_bit_alignment = 1)
+        : width_(width), height_(height), width_bit_alignment_(width_bit_alignment), data_(data) {
+            data_width_ = width_; // TODO
+    }
+
+    inline virtual size_t
+    get_width() const {
+        return width_;
+    }
+
+    inline virtual size_t
+    get_height() const {
+        return height_;
+    }
+
+    template<typename T>
+    inline T ge_data(size_t i, size_t j) const {
+        assert(i < width_ && j < height_ && "Position must be within image.");
+        return data_.at(j * data_width_ + i);
+    }
+
+    template<std::same_as<png_byte> T>
+    inline png_byte get_color(size_t i, size_t j) const {
+        return ge_data(i, j);
+    }
+
+    template<int n, std::same_as<std::array<png_byte, n>> T>
+    inline std::array<png_byte, n> get_color(size_t i, size_t j) const {
+        auto color = ge_data(i, j);
+        std::array<png_byte, n> out_color;
+        for (size_t index = 0; index < n; index++) {
+            out_color[index] = color[index];
+        }
+        return out_color;
+    }
+
+    template<std::same_as<float> T>
+    inline png_byte get_color(size_t i, size_t j) const {
+        return ge_data(i, j) * 256;
+    }
+
+    template<int n, std::same_as<std::array<float, n>> T>
+    inline std::array<png_byte, n> get_color(size_t i, size_t j) const {
+        auto color = get(i, j);
+        std::array<png_byte, n> out_color;
+        for (size_t index = 0; index < n; index++) {
+            out_color[index] = color[index] * 256;
+        }
+        return out_color;
+    }
+};
+}
 
 struct FloatPolychromeAlphaImage_data_t {
     std::shared_ptr<char[]> data;
@@ -44,159 +135,23 @@ read_data_float(std::shared_ptr<char[]> data, size_t offset) {
     return out;
 }
 
-class Image {
-    // some data
- protected:
-    size_t width_;
-    size_t height_;
-    size_t data_size_;
-    std::shared_ptr<char[]> data_;
+using MonochromeImage = ImageImplementation<png_byte>;
+using PolychromeImage = ImageImplementation<std::array<png_byte, 3>>;
+using PolychromeAlphaImage = ImageImplementation<std::array<png_byte, 4>>;
 
- public:
-    inline virtual size_t
-    get_width() const {
-        return width_;
-    }
+using FloatMonochromeImage = ImageImplementation<float>;
+using FloatPolychromeImage = ImageImplementation<std::array<float, 3>>;
+using FloatPolychromeAlphaImage = ImageImplementation<std::array<float, 4>>;
 
-    inline virtual size_t
-    get_height() const {
-        return height_;
-    }
+using ImageVariant = std::variant<MonochromeImage, PolychromeImage, PolychromeAlphaImage, FloatMonochromeImage, FloatPolychromeImage, FloatPolychromeAlphaImage>;
 
-    inline virtual void*
-    data() const {
-        return data_.get();
-    }
-
-    inline Image(
-        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        width_(width),
-        height_(height), data_size_(data_size), data_(data){};
-
-    virtual ~Image() {}
-};
-
-class MonochromeImage : public virtual Image {
- public:
-    virtual png_byte get_color(size_t i, size_t j) const = 0;
-
-    inline virtual ~MonochromeImage() {}
-};
-
-class PolychromeImage : public virtual Image {
- public:
-    virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const = 0;
-
-    inline virtual ~PolychromeImage() {}
-};
-
-class PolychromeAlphaImage : public virtual Image {
- public:
-    virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const = 0;
-
-    inline virtual ~PolychromeAlphaImage() {}
-};
-
-// FLOAT
-class FloatMonochromeImage : public virtual MonochromeImage {
- public:
-    virtual png_byte get_color(size_t i, size_t j) const override;
-
-    virtual float get_data(size_t i, size_t j) const;
-
-    FloatMonochromeImage(
-        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {}
-
-    inline virtual size_t
-    get_width() const {
-        return width_;
-    }
-
-    inline virtual size_t
-    get_height() const {
-        return height_;
-    }
-
-    inline virtual ~FloatMonochromeImage() {}
-};
-
-class FloatPolychromeImage : public virtual PolychromeImage {
- public:
-    virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const override;
-
-    virtual std::array<float, 3> get_data(size_t i, size_t j) const;
-
-    FloatPolychromeImage(
-        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {}
-
-    inline virtual size_t
-    get_width() const {
-        return width_;
-    }
-
-    inline virtual size_t
-    get_height() const {
-        return height_;
-    }
-
-    inline virtual ~FloatPolychromeImage() {}
-};
-
-class FloatPolychromeAlphaImage : public virtual PolychromeAlphaImage {
- private:
-    static FloatPolychromeAlphaImage_data_t
-    pad_color_data(const std::vector<std::vector<ColorFloat>>& vector_data);
-
-    FloatPolychromeAlphaImage(FloatPolychromeAlphaImage_data_t data) :
-        Image(data.data, data.width, data.height, sizeof(ColorFloat)) {}
-
- public:
-    virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const override;
-
-    virtual std::array<float, 4> get_data(size_t i, size_t j) const;
-
-    FloatPolychromeAlphaImage(
-        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {}
-
-    FloatPolychromeAlphaImage(std::vector<std::vector<ColorFloat>> data) :
-        FloatPolychromeAlphaImage(pad_color_data(data)) {}
-
-    inline virtual size_t
-    get_width() const {
-        return width_;
-    }
-
-    inline virtual size_t
-    get_height() const {
-        return height_;
-    }
-
-    inline virtual ~FloatPolychromeAlphaImage() {}
-};
-
-#if __HAVE_FLOAT16
+#if 0
 // HALF FLOAT
-class HALFFloatMonochromeImage : public virtual MonochromeImage {
- public:
-    virtual png_byte get_color(size_t i, size_t j) const;
-};
 
-class HALFFloatPolychromeImage : public virtual PolychromeImage {
- public:
-    virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const;
-};
+using HalfFloatMonochromeImage = ImageImplementation<halffloat>;
+using HalfFloatPolychromeImage = ImageImplementation<std::array<halffloat, 3>>;
+using HalfFloatPolychromeAlphaImage = ImageImplementation<std::array<halffloat, 4>>;
 
-class HALFFloatPolychromeAlphaImage : public virtual PolychromeAlphaImage {
- public:
-    virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const;
-};
 #endif
 
 } // namespace image

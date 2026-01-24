@@ -85,7 +85,7 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     const TextureSettings settings_;
     GLuint texture_ID_;
 
-    void setup(std::shared_ptr<util::image::Image> image);
+    void setup(util::image::ImageVariant image);
 
  public:
     Texture2D(
@@ -94,11 +94,11 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     );
 
     Texture2D(
-        std::shared_ptr<util::image::Image> Image, TextureSettings settings = {},
+        util::image::ImageVariant Image, TextureSettings settings = {},
         bool differed = true
     );
 
-    void load_data(std::shared_ptr<util::image::Image> image);
+    void load_data(util::image::ImageVariant image);
 
     ~Texture2D() { glDeleteTextures(1, &texture_ID_); }
 

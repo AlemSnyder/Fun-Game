@@ -55,12 +55,12 @@ FrameBufferBase::copy_to(
     );
 }
 
-std::shared_ptr<util::image::Image>
+util::image::ImageVariant
 FrameBufferBase::read_data(int8_t color_component) const {
     return read_data(0, 0, width_, height_, color_component);
 }
 
-std::shared_ptr<util::image::Image>
+util::image::ImageVariant
 FrameBufferBase::read_data(
     screen_size_t start_w, screen_size_t start_h, screen_size_t image_w,
     screen_size_t image_h, int8_t color_component
