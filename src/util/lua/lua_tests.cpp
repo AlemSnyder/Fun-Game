@@ -1,4 +1,4 @@
-#include "lua_logging.hpp"
+#include "lua_tests.hpp"
 
 #include "global_context.hpp"
 #include "local_context.hpp"
@@ -8,7 +8,9 @@
 
 #include <future>
 
-namespace lua_logging {
+namespace util {
+
+namespace lua_tests {
 
 int
 lua_loadtime_test() {
@@ -323,4 +325,6 @@ lua_load_tests() {
     return 0;
 }
 
-} // namespace lua_logging
+} // namespace lua_tests
+
+} // namespace util

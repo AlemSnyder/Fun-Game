@@ -11,6 +11,7 @@
 #include "manifest/object_handler.hpp"
 #include "util/files.hpp"
 #include "util/lua/lua_logging.hpp"
+#include "util/lua/lua_tests.hpp"
 #include "util/mesh.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
@@ -423,13 +424,13 @@ lua_tests(const argh::parser& cmdl) {
     if (run_function == "Map") {
         return MacroMap(cmdl);
     } else if (run_function == "Logging") {
-        return lua_logging::lua_log_test();
+        return util::lua_tests::lua_log_test();
     } else if (run_function == "LoadTime") {
-        return lua_logging::lua_loadtime_test();
+        return util::lua_tests::lua_loadtime_test();
     } else if (run_function == "LoadScript") {
-        return lua_logging::lua_load_tests();
+        return util::lua_tests::lua_load_tests();
     } else if (run_function == "TransferScript") {
-        return lua_logging::lua_transfertime_test();
+        return util::lua_tests::lua_transfertime_test();
     } else {
         std::cout << "No known command" << std::endl;
         return 1;
@@ -518,17 +519,17 @@ main(int argc, char** argv) {
     int return_value;
 
     if (argc == 1) {
-        return_value =  graphics_main();
+        return_value = graphics_main();
     } else if (start_type == "Test") {
         int return_status = tests(cmdl);
         logging::flush();
-        return_value =  return_status;
+        return_value = return_status;
     } else if (start_type == "Start") {
-        return_value =  graphics_main(cmdl);
+        return_value = graphics_main(cmdl);
     } else {
         std::cout << "Old command line arguments don't work. Try adding \"Test\"."
                   << std::endl;
-        return_value =  1;
+        return_value = 1;
     }
 
     // TODO

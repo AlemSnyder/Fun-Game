@@ -76,12 +76,4 @@ setup_lua_logging(sol::state& lua) {
     }
 }
 
-int lua_loadtime_test();
-
-int lua_load_tests();
-
-int lua_transfertime_test();
-
-int lua_log_test();
-
 } // namespace lua_logging
