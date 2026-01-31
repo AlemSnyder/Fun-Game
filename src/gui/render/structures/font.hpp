@@ -38,6 +38,12 @@ class FontTexture {
         if (data != font_textures_.end()) {
             return &data->second;
         } else {
+            LOG_WARNING(
+                logging::main_logger,
+                "Could not find character \"{}\" with value \"{}\" "
+                "in font.",
+                std::string(1, character), static_cast<int>(character)
+            );
             return nullptr;
         }
     }

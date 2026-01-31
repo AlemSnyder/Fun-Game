@@ -24,7 +24,7 @@ class TextWidget : public virtual WidgetBase, public virtual gpu_data::GPUDataEl
     std::string text_;
     uint32_t num_characters_;
 
-    void update_text_data(bool differed = true);
+    void update_text_data();
 
     void initialize();
 
