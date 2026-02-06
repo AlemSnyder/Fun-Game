@@ -27,12 +27,16 @@ jobs:
             { cc: "gcc", cxx: "g++"},
             { cc: "clang", cxx: "clang++"}
           ]
+        build:
+            - Release
+            - Debug
 
-    name: Build ${{ matrix.os }} with ${{ matrix.compiler.cc }}
+    name: Build ${{ matrix.os }} with ${{ matrix.compiler.cc }} (${{ matrix.build }})
     runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
+      ACTION_ENV_CMAKE_BUILD_TYPE: ${{ matrix.build}}
 
     steps:
       - name: Checkout
@@ -63,7 +67,7 @@ jobs:
           mkdir -p build
           cd build
 
-          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
+          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=$ACTION_ENV_CMAKE_BUILD_TYPE
           cmake --build .
 
       - name: Test
