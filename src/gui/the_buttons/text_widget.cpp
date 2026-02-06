@@ -54,13 +54,14 @@ std::vector<glm::uvec4>
 TextWidget::generate_data() const {
     std::vector<glm::uvec4> data;
 
-    // TODO I want to put all of this into a class. Some sort of  text alignment
-    // iterator. Need to send a text size scale to the text widget.
-    unsigned int text_scale = 4; // should be class value
-    bool wrap_text = true;       // read from class
 
-    unsigned int line_spacing = 20; // need to read this from the font
-    unsigned int baseline = 15;     // read from font
+    // TODO I want to put all of this into a class. Some sort of text alignment
+    // iterator.
+    unsigned int text_scale = text_scale_;
+    bool wrap_text = wrap_text_;
+
+    unsigned int line_spacing = font_->get_text_height();
+    unsigned int baseline = font_->get_ascender_height();
 
     unsigned int text_width = frame_size_.y / text_scale;
     int text_height = frame_size_.y / text_scale;

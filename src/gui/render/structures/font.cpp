@@ -60,6 +60,10 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
 
     std::unordered_map<char, util::image::ByteMonochromeImage> images;
 
+    descender_height_ = -font_face->descender;
+    ascender_height_ = -font_face->ascender;
+    text_height_ = font_face->ascender + descender_height_;
+
     for (unsigned char c = 0; c < 128; c++) {
         if (FT_Load_Char(font_face, c, FT_LOAD_RENDER | FT_LOAD_MONOCHROME)) {
             LOG_WARNING(logging::main_logger, "Failed to load \"{}\" from font.", c);

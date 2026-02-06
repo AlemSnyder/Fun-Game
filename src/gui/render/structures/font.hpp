@@ -24,6 +24,10 @@ class FontTexture {
 
     std::unordered_map<char, Character> font_textures_;
 
+    uint16_t text_height_;
+    uint16_t ascender_height_;
+    uint16_t descender_height_; // the distance from the baseline to the top of the character
+
  public:
     FontTexture(std::filesystem::path font_file);
 
@@ -46,6 +50,21 @@ class FontTexture {
             );
             return nullptr;
         }
+    }
+
+    [[nodiscard]] inline auto
+    get_text_height() const {
+        return text_height_;
+    }
+
+    [[nodiscard]] inline auto
+    get_ascender_height() const {
+        return ascender_height_;
+    }
+
+    [[nodiscard]] inline auto
+    get_descender_height() const {
+        return descender_height_;
     }
 };
 
