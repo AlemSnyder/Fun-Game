@@ -12,7 +12,7 @@ namespace render {
 namespace structures {
 
 struct Character {
-    glm::ivec2 size;
+    glm::uvec2 size;
     glm::ivec2 bearing;
     unsigned int advance;
     glm::ivec4 position_in_texture;
