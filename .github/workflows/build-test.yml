@@ -59,7 +59,8 @@ jobs:
             libglew-dev \
             libglm-dev \
             libomp-17-dev \
-            libpng-dev
+            libpng-dev \
+            libfreetype-dev
 
 
       - name: Build
