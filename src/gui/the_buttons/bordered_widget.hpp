@@ -52,7 +52,7 @@ class BorderedWidget : public virtual WidgetBase {
         data_->update_position(get_bounding_box());
     }
 
-    inline virtual ~BorderedWidget(){};
+    inline virtual ~BorderedWidget() {};
 
     inline unsigned int
     get_num_vertices() const {

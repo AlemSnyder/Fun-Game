@@ -80,7 +80,7 @@ class WorleyNoise : protected Noise {
      * @details Default constructor sets tile_size to 1;
      */
     inline WorleyNoise(NoisePosition tile_size, NoisePosition point_radius) :
-        tile_size_(tile_size), point_radius_(point_radius){};
+        tile_size_(tile_size), point_radius_(point_radius) {};
 
     /**
      * @brief Get the noise value at given position.
@@ -112,8 +112,7 @@ class AlternativeWorleyNoise : public WorleyNoise {
      */
     inline AlternativeWorleyNoise(
         NoisePosition tile_size, double positive_chance, NoisePosition radius
-    ) :
-        WorleyNoise(tile_size, radius) {
+    ) : WorleyNoise(tile_size, radius) {
         positive_chance_ = positive_chance;
     }
 

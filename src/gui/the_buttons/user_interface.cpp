@@ -19,9 +19,11 @@ namespace the_buttons {
 UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_scale) :
     frame_size_uniform_(std::make_shared<render::FrameSizeUniform>()),
     ui_scale_uniform_(std::make_shared<render::UIScaleUniform>(ui_scale)),
-    frame_texture_uniform_(std::make_shared<render::TextureUniform>(
-        gpu_data::GPUArayType::UNSIGNED_INT_SAMPLER_2D, 0
-    )),
+    frame_texture_uniform_(
+        std::make_shared<render::TextureUniform>(
+            gpu_data::GPUArayType::UNSIGNED_INT_SAMPLER_2D, 0
+        )
+    ),
     border_sizes_(std::make_shared<render::FrameBorderSizeUniform>()),
     side_lengths_(std::make_shared<render::FrameSideLengthsUniform>()),
     inner_pattern_size_(std::make_shared<render::InnerPatternSizeUniform>()),
@@ -194,8 +196,9 @@ UserInterface::render_frame(
 }
 
 std::pair<std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>
-UserInterface::get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y)
-    const {
+UserInterface::get_frame(
+    screen_size_t mouse_position_x, screen_size_t mouse_position_y
+) const {
     // iterate from back to front
     auto frame_outer = frames_.end();
     // might be able to do this with control flow

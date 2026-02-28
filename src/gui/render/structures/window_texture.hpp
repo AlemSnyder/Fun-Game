@@ -70,7 +70,8 @@ struct window_texture_data_t {
             std::array<int, 2>({texture_regions[5].x, texture_regions[5].y}),
             std::array<int, 2>({texture_regions[6].x, texture_regions[6].y}),
             std::array<int, 2>({texture_regions[7].x, texture_regions[7].y}),
-            std::array<int, 2>({texture_regions[8].x, texture_regions[8].y})};
+            std::array<int, 2>({texture_regions[8].x, texture_regions[8].y})
+        };
     }
 
     inline void
@@ -211,6 +212,11 @@ template <>
 struct glz::meta<gui::render::window_texture_data_t> {
     using T = gui::render::window_texture_data_t;
 
-    static constexpr auto
-        value = object("texture_file", &T::texture_file, "border_size", custom<&T::border_size_read, &T::border_size_write>, "side_lengths", custom<&T::side_lengths_read, &T::side_lengths_write>, "inner_pattern_size", custom<&T::inner_pattern_size_read, &T::inner_pattern_size_write>, "texture_regions", custom<&T::texture_regions_read, &T::texture_regions_write>);
+    static constexpr auto value = object(
+        "texture_file", &T::texture_file, "border_size",
+        custom<&T::border_size_read, &T::border_size_write>, "side_lengths",
+        custom<&T::side_lengths_read, &T::side_lengths_write>, "inner_pattern_size",
+        custom<&T::inner_pattern_size_read, &T::inner_pattern_size_write>,
+        "texture_regions", custom<&T::texture_regions_read, &T::texture_regions_write>
+    );
 };

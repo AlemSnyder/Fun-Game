@@ -119,9 +119,7 @@ Texture2D::setup(std::shared_ptr<util::image::Image> image) {
 
 Texture2D::Texture2D(
     screen_size_t width, screen_size_t height, TextureSettings settings, bool differed
-) :
-    width_(width),
-    height_(height), settings_(settings) {
+) : width_(width), height_(height), settings_(settings) {
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
         context.push_opengl_task([this]() { setup(nullptr); });
@@ -132,8 +130,7 @@ Texture2D::Texture2D(
 
 Texture2D::Texture2D(
     std::shared_ptr<util::image::Image> image, TextureSettings settings, bool differed
-) :
-    settings_(settings) {
+) : settings_(settings) {
     if (!image) {
         return;
     }
@@ -176,11 +173,10 @@ std::shared_ptr<util::image::Image>
 Texture2D::get_image() const {
     // multiplying by 2 fixes the memory error, but that can't possibly be correct.
     // TODO GL_PACK_ALIGNMENT
-    size_t data_size = width_ * height_ * get_size(settings_.type) * get_size(settings_.read_format) * 2;
+    size_t data_size = width_ * height_ * get_size(settings_.type)
+                       * get_size(settings_.read_format) * 2;
 
-    std::shared_ptr<char[]> data = std::make_shared<char[]>(
-        data_size
-    );
+    std::shared_ptr<char[]> data = std::make_shared<char[]>(data_size);
 
     if (settings_.multisample) {
         LOG_ERROR(logging::opengl_logger, "Cannot load multisample texture to image.");
@@ -195,15 +191,25 @@ Texture2D::get_image() const {
 
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,  GL_TEXTURE_INTERNAL_FORMAT, &opengl_type);
+    glGetTexLevelParameteriv(
+        GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &opengl_type
+    );
 
     if (width != width_ || height != height_) {
-        LOG_WARNING(logging::opengl_logger, "Width or Height don't match correct value. Actual {}, {}, Saved {}, {}.", width, height, width_, height_);
+        LOG_WARNING(
+            logging::opengl_logger,
+            "Width or Height don't match correct value. Actual {}, {}, Saved {}, {}.",
+            width, height, width_, height_
+        );
     }
 
-    if (gui::gpu_data::GPUPixelStorageFormat(opengl_type) != settings_.internal_format ) {
-        LOG_WARNING(logging::opengl_logger, "Type sizes don't match. Actual {}, Given {}.",
-            get_size(gui::gpu_data::GPUPixelStorageFormat(opengl_type)), get_size(settings_.internal_format));
+    if (gui::gpu_data::GPUPixelStorageFormat(opengl_type)
+        != settings_.internal_format) {
+        LOG_WARNING(
+            logging::opengl_logger, "Type sizes don't match. Actual {}, Given {}.",
+            get_size(gui::gpu_data::GPUPixelStorageFormat(opengl_type)),
+            get_size(settings_.internal_format)
+        );
     }
 
 #endif

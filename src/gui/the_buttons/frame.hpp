@@ -15,7 +15,7 @@ namespace the_buttons {
 
 class FrameInterface : public virtual WidgetInterface {
  public:
-    inline virtual ~FrameInterface(){}; // kill children
+    inline virtual ~FrameInterface() {}; // kill children
 
     virtual bool is_fixed() const = 0;
 
@@ -150,10 +150,10 @@ class FrameBase : public virtual FrameInterface {
         glm::ivec2 position, glm::ivec2 frame_size,
         std::vector<glm::ivec2> exterior_points, bool fixed = false
     ) :
-        position_(position),
-        frame_size_(frame_size), exterior_points_(exterior_points), fixed_(fixed){};
+        position_(position), frame_size_(frame_size), exterior_points_(exterior_points),
+        fixed_(fixed) {};
 
-    inline virtual ~FrameBase(){}; // kill children
+    inline virtual ~FrameBase() {}; // kill children
 
     bool is_interior(screen_size_t x, screen_size_t y) const;
 
@@ -184,9 +184,9 @@ class FrameBase : public virtual FrameInterface {
         return true;
     }
 
-    inline virtual void on_select() override{};
+    inline virtual void on_select() override {};
 
-    inline virtual void on_end_select() override{};
+    inline virtual void on_end_select() override {};
 
     // virtual void render_children(
     //     const UserInterface* user_interface, screen_size_t x_position,

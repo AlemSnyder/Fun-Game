@@ -47,7 +47,8 @@ graphics_main(const argh::parser& cmdl) {
     bool imgui_debug = cmdl[{"-g", "--imgui"}];
 
     intro_scene::result new_game_settings = intro_scene::NewGame{
-        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug};
+        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug
+    };
 
     return graphics_main(new_game_settings);
 }
@@ -111,7 +112,9 @@ graphics_main(intro_scene::result result) {
         }
     }
 exit:
-    gui::scene::InputHandler::forward_inputs_to(nullptr); // this removes an object from static storage
+    gui::scene::InputHandler::forward_inputs_to(
+        nullptr
+    ); // this removes an object from static storage
     GlobalContext& context = GlobalContext::instance();
     context.run_opengl_queue(); // this should clean up anything left in the queue
 

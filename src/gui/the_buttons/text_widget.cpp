@@ -54,7 +54,6 @@ std::vector<glm::uvec4>
 TextWidget::generate_data() const {
     std::vector<glm::uvec4> data;
 
-
     // TODO I want to put all of this into a class. Some sort of text alignment
     // iterator.
     unsigned int text_scale = text_scale_;

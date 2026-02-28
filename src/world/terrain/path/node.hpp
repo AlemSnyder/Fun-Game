@@ -59,12 +59,12 @@ class Node {            // Used to find paths.
      */
     Node(T* tile, float hc) :
         tile_(tile), parent_node_(nullptr), g_cost_(0), h_cost_(hc),
-        f_cost_(g_cost_ + h_cost_), explored_(false){};
+        f_cost_(g_cost_ + h_cost_), explored_(false) {};
     /**
      * @brief Construct a new Node object (default initializer)
      * @deprecated should not be used
      */
-    Node() : Node(nullptr, 0){};
+    Node() : Node(nullptr, 0) {};
 
     /**
      * @brief Explore this node

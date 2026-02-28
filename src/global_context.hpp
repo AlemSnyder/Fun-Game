@@ -102,8 +102,9 @@ class GlobalContext {
     }
 
     // this must be run before exit if lua has been initialized on thread local
-    // 
-    inline void close_threads() {
+    //
+    inline void
+    close_threads() {
         thread_pool_.reset(0);
     }
 

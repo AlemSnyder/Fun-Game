@@ -19,8 +19,8 @@ class file_not_found_error : public std::runtime_error {
 
     file_not_found_error(const file_not_found_error& other) noexcept = default;
 
-    file_not_found_error& operator=(const file_not_found_error& other
-    ) noexcept = default;
+    file_not_found_error&
+    operator=(const file_not_found_error& other) noexcept = default;
 
     [[nodiscard]] virtual inline const std::filesystem::path
     path() const noexcept {
@@ -36,8 +36,8 @@ class not_implemented_error : public std::logic_error {
 
     not_implemented_error(const not_implemented_error& other) noexcept = default;
 
-    not_implemented_error& operator=(const not_implemented_error& other
-    ) noexcept = default;
+    not_implemented_error&
+    operator=(const not_implemented_error& other) noexcept = default;
 };
 
 } // namespace exc

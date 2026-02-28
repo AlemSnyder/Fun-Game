@@ -19,8 +19,9 @@ class VertexArrayObject {
     inline VertexArrayObject(bool differed = true) {
         if (differed) {
             GlobalContext& context = GlobalContext::instance();
-            context.push_opengl_task([this]() { glGenVertexArrays(1, &vertex_array_); }
-            );
+            context.push_opengl_task([this]() {
+                glGenVertexArrays(1, &vertex_array_);
+            });
         } else {
             glGenVertexArrays(1, &vertex_array_);
         }

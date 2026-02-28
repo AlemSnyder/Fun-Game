@@ -278,9 +278,11 @@ Biome::get_plant_map(Dim length) const {
 
         std::string type_as_string = flora_type.as<std::string>();
 
-        out.emplace(std::make_pair<std::string, PlantMap>(
-            std::move(type_as_string), {type_map, x_map_tiles, y_map_tiles}
-        ));
+        out.emplace(
+            std::make_pair<std::string, PlantMap>(
+                std::move(type_as_string), {type_map, x_map_tiles, y_map_tiles}
+            )
+        );
     }
 
     return out;

@@ -77,7 +77,7 @@ void log_result(write_result_t result, const std::filesystem::path& path);
 
 class ImageTest {
  public:
-    ImageTest(){};
+    ImageTest() {};
 
     size_t
     get_height() const {
@@ -266,7 +266,7 @@ write_image(T image, const std::filesystem::path& path) {
 
 class ColorImageTest {
  public:
-    ColorImageTest(){};
+    ColorImageTest() {};
 
     size_t
     get_height() const {

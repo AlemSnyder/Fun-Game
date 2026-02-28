@@ -12,7 +12,7 @@ class UserInterface;
 
 class WidgetInterface : public virtual scene::Inputs, public virtual gpu_data::GPUData {
  public:
-    inline virtual ~WidgetInterface(){}; // kill children
+    inline virtual ~WidgetInterface() {}; // kill children
 
     virtual bool is_interior(screen_size_t x, screen_size_t y) const = 0;
 

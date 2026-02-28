@@ -38,7 +38,8 @@ WindowTexture::WindowTexture(
             .read_format = gui::gpu_data::GPUPixelReadFormat::RGBA_INTEGER,
             .type = gui::gpu_data::GPUPixelType::UNSIGNED_BYTE,
             .min_filter = GL_NEAREST,
-            .mag_filter = GL_NEAREST}
+            .mag_filter = GL_NEAREST
+        }
     ),
     border_size_(border_size), side_lengths_(side_lengths),
     inner_pattern_size_(inner_pattern_size), texture_regions_(texture_regions) {

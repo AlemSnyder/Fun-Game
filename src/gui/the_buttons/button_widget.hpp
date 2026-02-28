@@ -58,7 +58,7 @@ class ButtonWidget : public virtual WidgetBase {
         data_->update_position(get_bounding_box());
     }
 
-    inline virtual ~ButtonWidget(){};
+    inline virtual ~ButtonWidget() {};
 
     inline unsigned int
     get_num_vertices() const {

@@ -53,7 +53,8 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         .read_format = gpu_data::GPUPixelReadFormat::RED,
         .type = gpu_data::GPUPixelType::UNSIGNED_BYTE,
         .min_filter = GL_NEAREST,
-        .mag_filter = GL_NEAREST};
+        .mag_filter = GL_NEAREST
+    };
 
     unsigned int max_height = 0;
     unsigned int total_width = 0;
@@ -108,7 +109,8 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
                 .bearing = char_position,
                 .advance = static_cast<unsigned int>(font_face->glyph->advance.x),
                 .position_in_texture =
-                    glm::ivec4(total_width, 0, total_width + char_size.x, char_size.y)}
+                    glm::ivec4(total_width, 0, total_width + char_size.x, char_size.y)
+            }
         );
 
         total_width += char_size.x;
@@ -131,11 +133,11 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     }
 
     LOG_DEBUG(logging::main_logger, "saving fonts to file.");
-/*    auto result_1 =
-        image::write_image(*image, files::get_log_path() / "font_as_image.png");
-    if (result_1 != image::write_result_t::WR_OK) {
-        image::log_result(result_1, files::get_log_path() / "font_as_image.png");
-    }*/
+    /*    auto result_1 =
+            image::write_image(*image, files::get_log_path() / "font_as_image.png");
+        if (result_1 != image::write_result_t::WR_OK) {
+            image::log_result(result_1, files::get_log_path() / "font_as_image.png");
+        }*/
 
     image->transpose();
     texture_ = std::make_shared<gui::gpu_data::Texture2D>(image, settings);
@@ -145,7 +147,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
 
     /*
     auto font_image_from_gpu = texture_->get_image();
-    
+
     if (auto font_image_from_gpu_typed =
             std::dynamic_pointer_cast<util::image::ByteMonochromeImage>(
                 font_image_from_gpu

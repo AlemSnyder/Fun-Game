@@ -28,9 +28,8 @@ class WidgetBase : public virtual WidgetInterface {
         WidgetInterface* parent, glm::ivec2 position, glm::ivec2 frame_size,
         std::vector<glm::ivec2> exterior_points
     ) :
-        parent_(parent),
-        position_(position), frame_size_(frame_size),
-        exterior_points_(exterior_points){};
+        parent_(parent), position_(position), frame_size_(frame_size),
+        exterior_points_(exterior_points) {};
 
     WidgetBase() = delete;
     /**
@@ -95,7 +94,7 @@ class WidgetBase : public virtual WidgetInterface {
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int key,
         [[maybe_unused]] int scancode, [[maybe_unused]] int action,
         [[maybe_unused]] int mods
-    ) override{};
+    ) override {};
 
     /**
      * @brief Handle text input
@@ -106,7 +105,7 @@ class WidgetBase : public virtual WidgetInterface {
 
     virtual void handle_text_input_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] unsigned int codepoint
-    ) override{};
+    ) override {};
 
     /**
      * @brief Handle mouse movement events.
@@ -118,7 +117,7 @@ class WidgetBase : public virtual WidgetInterface {
     virtual void handle_mouse_event_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xpos,
         [[maybe_unused]] double ypos
-    ) override{};
+    ) override {};
 
     /**
      * @brief Handle mouse enter window events
@@ -131,7 +130,7 @@ class WidgetBase : public virtual WidgetInterface {
     virtual void handle_mouse_button_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int button,
         [[maybe_unused]] int action, [[maybe_unused]] int mods
-    ) override{};
+    ) override {};
 
     /**
      * @brief Handle mouse scroll events
@@ -143,7 +142,7 @@ class WidgetBase : public virtual WidgetInterface {
     virtual void handle_mouse_scroll_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset,
         [[maybe_unused]] double yoffset
-    ) override{};
+    ) override {};
 
     /**
      * @brief Handle joystick event
@@ -153,7 +152,7 @@ class WidgetBase : public virtual WidgetInterface {
      */
     virtual void handle_joystick_input(
         [[maybe_unused]] int jid, [[maybe_unused]] int event
-    ) override{};
+    ) override {};
 
     /**
      * @brief Handle file drop event
@@ -165,28 +164,28 @@ class WidgetBase : public virtual WidgetInterface {
     virtual void handle_file_drop_input(
         [[maybe_unused]] GLFWwindow* window, [[maybe_unused]] int count,
         [[maybe_unused]] const char** paths
-    ) override{};
+    ) override {};
 
     /**
      * @brief Handle all pooled inputs
      *
      * @param GLFWwindow* window window
      */
-    virtual void handle_pooled_inputs([[maybe_unused]] GLFWwindow* window) override{};
+    virtual void handle_pooled_inputs([[maybe_unused]] GLFWwindow* window) override {};
 
     /**
      * @brief Setup so this objects handles inputs correctly
      *
      * @param GLFWwindow* window window
      */
-    virtual void setup([[maybe_unused]] GLFWwindow* window) override{};
+    virtual void setup([[maybe_unused]] GLFWwindow* window) override {};
 
     /**
      * @brief Cleanup to original state
      *
      * @param GLFWwindow* window window
      */
-    virtual void cleanup([[maybe_unused]] GLFWwindow* window) override{};
+    virtual void cleanup([[maybe_unused]] GLFWwindow* window) override {};
 };
 
 } // namespace the_buttons

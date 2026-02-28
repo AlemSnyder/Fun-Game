@@ -40,7 +40,7 @@ class BorderedWindow : public virtual FrameBase {
         glm::ivec2 size
     );
 
-    inline virtual ~BorderedWindow(){};
+    inline virtual ~BorderedWindow() {};
 
     inline unsigned int
     get_num_vertices() const {

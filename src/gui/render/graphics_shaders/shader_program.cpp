@@ -76,7 +76,6 @@ ShaderProgramElements_Windows::render(
     screen_size_t x_start, screen_size_t y_start, screen_size_t width,
     screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUDataElements* data
 ) {
-
     Render_Base::render(width, height, framebuffer_ID, x_start, y_start);
 
     if (!data->do_render()) {
@@ -99,9 +98,7 @@ ShaderProgramElements_Windows::render(
     );
 
     data->release();
-    
 }
-
 
 void
 ShaderProgram_Standard::render(
@@ -316,7 +313,8 @@ ShaderProgram_MultiElements::render(
             GL_TRIANGLES,                      // mode
             mesh->get_num_vertices().data(),   // count
             static_cast<GLenum>(element_type), // type
-            reinterpret_cast<const void* const*>(mesh->get_elements_position().data()
+            reinterpret_cast<const void* const*>(
+                mesh->get_elements_position().data()
             ),                       // indices
             mesh->get_num_objects(), // drawcount
             mesh->get_base_vertex().data()

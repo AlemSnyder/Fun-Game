@@ -26,7 +26,8 @@ class FontTexture {
 
     uint16_t text_height_;
     uint16_t ascender_height_;
-    uint16_t descender_height_; // the distance from the baseline to the top of the character
+    uint16_t
+        descender_height_; // the distance from the baseline to the top of the character
 
  public:
     FontTexture(std::filesystem::path font_file);

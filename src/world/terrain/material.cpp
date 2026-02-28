@@ -79,9 +79,9 @@ MaterialGroup::insert(
     return false;
 }
 
-MaterialGroup::MaterialGroup(const std::vector<generation::material_designation_t>& data
-) :
-    contain_all_materials(false) {
+MaterialGroup::MaterialGroup(
+    const std::vector<generation::material_designation_t>& data
+) : contain_all_materials(false) {
     // want to generated a group that represents the given data
     // There will be elements with no requirements on the color
     // materials_no_color_requirement_

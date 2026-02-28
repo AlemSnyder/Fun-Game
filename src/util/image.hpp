@@ -87,9 +87,7 @@ class Image {
 
     inline Image(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        width_(width),
-        height_(height), data_size_(data_size), data_(data){};
+    ) : width_(width), height_(height), data_size_(data_size), data_(data) {};
 
     Image(void* data, size_t width, size_t height, size_t data_size);
 
@@ -128,8 +126,7 @@ class FloatMonochromeImage : public virtual MonochromeImage {
 
     FloatMonochromeImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {
+    ) : Image(data, width, height, data_size) {
         assert(data_size == sizeof(float) && "data size must match expected size");
     }
 
@@ -154,8 +151,7 @@ class FloatPolychromeImage : public virtual PolychromeImage {
 
     FloatPolychromeImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {
+    ) : Image(data, width, height, data_size) {
         assert(data_size == sizeof(float) && "data size must match expected size");
     }
 
@@ -187,8 +183,7 @@ class FloatPolychromeAlphaImage : public virtual PolychromeAlphaImage {
 
     FloatPolychromeAlphaImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {
+    ) : Image(data, width, height, data_size) {
         assert(data_size == sizeof(float) && "data size must match expected size");
     }
 
@@ -235,8 +230,7 @@ class ByteMonochromeImage : public virtual MonochromeImage {
 
     ByteMonochromeImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {
+    ) : Image(data, width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
@@ -292,8 +286,7 @@ class BytePolychromeImage : public virtual PolychromeImage {
     // if needed make inline get color
     BytePolychromeImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {
+    ) : Image(data, width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
@@ -343,8 +336,7 @@ class BytePolychromeAlphaImage : public virtual PolychromeAlphaImage {
 
     BytePolychromeAlphaImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {
+    ) : Image(data, width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
@@ -352,8 +344,7 @@ class BytePolychromeAlphaImage : public virtual PolychromeAlphaImage {
 
     BytePolychromeAlphaImage(
         void* data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {
+    ) : Image(data, width, height, data_size) {
         assert(
             data_size == sizeof(unsigned char) && "data size must match expected size"
         );
