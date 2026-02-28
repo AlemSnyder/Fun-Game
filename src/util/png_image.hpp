@@ -31,6 +31,7 @@
 #include <expected>
 #include <filesystem>
 #include <new>
+#include <expected>
 
 namespace util {
 namespace image {
