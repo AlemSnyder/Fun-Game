@@ -21,14 +21,9 @@
 
 #include <memory>
 
-// create structure to pass game start data either from command line or from gui
-/*
-struct Options {
-    std::optional<std::string> biome;
-
-    std::optional<std::filesystem::path> save_file;
-};*/
-
+// result from loading
+// will be modified to handel all events that must be returned from the loading
+// screen.
 struct background_result {
     int result;
     std::unique_ptr<world::World> world;
@@ -59,7 +54,7 @@ graphics_main(intro_scene::result result) {
 
     // global context and logging are already initalized.
 
-    // read commands from file
+    // read settings from file
     // Things like screen size
     // full screen
     // all graphics/audio settings
@@ -82,8 +77,10 @@ graphics_main(intro_scene::result result) {
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     gui::VertexBufferHandler::instance().bind_vertex_buffer(VertexArrayID);
-    //    intro_scene::result result = intro_scene::IntroPage();
 
+    // This is the top level game loop. This will handle switching between
+    // games, and starting new games. Should also have a settings page
+    // etc.
     while (true) {
         switch (result.index()) {
             case 0: // exiting
@@ -94,13 +91,11 @@ graphics_main(intro_scene::result result) {
                 break;
             case 2: // new world with settings
                 {
-                    // auto settings = std::get<intro_scene::NewGame>(result);
                     result = start_game(result, window);
                 }
                 break;
             case 3: // from save with file path
                 {
-                    // auto path = std::get<intro_scene::LoadGame>(result);
                     result = start_game(result, window);
                 }
                 break;
@@ -172,9 +167,7 @@ start_game(intro_scene::result result, GLFWwindow* window) {
                 background_result result;
 
                 int manifest_result = object_handler.load_all_manifests<true>();
-
                 result.result = manifest_result;
-
                 if (result.result == 1) {
                     return result;
                 }
@@ -258,9 +251,6 @@ intro_window(GLFWwindow* window) {
 
     GlobalContext& global_context = GlobalContext::instance();
     // don't forget ot load ScreenData onto gpu
-
-    // gui::the_buttons::UserInterface main_interface(temp_handler, 4);
-    // gui::setup(main_interface);
 
     auto main_interface =
         std::make_shared<gui::the_buttons::UserInterface>(temp_handler, 4);

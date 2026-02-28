@@ -561,6 +561,10 @@ VertexBufferObject<T, Buffer>::private_insert_(
 template <class T, BindingTarget Buffer>
 void
 VertexBufferObject<T, Buffer>::bind() const {
+    GlobalContext& context = GlobalContext::instance();
+    if (!context.is_main_thread()) {
+        LOG_ERROR(logging::opengl_logger, "Calling bind from nonmain thread.");
+    }
     constexpr GPUStructureType data_type = GPUStructureType::create<T>();
 
     LOG_BACKTRACE(

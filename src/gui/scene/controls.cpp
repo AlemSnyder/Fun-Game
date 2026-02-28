@@ -94,13 +94,12 @@ Controls::handle_pooled_inputs(GLFWwindow* window) {
     ); // display range max
     // Camera matrix
     view_matrix_ = glm::lookAt(
-        position_, // Camera is here
-        position_
-            + direction, // and looks here : at the same position_, plus "direction"
-        screen_up        // Head is up (set to 0,-1,0 to look upside-down)
+        position_,             // Camera is here
+        position_ + direction, // look along direction
+        screen_up              // set up direction
     );
 
-    // For the next frame, the "last time" will be "now"
+    // Update time
     glfw_previous_time_ = currentTime;
 }
 

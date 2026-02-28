@@ -1,5 +1,5 @@
 #include "font.hpp"
-// #include "../render/texture.hpp"
+
 #include "logging.hpp"
 #include "util/files.hpp"
 #include "util/png_image.hpp"
@@ -8,7 +8,6 @@
 #include FT_FREETYPE_H
 
 // ^ what type of mad man write this?
-//
 
 namespace gui {
 
@@ -16,37 +15,24 @@ namespace render {
 
 namespace structures {
 
-// FontHandler::FontHandler () {
-//     FT_Library ft;
-
-//     if (FT_Init_FreeType(&ft)) {
-//         LOG_WARNING(logging::main_logger, "Could not initiate FreeType.");
-//         return;
-//     }
-// }
-
-///
-
 FontTexture::FontTexture(std::filesystem::path font_file) {
+    LOG_BACKTRACE(logging::main_logger, "Loading font from {}.", font_file);
+
     FT_Library ft;
 
-    if (FT_Init_FreeType(&ft)) {
-        LOG_WARNING(logging::main_logger, "Could not initiate FreeType.");
+    if (auto error = FT_Init_FreeType(&ft)) {
+        LOG_WARNING(logging::main_logger, "Could not initiate FreeType. {}", error);
         return;
     }
 
     FT_Face font_face;
-    if (FT_New_Face(ft, font_file.c_str(), 0, &font_face)) {
-        LOG_WARNING(logging::main_logger, "Could not load Pixelated Font");
+    if (auto error = FT_New_Face(ft, font_file.c_str(), 0, &font_face)) {
+        LOG_WARNING(logging::main_logger, "Could not load font. {}", error);
         return;
     }
 
+    // 20 is the height in pixels
     FT_Set_Pixel_Sizes(font_face, 0, 20);
-
-    if (FT_Load_Char(font_face, 'a', FT_LOAD_RENDER)) {
-        LOG_WARNING(logging::main_logger, "Failed to load \"{}\" from font.", 'a');
-        return;
-    }
 
     auto settings = gpu_data::TextureSettings{
         .internal_format = gpu_data::GPUPixelStorageFormat::RED,
@@ -65,17 +51,17 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     ascender_height_ = -font_face->ascender;
     text_height_ = font_face->ascender + descender_height_;
 
+    LOG_BACKTRACE(logging::main_logger, "Creating images for each character.");
     for (unsigned char c = 0; c < 128; c++) {
         if (FT_Load_Char(font_face, c, FT_LOAD_RENDER | FT_LOAD_MONOCHROME)) {
             LOG_WARNING(logging::main_logger, "Failed to load \"{}\" from font.", c);
-            return;
+            continue;
         }
 
         auto char_size =
             glm::uvec2(font_face->glyph->bitmap.width, font_face->glyph->bitmap.rows);
         auto char_position =
             glm::uvec2(font_face->glyph->bitmap_left, font_face->glyph->bitmap_top);
-        // auto char_texture = gpu_data::Texture2D(char_size.x, char_size.y, settings);
 
         std::vector<png_byte> data;
         data.resize(char_size.x * char_size.y);
@@ -89,18 +75,12 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
                 data[i * font_face->glyph->bitmap.rows + j] = (value & one) * 255;
             }
         }
-        //        if (c == 'a' || c == 'b') {
-        //            LOG_DEBUG(logging::main_logger, "{}", data);
-        //        }
 
         images.emplace(
             c, util::image::ByteMonochromeImage(
                    data.data(), char_size.x, char_size.y, sizeof(char)
                )
         );
-
-        //        image::write_image(images.at(c), files::get_log_path() /
-        //        ("font_as_image_" + std::string(1, c) + ".png"));
 
         font_textures_.emplace(
             c,
@@ -119,8 +99,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         }
     }
 
-    // std::shared_ptr<char> image(new char[max_height * total_width]);
-
+    LOG_BACKTRACE(logging::main_logger, "Combining characters into single image.");
     auto image = std::make_shared<util::image::ByteMonochromeImage>(
         total_width, max_height, sizeof(char)
     );
@@ -132,38 +111,13 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         );
     }
 
-    LOG_DEBUG(logging::main_logger, "saving fonts to file.");
-    /*    auto result_1 =
-            image::write_image(*image, files::get_log_path() / "font_as_image.png");
-        if (result_1 != image::write_result_t::WR_OK) {
-            image::log_result(result_1, files::get_log_path() / "font_as_image.png");
-        }*/
+    LOG_BACKTRACE(logging::main_logger, "Loading font to texture.");
 
     image->transpose();
     texture_ = std::make_shared<gui::gpu_data::Texture2D>(image, settings);
 
     GlobalContext& global_context = GlobalContext::instance();
     global_context.run_opengl_queue();
-
-    /*
-    auto font_image_from_gpu = texture_->get_image();
-
-    if (auto font_image_from_gpu_typed =
-            std::dynamic_pointer_cast<util::image::ByteMonochromeImage>(
-                font_image_from_gpu
-            )) {
-        font_image_from_gpu_typed->transpose();
-        auto result_2 = image::write_image(
-            *font_image_from_gpu_typed,
-            files::get_log_path() / "font_as_image_from_texture.png"
-        );
-        if (result_2 != image::write_result_t::WR_OK) {
-            image::log_result(
-                result_2, files::get_log_path() / "font_as_image_from_texture.png"
-            );
-        }
-    }
-    */
 }
 
 } // namespace structures

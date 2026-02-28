@@ -273,8 +273,9 @@ Program::set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_n
             "program \"{}\".",
             uniform_name, name_
         );
-        // do you mean...
-        // min less than 5
+
+        // Add a  "do you mean..." suggestion.
+        // Consider Levenshtein distance less than 5
         // https://en.wikipedia.org/wiki/Levenshtein_distance
     }
 }

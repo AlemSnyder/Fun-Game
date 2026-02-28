@@ -1,11 +1,57 @@
 {
-    "texture_file" : "./GenericBorder_2.png",
-    "border_size" : [7,7,7,7],
-    "side_lengths" : [10,10,10,10],
-    "inner_pattern_size" : [10,10],
-    "texture_regions" : [
-            [0, 0], [6, 0], [15, 0],
-            [0, 6], [6, 6], [15, 6],
-            [0, 15], [6, 15], [15, 15]
+    "texture_file": "./GenericBorder_2.png",
+    "border_size": [
+        7,
+        7,
+        7,
+        7
+    ],
+    "side_lengths": [
+        10,
+        10,
+        10,
+        10
+    ],
+    "inner_pattern_size": [
+        10,
+        10
+    ],
+    "texture_regions": [
+        [
+            0,
+            0
+        ],
+        [
+            6,
+            0
+        ],
+        [
+            15,
+            0
+        ],
+        [
+            0,
+            6
+        ],
+        [
+            6,
+            6
+        ],
+        [
+            15,
+            6
+        ],
+        [
+            0,
+            15
+        ],
+        [
+            6,
+            15
+        ],
+        [
+            15,
+            15
         ]
+    ]
 }
