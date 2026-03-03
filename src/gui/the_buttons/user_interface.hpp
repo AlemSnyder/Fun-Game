@@ -26,7 +26,7 @@ class UserInterface : public virtual scene::Inputs {
     std::shared_ptr<render::FrameSideLengthsUniform> side_lengths_;
     std::shared_ptr<render::InnerPatternSizeUniform> inner_pattern_size_;
     std::shared_ptr<render::TextureRegionsUniform> texture_regions_;
-    //    std::shared_ptr<render::TextureUniform> font_texture_uniform_;
+    std::shared_ptr<render::FloatColorUniform> font_color_uniform_;
 
     // widget renderer
     std::shared_ptr<shader::ShaderProgram_Windows> window_pipeline_;

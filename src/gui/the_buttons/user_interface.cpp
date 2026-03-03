@@ -27,7 +27,8 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     border_sizes_(std::make_shared<render::FrameBorderSizeUniform>()),
     side_lengths_(std::make_shared<render::FrameSideLengthsUniform>()),
     inner_pattern_size_(std::make_shared<render::InnerPatternSizeUniform>()),
-    texture_regions_(std::make_shared<render::TextureRegionsUniform>()) {
+    texture_regions_(std::make_shared<render::TextureRegionsUniform>()),
+    font_color_uniform_(std::make_shared<render::FloatColorUniform>()) {
     shader::Program& window_render_program = shader_handler.load_program(
         "Windows", files::get_resources_path() / "shaders" / "overlay" / "Widget.vert",
         files::get_resources_path() / "shaders" / "overlay" / "FramedWindow.frag"
@@ -70,6 +71,7 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     text_render_program.set_uniform(frame_size_uniform_, "frame_size");
     text_render_program.set_uniform(ui_scale_uniform_, "ui_scale");
     text_render_program.set_uniform(frame_texture_uniform_, "font_texture");
+    text_render_program.set_uniform(font_color_uniform_, "font_color");
     // vec3 font color_uniform
     // vec2 position
 
@@ -189,6 +191,8 @@ UserInterface::render_frame(
     );
 
     // set uniforms
+    font_color_uniform_->set_color(widget->get_text_color());
+
     text_pipeline_->render(
         bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
         bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0, widget

@@ -105,7 +105,6 @@ class SpectralLight : public shader::UniformExecutor {
             sunlight_color.r, sunlight_color.g, sunlight_color.b
         );
 
-        // here
         glUniform3f(uniform_ID, sunlight_color.r, sunlight_color.g, sunlight_color.b);
     }
 };
@@ -472,6 +471,32 @@ class TextureRegionsUniform : public shader::UniformExecutor {
         );
 
         glUniform2iv(uniform_ID, 9, &(*texture_location_.data())[0]);
+    }
+};
+
+class FloatColorUniform : public shader::UniformExecutor {
+ private:
+    ColorFloat color_;
+
+ public:
+    FloatColorUniform() : UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC4) {}
+
+    virtual ~FloatColorUniform() {};
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger,
+            "Uniform {}, value: ({}, {}, {}, {}), being initialized.", uniform_ID,
+            color_.r, color_.g, color_.b, color_.a
+        );
+
+        glUniform4f(uniform_ID, color_.r, color_.g, color_.b, color_.a);
+    }
+
+    inline void
+    set_color(const ColorFloat&& color) {
+        color_ = color;
     }
 };
 
