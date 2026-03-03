@@ -44,10 +44,11 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install Ninja
+      - name: Install Ninja & Clang-19
         run: |
           sudo apt update
           sudo apt install ninja-build -y
+          sudo apt install clang-19 -y
 
       - name: Install Dependencies
         run: |
