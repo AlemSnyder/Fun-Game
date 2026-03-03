@@ -71,6 +71,7 @@ jobs:
           cmake --build .
 
       - name: Test
-        run: |
-          cd build
-          ninja test
+        uses: coactions/setup-xvfb@v1
+        with:
+            run: ninja test
+            working-directory: ./build

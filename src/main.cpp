@@ -465,8 +465,7 @@ tests(const argh::parser& cmdl) {
     } else if (run_function == "LoadManifest") {
         manifest::ObjectHandler object_handler;
         return object_handler.load_all_manifests<false>();
-
-    } else if (run_function == "EnginTest") {
+    } else if (run_function == "EngineTest") {
         return gui::opengl_tests();
     } else if (run_function == "Lua") {
         return lua_tests(cmdl);
