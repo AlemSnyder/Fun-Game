@@ -25,7 +25,7 @@ jobs:
           # - macos-latest
         compiler: [
             { cc: "gcc", cxx: "g++"},
-            { cc: "clang", cxx: "clang++"}
+            { cc: "clang-19", cxx: "clang++-19"}
           ]
         build:
             - Release
