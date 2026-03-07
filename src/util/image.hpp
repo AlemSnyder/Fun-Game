@@ -108,9 +108,11 @@ struct FloatPolychromeAlphaImage_data_t {
     screen_size_t height;
 };
 
+// t represents the underlying type of the data structure;
 template <class T, int datum_number>
 std::array<png_byte, datum_number>
 read_data(std::shared_ptr<char[]> data, size_t offset) {
+    // assert(sizeof(T) == data_size_)
     size_t bit_offset = offset * sizeof(T) * datum_number;
     char* data_ptr = &data[bit_offset];
     T* pixel_data = reinterpret_cast<T*>(data_ptr);
@@ -153,6 +155,158 @@ using HalfFloatPolychromeImage = ImageImplementation<std::array<halffloat, 3>>;
 using HalfFloatPolychromeAlphaImage = ImageImplementation<std::array<halffloat, 4>>;
 
 #endif
+
+// BYTE // 8 bit color channels 24 or 32 bit image
+class ByteMonochromeImage : public virtual MonochromeImage {
+ public:
+    virtual png_byte get_color(size_t i, size_t j) const override;
+
+    //    virtual png_byte get_data(size_t i, size_t j) const;
+
+    ByteMonochromeImage(
+        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
+    ) : Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    ByteMonochromeImage(void* data, size_t width, size_t height, size_t data_size) :
+        Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    ByteMonochromeImage(size_t width, size_t height, size_t data_size) :
+        Image(width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    void
+    draw_at(const ByteMonochromeImage& other, size_t position_x, size_t position_y);
+
+    void
+    set_color(png_byte color, size_t i, size_t j) {
+        reinterpret_cast<png_byte*>(data_.get())[i * height_ + j] = color;
+    }
+
+    inline void
+    transpose() {
+        auto temp = width_;
+        width_ = height_;
+        height_ = temp;
+    }
+
+    inline virtual size_t
+    get_width() const {
+        return width_;
+    }
+
+    inline virtual size_t
+    get_height() const {
+        return height_;
+    }
+
+    inline virtual ~ByteMonochromeImage() {}
+};
+
+class BytePolychromeImage : public virtual PolychromeImage {
+ public:
+    virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const override;
+
+    //    virtual std::array<png_byte, 3> get_data(size_t i, size_t j) const;
+    // if needed make inline get color
+    BytePolychromeImage(
+        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
+    ) : Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeImage(void* data, size_t width, size_t height, size_t data_size) :
+        Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeImage(size_t width, size_t height, size_t data_size) :
+        Image(width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    inline virtual size_t
+    get_width() const {
+        return width_;
+    }
+
+    inline virtual size_t
+    get_height() const {
+        return height_;
+    }
+
+    inline virtual ~BytePolychromeImage() {}
+};
+
+// TODO
+// Everything commented out is a todo
+class BytePolychromeAlphaImage : public virtual PolychromeAlphaImage {
+ private:
+    //    static BytePolychromeAlphaImage_data_t
+    //    pad_color_data(const std::vector<std::vector<ColorByte>>& vector_data);
+
+    //    BytePolychromeAlphaImage(BytePolychromeAlphaImage_data_t data) :
+    //        Image(data.data, data.width, data.height, sizeof(ColorByte)) {}
+
+ public:
+    virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const override;
+
+    //    virtual std::array<png_byte, 4> get_data(size_t i, size_t j) const;
+
+    BytePolychromeAlphaImage(
+        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
+    ) : Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeAlphaImage(
+        void* data, size_t width, size_t height, size_t data_size
+    ) : Image(data, width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    BytePolychromeAlphaImage(size_t width, size_t height, size_t data_size) :
+        Image(width, height, data_size) {
+        assert(
+            data_size == sizeof(unsigned char) && "data size must match expected size"
+        );
+    }
+
+    //    BytePolychromeAlphaImage(std::vector<std::vector<ColorByte>> data) :
+    //        BytePolychromeAlphaImage(pad_color_data(data)) {}
+
+    inline virtual size_t
+    get_width() const {
+        return width_;
+    }
+
+    inline virtual size_t
+    get_height() const {
+        return height_;
+    }
+
+    inline virtual ~BytePolychromeAlphaImage() {}
+};
 
 } // namespace image
 

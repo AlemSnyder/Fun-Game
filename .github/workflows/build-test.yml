@@ -25,14 +25,18 @@ jobs:
           # - macos-latest
         compiler: [
             { cc: "gcc", cxx: "g++"},
-            { cc: "clang", cxx: "clang++"}
+            { cc: "clang-19", cxx: "clang++-19"}
           ]
+        build:
+            - Release
+            - Debug
 
-    name: Build ${{ matrix.os }} with ${{ matrix.compiler.cc }}
+    name: Build ${{ matrix.os }} with ${{ matrix.compiler.cc }} (${{ matrix.build }})
     runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
+      ACTION_ENV_CMAKE_BUILD_TYPE: ${{ matrix.build}}
 
     steps:
       - name: Checkout
@@ -40,10 +44,11 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install Ninja
+      - name: Install Ninja & Clang-19
         run: |
           sudo apt update
           sudo apt install ninja-build -y
+          sudo apt install clang-19 -y
 
       - name: Install Dependencies
         run: |
@@ -55,7 +60,8 @@ jobs:
             libglew-dev \
             libglm-dev \
             libomp-17-dev \
-            libpng-dev
+            libpng-dev \
+            libfreetype-dev
 
 
       - name: Build
@@ -63,7 +69,7 @@ jobs:
           mkdir -p build
           cd build
 
-          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
+          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=$ACTION_ENV_CMAKE_BUILD_TYPE
           cmake --build .
 
       - name: Test

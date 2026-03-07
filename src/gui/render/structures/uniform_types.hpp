@@ -18,7 +18,7 @@ namespace render {
 class LightEnvironment {
  private:
  public:
-    virtual ~LightEnvironment(){};
+    virtual ~LightEnvironment() {};
 
     virtual glm::vec3 get_light_direction() const = 0;
     virtual glm::vec3 get_diffuse_light() const = 0;
@@ -27,7 +27,7 @@ class LightEnvironment {
 
 class StarRotation {
  public:
-    virtual ~StarRotation(){};
+    virtual ~StarRotation() {};
     virtual glm::mat4 get_sky_rotation() const = 0;
 };
 
@@ -39,7 +39,7 @@ class LightDirection : public shader::UniformExecutor {
     LightDirection(std::shared_ptr<LightEnvironment> lighting) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
-    virtual ~LightDirection(){};
+    virtual ~LightDirection() {};
 
     virtual void
     bind(GLint uniform_ID) const override {
@@ -66,7 +66,7 @@ class DiffuseLight : public shader::UniformExecutor {
     DiffuseLight(std::shared_ptr<LightEnvironment> lighting) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
-    virtual ~DiffuseLight(){};
+    virtual ~DiffuseLight() {};
 
     virtual void
     bind(GLint uniform_ID) const override {
@@ -93,7 +93,7 @@ class SpectralLight : public shader::UniformExecutor {
     SpectralLight(std::shared_ptr<LightEnvironment> lighting) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
-    virtual ~SpectralLight(){};
+    virtual ~SpectralLight() {};
 
     inline virtual void
     bind(GLint uniform_ID) const override {
@@ -105,7 +105,6 @@ class SpectralLight : public shader::UniformExecutor {
             sunlight_color.r, sunlight_color.g, sunlight_color.b
         );
 
-        // here
         glUniform3f(uniform_ID, sunlight_color.r, sunlight_color.g, sunlight_color.b);
     }
 };
@@ -117,7 +116,7 @@ class MatrixViewProjection : public shader::UniformExecutor {
     MatrixViewProjection(std::shared_ptr<scene::Controls> controller) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), controller_(controller) {}
 
-    virtual ~MatrixViewProjection(){};
+    virtual ~MatrixViewProjection() {};
 
     inline virtual void
     bind(GLint uniform_ID) const override {
@@ -141,7 +140,7 @@ class ViewMatrix : public shader::UniformExecutor {
     ViewMatrix(std::shared_ptr<scene::Controls> controller) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), controller_(controller) {}
 
-    virtual ~ViewMatrix(){};
+    virtual ~ViewMatrix() {};
 
     inline virtual void
     bind(GLint uniform_ID) const override {
@@ -324,6 +323,180 @@ class StarRotationUniform : public shader::UniformExecutor {
         );
 
         glUniformMatrix4fv(uniform_ID, 1, GL_FALSE, &star_rotation[0][0]);
+    }
+};
+
+class FrameSizeUniform : public shader::UniformExecutor {
+ private:
+    glm::ivec2 frame_size_;
+
+ public:
+    FrameSizeUniform() :
+        UniformExecutor(gpu_data::GPUArayType::INT_VEC2), frame_size_(0, 0) {}
+
+    inline void
+    set_frame_size(glm::ivec2 frame_size) {
+        frame_size_ = frame_size;
+    }
+
+    inline virtual ~FrameSizeUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, value {}, {} being initialized.",
+            uniform_ID, frame_size_.x, frame_size_.y
+        );
+
+        glUniform2i(uniform_ID, frame_size_.x, frame_size_.y);
+    }
+};
+
+class UIScaleUniform : public shader::UniformExecutor {
+ private:
+    uint8_t ui_scale_;
+
+ public:
+    UIScaleUniform(uint8_t scale) :
+        UniformExecutor(gpu_data::GPUArayType::INT), ui_scale_(scale) {}
+
+    inline void
+    set_ui_scale(uint8_t ui_scale) {
+        ui_scale_ = ui_scale;
+    }
+
+    inline virtual ~UIScaleUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {}, value {} being initialized.",
+            uniform_ID, ui_scale_
+        );
+
+        glUniform1i(uniform_ID, int(ui_scale_));
+    }
+};
+
+class FrameBorderSizeUniform : public shader::UniformExecutor {
+ private:
+    glm::ivec4 border_size_;
+
+ public:
+    FrameBorderSizeUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC4) {}
+
+    inline void
+    set_border_size(glm::ivec4 border_size) {
+        border_size_ = border_size;
+    }
+
+    inline virtual ~FrameBorderSizeUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform4iv(uniform_ID, 1, &border_size_[0]);
+    }
+};
+
+class FrameSideLengthsUniform : public shader::UniformExecutor {
+ private:
+    glm::ivec4 side_length_;
+
+ public:
+    FrameSideLengthsUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC4) {}
+
+    inline void
+    set_side_lengths(glm::ivec4 side_length) {
+        side_length_ = side_length;
+    }
+
+    inline virtual ~FrameSideLengthsUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform4iv(uniform_ID, 1, &side_length_[0]);
+    }
+};
+
+class InnerPatternSizeUniform : public shader::UniformExecutor {
+ private:
+    glm::ivec2 pattern_size_;
+
+ public:
+    InnerPatternSizeUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC2) {}
+
+    inline void
+    set_inner_pattern_size(glm::ivec2 pattern_size) {
+        pattern_size_ = pattern_size;
+    }
+
+    inline virtual ~InnerPatternSizeUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform2iv(uniform_ID, 1, &pattern_size_[0]);
+    }
+};
+
+class TextureRegionsUniform : public shader::UniformExecutor {
+ private:
+    std::array<glm::ivec2, 9> texture_location_;
+
+ public:
+    TextureRegionsUniform() : UniformExecutor(gpu_data::GPUArayType::INT_VEC2) {}
+
+    inline void
+    set_texture_regions(std::array<glm::ivec2, 9> texture_location) {
+        texture_location_ = texture_location;
+    }
+
+    inline virtual ~TextureRegionsUniform() {}
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger, "Uniform {} being initialized.", uniform_ID
+        );
+
+        glUniform2iv(uniform_ID, 9, &(*texture_location_.data())[0]);
+    }
+};
+
+class FloatColorUniform : public shader::UniformExecutor {
+ private:
+    ColorFloat color_;
+
+ public:
+    FloatColorUniform() : UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC4) {}
+
+    virtual ~FloatColorUniform() {};
+
+    inline virtual void
+    bind(GLint uniform_ID) const override {
+        LOG_BACKTRACE(
+            logging::opengl_logger,
+            "Uniform {}, value: ({}, {}, {}, {}), being initialized.", uniform_ID,
+            color_.r, color_.g, color_.b, color_.a
+        );
+
+        glUniform4f(uniform_ID, color_.r, color_.g, color_.b, color_.a);
+    }
+
+    inline void
+    set_color(const ColorFloat&& color) {
+        color_ = color;
     }
 };
 

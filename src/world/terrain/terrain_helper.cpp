@@ -16,19 +16,11 @@ namespace helper {
 //          set tile grass height to height
 // if height then run grow_grass_recursive(new_set, height -1)
 
-/*
-used the grow the (grass gradient length - height)th iteration of grass
-given a set
-
- * * of grass tiles gets the adjacent grass tiles that have height
-equal to given
- *
- * hight.
-Then next to those tiles set the grass height to hight-1 if this is
- *
- * higher
-than the saved height.
-*/
+/* used the grow the (grass gradient length - height)th iteration of grass
+ * given a set of grass tiles gets the adjacent grass tiles that have height
+ * equal to given hight. Then next to those tiles set the grass height to
+ * hight-1 if this is higher than the saved height.
+ */
 template <int getter(Tile*), void setter(Tile*, int)>
 void
 grow_grass_inner(
@@ -70,16 +62,10 @@ grow_grass_inner(
 //          add adjacent tiles to the new set if they are grass and something about
 //          height set tile.grass height/source status
 // run grow_grass recursive(new_set, grass_grad_length)
-/*
-used to grow the first iteration of of grass
-given a set of all grass tiles gets the
-
- * * grass tiles that adjacent to an
-edge.
-Then next to those tiles set the grass
- * height
- * to max_hight-1.
-*/
+/* used to grow the first iteration of of grass given a set of all grass tiles
+ * gets the grass tiles that adjacent to an edge. Then next to those tiles set
+ * the grass height to max_hight-1.
+ */
 template <bool edge_detector(Tile*), int getter(Tile*), void setter(Tile*, int)>
 void
 grow_grass_recursive(Terrain& ter, std::unordered_set<TerrainOffset3> all_grass) {

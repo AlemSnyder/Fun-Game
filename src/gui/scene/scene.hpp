@@ -28,6 +28,7 @@
 #include "gui/render/gpu_data/shadow_map.hpp"
 #include "gui/render/graphics_shaders/render_types.hpp"
 #include "gui/render/structures/screen_data.hpp"
+#include "gui/the_buttons/bordered_window.hpp"
 #include "helio.hpp"
 
 #include <GLFW/glfw3.h>
@@ -204,7 +205,8 @@ class Scene {
      * @param render object that can render to a framebuffer.
      */
     inline void
-    add_background_ground_renderer(const std::shared_ptr<render_to::FrameBuffer> render
+    add_background_ground_renderer(
+        const std::shared_ptr<render_to::FrameBuffer> render
     ) {
         background_frame_buffer_.push_back(render);
     }

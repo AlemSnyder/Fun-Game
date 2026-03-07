@@ -31,19 +31,73 @@ namespace gui {
 namespace shader {
 
 void
-Render_Base::render(screen_size_t width, screen_size_t height, GLuint framebuffer_ID) {
+Render_Base::render(
+    screen_size_t width, screen_size_t height, GLuint framebuffer_ID,
+    screen_size_t x_start, screen_size_t y_start
+) {
     // Render to the screen
     gui::FrameBufferHandler::instance().bind_fbo(framebuffer_ID);
 
     // Render on the whole framebuffer, complete
     // from the lower left corner to the upper right
-    glViewport(0, 0, width, height);
+    glViewport(x_start, y_start, width, height);
 
     opengl_program_.use_program();
 
     setup_();
 
     opengl_program_.bind_uniforms();
+}
+
+void
+ShaderProgram_Windows::render(
+    screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+    screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUData* data
+) {
+    if (!data->do_render()) {
+        return;
+    }
+    Render_Base::render(width, height, framebuffer_ID, x_start, y_start);
+
+    data->bind();
+
+    // Draw the triangles !
+    glDrawArrays(
+        GL_TRIANGLE_STRIP,       // mode
+        0,                       // start
+        data->get_num_vertices() // number of vertices
+    );
+
+    data->release();
+}
+
+void
+ShaderProgramElements_Windows::render(
+    screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+    screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUDataElements* data
+) {
+    Render_Base::render(width, height, framebuffer_ID, x_start, y_start);
+
+    if (!data->do_render()) {
+        return;
+    }
+
+    data->bind();
+
+    // test if T inherits from Instancing or not
+
+    auto num_vertices = data->get_num_vertices();
+    auto element_type = data->get_element_type();
+
+    // Draw the triangles !
+    glDrawElements(
+        GL_TRIANGLES,                      // mode
+        num_vertices,                      // count
+        static_cast<GLenum>(element_type), // type
+        (void*)0                           // element array buffer offset
+    );
+
+    data->release();
 }
 
 void
@@ -259,7 +313,8 @@ ShaderProgram_MultiElements::render(
             GL_TRIANGLES,                      // mode
             mesh->get_num_vertices().data(),   // count
             static_cast<GLenum>(element_type), // type
-            reinterpret_cast<const void* const*>(mesh->get_elements_position().data()
+            reinterpret_cast<const void* const*>(
+                mesh->get_elements_position().data()
             ),                       // indices
             mesh->get_num_objects(), // drawcount
             mesh->get_base_vertex().data()

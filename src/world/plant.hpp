@@ -28,8 +28,8 @@ struct plant_t {
     // path to lua file that contains function map_name
     std::optional<std::filesystem::path> map_generator_path;
 
-    [[nodiscard]] inline std::strong_ordering operator<=>(const plant_t& other
-    ) const = default;
+    [[nodiscard]] inline std::strong_ordering
+    operator<=>(const plant_t& other) const = default;
 };
 
 } // namespace generation
@@ -46,7 +46,8 @@ struct std::hash<terrain::generation::plant_t> {
 };
 
 template <>
-inline glz::detail::any_t::operator std::filesystem::path() const {
+inline glz::detail::any_t::
+operator std::filesystem::path() const {
     assert(false && "Not Implemented");
     return {};
 }

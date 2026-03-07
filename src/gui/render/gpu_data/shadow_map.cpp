@@ -23,7 +23,8 @@ ShadowMap::ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings setti
         .internal_format = GPUPixelStorageFormat::DEPTH_16,
         .read_format = GPUPixelReadFormat::DEPTH_COMPONENT,
         .type = GPUPixelType::HALF_FLOAT,
-        .min_filter = GL_LINEAR};
+        .min_filter = GL_LINEAR
+    };
 
     connect_depth_texture(
         std::make_shared<Texture2D>(width_, height_, depth_texture_settings, false)
