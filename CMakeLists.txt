@@ -144,4 +144,4 @@ add_test(NAME LuaLogging COMMAND FunGame Test Lua Logging)
 add_test(NAME LuaLoadTime COMMAND FunGame Test Lua LoadTime)
 add_test(NAME LuaLoadScript COMMAND FunGame Test Lua LoadScript)
 add_test(NAME LuaTransferScript COMMAND FunGame Test Lua TransferScript)
-
+add_test(NAME EngineTest COMMAND FunGame Test EngineTest)
