@@ -52,7 +52,7 @@ test_function() {
 
 #endif
 
-[[nodiscard]] std::expected<std::shared_ptr<util::image::Image>, int>
+[[nodiscard]] std::expected<util::image::ImageVariant, int>
 read_image(std::filesystem::path path) {
     path = std::filesystem::absolute(path);
     LOG_BACKTRACE(logging::file_io_logger, "Reading image from {}.", path.string());
@@ -130,11 +130,12 @@ read_image(std::filesystem::path path) {
     std::shared_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
 
     png_uint_32 row_bytes = png_get_rowbytes(png_ptr, info_ptr);
-    std::shared_ptr<char[]> data(new char[row_bytes * height]);
+    std::vector<std::array<png_byte, 4>> data (width * height);
+//    std::shared_ptr<char[]> data(new char[row_bytes * height]);
     // data.reserve(row_bytes * height);
 
     for (unsigned int i = 0; i < height; i++) {
-        row_pointers[i] = reinterpret_cast<png_bytep>(data.get() + i * row_bytes);
+        row_pointers[i] = reinterpret_cast<png_bytep>(data.data()) + i * row_bytes;
     }
 
     png_read_image(png_ptr, row_pointers.get());
@@ -145,24 +146,24 @@ read_image(std::filesystem::path path) {
 
     // todo do things for bit depth
     auto image =
-        std::make_shared<util::image::BytePolychromeAlphaImage>(data, width, height, 1);
+        util::image::PolychromeAlphaImage(width, height, data, 1);
 
 #if DEBUG()
-    for (unsigned int i = 0; i < image->get_width(); i++) {
-        for (unsigned int j = 0; j < image->get_height(); j++) {
+    for (unsigned int i = 0; i < image.get_width(); i++) {
+        for (unsigned int j = 0; j < image.get_height(); j++) {
             auto raw_image_color0 = row_pointers[i][j * 4];
             auto raw_image_color1 = row_pointers[i][j * 4 + 1];
             auto raw_image_color2 = row_pointers[i][j * 4 + 2];
             auto raw_image_color3 = row_pointers[i][j * 4 + 3];
 
             auto data_color0 =
-                reinterpret_cast<png_bytep>(data.get())[i * row_bytes + j * 4];
+                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4];
             auto data_color1 =
-                reinterpret_cast<png_bytep>(data.get())[i * row_bytes + j * 4 + 1];
+                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4 + 1];
             auto data_color2 =
-                reinterpret_cast<png_bytep>(data.get())[i * row_bytes + j * 4 + 2];
+                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4 + 2];
             auto data_color3 =
-                reinterpret_cast<png_bytep>(data.get())[i * row_bytes + j * 4 + 3];
+                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4 + 3];
             if (raw_image_color0 != data_color0 || raw_image_color1 != data_color1
                 || raw_image_color2 != data_color2 || raw_image_color3 != data_color3) {
                 LOG_WARNING(logging::file_io_logger, "Pixel incorrect at {}{}", i, j);
@@ -176,7 +177,7 @@ read_image(std::filesystem::path path) {
                 );
             }
 
-            auto color = image->get_color(i, j);
+            auto color = image.get_color(i, j);
 
             if (raw_image_color0 != color[0] || raw_image_color1 != color[1]
                 || raw_image_color2 != color[2] || raw_image_color3 != color[3]) {

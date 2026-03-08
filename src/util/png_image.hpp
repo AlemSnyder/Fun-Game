@@ -287,7 +287,7 @@ class ColorImageTest {
 
 // #endif
 
-[[nodiscard]] std::expected<std::shared_ptr<util::image::Image>, int>
+[[nodiscard]] std::expected<util::image::ImageVariant, int>
 read_image(std::filesystem::path path);
 
 } // namespace image

@@ -45,7 +45,7 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
     //     LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
     //     return;
     // }
-    // std::shared_ptr<util::image::Image> image = image_result.value();
+    // util::image::ImageVariant image = image_result.value();
 
     // gpu_data::Texture2D border_texture(image, gui::gpu_data::TextureSettings{},
     // false);

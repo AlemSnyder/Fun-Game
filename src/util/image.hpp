@@ -2,10 +2,10 @@
 
 #include "types.hpp"
 #include "util/color.hpp"
+#include "gui/render/gl_enums.hpp"
 
 #include <png.h>
 
-//#include <memory>
 #include <vector>
 #include <variant>
 
@@ -25,20 +25,33 @@ byte and float have get_data() which returns a byte of float
 
 */
 
-struct ImageSettings {
-    size_t data_size;
-    size_t width_bit_alignment; // 1, 2, 4, 8
-    // anything else
-    // image type
-};
-
 namespace {
 
+template<int n>
+std::array<png_byte, n> convert_to_color(std::array<float, n>&& const data) {
+        std::array<png_byte, n> out_color;
+        for (size_t index = 0; index < n; index++) {
+            out_color[index] = data[index] * 256;
+        }
+        return out_color;
+}
+
+png_byte convert_to_color(float&& const data) {
+    return data * 255;
+}
+
+template<int n>
+std::array<png_byte, n> convert_to_color(std::array<png_byte, n>&& const data) {
+        return data;
+}
+
+png_byte convert_to_color(png_byte&& const data) {
+    return data;
+}
 
 template<typename T>
 class ImageImplementation {
  protected:
-    ImageSettings settings_;
     size_t width_;
     size_t height_;
     size_t data_width_; // width with padding
@@ -48,11 +61,19 @@ class ImageImplementation {
     std::vector<T> data_;
 
  public:
-    template<typename T>
-    ImageImplementation(size_t width, size_t height, std::vector<T> data, size_t width_bit_alignment = 1)
+//    template<typename T>
+    ImageImplementation(size_t width, size_t height, std::vector<T>&& data, size_t width_bit_alignment = 1)
         : width_(width), height_(height), width_bit_alignment_(width_bit_alignment), data_(data) {
             data_width_ = width_; // TODO
     }
+
+    ImageImplementation(std::vector<std::vector<T>>&& data, size_t width_bit_alignment = 1)
+        : {    }
+
+
+//    template<typename T>
+    ImageImplementation(size_t width, size_t height, size_t width_bit_alignment = 1)
+        : ImageImplementation<T>(width, height, {}, width_bit_alignment) {}
 
     inline virtual size_t
     get_width() const {
@@ -64,40 +85,24 @@ class ImageImplementation {
         return height_;
     }
 
-    template<typename T>
-    inline T ge_data(size_t i, size_t j) const {
+//    template<typename T>
+    inline const T* get_raw_data() const {
+        return data_.data()
+    }
+
+//    template<typename T>
+    inline T* get_raw_data() {
+        return data_.data();
+    }
+
+//    template<typename T>
+    inline T get_data(size_t i, size_t j) const {
         assert(i < width_ && j < height_ && "Position must be within image.");
         return data_.at(j * data_width_ + i);
     }
 
-    template<std::same_as<png_byte> T>
-    inline png_byte get_color(size_t i, size_t j) const {
-        return ge_data(i, j);
-    }
-
-    template<int n, std::same_as<std::array<png_byte, n>> T>
-    inline std::array<png_byte, n> get_color(size_t i, size_t j) const {
-        auto color = ge_data(i, j);
-        std::array<png_byte, n> out_color;
-        for (size_t index = 0; index < n; index++) {
-            out_color[index] = color[index];
-        }
-        return out_color;
-    }
-
-    template<std::same_as<float> T>
-    inline png_byte get_color(size_t i, size_t j) const {
-        return ge_data(i, j) * 256;
-    }
-
-    template<int n, std::same_as<std::array<float, n>> T>
-    inline std::array<png_byte, n> get_color(size_t i, size_t j) const {
-        auto color = get(i, j);
-        std::array<png_byte, n> out_color;
-        for (size_t index = 0; index < n; index++) {
-            out_color[index] = color[index] * 256;
-        }
-        return out_color;
+    inline auto get_color(size_t i, size_t j) const {
+        return convert_to_color(get_data(i, j))
     }
 };
 }
@@ -156,157 +161,17 @@ using HalfFloatPolychromeAlphaImage = ImageImplementation<std::array<halffloat, 
 
 #endif
 
-// BYTE // 8 bit color channels 24 or 32 bit image
-class ByteMonochromeImage : public virtual MonochromeImage {
- public:
-    virtual png_byte get_color(size_t i, size_t j) const override;
+template<class... Ts>
+struct ImageVisitor : Ts... { using Ts::operator()...;};
 
-    //    virtual png_byte get_data(size_t i, size_t j) const;
+ImageVariant
+make_image(gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format, size_t width, size_t height, size_t width_bit_alignment = 1);
 
-    ByteMonochromeImage(
-        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) : Image(data, width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    ByteMonochromeImage(void* data, size_t width, size_t height, size_t data_size) :
-        Image(data, width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    ByteMonochromeImage(size_t width, size_t height, size_t data_size) :
-        Image(width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    void
-    draw_at(const ByteMonochromeImage& other, size_t position_x, size_t position_y);
-
-    void
-    set_color(png_byte color, size_t i, size_t j) {
-        reinterpret_cast<png_byte*>(data_.get())[i * height_ + j] = color;
-    }
-
-    inline void
-    transpose() {
-        auto temp = width_;
-        width_ = height_;
-        height_ = temp;
-    }
-
-    inline virtual size_t
-    get_width() const {
-        return width_;
-    }
-
-    inline virtual size_t
-    get_height() const {
-        return height_;
-    }
-
-    inline virtual ~ByteMonochromeImage() {}
-};
-
-class BytePolychromeImage : public virtual PolychromeImage {
- public:
-    virtual std::array<png_byte, 3> get_color(size_t i, size_t j) const override;
-
-    //    virtual std::array<png_byte, 3> get_data(size_t i, size_t j) const;
-    // if needed make inline get color
-    BytePolychromeImage(
-        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) : Image(data, width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    BytePolychromeImage(void* data, size_t width, size_t height, size_t data_size) :
-        Image(data, width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    BytePolychromeImage(size_t width, size_t height, size_t data_size) :
-        Image(width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    inline virtual size_t
-    get_width() const {
-        return width_;
-    }
-
-    inline virtual size_t
-    get_height() const {
-        return height_;
-    }
-
-    inline virtual ~BytePolychromeImage() {}
-};
-
-// TODO
-// Everything commented out is a todo
-class BytePolychromeAlphaImage : public virtual PolychromeAlphaImage {
- private:
-    //    static BytePolychromeAlphaImage_data_t
-    //    pad_color_data(const std::vector<std::vector<ColorByte>>& vector_data);
-
-    //    BytePolychromeAlphaImage(BytePolychromeAlphaImage_data_t data) :
-    //        Image(data.data, data.width, data.height, sizeof(ColorByte)) {}
-
- public:
-    virtual std::array<png_byte, 4> get_color(size_t i, size_t j) const override;
-
-    //    virtual std::array<png_byte, 4> get_data(size_t i, size_t j) const;
-
-    BytePolychromeAlphaImage(
-        std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) : Image(data, width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    BytePolychromeAlphaImage(
-        void* data, size_t width, size_t height, size_t data_size
-    ) : Image(data, width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    BytePolychromeAlphaImage(size_t width, size_t height, size_t data_size) :
-        Image(width, height, data_size) {
-        assert(
-            data_size == sizeof(unsigned char) && "data size must match expected size"
-        );
-    }
-
-    //    BytePolychromeAlphaImage(std::vector<std::vector<ColorByte>> data) :
-    //        BytePolychromeAlphaImage(pad_color_data(data)) {}
-
-    inline virtual size_t
-    get_width() const {
-        return width_;
-    }
-
-    inline virtual size_t
-    get_height() const {
-        return height_;
-    }
-
-    inline virtual ~BytePolychromeAlphaImage() {}
-};
+template<typename T>
+ImageVariant
+make_image(size_t width, size_t height, size_t width_bit_alignment = 1) {
+    return ImageImplementation<T>(width, height, {}, width_bit_alignment);
+}
 
 } // namespace image
 

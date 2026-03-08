@@ -212,7 +212,7 @@ color_image_text() {
         LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
         return 1;
     }
-    std::shared_ptr<util::image::Image> image = image_result.value();
+    util::image::ImageVariant image = image_result.value();
 
     auto FPAimage =
         std::dynamic_pointer_cast<util::image::BytePolychromeAlphaImage>(image);
