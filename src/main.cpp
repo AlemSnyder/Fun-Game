@@ -220,7 +220,7 @@ color_image_text() {
 
     auto result = image::write_image(
         FPAimage,
-        files::get_resources_path() / "textures" / "GenericBorder_out_test.png"
+        files::get_root_path() / "logs" / "GenericBorder_out_test.png"
     );
 
     if (!result == image::write_result_t::WR_OK) {
