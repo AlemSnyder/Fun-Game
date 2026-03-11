@@ -4,7 +4,7 @@ namespace util {
 namespace image {
     
 ImageVariant
-make_image(gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format, size_t width, size_t height, size_t width_bit_alignment = 1){
+make_image(gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format, size_t width, size_t height, size_t width_bit_alignment){
     switch (type) {
         case gui::gpu_data::GPUPixelType::FLOAT:
         case gui::gpu_data::GPUPixelType::HALF_FLOAT:

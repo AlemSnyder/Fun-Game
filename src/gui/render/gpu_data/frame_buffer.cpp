@@ -55,12 +55,12 @@ FrameBufferBase::copy_to(
     );
 }
 
-util::image::ImageVariant
+std::expected<util::image::ImageVariant, int>
 FrameBufferBase::read_data(int8_t color_component) const {
     return read_data(0, 0, width_, height_, color_component);
 }
 
-util::image::ImageVariant
+std::expected<util::image::ImageVariant, int>
 FrameBufferBase::read_data(
     screen_size_t start_w, screen_size_t start_h, screen_size_t image_w,
     screen_size_t image_h, int8_t color_component
@@ -72,10 +72,11 @@ FrameBufferBase::read_data(
     FrameBufferHandler& fbh = FrameBufferHandler::instance();
     fbh.bind_fbo(frame_buffer); // need to crate a locking accessor
 
+    // choose which component we are reading from
     if (color_component == DEPTH_COMPONENT_ID) {
         if (!depth_buffer_) {
             LOG_ERROR(logging::opengl_logger, "No depth Component to read from");
-            return {};
+            return std::unexpected(1);
         }
         type = depth_buffer_->get_type();
         format = depth_buffer_->get_format();
@@ -87,7 +88,7 @@ FrameBufferBase::read_data(
                 logging::opengl_logger, "Color component {} does not exist.",
                 color_component
             );
-            return {};
+            return std::unexpected(1);
         }
         const auto& color_texture = render_texture_.at(color_component);
         if (!color_texture) {
@@ -95,7 +96,7 @@ FrameBufferBase::read_data(
                 logging::opengl_logger, "Color component {} exist, but has no value.",
                 color_component
             );
-            return {};
+            return std::unexpected(1);
         }
         type = color_texture->get_type();
         format = color_texture->get_format();
@@ -111,46 +112,33 @@ FrameBufferBase::read_data(
                 read_format = GPUPixelReadFormat::RGBA;
                 break;
             default:
-                LOG_ERROR(logging::opengl_logger, "Cannot read from depth texture");
-                return {};
+                LOG_ERROR(logging::opengl_logger, "No known format.");
+            return std::unexpected(2);
         }
 
         // GLuint attachment = GL_COLOR_ATTACHMENT0 + color_component;
     }
-    // type
-    // number of
-    size_t format_size = get_size(read_format);
-    size_t type_size = get_size(type) / sizeof(char);
-    std::shared_ptr<char[]> data(new char[image_w * image_h * format_size * type_size]);
-
-    glReadPixels(
-        start_w, start_h, image_w, image_h, static_cast<GLenum>(read_format),
-        static_cast<GLenum>(type), data.get()
-    );
 
     if (type != GPUPixelType::FLOAT) {
         LOG_ERROR(logging::opengl_logger, "NOT IMPLEMENTED MUST USE FLOAT");
+        return std::unexpected(3);
     }
 
-    switch (format) {
-        case GPUPixelStorageFormat::RED:
-        case GPUPixelStorageFormat::DEPTH:
-            // in this case format_size should be 1
-            return std::make_shared<util::image::FloatMonochromeImage>(
-                data, image_w, image_h, format_size
-            );
-        case GPUPixelStorageFormat::RGB:
-            return std::make_shared<util::image::FloatPolychromeImage>(
-                data, image_w, image_h, format_size
-            );
-        case GPUPixelStorageFormat::RGBA:
-            return std::make_shared<util::image::FloatPolychromeAlphaImage>(
-                data, image_w, image_h, format_size
-            );
+    util::image::ImageVariant out = util::image::make_image(GPUPixelType::FLOAT, read_format, image_w, image_h);
 
-        default:
-            return {};
-    }
+    const auto visitor = util::image::ImageVisitor(
+        [this, start_w, start_h, read_format](auto&& image) {
+
+            glReadPixels(
+                start_w, start_h, image.get_width(), image.get_height(), static_cast<GLenum>(read_format),
+                static_cast<GLenum>(GPUPixelType::FLOAT), image.get_raw_data()
+    );
+        }
+    );
+
+    std::visit(visitor, out);
+
+    return out;
 }
 
 } // namespace gpu_data

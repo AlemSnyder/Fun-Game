@@ -205,10 +205,11 @@ class FrameBufferBase {
         std::array<screen_size_t, 8> params
     ) const;
 
-    util::image::ImageVariant
+    std::expected<util::image::ImageVariant, int>
     read_data(int8_t color_component = DEPTH_COMPONENT_ID) const;
 
-    util::image::ImageVariant read_data(
+    std::expected<util::image::ImageVariant, int>
+    read_data(
         screen_size_t start_w, screen_size_t start_h, screen_size_t image_w,
         screen_size_t image_h, int8_t color_component = DEPTH_COMPONENT_ID
     ) const;

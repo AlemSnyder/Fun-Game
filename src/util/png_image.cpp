@@ -52,7 +52,7 @@ test_function() {
 
 #endif
 
-[[nodiscard]] std::expected<util::image::ImageVariant, int>
+std::expected<util::image::ImageVariant, int>
 read_image(std::filesystem::path path) {
     path = std::filesystem::absolute(path);
     LOG_BACKTRACE(logging::file_io_logger, "Reading image from {}.", path.string());

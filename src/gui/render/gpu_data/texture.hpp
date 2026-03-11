@@ -104,7 +104,7 @@ class Texture2D : virtual public GPUDataRenderBuffer {
             GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
             width_, height_, 0,
             static_cast<GLenum>(settings_.read_format), static_cast<GLenum>(settings_.type),
-            image->data()
+            image.get_raw_data()
         );
         if (settings_.type == GPUPixelType::FLOAT
             || settings_.type == GPUPixelType::HALF_FLOAT) {
@@ -123,12 +123,24 @@ class Texture2D : virtual public GPUDataRenderBuffer {
         bool differed = true
     );
 
-    void load_data(util::image::MonochromeImage image);
-    void load_data(util::image::PolychromeImage image);
-    void load_data(util::image::PolychromeAlphaImage image);
-    void load_data(util::image::FloatMonochromeImage image);
-    void load_data(util::image::FloatPolychromeImage image);
-    void load_data(util::image::FloatPolychromeAlphaImage image);
+    inline void load_data(util::image::MonochromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::PolychromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::PolychromeAlphaImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::FloatMonochromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::FloatPolychromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::FloatPolychromeAlphaImage image) {
+        return load_data_(image);
+    }
     
     void load_image(util::image::ImageVariant image);
 

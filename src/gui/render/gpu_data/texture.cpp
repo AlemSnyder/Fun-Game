@@ -215,7 +215,6 @@ Texture2D::get_image() const {
     return out;
 
     }
-}
 
 } // namespace gpu_data
 

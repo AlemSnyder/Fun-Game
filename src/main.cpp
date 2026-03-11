@@ -14,6 +14,7 @@
 #include "util/lua/lua_tests.hpp"
 #include "util/mesh.hpp"
 #include "util/png_image.hpp"
+#include "util/image.hpp"
 #include "util/time.hpp"
 #include "util/voxel_io.hpp"
 #include "world/biome.hpp"
@@ -214,11 +215,11 @@ color_image_text() {
     }
     util::image::ImageVariant image = image_result.value();
 
-    auto FPAimage =
-        std::dynamic_pointer_cast<util::image::BytePolychromeAlphaImage>(image);
+    auto FPAimage = std::get<util::image::PolychromeAlphaImage>(image);
+    //        std::dynamic_pointer_cast<>(image;
 
     auto result = image::write_image(
-        *FPAimage.get(),
+        FPAimage,
         files::get_resources_path() / "textures" / "GenericBorder_out_test.png"
     );
 

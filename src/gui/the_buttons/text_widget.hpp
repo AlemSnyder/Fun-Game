@@ -73,7 +73,7 @@ class TextWidget : public virtual WidgetBase, public virtual gpu_data::GPUDataEl
         vertex_array_object_(differed),
 
         font_(font), text_(text), num_characters_(text_.length()),
-        wrap_text_(wrap_text), text_color_(text_color), text_scale_(text_scale) {
+        text_color_(text_color), wrap_text_(wrap_text), text_scale_(text_scale) {
         if (differed) {
             GlobalContext& context = GlobalContext::instance();
             context.push_opengl_task([this]() { initialize(); });

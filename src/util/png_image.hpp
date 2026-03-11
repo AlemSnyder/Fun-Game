@@ -23,6 +23,7 @@
 #pragma once
 
 #include "files.hpp"
+#include "util/image.hpp"
 
 #include <png.h>
 

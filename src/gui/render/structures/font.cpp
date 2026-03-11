@@ -45,7 +45,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     unsigned int max_height = 0;
     unsigned int total_width = 0;
 
-    std::unordered_map<char, util::image::ByteMonochromeImage> images;
+    std::unordered_map<char, util::image::MonochromeImage> images;
 
     descender_height_ = -font_face->descender;
     ascender_height_ = -font_face->ascender;
@@ -77,8 +77,8 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
         }
 
         images.emplace(
-            c, util::image::ByteMonochromeImage(
-                   data.data(), char_size.x, char_size.y, sizeof(char)
+            c, util::image::MonochromeImage(
+                   char_size.x, char_size.y, data
                )
         );
 
@@ -100,12 +100,12 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     }
 
     LOG_BACKTRACE(logging::main_logger, "Combining characters into single image.");
-    auto image = std::make_shared<util::image::ByteMonochromeImage>(
+    auto image = util::image::MonochromeImage(
         total_width, max_height, sizeof(char)
     );
 
     for (unsigned char c = 0; c < 128; c++) {
-        image->draw_at(
+        image.draw_at(
             images.at(c), font_textures_[c].position_in_texture.x,
             font_textures_[c].position_in_texture.y
         );
@@ -113,7 +113,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
 
     LOG_BACKTRACE(logging::main_logger, "Loading font to texture.");
 
-    image->transpose();
+    image.transpose();
     texture_ = std::make_shared<gui::gpu_data::Texture2D>(image, settings);
 
     GlobalContext& global_context = GlobalContext::instance();
