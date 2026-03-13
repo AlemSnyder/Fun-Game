@@ -4,6 +4,7 @@
 #include "data_types.hpp"
 #include "types.hpp"
 #include "util/image.hpp"
+#include <expected>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -82,7 +83,34 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     const TextureSettings settings_;
     GLuint texture_ID_;
 
-    void setup(std::shared_ptr<util::image::Image> image);
+    void load_settings();
+
+    void setup();
+
+    void bind();
+
+    template<class T>
+    void load_data_(T image) {
+        if (settings_.multisample) {
+            LOG_ERROR(logging::opengl_logger, "Cannot write data to multisample texture");
+            return;
+        }
+        if (settings_.internal_format == gpu_data::GPUPixelStorageFormat::DEPTH) {
+            // Not sure what I wanted to put here
+        }
+        width_ = image.get_width();
+        height_ = image.get_height();
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
+            width_, height_, 0,
+            static_cast<GLenum>(settings_.read_format), static_cast<GLenum>(settings_.type),
+            image.get_raw_data()
+        );
+        if (settings_.type == GPUPixelType::FLOAT
+            || settings_.type == GPUPixelType::HALF_FLOAT) {
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+    }
 
  public:
     Texture2D(
@@ -91,11 +119,30 @@ class Texture2D : virtual public GPUDataRenderBuffer {
     );
 
     Texture2D(
-        std::shared_ptr<util::image::Image> Image, TextureSettings settings = {},
+        util::image::ImageVariant Image, TextureSettings settings = {},
         bool differed = true
     );
 
-    void load_data(std::shared_ptr<util::image::Image> image);
+    inline void load_data(util::image::MonochromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::PolychromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::PolychromeAlphaImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::FloatMonochromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::FloatPolychromeImage image) {
+        return load_data_(image);
+    }
+    inline void load_data(util::image::FloatPolychromeAlphaImage image) {
+        return load_data_(image);
+    }
+    
+    void load_image(util::image::ImageVariant image);
 
     ~Texture2D() { glDeleteTextures(1, &texture_ID_); }
 
@@ -139,7 +186,9 @@ class Texture2D : virtual public GPUDataRenderBuffer {
         glBindTexture(target, texture_ID_);
     }
 
-    [[nodiscard]] std::shared_ptr<util::image::Image> get_image() const;
+    // instead of ints could return error enums
+    [[nodiscard]] std::expected<util::image::ImageVariant, int>
+    get_image() const;
 };
 
 } // namespace gpu_data

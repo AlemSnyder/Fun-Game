@@ -1,146 +1,57 @@
 #include "image.hpp"
 
-#include "util/color.hpp"
-
-#include <cstring>
-
 namespace util {
-
 namespace image {
+    
+ImageVariant
+make_image(gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format, size_t width, size_t height, size_t width_bit_alignment){
+    switch (type) {
+        case gui::gpu_data::GPUPixelType::FLOAT:
+        case gui::gpu_data::GPUPixelType::HALF_FLOAT:
+            switch (format) {
+                case gui::gpu_data::GPUPixelReadFormat::DEPTH_COMPONENT:
+                case gui::gpu_data::GPUPixelReadFormat::DEPTH_STENCIL:
+                case gui::gpu_data::GPUPixelReadFormat::RED:
+                case gui::gpu_data::GPUPixelReadFormat::GREEN:
+                case gui::gpu_data::GPUPixelReadFormat::BLUE:
+                    return MonochromeImage(width, height, width_bit_alignment);
+                case gui::gpu_data::GPUPixelReadFormat::RGB:
+                case gui::gpu_data::GPUPixelReadFormat::BGR:
+                    return MonochromeImage(width, height, width_bit_alignment);
 
-Image::Image(void* data, size_t width, size_t height, size_t data_size) :
-    width_(width), height_(height), data_size_(data_size),
-    data_(new char[width * height * data_size]) {
-    std::memcpy(data_.get(), data, width * height * data_size);
-};
+                case gui::gpu_data::GPUPixelReadFormat::RGBA:
+                case gui::gpu_data::GPUPixelReadFormat::BGRA:
+                    return MonochromeImage(width, height, width_bit_alignment);
+            }
+        case gui::gpu_data::GPUPixelType::UNSIGNED_BYTE:
+            switch (format) {
+                case gui::gpu_data::GPUPixelReadFormat::DEPTH_COMPONENT:
+                case gui::gpu_data::GPUPixelReadFormat::DEPTH_STENCIL:
+                case gui::gpu_data::GPUPixelReadFormat::RED:
+                case gui::gpu_data::GPUPixelReadFormat::GREEN:
+                case gui::gpu_data::GPUPixelReadFormat::BLUE:
+                    return MonochromeImage(
+                        width, height, width_bit_alignment
+                    );
+                case gui::gpu_data::GPUPixelReadFormat::RGB:
+                case gui::gpu_data::GPUPixelReadFormat::BGR:
+                    return PolychromeImage(
+                         width, height, width_bit_alignment
+                    );
 
-Image::Image(size_t width, size_t height, size_t data_size) :
-    width_(width), height_(height), data_size_(data_size),
-    data_(new char[width * height * data_size]) {
-    std::memset(data_.get(), char(0), width * height * data_size);
-};
+                case gui::gpu_data::GPUPixelReadFormat::RGBA:
+                case gui::gpu_data::GPUPixelReadFormat::BGRA:
+                    return PolychromeAlphaImage(
+                        width, height, width_bit_alignment
+                    );
+            }
 
-png_byte
-FloatMonochromeImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data<float, 1>(data_, i * height_ + j)[0];
+}
+    // LOR error
+    abort();
 }
 
-float
-FloatMonochromeImage::get_data(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data_float<float, 1>(data_, i * height_ + j)[0];
 }
 
-std::array<png_byte, 3>
-FloatPolychromeImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data<float, 3>(data_, i * height_ + j);
 }
 
-std::array<float, 3>
-FloatPolychromeImage::get_data(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data_float<float, 3>(data_, i * height_ + j);
-}
-
-FloatPolychromeAlphaImage_data_t
-FloatPolychromeAlphaImage::pad_color_data(
-    const std::vector<std::vector<ColorFloat>>& vector_data
-) {
-    uint width = 0;
-    uint height = vector_data.size();
-
-    for (const auto& row : vector_data) {
-        if (row.size() > width) {
-            width = row.size();
-        }
-    }
-
-    std::shared_ptr<char[]> data(
-        new char[width * height * sizeof(ColorFloat) / sizeof(char)]
-    );
-
-    size_t j = 0;
-    ColorFloat* float_color_data = reinterpret_cast<ColorFloat*>(data.get());
-
-    for (const auto& row : vector_data) {
-        for (const auto& color_f : row) {
-            // data.push_back(color);
-            float_color_data[j] = color_f;
-            j++;
-        }
-        for (size_t i = 0; i < width - row.size(); i++) {
-            float_color_data[j] = color::black;
-            j++;
-        }
-    }
-
-    return FloatPolychromeAlphaImage_data_t(data, width, height);
-}
-
-std::array<png_byte, 4>
-FloatPolychromeAlphaImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data<float, 4>(data_, i * height_ + j);
-}
-
-std::array<float, 4>
-FloatPolychromeAlphaImage::get_data(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data_float<float, 4>(data_, i * height_ + j);
-}
-
-#if __HAVE_FLOAT16
-// HALF FLOAT
-png_byte
-HALFFloatMonochromeImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data<_Float16, 1>(data_, i * height_ + j)[0];
-}
-
-std::array<png_byte, 3>
-HALFFloatPolychromeImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data<_Float16, 3>(data_, i * height_ + j);
-}
-
-std::array<png_byte, 4>
-HALFFloatPolychromeAlphaImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data<_Float16, 4>(data_, i * height_ + j);
-}
-#endif
-
-png_byte
-ByteMonochromeImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data_byte<png_byte, 1>(data_, i * height_ + j)[0];
-}
-
-std::array<png_byte, 3>
-BytePolychromeImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data_byte<png_byte, 3>(data_, i * height_ + j);
-}
-
-std::array<png_byte, 4>
-BytePolychromeAlphaImage::get_color(size_t i, size_t j) const {
-    assert(i < width_ && j < height_ && "Position must be within image.");
-    return read_data_byte<png_byte, 4>(data_, i * height_ + j);
-}
-
-void
-ByteMonochromeImage::draw_at(
-    const ByteMonochromeImage& other, size_t position_x, size_t position_y
-) {
-    for (size_t i = 0; i < other.get_width(); i++) {
-        for (size_t j = 0; j < other.get_height(); j++) {
-            set_color(other.get_color(i, j), i + position_x, j + position_y);
-        }
-    }
-}
-
-} // namespace image
-
-} // namespace util
