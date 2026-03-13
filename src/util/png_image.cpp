@@ -139,7 +139,7 @@ read_image(std::filesystem::path path) {
         LOG_WARNING(logging::file_io_logger, "Color type not RGBA");
     }
 
-    /* I don't really care about a background color;
+    /* I don't really care about a background color, but if I did
     if (!png_get_valid(info.png_ptr, info.png_info, PNG_INFO_bKGD)) {
         LOG_ERROR(logging::file_io_logger, "Failed due to: Out of Memory");
         return std::unexpected(1);

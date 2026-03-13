@@ -147,7 +147,6 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
 
 
     // Open the file for writing
-//    auto path_str = path.string(); // need to keep this from being free'd
     std::unique_ptr<std::FILE, void(*)(std::FILE*)> file (
         fopen(path.c_str(), "wb"), [](std::FILE* file){
             fclose(file);
