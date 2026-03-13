@@ -52,23 +52,47 @@ test_function() {
 
 #endif
 
+class PNG_read_info {
+    public:
+    png_structp png_ptr = nullptr;
+    png_infop png_info = nullptr;
+
+    PNG_read_info() {
+        // Create our write struct
+        // TODO these nullptr should be function pointers
+        png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+        if (!png_ptr) {return ;}
+        // Create our info struct for this png image
+        png_info = png_create_info_struct(png_ptr);
+    }
+
+    ~PNG_read_info() {
+        auto temp_ptr_struct = (png_ptr) ? &png_ptr : nullptr;
+        auto temp_png_info = (png_info) ? &png_info : nullptr;
+        png_destroy_read_struct(temp_ptr_struct, temp_png_info, nullptr);
+    }
+};
+
 std::expected<util::image::ImageVariant, int>
 read_image(std::filesystem::path path) {
     path = std::filesystem::absolute(path);
-    LOG_BACKTRACE(logging::file_io_logger, "Reading image from {}.", path.string());
+    std::string path_string = path.string();
+    LOG_BACKTRACE(logging::file_io_logger, "Reading image from {}.", path_string);
 
     // Read the tiles from the path specified, and save
-    // std::ifstream file(path, std::ios::in | std::ios::binary);
     if (!std::filesystem::exists(path)) {
         LOG_ERROR(
             logging::file_io_logger,
-            "Could not open {}. Are you in the right directory?", path.string()
+            "Could not open {}. Are you in the right directory?", path_string
         );
-        throw exc::file_not_found_error(path);
+        return std::unexpected(1);
     }
 
-    std::FILE* file = fopen(path.c_str(), "rb");
-
+    std::unique_ptr<std::FILE, void(*)(std::FILE*)> file (
+        fopen(path_string.c_str(), "rb"), [](std::FILE* file){
+            fclose(file);
+        }
+    );
     png_uint_32 width;
     png_uint_32 height;
     int bit_depth;
@@ -79,40 +103,35 @@ read_image(std::filesystem::path path) {
 
     unsigned char signal[8];
 
-    fread(signal, 1, 8, file);
-
-    // file.read(reinterpret_cast<char*>(signal), 8);
+    fread(signal, 1, 8, file.get());
 
     if (!png_check_sig(signal, 8)) {
         LOG_ERROR(logging::file_io_logger, "Failed due to: Bad Signal");
-        return std::unexpected(1);
-    }
-
-    auto png_ptr =
-        png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-    if (png_ptr == nullptr) {
-        LOG_ERROR(logging::file_io_logger, "Failed due to: Out of Memory");
-        return std::unexpected(4);
-    }
-
-    auto info_ptr = png_create_info_struct(png_ptr);
-    if (info_ptr == nullptr) {
-        png_destroy_read_struct(&png_ptr, nullptr, nullptr);
-        LOG_ERROR(logging::file_io_logger, "Failed due to: Out of Memory");
-        return std::unexpected(4);
-    }
-
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
         return std::unexpected(2);
     }
 
-    png_init_io(png_ptr, file);
-    png_set_sig_bytes(png_ptr, 8);
-    png_read_info(png_ptr, info_ptr);
+    auto struct_ptr = std::unique_ptr<png_struct, void(*)(png_struct*)>(
+        png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr),
+        [](png_struct* ptr){
+            png_destroy_read_struct(&ptr, nullptr, nullptr);
+        }
+    );
+    PNG_read_info info;
+    if (!info.png_ptr) {
+        LOG_ERROR(logging::file_io_logger, "Failed due to: Out of Memory");
+        return std::unexpected(4);
+    }
+    if (!info.png_info) {
+        LOG_ERROR(logging::file_io_logger, "Failed due to: Out of Memory");
+        return std::unexpected(4);
+    }
+
+    png_init_io(info.png_ptr, file.get());
+    png_set_sig_bytes(info.png_ptr, 8);
+    png_read_info(info.png_ptr, info.png_info);
 
     png_get_IHDR(
-        png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_method,
+        info.png_ptr, info.png_info, &width, &height, &bit_depth, &color_type, &interlace_method,
         &compression_method, &filter_method
     );
 
@@ -121,28 +140,23 @@ read_image(std::filesystem::path path) {
     }
 
     /* I don't really care about a background color;
-    if (!png_get_valid(png_ptr, info_ptr, PNG_INFO_bKGD)) {
+    if (!png_get_valid(info.png_ptr, info.png_info, PNG_INFO_bKGD)) {
         LOG_ERROR(logging::file_io_logger, "Failed due to: Out of Memory");
         return std::unexpected(1);
     }*/
 
-    // png_bytep [height];
     std::shared_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
 
-    png_uint_32 row_bytes = png_get_rowbytes(png_ptr, info_ptr);
+    png_uint_32 row_bytes = png_get_rowbytes(info.png_ptr, info.png_info);
     std::vector<std::array<png_byte, 4>> data (width * height);
-//    std::shared_ptr<char[]> data(new char[row_bytes * height]);
-    // data.reserve(row_bytes * height);
 
     for (unsigned int i = 0; i < height; i++) {
         row_pointers[i] = reinterpret_cast<png_bytep>(data.data()) + i * row_bytes;
     }
 
-    png_read_image(png_ptr, row_pointers.get());
+    png_read_image(info.png_ptr, row_pointers.get());
 
-    png_read_end(png_ptr, nullptr);
-
-    fclose(file);
+    png_read_end(info.png_ptr, nullptr);
 
     // todo do things for bit depth
     auto image =

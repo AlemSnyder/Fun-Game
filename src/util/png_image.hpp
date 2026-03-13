@@ -95,6 +95,28 @@ class ImageTest {
     }
 };
 
+class PNG_write_info {
+    public:
+    png_structp png_ptr = nullptr;
+    png_infop png_info = nullptr;
+
+    PNG_write_info() {
+        // Create our write struct
+        // TODO these nullptr should be function pointers
+        png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+        if (!png_ptr) {return ;}
+            // Create our info struct for this png image
+
+        png_info = png_create_info_struct(png_ptr);
+    }
+
+    ~PNG_write_info() {
+        auto temp_ptr_struct = (png_ptr) ? &png_ptr : nullptr;
+        auto temp_png_info = (png_info) ? &png_info : nullptr;
+        png_destroy_write_struct(temp_ptr_struct, temp_png_info);
+    }
+};
+
 namespace {
 
 template <class T, size_t n>
@@ -123,42 +145,35 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
     char meta_key[] = "An Image";
     char meta_text[] = "Some text";
 
-    // Create png variables
-    png_structp png_ptr = nullptr;
-    png_infop info_ptr = nullptr;
 
     // Open the file for writing
-    auto path_str = path.string(); // need to keep this from being free'd
-    std::FILE* file = fopen(path_str.c_str(), "wb");
+//    auto path_str = path.string(); // need to keep this from being free'd
+    std::unique_ptr<std::FILE, void(*)(std::FILE*)> file (
+        fopen(path.c_str(), "wb"), [](std::FILE* file){
+            fclose(file);
+        }
+    );
 
     if (!file) {
         status = WR_FOPEN_FAILED;
-        goto fopen_failed;
+        return status;
     }
 
-    // Create our write struct
-    // TODO these nullptr should be function pointers
-    png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-    if (!png_ptr) {
+    // Create write struct and info struct
+    PNG_write_info info;
+
+    if (!info.png_ptr) {
         status = WR_CREATE_WRITE_STRUCT_FAILED;
-        goto png_create_write_struct_failed;
+        return status;
     }
 
-    // Create our info struct for this png image
-    info_ptr = png_create_info_struct(png_ptr);
-    if (!info_ptr) {
+    if (!info.png_info) {
         status = WR_CREATE_INFO_STRUCT_FAILED;
-        goto png_create_info_struct_failed;
-    }
-
-    // Set jump buffer for callbacks
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        status = WR_SETJMP_PNG_JMPBUF_FAILED;
-        goto setjmp_png_jmpbuf_failed;
+        return status;
     }
 
     // Set up IO for our file
-    png_init_io(png_ptr, file);
+    png_init_io(info.png_ptr, file.get());
 
     int color_type;
 
@@ -174,7 +189,7 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
 
     // set information about our image
     png_set_IHDR(
-        png_ptr, info_ptr, WIDTH, HEIGHT, 8, color_type, PNG_INTERLACE_NONE,
+        info.png_ptr, info.png_info, WIDTH, HEIGHT, 8, color_type, PNG_INTERLACE_NONE,
         PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT
     );
 
@@ -187,25 +202,15 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
     meta_data.key = meta_key;
     meta_data.text = meta_text;
 
-    png_set_text(png_ptr, info_ptr, &meta_data, 1);
-    png_write_info(png_ptr, info_ptr);
+    png_set_text(info.png_ptr, info.png_info, &meta_data, 1);
+    png_write_info(info.png_ptr, info.png_info);
 
     // multiple colors are written in the same row
-    // not sure how I want to implement this in a template safe way
-    // https://stackoverflow.com/questions/48757099/write-an-image-row-by-row-with-libpng-using-c
-
     /*
      * write rows of image
      */
     size_t i, j;
-    png_bytep row;
-
-    // allocate data for row
-    row = new (std::nothrow) png_byte[n * WIDTH];
-    if (!row) {
-        status = WR_ROW_MALLOC_FAILED;
-        goto row_malloc_failed;
-    }
+    std::vector<png_byte> row(n * WIDTH);
 
     // write row data
     for (i = 0; i < HEIGHT; i++) {
@@ -218,29 +223,15 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
         }
 
         // write the row
-        png_write_row(png_ptr, row);
+        png_write_row(info.png_ptr, row.data());
     }
 
     /*
      * Cleanups
      */
-    // Free our row data
-    delete[] row;
-
-row_malloc_failed:
     // Finish our write
-    png_write_end(png_ptr, info_ptr);
+    png_write_end(info.png_ptr, info.png_info);
 
-setjmp_png_jmpbuf_failed:
-png_create_info_struct_failed:
-    // Free our write struct
-    png_destroy_write_struct(&png_ptr, &info_ptr);
-
-png_create_write_struct_failed:
-    // Close our file
-    fclose(file);
-
-fopen_failed:
     return status;
 }
 
