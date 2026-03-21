@@ -10,16 +10,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set the project name
 project(FunGame VERSION 0.1.0)
 
+# AngelScript
+file(GLOB ANGELSCRIPT_SOURCE "vendor/angelscript/sdk/angelscript/source/*.c*")
+add_library(angelscript OBJECT ${ANGELSCRIPT_SOURCE})
+target_include_directories(angelscript PRIVATE "vendor/angelscript/sdk/angelscript/include")
+
+# where am I
+file(GLOB WHEREAMI_SOURCE "vendor/whereami/src/**")
+add_library(whereami OBJECT ${WHEREAMI_SOURCE})
+target_include_directories(whereami PRIVATE "vendor/whereami/src")
+
+# ImGUI
+file(GLOB IMGUI_SOURCES1 "vendor/imgui/imgui/*.c*")
+file(GLOB IMGUI_SOURCES2 "vendor/imgui/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB IMGUI_SOURCES3 "vendor/imgui/imgui/backends/imgui_impl_glfw.cpp")
+add_library(dear_imgui OBJECT ${IMGUI_SOURCES1} ${IMGUI_SOURCES2} ${IMGUI_SOURCES3})
+target_include_directories(dear_imgui PRIVATE "vendor/imgui/imgui")
+
 # add the executable
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
-
-# this is one json file and whereami
-file(GLOB SOURCES3 "vendor/angelscript/sdk/angelscript/source/*.c*")
-file(GLOB SOURCES4 "vendor/whereami/src/*.c*")
-file(GLOB SOURCES6 "vendor/imgui/imgui/*.c*")
-file(GLOB SOURCES7 "vendor/imgui/imgui/backends/imgui_impl_opengl3.cpp")
-file(GLOB SOURCES8 "vendor/imgui/imgui/backends/imgui_impl_glfw.cpp")
-add_executable(FunGame ${SOURCES1} ${SOURCES3} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
+add_executable(FunGame ${SOURCES1})
 
 # Set standard version
 set_property(TARGET FunGame PROPERTY CXX_STANDARD 23)
@@ -77,10 +87,14 @@ find_package(Lua REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
 # add quill and sol2
-target_link_libraries_system(FunGame PRIVATE quill::quill)
+target_link_libraries(FunGame PRIVATE quill::quill)
 
 target_link_libraries_system(FunGame PRIVATE sol2::sol2)
 target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
+
+target_link_libraries(FunGame PRIVATE whereami)
+target_link_libraries(FunGame PRIVATE dear_imgui)
+target_link_libraries(FunGame PRIVATE angelscript)
 
 # Add include dirs
 target_include_directories(FunGame PRIVATE "vendor/whereami/src")
@@ -90,7 +104,6 @@ target_include_directories(FunGame PRIVATE "vendor/glaze/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "vendor/imgui/imgui")
 target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/angelscript/include")
-target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/angelscript/source")
 target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
