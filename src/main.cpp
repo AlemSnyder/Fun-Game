@@ -12,6 +12,7 @@
 #include "util/files.hpp"
 #include "util/lua/lua_logging.hpp"
 #include "util/lua/lua_tests.hpp"
+#include "util/angle_script/as_tests.hpp"
 #include "util/mesh.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
@@ -469,6 +470,8 @@ tests(const argh::parser& cmdl) {
         return gui::opengl_tests();
     } else if (run_function == "Lua") {
         return lua_tests(cmdl);
+    } else if (run_function == "AngelScript") {
+        return as_test::test();
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

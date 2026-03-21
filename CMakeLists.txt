@@ -14,11 +14,12 @@ project(FunGame VERSION 0.1.0)
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
 
 # this is one json file and whereami
+file(GLOB SOURCES3 "vendor/angelscript/sdk/angelscript/source/*.c*")
 file(GLOB SOURCES4 "vendor/whereami/src/*.c*")
 file(GLOB SOURCES6 "vendor/imgui/imgui/*.c*")
 file(GLOB SOURCES7 "vendor/imgui/imgui/backends/imgui_impl_opengl3.cpp")
 file(GLOB SOURCES8 "vendor/imgui/imgui/backends/imgui_impl_glfw.cpp")
-add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
+add_executable(FunGame ${SOURCES1} ${SOURCES3} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
 
 # Set standard version
 set_property(TARGET FunGame PROPERTY CXX_STANDARD 23)
@@ -88,6 +89,8 @@ target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
 target_include_directories(FunGame PRIVATE "vendor/glaze/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "vendor/imgui/imgui")
+target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/angelscript/include")
+target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/angelscript/source")
 target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
@@ -144,4 +147,5 @@ add_test(NAME LuaLogging COMMAND FunGame Test Lua Logging)
 add_test(NAME LuaLoadTime COMMAND FunGame Test Lua LoadTime)
 add_test(NAME LuaLoadScript COMMAND FunGame Test Lua LoadScript)
 add_test(NAME LuaTransferScript COMMAND FunGame Test Lua TransferScript)
+add_test(NAME AngelScript COMMAND FunGame Test AngelScript)
 add_test(NAME EngineTest COMMAND FunGame Test EngineTest)
