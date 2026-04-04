@@ -26,11 +26,16 @@
 #pragma once
 
 #include <sol/sol.hpp>
+#include <angelscript.h>
+
+class asContextWrapper;
 
 class LocalContext {
  private:
     LocalContext();
     sol::state lua_state;
+
+    asIScriptFunction* context_;
 
     sol::object copy(sol::state& lua, const sol::object& object);
 
@@ -49,4 +54,6 @@ class LocalContext {
     bool load_into_this_lua_state(const std::string& command);
 
     std::optional<sol::object> get_from_lua(const std::string& command);
+
+    auto run_function(asIScriptFunction* function);
 };

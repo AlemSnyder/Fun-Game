@@ -28,6 +28,7 @@
 #define BS_THREAD_POOL_ENABLE_PRIORITY
 #include <BS_thread_pool.hpp>
 #include <sol/sol.hpp>
+#include <angelscript.h>
 
 #include <functional>
 #include <mutex>
@@ -43,6 +44,7 @@
  * @details In particular this will contain the thread pool.
  */
 
+
 class GlobalContext {
  private:
     BS::thread_pool thread_pool_;
@@ -56,6 +58,10 @@ class GlobalContext {
     sol::state lua_;
 
     std::mutex global_lua_mutex_;
+
+    asIScriptEngine* engine_;
+
+    std::mutex global_as_mutex_;
 
 #if DEBUG()
 
@@ -158,4 +164,8 @@ class GlobalContext {
     void load_script_file(const std::filesystem::path& path);
 
     std::optional<sol::object> get_from_lua(const std::string& command);
+
+    auto as_engine() {
+        return engine_;
+    }
 };

@@ -15,8 +15,7 @@ pacman -Su \
     mingw-w64-x86_64-ninja \
     mingw-w64-x86_64-glew \
     mingw-w64-x86_64-glfw \
-    mingw-w64-x86_64-glm \
-    mingw-w64-x86_64-lua  # not 100% sure this is the right lua version
+    mingw-w64-x86_64-glm
 ```
 
 ## Building
