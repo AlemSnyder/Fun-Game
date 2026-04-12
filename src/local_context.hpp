@@ -25,8 +25,10 @@
 
 #pragma once
 
-#include <sol/sol.hpp>
 #include <angelscript.h>
+#include <sol/sol.hpp>
+
+#include <expected>
 
 class asContextWrapper;
 
@@ -35,12 +37,13 @@ class LocalContext {
     LocalContext();
     sol::state lua_state;
 
-    asIScriptFunction* context_;
+    asIScriptContext* context_;
 
     sol::object copy(sol::state& lua, const sol::object& object);
 
  public:
     [[nodiscard]] static LocalContext& instance();
+    ~LocalContext();
 
     [[nodiscard]] inline sol::state&
     get_lua_state() {
@@ -55,5 +58,25 @@ class LocalContext {
 
     std::optional<sol::object> get_from_lua(const std::string& command);
 
-    auto run_function(asIScriptFunction* function);
+    template <class T>
+    std::expected<T, int>
+    run_function(asIScriptFunction* function) {
+        context_->Prepare(function);
+        // set args maybe
+        int result = context_->Execute();
+        if (result != asEXECUTION_FINISHED) {
+            return std::unexpected(result);
+        }
+        T object = *static_cast<T*>(context_->GetReturnObject());
+
+        return object;
+    }
+
+    int
+    run_function(asIScriptFunction* function) {
+        context_->Prepare(function);
+        // set args maybe
+        int result = context_->Execute();
+        return result;
+    }
 };

@@ -23,6 +23,9 @@ namespace terrain {
 namespace generation {
 
 class Noise {
+ private:
+    size_t ref_count;
+
  protected:
     // The length of Noise::primes
     static constexpr uint16_t NUM_PRIMES = 10;
@@ -57,6 +60,20 @@ class Noise {
     }
 
     virtual ~Noise() {}
+
+    // TODO what I want to do is create some sort of template that does this for me
+    // Also might want the reference counter to be mutable in the template;
+    inline void
+    add_ref() {
+        ref_count++;
+    }
+
+    inline void
+    release_ref() {
+        if (--ref_count == 0) {
+            delete this;
+        }
+    }
 };
 
 template <class T>
@@ -95,6 +112,9 @@ class FractalNoise : protected Noise {
      * @return double the value of the noise
      */
     virtual double get_noise(NoisePosition x, NoisePosition y) const override;
+
+    using Noise::add_ref;
+    using Noise::release_ref;
 
  private:
     double smoothed_noise_(size_t i, NoiseTileIndex x, NoiseTileIndex y) const;

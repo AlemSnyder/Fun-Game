@@ -12,7 +12,10 @@ project(FunGame VERSION 0.1.0)
 
 # AngelScript
 file(GLOB ANGELSCRIPT_SOURCE "vendor/angelscript/sdk/angelscript/source/*.c*")
-add_library(angelscript OBJECT ${ANGELSCRIPT_SOURCE})
+file(GLOB ANGELSCRIPT_SOURCE_STRING "vendor/angelscript/sdk/add_on/scriptstdstring/*.c*")
+file(GLOB ANGELSCRIPT_SOURCE_ARRAY "vendor/angelscript/sdk/add_on/scriptarray/*.c*")
+add_library(angelscript OBJECT ${ANGELSCRIPT_SOURCE} ${ANGELSCRIPT_SOURCE_STRING} ${ANGELSCRIPT_SOURCE_ARRAY})
+target_compile_definitions(angelscript PRIVATE "AS_USE_STLNAMES")
 target_include_directories(angelscript PRIVATE "vendor/angelscript/sdk/angelscript/include")
 
 # where am I
@@ -104,6 +107,7 @@ target_include_directories(FunGame PRIVATE "vendor/glaze/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "vendor/imgui/imgui")
 target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/angelscript/include")
+target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/add_on/scriptstdstring")
 target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 

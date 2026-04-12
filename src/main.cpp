@@ -9,10 +9,10 @@
 #include "local_context.hpp"
 #include "logging.hpp"
 #include "manifest/object_handler.hpp"
+#include "util/angle_script/as_tests.hpp"
 #include "util/files.hpp"
 #include "util/lua/lua_logging.hpp"
 #include "util/lua/lua_tests.hpp"
-#include "util/angle_script/as_tests.hpp"
 #include "util/mesh.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
@@ -438,6 +438,28 @@ lua_tests(const argh::parser& cmdl) {
     }
 }
 
+int
+as_tests(const argh::parser& cmdl) {
+    if (cmdl.size() < 3) {
+        return as_test::test();
+    }
+
+    std::string run_function = cmdl(3).str();
+
+    if (run_function == "Map") {
+        return 1; // MacroMap(cmdl);
+    } else if (run_function == "Logging") {
+        return 1; // as_test::lua_log_test();
+    } else if (run_function == "LoadTime") {
+        return 1; // as_test::lua_loadtime_test();
+    } else if (run_function == "LoadScript") {
+        return as_test::as_load_tests();
+    } else {
+        std::cout << "No known command" << std::endl;
+        return 1;
+    }
+}
+
 // for tests. Probably should make a bash script to test each test
 inline int
 tests(const argh::parser& cmdl) {
@@ -471,7 +493,7 @@ tests(const argh::parser& cmdl) {
     } else if (run_function == "Lua") {
         return lua_tests(cmdl);
     } else if (run_function == "AngelScript") {
-        return as_test::test();
+        return as_tests(cmdl);
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

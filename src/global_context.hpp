@@ -26,9 +26,9 @@
 #include "logging.hpp"
 
 #define BS_THREAD_POOL_ENABLE_PRIORITY
+#include <angelscript.h>
 #include <BS_thread_pool.hpp>
 #include <sol/sol.hpp>
-#include <angelscript.h>
 
 #include <functional>
 #include <mutex>
@@ -43,7 +43,6 @@
  *
  * @details In particular this will contain the thread pool.
  */
-
 
 class GlobalContext {
  private:
@@ -80,6 +79,8 @@ class GlobalContext {
     void operator=(GlobalContext&&) = delete;
     void operator=(GlobalContext const&) = delete;
 
+    ~GlobalContext();
+
     inline void
     set_main_thread() {
 #if DEBUG()
@@ -108,8 +109,9 @@ class GlobalContext {
     }
 
     // this must be run before exit if lua has been initialized on thread local
-    // 
-    inline void close_threads() {
+    //
+    inline void
+    close_threads() {
         thread_pool_.reset(0);
     }
 
@@ -165,7 +167,14 @@ class GlobalContext {
 
     std::optional<sol::object> get_from_lua(const std::string& command);
 
-    auto as_engine() {
+    auto
+    as_engine() {
         return engine_;
     }
+
+    // load as script file
+    void load_file(std::string module, std::filesystem::path path);
+
+    // get function from module
+    asIScriptFunction* get_function(std::string module, std::string function) const;
 };

@@ -6,13 +6,18 @@
 
 // #include <bits/stdc++>
 
-LocalContext::LocalContext() {
+LocalContext::LocalContext() :
+    context_(GlobalContext::instance().as_engine()->CreateContext()) {
     lua_state.open_libraries(sol::lib::base);
     lua_state.open_libraries(sol::lib::math);
     lua_state.open_libraries(sol::lib::string);
     lua_state.open_libraries(sol::lib::debug);
     lua_logging::setup_lua_logging(lua_state);
     terrain::generation::init_lua_interface(lua_state);
+}
+
+LocalContext::~LocalContext() {
+    context_->Release();
 }
 
 LocalContext&

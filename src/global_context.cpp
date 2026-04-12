@@ -2,6 +2,30 @@
 
 #include "local_context.hpp"
 #include "logging.hpp"
+#include "scriptstdstring.h"
+#include "util/files.hpp"
+#include "world/terrain/generation/lua_interface.hpp"
+
+// Implement a simple message callback function
+void
+MessageCallback(const asSMessageInfo* msg, void* param) {
+    if (msg->type == asMSGTYPE_ERROR) {
+        LOG_ERROR(
+            logging::lua_script_logger, "{} ({}, {}) : {}", msg->section, msg->row,
+            msg->col, msg->message
+        );
+    } else if (msg->type == asMSGTYPE_WARNING) {
+        LOG_WARNING(
+            logging::lua_script_logger, "{} ({}, {}) : {}", msg->section, msg->row,
+            msg->col, msg->message
+        );
+    } else if (msg->type == asMSGTYPE_INFORMATION) {
+        LOG_WARNING(
+            logging::lua_script_logger, "{} ({}, {}) : {}", msg->section, msg->row,
+            msg->col, msg->message
+        );
+    }
+}
 
 void
 GlobalContext::run_opengl_queue() {
@@ -26,7 +50,16 @@ GlobalContext::run_opengl_queue() {
 }
 
 GlobalContext::GlobalContext() :
-    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
+    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }),
+    engine_(asCreateScriptEngine()) {
+    engine_->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+    RegisterStdString(engine_);
+    terrain::generation::init_as_interface(engine_);
+}
+
+GlobalContext::~GlobalContext() {
+    engine_->ShutDownAndRelease();
+}
 
 std::optional<sol::object>
 GlobalContext::get_from_lua(const std::string& command) {
@@ -102,4 +135,33 @@ GlobalContext::load_script_file(const std::filesystem::path& path) {
         std::string what = err.what();
         LOG_ERROR(logging::lua_logger, "{}", what);
     }
+}
+
+// TODO this needs to return a status
+void
+GlobalContext::load_file(std::string module, std::filesystem::path path) {
+    asIScriptModule* mod =
+        engine_->GetModule(module.c_str(), asGM_CREATE_IF_NOT_EXISTS);
+
+    std::ostringstream script;
+    auto file = files::open_file(path);
+    if (!file) {
+        return;
+    }
+
+    script << file.value().rdbuf();
+    mod->AddScriptSection(path.filename().c_str(), script.str().c_str());
+
+    int result = mod->Build();
+    if (result > 0) {
+        LOG_ERROR(logging::lua_logger, "{}", result);
+        return;
+    }
+}
+
+asIScriptFunction*
+GlobalContext::get_function(std::string module, std::string function_signature) const {
+    asIScriptFunction* function = engine_->GetModule(module.c_str())
+                                      ->GetFunctionByDecl(function_signature.c_str());
+    return function;
 }

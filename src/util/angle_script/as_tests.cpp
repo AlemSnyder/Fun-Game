@@ -1,12 +1,16 @@
 
+#include "global_context.hpp"
+#include "local_context.hpp"
 #include "logging.hpp"
-#include <angelscript.h>
 #include "util/files.hpp"
+
+#include <angelscript.h>
+
 namespace as_test {
 
 int
 test() {
-	asIScriptEngine *engine = asCreateScriptEngine();
+    asIScriptEngine* engine = asCreateScriptEngine();
     if (!engine) {
         LOG_ERROR(logging::main_logger, "Could no start Angle Script engine.");
         return 1;
@@ -15,7 +19,7 @@ test() {
     asIScriptModule* mod = engine->GetModule("test_module", asGM_CREATE_IF_NOT_EXISTS);
     std::ostringstream script;
     auto file = files::open_file(files::get_resources_path() / "as" / "test.as");
-    if (! file) {
+    if (!file) {
         engine->ShutDownAndRelease();
         return 1;
     }
@@ -29,11 +33,12 @@ test() {
         return 1;
     }
 
-    asIScriptFunction* funct1 = engine->GetModule("test_module")->GetFunctionByDecl("void test1()");
+    asIScriptFunction* funct1 =
+        engine->GetModule("test_module")->GetFunctionByDecl("void test1()");
 
     asIScriptContext* ctx = engine->CreateContext();
     ctx->Prepare(funct1);
-//    ctx->SetArgDWord();
+    //    ctx->SetArgDWord();
     result = ctx->Execute();
     if (result != asEXECUTION_FINISHED) {
         ctx->Release();
@@ -41,10 +46,11 @@ test() {
         return 1;
     }
 
-    asIScriptFunction* funct2 = engine->GetModule("test_module")->GetFunctionByDecl("int test2()");
+    asIScriptFunction* funct2 =
+        engine->GetModule("test_module")->GetFunctionByDecl("int test2()");
 
     ctx->Prepare(funct2);
-//    ctx->SetArgDWord();
+    //    ctx->SetArgDWord();
     result = ctx->Execute();
     if (result != asEXECUTION_FINISHED) {
         ctx->Release();
@@ -52,7 +58,7 @@ test() {
         return 1;
     }
     int returnvalue = ctx->GetReturnDWord();
-    if (returnvalue == 1 || returnvalue == 0){
+    if (returnvalue == 1 || returnvalue == 0) {
         ctx->Release();
         engine->ShutDownAndRelease();
         return 1;
@@ -62,5 +68,25 @@ test() {
     return 0;
 }
 
+int
+as_load_tests() {
+    GlobalContext& context = GlobalContext::instance();
+
+    context.load_file("main", files::get_resources_path() / "as" / "test.as");
+
+    context.load_file("Base", files::get_data_path() / "Base" / "biome_map.as");
+
+    auto function = context.get_function("Base", "void do_something()");
+
+    LocalContext& local_context = LocalContext::instance();
+    int result = local_context.run_function(function);
+
+    if (result != asEXECUTION_FINISHED) {
+        LOG_ERROR(logging::main_logger, "Failed AngelScript Test");
+        return 1;
+    }
+
+    return 0;
 }
 
+} // namespace as_test

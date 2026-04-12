@@ -91,10 +91,21 @@ Biome::Biome(biome_json_data biome_data, size_t seed) :
 
 TerrainMacroMap
 Biome::get_map(MacroDim size) const {
+    auto& global_context = GlobalContext::instance();
+    auto function = global_context.get_function("base", "biome_map");
+
+    if (function == nullptr) {
+        // log warning return
+    }
+
     std::vector<MapTile> out;
 
     LocalContext& local_context = LocalContext::instance();
     auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
+
+    auto terrain_map = local_context.run_function<TerrainMacroMap>(function);
+
+    // get result
 
     if (!biome_map_query) {
         LOG_ERROR(logging::lua_logger, "Could not copy biome map.");
@@ -278,9 +289,11 @@ Biome::get_plant_map(Dim length) const {
 
         std::string type_as_string = flora_type.as<std::string>();
 
-        out.emplace(std::make_pair<std::string, PlantMap>(
-            std::move(type_as_string), {type_map, x_map_tiles, y_map_tiles}
-        ));
+        out.emplace(
+            std::make_pair<std::string, PlantMap>(
+                std::move(type_as_string), {type_map, x_map_tiles, y_map_tiles}
+            )
+        );
     }
 
     return out;

@@ -83,8 +83,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     std::shared_ptr<scene::Controls> controller =
         std::make_shared<scene::Controls>(key_mapping);
     scene::InputHandler::set_window(window);
-    scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
-    ));
+    scene::InputHandler::forward_inputs_to(
+        static_pointer_cast<scene::Inputs>(controller)
+    );
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -146,7 +147,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
         {
-            ImGui::Begin("Hello, world!"
+            ImGui::Begin(
+                "Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
 
             if (scene::InputHandler::escape()) {
@@ -156,7 +158,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 scene::InputHandler::clear_escape();
             }
 
-            ImGui::Text("This is some useful text."
+            ImGui::Text(
+                "This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Position Window", &show_position_window);
             ImGui::Checkbox("Show Light Controls", &show_light_controls);

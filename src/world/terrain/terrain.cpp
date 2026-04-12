@@ -82,9 +82,8 @@ Terrain::Terrain(
     TerrainOffset z, const generation::Biome& biome,
     generation::TerrainMacroMap macro_map
 ) :
-    area_size_(area_size_),
-    biome_(biome), X_MAX(x_map_tiles * area_size_), Y_MAX(y_map_tiles * area_size_),
-    Z_MAX(z) {
+    area_size_(area_size_), biome_(biome), X_MAX(x_map_tiles * area_size_),
+    Y_MAX(y_map_tiles * area_size_), Z_MAX(z) {
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
@@ -174,7 +173,8 @@ Terrain::qb_read(
                         if (color == 0) { // if the qb voxel is transparent.
                             mat_color =
                                 &materials_inverse.at(0); // set the materials to air
-                        } else if (materials_inverse.count(color
+                        } else if (materials_inverse.count(
+                                       color
                                    )) { // if the color is known
                             mat_color = &materials_inverse.at(color);
                         } else { // the color is unknown
@@ -545,8 +545,9 @@ Terrain::set_tile_material(
 }
 
 ColorId
-Terrain::natural_color(TerrainOffset3 xyz, const material_t* mat, ColorId color_id)
-    const {
+Terrain::natural_color(
+    TerrainOffset3 xyz, const material_t* mat, ColorId color_id
+) const {
     auto mat_id = mat->material_id;
     if (mat_id == DIRT_ID) { // being set to dirt
         // adds striations to the dirt. (This should be done by lua in the future)

@@ -259,7 +259,8 @@ ShaderProgram_MultiElements::render(
             GL_TRIANGLES,                      // mode
             mesh->get_num_vertices().data(),   // count
             static_cast<GLenum>(element_type), // type
-            reinterpret_cast<const void* const*>(mesh->get_elements_position().data()
+            reinterpret_cast<const void* const*>(
+                mesh->get_elements_position().data()
             ),                       // indices
             mesh->get_num_objects(), // drawcount
             mesh->get_base_vertex().data()
