@@ -24,7 +24,7 @@ namespace generation {
 
 class Noise {
  private:
-    size_t ref_count;
+    size_t ref_count = 1;
 
  protected:
     // The length of Noise::primes
@@ -83,14 +83,16 @@ concept NoiseGenerator = std::is_base_of<Noise, T>::value;
  * @brief Generates two dimensional Perlin noise.
  *
  * @details FractalNoise generates two dimensional Perlin noise with cosine
- * interpolation, and geometric persistance. The noise consists of different
+ * interpolation, and geometric persistence. The noise consists of different
  * layers. The first layer is between -1, and 1. Subsequent have twice the
- * frequency, and amplitude of persistance times the previous amplitude.
+ * frequency, and amplitude of persistence times the previous amplitude.
  */
 class FractalNoise : protected Noise {
-    int num_octaves_ = 7;
-    double persistence_ = 0.5;
-    int primeIndex_ = 0;
+    int num_octaves_;
+    double persistence_;
+    int primeIndex_;
+
+    size_t ref_count = 1;
 
  public:
     /**

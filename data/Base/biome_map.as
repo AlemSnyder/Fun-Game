@@ -55,7 +55,7 @@ class biome_map {
             }
         }
         else if (plant_id == "Flower_1") {
-            int flower_height = flower_noise.sample(x * 4, y * 4);
+            int flower_height = int(flower_noise.sample(x * 4, y * 4));
             if (flower_height > 0) {
                 return 0.10;
             }
@@ -74,5 +74,5 @@ class biome_map {
 }
 
 void do_something() {
-    Base::biomes::biome_map map = Base::biomes::biome_map();
+    Base::biomes::biome_map@ map = Base::biomes::biome_map();
 }
