@@ -177,4 +177,7 @@ class GlobalContext {
 
     // get function from module
     asIScriptFunction* get_function(std::string module, std::string function) const;
+
+    // get type from module
+    asITypeInfo* get_type(std::string module, std::string type_signature) const;
 };

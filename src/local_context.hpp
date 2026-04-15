@@ -79,4 +79,25 @@ class LocalContext {
         int result = context_->Execute();
         return result;
     }
+
+    // this might crash. should probably do some tests
+    asIScriptObject* get_return_object() const {
+        auto out = context_->GetAddressOfReturnValue();
+        if (out == nullptr){
+            return nullptr;
+        }
+        return *(asIScriptObject**)out;
+
+    }
+
+    int
+    run_method(asIScriptObject* object, asIScriptFunction* function) {
+        context_->Prepare(function);
+        context_->SetObject(object);
+        // set args maybe
+        int result = context_->Execute();
+        return result;
+    }
+
+
 };

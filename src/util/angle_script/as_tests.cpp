@@ -86,6 +86,25 @@ as_load_tests() {
         return 1;
     }
 
+    auto type = context.get_type("Base::biomes", "biome_map");
+
+    auto factory_function = type->GetFactoryByDecl("biome_map @biome_map()");
+
+    result = local_context.run_function(factory_function);
+    if (result != asEXECUTION_FINISHED) {
+        LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
+        return 1;
+    }
+
+    asIScriptObject *biome_map = local_context.get_return_object();
+    if (biome_map == nullptr) {
+        LOG_ERROR(logging::main_logger, "Failed to get object");
+        return 1;
+    }
+    biome_map->AddRef();
+
+    asIScriptFunction* method = type->GetMethodByDecl("int sample(double, double)");
+    local_context.run_function();
     return 0;
 }
 

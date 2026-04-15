@@ -165,3 +165,9 @@ GlobalContext::get_function(std::string module, std::string function_signature) 
                                       ->GetFunctionByDecl(function_signature.c_str());
     return function;
 }
+
+asITypeInfo* GlobalContext::get_type(std::string module, std::string type_signature) const {
+    asITypeInfo* type = engine_->GetModule(module.c_str())->GetTypeInfoByDecl(type_signature.c_str());
+    return type;
+}
+
