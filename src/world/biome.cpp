@@ -91,19 +91,19 @@ Biome::Biome(biome_json_data biome_data, size_t seed) :
 
 TerrainMacroMap
 Biome::get_map(MacroDim size) const {
-    auto& global_context = GlobalContext::instance();
-    auto function = global_context.get_function("base", "biome_map");
+    //auto& global_context = GlobalContext::instance();
+    //auto function = global_context.get_function("base", "biome_map");
 
-    if (function == nullptr) {
+    //if (function == nullptr) {
         // log warning return
-    }
+    //}
 
     std::vector<MapTile> out;
 
     LocalContext& local_context = LocalContext::instance();
     auto biome_map_query = local_context.get_from_lua(id_name_ + "\\biome_map");
 
-    auto terrain_map = local_context.run_function<TerrainMacroMap>(function);
+    //auto terrain_map = local_context.run_function<TerrainMacroMap>(function);
 
     // get result
 
