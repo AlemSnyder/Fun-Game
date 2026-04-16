@@ -449,7 +449,7 @@ as_tests(const argh::parser& cmdl) {
     if (run_function == "Map") {
         return 1; // MacroMap(cmdl);
     } else if (run_function == "Logging") {
-        return 1; // as_test::lua_log_test();
+        return as_test::logging_test();
     } else if (run_function == "LoadTime") {
         return 1; // as_test::lua_loadtime_test();
     } else if (run_function == "LoadScript") {

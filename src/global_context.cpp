@@ -5,23 +5,24 @@
 #include "scriptstdstring.h"
 #include "util/files.hpp"
 #include "world/terrain/generation/lua_interface.hpp"
+#include "util/angle_script/as_logging.hpp"
 
 // Implement a simple message callback function
 void
 MessageCallback(const asSMessageInfo* msg, void* param) {
     if (msg->type == asMSGTYPE_ERROR) {
         LOG_ERROR(
-            logging::lua_script_logger, "{} ({}, {}) : {}", msg->section, msg->row,
+            logging::lua_script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
             msg->col, msg->message
         );
     } else if (msg->type == asMSGTYPE_WARNING) {
         LOG_WARNING(
-            logging::lua_script_logger, "{} ({}, {}) : {}", msg->section, msg->row,
+            logging::lua_script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
             msg->col, msg->message
         );
     } else if (msg->type == asMSGTYPE_INFORMATION) {
         LOG_WARNING(
-            logging::lua_script_logger, "{} ({}, {}) : {}", msg->section, msg->row,
+            logging::lua_script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
             msg->col, msg->message
         );
     }
@@ -55,6 +56,8 @@ GlobalContext::GlobalContext() :
     engine_->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
     RegisterStdString(engine_);
     terrain::generation::init_as_interface(engine_);
+    as_logging::init_as_interface(engine_);
+
 }
 
 GlobalContext::~GlobalContext() {
@@ -167,6 +170,7 @@ GlobalContext::get_function(std::string module, std::string function_signature) 
 }
 
 asITypeInfo* GlobalContext::get_type(std::string module, std::string type_signature) const {
+    // TODO check that the module exists. In this and the above function.
     asITypeInfo* type = engine_->GetModule(module.c_str())->GetTypeInfoByDecl(type_signature.c_str());
     return type;
 }
