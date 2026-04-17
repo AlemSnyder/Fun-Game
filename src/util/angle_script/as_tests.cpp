@@ -10,6 +10,8 @@
 
 namespace as_test {
 
+    // TODO want to use the engine from global context and not create our own.
+
 int
 logging_test() {
     as_logging::as_log_backtrace("Backtrace");
@@ -124,16 +126,13 @@ test() {
 int
 as_threading() {
     GlobalContext& context = GlobalContext::instance();
+    context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
 
     std::future<int> future = context.submit_task([]() {
         GlobalContext& context = GlobalContext::instance();
-
-        context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
-
         LocalContext& local_context = LocalContext::instance();
 
         auto function = context.get_function("test_module", "int text3()");
-
         int result = local_context.run_function(function);
         return result;
     });
@@ -146,23 +145,19 @@ as_threading() {
 int
 as_load_tests() {
     GlobalContext& context = GlobalContext::instance();
+    LocalContext& local_context = LocalContext::instance();
 
     context.load_file("main", files::get_resources_path() / "as" / "test.as");
-
     context.load_file("Base", files::get_data_path() / "Base" / "biome_map.as");
 
     auto function = context.get_function("Base", "void do_something()");
-
-    LocalContext& local_context = LocalContext::instance();
     int result = local_context.run_function(function);
-
     if (result != asEXECUTION_FINISHED) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript Test");
         return 1;
     }
 
     auto type = context.get_type("Base", "Base::biomes::biome_map");
-
     int factory_count = type->GetFactoryCount();
     LOG_DEBUG(logging::main_logger, "Found {} factory functions", factory_count);
 
