@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <angelscript.h>
 
 namespace as_logging {
 
@@ -16,7 +17,6 @@ void as_log_error(std::string message);
 
 void as_log_critical(std::string message);
 
-void
-init_as_interface(asIScriptEngine* engine);
+void init_as_interface(asIScriptEngine* engine);
 
 } // namespace as_logging

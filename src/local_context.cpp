@@ -18,6 +18,7 @@ LocalContext::LocalContext() :
 
 LocalContext::~LocalContext() {
     context_->Release();
+    asThreadCleanup();
 }
 
 LocalContext&

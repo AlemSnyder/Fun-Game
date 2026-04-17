@@ -1,16 +1,17 @@
 
+#include "as_logging.hpp"
 #include "global_context.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
-#include "util/files.hpp"
-#include "as_logging.hpp"
 #include "scriptstdstring.h" // hm
+#include "util/files.hpp"
 
 #include <angelscript.h>
 
 namespace as_test {
 
-int logging_test() {
+int
+logging_test() {
     as_logging::as_log_backtrace("Backtrace");
     LOG_ERROR(logging::lua_script_logger, "");
 
@@ -43,7 +44,6 @@ int logging_test() {
 
     asIScriptFunction* funct1 =
         engine->GetModule("test_module")->GetFunctionByDecl("int test3()");
-
 
     asIScriptContext* ctx = engine->CreateContext();
     ctx->Prepare(funct1);
@@ -122,6 +122,28 @@ test() {
 }
 
 int
+as_threading() {
+    GlobalContext& context = GlobalContext::instance();
+
+    std::future<int> future = context.submit_task([]() {
+        GlobalContext& context = GlobalContext::instance();
+
+        context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
+
+        LocalContext& local_context = LocalContext::instance();
+
+        auto function = context.get_function("test_module", "int text3()");
+
+        int result = local_context.run_function(function);
+        return result;
+    });
+
+    int result = future.get();
+
+    return result;
+}
+
+int
 as_load_tests() {
     GlobalContext& context = GlobalContext::instance();
 
@@ -144,14 +166,18 @@ as_load_tests() {
     int factory_count = type->GetFactoryCount();
     LOG_DEBUG(logging::main_logger, "Found {} factory functions", factory_count);
 
-    auto factory_function = type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
+    auto factory_function =
+        type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
     auto factory_function_2 = type->GetFactoryByIndex(0);
-    
+
     auto declaration = factory_function_2->GetDeclaration(true, true, true);
-    
+
     auto factory_function_3 = type->GetFactoryByDecl(declaration);
 
-    LOG_DEBUG(logging::main_logger, "{}, {}, {}", factory_function != nullptr, factory_function_2 != nullptr, factory_function_3 != nullptr);
+    LOG_DEBUG(
+        logging::main_logger, "{}, {}, {}", factory_function != nullptr,
+        factory_function_2 != nullptr, factory_function_3 != nullptr
+    );
 
     LOG_DEBUG(logging::main_logger, "{}", declaration);
 
@@ -161,7 +187,7 @@ as_load_tests() {
         return 1;
     }
 
-    asIScriptObject *biome_map = local_context.get_return_object();
+    asIScriptObject* biome_map = local_context.get_return_object();
     if (biome_map == nullptr) {
         LOG_ERROR(logging::main_logger, "Failed to get object");
         return 1;
@@ -178,7 +204,9 @@ as_load_tests() {
     int return_value;
     result = local_context.get_return_value(return_value);
     if (result != 0) {
-        LOG_ERROR(logging::main_logger, "Failed to get result from sample. Error: {}", result);
+        LOG_ERROR(
+            logging::main_logger, "Failed to get result from sample. Error: {}", result
+        );
         return 1;
     }
 

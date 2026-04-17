@@ -38,8 +38,7 @@
 #include <thread>
 #include <unordered_map>
 
-void
-MessageCallback(const asSMessageInfo* msg, void* param);
+void MessageCallback(const asSMessageInfo* msg, void* param);
 
 /**
  * @brief Any global context that are needed will go in this class.

@@ -3,9 +3,9 @@
 #include "local_context.hpp"
 #include "logging.hpp"
 #include "scriptstdstring.h"
+#include "util/angle_script/as_logging.hpp"
 #include "util/files.hpp"
 #include "world/terrain/generation/lua_interface.hpp"
-#include "util/angle_script/as_logging.hpp"
 
 // Implement a simple message callback function
 void
@@ -51,13 +51,13 @@ GlobalContext::run_opengl_queue() {
 }
 
 GlobalContext::GlobalContext() :
-    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }),
-    engine_(asCreateScriptEngine()) {
+    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {
+    asPrepareMultithread();
+    engine_ = asCreateScriptEngine();
     engine_->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
     RegisterStdString(engine_);
     terrain::generation::init_as_interface(engine_);
     as_logging::init_as_interface(engine_);
-
 }
 
 GlobalContext::~GlobalContext() {
@@ -169,9 +169,10 @@ GlobalContext::get_function(std::string module, std::string function_signature) 
     return function;
 }
 
-asITypeInfo* GlobalContext::get_type(std::string module, std::string type_signature) const {
+asITypeInfo*
+GlobalContext::get_type(std::string module, std::string type_signature) const {
     // TODO check that the module exists. In this and the above function.
-    asITypeInfo* type = engine_->GetModule(module.c_str())->GetTypeInfoByDecl(type_signature.c_str());
+    asITypeInfo* type =
+        engine_->GetModule(module.c_str())->GetTypeInfoByDecl(type_signature.c_str());
     return type;
 }
-
