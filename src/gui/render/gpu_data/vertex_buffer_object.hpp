@@ -568,7 +568,10 @@ VertexBufferObject<T, Buffer>::bind() const {
 }
 
 template <class T, BindingTarget Buffer>
-__attribute__((optimize(3))) void
+#ifdef GCC
+__attribute__((optimize(3)))
+#endif
+void
 VertexBufferObject<T, Buffer>::attach_to_vertex_attribute(GLuint index) const {
     static_assert(
         Buffer != BindingTarget::ELEMENT_ARRAY_BUFFER,
