@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include <angelscript.h>
+
+#include <string>
 
 namespace as_logging {
 

@@ -220,9 +220,9 @@ Biome::get_map_as(MacroDim size) const {
         LOG_WARNING(logging::main_logger, "Could not find biome map function.");
         return {};
     }
-    
+
     std::vector<MapTile> out;
-    
+
     MacroDim x_map_tiles = size;
     MacroDim y_map_tiles = size;
 
@@ -231,7 +231,9 @@ Biome::get_map_as(MacroDim size) const {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             int x_copy = x;
             int y_copy = y;
-            result = local_context.run_method(biome_map, method, std::move(x_copy), std::move(y_copy));
+            result = local_context.run_method(
+                biome_map, method, std::move(x_copy), std::move(y_copy)
+            );
             if (result == asCONTEXT_NOT_PREPARED) {
                 LOG_ERROR(logging::main_logger, "Context not prepared");
                 return {};
@@ -245,8 +247,11 @@ Biome::get_map_as(MacroDim size) const {
 
             int tile_id;
             result = local_context.get_return_value(tile_id);
-            if (result !=0) {
-                LOG_ERROR(logging::main_logger, "Non zero return value in get map as ({})", result);
+            if (result != 0) {
+                LOG_ERROR(
+                    logging::main_logger, "Non zero return value in get map as ({})",
+                    result
+                );
                 return {};
             }
 

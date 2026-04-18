@@ -54,7 +54,6 @@ as_log_info(std::string message) {
 
 void
 as_log_debug(std::string message) {
-    LocalContext& local_context = LocalContext::instance();
     script_location location = get_script_location();
     LOG_DEBUG(
         logging::lua_script_logger, "[{:<18}] - {}",

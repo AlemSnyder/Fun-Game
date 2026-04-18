@@ -5,12 +5,109 @@
 #include "logging.hpp"
 #include "scriptstdstring.h" // hm
 #include "util/files.hpp"
+#include "util/time.hpp"
 
 #include <angelscript.h>
 
 namespace as_test {
 
-    // TODO want to use the engine from global context and not create our own.
+// TODO want to use the engine from global context and not create our own.
+
+int
+as_loadtime_test() {
+    LOG_INFO(logging::main_logger, "Getting Local Lua State.");
+    GlobalContext& context = GlobalContext::instance();
+    LocalContext& local_context = LocalContext::instance();
+
+    {
+        context.load_file(
+            "test_module", files::get_resources_path() / "as" / "test.as"
+        );
+        auto is_prime_function =
+            context.get_function("test_module", "bool is_prime(int)");
+
+        LOG_INFO(logging::main_logger, "Got as function, calling.");
+
+        auto function_result = local_context.run_function(is_prime_function, 97);
+
+        // TODO write a better error logging mechanism
+        if (function_result != asEXECUTION_FINISHED) {
+            return 1;
+        }
+
+        bool is_prime_result;
+        local_context.get_return_value(is_prime_result);
+
+        std::string log_value = is_prime_result ? "correct" : "incorrect";
+        LOG_INFO(
+            logging::main_logger, "Got {} from as function. Is {} value.",
+            is_prime_result, log_value
+        );
+    }
+
+    {
+        std::vector<std::chrono::nanoseconds> load_times;
+        std::vector<std::chrono::nanoseconds> run_times;
+
+        for (size_t y = 0; y < 100; y++) {
+            auto l_start = time_util::get_time_nanoseconds();
+
+//            context.load_file(
+//                "test_module", files::get_resources_path() / "as" / "test.as"
+//            );
+
+            auto is_prime_function =
+                context.get_function("test_module", "bool is_prime(int)");
+            auto l_end = time_util::get_time_nanoseconds();
+
+            auto r_start = time_util::get_time_nanoseconds();
+
+            auto function_result = local_context.run_function(is_prime_function, 97);
+
+            // TODO write a better error logging mechanism
+            if (function_result != asEXECUTION_FINISHED) {
+                return 1;
+            }
+
+            bool is_prime_result;
+            local_context.get_return_value(is_prime_result);
+
+            auto r_end = time_util::get_time_nanoseconds();
+
+            load_times.push_back(l_end - l_start);
+
+            run_times.push_back(r_end - r_start);
+        }
+
+        std::chrono::nanoseconds r_mean(0);
+        for (size_t i = 1; i < run_times.size(); i++) {
+            std::chrono::nanoseconds duration = run_times[i];
+            r_mean += duration;
+        }
+        r_mean /= (run_times.size() - 1);
+
+        std::chrono::nanoseconds l_mean(0);
+        for (size_t i = 1; i < load_times.size(); i++) {
+            std::chrono::nanoseconds duration = load_times[i];
+            l_mean += duration;
+        }
+        l_mean /= (load_times.size() - 1);
+
+        LOG_INFO(
+            logging::main_logger,
+            "Mean load time of {} samples is {}ns. First load time is {}ns",
+            (load_times.size() - 1), int64_t(l_mean.count()), load_times[0].count()
+        );
+
+        LOG_INFO(
+            logging::main_logger,
+            "Mean execution time of {} samples is {}ns. First execution time is {}ns.",
+            (run_times.size() - 1), int64_t(r_mean.count()), run_times[0].count()
+        );
+    }
+
+    return 0;
+}
 
 int
 logging_test() {

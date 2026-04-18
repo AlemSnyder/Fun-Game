@@ -233,6 +233,13 @@ class LocalContext {
         return 0;
     }
 
+    int
+    get_return_value(bool& value) {
+        // if this is zero then could be right could be wrong.
+        value = context_->GetReturnByte();
+        return 0;
+    }
+
     inline int
     get_line_number(int stack_level, int* column, const char** section_name) const {
         return context_->GetLineNumber(stack_level, column, section_name);

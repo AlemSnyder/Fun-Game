@@ -23,3 +23,12 @@ int test3() {
 
     return 0;
 }
+
+bool is_prime(int N) {
+    for (int x = 2; x * x < N; x++) {
+        if (N % x == 0) {
+            return false;
+        }
+    }
+    return true;
+}
