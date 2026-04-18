@@ -156,6 +156,8 @@ class Biome {
      */
     [[nodiscard]] TerrainMacroMap get_map(MacroDim length) const;
 
+    [[nodiscard]] TerrainMacroMap get_map_as(MacroDim length) const;
+
     /**
      * @brief Get plant map
      *

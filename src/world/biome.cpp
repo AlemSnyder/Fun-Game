@@ -187,6 +187,79 @@ Biome::get_map(MacroDim size) const {
     return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
 
+TerrainMacroMap
+Biome::get_map_as(MacroDim size) const {
+    auto& global_context = GlobalContext::instance();
+    auto& local_context = LocalContext::instance();
+
+    global_context.load_file("Base", files::get_data_path() / "Base" / "biome_map.as");
+
+    auto type = global_context.get_type("Base", "Base::biomes::biome_map");
+    int factory_count = type->GetFactoryCount();
+    LOG_DEBUG(logging::main_logger, "Found {} factory functions", factory_count);
+
+    auto factory_function =
+        type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
+
+    int result = local_context.run_function(factory_function);
+    if (result != asEXECUTION_FINISHED) {
+        LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
+        return {};
+    }
+
+    asIScriptObject* biome_map = local_context.get_return_object();
+    if (biome_map == nullptr) {
+        LOG_ERROR(logging::main_logger, "Failed to get object");
+        return {};
+    }
+    biome_map->AddRef();
+
+    asIScriptFunction* method = type->GetMethodByDecl("int sample(int, int)");
+    result = local_context.run_method(biome_map, method, 5, 5);
+    if (method == nullptr) {
+        LOG_WARNING(logging::main_logger, "Could not find biome map function.");
+        return {};
+    }
+    
+    std::vector<MapTile> out;
+    
+    MacroDim x_map_tiles = size;
+    MacroDim y_map_tiles = size;
+
+    out.reserve(x_map_tiles * y_map_tiles);
+    for (MacroDim x = 0; x < x_map_tiles; x++) {
+        for (MacroDim y = 0; y < y_map_tiles; y++) {
+            int x_copy = x;
+            int y_copy = y;
+            result = local_context.run_method(biome_map, method, std::move(x_copy), std::move(y_copy));
+            if (result == asCONTEXT_NOT_PREPARED) {
+                LOG_ERROR(logging::main_logger, "Context not prepared");
+                return {};
+            } else if (result == asINVALID_ARG) {
+                LOG_ERROR(logging::main_logger, "To many arguments");
+                return {};
+            } else if (result == asINVALID_TYPE) {
+                LOG_ERROR(logging::main_logger, "Invalid arg type");
+                return {};
+            }
+
+            int tile_id;
+            result = local_context.get_return_value(tile_id);
+            if (result !=0) {
+                LOG_ERROR(logging::main_logger, "Non zero return value in get map as ({})", result);
+                return {};
+            }
+
+            const TileType& tile_type = macro_tile_types_[tile_id];
+            out.emplace_back(tile_type, seed, x, y);
+        }
+    }
+
+    biome_map->Release();
+
+    return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
+}
+
 const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;

@@ -141,6 +141,38 @@ MacroMap(const argh::parser& cmdl) {
 }
 
 int
+MacroMapAS(const argh::parser& cmdl) {
+    std::string biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
+    size_t seed;
+    cmdl("seed", SEED) >> seed;
+    size_t size;
+    cmdl("size", 4) >> size;
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    terrain::generation::Biome biome(biome_name, seed);
+
+    // test terrain generation
+    auto map = biome.get_map_as(size);
+
+    assert(
+        map.get_width() == size && map.get_width() == size
+        && "Size should match the width and height."
+    );
+
+    std::vector<TileMacro_t> int_map;
+    for (const auto& map_tile : map) {
+        int_map.push_back(map_tile.get_type_id());
+    }
+
+    LOG_INFO(logging::main_logger, "Map: {}", int_map);
+
+    return 0;
+}
+
+int
 image_test(const argh::parser& cmdl) {
     if (cmdl.size() < 2) {
         // png::image<png::rgb_pixel> image(16,16);
@@ -447,7 +479,7 @@ as_tests(const argh::parser& cmdl) {
     std::string run_function = cmdl(3).str();
 
     if (run_function == "Map") {
-        return 1; // MacroMap(cmdl);
+        return MacroMapAS(cmdl);
     } else if (run_function == "Logging") {
         return as_test::logging_test();
     } else if (run_function == "LoadTime") {
