@@ -18,7 +18,7 @@
  *
  * @brief Defines Local Context class
  *
- * @details Creates a local Lua environment. Helpfull for multithreading.
+ * @details Creates a local environment. Helpfull for multithreading.
  *
  * @ingroup --
  */
@@ -27,20 +27,14 @@
 
 #include <angelscript.h>
 #include <logging.hpp>
-#include <sol/sol.hpp>
 
 #include <expected>
-
-class asContextWrapper;
 
 class LocalContext {
  private:
     LocalContext();
-    sol::state lua_state;
 
     asIScriptContext* context_;
-
-    sol::object copy(sol::state& lua, const sol::object& object);
 
     inline int
     set_arg(size_t i, bool arg) {
@@ -102,6 +96,11 @@ class LocalContext {
         return context_->SetArgObject(i, arg);
     }
 
+    inline int
+    set_arg(size_t i, std::string arg) {
+        return context_->SetArgObject(i, &arg);
+    }
+
     template <typename A>
     inline int
     set_all_args(const size_t i, const A&& a) {
@@ -130,19 +129,6 @@ class LocalContext {
  public:
     [[nodiscard]] static LocalContext& instance();
     ~LocalContext();
-
-    [[nodiscard]] inline sol::state&
-    get_lua_state() {
-        return lua_state;
-    }
-
-    std::optional<sol::object> get_from_this_lua_state(const std::string& command);
-
-    void set_to_this_lua_state(const std::string& command, const sol::object& object);
-
-    bool load_into_this_lua_state(const std::string& command);
-
-    std::optional<sol::object> get_from_lua(const std::string& command);
 
     template <class T>
     std::expected<T, int>
@@ -237,6 +223,13 @@ class LocalContext {
     get_return_value(bool& value) {
         // if this is zero then could be right could be wrong.
         value = context_->GetReturnByte();
+        return 0;
+    }
+
+    int
+    get_return_value(float& value) {
+        // if this is zero then could be right could be wrong.
+        value = context_->GetReturnFloat();
         return 0;
     }
 

@@ -11,8 +11,6 @@
 #include "manifest/object_handler.hpp"
 #include "util/angle_script/as_tests.hpp"
 #include "util/files.hpp"
-#include "util/lua/lua_logging.hpp"
-#include "util/lua/lua_tests.hpp"
 #include "util/mesh.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
@@ -124,38 +122,6 @@ MacroMap(const argh::parser& cmdl) {
 
     // test terrain generation
     auto map = biome.get_map(size);
-
-    assert(
-        map.get_width() == size && map.get_width() == size
-        && "Size should match the width and height."
-    );
-
-    std::vector<TileMacro_t> int_map;
-    for (const auto& map_tile : map) {
-        int_map.push_back(map_tile.get_type_id());
-    }
-
-    LOG_INFO(logging::main_logger, "Map: {}", int_map);
-
-    return 0;
-}
-
-int
-MacroMapAS(const argh::parser& cmdl) {
-    std::string biome_name;
-    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
-    size_t seed;
-    cmdl("seed", SEED) >> seed;
-    size_t size;
-    cmdl("size", 4) >> size;
-
-    manifest::ObjectHandler object_handler;
-    object_handler.load_all_manifests<false>();
-
-    terrain::generation::Biome biome(biome_name, seed);
-
-    // test terrain generation
-    auto map = biome.get_map_as(size);
 
     assert(
         map.get_width() == size && map.get_width() == size
@@ -435,39 +401,19 @@ LogTest() {
     });
 
     LOG_INFO(
-        logging::lua_script_logger,
-        "Using Lua logger. The lua logger should not log the cpp "
-        "file, but instead the lua file."
+        logging::script_logger,
+        "Using script logger. The script logger should not log the cpp "
+        "file, but instead the script file."
     );
 
     LOG_INFO(
-        logging::lua_script_logger,
-        "[{}.lua:{}] - This is what a lua log should look like.", "example_file", 37
+        logging::script_logger,
+        "[{}.as:{}] - This is what a script log should look like.", "example_file", 37
     );
 
     future.wait();
 
     return 0;
-}
-
-int
-lua_tests(const argh::parser& cmdl) {
-    std::string run_function = cmdl(3).str();
-
-    if (run_function == "Map") {
-        return MacroMap(cmdl);
-    } else if (run_function == "Logging") {
-        return util::lua_tests::lua_log_test();
-    } else if (run_function == "LoadTime") {
-        return util::lua_tests::lua_loadtime_test();
-    } else if (run_function == "LoadScript") {
-        return util::lua_tests::lua_load_tests();
-    } else if (run_function == "TransferScript") {
-        return util::lua_tests::lua_transfertime_test();
-    } else {
-        std::cout << "No known command" << std::endl;
-        return 1;
-    }
 }
 
 int
@@ -479,7 +425,7 @@ as_tests(const argh::parser& cmdl) {
     std::string run_function = cmdl(3).str();
 
     if (run_function == "Map") {
-        return MacroMapAS(cmdl);
+        return MacroMap(cmdl);
     } else if (run_function == "Logging") {
         return as_test::logging_test();
     } else if (run_function == "LoadTime") {
@@ -524,8 +470,6 @@ tests(const argh::parser& cmdl) {
         return object_handler.load_all_manifests<false>();
     } else if (run_function == "EngineTest") {
         return gui::opengl_tests();
-    } else if (run_function == "Lua") {
-        return lua_tests(cmdl);
     } else if (run_function == "AngelScript") {
         return as_tests(cmdl);
     } else {
@@ -545,7 +489,6 @@ main(int argc, char** argv) {
         "-c", "--console"  // Enable console logging
     });
     cmdl.add_param("biome-name");
-    //    cmdl.add_param("materials"); materials should be dictated by biome
 
     cmdl.add_params({"--imgui", "-g"});
     // int seed for generation
@@ -568,7 +511,7 @@ main(int argc, char** argv) {
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
-    // main thread for opengl and lua loading
+    // main thread for opengl and script loading
     GlobalContext& context = GlobalContext::instance();
     context.set_main_thread();
 

@@ -28,7 +28,6 @@
 #define BS_THREAD_POOL_ENABLE_PRIORITY
 #include <angelscript.h>
 #include <BS_thread_pool.hpp>
-#include <sol/sol.hpp>
 
 #include <functional>
 #include <mutex>
@@ -56,13 +55,9 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
-    sol::state lua_;
-
-    std::mutex global_lua_mutex_;
-
     asIScriptEngine* engine_;
 
-    std::mutex global_as_mutex_;
+    // std::mutex global_as_mutex_;
 
 #if DEBUG()
 
@@ -110,8 +105,13 @@ class GlobalContext {
         return obj;
     }
 
-    // this must be run before exit if lua has been initialized on thread local
-    //
+    /**
+     * @brief Close all threads in thread pool.
+     * 
+     * @details This function will close the threads in the thread pool. This
+     * may be necessary if things allocated in thread local memory need to be
+     * deallocated before things on the main thread are deallocated.
+     */
     inline void
     close_threads() {
         thread_pool_.reset(0);
@@ -164,10 +164,6 @@ class GlobalContext {
     }
 
     // oh boy time to start wrapping tread_pool
-
-    void load_script_file(const std::filesystem::path& path);
-
-    std::optional<sol::object> get_from_lua(const std::string& command);
 
     auto
     as_engine() {

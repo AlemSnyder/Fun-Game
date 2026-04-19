@@ -38,7 +38,7 @@ void
 as_log_backtrace(std::string message) {
     script_location location = get_script_location();
     LOG_BACKTRACE(
-        logging::lua_script_logger, "[{:<18}] - {}",
+        logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
     );
 }
@@ -47,7 +47,7 @@ void
 as_log_info(std::string message) {
     script_location location = get_script_location();
     LOG_INFO(
-        logging::lua_script_logger, "[{:<18}] - {}",
+        logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
     );
 }
@@ -56,7 +56,7 @@ void
 as_log_debug(std::string message) {
     script_location location = get_script_location();
     LOG_DEBUG(
-        logging::lua_script_logger, "[{:<18}] - {}",
+        logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
     );
 }
@@ -65,7 +65,7 @@ void
 as_log_warning(std::string message) {
     script_location location = get_script_location();
     LOG_WARNING(
-        logging::lua_script_logger, "[{:<18}] - {}",
+        logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
     );
 }
@@ -74,7 +74,7 @@ void
 as_log_error(std::string message) {
     script_location location = get_script_location();
     LOG_ERROR(
-        logging::lua_script_logger, "[{:<18}] - {}",
+        logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
     );
 }
@@ -83,7 +83,7 @@ void
 as_log_critical(std::string message) {
     script_location location = get_script_location();
     LOG_CRITICAL(
-        logging::lua_script_logger, "[{:<18}] - {}",
+        logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
     );
 }

@@ -5,8 +5,7 @@ namespace as_test {
 
 int test();
 
-int
-as_loadtime_test();
+int as_loadtime_test();
 
 int logging_test();
 

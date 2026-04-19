@@ -15,7 +15,7 @@ namespace as_test {
 
 int
 as_loadtime_test() {
-    LOG_INFO(logging::main_logger, "Getting Local Lua State.");
+    LOG_INFO(logging::main_logger, "Getting global and local context.");
     GlobalContext& context = GlobalContext::instance();
     LocalContext& local_context = LocalContext::instance();
 
@@ -52,9 +52,10 @@ as_loadtime_test() {
         for (size_t y = 0; y < 100; y++) {
             auto l_start = time_util::get_time_nanoseconds();
 
-//            context.load_file(
-//                "test_module", files::get_resources_path() / "as" / "test.as"
-//            );
+            //            context.load_file(
+            //                "test_module", files::get_resources_path() / "as" /
+            //                "test.as"
+            //            );
 
             auto is_prime_function =
                 context.get_function("test_module", "bool is_prime(int)");
@@ -112,7 +113,7 @@ as_loadtime_test() {
 int
 logging_test() {
     as_logging::as_log_backtrace("Backtrace");
-    LOG_ERROR(logging::lua_script_logger, "");
+    LOG_ERROR(logging::script_logger, "");
 
     asIScriptEngine* engine = asCreateScriptEngine();
     engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);

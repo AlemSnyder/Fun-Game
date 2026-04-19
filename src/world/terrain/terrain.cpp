@@ -550,7 +550,8 @@ Terrain::natural_color(
 ) const {
     auto mat_id = mat->material_id;
     if (mat_id == DIRT_ID) { // being set to dirt
-        // adds striations to the dirt. (This should be done by lua in the future)
+        // adds striations to the dirt. (This should be done by angelscript in the
+        // future)
         color_id = (xyz.z + (xyz.x / 16 + xyz.y / 16) % 2) / 3 % 2 + NUM_GRASS;
     }
 
