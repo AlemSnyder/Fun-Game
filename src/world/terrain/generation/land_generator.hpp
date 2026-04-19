@@ -175,8 +175,7 @@ class FromRadius : public StampGenerator {
     FromRadius(
         const generation_stamp_t& data, const stamp_generation_radius_data_t& type_data
     ) :
-        StampGenerator(data),
-        radius_(type_data.radius), number_(type_data.number),
+        StampGenerator(data), radius_(type_data.radius), number_(type_data.number),
         center_variance_(data.center_range) {}
 
     FromRadius(const generation_stamp_t& data) :
@@ -202,8 +201,7 @@ class FromGrid : public StampGenerator {
     FromGrid(
         const generation_stamp_t& data, const stamp_generation_grid_data_t& type_data
     ) :
-        StampGenerator(data),
-        radius_(type_data.radius), number_(type_data.number),
+        StampGenerator(data), radius_(type_data.radius), number_(type_data.number),
         center_variance_(data.center_range) {}
 
     FromGrid(const generation_stamp_t& data) : FromGrid(data, data.grid.value()) {}

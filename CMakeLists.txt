@@ -10,15 +10,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set the project name
 project(FunGame VERSION 0.1.0)
 
+# AngelScript
+file(GLOB ANGELSCRIPT_SOURCE "vendor/angelscript/sdk/angelscript/source/*.c*")
+file(GLOB ANGELSCRIPT_SOURCE_STRING "vendor/angelscript/sdk/add_on/scriptstdstring/*.c*")
+file(GLOB ANGELSCRIPT_SOURCE_ARRAY "vendor/angelscript/sdk/add_on/scriptarray/*.c*")
+add_library(angelscript OBJECT ${ANGELSCRIPT_SOURCE} ${ANGELSCRIPT_SOURCE_STRING} ${ANGELSCRIPT_SOURCE_ARRAY})
+target_compile_definitions(angelscript PRIVATE "AS_USE_STLNAMES")
+target_include_directories(angelscript PRIVATE "vendor/angelscript/sdk/angelscript/include")
+
+# where am I
+file(GLOB WHEREAMI_SOURCE "vendor/whereami/src/**")
+add_library(whereami OBJECT ${WHEREAMI_SOURCE})
+target_include_directories(whereami PRIVATE "vendor/whereami/src")
+
+# ImGUI
+file(GLOB IMGUI_SOURCES1 "vendor/imgui/imgui/*.c*")
+file(GLOB IMGUI_SOURCES2 "vendor/imgui/imgui/backends/imgui_impl_opengl3.cpp")
+file(GLOB IMGUI_SOURCES3 "vendor/imgui/imgui/backends/imgui_impl_glfw.cpp")
+add_library(dear_imgui OBJECT ${IMGUI_SOURCES1} ${IMGUI_SOURCES2} ${IMGUI_SOURCES3})
+target_include_directories(dear_imgui PRIVATE "vendor/imgui/imgui")
+
 # add the executable
 file(GLOB_RECURSE SOURCES1 "src/*.cpp")
-
-# this is one json file and whereami
-file(GLOB SOURCES4 "vendor/whereami/src/*.c*")
-file(GLOB SOURCES6 "vendor/imgui/imgui/*.c*")
-file(GLOB SOURCES7 "vendor/imgui/imgui/backends/imgui_impl_opengl3.cpp")
-file(GLOB SOURCES8 "vendor/imgui/imgui/backends/imgui_impl_glfw.cpp")
-add_executable(FunGame ${SOURCES1} ${SOURCES4} ${SOURCES6} ${SOURCES7} ${SOURCES8})
+add_executable(FunGame ${SOURCES1})
 
 # Set standard version
 set_property(TARGET FunGame PROPERTY CXX_STANDARD 23)
@@ -26,7 +40,7 @@ set_property(TARGET FunGame PROPERTY C_STANDARD 17)
 
 target_compile_definitions(FunGame PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-# compile quill and sol2
+# compile quill
 block()
     set(QUILL_BUILD_EXAMPLES   OFF)
     set(QUILL_BUILD_TESTS      OFF)
@@ -35,8 +49,6 @@ block()
 
     add_subdirectory("vendor/quill")
 endblock()
-
-add_subdirectory("vendor/sol2")
 
 add_subdirectory("vendor/glaze")
 
@@ -69,17 +81,13 @@ else()
     target_link_libraries(FunGame PRIVATE glm::glm)
 endif()
 
-# Lua 5.2 just uses the name "Lua" while 5.1, and 5.0 used "Lua51", and "Lua50"
-# respectivly.
-find_package(Lua REQUIRED)
-
-include_directories(${LUA_INCLUDE_DIR})
 
 # add quill and sol2
-target_link_libraries_system(FunGame PRIVATE quill::quill)
+target_link_libraries(FunGame PRIVATE quill::quill)
 
-target_link_libraries_system(FunGame PRIVATE sol2::sol2)
-target_link_libraries(FunGame PRIVATE ${LUA_LIBRARIES})
+target_link_libraries(FunGame PRIVATE whereami)
+target_link_libraries(FunGame PRIVATE dear_imgui)
+target_link_libraries(FunGame PRIVATE angelscript)
 
 # Add include dirs
 target_include_directories(FunGame PRIVATE "vendor/whereami/src")
@@ -88,6 +96,8 @@ target_include_directories(FunGame PRIVATE "vendor/thread-pool/include")
 target_include_directories(FunGame PRIVATE "vendor/glaze/include")
 target_include_directories(FunGame PRIVATE "vendor/imgui")
 target_include_directories(FunGame PRIVATE "vendor/imgui/imgui")
+target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/angelscript/include")
+target_include_directories(FunGame PRIVATE "vendor/angelscript/sdk/add_on/scriptstdstring")
 target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
@@ -139,9 +149,8 @@ add_test(NAME Logging COMMAND FunGame Test Logging)
 add_test(NAME ChunkDataTest COMMAND FunGame Test ChunkDataTest)
 add_test(NAME LoadManifest COMMAND FunGame Test LoadManifest)
 add_test(NAME PathFinderTest COMMAND FunGame Test PathFinderTest)
-add_test(NAME LuaMap COMMAND FunGame Test Lua Map)
-add_test(NAME LuaLogging COMMAND FunGame Test Lua Logging)
-add_test(NAME LuaLoadTime COMMAND FunGame Test Lua LoadTime)
-add_test(NAME LuaLoadScript COMMAND FunGame Test Lua LoadScript)
-add_test(NAME LuaTransferScript COMMAND FunGame Test Lua TransferScript)
+add_test(NAME AngelScriptNap COMMAND FunGame Test AngelScript Map)
+add_test(NAME AngelScriptLogging COMMAND FunGame Test AngelScript Logging)
+add_test(NAME AngelScriptLoadTime COMMAND FunGame Test AngelScript LoadTime)
+add_test(NAME AngelScriptLoadScript COMMAND FunGame Test AngelScript LoadScript)
 add_test(NAME EngineTest COMMAND FunGame Test EngineTest)

@@ -26,8 +26,8 @@
 #include "logging.hpp"
 
 #define BS_THREAD_POOL_ENABLE_PRIORITY
+#include <angelscript.h>
 #include <BS_thread_pool.hpp>
-#include <sol/sol.hpp>
 
 #include <functional>
 #include <mutex>
@@ -36,6 +36,8 @@
 #include <set>
 #include <thread>
 #include <unordered_map>
+
+void MessageCallback(const asSMessageInfo* msg, void* param);
 
 /**
  * @brief Any global context that are needed will go in this class.
@@ -53,9 +55,9 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
-    sol::state lua_;
+    asIScriptEngine* engine_;
 
-    std::mutex global_lua_mutex_;
+    // std::mutex global_as_mutex_;
 
 #if DEBUG()
 
@@ -73,6 +75,8 @@ class GlobalContext {
 
     void operator=(GlobalContext&&) = delete;
     void operator=(GlobalContext const&) = delete;
+
+    ~GlobalContext();
 
     inline void
     set_main_thread() {
@@ -101,9 +105,15 @@ class GlobalContext {
         return obj;
     }
 
-    // this must be run before exit if lua has been initialized on thread local
-    // 
-    inline void close_threads() {
+    /**
+     * @brief Close all threads in thread pool.
+     * 
+     * @details This function will close the threads in the thread pool. This
+     * may be necessary if things allocated in thread local memory need to be
+     * deallocated before things on the main thread are deallocated.
+     */
+    inline void
+    close_threads() {
         thread_pool_.reset(0);
     }
 
@@ -155,7 +165,17 @@ class GlobalContext {
 
     // oh boy time to start wrapping tread_pool
 
-    void load_script_file(const std::filesystem::path& path);
+    auto
+    as_engine() {
+        return engine_;
+    }
 
-    std::optional<sol::object> get_from_lua(const std::string& command);
+    // load as script file
+    void load_file(std::string module, std::filesystem::path path);
+
+    // get function from module
+    asIScriptFunction* get_function(std::string module, std::string function) const;
+
+    // get type from module
+    asITypeInfo* get_type(std::string module, std::string type_signature) const;
 };

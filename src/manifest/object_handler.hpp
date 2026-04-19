@@ -156,9 +156,9 @@ class ObjectHandler {
 
         for (const auto& directory_entry :
              std::filesystem::directory_iterator(manifest_folder)) {
-            auto manifest_opt =
-                files::read_json_from_file<manifest::manifest_t>(directory_entry.path()
-                );
+            auto manifest_opt = files::read_json_from_file<manifest::manifest_t>(
+                directory_entry.path()
+            );
 
             if (!manifest_opt) {
                 if constexpr (opengl) {
@@ -184,6 +184,7 @@ class ObjectHandler {
                 // iterate through objects in manifest and queue them to be loaded
                 for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                     auto future = context.submit_task([this, entity_data]() {
+                        // manifest.name
                         int result = read_object<opengl>(entity_data);
                         return result;
                     });

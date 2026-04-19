@@ -49,10 +49,9 @@ class Mesh {
         const std::vector<glm::i8vec3>& indexed_normals,
         const std::vector<ColorInt>& color_map, glm::ivec3 size, glm::ivec3 center
     ) :
-        size_(size),
-        center_(center), indices_(indices), indexed_vertices_(indexed_vertices),
-        indexed_color_ids_(indexed_color_ids), indexed_normals_(indexed_normals),
-        color_map_(color_map) {}
+        size_(size), center_(center), indices_(indices),
+        indexed_vertices_(indexed_vertices), indexed_color_ids_(indexed_color_ids),
+        indexed_normals_(indexed_normals), color_map_(color_map) {}
 
     Mesh() :
         size_({0, 0, 0}), center_({0, 0, 0}), indices_({}), indexed_vertices_({}),

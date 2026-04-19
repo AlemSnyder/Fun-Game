@@ -199,9 +199,9 @@ class MaterialGroup {
      *
      * @details Default constructor. Nothing will be in the group.
      */
-    inline MaterialGroup() : contain_all_materials(false){};
+    inline MaterialGroup() : contain_all_materials(false) {};
 
-    inline MaterialGroup(bool all_materials) : contain_all_materials(all_materials){};
+    inline MaterialGroup(bool all_materials) : contain_all_materials(all_materials) {};
 
     /**
      * @brief Construct new MaterialGroup object.
@@ -215,9 +215,8 @@ class MaterialGroup {
         std::unordered_set<MaterialId> materials,
         std::unordered_map<MaterialId, std::unordered_set<ColorId>> materials_w_color
     ) :
-        contain_all_materials(false),
-        materials_no_color_requirement_(materials),
-        materials_with_color_requirement_(materials_w_color){};
+        contain_all_materials(false), materials_no_color_requirement_(materials),
+        materials_with_color_requirement_(materials_w_color) {};
 
     /**
      * @brief Read the materials and colors that this stamp can overwrite in
@@ -342,7 +341,8 @@ struct glz::meta<terrain::material_color_t> {
 };
 
 template <>
-inline glz::detail::any_t::operator terrain::grass_data_t() const {
+inline glz::detail::any_t::
+operator terrain::grass_data_t() const {
     assert(false && "Not Implemented");
     return {};
 }

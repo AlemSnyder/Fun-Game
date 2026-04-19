@@ -9,9 +9,7 @@ TileType::TileType(
     const std::unordered_set<const LandGenerator*> land_generators, MapTile_t tile_type,
     const std::vector<AddToTop>& layer_effect_generators,
     const std::unordered_map<MaterialId, const terrain::material_t> materials
-) :
-    land_generators_(land_generators),
-    tile_type_(tile_type) {
+) : land_generators_(land_generators), tile_type_(tile_type) {
     Dim max_height = 0;
 
     ColorId stamp_color_id = 0;
