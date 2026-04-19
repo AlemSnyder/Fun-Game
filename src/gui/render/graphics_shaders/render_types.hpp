@@ -43,7 +43,20 @@ class FrameBuffer {
     render(screen_size_t width, screen_size_t height, GLuint frame_buffer) = 0;
 };
 
-// blume
+/**
+ * @brief Render only to a section of the window
+ * 
+ * @details Renders to the given section of the window. This is used for things
+ * that get rendered few times per frame, and have a specific location like a 
+ * window.
+ */
+class ScreenSection {
+ public:
+    virtual void render(
+        screen_size_t x_start, screen_size_t y_start, screen_size_t width,
+        screen_size_t height, GLuint frame_buffer, const gpu_data::GPUData* data
+    ) = 0;
+};
 
 /**
  * @brief Defines virtual classes for writing data to object

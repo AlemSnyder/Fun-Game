@@ -498,7 +498,7 @@ class ShaderHandler {
     /**
      * @brief construct a new ShaderHandler
      */
-    inline ShaderHandler(){};
+    inline ShaderHandler() {};
 
     inline ~ShaderHandler() {}
 };

@@ -44,8 +44,7 @@ class StaticMesh : public virtual InstancedIMeshGPU {
 
     inline StaticMesh(
         const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
-    ) :
-        InstancedIMeshGPU(mesh, model_transforms) {}
+    ) : InstancedIMeshGPU(mesh, model_transforms) {}
 
     inline virtual ~StaticMesh() {}
 

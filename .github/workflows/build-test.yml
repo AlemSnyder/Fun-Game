@@ -25,7 +25,7 @@ jobs:
           # - macos-latest
         compiler: [
             { cc: "gcc", cxx: "g++"},
-            { cc: "clang", cxx: "clang++"}
+            { cc: "clang-19", cxx: "clang++-19"}
           ]
         build:
             - Release
@@ -44,10 +44,11 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install Ninja
+      - name: Install Ninja & Clang-19
         run: |
           sudo apt update
           sudo apt install ninja-build -y
+          sudo apt install clang-19 -y
 
       - name: Install Dependencies
         run: |
@@ -59,7 +60,8 @@ jobs:
             libglew-dev \
             libglm-dev \
             libomp-17-dev \
-            libpng-dev
+            libpng-dev \
+            libfreetype-dev
 
 
       - name: Build

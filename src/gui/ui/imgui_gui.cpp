@@ -11,6 +11,7 @@
 #include "../handler.hpp"
 #include "../scene/controls.hpp"
 #include "../scene/scene.hpp"
+#include "../the_buttons/user_interface.hpp"
 #include "gui/scene/input.hpp"
 #include "imgui_style.hpp"
 #include "imgui_windows.hpp"
@@ -18,6 +19,7 @@
 #include "manifest/object_handler.hpp"
 #include "opengl_setup.hpp"
 #include "scene_setup.hpp"
+#include "user_interface_setup.hpp"
 #include "util/mesh.hpp"
 #include "world/climate.hpp"
 #include "world/world.hpp"
@@ -82,9 +84,11 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                                              : gui::scene::KeyMapping();
     std::shared_ptr<scene::Controls> controller =
         std::make_shared<scene::Controls>(key_mapping);
+    scene::InputHandler::imgui_active = true;
     scene::InputHandler::set_window(window);
-    scene::InputHandler::forward_inputs_to(static_pointer_cast<scene::Inputs>(controller
-    ));
+    scene::InputHandler::forward_inputs_to(
+        std::static_pointer_cast<scene::Inputs>(controller)
+    );
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -99,6 +103,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
 
     Scene main_scene(mode->width, mode->height, shadow_map_size, controller);
     setup(main_scene, shader_handler, world, climate);
+
+    the_buttons::UserInterface main_interface(shader_handler, 4);
+    setup(main_interface);
 
     //! Main loop
 
@@ -136,6 +143,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // "render" scene to the screen
         main_scene.copy_to_window(window_width, window_height);
 
+        // render interface to screen
+        main_interface.update(window_width, window_height);
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -146,7 +156,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
         // create a named window.
         {
-            ImGui::Begin("Hello, world!"
+            ImGui::Begin(
+                "Hello, world!"
             ); // Create a window called "Hello, world!" and append into it.
 
             if (scene::InputHandler::escape()) {
@@ -156,7 +167,8 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
                 scene::InputHandler::clear_escape();
             }
 
-            ImGui::Text("This is some useful text."
+            ImGui::Text(
+                "This is some useful text."
             ); // Display some text (you can use a format strings too)
             ImGui::Checkbox("Position Window", &show_position_window);
             ImGui::Checkbox("Show Light Controls", &show_light_controls);

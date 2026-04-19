@@ -170,23 +170,28 @@ Program::get_status_string() const {
         "OK",
         "This program and its corresponding shaders have compiled successfully. If "
         "there is still some error check that Uniforms and Locations are set "
-        "correctly."};
+        "correctly."
+    };
 
     static std::pair<std::string, std::string> linking_failed_string = {
         "Linking Failed",
         "There is an error when connecting different shader types together. Check that "
-        "the inputs and output between shaders align."};
+        "the inputs and output between shaders align."
+    };
 
     static std::pair<std::string, std::string> invalid_shader_string = {
         "Shader Failed", "Error compiling constituent shader(s). Check the log file "
-                         "for more information."};
+                         "for more information."
+    };
 
     static std::pair<std::string, std::string> empty_program_string = {
-        "No Program; Reload", "Program has not been loaded. Click the reload button."};
+        "No Program; Reload", "Program has not been loaded. Click the reload button."
+    };
 
     static std::pair<std::string, std::string> other_string = {
         "This should not happen",
-        "This is a bug that should be reported to the developers."};
+        "This is a bug that should be reported to the developers."
+    };
 
     switch (status_) {
         case ProgramStatus::OK:
@@ -227,7 +232,7 @@ Program::attach_uniforms() {
 
         LOG_INFO(
             logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}",
-            uid, name, gpu_data::to_string(enum_type)
+            uid, str_name, gpu_data::to_string(enum_type)
         );
 
         if (length > buf_size - 4) {
@@ -239,8 +244,8 @@ Program::attach_uniforms() {
         }
 
         uniforms_.emplace(
-            std::piecewise_construct, std::forward_as_tuple(name),
-            std::forward_as_tuple(name, enum_type, uid)
+            std::piecewise_construct, std::forward_as_tuple(str_name),
+            std::forward_as_tuple(str_name, enum_type, uid)
         );
     }
 }
@@ -268,6 +273,10 @@ Program::set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_n
             "program \"{}\".",
             uniform_name, name_
         );
+
+        // Add a  "do you mean..." suggestion.
+        // Consider Levenshtein distance less than 5
+        // https://en.wikipedia.org/wiki/Levenshtein_distance
     }
 }
 

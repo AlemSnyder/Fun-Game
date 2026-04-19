@@ -295,7 +295,8 @@ setup(
     star_pipeline->data.push_back(star_data);
     sun_pipeline->data.push_back(star_shape);
 
-    terrain_mesh->set_shadow_texture(scene.get_shadow_map().get_depth_buffer()->value()
+    terrain_mesh->set_shadow_texture(
+        scene.get_shadow_map().get_depth_buffer()->value()
     );
     chunks_render_pipeline->data.push_back(terrain_mesh.get());
     chunks_shadow_pipeline->data.push_back(terrain_mesh.get());
@@ -306,7 +307,8 @@ setup(
 
     render_programs_t object_render_programs{
         .entity_render_program = entity_render_pipeline,
-        .tile_object_render_program = tile_entity_render_pipeline};
+        .tile_object_render_program = tile_entity_render_pipeline
+    };
 
     // attach the world objects to the render program
     for (auto& [id, object] : *world.get_object_handler()) {

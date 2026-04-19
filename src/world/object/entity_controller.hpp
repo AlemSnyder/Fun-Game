@@ -25,7 +25,7 @@ class EntityController {
 
  public:
     EntityController(manifest::ObjectHandler* object_handler) :
-        object_handler_(object_handler){};
+        object_handler_(object_handler) {};
 
     void update_entities(glm::mat4 transforms_matrix);
 
@@ -39,8 +39,8 @@ class EntityController {
         std::string identification, uint8_t model_id, gui::Placement placement
     );
 
-    void remove_tile_object(std::shared_ptr<entity::TileObjectInstance> entity_instance
-    );
+    void
+    remove_tile_object(std::shared_ptr<entity::TileObjectInstance> entity_instance);
 
     void load_to_gup();
 

@@ -8,18 +8,19 @@
 namespace exc {
 
 class file_not_found_error : public std::runtime_error {
-    constexpr static std::string ERROR_PREFIX_ = "Could not open ";
+    constexpr static std::string_view ERROR_PREFIX_ = "Could not open ";
 
     std::filesystem::path path_;
 
  public:
     file_not_found_error(std::filesystem::path path) :
-        runtime_error(ERROR_PREFIX_ + path.string()), path_(std::move(path)) {}
+        runtime_error(std::move(std::string(ERROR_PREFIX_) + path.string())),
+        path_(std::move(path)) {}
 
     file_not_found_error(const file_not_found_error& other) noexcept = default;
 
-    file_not_found_error& operator=(const file_not_found_error& other
-    ) noexcept = default;
+    file_not_found_error&
+    operator=(const file_not_found_error& other) noexcept = default;
 
     [[nodiscard]] virtual inline const std::filesystem::path
     path() const noexcept {
@@ -35,8 +36,8 @@ class not_implemented_error : public std::logic_error {
 
     not_implemented_error(const not_implemented_error& other) noexcept = default;
 
-    not_implemented_error& operator=(const not_implemented_error& other
-    ) noexcept = default;
+    not_implemented_error&
+    operator=(const not_implemented_error& other) noexcept = default;
 };
 
 } // namespace exc

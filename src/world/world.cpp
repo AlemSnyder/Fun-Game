@@ -49,18 +49,17 @@ World::World(
     manifest::ObjectHandler* object_handler, const std::string& biome_name,
     const std::string& path, size_t seed
 ) :
-    biome_(biome_name, seed),
-    terrain_main_(path, biome_), controller_(object_handler) {}
+    biome_(biome_name, seed), terrain_main_(path, biome_), controller_(object_handler) {
+}
 
 World::World(
     manifest::ObjectHandler* object_handler, const std::string& biome_name,
     MacroDim x_tiles, MacroDim y_tiles, size_t seed
 ) :
-    biome_(biome_name, seed),
-    terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, biome_,
-        std::move(biome_.get_map(x_tiles))
-    ),
+    biome_(biome_name, seed), terrain_main_(
+                                  x_tiles, y_tiles, macro_tile_size, height, biome_,
+                                  std::move(biome_.get_map(x_tiles))
+                              ),
     controller_(object_handler) {}
 
 World::World(
@@ -151,8 +150,9 @@ void
 World::update_marked_chunks_mesh() {
     for (auto chunk_pos : chunks_to_update_) {
         GlobalContext& context = GlobalContext::instance();
-        context.submit_task([this, chunk_pos]() { this->update_single_mesh(chunk_pos); }
-        );
+        context.submit_task([this, chunk_pos]() {
+            this->update_single_mesh(chunk_pos);
+        });
     }
     chunks_to_update_.clear();
 }
@@ -231,8 +231,9 @@ World::remove_entity(std::shared_ptr<object::entity::EntityInstance> entity) {
 }
 
 std::optional<std::vector<TerrainOffset3>>
-World::pathfind_to_object(TerrainOffset3 start_position, const std::string& object_id)
-    const {
+World::pathfind_to_object(
+    TerrainOffset3 start_position, const std::string& object_id
+) const {
     auto object = get_object_handler()->get_object(object_id);
     if (!object) {
         LOG_WARNING(logging::terrain_logger, "Object {} not found.", object_id);

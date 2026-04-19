@@ -156,9 +156,9 @@ class ObjectHandler {
 
         for (const auto& directory_entry :
              std::filesystem::directory_iterator(manifest_folder)) {
-            auto manifest_opt =
-                files::read_json_from_file<manifest::manifest_t>(directory_entry.path()
-                );
+            auto manifest_opt = files::read_json_from_file<manifest::manifest_t>(
+                directory_entry.path()
+            );
 
             if (!manifest_opt) {
                 if constexpr (opengl) {

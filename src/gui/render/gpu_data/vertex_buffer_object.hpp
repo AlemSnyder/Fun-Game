@@ -69,9 +69,8 @@ struct GPUStructureType {
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
         GPUArayType draw_type
     ) :
-        major_size(major_size_),
-        minor_size(minor_size_), type_size(type_size), is_int(is_int),
-        draw_type(draw_type) {}
+        major_size(major_size_), minor_size(minor_size_), type_size(type_size),
+        is_int(is_int), draw_type(draw_type) {}
 
     template <
         uint8_t major_size_T, uint8_t minor_size_T, uint8_t type_size_T, bool is_int_T,
@@ -398,16 +397,28 @@ VertexBufferObject<T, Buffer>::private_insert_(
 
     // size_t size_ = alloc_size_;
 
+    // rewriting entire array
     if (start == 0 && end == size_) { // Tested
-        bind();
+        if (alloc_size_ >= data_size) {
+            bind();
 
-        alloc_size_ = data_size;
+            glBufferSubData(
+                static_cast<GLenum>(Buffer), start, alloc_size_ * element_size,
+                data_begin
+            );
+            size_ = data_size;
 
-        glBufferData(
-            static_cast<GLenum>(Buffer), alloc_size_ * element_size, data_begin,
-            GL_DYNAMIC_DRAW
-        );
-        size_ = alloc_size_;
+        } else {
+            bind();
+
+            alloc_size_ = data_size;
+
+            glBufferData(
+                static_cast<GLenum>(Buffer), alloc_size_ * element_size, data_begin,
+                GL_DYNAMIC_DRAW
+            );
+            size_ = alloc_size_;
+        }
 
     } else if (start + data_size + (size_ - end) > alloc_size_) { // Tested
         // the size of the new array is large than the allocated size
@@ -550,6 +561,10 @@ VertexBufferObject<T, Buffer>::private_insert_(
 template <class T, BindingTarget Buffer>
 void
 VertexBufferObject<T, Buffer>::bind() const {
+    GlobalContext& context = GlobalContext::instance();
+    if (!context.is_main_thread()) {
+        LOG_ERROR(logging::opengl_logger, "Calling bind from nonmain thread.");
+    }
     constexpr GPUStructureType data_type = GPUStructureType::create<T>();
 
     LOG_BACKTRACE(

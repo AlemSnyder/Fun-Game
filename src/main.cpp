@@ -203,6 +203,35 @@ image_test(const argh::parser& cmdl) {
     return 0;
 }
 
+int
+color_image_text() {
+    auto image_result = image::read_image(
+        files::get_resources_path() / "textures" / "GenericBorder.png"
+    );
+    if (!image_result.has_value()) {
+        LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
+        return 1;
+    }
+    std::shared_ptr<util::image::Image> image = image_result.value();
+
+    auto FPAimage =
+        std::dynamic_pointer_cast<util::image::BytePolychromeAlphaImage>(image);
+
+    auto result = image::write_image(
+        *FPAimage.get(),
+        files::get_resources_path() / "textures" / "GenericBorder_out_test.png"
+    );
+
+    if (!result == image::write_result_t::WR_OK) {
+        LOG_ERROR(
+            logging::file_io_logger, "Image write failed with result {}.", int(result)
+        );
+        return 1;
+    }
+
+    return 0;
+}
+
 // reimplement
 int
 ChunkDataTest() {
@@ -462,6 +491,8 @@ tests(const argh::parser& cmdl) {
         return ChunkDataTest();
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
+    } else if (run_function == "ColorImageTest") {
+        return color_image_text();
     } else if (run_function == "LoadManifest") {
         manifest::ObjectHandler object_handler;
         return object_handler.load_all_manifests<false>();

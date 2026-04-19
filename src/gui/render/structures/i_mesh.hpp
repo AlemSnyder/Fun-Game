@@ -85,15 +85,17 @@ class IMeshGPU : virtual public GPUDataElements {
      * @param util::Mesh& mesh to load
      * @param bool b set to false when calling this constructor when inherited
      */
-    explicit inline IMeshGPU(const util::Mesh& mesh, bool b = true) :
+    explicit inline IMeshGPU(const util::Mesh& mesh, bool differed = true) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
         normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),
         num_vertices_(mesh.get_indices().size()),
         do_render_(mesh.get_indices().size()) {
-        if (b) {
+        if (differed) {
             GlobalContext& context = GlobalContext::instance();
             context.push_opengl_task([this]() { initialize(); });
+        } else {
+            initialize();
         }
     }
 

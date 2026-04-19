@@ -55,13 +55,14 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(PNG REQUIRED)
+find_package(Freetype REQUIRED)
 # find_package(OpenMP REQUIRED)
 
 target_link_libraries(FunGame PRIVATE glfw)
 target_link_libraries(FunGame PRIVATE OpenGL::GL)
 target_link_libraries(FunGame PRIVATE GLEW::GLEW)
 target_link_libraries(FunGame PRIVATE PNG::PNG)
-# target_link_libraries(FunGame PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(FunGame PRIVATE Freetype::Freetype)
 
 if(WIN32)
     target_link_libraries(FunGame PRIVATE glm)
@@ -126,8 +127,17 @@ else()
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   )
 
+  add_custom_target(fonts
+    # maybe vendor is already made by something else?
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/vendor/fonts
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/vendor/fonts ${CMAKE_BINARY_DIR}/vendor/fonts
+    COMMENT " copying ${CMAKE_SOURCE_DIR}/vendor/fonts to ${CMAKE_BINARY_DIR}/vendor/fonts "
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  )
+
   add_dependencies(FunGame resources)
   add_dependencies(FunGame data)
+  add_dependencies(FunGame fonts)
 endif()
 
 configure_file(src/config.h.in config.h)
