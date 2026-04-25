@@ -195,7 +195,7 @@ Biome::get_plant_map(Dim length) const {
     }
 
     for (auto& plant : generate_plants_) {
-        std::string plant_id = plant.identification;
+        std::string plant_map_name = plant.map_name;
 
         std::vector<float> plant_data;
 
@@ -208,7 +208,7 @@ Biome::get_plant_map(Dim length) const {
                 int x_copy = x;
                 int y_copy = y;
                 result = local_context.run_method(
-                    biome_map, method, &plant_id, std::move(x_copy), std::move(y_copy)
+                    biome_map, method, &plant_map_name, std::move(x_copy), std::move(y_copy)
                 );
                 if (result == asCONTEXT_NOT_PREPARED) {
                     LOG_ERROR(logging::main_logger, "Context not prepared");
@@ -234,7 +234,7 @@ Biome::get_plant_map(Dim length) const {
                 plant_data.push_back(plant_probability);
             }
         }
-        out.emplace(plant_id, PlantMap(plant_data, length, length));
+        out.emplace(plant_map_name, PlantMap(plant_data, length, length));
     }
 
     biome_map->Release();
