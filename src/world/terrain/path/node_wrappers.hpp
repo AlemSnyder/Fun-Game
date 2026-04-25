@@ -8,7 +8,7 @@ class PositionWrapper {
     TerrainOffset3 position_;
 
  public:
-    inline PositionWrapper(){};
+    inline PositionWrapper() {};
 
     inline PositionWrapper(TerrainOffset3 position) : position_(position) {}
 

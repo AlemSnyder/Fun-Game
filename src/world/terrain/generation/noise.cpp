@@ -38,8 +38,9 @@ Noise::get_double(size_t i, NoiseTileIndex x, NoiseTileIndex y) {
 }
 
 double
-generation::FractalNoise::smoothed_noise_(size_t i, NoiseTileIndex x, NoiseTileIndex y)
-    const {
+generation::FractalNoise::smoothed_noise_(
+    size_t i, NoiseTileIndex x, NoiseTileIndex y
+) const {
     // clang-format off
     double corners = (get_double(i, x - 1, y - 1)
                     + get_double(i, x + 1, y - 1)

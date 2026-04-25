@@ -204,7 +204,8 @@ class Scene {
      * @param render object that can render to a framebuffer.
      */
     inline void
-    add_background_ground_renderer(const std::shared_ptr<render_to::FrameBuffer> render
+    add_background_ground_renderer(
+        const std::shared_ptr<render_to::FrameBuffer> render
     ) {
         background_frame_buffer_.push_back(render);
     }
