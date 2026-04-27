@@ -17,5 +17,5 @@
         }
     ],
     "listeners":"",
-    "ai":"ai.lua"
+    "ai":"ai.as"
 }

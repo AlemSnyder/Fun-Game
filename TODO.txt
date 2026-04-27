@@ -18,3 +18,5 @@ GUI
     make trees function like entities   # here
         same shader etc
 
+Generally fix TODOs in the code
+Want to get the correct module name for as code, and make sure modules can communicate with needed.

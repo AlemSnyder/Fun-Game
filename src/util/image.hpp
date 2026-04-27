@@ -1,3 +1,25 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+/**
+ * @file image.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines Image Templates and Classes
+ *
+ */
+
 #pragma once
 
 #include "types.hpp"
@@ -70,9 +92,7 @@ class Image {
 
     inline Image(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        width_(width),
-        height_(height), data_size_(data_size), data_(data){};
+    ) : width_(width), height_(height), data_size_(data_size), data_(data) {};
 
     virtual ~Image() {}
 };
@@ -107,8 +127,7 @@ class FloatMonochromeImage : public virtual MonochromeImage {
 
     FloatMonochromeImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {}
+    ) : Image(data, width, height, data_size) {}
 
     inline virtual size_t
     get_width() const {
@@ -131,8 +150,7 @@ class FloatPolychromeImage : public virtual PolychromeImage {
 
     FloatPolychromeImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {}
+    ) : Image(data, width, height, data_size) {}
 
     inline virtual size_t
     get_width() const {
@@ -162,8 +180,7 @@ class FloatPolychromeAlphaImage : public virtual PolychromeAlphaImage {
 
     FloatPolychromeAlphaImage(
         std::shared_ptr<char[]> data, size_t width, size_t height, size_t data_size
-    ) :
-        Image(data, width, height, data_size) {}
+    ) : Image(data, width, height, data_size) {}
 
     FloatPolychromeAlphaImage(std::vector<std::vector<ColorFloat>> data) :
         FloatPolychromeAlphaImage(pad_color_data(data)) {}
