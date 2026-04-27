@@ -46,14 +46,14 @@ using cc = quill::ConsoleColours;
 
 LogLevel _LOG_LEVEL;
 
-quill::Logger* main_logger;       // for everything else
-quill::Logger* opengl_logger;     // for glfw, glew etc
-quill::Logger* terrain_logger;    // for terrain, chunk, tile class
-quill::Logger* game_map_logger;   // for terrain generation
-quill::Logger* voxel_logger;      // for voxel logic like mesh creation
-quill::Logger* file_io_logger;    // for file io
-quill::Logger* as_logger;         // for AngelScript
-quill::Logger* script_logger;     // for scripts
+quill::Logger* main_logger;     // for everything else
+quill::Logger* opengl_logger;   // for glfw, glew etc
+quill::Logger* terrain_logger;  // for terrain, chunk, tile class
+quill::Logger* game_map_logger; // for terrain generation
+quill::Logger* voxel_logger;    // for voxel logic like mesh creation
+quill::Logger* file_io_logger;  // for file io
+quill::Logger* as_logger;       // for AngelScript
+quill::Logger* script_logger;   // for scripts
 
 const static std::filesystem::path LOG_FILE = files::get_log_path() / "app.log";
 
@@ -115,6 +115,7 @@ init(bool console, quill::LogLevel log_level) {
 #endif
 
     // create all loggers
+    // clang-format off
     main_logger =
         quill::Frontend::create_or_get_logger("main", file_sink, LOGLINE_FORMAT);
     opengl_logger =
@@ -131,6 +132,7 @@ init(bool console, quill::LogLevel log_level) {
         quill::Frontend::create_or_get_logger("as", file_sink, LOGLINE_FORMAT);
     script_logger =
         quill::Frontend::create_or_get_logger("script", file_sink, LOGLINE_FORMAT_SCRIPT);
+    // clang-format on
 
     main_logger->set_log_level(_LOG_LEVEL);
     opengl_logger->set_log_level(_LOG_LEVEL);

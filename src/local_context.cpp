@@ -3,8 +3,7 @@
 #include "global_context.hpp"
 
 LocalContext::LocalContext() :
-    context_(GlobalContext::instance().as_engine()->CreateContext()) {
-}
+    context_(GlobalContext::instance().as_engine()->CreateContext()) {}
 
 LocalContext::~LocalContext() {
     context_->Release();

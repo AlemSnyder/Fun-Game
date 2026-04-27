@@ -1,20 +1,13 @@
 #include "config.h"
 #include "graphics_main.hpp"
-#include "gui/render/graphics_shaders/program_handler.hpp"
-#include "gui/scene/controls.hpp"
 #include "gui/tests.hpp"
-#include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
-#include "gui/ui/opengl_gui.hpp"
-#include "local_context.hpp"
 #include "logging.hpp"
 #include "manifest/object_handler.hpp"
 #include "util/angle_script/as_tests.hpp"
 #include "util/files.hpp"
-#include "util/mesh.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
-#include "util/voxel_io.hpp"
 #include "world/biome.hpp"
 #include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
@@ -38,7 +31,6 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <string>
 

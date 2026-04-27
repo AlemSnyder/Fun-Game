@@ -3,9 +3,7 @@
 #include "global_context.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
-#include "manifest/object_handler.hpp"
-#include "terrain/generation/noise.hpp"
-#include "terrain/generation/worley_noise.hpp"
+#include "util/files.hpp"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
@@ -13,7 +11,6 @@
 #pragma clang diagnostic pop
 
 #include <filesystem>
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -208,7 +205,8 @@ Biome::get_plant_map(Dim length) const {
                 int x_copy = x;
                 int y_copy = y;
                 result = local_context.run_method(
-                    biome_map, method, &plant_map_name, std::move(x_copy), std::move(y_copy)
+                    biome_map, method, &plant_map_name, std::move(x_copy),
+                    std::move(y_copy)
                 );
                 if (result == asCONTEXT_NOT_PREPARED) {
                     LOG_ERROR(logging::main_logger, "Context not prepared");

@@ -15,8 +15,6 @@
  *
  * @brief Defines Mesh Class
  *
- * @ingroup ENTITY
- *
  */
 #pragma once
 

@@ -3,7 +3,6 @@
 #include "noise.hpp"
 #include "worley_noise.hpp"
 
-
 namespace terrain {
 namespace generation {
 

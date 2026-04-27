@@ -107,7 +107,7 @@ class GlobalContext {
 
     /**
      * @brief Close all threads in thread pool.
-     * 
+     *
      * @details This function will close the threads in the thread pool. This
      * may be necessary if things allocated in thread local memory need to be
      * deallocated before things on the main thread are deallocated.
