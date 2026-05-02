@@ -29,7 +29,7 @@
 #include "gui/render/gpu_data/texture.hpp"
 #include "gui/render/gpu_data/vertex_array_object.hpp"
 #include "gui/render/gpu_data/vertex_buffer_object.hpp"
-#include "world/entity/mesh.hpp"
+#include "util/mesh.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -82,10 +82,10 @@ class IMeshGPU : virtual public GPUDataElements {
     /**
      * @brief Construct a new IMeshGPU object
      *
-     * @param world::entity::Mesh& mesh to load
+     * @param util::Mesh& mesh to load
      * @param bool b set to false when calling this constructor when inherited
      */
-    explicit inline IMeshGPU(const world::entity::Mesh& mesh, bool b = true) :
+    explicit inline IMeshGPU(const util::Mesh& mesh, bool b = true) :
         vertex_array_(mesh.get_indexed_vertices()),
         color_array_(mesh.get_indexed_color_ids()),
         normal_array_(mesh.get_indexed_normals()), element_array_(mesh.get_indices()),
@@ -96,6 +96,8 @@ class IMeshGPU : virtual public GPUDataElements {
             context.push_opengl_task([this]() { initialize(); });
         }
     }
+
+    inline virtual ~IMeshGPU() {}
 
     /**
      * @brief Initializes Vertex Array Object.
@@ -110,7 +112,7 @@ class IMeshGPU : virtual public GPUDataElements {
      */
     virtual void attach_all();
 
-    virtual void update(const world::entity::Mesh& mesh);
+    virtual void update(const util::Mesh& mesh);
 
     virtual void bind() const override;
 
@@ -145,7 +147,7 @@ class IMeshGPU : virtual public GPUDataElements {
         return num_vertices_;
     }
 
-    [[nodiscard]] inline GPUDataType
+    [[nodiscard]] inline GPUArayType
     get_element_type() const noexcept override {
         return element_array_.get_opengl_numeric_type();
     }

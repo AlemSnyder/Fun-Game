@@ -40,19 +40,19 @@
 #include <unordered_set>
 #include <vector>
 
-// TODO this is nto a namespace. Should be world::terrain
+// TODO this is not the correct namespace. Should be world::terrain
 namespace terrain {
 
 struct material_color_t {
     std::string color_name;
     ColorInt hex_color;
 
-    void
+    inline void
     read_hex_color(std::string hex_string) {
         hex_color = std::stoll(hex_string, nullptr, 16);
     }
 
-    std::string
+    inline std::string
     write_hex_color() const {
         return fmtquill::format("{:08X}", hex_color);
     }

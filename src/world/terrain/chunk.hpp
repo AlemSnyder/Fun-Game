@@ -40,6 +40,7 @@ class Terrain;
  * modifications can be made.
  */
 class Chunk : public voxel_utility::VoxelBase {
+    // lock when using tiles_ or node_groups_
     mutable std::mutex mut_;
 
     Terrain* ter_;

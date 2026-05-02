@@ -103,8 +103,8 @@ class MapTile {
     MacroDim y_; // y position
 
     const TileType& tile_type_; // map tile type
-    // TODO add mutex
-    // This requires >= 64 x 64 map macro tiles. This would correspond to
+    // to add mutex:
+    // requires >= 64 x 64 map macro tiles. This would correspond to
     // 2^30 tiles. This is 4+ gigabytes.
     // std::mutex mut_; // mutex for locking to avoid collisions during generation
     std::default_random_engine rand_engine_; // random number generator

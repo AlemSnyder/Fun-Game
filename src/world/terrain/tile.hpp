@@ -196,18 +196,6 @@ class Tile {
     is_solid() const noexcept {
         return solid_;
     }
-
-    // inline bool
-    // operator==(const Tile other) const {
-    //     return (this->x == other.x && this->y == other.y && this->z == other.z);
-    // }
-
-    // inline bool
-    // operator==(const Tile* other) const {
-    //     return (this->x == other->x && this->y == other->y && this->z == other->z);
-    // }
-
-    // bool operator>(const Tile other) const;
 };
 
 } // namespace terrain

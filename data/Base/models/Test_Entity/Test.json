@@ -1,6 +1,6 @@
 {
     "name": "Test Object",
-    "type": "ENTITY",
+    "type": "IMPLEMENTED_ENTITY",
     "models": [
         {
             "path": "./Test.qb",

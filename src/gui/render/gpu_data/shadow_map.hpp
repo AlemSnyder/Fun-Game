@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#include "data_types.hpp"
+#include "frame_buffer_multisample.hpp"
 #include "types.hpp"
 
 #include <GL/glew.h>
@@ -39,17 +41,14 @@ namespace gpu_data {
  * @details ShadowMap holds the depth texture. When added to a scene object
  * shadows are cast to this depth texture, and used when rendering the scene.
  */
-class ShadowMap {
+class ShadowMap : public FrameBufferBase {
  private:
-    GLuint depth_texture_id_; // ID of depth texture
-    GLuint frame_buffer_id_;  // ID of frame buffer
     // ------ the below are added to the class ------
     glm::vec3 light_direction_;         // direction of sunlight
-    screen_size_t shadow_width_;        // width of depth texture
-    screen_size_t shadow_height_;       // height of depth texture
     glm::mat4 depth_projection_matrix_; // projection matrix of the light source
     glm::mat4 depth_view_matrix_;       // convert a point in world space
                                         // to depth in light direction
+    glm::mat4 inverse_view_projection_;
 
  public:
     /**
@@ -58,22 +57,7 @@ class ShadowMap {
      * @param w the width of the area hit by light
      * @param h the height of the area hit by light
      */
-    ShadowMap(screen_size_t w, screen_size_t h);
-
-    ~ShadowMap() {
-        glDeleteFramebuffers(1, &frame_buffer_id_);
-        glDeleteTextures(1, &depth_texture_id_);
-    }
-
-    /**
-     * @brief Get the depth texture ID
-     *
-     * @return GLuint& reference to depth texture ID
-     */
-    [[nodiscard]] inline GLuint
-    get_depth_texture() const {
-        return depth_texture_id_;
-    }
+    ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings settings = {});
 
     /**
      * @brief Bind texture to given texture index
@@ -83,17 +67,8 @@ class ShadowMap {
     inline void
     bind(uint texture_index) const {
         glActiveTexture(GL_TEXTURE0 + texture_index);
-        glBindTexture(GL_TEXTURE_2D, depth_texture_id_);
-    }
 
-    /**
-     * @brief Get the frame buffer ID
-     *
-     * @return GLuint& reference to frame buffer ID
-     */
-    [[nodiscard]] inline GLuint&
-    get_frame_buffer_id() {
-        return frame_buffer_id_;
+        glBindTexture(GL_TEXTURE_2D, depth_buffer_->value());
     }
 
     /**
@@ -109,6 +84,8 @@ class ShadowMap {
      * @param depth_projection_matrix the projection matrix
      */
     void set_depth_projection_matrix(glm::mat4 depth_projection_matrix);
+
+    void set_inverse_view_projection(glm::mat4 inverse_view_projection);
 
     /**
      * @brief Get the light direction used for this shadow map
@@ -140,44 +117,11 @@ class ShadowMap {
     }
 
     /**
-     * @brief Get shadow width in pixels
+     * @brief Updates the depth projection matrix from saved values.
      *
-     * @return screen_size_t width of shadow map in pixels
      */
-    [[nodiscard]] inline screen_size_t
-    get_shadow_width() const {
-        return shadow_width_;
-    }
 
-    /**
-     * @brief Get shadow height in pixels
-     *
-     * @return screen_size_t height of shadow map in pixels
-     */
-    [[nodiscard]] inline screen_size_t
-    get_shadow_height() const {
-        return shadow_height_;
-    }
-
-    /**
-     * @brief Update the shadow map
-     *
-     * @details Changes the shadow map depth matrix. This allows the shadow map
-     * to move with the camera.
-     */
-    void update();
-
-    /**
-     * @brief Update the light direction and depth projection matrix by using the given
-     * light direction.
-     *
-     * @param glm::vec3 light_direction
-     */
-    void
-    update(glm::vec3 light_direction) {
-        set_light_direction(light_direction);
-        update();
-    };
+    void update_depth_projection_matrix();
 };
 
 } // namespace gpu_data

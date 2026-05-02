@@ -17,39 +17,23 @@ namespace gui {
 
 namespace gpu_data {
 
-ShadowMap::ShadowMap(screen_size_t w, screen_size_t h) {
-    shadow_width_ = w;
-    shadow_height_ = h;
+ShadowMap::ShadowMap(screen_size_t w, screen_size_t h, FrameBufferSettings settings) :
+    FrameBufferBase(w, h, settings) {
+    TextureSettings depth_texture_settings{
+        .internal_format = GPUPixelStorageFormat::DEPTH_16,
+        .read_format = GPUPixelReadFormat::DEPTH_COMPONENT,
+        .type = GPUPixelType::HALF_FLOAT,
+        .min_filter = GL_LINEAR};
 
-    glGenFramebuffers(1, &frame_buffer_id_);
-    FrameBufferHandler::instance().bind_fbo(frame_buffer_id_);
-
-    // Depth texture. Slower than a depth buffer, but you can sample it later in
-    // your shader
-
-    glGenTextures(1, &depth_texture_id_);
-    glBindTexture(GL_TEXTURE_2D, depth_texture_id_);
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, shadow_width_, shadow_height_, 0,
-        GL_DEPTH_COMPONENT, GL_FLOAT, 0
+    connect_depth_texture(
+        std::make_shared<Texture2D>(width_, height_, depth_texture_settings, false)
     );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_texture_id_, 0);
 
     // No color output in the bound framebuffer, only depth.
-    glDrawBuffer(GL_NONE);
+    glNamedFramebufferDrawBuffer(frame_buffer, GL_NONE);
 
     // Always check that our framebuffer is ok
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        LOG_CRITICAL(logging::opengl_logger, "Framebuffer is not ok");
-        abort();
-    }
+    status_check();
 }
 
 void
@@ -65,11 +49,12 @@ ShadowMap::set_depth_projection_matrix(glm::mat4 depth_projection_matrix) {
 }
 
 void
-ShadowMap::update() {
-    glm::mat4 view_matrix = controls::get_view_matrix();
-    glm::mat4 projection_matrix = controls::get_projection_matrix();
-    glm::mat4 inverse_view_projection = glm::inverse(projection_matrix * view_matrix);
+ShadowMap::set_inverse_view_projection(glm::mat4 inverse_view_projection) {
+    inverse_view_projection_ = std::move(inverse_view_projection);
+}
 
+void
+ShadowMap::update_depth_projection_matrix() {
     // world space positions of back corners of view field.
     std::vector<glm::vec4> shadow_range_corners;
     // Average position of four corners
@@ -81,7 +66,7 @@ ShadowMap::update() {
                 // corner in camera space
                 glm::vec4 corner = {x, y, z, 1}; // w = 1
                 // direction in world space
-                glm::vec4 direction = inverse_view_projection * corner;
+                glm::vec4 direction = inverse_view_projection_ * corner;
                 direction = direction / direction.w;
                 shadow_range_corners.emplace_back(direction);
                 center = +direction;

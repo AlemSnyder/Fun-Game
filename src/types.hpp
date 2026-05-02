@@ -11,9 +11,7 @@
  * Terrain *
  ***********/
 
-// Tile index in terrain's vector. Also know as pos
-// using TileIndex = size_t;
-// using ChunkIndex = size_t;
+// Tile position within a chunk
 using LocalPosition = glm::u8vec3;
 // Tile position in terrain.
 using Dim = uint16_t;
@@ -143,6 +141,21 @@ struct std::hash<glm::u8vec3> {
         utils::hash_combine<uint8_t>(result, position.x);
         utils::hash_combine<uint8_t>(result, position.y);
         utils::hash_combine<uint8_t>(result, position.z);
+        return result;
+    }
+};
+
+/**
+ * @brief Create hash from position of object.
+ */
+template <>
+struct std::hash<ChunkPos> {
+    size_t
+    operator()(const ChunkPos& pos) const noexcept {
+        size_t result = 0;
+        utils::hash_combine(result, pos.x);
+        utils::hash_combine(result, pos.y);
+        utils::hash_combine(result, pos.z);
         return result;
     }
 };

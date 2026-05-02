@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <string>
+#include <chrono>
 
 namespace gui {
 
@@ -71,28 +72,28 @@ message_callback(
     //clang-format on
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
-            LOG_ERROR(
+            LOG_ERROR_LIMIT( std::chrono::seconds{60},
                 logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_MEDIUM:
-            LOG_WARNING(
+            LOG_WARNING_LIMIT( std::chrono::seconds{60},
                 logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_LOW:
-            LOG_DEBUG(
+            LOG_DEBUG_LIMIT( std::chrono::seconds{60},
                 logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );
             break;
 
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            LOG_DEBUG(
+            LOG_DEBUG_LIMIT( std::chrono::seconds{60},
                 logging::opengl_logger, "{}: {}, ({}): {}", type_string, source_sting, id,
                 message
             );

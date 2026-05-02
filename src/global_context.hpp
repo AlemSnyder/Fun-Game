@@ -27,11 +27,15 @@
 
 #define BS_THREAD_POOL_ENABLE_PRIORITY
 #include <BS_thread_pool.hpp>
+#include <sol/sol.hpp>
 
 #include <functional>
 #include <mutex>
+#include <optional>
 #include <queue>
 #include <set>
+#include <thread>
+#include <unordered_map>
 
 /**
  * @brief Any global context that are needed will go in this class.
@@ -49,9 +53,18 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
+    sol::state lua_;
+
+    std::mutex global_lua_mutex_;
+
+#if DEBUG()
+
+    std::thread::id main_thread_id;
+
+#endif
+
     // Private CTOR as this is a singleton
-    GlobalContext() :
-        thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
+    GlobalContext();
 
  public:
     // Delete all CTORs and CTOR-like operators
@@ -61,11 +74,37 @@ class GlobalContext {
     void operator=(GlobalContext&&) = delete;
     void operator=(GlobalContext const&) = delete;
 
+    inline void
+    set_main_thread() {
+#if DEBUG()
+        assert(
+            main_thread_id == std::thread::id()
+            && "Cannot set main thread id if it is already initialized."
+        );
+        main_thread_id = std::this_thread::get_id();
+#endif
+    }
+
+    inline bool
+    is_main_thread() const {
+#if DEBUG()
+        return main_thread_id == std::this_thread::get_id();
+#else
+        return true;
+#endif
+    }
+
     // Instance accessor
     static inline GlobalContext&
     instance() {
         static GlobalContext obj;
         return obj;
+    }
+
+    // this must be run before exit if lua has been initialized on thread local
+    // 
+    inline void close_threads() {
+        thread_pool_.reset(0);
     }
 
     void run_opengl_queue();
@@ -115,4 +154,8 @@ class GlobalContext {
     }
 
     // oh boy time to start wrapping tread_pool
+
+    void load_script_file(const std::filesystem::path& path);
+
+    std::optional<sol::object> get_from_lua(const std::string& command);
 };

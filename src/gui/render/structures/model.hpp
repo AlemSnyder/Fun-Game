@@ -4,7 +4,7 @@
 #include "gui/placement.hpp"
 #include "gui/render/gpu_data/data_types.hpp"
 #include "gui/render/gpu_data/vertex_buffer_object.hpp"
-#include "manifest.hpp"
+#include "manifest/manifest.hpp"
 #include "static_mesh.hpp"
 #include "types.hpp"
 #include "util/voxel.hpp"
@@ -76,17 +76,19 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     /**
      * @brief Construct new ModelController
      *
-     * @param const world::entity::Mesh& Mesh data
+     * @param const util::Mesh& Mesh data
      * @param const std::vector<std::vector<ColorFloat>>& color map data
      */
     inline ModelController(
-        const world::entity::Mesh& model_mesh,
+        const util::Mesh& model_mesh,
         const std::vector<std::vector<ColorFloat>>& vector_data
     ) noexcept :
         model_mesh_(model_mesh, {}),
-        model_textures_(vector_data) {}
+        model_textures_(
+            std::make_shared<util::image::FloatPolychromeAlphaImage>(vector_data)
+        ) {}
 
-    ~ModelController() {}
+    inline virtual ~ModelController() {}
 
     inline ModelController(const ModelController& obj) = delete;
     ModelController(ModelController&& other) :
@@ -140,9 +142,9 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     /**
      * @brief Get they data buffer type.
      *
-     * @return gui::gpu_data::GPUDataType data buffer type
+     * @return gui::gpu_data::GPUArayType data buffer type
      */
-    [[nodiscard]] inline gui::gpu_data::GPUDataType
+    [[nodiscard]] inline gui::gpu_data::GPUArayType
     get_element_type() const override {
         return model_mesh_.get_element_type();
     }

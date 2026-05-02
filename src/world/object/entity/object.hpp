@@ -15,6 +15,8 @@
 
 namespace world {
 
+namespace object {
+
 namespace entity {
 
 struct global_illumination_t {
@@ -34,6 +36,7 @@ struct remapping_t {
 enum class OBJECT_TYPE {
     ENTITY,
     TILE_OBJECT,
+    IMPLEMENTED_ENTITY,
 };
 
 struct model_t {
@@ -61,13 +64,16 @@ class Object {
 
     virtual std::string identification() const = 0;
 
+    virtual const std::string& get_name() const = 0;
+    virtual size_t num_models() const = 0;
+
     // one for each mesh
     //    virtual std::vector<const gui::gpu_data::GPUDataElementsInstanced*>
     //    renderable_data() const = 0;
 
     virtual void init_render(render_programs_t& programs) const = 0;
 
-    virtual void update() = 0;
+    virtual void sync_data_to_gpu() = 0;
 };
 
 class ObjectInstance {
@@ -86,23 +92,26 @@ class ObjectInstance {
 
 } // namespace entity
 
+} // namespace object
+
 } // namespace world
 
 template <>
-struct glz::meta<world::entity::OBJECT_TYPE> {
-    using enum world::entity::OBJECT_TYPE;
-    static constexpr auto value = enumerate(ENTITY, TILE_OBJECT);
+struct glz::meta<world::object::entity::OBJECT_TYPE> {
+    using enum world::object::entity::OBJECT_TYPE;
+    static constexpr auto value = enumerate(ENTITY, TILE_OBJECT, IMPLEMENTED_ENTITY);
 };
 
 template <>
-struct glz::meta<world::entity::remapping_t> {
-    using T = world::entity::remapping_t;
+struct glz::meta<world::object::entity::remapping_t> {
+    using T = world::object::entity::remapping_t;
 
     static constexpr auto value = object("map", custom<&T::read_map, &T::write_map>);
 };
 
 template <>
-inline glz::detail::any_t::operator std::vector<world::entity::remapping_t>() const {
+inline glz::detail::any_t::operator std::vector<world::object::entity::remapping_t>(
+) const {
     assert(false && "Not Implemented");
     return {};
 }
