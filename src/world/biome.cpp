@@ -107,14 +107,14 @@ Biome::get_map(MacroDim size) const {
     biome_map->AddRef();
 
     asIScriptFunction* method = type->GetMethodByDecl("int sample(int, int)");
-    result = local_context.run_method(biome_map, method, 5, 5);
     if (method == nullptr) {
         LOG_WARNING(logging::main_logger, "Could not find biome map function.");
         return {};
     }
-
+    result = local_context.run_method(biome_map, method, 5, 5);
+    
     std::vector<MapTile> out;
-
+    
     MacroDim x_map_tiles = size;
     MacroDim y_map_tiles = size;
 

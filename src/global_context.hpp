@@ -171,11 +171,11 @@ class GlobalContext {
     }
 
     // load as script file
-    void load_file(std::string module, std::filesystem::path path);
+    void load_file(const std::string& module, std::filesystem::path path);
 
     // get function from module
-    asIScriptFunction* get_function(std::string module, std::string function) const;
+    asIScriptFunction* get_function(const std::string& module, std::string function) const;
 
     // get type from module
-    asITypeInfo* get_type(std::string module, std::string type_signature) const;
+    asITypeInfo* get_type(const std::string& module, std::string type_signature) const;
 };

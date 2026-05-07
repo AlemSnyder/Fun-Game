@@ -7,15 +7,15 @@
 
 namespace as_logging {
 
-struct script_location {
+struct script_location_t {
     std::string file;
     int line;
     int column;
 };
 
-script_location
+script_location_t
 get_script_location() {
-    script_location location_data;
+    script_location_t location_data;
     asIScriptContext* context = asGetActiveContext();
     if (context == nullptr) {
         location_data.file = "Invoked from c++";
@@ -36,7 +36,7 @@ get_script_location() {
 
 void
 as_log_backtrace(std::string message) {
-    script_location location = get_script_location();
+    script_location_t location = get_script_location();
     LOG_BACKTRACE(
         logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
@@ -45,7 +45,7 @@ as_log_backtrace(std::string message) {
 
 void
 as_log_info(std::string message) {
-    script_location location = get_script_location();
+    script_location_t location = get_script_location();
     LOG_INFO(
         logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
@@ -54,7 +54,7 @@ as_log_info(std::string message) {
 
 void
 as_log_debug(std::string message) {
-    script_location location = get_script_location();
+    script_location_t location = get_script_location();
     LOG_DEBUG(
         logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
@@ -63,7 +63,7 @@ as_log_debug(std::string message) {
 
 void
 as_log_warning(std::string message) {
-    script_location location = get_script_location();
+    script_location_t location = get_script_location();
     LOG_WARNING(
         logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
@@ -72,7 +72,7 @@ as_log_warning(std::string message) {
 
 void
 as_log_error(std::string message) {
-    script_location location = get_script_location();
+    script_location_t location = get_script_location();
     LOG_ERROR(
         logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message
@@ -81,7 +81,7 @@ as_log_error(std::string message) {
 
 void
 as_log_critical(std::string message) {
-    script_location location = get_script_location();
+    script_location_t location = get_script_location();
     LOG_CRITICAL(
         logging::script_logger, "[{:<18}] - {}",
         fmtquill::format("{}:{}", location.file, location.line), message

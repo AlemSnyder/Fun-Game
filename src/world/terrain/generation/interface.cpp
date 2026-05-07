@@ -6,6 +6,8 @@
 namespace terrain {
 namespace generation {
 
+namespace {
+
 FractalNoise*
 FractalNoise_factory(int x, double y, int z) {
     // The class constructor is initializing the reference counter to 1
@@ -22,6 +24,8 @@ AlternativeWorleyNoise*
 AlternativeWorleyNoise_factory(NoisePosition x, double y, NoisePosition z) {
     // The class constructor is initializing the reference counter to 1
     return new AlternativeWorleyNoise(x, y, z);
+}
+
 }
 
 void

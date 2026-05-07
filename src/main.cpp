@@ -4,7 +4,7 @@
 #include "gui/ui/imgui_gui.hpp"
 #include "logging.hpp"
 #include "manifest/object_handler.hpp"
-#include "util/angle_script/as_tests.hpp"
+#include "util/angel_script/as_tests.hpp"
 #include "util/files.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"

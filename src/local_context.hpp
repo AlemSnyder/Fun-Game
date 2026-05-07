@@ -131,7 +131,7 @@ class LocalContext {
     ~LocalContext();
 
     template <class T>
-    std::expected<T, int>
+    inline std::expected<T, int>
     run_function(asIScriptFunction* function) {
         context_->Prepare(function);
         // set args maybe
@@ -142,13 +142,6 @@ class LocalContext {
         T object = *static_cast<T*>(context_->GetReturnObject());
 
         return object;
-    }
-
-    int
-    run_function(asIScriptFunction* function) {
-        context_->Prepare(function);
-        int result = context_->Execute();
-        return result;
     }
 
     template <class... Args>

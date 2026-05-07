@@ -3,7 +3,7 @@
 #include "local_context.hpp"
 #include "logging.hpp"
 #include "scriptstdstring.h"
-#include "util/angle_script/as_logging.hpp"
+#include "util/angel_script/as_logging.hpp"
 #include "util/files.hpp"
 #include "world/terrain/generation/interface.hpp"
 
@@ -21,9 +21,13 @@ MessageCallback(const asSMessageInfo* msg, void* param) {
             msg->col, msg->message
         );
     } else if (msg->type == asMSGTYPE_INFORMATION) {
-        LOG_WARNING(
+        LOG_INFO(
             logging::script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
             msg->col, msg->message
+        );
+    } else {
+        LOG_ERROR(
+            logging::script_logger, "Unknown message type."
         );
     }
 }
@@ -66,9 +70,9 @@ GlobalContext::~GlobalContext() {
 
 // TODO this needs to return a status
 void
-GlobalContext::load_file(std::string module, std::filesystem::path path) {
+GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path) {
     asIScriptModule* mod =
-        engine_->GetModule(module.c_str(), asGM_CREATE_IF_NOT_EXISTS);
+        engine_->GetModule(mod_name.c_str(), asGM_CREATE_IF_NOT_EXISTS);
 
     std::ostringstream script;
     auto file = files::open_file(path);
@@ -87,16 +91,23 @@ GlobalContext::load_file(std::string module, std::filesystem::path path) {
 }
 
 asIScriptFunction*
-GlobalContext::get_function(std::string module, std::string function_signature) const {
-    asIScriptFunction* function = engine_->GetModule(module.c_str())
-                                      ->GetFunctionByDecl(function_signature.c_str());
+GlobalContext::get_function(const std::string& module, std::string function_signature) const {
+    // check that the module exists.
+    asIScriptModule* mod;
+    if ((mod = engine_->GetModule(module.c_str())) == nullptr) {
+        return nullptr;
+    }
+    asIScriptFunction* function = mod->GetFunctionByDecl(function_signature.c_str());
     return function;
 }
 
 asITypeInfo*
-GlobalContext::get_type(std::string module, std::string type_signature) const {
-    // TODO check that the module exists. In this and the above function.
-    asITypeInfo* type =
-        engine_->GetModule(module.c_str())->GetTypeInfoByDecl(type_signature.c_str());
+GlobalContext::get_type(const std::string& module, std::string type_signature) const {
+    // check that the module exists.
+    asIScriptModule* mod;
+    if ((mod = engine_->GetModule(module.c_str())) == nullptr) {
+        return nullptr;
+    }
+    asITypeInfo* type = mod->GetTypeInfoByDecl(type_signature.c_str());
     return type;
 }
