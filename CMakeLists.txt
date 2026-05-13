@@ -15,6 +15,7 @@ file(GLOB ANGELSCRIPT_SOURCE "vendor/angelscript/sdk/angelscript/source/*.c*")
 file(GLOB ANGELSCRIPT_SOURCE_STRING "vendor/angelscript/sdk/add_on/scriptstdstring/*.c*")
 file(GLOB ANGELSCRIPT_SOURCE_ARRAY "vendor/angelscript/sdk/add_on/scriptarray/*.c*")
 add_library(angelscript OBJECT ${ANGELSCRIPT_SOURCE} ${ANGELSCRIPT_SOURCE_STRING} ${ANGELSCRIPT_SOURCE_ARRAY})
+target_compile_definitions(angelscript PRIVATE "AS_USE_NAMESPACE")
 target_compile_definitions(angelscript PRIVATE "AS_USE_STLNAMES")
 target_include_directories(angelscript PRIVATE "vendor/angelscript/sdk/angelscript/include")
 
@@ -38,6 +39,7 @@ add_executable(FunGame ${SOURCES1})
 set_property(TARGET FunGame PROPERTY CXX_STANDARD 23)
 set_property(TARGET FunGame PROPERTY C_STANDARD 17)
 
+target_compile_definitions(FunGame PRIVATE "AS_USE_NAMESPACE")
 target_compile_definitions(FunGame PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
 # compile quill

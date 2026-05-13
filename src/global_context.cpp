@@ -9,26 +9,24 @@
 
 // Implement a simple message callback function
 void
-MessageCallback(const asSMessageInfo* msg, void* param) {
-    if (msg->type == asMSGTYPE_ERROR) {
+MessageCallback(const AngelScript::asSMessageInfo* msg, void* param) {
+    if (msg->type == AngelScript::asMSGTYPE_ERROR) {
         LOG_ERROR(
             logging::script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
             msg->col, msg->message
         );
-    } else if (msg->type == asMSGTYPE_WARNING) {
+    } else if (msg->type == AngelScript::asMSGTYPE_WARNING) {
         LOG_WARNING(
             logging::script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
             msg->col, msg->message
         );
-    } else if (msg->type == asMSGTYPE_INFORMATION) {
+    } else if (msg->type == AngelScript::asMSGTYPE_INFORMATION) {
         LOG_INFO(
             logging::script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
             msg->col, msg->message
         );
     } else {
-        LOG_ERROR(
-            logging::script_logger, "Unknown message type."
-        );
+        LOG_ERROR(logging::script_logger, "Unknown message type.");
     }
 }
 
@@ -56,9 +54,11 @@ GlobalContext::run_opengl_queue() {
 
 GlobalContext::GlobalContext() :
     thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {
-    asPrepareMultithread();
-    engine_ = asCreateScriptEngine();
-    engine_->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+    AngelScript::asPrepareMultithread();
+    engine_ = AngelScript::asCreateScriptEngine();
+    engine_->SetMessageCallback(
+        AngelScript::asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
+    );
     RegisterStdString(engine_);
     terrain::generation::init_as_interface(engine_);
     as_logging::init_as_interface(engine_);
@@ -71,8 +71,8 @@ GlobalContext::~GlobalContext() {
 // TODO this needs to return a status
 void
 GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path) {
-    asIScriptModule* mod =
-        engine_->GetModule(mod_name.c_str(), asGM_CREATE_IF_NOT_EXISTS);
+    AngelScript::asIScriptModule* mod =
+        engine_->GetModule(mod_name.c_str(), AngelScript::asGM_CREATE_IF_NOT_EXISTS);
 
     std::ostringstream script;
     auto file = files::open_file(path);
@@ -90,24 +90,27 @@ GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path
     }
 }
 
-asIScriptFunction*
-GlobalContext::get_function(const std::string& module, std::string function_signature) const {
+AngelScript::asIScriptFunction*
+GlobalContext::get_function(
+    const std::string& module, std::string function_signature
+) const {
     // check that the module exists.
-    asIScriptModule* mod;
+    AngelScript::asIScriptModule* mod;
     if ((mod = engine_->GetModule(module.c_str())) == nullptr) {
         return nullptr;
     }
-    asIScriptFunction* function = mod->GetFunctionByDecl(function_signature.c_str());
+    AngelScript::asIScriptFunction* function =
+        mod->GetFunctionByDecl(function_signature.c_str());
     return function;
 }
 
-asITypeInfo*
+AngelScript::asITypeInfo*
 GlobalContext::get_type(const std::string& module, std::string type_signature) const {
     // check that the module exists.
-    asIScriptModule* mod;
+    AngelScript::asIScriptModule* mod;
     if ((mod = engine_->GetModule(module.c_str())) == nullptr) {
         return nullptr;
     }
-    asITypeInfo* type = mod->GetTypeInfoByDecl(type_signature.c_str());
+    AngelScript::asITypeInfo* type = mod->GetTypeInfoByDecl(type_signature.c_str());
     return type;
 }

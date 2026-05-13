@@ -94,27 +94,28 @@ Biome::get_map(MacroDim size) const {
     auto factory_function =
         type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
 
-    int result = local_context.run_function(factory_function);
-    if (result != asEXECUTION_FINISHED) {
+    AngelScript::asEContextState result = local_context.run_function(factory_function);
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
         return {};
     }
-    asIScriptObject* biome_map = local_context.get_return_object();
+    AngelScript::asIScriptObject* biome_map = local_context.get_return_object();
     if (biome_map == nullptr) {
         LOG_ERROR(logging::main_logger, "Failed to get object");
         return {};
     }
     biome_map->AddRef();
 
-    asIScriptFunction* method = type->GetMethodByDecl("int sample(int, int)");
+    AngelScript::asIScriptFunction* method =
+        type->GetMethodByDecl("int sample(int, int)");
     if (method == nullptr) {
         LOG_WARNING(logging::main_logger, "Could not find biome map function.");
         return {};
     }
     result = local_context.run_method(biome_map, method, 5, 5);
-    
+
     std::vector<MapTile> out;
-    
+
     MacroDim x_map_tiles = size;
     MacroDim y_map_tiles = size;
 
@@ -126,13 +127,13 @@ Biome::get_map(MacroDim size) const {
             result = local_context.run_method(
                 biome_map, method, std::move(x_copy), std::move(y_copy)
             );
-            if (result == asCONTEXT_NOT_PREPARED) {
+            if (result == AngelScript::asCONTEXT_NOT_PREPARED) {
                 LOG_ERROR(logging::main_logger, "Context not prepared");
                 return {};
-            } else if (result == asINVALID_ARG) {
+            } else if (result == AngelScript::asINVALID_ARG) {
                 LOG_ERROR(logging::main_logger, "To many arguments");
                 return {};
-            } else if (result == asINVALID_TYPE) {
+            } else if (result == AngelScript::asINVALID_TYPE) {
                 LOG_ERROR(logging::main_logger, "Invalid arg type");
                 return {};
             }
@@ -142,7 +143,7 @@ Biome::get_map(MacroDim size) const {
             if (result != 0) {
                 LOG_ERROR(
                     logging::main_logger, "Non zero return value in get map as ({})",
-                    result
+                    std::to_underlying(result)
                 );
                 return {};
             }
@@ -171,22 +172,22 @@ Biome::get_plant_map(Dim length) const {
     auto factory_function =
         type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
 
-    int result = local_context.run_function(factory_function);
-    if (result != asEXECUTION_FINISHED) {
+    AngelScript::asEContextState result = local_context.run_function(factory_function);
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
         return {};
     }
-    asIScriptObject* biome_map = local_context.get_return_object();
+    AngelScript::asIScriptObject* biome_map = local_context.get_return_object();
     if (biome_map == nullptr) {
         LOG_ERROR(logging::main_logger, "Failed to get object");
         return {};
     }
     biome_map->AddRef();
 
-    asIScriptFunction* method =
+    AngelScript::asIScriptFunction* script_method =
         type->GetMethodByDecl("float sample_plants(string, int, int)");
-    result = local_context.run_method(biome_map, method, 5, 5);
-    if (method == nullptr) {
+    result = local_context.run_method(biome_map, script_method, 5, 5);
+    if (script_method == nullptr) {
         LOG_WARNING(logging::main_logger, "Could not find biome map function.");
         return {};
     }
@@ -205,16 +206,16 @@ Biome::get_plant_map(Dim length) const {
                 int x_copy = x;
                 int y_copy = y;
                 result = local_context.run_method(
-                    biome_map, method, &plant_map_name, std::move(x_copy),
+                    biome_map, script_method, &plant_map_name, std::move(x_copy),
                     std::move(y_copy)
                 );
-                if (result == asCONTEXT_NOT_PREPARED) {
+                if (result == AngelScript::asCONTEXT_NOT_PREPARED) {
                     LOG_ERROR(logging::main_logger, "Context not prepared");
                     return {};
-                } else if (result == asINVALID_ARG) {
+                } else if (result == AngelScript::asINVALID_ARG) {
                     LOG_ERROR(logging::main_logger, "To many arguments");
                     return {};
-                } else if (result == asINVALID_TYPE) {
+                } else if (result == AngelScript::asINVALID_TYPE) {
                     LOG_ERROR(logging::main_logger, "Invalid arg type");
                     return {};
                 }
@@ -224,7 +225,8 @@ Biome::get_plant_map(Dim length) const {
                 if (result != 0) {
                     LOG_ERROR(
                         logging::main_logger,
-                        "Non zero return value in get map as ({})", result
+                        "Non zero return value in get map as ({})",
+                        std::to_underlying(result)
                     );
                     return {};
                 }

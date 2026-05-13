@@ -6,7 +6,7 @@ namespace terrain {
 
 namespace generation {
 
-void init_as_interface(asIScriptEngine* engine);
+void init_as_interface(AngelScript::asIScriptEngine* engine);
 
 } // namespace generation
 

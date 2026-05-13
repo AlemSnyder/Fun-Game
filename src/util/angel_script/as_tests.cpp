@@ -31,7 +31,7 @@ as_loadtime_test() {
         auto function_result = local_context.run_function(is_prime_function, 97);
 
         // TODO write a better error logging mechanism
-        if (function_result != asEXECUTION_FINISHED) {
+        if (function_result != AngelScript::asEXECUTION_FINISHED) {
             return 1;
         }
 
@@ -66,7 +66,7 @@ as_loadtime_test() {
             auto function_result = local_context.run_function(is_prime_function, 97);
 
             // TODO write a better error logging mechanism
-            if (function_result != asEXECUTION_FINISHED) {
+            if (function_result != AngelScript::asEXECUTION_FINISHED) {
                 return 1;
             }
 
@@ -112,11 +112,13 @@ as_loadtime_test() {
 
 int
 logging_test() {
-    as_logging::as_log_backtrace("Backtrace");
+    // as_logging::as_log_backtrace("Backtrace");
     LOG_ERROR(logging::script_logger, "");
 
-    asIScriptEngine* engine = asCreateScriptEngine();
-    engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+    AngelScript::asIScriptEngine* engine = AngelScript::asCreateScriptEngine();
+    engine->SetMessageCallback(
+        asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
+    );
     RegisterStdString(engine);
     as_logging::init_as_interface(engine);
 
@@ -125,7 +127,8 @@ logging_test() {
         return 1;
     }
 
-    asIScriptModule* mod = engine->GetModule("test_module", asGM_CREATE_IF_NOT_EXISTS);
+    AngelScript::asIScriptModule* mod =
+        engine->GetModule("test_module", AngelScript::asGM_CREATE_IF_NOT_EXISTS);
     std::ostringstream script;
     auto file = files::open_file(files::get_resources_path() / "as" / "test.as");
     if (!file) {
@@ -142,14 +145,14 @@ logging_test() {
         return 1;
     }
 
-    asIScriptFunction* funct1 =
+    AngelScript::asIScriptFunction* funct1 =
         engine->GetModule("test_module")->GetFunctionByDecl("int test3()");
 
-    asIScriptContext* ctx = engine->CreateContext();
+    AngelScript::asIScriptContext* ctx = engine->CreateContext();
     ctx->Prepare(funct1);
     //    ctx->SetArgDWord();
     result = ctx->Execute();
-    if (result != asEXECUTION_FINISHED) {
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         ctx->Release();
         engine->ShutDownAndRelease();
         return 1;
@@ -161,15 +164,18 @@ logging_test() {
 
 int
 test() {
-    asIScriptEngine* engine = asCreateScriptEngine();
-    engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+    AngelScript::asIScriptEngine* engine = AngelScript::asCreateScriptEngine();
+    engine->SetMessageCallback(
+        asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
+    );
 
     if (!engine) {
         LOG_ERROR(logging::main_logger, "Could no start Angle Script engine.");
         return 1;
     }
 
-    asIScriptModule* mod = engine->GetModule("test_module", asGM_CREATE_IF_NOT_EXISTS);
+    AngelScript::asIScriptModule* mod =
+        engine->GetModule("test_module", AngelScript::asGM_CREATE_IF_NOT_EXISTS);
     std::ostringstream script;
     auto file = files::open_file(files::get_resources_path() / "as" / "test.as");
     if (!file) {
@@ -186,26 +192,26 @@ test() {
         return 1;
     }
 
-    asIScriptFunction* funct1 =
+    AngelScript::asIScriptFunction* funct1 =
         engine->GetModule("test_module")->GetFunctionByDecl("void test1()");
 
-    asIScriptContext* ctx = engine->CreateContext();
+    AngelScript::asIScriptContext* ctx = engine->CreateContext();
     ctx->Prepare(funct1);
     //    ctx->SetArgDWord();
     result = ctx->Execute();
-    if (result != asEXECUTION_FINISHED) {
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         ctx->Release();
         engine->ShutDownAndRelease();
         return 1;
     }
 
-    asIScriptFunction* funct2 =
+    AngelScript::asIScriptFunction* funct2 =
         engine->GetModule("test_module")->GetFunctionByDecl("int test2()");
 
     ctx->Prepare(funct2);
     //    ctx->SetArgDWord();
     result = ctx->Execute();
-    if (result != asEXECUTION_FINISHED) {
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         ctx->Release();
         engine->ShutDownAndRelease();
         return 1;
@@ -250,7 +256,7 @@ as_load_tests() {
 
     auto function = context.get_function("Base", "void do_something()");
     int result = local_context.run_function(function);
-    if (result != asEXECUTION_FINISHED) {
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript Test");
         return 1;
     }
@@ -275,21 +281,22 @@ as_load_tests() {
     LOG_DEBUG(logging::main_logger, "{}", declaration);
 
     result = local_context.run_function(factory_function);
-    if (result != asEXECUTION_FINISHED) {
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
         return 1;
     }
 
-    asIScriptObject* biome_map = local_context.get_return_object();
+    AngelScript::asIScriptObject* biome_map = local_context.get_return_object();
     if (biome_map == nullptr) {
         LOG_ERROR(logging::main_logger, "Failed to get object");
         return 1;
     }
     biome_map->AddRef();
 
-    asIScriptFunction* method = type->GetMethodByDecl("int sample(int, int)");
+    AngelScript::asIScriptFunction* method =
+        type->GetMethodByDecl("int sample(int, int)");
     result = local_context.run_method(biome_map, method, 5, 5);
-    if (result != asEXECUTION_FINISHED) {
+    if (result != AngelScript::asEXECUTION_FINISHED) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript run sample");
         return 1;
     }

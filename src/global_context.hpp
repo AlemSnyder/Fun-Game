@@ -37,7 +37,7 @@
 #include <thread>
 #include <unordered_map>
 
-void MessageCallback(const asSMessageInfo* msg, void* param);
+void MessageCallback(const AngelScript::asSMessageInfo* msg, void* param);
 
 /**
  * @brief Any global context that are needed will go in this class.
@@ -55,7 +55,7 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
-    asIScriptEngine* engine_;
+    AngelScript::asIScriptEngine* engine_;
 
     // std::mutex global_as_mutex_;
 
@@ -174,8 +174,10 @@ class GlobalContext {
     void load_file(const std::string& module, std::filesystem::path path);
 
     // get function from module
-    asIScriptFunction* get_function(const std::string& module, std::string function) const;
+    AngelScript::asIScriptFunction*
+    get_function(const std::string& module, std::string function) const;
 
     // get type from module
-    asITypeInfo* get_type(const std::string& module, std::string type_signature) const;
+    AngelScript::asITypeInfo*
+    get_type(const std::string& module, std::string type_signature) const;
 };

@@ -7,7 +7,7 @@ LocalContext::LocalContext() :
 
 LocalContext::~LocalContext() {
     context_->Release();
-    asThreadCleanup();
+    AngelScript::asThreadCleanup();
 }
 
 LocalContext&

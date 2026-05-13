@@ -26,81 +26,86 @@ AlternativeWorleyNoise_factory(NoisePosition x, double y, NoisePosition z) {
     return new AlternativeWorleyNoise(x, y, z);
 }
 
-}
+} // namespace
 
 void
-init_as_interface(asIScriptEngine* engine) {
+init_as_interface(AngelScript::asIScriptEngine* engine) {
     int r = engine->SetDefaultNamespace("TerrainGeneration");
     assert(r >= 0);
 
     // Registering the class method
-    r = engine->RegisterObjectType("FractalNoise", 0, asOBJ_REF);
+    r = engine->RegisterObjectType("FractalNoise", 0, AngelScript::asOBJ_REF);
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "FractalNoise", asBEHAVE_FACTORY, "FractalNoise@ f(int, double, int)",
-        asFUNCTION(FractalNoise_factory), asCALL_CDECL
+        "FractalNoise", AngelScript::asBEHAVE_FACTORY,
+        "FractalNoise@ f(int, double, int)",
+        AngelScript::asFUNCTION(FractalNoise_factory), AngelScript::asCALL_CDECL
     );
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "FractalNoise", asBEHAVE_ADDREF, "void f()", asMETHOD(FractalNoise, add_ref),
-        asCALL_THISCALL
+        "FractalNoise", AngelScript::asBEHAVE_ADDREF, "void f()",
+        AngelScript::asMETHOD(FractalNoise, add_ref), AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "FractalNoise", asBEHAVE_RELEASE, "void f()",
-        asMETHOD(FractalNoise, release_ref), asCALL_THISCALL
+        "FractalNoise", AngelScript::asBEHAVE_RELEASE, "void f()",
+        AngelScript::asMETHOD(FractalNoise, release_ref), AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
     r = engine->RegisterObjectMethod(
         "FractalNoise", "double sample(double, double)",
-        asMETHOD(FractalNoise, get_noise), asCALL_THISCALL
+        AngelScript::asMETHOD(FractalNoise, get_noise), AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
 
-    r = engine->RegisterObjectType("WorleyNoise", 0, asOBJ_REF);
+    r = engine->RegisterObjectType("WorleyNoise", 0, AngelScript::asOBJ_REF);
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "WorleyNoise", asBEHAVE_FACTORY, "WorleyNoise@ f(double, double)",
-        asFUNCTION(WorleyNoise_factory), asCALL_CDECL
+        "WorleyNoise", AngelScript::asBEHAVE_FACTORY, "WorleyNoise@ f(double, double)",
+        AngelScript::asFUNCTION(WorleyNoise_factory), AngelScript::asCALL_CDECL
     );
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "WorleyNoise", asBEHAVE_ADDREF, "void f()", asMETHOD(WorleyNoise, add_ref),
-        asCALL_THISCALL
+        "WorleyNoise", AngelScript::asBEHAVE_ADDREF, "void f()",
+        AngelScript::asMETHOD(WorleyNoise, add_ref), AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "WorleyNoise", asBEHAVE_RELEASE, "void f()", asMETHOD(WorleyNoise, release_ref),
-        asCALL_THISCALL
+        "WorleyNoise", AngelScript::asBEHAVE_RELEASE, "void f()",
+        AngelScript::asMETHOD(WorleyNoise, release_ref), AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
     r = engine->RegisterObjectMethod(
         "WorleyNoise", "double sample(double, double)",
-        asMETHOD(WorleyNoise, get_noise), asCALL_THISCALL
+        AngelScript::asMETHOD(WorleyNoise, get_noise), AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
 
-    r = engine->RegisterObjectType("AlternativeWorleyNoise", 0, asOBJ_REF);
+    r = engine->RegisterObjectType("AlternativeWorleyNoise", 0, AngelScript::asOBJ_REF);
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "AlternativeWorleyNoise", asBEHAVE_FACTORY,
+        "AlternativeWorleyNoise", AngelScript::asBEHAVE_FACTORY,
         "AlternativeWorleyNoise@ f(double, double, double)",
-        asFUNCTION(AlternativeWorleyNoise_factory), asCALL_CDECL
+        AngelScript::asFUNCTION(AlternativeWorleyNoise_factory),
+        AngelScript::asCALL_CDECL
     );
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "AlternativeWorleyNoise", asBEHAVE_ADDREF, "void f()",
-        asMETHOD(AlternativeWorleyNoise, add_ref), asCALL_THISCALL
+        "AlternativeWorleyNoise", AngelScript::asBEHAVE_ADDREF, "void f()",
+        AngelScript::asMETHOD(AlternativeWorleyNoise, add_ref),
+        AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
     r = engine->RegisterObjectBehaviour(
-        "AlternativeWorleyNoise", asBEHAVE_RELEASE, "void f()",
-        asMETHOD(AlternativeWorleyNoise, release_ref), asCALL_THISCALL
+        "AlternativeWorleyNoise", AngelScript::asBEHAVE_RELEASE, "void f()",
+        AngelScript::asMETHOD(AlternativeWorleyNoise, release_ref),
+        AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
     r = engine->RegisterObjectMethod(
         "AlternativeWorleyNoise", "double sample(double, double)",
-        asMETHOD(AlternativeWorleyNoise, get_noise), asCALL_THISCALL
+        AngelScript::asMETHOD(AlternativeWorleyNoise, get_noise),
+        AngelScript::asCALL_THISCALL
     );
     assert(r >= 0);
 }

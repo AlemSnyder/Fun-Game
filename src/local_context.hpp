@@ -34,92 +34,100 @@ class LocalContext {
  private:
     LocalContext();
 
-    asIScriptContext* context_;
+    AngelScript::asIScriptContext* context_;
 
-    inline int
+    // Return values
+    // asSUCCESS                Success
+    // asCONTEXT_NOT_PREPARED   The context is not in prepared state.
+    // asINVALID_ARG            The arg is larger than the number of arguments in the
+    // prepared function. asINVALID_TYPE           The argument is not an object or
+    // handle.
+    inline AngelScript::asERetCodes
     set_arg(size_t i, bool arg) {
-        return context_->SetArgByte(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgByte(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, int8_t arg) {
-        return context_->SetArgByte(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgByte(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, uint8_t arg) {
-        return context_->SetArgByte(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgByte(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, int16_t arg) {
-        return context_->SetArgWord(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgWord(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, uint16_t arg) {
-        return context_->SetArgWord(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgWord(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, int32_t arg) {
-        return context_->SetArgDWord(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgDWord(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, uint32_t arg) {
-        return context_->SetArgDWord(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgDWord(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, int64_t arg) {
-        return context_->SetArgQWord(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgQWord(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, uint64_t arg) {
-        return context_->SetArgQWord(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgQWord(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, float arg) {
-        return context_->SetArgFloat(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgFloat(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, double arg) {
-        return context_->SetArgDouble(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgDouble(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, void* arg) {
-        return context_->SetArgObject(i, arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgObject(i, arg));
     }
 
-    inline int
+    inline AngelScript::asERetCodes
     set_arg(size_t i, std::string arg) {
-        return context_->SetArgObject(i, &arg);
+        return static_cast<AngelScript::asERetCodes>(context_->SetArgObject(i, &arg));
     }
 
     template <typename A>
-    inline int
+    inline AngelScript::asERetCodes
     set_all_args(const size_t i, const A&& a) {
-        int result = set_arg(i, a);
-        if (result != 0) {
+        AngelScript::asERetCodes result = set_arg(i, a);
+        if (result != AngelScript::asERetCodes::asSUCCESS) {
             LOG_ERROR(
-                logging::main_logger, "An error occurred {} at parameter {}", result, i
+                logging::main_logger, "An error occurred {} at parameter {}",
+                std::to_underlying(result), i
             );
         }
         return result;
     }
 
     template <typename A, typename... Args>
-    inline int
+    inline AngelScript::asERetCodes
     set_all_args(const size_t i, const A&& a, const Args&&... args) {
-        int result = set_arg(i, a);
-        if (result != 0) {
+        AngelScript::asERetCodes result = set_arg(i, a);
+        if (result != AngelScript::asERetCodes::asSUCCESS) {
             LOG_ERROR(
-                logging::main_logger, "An error occurred {} at parameter {}", result, i
+                logging::main_logger, "An error occurred {} at parameter {}",
+                std::to_underlying(result), i
             );
             return result;
         }
@@ -131,12 +139,13 @@ class LocalContext {
     ~LocalContext();
 
     template <class T>
-    inline std::expected<T, int>
-    run_function(asIScriptFunction* function) {
+    inline std::expected<T, AngelScript::asEContextState>
+    run_function(AngelScript::asIScriptFunction* function) {
         context_->Prepare(function);
         // set args maybe
-        int result = context_->Execute();
-        if (result != asEXECUTION_FINISHED) {
+        AngelScript::asEContextState result =
+            static_cast<AngelScript::asEContextState>(context_->Execute());
+        if (result != AngelScript::asEContextState::asEXECUTION_FINISHED) {
             return std::unexpected(result);
         }
         T object = *static_cast<T*>(context_->GetReturnObject());
@@ -144,48 +153,71 @@ class LocalContext {
         return object;
     }
 
-    template <class... Args>
-    inline int
-    run_function(asIScriptFunction* function, const Args&&... args) {
+    AngelScript::asEContextState
+    run_function(AngelScript::asIScriptFunction* function) {
         context_->Prepare(function);
-        int result = set_all_args(0, std::forward<const Args>(args)...);
-        if (result != 0) {
-            return result;
+        AngelScript::asEContextState result =
+            static_cast<AngelScript::asEContextState>(context_->Execute());
+        return result;
+    }
+
+    template <class... Args>
+    inline AngelScript::asEContextState
+    run_function(AngelScript::asIScriptFunction* function, const Args&&... args) {
+        context_->Prepare(function);
+        AngelScript::asERetCodes args_result =
+            set_all_args(0, std::forward<const Args>(args)...);
+        if (args_result != AngelScript::asERetCodes::asSUCCESS) {
+            LOG_WARNING(
+                logging::as_logger, "Setting script arguments did not secseed."
+            );
+            return AngelScript::asEContextState::asEXECUTION_SUSPENDED;
         }
-        result = context_->Execute();
+        AngelScript::asEContextState result =
+            static_cast<AngelScript::asEContextState>(context_->Execute());
+
         return result;
     }
 
     // this might crash. should probably do some tests
-    asIScriptObject*
+    AngelScript::asIScriptObject*
     get_return_object() const {
         auto out = context_->GetAddressOfReturnValue();
         if (out == nullptr) {
             return nullptr;
         }
-        return *(asIScriptObject**)out;
+        return *(AngelScript::asIScriptObject**)out;
     }
 
-    int
-    run_method(asIScriptObject* object, asIScriptFunction* function) {
+    AngelScript::asEContextState
+    run_method(
+        AngelScript::asIScriptObject* object, AngelScript::asIScriptFunction* function
+    ) {
         context_->Prepare(function);
         context_->SetObject(object);
-        int result = context_->Execute();
+        AngelScript::asEContextState result =
+            static_cast<AngelScript::asEContextState>(context_->Execute());
         return result;
     }
 
     template <class... Args>
-    inline int
+    inline AngelScript::asEContextState
     run_method(
-        asIScriptObject* object, asIScriptFunction* function, const Args&&... args
+        AngelScript::asIScriptObject* object, AngelScript::asIScriptFunction* function,
+        const Args&&... args
     ) {
         context_->Prepare(function);
         context_->SetObject(object);
-        int result = set_all_args(0, std::forward<const Args>(args)...);
-        if (result != 0) {
-            return result;
+        AngelScript::asERetCodes args_result =
+            set_all_args(0, std::forward<const Args>(args)...);
+        if (args_result != AngelScript::asERetCodes::asSUCCESS) {
+            LOG_WARNING(
+                logging::as_logger, "Setting script arguments did not secseed."
+            );
+            return AngelScript::asEContextState::asEXECUTION_SUSPENDED;
         }
-        result = context_->Execute();
+        AngelScript::asEContextState result =
+            static_cast<AngelScript::asEContextState>(context_->Execute());
         return result;
     }
 
@@ -204,26 +236,25 @@ class LocalContext {
     //    }
 
     //    template<int>
-    int
+    AngelScript::asEContextState
     get_return_value(int& value) {
         // if this is zero then could be right could be wrong.
         value = context_->GetReturnDWord();
-
-        return 0;
+        return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 
-    int
+    AngelScript::asEContextState
     get_return_value(bool& value) {
         // if this is zero then could be right could be wrong.
         value = context_->GetReturnByte();
-        return 0;
+        return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 
-    int
+    AngelScript::asEContextState
     get_return_value(float& value) {
         // if this is zero then could be right could be wrong.
         value = context_->GetReturnFloat();
-        return 0;
+        return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 
     inline int
