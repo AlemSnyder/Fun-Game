@@ -26,8 +26,11 @@
 
 #include <string>
 
-namespace as_logging {
+namespace util {
+namespace scripting {
 
 void init_as_interface(AngelScript::asIScriptEngine* engine);
 
-} // namespace as_logging
+} // namespace scripting
+
+} // namespace util

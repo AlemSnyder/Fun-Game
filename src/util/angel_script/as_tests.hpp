@@ -22,7 +22,8 @@
 
 #pragma once
 
-namespace as_test {
+namespace util {
+namespace scripting {
 
 int test();
 
@@ -34,4 +35,6 @@ int as_threading();
 
 int as_load_tests();
 
-} // namespace as_test
+} // namespace scripting
+
+} // namespace util

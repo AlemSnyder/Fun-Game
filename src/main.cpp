@@ -411,7 +411,7 @@ LogTest() {
 int
 as_tests(const argh::parser& cmdl) {
     if (cmdl.size() < 3) {
-        return as_test::test();
+        return util::scripting::test();
     }
 
     std::string run_function = cmdl(3).str();
@@ -419,13 +419,13 @@ as_tests(const argh::parser& cmdl) {
     if (run_function == "Map") {
         return MacroMap(cmdl);
     } else if (run_function == "Logging") {
-        return as_test::logging_test();
+        return util::scripting::logging_test();
     } else if (run_function == "LoadTime") {
-        return as_test::as_loadtime_test();
+        return util::scripting::as_loadtime_test();
     } else if (run_function == "Threading") {
-        return as_test::as_threading();
+        return util::scripting::as_threading();
     } else if (run_function == "LoadScript") {
-        return as_test::as_load_tests();
+        return util::scripting::as_load_tests();
     } else {
         std::cout << "No known command" << std::endl;
         return 1;

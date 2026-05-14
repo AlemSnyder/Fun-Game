@@ -61,33 +61,81 @@ GlobalContext::GlobalContext() :
     );
     RegisterStdString(engine_);
     terrain::generation::init_as_interface(engine_);
-    as_logging::init_as_interface(engine_);
+    util::scripting::init_as_interface(engine_);
 }
 
 GlobalContext::~GlobalContext() {
     engine_->ShutDownAndRelease();
 }
 
-// TODO this needs to return a status
-void
+AngelScript::asERetCodes
 GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path) {
-    AngelScript::asIScriptModule* mod =
-        engine_->GetModule(mod_name.c_str(), AngelScript::asGM_CREATE_IF_NOT_EXISTS);
+    AngelScript::asIScriptModule* mod;
+    if (mod = engine_->GetModule(mod_name.c_str(), AngelScript::asGM_ONLY_IF_EXISTS)) {
+        LOG_BACKTRACE(
+            logging::as_logger, "Loading file from \"{}\" into module \"{}\".",
+            path.lexically_normal().string(), mod_name
+        );
+    } else if (mod = engine_->GetModule(
+                   mod_name.c_str(), AngelScript::asGM_CREATE_IF_NOT_EXISTS
+               )) {
+        LOG_BACKTRACE(
+            logging::as_logger, "Creating module \"{}\" from file \"{}\".", mod_name,
+            path.lexically_normal().string()
+        );
+    } else {
+        LOG_ERROR(
+            logging::as_logger, "Could not find or create module \"{}\".", mod_name
+        );
+        return AngelScript::asERetCodes::asERROR;
+    }
 
     std::ostringstream script;
     auto file = files::open_file(path);
     if (!file) {
-        return;
+        LOG_ERROR(logging::as_logger, "Could not open file.");
+        return AngelScript::asERetCodes::asERROR;
     }
 
     script << file.value().rdbuf();
     mod->AddScriptSection(path.filename().c_str(), script.str().c_str());
 
-    int result = mod->Build();
-    if (result > 0) {
-        LOG_ERROR(logging::as_logger, "{}", result);
-        return;
+    AngelScript::asERetCodes result =
+        static_cast<AngelScript::asERetCodes>(mod->Build());
+
+    switch (result) {
+        case AngelScript::asINVALID_CONFIGURATION:
+            LOG_ERROR(logging::as_logger, "The engine configuration is invalid.");
+            return result;
+        case AngelScript::asERROR:
+            LOG_ERROR(logging::as_logger, "The script failed to build.");
+            return result;
+        case AngelScript::asBUILD_IN_PROGRESS:
+            LOG_ERROR(logging::as_logger, "Another thread is currently building.");
+            return result;
+        case AngelScript::asINIT_GLOBAL_VARS_FAILED:
+            LOG_ERROR(
+                logging::as_logger, "It was not possible to initialize at least one of "
+                                    "the global variables."
+            );
+            return result;
+        case AngelScript::asNOT_SUPPORTED:
+            LOG_ERROR(
+                logging::as_logger, "Compiler support is disabled in the engine."
+            );
+            return result;
+        case AngelScript::asMODULE_IS_IN_USE:
+            LOG_ERROR(
+                logging::as_logger,
+                "The code in the module is still being used and and cannot be removed."
+            );
+            return result;
+
+        default:
+            break;
     }
+
+    return AngelScript::asERetCodes::asSUCCESS;
 }
 
 AngelScript::asIScriptFunction*

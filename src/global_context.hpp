@@ -143,7 +143,7 @@ class GlobalContext {
      * @param BS::priority_t priority = BS::pr::normal
      */
     template <typename F, typename R = std::invoke_result_t<std::decay_t<F>>>
-    auto
+    [[nodiscard]] auto
     submit_task(F&& function, BS::priority_t priority = BS::pr::normal) {
         return thread_pool_.submit_task(function, priority);
     }
@@ -158,26 +158,27 @@ class GlobalContext {
     }
 
     // Might want to expose these in the future.
-    auto
+    [[nodiscard]] auto
     wait_for_tasks() {
         return thread_pool_.wait();
     }
 
     // oh boy time to start wrapping tread_pool
 
-    auto
+    [[nodiscard]] auto
     as_engine() {
         return engine_;
     }
 
     // load as script file
-    void load_file(const std::string& module, std::filesystem::path path);
+    [[nodiscard]] AngelScript::asERetCodes
+    load_file(const std::string& module, std::filesystem::path path);
 
     // get function from module
-    AngelScript::asIScriptFunction*
+    [[nodiscard]] AngelScript::asIScriptFunction*
     get_function(const std::string& module, std::string function) const;
 
     // get type from module
-    AngelScript::asITypeInfo*
+    [[nodiscard]] AngelScript::asITypeInfo*
     get_type(const std::string& module, std::string type_signature) const;
 };

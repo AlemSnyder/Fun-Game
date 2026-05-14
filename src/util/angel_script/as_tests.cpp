@@ -9,9 +9,8 @@
 
 #include <angelscript.h>
 
-namespace as_test {
-
-// TODO want to use the engine from global context and not create our own.
+namespace util {
+namespace scripting {
 
 int
 as_loadtime_test() {
@@ -51,11 +50,6 @@ as_loadtime_test() {
 
         for (size_t y = 0; y < 100; y++) {
             auto l_start = time_util::get_time_nanoseconds();
-
-            //            context.load_file(
-            //                "test_module", files::get_resources_path() / "as" /
-            //                "test.as"
-            //            );
 
             auto is_prime_function =
                 context.get_function("test_module", "bool is_prime(int)");
@@ -120,7 +114,7 @@ logging_test() {
         asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
     );
     RegisterStdString(engine);
-    as_logging::init_as_interface(engine);
+    init_as_interface(engine);
 
     if (!engine) {
         LOG_ERROR(logging::main_logger, "Could no start Angle Script engine.");
@@ -315,4 +309,6 @@ as_load_tests() {
     return 0;
 }
 
-} // namespace as_test
+} // namespace scripting
+
+} // namespace util

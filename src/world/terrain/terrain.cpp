@@ -191,6 +191,7 @@ Terrain::qb_read(
             }
         });
     }
+    // TODO instead of waiting should collect futures
     context.wait_for_tasks();
 
     for (ColorInt color : unknown_colors) {

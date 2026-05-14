@@ -5,7 +5,8 @@
 
 #include <string>
 
-namespace as_logging {
+namespace util {
+namespace scripting {
 
 namespace {
 
@@ -208,4 +209,6 @@ init_as_interface(AngelScript::asIScriptEngine* engine) {
     assert(r >= 0);
 }
 
-} // namespace as_logging
+} // namespace scripting
+
+} // namespace util

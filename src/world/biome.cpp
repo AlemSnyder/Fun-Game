@@ -88,9 +88,10 @@ Biome::get_map(MacroDim size) const {
     auto& global_context = GlobalContext::instance();
     auto& local_context = LocalContext::instance();
 
-    global_context.load_file("Base", files::get_data_path() / "Base" / "biome_map.as");
-
     auto type = global_context.get_type("Base", "Base::biomes::biome_map");
+    if (type == nullptr) {
+        return {};
+    }
     auto factory_function =
         type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
 
