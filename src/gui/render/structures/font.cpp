@@ -48,7 +48,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     std::unordered_map<char, util::image::ByteMonochromeImage> images;
 
     descender_height_ = -font_face->descender;
-    ascender_height_ = -font_face->ascender;
+    ascender_height_ = font_face->ascender;
     text_height_ = font_face->ascender + descender_height_;
 
     LOG_BACKTRACE(logging::main_logger, "Creating images for each character.");
