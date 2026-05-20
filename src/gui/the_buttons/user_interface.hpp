@@ -65,6 +65,7 @@ class UserInterface : public virtual scene::Inputs {
         ui_scale_uniform_->set_ui_scale(ui_scale);
     }
 
+    // What types of frames do I need to add?
     inline void
     add(std::shared_ptr<FrameInterface> frame) {
         auto pos = frames_.begin();
