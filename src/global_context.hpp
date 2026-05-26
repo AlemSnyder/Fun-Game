@@ -37,8 +37,6 @@
 #include <thread>
 #include <unordered_map>
 
-void MessageCallback(const AngelScript::asSMessageInfo* msg, void* param);
-
 /**
  * @brief Any global context that are needed will go in this class.
  *

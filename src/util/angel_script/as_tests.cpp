@@ -106,118 +106,54 @@ as_loadtime_test() {
 
 int
 logging_test() {
-    // as_logging::as_log_backtrace("Backtrace");
-    LOG_ERROR(logging::script_logger, "");
+    GlobalContext& context = GlobalContext::instance();
+    LocalContext& local_context = LocalContext::instance();
 
-    AngelScript::asIScriptEngine* engine = AngelScript::asCreateScriptEngine();
-    engine->SetMessageCallback(
-        asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
-    );
-    RegisterStdString(engine);
-    init_as_interface(engine);
-
-    if (!engine) {
-        LOG_ERROR(logging::main_logger, "Could no start Angle Script engine.");
-        return 1;
-    }
-
-    AngelScript::asIScriptModule* mod =
-        engine->GetModule("test_module", AngelScript::asGM_CREATE_IF_NOT_EXISTS);
-    std::ostringstream script;
-    auto file = files::open_file(files::get_resources_path() / "as" / "test.as");
-    if (!file) {
-        engine->ShutDownAndRelease();
-        return 1;
-    }
-
-    script << file.value().rdbuf();
-    mod->AddScriptSection("test.as", script.str().c_str());
-
-    int result = mod->Build();
-    if (result > 0) {
-        engine->ShutDownAndRelease();
-        return 1;
-    }
+    auto result_1 = context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
 
     AngelScript::asIScriptFunction* funct1 =
-        engine->GetModule("test_module")->GetFunctionByDecl("int test3()");
+       context.get_function("test_module", "int test3()");
 
-    AngelScript::asIScriptContext* ctx = engine->CreateContext();
-    ctx->Prepare(funct1);
-    //    ctx->SetArgDWord();
-    result = ctx->Execute();
-    if (result != AngelScript::asEXECUTION_FINISHED) {
-        ctx->Release();
-        engine->ShutDownAndRelease();
+    if (funct1 == nullptr) {
         return 1;
     }
-    ctx->Release();
-    engine->ShutDownAndRelease();
+    auto result_2 = local_context.run_function(funct1);
+    if (result_2 != AngelScript::asEXECUTION_FINISHED) {
+        return 1;
+    }
     return 0;
 }
 
 int
 test() {
-    AngelScript::asIScriptEngine* engine = AngelScript::asCreateScriptEngine();
-    engine->SetMessageCallback(
-        asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
-    );
+    LOG_ERROR(logging::script_logger, "");
 
-    if (!engine) {
-        LOG_ERROR(logging::main_logger, "Could no start Angle Script engine.");
-        return 1;
-    }
+    GlobalContext& context = GlobalContext::instance();
+    LocalContext& local_context = LocalContext::instance();
 
-    AngelScript::asIScriptModule* mod =
-        engine->GetModule("test_module", AngelScript::asGM_CREATE_IF_NOT_EXISTS);
-    std::ostringstream script;
-    auto file = files::open_file(files::get_resources_path() / "as" / "test.as");
-    if (!file) {
-        engine->ShutDownAndRelease();
-        return 1;
-    }
-
-    script << file.value().rdbuf();
-    mod->AddScriptSection("test.as", script.str().c_str());
-
-    int result = mod->Build();
-    if (result > 0) {
-        engine->ShutDownAndRelease();
-        return 1;
-    }
+    auto result_1 = context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
 
     AngelScript::asIScriptFunction* funct1 =
-        engine->GetModule("test_module")->GetFunctionByDecl("void test1()");
+       context.get_function("test_module", "int test1()");
 
-    AngelScript::asIScriptContext* ctx = engine->CreateContext();
-    ctx->Prepare(funct1);
-    //    ctx->SetArgDWord();
-    result = ctx->Execute();
-    if (result != AngelScript::asEXECUTION_FINISHED) {
-        ctx->Release();
-        engine->ShutDownAndRelease();
+    if (funct1 == nullptr) {
         return 1;
     }
-
+    auto result_2 = local_context.run_function(funct1);
+    if (result_2 != AngelScript::asEXECUTION_FINISHED) {
+        return 1;
+    }
     AngelScript::asIScriptFunction* funct2 =
-        engine->GetModule("test_module")->GetFunctionByDecl("int test2()");
+       context.get_function("test_module", "int test1()");
 
-    ctx->Prepare(funct2);
-    //    ctx->SetArgDWord();
-    result = ctx->Execute();
-    if (result != AngelScript::asEXECUTION_FINISHED) {
-        ctx->Release();
-        engine->ShutDownAndRelease();
+    if (funct2 == nullptr) {
         return 1;
     }
-    int returnvalue = ctx->GetReturnDWord();
-    if (returnvalue == 1 || returnvalue == 0) {
-        ctx->Release();
-        engine->ShutDownAndRelease();
+    result_2 = local_context.run_function(funct2);
+    if (result_2 != AngelScript::asEXECUTION_FINISHED) {
         return 1;
     }
 
-    engine->ShutDownAndRelease();
     return 0;
 }
 

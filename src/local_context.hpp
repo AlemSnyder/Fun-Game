@@ -238,22 +238,29 @@ class LocalContext {
     //    template<int>
     AngelScript::asEContextState
     get_return_value(int& value) {
-        // if this is zero then could be right could be wrong.
+        AngelScript::asEContextState state = context_->GetState();
+        if (state != AngelScript::asEContextState::asEXECUTION_FINISHED) {
+            return state;
+        }
         value = context_->GetReturnDWord();
         return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 
     AngelScript::asEContextState
     get_return_value(bool& value) {
-        // if this is zero then could be right could be wrong.
-        value = context_->GetReturnByte();
+        AngelScript::asEContextState state = context_->GetState();
+        if (state != AngelScript::asEContextState::asEXECUTION_FINISHED) {
+            return state;
+        }        value = context_->GetReturnByte();
         return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 
     AngelScript::asEContextState
     get_return_value(float& value) {
-        // if this is zero then could be right could be wrong.
-        value = context_->GetReturnFloat();
+        AngelScript::asEContextState state = context_->GetState();
+        if (state != AngelScript::asEContextState::asEXECUTION_FINISHED) {
+            return state;
+        }        value = context_->GetReturnFloat();
         return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 

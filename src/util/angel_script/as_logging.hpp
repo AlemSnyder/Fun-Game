@@ -24,8 +24,6 @@
 
 #include <angelscript.h>
 
-#include <string>
-
 namespace util {
 namespace scripting {
 
