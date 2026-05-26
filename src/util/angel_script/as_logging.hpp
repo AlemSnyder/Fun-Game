@@ -29,6 +29,11 @@
 namespace util {
 namespace scripting {
 
+/**
+ * @brief Initialize Logging interface on given engine
+ *
+ * @param asIScriptEngine* engine the engine logging will be initialized on.
+ */
 void init_as_interface(AngelScript::asIScriptEngine* engine);
 
 } // namespace scripting

@@ -16,6 +16,22 @@ check_SetDefaultNamespace(int r) {
 }
 
 AngelScript::asERetCodes
+check_RegisterGlobalFunction(int r) {
+    switch (r) {
+        case AngelScript::asERetCodes::asINVALID_ARG:
+            LOG_ERROR(logging::as_logger, "The namespace is null.");
+            break;
+        case AngelScript::asERetCodes::asINVALID_DECLARATION:
+            LOG_ERROR(logging::as_logger, "The namespace is invalid.");
+            break;
+
+        default:
+            break;
+    }
+    return static_cast<AngelScript::asERetCodes>(r);
+}
+
+AngelScript::asERetCodes
 check_RegisterObjectType(int r) {
     switch (r) {
         case AngelScript::asERetCodes::asINVALID_ARG:

@@ -1,3 +1,4 @@
+#include "error_checks.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
 
@@ -9,72 +10,6 @@ namespace util {
 namespace scripting {
 
 namespace {
-
-/**
- * @brief Backtrace Log API
- *
- * @param std::string message message to be logged
- *
- * @details Given a message this will log it to the log file. This function will
- * determine the AngelScript line and file from the calling context.
- */
-void as_log_backtrace(std::string message);
-
-/**
- * @brief Info Log API
- *
- * @param std::string message message to be logged
- *
- * @details Given a message this will log it to the log file. This function will
- * determine the AngelScript line and file from the calling context.
- */
-void as_log_info(std::string message);
-
-/**
- * @brief Debug Log API
- *
- * @param std::string message message to be logged
- *
- * @details Given a message this will log it to the log file. This function will
- * determine the AngelScript line and file from the calling context.
- */
-void as_log_debug(std::string message);
-
-/**
- * @brief Warning Log API
- *
- * @param std::string message message to be logged
- *
- * @details Given a message this will log it to the log file. This function will
- * determine the AngelScript line and file from the calling context.
- */
-void as_log_warning(std::string message);
-
-/**
- * @brief Error Log API
- *
- * @param std::string message message to be logged
- *
- * @details Given a message this will log it to the log file. This function will
- * determine the AngelScript line and file from the calling context.
- */
-void as_log_error(std::string message);
-
-/**
- * @brief Critical Log API
- *
- * @param std::string message message to be logged
- *
- * @details Given a message this will log it to the log file. This function will
- * determine the AngelScript line and file from the calling context.
- */
-void as_log_critical(std::string message);
-
-/**
- * @brief Initialize Logging interface on given engine
- *
- * @param asIScriptEngine* engine the engine logging will be initialized on.
- */
 
 struct script_location_t {
     std::string file;
@@ -103,6 +38,14 @@ get_script_location() {
     return location_data;
 }
 
+/**
+ * @brief Backtrace Log API
+ *
+ * @param std::string message message to be logged
+ *
+ * @details Given a message this will log it to the log file. This function will
+ * determine the AngelScript line and file from the calling context.
+ */
 void
 as_log_backtrace(std::string message) {
     script_location_t location = get_script_location();
@@ -112,6 +55,14 @@ as_log_backtrace(std::string message) {
     );
 }
 
+/**
+ * @brief Info Log API
+ *
+ * @param std::string message message to be logged
+ *
+ * @details Given a message this will log it to the log file. This function will
+ * determine the AngelScript line and file from the calling context.
+ */
 void
 as_log_info(std::string message) {
     script_location_t location = get_script_location();
@@ -121,6 +72,14 @@ as_log_info(std::string message) {
     );
 }
 
+/**
+ * @brief Debug Log API
+ *
+ * @param std::string message message to be logged
+ *
+ * @details Given a message this will log it to the log file. This function will
+ * determine the AngelScript line and file from the calling context.
+ */
 void
 as_log_debug(std::string message) {
     script_location_t location = get_script_location();
@@ -130,6 +89,14 @@ as_log_debug(std::string message) {
     );
 }
 
+/**
+ * @brief Warning Log API
+ *
+ * @param std::string message message to be logged
+ *
+ * @details Given a message this will log it to the log file. This function will
+ * determine the AngelScript line and file from the calling context.
+ */
 void
 as_log_warning(std::string message) {
     script_location_t location = get_script_location();
@@ -139,6 +106,14 @@ as_log_warning(std::string message) {
     );
 }
 
+/**
+ * @brief Error Log API
+ *
+ * @param std::string message message to be logged
+ *
+ * @details Given a message this will log it to the log file. This function will
+ * determine the AngelScript line and file from the calling context.
+ */
 void
 as_log_error(std::string message) {
     script_location_t location = get_script_location();
@@ -148,6 +123,14 @@ as_log_error(std::string message) {
     );
 }
 
+/**
+ * @brief Critical Log API
+ *
+ * @param std::string message message to be logged
+ *
+ * @details Given a message this will log it to the log file. This function will
+ * determine the AngelScript line and file from the calling context.
+ */
 void
 as_log_critical(std::string message) {
     script_location_t location = get_script_location();
@@ -161,52 +144,52 @@ as_log_critical(std::string message) {
 
 void
 init_as_interface(AngelScript::asIScriptEngine* engine) {
-    // Return values
-    // asINVALID_ARG           The namespace is null.
-    // asINVALID_DECLARATION   The namespace is invalid.
     int r = engine->SetDefaultNamespace("LOGGING");
-    assert(r >= 0);
-
-    // Return values
-    // asNOT_SUPPORTED          The calling convention is not supported.
-    // asWRONG_CALLING_CONV     The function's calling convention doesn't match
-    // callConv. asINVALID_DECLARATION    The function declaration is invalid.
-    // asNAME_TAKEN             The function name is already used elsewhere.
-    // asALREADY_REGISTERED     The function has already been registered with the same
-    // parameter list. asINVALID_ARG            The auxiliary pointer wasn't set
-    // according to calling convention.
-
-    // Registering
+    if (util::scripting::check_SetDefaultNamespace(r) < 0) {
+        return;
+    }
     r = engine->RegisterGlobalFunction(
         "void LOG_BACKTRACE(string)", AngelScript::asFUNCTION(as_log_backtrace),
         AngelScript::asCALL_CDECL
     );
-    assert(r >= 0);
+    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+        return;
+    }
     r = engine->RegisterGlobalFunction(
         "void LOG_INFO(string)", AngelScript::asFUNCTION(as_log_info),
         AngelScript::asCALL_CDECL
     );
-    assert(r >= 0);
+    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+        return;
+    }
     r = engine->RegisterGlobalFunction(
         "void LOG_DEBUG(string)", AngelScript::asFUNCTION(as_log_debug),
         AngelScript::asCALL_CDECL
     );
-    assert(r >= 0);
+    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+        return;
+    }
     r = engine->RegisterGlobalFunction(
         "void LOG_WARNING(string)", AngelScript::asFUNCTION(as_log_warning),
         AngelScript::asCALL_CDECL
     );
-    assert(r >= 0);
+    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+        return;
+    }
     r = engine->RegisterGlobalFunction(
         "void LOG_ERROR(string)", AngelScript::asFUNCTION(as_log_error),
         AngelScript::asCALL_CDECL
     );
-    assert(r >= 0);
+    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+        return;
+    }
     r = engine->RegisterGlobalFunction(
         "void LOG_CRITICAL(string)", AngelScript::asFUNCTION(as_log_critical),
         AngelScript::asCALL_CDECL
     );
-    assert(r >= 0);
+    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+        return;
+    }
 }
 
 } // namespace scripting

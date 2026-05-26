@@ -31,7 +31,6 @@ ObjectHandler::read_biome(const descriptor_t& biome_descriptor) {
 
     std::filesystem::path path_copy = biome_descriptor.path;
 
-
     // TODO just need to know what module to load this into
     context.load_file(
         "Base", files::get_data_path() / path_copy.remove_filename()

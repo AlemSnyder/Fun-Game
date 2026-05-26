@@ -9,6 +9,8 @@ namespace scripting {
 
 AngelScript::asERetCodes check_SetDefaultNamespace(int);
 
+AngelScript::asERetCodes check_RegisterGlobalFunction(int);
+
 AngelScript::asERetCodes check_RegisterObjectType(int);
 
 AngelScript::asERetCodes check_RegisterObjectBehaviour(int);
