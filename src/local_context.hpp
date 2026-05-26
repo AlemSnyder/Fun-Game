@@ -103,7 +103,7 @@ class LocalContext {
     }
 
     inline AngelScript::asERetCodes
-    set_arg(size_t i, std::string arg) {
+    set_arg(size_t i, std::string& arg) {
         return static_cast<AngelScript::asERetCodes>(context_->SetArgObject(i, &arg));
     }
 

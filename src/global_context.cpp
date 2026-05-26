@@ -1,5 +1,6 @@
 #include "global_context.hpp"
 
+#include "util/angel_script/error_checks.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
 #include "scriptstdstring.h"
@@ -101,40 +102,11 @@ GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path
     mod->AddScriptSection(path.filename().c_str(), script.str().c_str());
 
     AngelScript::asERetCodes result =
-        static_cast<AngelScript::asERetCodes>(mod->Build());
+        util::scripting::check_ScriptModule_Build(mod->Build());
 
-    switch (result) {
-        case AngelScript::asINVALID_CONFIGURATION:
-            LOG_ERROR(logging::as_logger, "The engine configuration is invalid.");
-            return result;
-        case AngelScript::asERROR:
-            LOG_ERROR(logging::as_logger, "The script failed to build.");
-            return result;
-        case AngelScript::asBUILD_IN_PROGRESS:
-            LOG_ERROR(logging::as_logger, "Another thread is currently building.");
-            return result;
-        case AngelScript::asINIT_GLOBAL_VARS_FAILED:
-            LOG_ERROR(
-                logging::as_logger, "It was not possible to initialize at least one of "
-                                    "the global variables."
-            );
-            return result;
-        case AngelScript::asNOT_SUPPORTED:
-            LOG_ERROR(
-                logging::as_logger, "Compiler support is disabled in the engine."
-            );
-            return result;
-        case AngelScript::asMODULE_IS_IN_USE:
-            LOG_ERROR(
-                logging::as_logger,
-                "The code in the module is still being used and and cannot be removed."
-            );
-            return result;
-
-        default:
-            break;
+    if (result < 0) {
+        return result;
     }
-
     return AngelScript::asERetCodes::asSUCCESS;
 }
 

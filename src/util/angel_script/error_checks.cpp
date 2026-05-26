@@ -9,8 +9,15 @@ namespace scripting {
 
 AngelScript::asERetCodes
 check_SetDefaultNamespace(int r) {
-    if (r == AngelScript::asERetCodes::asINVALID_ARG) {
-        LOG_ERROR(logging::as_logger, "The namespace is invalid.");
+        switch (r) {
+        case  AngelScript::asERetCodes::asINVALID_ARG:
+            LOG_ERROR(logging::as_logger, "The namespace is invalid.");
+            break;
+        case AngelScript::asERetCodes::asSUCCESS:
+            break;
+        default:
+            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
 }
@@ -24,8 +31,10 @@ check_RegisterGlobalFunction(int r) {
         case AngelScript::asERetCodes::asINVALID_DECLARATION:
             LOG_ERROR(logging::as_logger, "The namespace is invalid.");
             break;
-
+        case AngelScript::asERetCodes::asSUCCESS:
+            break;
         default:
+            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -65,7 +74,10 @@ check_RegisterObjectType(int r) {
                                     "use preventing it from being overloaded."
             );
             break;
+        case AngelScript::asERetCodes::asSUCCESS:
+            break;
         default:
+            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -118,7 +130,10 @@ check_RegisterObjectBehaviour(int r) {
                 "The behaviour is already registered with the same signature."
             );
             break;
+        case AngelScript::asERetCodes::asSUCCESS:
+            break;
         default:
+            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -165,11 +180,48 @@ check_RegisterObjectMethod(int r) {
                 "The auxiliary pointer wasn't set according to calling convention."
             );
             break;
+        case AngelScript::asERetCodes::asSUCCESS:
+            break;
         default:
+            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
 }
+
+AngelScript::asERetCodes
+check_ScriptModule_Build(int r) {
+
+    switch (r) {
+        case AngelScript::asINVALID_CONFIGURATION:
+            LOG_ERROR(logging::as_logger, "The engine configuration is invalid.");
+        case AngelScript::asERROR:
+            LOG_ERROR(logging::as_logger, "The script failed to build.");
+        case AngelScript::asBUILD_IN_PROGRESS:
+            LOG_ERROR(logging::as_logger, "Another thread is currently building.");
+        case AngelScript::asINIT_GLOBAL_VARS_FAILED:
+            LOG_ERROR(
+                logging::as_logger, "It was not possible to initialize at least one of "
+                                    "the global variables."
+            );
+        case AngelScript::asNOT_SUPPORTED:
+            LOG_ERROR(
+                logging::as_logger, "Compiler support is disabled in the engine."
+            );
+        case AngelScript::asMODULE_IS_IN_USE:
+            LOG_ERROR(
+                logging::as_logger,
+                "The code in the module is still being used and and cannot be removed."
+            );
+        case AngelScript::asERetCodes::asSUCCESS:
+            break;
+        default:
+            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            break;
+    }
+    return static_cast<AngelScript::asERetCodes>(r);
+}
+
 
 // AngelScript::asERetCodes check_RegisterObjectType(int r) {
 
