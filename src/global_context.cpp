@@ -1,10 +1,10 @@
 #include "global_context.hpp"
 
-#include "util/angel_script/error_checks.hpp"
 #include "local_context.hpp"
 #include "logging.hpp"
 #include "scriptstdstring.h"
 #include "util/angel_script/as_logging.hpp"
+#include "util/angel_script/error_checks.hpp"
 #include "util/files.hpp"
 #include "world/terrain/generation/interface.hpp"
 

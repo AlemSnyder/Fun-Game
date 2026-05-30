@@ -95,8 +95,8 @@ Biome::get_map(MacroDim size) const {
     auto factory_function =
         type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
 
-    AngelScript::asEContextState result = local_context.run_function(factory_function);
-    if (result != AngelScript::asEXECUTION_FINISHED) {
+    auto result = local_context.run_function(factory_function);
+    if (!result) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
         return {};
     }
@@ -125,30 +125,18 @@ Biome::get_map(MacroDim size) const {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
             int x_copy = x;
             int y_copy = y;
-            result = local_context.run_method(
+            auto result_2 = local_context.run_method<int>(
                 biome_map, method, std::move(x_copy), std::move(y_copy)
             );
-            if (result == AngelScript::asCONTEXT_NOT_PREPARED) {
-                LOG_ERROR(logging::main_logger, "Context not prepared");
-                return {};
-            } else if (result == AngelScript::asINVALID_ARG) {
-                LOG_ERROR(logging::main_logger, "To many arguments");
-                return {};
-            } else if (result == AngelScript::asINVALID_TYPE) {
-                LOG_ERROR(logging::main_logger, "Invalid arg type");
-                return {};
-            }
-
-            int tile_id;
-            result = local_context.get_return_value(tile_id);
-            if (result != 0) {
+            if (!result_2) {
                 LOG_ERROR(
-                    logging::main_logger, "Non zero return value in get map as ({})",
-                    std::to_underlying(result)
+                    logging::main_logger, "Error code {}",
+                    static_cast<int>(result_2.error())
                 );
                 return {};
             }
 
+            int tile_id = result_2.value();
             const TileType& tile_type = macro_tile_types_[tile_id];
             out.emplace_back(tile_type, seed, x, y);
         }
@@ -173,8 +161,8 @@ Biome::get_plant_map(Dim length) const {
     auto factory_function =
         type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
 
-    AngelScript::asEContextState result = local_context.run_function(factory_function);
-    if (result != AngelScript::asEXECUTION_FINISHED) {
+    auto result = local_context.run_function(factory_function);
+    if (!result) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
         return {};
     }
@@ -206,32 +194,19 @@ Biome::get_plant_map(Dim length) const {
             for (MacroDim y = 0; y < y_map_tiles; y++) {
                 int x_copy = x;
                 int y_copy = y;
-                result = local_context.run_method(
+                auto result_2 = local_context.run_method<float>(
                     biome_map, script_method, &plant_map_name, std::move(x_copy),
                     std::move(y_copy)
                 );
-                if (result == AngelScript::asCONTEXT_NOT_PREPARED) {
-                    LOG_ERROR(logging::main_logger, "Context not prepared");
-                    return {};
-                } else if (result == AngelScript::asINVALID_ARG) {
-                    LOG_ERROR(logging::main_logger, "To many arguments");
-                    return {};
-                } else if (result == AngelScript::asINVALID_TYPE) {
-                    LOG_ERROR(logging::main_logger, "Invalid arg type");
-                    return {};
-                }
-
-                float plant_probability;
-                result = local_context.get_return_value(plant_probability);
-                if (result != 0) {
+                if (!result) {
                     LOG_ERROR(
-                        logging::main_logger,
-                        "Non zero return value in get map as ({})",
-                        std::to_underlying(result)
+                        logging::script_logger, "Error code {}",
+                        static_cast<int>(result.error())
                     );
                     return {};
                 }
 
+                float plant_probability = result_2.value();
                 plant_data.push_back(plant_probability);
             }
         }

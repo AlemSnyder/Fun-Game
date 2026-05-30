@@ -9,14 +9,19 @@ namespace scripting {
 
 AngelScript::asERetCodes
 check_SetDefaultNamespace(int r) {
-        switch (r) {
-        case  AngelScript::asERetCodes::asINVALID_ARG:
+    switch (r) {
+        case AngelScript::asERetCodes::asINVALID_ARG:
             LOG_ERROR(logging::as_logger, "The namespace is invalid.");
             break;
         case AngelScript::asERetCodes::asSUCCESS:
             break;
         default:
-            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            LOG_WARNING(
+                logging::as_logger,
+                "Error {} does not match function call. Are you using the correct "
+                "error handler?",
+                r
+            );
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -34,7 +39,12 @@ check_RegisterGlobalFunction(int r) {
         case AngelScript::asERetCodes::asSUCCESS:
             break;
         default:
-            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            LOG_WARNING(
+                logging::as_logger,
+                "Error {} does not match function call. Are you using the correct "
+                "error handler?",
+                r
+            );
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -77,7 +87,12 @@ check_RegisterObjectType(int r) {
         case AngelScript::asERetCodes::asSUCCESS:
             break;
         default:
-            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            LOG_WARNING(
+                logging::as_logger,
+                "Error {} does not match function call. Are you using the correct "
+                "error handler?",
+                r
+            );
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -133,7 +148,12 @@ check_RegisterObjectBehaviour(int r) {
         case AngelScript::asERetCodes::asSUCCESS:
             break;
         default:
-            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            LOG_WARNING(
+                logging::as_logger,
+                "Error {} does not match function call. Are you using the correct "
+                "error handler?",
+                r
+            );
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -183,7 +203,12 @@ check_RegisterObjectMethod(int r) {
         case AngelScript::asERetCodes::asSUCCESS:
             break;
         default:
-            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            LOG_WARNING(
+                logging::as_logger,
+                "Error {} does not match function call. Are you using the correct "
+                "error handler?",
+                r
+            );
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
@@ -191,7 +216,6 @@ check_RegisterObjectMethod(int r) {
 
 AngelScript::asERetCodes
 check_ScriptModule_Build(int r) {
-
     switch (r) {
         case AngelScript::asINVALID_CONFIGURATION:
             LOG_ERROR(logging::as_logger, "The engine configuration is invalid.");
@@ -216,12 +240,16 @@ check_ScriptModule_Build(int r) {
         case AngelScript::asERetCodes::asSUCCESS:
             break;
         default:
-            LOG_WARNING(logging::as_logger, "Error {} does not match function call. Are you using the correct error handler?", r);
+            LOG_WARNING(
+                logging::as_logger,
+                "Error {} does not match function call. Are you using the correct "
+                "error handler?",
+                r
+            );
             break;
     }
     return static_cast<AngelScript::asERetCodes>(r);
 }
-
 
 // AngelScript::asERetCodes check_RegisterObjectType(int r) {
 

@@ -138,45 +138,51 @@ class LocalContext {
     [[nodiscard]] static LocalContext& instance();
     ~LocalContext();
 
-    template <class T>
+    template <class T = void*, class... Args>
     inline std::expected<T, AngelScript::asEContextState>
-    run_function(AngelScript::asIScriptFunction* function) {
-        context_->Prepare(function);
-        // set args maybe
+    run_function(AngelScript::asIScriptFunction* function, const Args&&... args) {
         AngelScript::asEContextState result =
-            static_cast<AngelScript::asEContextState>(context_->Execute());
+            static_cast<AngelScript::asEContextState>(context_->Prepare(function));
         if (result != AngelScript::asEContextState::asEXECUTION_FINISHED) {
             return std::unexpected(result);
         }
-        T object = *static_cast<T*>(context_->GetReturnObject());
-
-        return object;
-    }
-
-    AngelScript::asEContextState
-    run_function(AngelScript::asIScriptFunction* function) {
-        context_->Prepare(function);
-        AngelScript::asEContextState result =
-            static_cast<AngelScript::asEContextState>(context_->Execute());
-        return result;
-    }
-
-    template <class... Args>
-    inline AngelScript::asEContextState
-    run_function(AngelScript::asIScriptFunction* function, const Args&&... args) {
-        context_->Prepare(function);
-        AngelScript::asERetCodes args_result =
-            set_all_args(0, std::forward<const Args>(args)...);
-        if (args_result != AngelScript::asERetCodes::asSUCCESS) {
-            LOG_WARNING(
-                logging::as_logger, "Setting script arguments did not secseed."
-            );
-            return AngelScript::asEContextState::asEXECUTION_SUSPENDED;
+        if constexpr (sizeof...(args) != 0) {
+            AngelScript::asERetCodes args_result =
+                set_all_args(0, std::forward<const Args>(args)...);
+            if (args_result != AngelScript::asERetCodes::asSUCCESS) {
+                LOG_WARNING(
+                    logging::as_logger, "Setting script arguments did not secseed."
+                );
+                return std::unexpected(AngelScript::asEContextState::asEXECUTION_ERROR);
+            }
         }
-        AngelScript::asEContextState result =
-            static_cast<AngelScript::asEContextState>(context_->Execute());
 
-        return result;
+        result = static_cast<AngelScript::asEContextState>(context_->Execute());
+
+        if (result != AngelScript::asEContextState::asEXECUTION_FINISHED) {
+            return std::unexpected(result);
+        }
+
+        if constexpr (std::is_same<T, void*>::value) {
+            return nullptr;
+        }
+
+        AngelScript::asEContextState error;
+        if constexpr (std::is_pointer<T>::value) {
+            void* pointer = context_->GetReturnObject();
+            if (pointer) {
+                T object = *static_cast<T*>(pointer);
+                return object;
+            }
+            error = AngelScript::asEContextState::asEXECUTION_ERROR;
+        } else {
+            T out;
+            error = get_return_value(out);
+            if (error == AngelScript::asEContextState::asEXECUTION_FINISHED) {
+                return out;
+            }
+        }
+        return std::unexpected(error);
     }
 
     // this might crash. should probably do some tests
@@ -189,53 +195,60 @@ class LocalContext {
         return *(AngelScript::asIScriptObject**)out;
     }
 
-    AngelScript::asEContextState
-    run_method(
-        AngelScript::asIScriptObject* object, AngelScript::asIScriptFunction* function
-    ) {
-        context_->Prepare(function);
-        context_->SetObject(object);
-        AngelScript::asEContextState result =
-            static_cast<AngelScript::asEContextState>(context_->Execute());
-        return result;
-    }
-
-    template <class... Args>
-    inline AngelScript::asEContextState
+    template <class T = void*, class... Args>
+    inline std::expected<T, AngelScript::asEContextState>
     run_method(
         AngelScript::asIScriptObject* object, AngelScript::asIScriptFunction* function,
         const Args&&... args
     ) {
-        context_->Prepare(function);
-        context_->SetObject(object);
-        AngelScript::asERetCodes args_result =
-            set_all_args(0, std::forward<const Args>(args)...);
-        if (args_result != AngelScript::asERetCodes::asSUCCESS) {
-            LOG_WARNING(
-                logging::as_logger, "Setting script arguments did not secseed."
-            );
-            return AngelScript::asEContextState::asEXECUTION_SUSPENDED;
-        }
         AngelScript::asEContextState result =
-            static_cast<AngelScript::asEContextState>(context_->Execute());
-        return result;
+            static_cast<AngelScript::asEContextState>(context_->Prepare(function));
+        if (result != AngelScript::asEContextState::asEXECUTION_FINISHED) {
+            return std::unexpected(result);
+        }
+        result = static_cast<AngelScript::asEContextState>(context_->SetObject(object));
+        if (result != AngelScript::asEContextState::asEXECUTION_FINISHED) {
+            return std::unexpected(result);
+        }
+        if constexpr (sizeof...(args) != 0) {
+            AngelScript::asERetCodes args_result =
+                set_all_args(0, std::forward<const Args>(args)...);
+            if (args_result != AngelScript::asERetCodes::asSUCCESS) {
+                LOG_WARNING(
+                    logging::as_logger, "Setting script arguments did not secseed."
+                );
+                return std::unexpected(AngelScript::asEContextState::asEXECUTION_ERROR);
+            }
+        }
+
+        result = static_cast<AngelScript::asEContextState>(context_->Execute());
+
+        if (result != AngelScript::asEContextState::asEXECUTION_FINISHED) {
+            return std::unexpected(result);
+        }
+
+        if constexpr (std::is_same<T, void*>::value) {
+            return nullptr;
+        }
+
+        AngelScript::asEContextState error;
+        if constexpr (std::is_pointer<T>::value) {
+            void* pointer = context_->GetReturnObject();
+            if (pointer) {
+                T object_out = *static_cast<T*>(pointer);
+                return object_out;
+            }
+            error = AngelScript::asEContextState::asEXECUTION_ERROR;
+        } else {
+            T out;
+            error = get_return_value(out);
+            if (error == AngelScript::asEContextState::asEXECUTION_FINISHED) {
+                return out;
+            }
+        }
+        return std::unexpected(error);
     }
 
-    // TODO add a check between the return signature of the current function and
-    // the template type. Maybe in debug mode only
-    //    template<typename T>
-    //    int get_return_value(T& value) {
-    //        auto address = context_->GetReturnAddress();
-
-    //        if (address == nullptr) {
-    //            return -1;
-    //        }
-    // good way to seg fault
-    //        value = *((T*)address);
-    //        return 0;
-    //    }
-
-    //    template<int>
     AngelScript::asEContextState
     get_return_value(int& value) {
         AngelScript::asEContextState state = context_->GetState();
@@ -251,7 +264,8 @@ class LocalContext {
         AngelScript::asEContextState state = context_->GetState();
         if (state != AngelScript::asEContextState::asEXECUTION_FINISHED) {
             return state;
-        }        value = context_->GetReturnByte();
+        }
+        value = context_->GetReturnByte();
         return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 
@@ -260,7 +274,8 @@ class LocalContext {
         AngelScript::asEContextState state = context_->GetState();
         if (state != AngelScript::asEContextState::asEXECUTION_FINISHED) {
             return state;
-        }        value = context_->GetReturnFloat();
+        }
+        value = context_->GetReturnFloat();
         return AngelScript::asEContextState::asEXECUTION_FINISHED;
     }
 

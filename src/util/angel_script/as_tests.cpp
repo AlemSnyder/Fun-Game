@@ -19,9 +19,14 @@ as_loadtime_test() {
     LocalContext& local_context = LocalContext::instance();
 
     {
-        context.load_file(
+        auto file_result = context.load_file(
             "test_module", files::get_resources_path() / "as" / "test.as"
         );
+        if (file_result != AngelScript::asERetCodes::asSUCCESS) {
+            LOG_ERROR(logging::script_logger, "Could not open file.");
+            return 1;
+        }
+
         auto is_prime_function =
             context.get_function("test_module", "bool is_prime(int)");
 
@@ -29,8 +34,7 @@ as_loadtime_test() {
 
         auto function_result = local_context.run_function(is_prime_function, 97);
 
-        // TODO write a better error logging mechanism
-        if (function_result != AngelScript::asEXECUTION_FINISHED) {
+        if (!function_result) {
             return 1;
         }
 
@@ -59,8 +63,7 @@ as_loadtime_test() {
 
             auto function_result = local_context.run_function(is_prime_function, 97);
 
-            // TODO write a better error logging mechanism
-            if (function_result != AngelScript::asEXECUTION_FINISHED) {
+            if (!function_result) {
                 return 1;
             }
 
@@ -109,16 +112,21 @@ logging_test() {
     GlobalContext& context = GlobalContext::instance();
     LocalContext& local_context = LocalContext::instance();
 
-    auto result_1 = context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
-
+    auto file_result = context.load_file(
+        "test_module", files::get_resources_path() / "as" / "test.as"
+    );
+    if (file_result != AngelScript::asERetCodes::asSUCCESS) {
+        LOG_ERROR(logging::script_logger, "Could not open file.");
+        return 1;
+    }
     AngelScript::asIScriptFunction* funct1 =
-       context.get_function("test_module", "int test3()");
+        context.get_function("test_module", "int test3()");
 
     if (funct1 == nullptr) {
         return 1;
     }
     auto result_2 = local_context.run_function(funct1);
-    if (result_2 != AngelScript::asEXECUTION_FINISHED) {
+    if (!result_2) {
         return 1;
     }
     return 0;
@@ -131,26 +139,33 @@ test() {
     GlobalContext& context = GlobalContext::instance();
     LocalContext& local_context = LocalContext::instance();
 
-    auto result_1 = context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
+    auto result_1 = context.load_file(
+        "test_module", files::get_resources_path() / "as" / "test.as"
+    );
+
+    if (result_1 != AngelScript::asERetCodes::asSUCCESS) {
+        LOG_ERROR(logging::script_logger, "Could not open file.");
+        return 1;
+    }
 
     AngelScript::asIScriptFunction* funct1 =
-       context.get_function("test_module", "int test1()");
+        context.get_function("test_module", "int test1()");
 
     if (funct1 == nullptr) {
         return 1;
     }
     auto result_2 = local_context.run_function(funct1);
-    if (result_2 != AngelScript::asEXECUTION_FINISHED) {
+    if (!result_2) {
         return 1;
     }
     AngelScript::asIScriptFunction* funct2 =
-       context.get_function("test_module", "int test1()");
+        context.get_function("test_module", "int test1()");
 
     if (funct2 == nullptr) {
         return 1;
     }
     result_2 = local_context.run_function(funct2);
-    if (result_2 != AngelScript::asEXECUTION_FINISHED) {
+    if (!result_2) {
         return 1;
     }
 
@@ -160,15 +175,24 @@ test() {
 int
 as_threading() {
     GlobalContext& context = GlobalContext::instance();
-    context.load_file("test_module", files::get_resources_path() / "as" / "test.as");
+    auto file_result = context.load_file(
+        "test_module", files::get_resources_path() / "as" / "test.as"
+    );
+    if (file_result != AngelScript::asERetCodes::asSUCCESS) {
+        LOG_ERROR(logging::script_logger, "Could not open file.");
+        return 1;
+    }
 
     std::future<int> future = context.submit_task([]() {
         GlobalContext& context = GlobalContext::instance();
         LocalContext& local_context = LocalContext::instance();
 
         auto function = context.get_function("test_module", "int text3()");
-        int result = local_context.run_function(function);
-        return result;
+        auto result = local_context.run_function(function);
+        if (!result) {
+            return 1;
+        }
+        return 0;
     });
 
     int result = future.get();
@@ -181,12 +205,22 @@ as_load_tests() {
     GlobalContext& context = GlobalContext::instance();
     LocalContext& local_context = LocalContext::instance();
 
-    context.load_file("main", files::get_resources_path() / "as" / "test.as");
-    context.load_file("Base", files::get_data_path() / "Base" / "biome_map.as");
+    auto file_result =
+        context.load_file("main", files::get_resources_path() / "as" / "test.as");
+    if (file_result != AngelScript::asERetCodes::asSUCCESS) {
+        LOG_ERROR(logging::script_logger, "Could not open file.");
+        return 1;
+    }
+    file_result =
+        context.load_file("Base", files::get_data_path() / "Base" / "biome_map.as");
+    if (file_result != AngelScript::asERetCodes::asSUCCESS) {
+        LOG_ERROR(logging::script_logger, "Could not open file.");
+        return 1;
+    }
 
     auto function = context.get_function("Base", "void do_something()");
-    int result = local_context.run_function(function);
-    if (result != AngelScript::asEXECUTION_FINISHED) {
+    auto result = local_context.run_function(function);
+    if (!result) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript Test");
         return 1;
     }
@@ -211,7 +245,7 @@ as_load_tests() {
     LOG_DEBUG(logging::main_logger, "{}", declaration);
 
     result = local_context.run_function(factory_function);
-    if (result != AngelScript::asEXECUTION_FINISHED) {
+    if (!result) {
         LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
         return 1;
     }
@@ -225,22 +259,16 @@ as_load_tests() {
 
     AngelScript::asIScriptFunction* method =
         type->GetMethodByDecl("int sample(int, int)");
-    result = local_context.run_method(biome_map, method, 5, 5);
-    if (result != AngelScript::asEXECUTION_FINISHED) {
-        LOG_ERROR(logging::main_logger, "Failed AngelScript run sample");
-        return 1;
-    }
-
-    int return_value;
-    result = local_context.get_return_value(return_value);
-    if (result != 0) {
+    auto result_2 = local_context.run_method<int>(biome_map, method, 5, 5);
+    if (!result) {
         LOG_ERROR(
-            logging::main_logger, "Failed to get result from sample. Error: {}", result
+            logging::main_logger, "Failed AngelScript run sample, with error {}.",
+            std::to_underlying(result_2.error())
         );
         return 1;
     }
 
-    LOG_DEBUG(logging::main_logger, "Got result {}.", return_value);
+    LOG_DEBUG(logging::main_logger, "Got result {}.", result_2.value());
     biome_map->Release();
     return 0;
 }
