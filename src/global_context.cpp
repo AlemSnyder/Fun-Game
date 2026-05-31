@@ -57,9 +57,12 @@ GlobalContext::GlobalContext() :
     thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {
     AngelScript::asPrepareMultithread();
     engine_ = AngelScript::asCreateScriptEngine();
-    engine_->SetMessageCallback(
+    int r = engine_->SetMessageCallback(
         AngelScript::asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
     );
+    if (r < 0) {
+        LOG_ERROR(logging::as_logger, "Could not set Message Callback.");
+    }
     RegisterStdString(engine_);
     terrain::generation::init_as_interface(engine_);
     util::scripting::init_as_interface(engine_);
@@ -101,11 +104,9 @@ GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path
     script << file.value().rdbuf();
     mod->AddScriptSection(path.filename().c_str(), script.str().c_str());
 
-    AngelScript::asERetCodes result =
-        util::scripting::check_ScriptModule_Build(mod->Build());
-
-    if (result < 0) {
-        return result;
+    int result = mod->Build();
+    if (util::scripting::check_ScriptModule_Build(result)) {
+        return static_cast<AngelScript::asERetCodes>(result);
     }
     return AngelScript::asERetCodes::asSUCCESS;
 }

@@ -7,19 +7,17 @@
 namespace util {
 namespace scripting {
 
-AngelScript::asERetCodes check_SetDefaultNamespace(int);
+bool check_SetDefaultNamespace(int);
 
-AngelScript::asERetCodes check_ScriptModule_Build(int);
+bool check_ScriptModule_Build(int);
 
-AngelScript::asERetCodes check_RegisterGlobalFunction(int);
+bool check_RegisterGlobalFunction(int);
 
-AngelScript::asERetCodes check_RegisterObjectType(int);
+bool check_RegisterObjectBehaviour(int);
 
-AngelScript::asERetCodes check_RegisterObjectBehaviour(int);
+bool check_RegisterObjectMethod(int);
 
-AngelScript::asERetCodes check_RegisterObjectMethod(int);
-
-AngelScript::asERetCodes check_RegisterObjectType(int);
+bool check_RegisterObjectType(int);
 
 } // namespace scripting
 
