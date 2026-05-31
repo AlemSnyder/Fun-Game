@@ -251,7 +251,6 @@ check_ScriptModule_Build(int r) {
     return static_cast<AngelScript::asERetCodes>(r);
 }
 
-//}
 } // namespace scripting
 
 } // namespace util
