@@ -34,12 +34,12 @@ void
 init_as_interface(AngelScript::asIScriptEngine* engine) {
     int r = engine->SetDefaultNamespace("TerrainGeneration");
 
-    if (util::scripting::check_SetDefaultNamespace(r) < 0) {
+    if (util::scripting::check_SetDefaultNamespace(r)) {
         return;
     }
     r = engine->RegisterObjectType("FractalNoise", 0, AngelScript::asOBJ_REF);
 
-    if (util::scripting::check_RegisterObjectType(r) < 0) {
+    if (util::scripting::check_RegisterObjectType(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
@@ -47,65 +47,65 @@ init_as_interface(AngelScript::asIScriptEngine* engine) {
         "FractalNoise@ f(int, double, int)",
         AngelScript::asFUNCTION(FractalNoise_factory), AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
         "FractalNoise", AngelScript::asBEHAVE_ADDREF, "void f()",
         AngelScript::asMETHOD(FractalNoise, add_ref), AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
         "FractalNoise", AngelScript::asBEHAVE_RELEASE, "void f()",
         AngelScript::asMETHOD(FractalNoise, release_ref), AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectMethod(
         "FractalNoise", "double sample(double, double)",
         AngelScript::asMETHOD(FractalNoise, get_noise), AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectMethod(r) < 0) {
+    if (util::scripting::check_RegisterObjectMethod(r)) {
         return;
     }
     r = engine->RegisterObjectType("WorleyNoise", 0, AngelScript::asOBJ_REF);
 
-    if (util::scripting::check_RegisterObjectType(r) < 0) {
+    if (util::scripting::check_RegisterObjectType(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
         "WorleyNoise", AngelScript::asBEHAVE_FACTORY, "WorleyNoise@ f(double, double)",
         AngelScript::asFUNCTION(WorleyNoise_factory), AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
         "WorleyNoise", AngelScript::asBEHAVE_ADDREF, "void f()",
         AngelScript::asMETHOD(WorleyNoise, add_ref), AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
         "WorleyNoise", AngelScript::asBEHAVE_RELEASE, "void f()",
         AngelScript::asMETHOD(WorleyNoise, release_ref), AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectMethod(
         "WorleyNoise", "double sample(double, double)",
         AngelScript::asMETHOD(WorleyNoise, get_noise), AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectMethod(r) < 0) {
+    if (util::scripting::check_RegisterObjectMethod(r)) {
         return;
     }
     r = engine->RegisterObjectType("AlternativeWorleyNoise", 0, AngelScript::asOBJ_REF);
-    if (util::scripting::check_RegisterObjectType(r) < 0) {
+    if (util::scripting::check_RegisterObjectType(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
@@ -114,7 +114,7 @@ init_as_interface(AngelScript::asIScriptEngine* engine) {
         AngelScript::asFUNCTION(AlternativeWorleyNoise_factory),
         AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
@@ -122,7 +122,7 @@ init_as_interface(AngelScript::asIScriptEngine* engine) {
         AngelScript::asMETHOD(AlternativeWorleyNoise, add_ref),
         AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectBehaviour(
@@ -130,7 +130,7 @@ init_as_interface(AngelScript::asIScriptEngine* engine) {
         AngelScript::asMETHOD(AlternativeWorleyNoise, release_ref),
         AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectBehaviour(r) < 0) {
+    if (util::scripting::check_RegisterObjectBehaviour(r)) {
         return;
     }
     r = engine->RegisterObjectMethod(
@@ -138,7 +138,7 @@ init_as_interface(AngelScript::asIScriptEngine* engine) {
         AngelScript::asMETHOD(AlternativeWorleyNoise, get_noise),
         AngelScript::asCALL_THISCALL
     );
-    if (util::scripting::check_RegisterObjectMethod(r) < 0) {
+    if (util::scripting::check_RegisterObjectMethod(r)) {
         return;
     }
 }

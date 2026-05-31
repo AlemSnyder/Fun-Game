@@ -145,49 +145,49 @@ as_log_critical(std::string message) {
 void
 init_as_interface(AngelScript::asIScriptEngine* engine) {
     int r = engine->SetDefaultNamespace("LOGGING");
-    if (util::scripting::check_SetDefaultNamespace(r) < 0) {
+    if (util::scripting::check_SetDefaultNamespace(r)) {
         return;
     }
     r = engine->RegisterGlobalFunction(
         "void LOG_BACKTRACE(string)", AngelScript::asFUNCTION(as_log_backtrace),
         AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+    if (util::scripting::check_RegisterGlobalFunction(r)) {
         return;
     }
     r = engine->RegisterGlobalFunction(
         "void LOG_INFO(string)", AngelScript::asFUNCTION(as_log_info),
         AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+    if (util::scripting::check_RegisterGlobalFunction(r)) {
         return;
     }
     r = engine->RegisterGlobalFunction(
         "void LOG_DEBUG(string)", AngelScript::asFUNCTION(as_log_debug),
         AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+    if (util::scripting::check_RegisterGlobalFunction(r)) {
         return;
     }
     r = engine->RegisterGlobalFunction(
         "void LOG_WARNING(string)", AngelScript::asFUNCTION(as_log_warning),
         AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+    if (util::scripting::check_RegisterGlobalFunction(r)) {
         return;
     }
     r = engine->RegisterGlobalFunction(
         "void LOG_ERROR(string)", AngelScript::asFUNCTION(as_log_error),
         AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+    if (util::scripting::check_RegisterGlobalFunction(r)) {
         return;
     }
     r = engine->RegisterGlobalFunction(
         "void LOG_CRITICAL(string)", AngelScript::asFUNCTION(as_log_critical),
         AngelScript::asCALL_CDECL
     );
-    if (util::scripting::check_RegisterGlobalFunction(r) < 0) {
+    if (util::scripting::check_RegisterGlobalFunction(r)) {
         return;
     }
 }
