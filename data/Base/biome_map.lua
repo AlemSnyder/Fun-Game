@@ -6,11 +6,14 @@
 -- Anyway, do something like this and it should work as long as there are
 -- correctly defined tile types and tile macros.
 
-spacing = .05
+Base = Base or {}
+Base.biome_map = Base.biome_map or {}
+
+Base.biome_map.spacing = .05
 
 
 -- Terrain map
-function map(number)
+function Base.biome_map.map(number)
     result = {}
     result.x = number
     result.y = number
@@ -24,7 +27,7 @@ function map(number)
     for x = 0, number-1 do
         for y = 0, number-1 do
             -- sample noise and set a value
-            height = 5 * noise_W:sample(x * spacing, y * spacing)^2 + 0.8
+            height = 5 * noise_W:sample(x * Base.biome_map.spacing, y * Base.biome_map.spacing)^2 + 0.8
             height = height + noise_F:sample(x * .6, y * .6) * 8 - 4
             -- each value must be integers. math.floor changes doubles to ints
             height_map_value = math.floor( height )
@@ -47,7 +50,7 @@ end
 -- name should be used in json file
 
 -- terrain_map should be a result from map
-function plants_map(length, terrain_map)
+function Base.biome_map.plants_map(length, terrain_map)
     result = {}
     result.x = length
     result.y = length
@@ -73,7 +76,7 @@ function plants_map(length, terrain_map)
 
     for x = 0, result.x - 1 do
         for y = 0, result.y - 1 do
-            height = flower_noise:sample(x,y)
+            height = flower_noise:sample(x * 4, y * 4)
             if (height > 0) then 
                 result["map"]["Flower_1"][ math.floor( x * result.y + y)] = 0.10
             else
@@ -84,3 +87,6 @@ function plants_map(length, terrain_map)
     return result
 end
 
+__ = {}
+__.Base = Base
+return __

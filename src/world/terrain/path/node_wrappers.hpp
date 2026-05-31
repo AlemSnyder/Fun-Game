@@ -8,7 +8,7 @@ class PositionWrapper {
     TerrainOffset3 position_;
 
  public:
-    inline PositionWrapper(){};
+    inline PositionWrapper() {};
 
     inline PositionWrapper(TerrainOffset3 position) : position_(position) {}
 
@@ -42,6 +42,11 @@ class NodeGroupWrapper {
     [[nodiscard]] inline TerrainOffset3
     unique_position() const {
         return nodegroup_->unique_position();
+    }
+
+    [[nodiscard]] inline ChunkPos
+    get_chunk_position() const {
+        return nodegroup_->get_chunk_position();
     }
 
     [[nodiscard]] inline std::unordered_set<const NodeGroup*>

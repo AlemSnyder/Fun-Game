@@ -1,18 +1,14 @@
 #include "config.h"
 #include "graphics_main.hpp"
-#include "gui/render/graphics_shaders/program_handler.hpp"
-#include "gui/scene/controls.hpp"
 #include "gui/tests.hpp"
-#include "gui/ui/gui_test.hpp"
 #include "gui/ui/imgui_gui.hpp"
-#include "gui/ui/opengl_gui.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
+#include "util/angel_script/as_tests.hpp"
 #include "util/files.hpp"
-#include "util/loading.hpp"
 #include "util/png_image.hpp"
-#include "util/voxel_io.hpp"
+#include "util/time.hpp"
 #include "world/biome.hpp"
-#include "world/entity/mesh.hpp"
 #include "world/terrain/generation/terrain_map.hpp"
 #include "world/terrain/terrain.hpp"
 #include "world/world.hpp"
@@ -35,7 +31,6 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -52,7 +47,7 @@ save_terrain(terrain::generation::biome_json_data biome_data) {
         Dim terrain_height = 128;
         auto macro_map = biome.single_tile_type_map(i);
         terrain::Terrain ter(
-            map_size, map_size, world::World::macro_tile_size, terrain_height, 5, biome,
+            map_size, map_size, world::World::macro_tile_size, terrain_height, biome,
             macro_map
         );
 
@@ -71,6 +66,10 @@ TerrainTypes(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", "-") >> biome_name;
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
     biome_data =
         terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
 
@@ -86,7 +85,11 @@ GenerateTerrain(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", 6) >> size;
-    world::World world(BIOME_BASE_NAME, size, size, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, size, size, seed);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
 
@@ -102,12 +105,20 @@ MacroMap(const argh::parser& cmdl) {
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
-    cmdl("size", 64) >> size;
+    cmdl("size", 4) >> size;
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
 
     terrain::generation::Biome biome(biome_name, seed);
 
     // test terrain generation
     auto map = biome.get_map(size);
+
+    assert(
+        map.get_width() == size && map.get_width() == size
+        && "Size should match the width and height."
+    );
 
     std::vector<TileMacro_t> int_map;
     for (const auto& map_tile : map) {
@@ -145,8 +156,6 @@ image_test(const argh::parser& cmdl) {
         return result;
 
     } else {
-        // TODO need to make a way to use lua that isn't only in the biome
-
         std::string biome_name;
         cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
         size_t seed;
@@ -154,9 +163,17 @@ image_test(const argh::parser& cmdl) {
         size_t size;
         cmdl("size", 64) >> size;
 
+        manifest::ObjectHandler object_handler;
+        object_handler.load_all_manifests<false>();
+
         terrain::generation::Biome biome(biome_name, seed);
 
         auto map = biome.get_map(size);
+
+        assert(
+            map.get_width() == size && map.get_width() == size
+            && "Size should match the width and height."
+        );
 
         std::filesystem::path png_save_path = files::get_argument_path(cmdl(3).str());
 
@@ -180,7 +197,10 @@ image_test(const argh::parser& cmdl) {
 // reimplement
 int
 ChunkDataTest() {
-    world::World world(BIOME_BASE_NAME, 6, 6);
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, 6, 6);
 
     const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
 
@@ -251,8 +271,11 @@ save_test(const argh::parser& cmdl) {
 
     size_t seed;
     cmdl("seed", SEED) >> seed;
-    util::load_manifest();
-    world::World world(BIOME_BASE_NAME, path_in, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -272,8 +295,11 @@ path_finder_test(const argh::parser& cmdl) {
 
     std::string biome_name;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
-    util::load_manifest();
-    world::World world(biome_name, path_in, seed);
+
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, biome_name, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -315,8 +341,10 @@ int
 path_finder_test() {
     quill::Logger* logger = logging::main_logger;
 
-    // util::load_manifest();
-    world::World world(BIOME_BASE_NAME, 4, 4, SEED);
+    manifest::ObjectHandler object_handler;
+    object_handler.load_all_manifests<false>();
+
+    world::World world(&object_handler, BIOME_BASE_NAME, 4, 4, SEED);
 
     TerrainOffset3 start(20, 20, world.get_terrain_main().get_Z_solid(20, 20) + 1);
     TerrainOffset3 end(90, 90, world.get_terrain_main().get_Z_solid(90, 90) + 1);
@@ -342,7 +370,7 @@ path_finder_test() {
     return 0;
 }
 
-inline int
+int
 LogTest() {
     LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 1);
     LOG_BACKTRACE(logging::terrain_logger, "Backtrace log {}", 2);
@@ -365,18 +393,43 @@ LogTest() {
     });
 
     LOG_INFO(
-        logging::lua_logger, "Using Lua logger. The lua logger should not log the cpp "
-                             "file, but instead the lua file."
+        logging::script_logger,
+        "Using script logger. The script logger should not log the cpp "
+        "file, but instead the script file."
     );
 
     LOG_INFO(
-        logging::lua_logger, "[{}.lua:{}] - This is what a lua log should look like.",
-        "example_file", 37
+        logging::script_logger,
+        "[{}.as:{}] - This is what a script log should look like.", "example_file", 37
     );
 
     future.wait();
 
     return 0;
+}
+
+int
+as_tests(const argh::parser& cmdl) {
+    if (cmdl.size() < 3) {
+        return util::scripting::test();
+    }
+
+    std::string run_function = cmdl(3).str();
+
+    if (run_function == "Map") {
+        return MacroMap(cmdl);
+    } else if (run_function == "Logging") {
+        return util::scripting::logging_test();
+    } else if (run_function == "LoadTime") {
+        return util::scripting::as_loadtime_test();
+    } else if (run_function == "Threading") {
+        return util::scripting::as_threading();
+    } else if (run_function == "LoadScript") {
+        return util::scripting::as_load_tests();
+    } else {
+        std::cout << "No known command" << std::endl;
+        return 1;
+    }
 }
 
 // for tests. Probably should make a bash script to test each test
@@ -388,7 +441,7 @@ tests(const argh::parser& cmdl) {
         return TerrainTypes(cmdl);
     } else if (run_function == "GenerateTerrain") {
         return GenerateTerrain(cmdl);
-    } else if (run_function == "MacroMap" || run_function == "LuaTest") {
+    } else if (run_function == "MacroMap") {
         return MacroMap(cmdl);
     } else if (run_function == "NoiseTest") {
         return NoiseTest();
@@ -405,9 +458,12 @@ tests(const argh::parser& cmdl) {
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
     } else if (run_function == "LoadManifest") {
-        return util::load_manifest_test();
-    } else if (run_function == "EnginTest") {
+        manifest::ObjectHandler object_handler;
+        return object_handler.load_all_manifests<false>();
+    } else if (run_function == "EngineTest") {
         return gui::opengl_tests();
+    } else if (run_function == "AngelScript") {
+        return as_tests(cmdl);
     } else {
         std::cout << "No known command" << std::endl;
         return 1;
@@ -425,7 +481,6 @@ main(int argc, char** argv) {
         "-c", "--console"  // Enable console logging
     });
     cmdl.add_param("biome-name");
-    //    cmdl.add_param("materials"); materials should be dictated by biome
 
     cmdl.add_params({"--imgui", "-g"});
     // int seed for generation
@@ -448,17 +503,31 @@ main(int argc, char** argv) {
     LOG_INFO(logger, "FunGame v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     LOG_INFO(logger, "Running from {}.", files::get_root_path().string());
 
+    // main thread for opengl and script loading
+    GlobalContext& context = GlobalContext::instance();
+    context.set_main_thread();
+
+    assert(context.is_main_thread() && "This is not the main thread. Strange :(");
+
+    int return_value;
+
     if (argc == 1) {
-        return graphics_main();
+        return_value = graphics_main();
     } else if (start_type == "Test") {
         int return_status = tests(cmdl);
         logging::flush();
-        return return_status;
+        return_value = return_status;
     } else if (start_type == "Start") {
-        return graphics_main(cmdl);
+        return_value = graphics_main(cmdl);
     } else {
         std::cout << "Old command line arguments don't work. Try adding \"Test\"."
                   << std::endl;
-        return 1;
+        return_value = 1;
     }
+
+    // TODO
+    // This shouldn't be necessary, but i think it is a bug in sol2v3
+    context.close_threads();
+
+    return return_value;
 }

@@ -67,8 +67,9 @@ LandGenerator::next() {
 namespace stamps {
 
 TileStamp
-StampGenerator::get_volume(glm::imat2x2 center, std::default_random_engine& rand_engine)
-    const {
+StampGenerator::get_volume(
+    glm::imat2x2 center, std::default_random_engine& rand_engine
+) const {
     // center_x between center[1][0] and center[0][0] inclusive
     std::uniform_int_distribution<TerrainOffset> center_x_dist(
         center[0][0], center[1][0]
@@ -172,9 +173,7 @@ FromRadius::get_stamp(
 
 FromPosition::FromPosition(
     const generation_stamp_t& data, const stamp_generation_position_data_t& type_data
-) :
-    StampGenerator(data),
-    center_variance_(data.center_range) {
+) : StampGenerator(data), center_variance_(data.center_range) {
     points_.reserve(type_data.positions.size());
 
     for (const auto& [x, y] : type_data.positions) {
@@ -196,8 +195,9 @@ FromPosition::get_stamp(
 }
 
 TileStamp
-FromGrid::get_stamp(size_t current_sub_region, std::default_random_engine& rand_engine)
-    const {
+FromGrid::get_stamp(
+    size_t current_sub_region, std::default_random_engine& rand_engine
+) const {
     TerrainOffset x_center =
         (1 + 2 * (current_sub_region % number_)) * (radius_ / number_) - radius_;
     TerrainOffset y_center =

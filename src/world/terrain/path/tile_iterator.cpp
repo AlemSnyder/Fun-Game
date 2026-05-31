@@ -47,6 +47,7 @@ static uint8_t offsets[26] = {
 
 glm::i8vec3
 get_indexed_offsets(uint8_t index) {
+    assert(index < 26 && "Index out of range.");
     uint8_t offset_type = offsets[index];
     glm::i8vec3 out(
         offset_type & int8_t(3), offset_type >> 2 & int8_t(3),
@@ -58,8 +59,8 @@ get_indexed_offsets(uint8_t index) {
 AdjacentIterator::AdjacentIterator(
     const Terrain& parent, TerrainOffset3 xyz, UnitPath path_type
 ) :
-    parent_(parent),
-    path_type_constraint_(path_type), pos_(xyz), path_type_(0), dpos_(0) {
+    parent_(parent), path_type_constraint_(path_type), pos_(xyz), path_type_(0),
+    dpos_(0) {
     update_path();
     if (!path_type_.compatible(path_type_constraint_) || !is_valid_end_position()) {
         iterate_to_next_available();

@@ -67,7 +67,7 @@ class AdjacentIterator {
 
     [[nodiscard]] inline bool
     end() const {
-        return dpos_ > NUMBER_OF_BORDER_CUBES;
+        return dpos_ >= NUMBER_OF_BORDER_CUBES;
     }
 
     [[nodiscard]] inline TerrainOffset3

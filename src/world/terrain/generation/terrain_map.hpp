@@ -23,7 +23,7 @@ class TerrainMacroMap {
      *
      * @details default constructor
      */
-    inline TerrainMacroMap() : width_(0), height_(0){};
+    inline TerrainMacroMap() : width_(0), height_(0) {};
 
     /**
      * @brief Create a new TerrainMacroMap
@@ -34,9 +34,7 @@ class TerrainMacroMap {
      */
     inline TerrainMacroMap(
         std::vector<MapTile> terrain_map, size_t width, size_t height
-    ) :
-        width_(width),
-        height_(height), terrain_map_(terrain_map) {
+    ) : width_(width), height_(height), terrain_map_(terrain_map) {
         assert(terrain_map_.size() == width_ * height_);
     };
 
@@ -133,8 +131,8 @@ class TerrainMapRepresentation {
         const TerrainMacroMap& map, unsigned int tile_size = 4,
         unsigned int tile_border = 1
     ) :
-        terrain_map_(map),
-        tile_size_in_pixels_(tile_size), tile_border_size_(tile_border) {}
+        terrain_map_(map), tile_size_in_pixels_(tile_size),
+        tile_border_size_(tile_border) {}
 
     [[nodiscard]] inline size_t
     get_height() const {

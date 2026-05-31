@@ -50,7 +50,7 @@ struct GPUStructureType {
     const uint8_t minor_size;
     const uint8_t type_size;     // size of type float, int etc.
     const bool is_int;           // should be interpreted as integer
-    const GPUDataType draw_type; // type of smallest unit of memory
+    const GPUArayType draw_type; // type of smallest unit of memory
 
  private:
     /**
@@ -63,19 +63,18 @@ struct GPUStructureType {
      * @param uint8_t minor_size_ if matrix the number of rows
      * @param uint8_t type_size the size in bytes of the low level value being stored
      * @param bool is_int weather or not the data should be interpreted as an integer.
-     * @param GPUDataType draw_type buffer type.
+     * @param GPUArayType draw_type buffer type.
      */
     inline constexpr GPUStructureType(
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
-        GPUDataType draw_type
+        GPUArayType draw_type
     ) :
-        major_size(major_size_),
-        minor_size(minor_size_), type_size(type_size), is_int(is_int),
-        draw_type(draw_type) {}
+        major_size(major_size_), minor_size(minor_size_), type_size(type_size),
+        is_int(is_int), draw_type(draw_type) {}
 
     template <
         uint8_t major_size_T, uint8_t minor_size_T, uint8_t type_size_T, bool is_int_T,
-        GPUDataType draw_type_T>
+        GPUArayType draw_type_T>
     constexpr inline static GPUStructureType
     create_from_data() {
         static_assert(
@@ -91,7 +90,7 @@ struct GPUStructureType {
     }
 
     template <std::integral T>
-    constexpr inline static GPUDataType
+    constexpr inline static GPUArayType
     presume_type() {
         static_assert(
             sizeof(T) == sizeof(int8_t) || sizeof(T) == sizeof(int16_t)
@@ -100,34 +99,34 @@ struct GPUStructureType {
         );
         if constexpr (sizeof(T) == sizeof(int8_t)) {
             if (std::is_unsigned_v<T>)
-                return GPUDataType::UNSIGNED_BYTE;
+                return GPUArayType::UNSIGNED_BYTE;
             else
-                return GPUDataType::BYTE;
+                return GPUArayType::BYTE;
         } else if constexpr (sizeof(T) == sizeof(int16_t)) {
             if (std::is_unsigned_v<T>)
-                return GPUDataType::UNSIGNED_SHORT;
+                return GPUArayType::UNSIGNED_SHORT;
             else
-                return GPUDataType::SHORT;
+                return GPUArayType::SHORT;
         } else if constexpr (sizeof(T) == sizeof(int32_t)) {
             if (std::is_unsigned_v<T>)
-                return GPUDataType::UNSIGNED_INT;
+                return GPUArayType::UNSIGNED_INT;
             else
-                return GPUDataType::INT;
+                return GPUArayType::INT;
         }
     }
 
     // std::same_as<float> is because there is a compiler bug in gcc
     // should be fixed in a later version of gcc tm
     template <std::same_as<float> T> // float
-    constexpr inline static GPUDataType
+    constexpr inline static GPUArayType
     presume_type() {
-        return GPUDataType::FLOAT;
+        return GPUArayType::FLOAT;
     }
 
     template <std::same_as<double> T> // double
-    constexpr inline static GPUDataType
+    constexpr inline static GPUArayType
     presume_type() {
-        return GPUDataType::DOUBLE;
+        return GPUArayType::DOUBLE;
     }
 
     template <std::integral T>
@@ -161,7 +160,7 @@ struct GPUStructureType {
     constexpr static GPUStructureType
     create_from_object([[maybe_unused]] T t) {
         assert(false && "Invalid type.");
-        return create_from_data<1, 1, 1, true, GPUDataType::BYTE>();
+        return create_from_data<1, 1, 1, true, GPUArayType::BYTE>();
     }
 
  public:
@@ -289,7 +288,7 @@ class VertexBufferObject {
         return size_;
     }
 
-    ~VertexBufferObject() { glDeleteBuffers(1, &buffer_ID_); }
+    inline virtual ~VertexBufferObject() { glDeleteBuffers(1, &buffer_ID_); }
 
     /**
      * @brief Attach to the given index.
@@ -317,11 +316,11 @@ class VertexBufferObject {
     /**
      * @brief Get data type
      *
-     * @return GPUDataType underlying data type
+     * @return GPUArayType underlying data type
      */
-    [[nodiscard]] inline constexpr static GPUDataType
+    [[nodiscard]] inline constexpr static GPUArayType
     get_opengl_numeric_type() {
-        constexpr GPUDataType draw_type = get_array_type().draw_type;
+        constexpr GPUArayType draw_type = get_array_type().draw_type;
         return draw_type;
     }
 
@@ -568,7 +567,10 @@ VertexBufferObject<T, Buffer>::bind() const {
 }
 
 template <class T, BindingTarget Buffer>
-__attribute__((optimize(3))) void
+#ifdef GCC
+__attribute__((optimize(3)))
+#endif
+void
 VertexBufferObject<T, Buffer>::attach_to_vertex_attribute(GLuint index) const {
     static_assert(
         Buffer != BindingTarget::ELEMENT_ARRAY_BUFFER,
@@ -596,7 +598,7 @@ VertexBufferObject<T, Buffer>::attach_to_vertex_attribute(GLuint index) const {
                     offset                // array buffer offset
                 );
             } else {
-                if constexpr (data_type.draw_type == GPUDataType::FLOAT) {
+                if constexpr (data_type.draw_type == GPUArayType::FLOAT) {
                     glVertexAttribPointer(
                         index + i,            // index
                         data_type.major_size, // size
@@ -605,7 +607,7 @@ VertexBufferObject<T, Buffer>::attach_to_vertex_attribute(GLuint index) const {
                         stride,               // stride
                         offset                // array buffer offset
                     );
-                } else if constexpr (data_type.draw_type == GPUDataType::DOUBLE) {
+                } else if constexpr (data_type.draw_type == GPUArayType::DOUBLE) {
                     glVertexAttribLPointer(
                         index + i,            // index
                         data_type.major_size, // size

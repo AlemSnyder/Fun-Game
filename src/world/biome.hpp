@@ -24,9 +24,6 @@
 #include "terrain/generation/land_generator.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "terrain/generation/terrain_map.hpp"
-#include "util/files.hpp"
-
-#include <sol/sol.hpp>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -123,11 +120,15 @@ class Biome {
 
     GrassData grass_data_;
 
-    // lua state that generates macro map
-    sol::state lua_;
+    const std::filesystem::path map_generator_file_;
+
+    // display name
+    const std::string name_;
+    // unique identifier name
+    const std::string id_name_;
 
  public:
-    const size_t seed_; // TODO change to seed (remove _)
+    const size_t seed;
 
     /**
      * @brief Construct a new Biome object
@@ -283,13 +284,8 @@ class Biome {
     [[nodiscard]] std::unordered_map<ColorInt, MaterialColor>
     get_colors_inverse_map() const;
 
-    static void init_lua_state(
-        sol::state& lua, const std::filesystem::path& lua_map_generator_file
-    );
-
-    static TerrainMacroMap map_generation_test(
-        const std::filesystem::path& lua_map_generator_file, size_t size
-    );
+    static TerrainMacroMap
+    map_generation_test(const std::filesystem::path& map_generator_file, size_t size);
 
     [[nodiscard]] static biome_json_data
     get_json_data(const std::filesystem::path& biome_file_folder);
@@ -303,11 +299,6 @@ class Biome {
 
     // read data to generate the add to top after affect
     void read_add_to_top_data_(const std::vector<layer_effects_t>& biome_data);
-
-    void
-    init_lua_state_(const std::filesystem::path& lua_map_generator_file) {
-        init_lua_state(lua_, lua_map_generator_file);
-    };
 
     /**
      * @brief Load materials from json data

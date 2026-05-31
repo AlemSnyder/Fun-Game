@@ -1,6 +1,7 @@
 #include "opengl_setup.hpp"
 
 #include "../../logging.hpp"
+#include "global_context.hpp"
 
 #include <optional>
 
@@ -8,6 +9,8 @@ namespace gui {
 
 std::optional<GLFWwindow*>
 setup_opengl(screen_size_t window_width, screen_size_t window_height) {
+    GlobalContext& context = GlobalContext::instance();
+    assert(context.is_main_thread() && "OpenGL must be initialized on main thread.");
     glEnable(GL_MULTISAMPLE);
 
     // Initialise GLFW
@@ -52,6 +55,8 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
 
 int
 setup_opengl_logging() {
+    GlobalContext& context = GlobalContext::instance();
+    assert(context.is_main_thread() && "OpenGL must be initialized on main thread.");
     // initialize logging
     GLint context_flag;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flag);

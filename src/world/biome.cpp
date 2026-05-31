@@ -1,19 +1,16 @@
 #include "biome.hpp"
 
-#include "entity/object_handler.hpp"
+#include "global_context.hpp"
+#include "local_context.hpp"
 #include "logging.hpp"
-#include "terrain/generation/noise.hpp"
-#include "terrain/generation/worley_noise.hpp"
+#include "util/files.hpp"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
 #include <glaze/glaze.hpp>
 #pragma clang diagnostic pop
 
-#include <sol/sol.hpp>
-
 #include <filesystem>
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -65,188 +62,87 @@ Biome::Biome(const std::string& biome_name, size_t seed) :
 Biome::Biome(biome_json_data biome_data, size_t seed) :
     materials_(init_materials_(biome_data.materials_data)),
     generate_plants_(biome_data.biome_data.generate_plants),
-    grass_data_(biome_data.materials_data.at("Dirt").gradient), seed_(seed) {
-    std::filesystem::path biome_json_path =
-        files::get_data_path() / biome_data.biome_name;
-
-    std::filesystem::path lua_map_generator_file =
-        biome_json_path / biome_data.biome_data.map_generator_path;
-
+    grass_data_(biome_data.materials_data.at("Dirt").gradient),
+    map_generator_file_(
+        files::get_data_path() / biome_data.biome_name
+        / biome_data.biome_data.map_generator_path
+    ),
+    name_(biome_data.biome_name), id_name_(biome_data.biome_name), seed(seed) {
+    // TODO make id_name_ add id_name_ to the json, and test if it is a good id (no
+    // spaces)
     read_tile_macro_data_(biome_data.biome_data.tile_macros);
 
     read_map_tile_data_(biome_data.biome_data.tile_data);
 
     read_add_to_top_data_(biome_data.biome_data.layer_effects);
 
-    init_lua_state_(lua_map_generator_file);
-}
-
-void
-Biome::init_lua_state(
-    sol::state& lua, const std::filesystem::path& lua_map_generator_file
-) {
-    if (!std::filesystem::exists(lua_map_generator_file)) [[unlikely]] {
+    if (!std::filesystem::exists(map_generator_file_)) [[unlikely]] {
         LOG_ERROR(
-            logging::lua_logger, "File, {}, not found", lua_map_generator_file.string()
+            logging::as_logger, "File, {}, not found", map_generator_file_.string()
         );
-        return;
-    }
-
-    // add functions/libraries etc
-    lua.open_libraries(sol::lib::base);
-    lua.open_libraries(sol::lib::math);
-    lua.new_usertype<FractalNoise>(
-        "FractalNoise", sol::meta_function::construct,
-        sol::factories(
-            // FractalNoise.new(...) -- dot syntax, no "self" value
-            // passed in
-            [](int num_octaves, double persistence, int prime_index) {
-                return std::make_shared<FractalNoise>(
-                    num_octaves, persistence, prime_index
-                );
-            },
-            // FractalNoise:new(...) -- colon syntax, passes in the
-            // "self" value as first argument implicitly
-            [](sol::object, int num_octaves, double persistence, int prime_index) {
-                return std::make_shared<FractalNoise>(
-                    num_octaves, persistence, prime_index
-                );
-            }
-        ),
-        // FractalNoise(...) syntax, only
-        sol::call_constructor,
-        sol::factories([](int num_octaves, double persistence, int prime_index) {
-            return std::make_shared<FractalNoise>(
-                num_octaves, persistence, prime_index
-            );
-        }),
-        "sample", &FractalNoise::get_noise
-    );
-
-    lua.new_usertype<WorleyNoise>(
-        "WorleyNoise", sol::meta_function::construct,
-        sol::factories(
-            // WorleyNoise.new(...) -- dot syntax, no "self" value
-            // passed in
-            [](int tile_size, double radius) {
-                return std::make_shared<WorleyNoise>(tile_size, radius);
-            },
-            // WorleyNoise:new(...) -- colon syntax, passes in the
-            // "self" value as first argument implicitly
-            [](sol::object, int tile_size, double radius) {
-                return std::make_shared<WorleyNoise>(tile_size, radius);
-            }
-        ),
-        // WorleyNoise(...) syntax, only
-        sol::call_constructor, sol::factories([](int tile_size, double radius) {
-            return std::make_shared<WorleyNoise>(tile_size, radius);
-        }),
-        "sample", &WorleyNoise::get_noise
-    );
-
-    lua.new_usertype<AlternativeWorleyNoise>(
-        "AlternativeWorleyNoise", sol::meta_function::construct,
-        sol::factories(
-            // AlternativeWorleyNoise.new(...) -- dot syntax, no "self" value
-            // passed in
-            [](int tile_size, double positive_chance, double radius) {
-                return std::make_shared<AlternativeWorleyNoise>(
-                    tile_size, positive_chance, radius
-                );
-            },
-            // AlternativeWorleyNoise:new(...) -- colon syntax, passes in the
-            // "self" value as first argument implicitly
-            [](sol::object, int tile_size, double positive_chance, double radius) {
-                return std::make_shared<AlternativeWorleyNoise>(
-                    tile_size, positive_chance, radius
-                );
-            }
-        ),
-        // AlternativeWorleyNoise(...) syntax, only
-        sol::call_constructor,
-        sol::factories([](int tile_size, double positive_chance, double radius) {
-            return std::make_shared<AlternativeWorleyNoise>(
-                tile_size, positive_chance, radius
-            );
-        }),
-        "sample", &AlternativeWorleyNoise::get_noise
-    );
-
-    auto result = lua.safe_script_file(
-        lua_map_generator_file.string(), sol::script_pass_on_error
-    );
-    if (!result.valid()) {
-        sol::error err = result;
-        sol::call_status status = result.status();
-        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
-        return;
-    }
-
-    sol::protected_function map_function = lua["map"];
-    if (!map_function.valid()) {
-        LOG_ERROR(logging::lua_logger, "Function map not defined.");
-        return;
     }
 }
 
 TerrainMacroMap
 Biome::get_map(MacroDim size) const {
+    auto& global_context = GlobalContext::instance();
+    auto& local_context = LocalContext::instance();
+
+    auto type = global_context.get_type("Base", "Base::biomes::biome_map");
+    if (type == nullptr) {
+        return {};
+    }
+    auto factory_function =
+        type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
+
+    auto result = local_context.run_function(factory_function);
+    if (!result) {
+        LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
+        return {};
+    }
+    AngelScript::asIScriptObject* biome_map = local_context.get_return_object();
+    if (biome_map == nullptr) {
+        LOG_ERROR(logging::main_logger, "Failed to get object");
+        return {};
+    }
+    biome_map->AddRef();
+
+    AngelScript::asIScriptFunction* method =
+        type->GetMethodByDecl("int sample(int, int)");
+    if (method == nullptr) {
+        LOG_WARNING(logging::main_logger, "Could not find biome map function.");
+        return {};
+    }
+    result = local_context.run_method(biome_map, method, 5, 5);
+
     std::vector<MapTile> out;
 
-    sol::protected_function map_function = lua_["map"];
+    MacroDim x_map_tiles = size;
+    MacroDim y_map_tiles = size;
 
-    if (!map_function.valid()) [[unlikely]] {
-        LOG_ERROR(logging::lua_logger, "Function map not defined.");
-        return {};
-    }
-
-    auto function_output = map_function(size);
-
-    if (!function_output.valid()) {
-        LOG_ERROR(logging::lua_logger, "Function result not valid.");
-        return {};
-    }
-
-    if (!(function_output.get_type() == sol::type::table)) {
-        LOG_ERROR(logging::lua_logger, "Function output must be a table.");
-        return {};
-    }
-
-    sol::table map = function_output;
-
-    auto tile_map_map = map["map"];
-    if (!(tile_map_map.get_type() == sol::type::table)) {
-        LOG_ERROR(logging::lua_logger, "Invalid map");
-        return {};
-    }
-
-    auto table_x_value = map["x"];
-    if (!(table_x_value.get_type() == sol::type::number)) {
-        LOG_ERROR(logging::lua_logger, "Invalid x value");
-        return {};
-    }
-    MacroDim x_map_tiles = table_x_value;
-
-    auto table_y_value = map["y"];
-    if (!(table_y_value.get_type() == sol::type::number)) {
-        LOG_ERROR(logging::lua_logger, "Invalid y value");
-        return {};
-    }
-    MacroDim y_map_tiles = table_y_value;
-
-    assert(
-        ((y_map_tiles == x_map_tiles) && (x_map_tiles == size))
-        && "Map tile input and out put must all match"
-    );
     out.reserve(x_map_tiles * y_map_tiles);
     for (MacroDim x = 0; x < x_map_tiles; x++) {
         for (MacroDim y = 0; y < y_map_tiles; y++) {
-            size_t map_index = x * y_map_tiles + y;
-            int tile_id = tile_map_map[map_index].get_or<int, int>(0);
+            int x_copy = x;
+            int y_copy = y;
+            auto result_2 = local_context.run_method<int>(
+                biome_map, method, std::move(x_copy), std::move(y_copy)
+            );
+            if (!result_2) {
+                LOG_ERROR(
+                    logging::main_logger, "Error code {}",
+                    static_cast<int>(result_2.error())
+                );
+                return {};
+            }
+
+            int tile_id = result_2.value();
             const TileType& tile_type = macro_tile_types_[tile_id];
-            out.emplace_back(tile_type, seed_, x, y);
+            out.emplace_back(tile_type, seed, x, y);
         }
     }
+
+    biome_map->Release();
 
     return TerrainMacroMap(out, x_map_tiles, y_map_tiles);
 }
@@ -255,57 +151,69 @@ const std::unordered_map<std::string, PlantMap>
 Biome::get_plant_map(Dim length) const {
     std::unordered_map<std::string, PlantMap> out;
 
-    sol::protected_function plant_map = lua_["plants_map"];
+    auto& global_context = GlobalContext::instance();
+    auto& local_context = LocalContext::instance();
 
-    sol::protected_function map_function = lua_["map"];
+    //    global_context.load_file("Base", files::get_data_path() / "Base" /
+    //    "biome_map.as");
 
-    sol::table macor_map = map_function(length);
+    auto type = global_context.get_type("Base", "Base::biomes::biome_map");
+    auto factory_function =
+        type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
 
-    sol::table map = plant_map(length, macor_map);
+    auto result = local_context.run_function(factory_function);
+    if (!result) {
+        LOG_ERROR(logging::main_logger, "Failed AngelScript getting biome map");
+        return {};
+    }
+    AngelScript::asIScriptObject* biome_map = local_context.get_return_object();
+    if (biome_map == nullptr) {
+        LOG_ERROR(logging::main_logger, "Failed to get object");
+        return {};
+    }
+    biome_map->AddRef();
 
-    MacroDim x_map_tiles = map["x"];
-    MacroDim y_map_tiles = map["y"];
+    AngelScript::asIScriptFunction* script_method =
+        type->GetMethodByDecl("float sample_plants(string, int, int)");
+    result = local_context.run_method(biome_map, script_method, 5, 5);
+    if (script_method == nullptr) {
+        LOG_WARNING(logging::main_logger, "Could not find biome map function.");
+        return {};
+    }
 
-    LOG_DEBUG(
-        logging::lua_logger, "Input length: {}, (x, y) = ({}, {})", length, x_map_tiles,
-        y_map_tiles
-    );
+    for (auto& plant : generate_plants_) {
+        std::string plant_map_name = plant.map_name;
 
-    assert(
-        ((y_map_tiles == x_map_tiles) && (x_map_tiles == length))
-        && "Map tile input and out put must all match"
-    );
+        std::vector<float> plant_data;
 
-    auto maps = sol::table(map["map"]);
-    for (const auto& plant_sub_map : maps) {
-        std::vector<float> type_map;
+        MacroDim x_map_tiles = length;
+        MacroDim y_map_tiles = length;
 
-        sol::object flora_type = plant_sub_map.first;
-
-        type_map.reserve(x_map_tiles * y_map_tiles);
-
-        LOG_DEBUG(logging::lua_logger, "Key is {}", flora_type.as<std::string>());
-
-        auto tile_map_map = maps[flora_type];
+        out.reserve(x_map_tiles * y_map_tiles);
         for (MacroDim x = 0; x < x_map_tiles; x++) {
             for (MacroDim y = 0; y < y_map_tiles; y++) {
-                size_t map_index = x * y_map_tiles + y;
-                auto value = tile_map_map[map_index];
-
-                if (value.is<float>()) {
-                    type_map.emplace_back(value.get<float>());
-                } else {
-                    LOG_ERROR(logging::lua_logger, "Value is not a float.");
+                int x_copy = x;
+                int y_copy = y;
+                auto result_2 = local_context.run_method<float>(
+                    biome_map, script_method, &plant_map_name, std::move(x_copy),
+                    std::move(y_copy)
+                );
+                if (!result) {
+                    LOG_ERROR(
+                        logging::script_logger, "Error code {}",
+                        static_cast<int>(result.error())
+                    );
+                    return {};
                 }
+
+                float plant_probability = result_2.value();
+                plant_data.push_back(plant_probability);
             }
         }
-
-        std::string type_as_string = flora_type.as<std::string>();
-
-        out.emplace(std::make_pair<std::string, PlantMap>(
-            std::move(type_as_string), {type_map, x_map_tiles, y_map_tiles}
-        ));
+        out.emplace(plant_map_name, PlantMap(plant_data, length, length));
     }
+
+    biome_map->Release();
 
     return out;
 }

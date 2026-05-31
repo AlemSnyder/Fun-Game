@@ -33,8 +33,9 @@ WorleyNoise::get_noise(NoisePosition x, NoisePosition y) const {
 }
 
 std::set<WorleyPoint>
-WorleyNoise::get_points_(NoiseTileIndex xt, NoiseTileIndex yt, NoiseTileIndex range)
-    const {
+WorleyNoise::get_points_(
+    NoiseTileIndex xt, NoiseTileIndex yt, NoiseTileIndex range
+) const {
     // assert(range % 2 == 0 && "range must be even");
     std::set<WorleyPoint> out;
     // compute index of worley tile

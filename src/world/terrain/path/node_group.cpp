@@ -9,8 +9,8 @@ namespace terrain {
 NodeGroup::NodeGroup(
     ChunkPos chunk_position, LocalPosition tile_position, UnitPath path_type
 ) :
-    chunk_position_(chunk_position),
-    path_type_(path_type), tile_positions_({tile_position}), center_x(tile_position.x),
+    chunk_position_(chunk_position), path_type_(path_type),
+    tile_positions_({tile_position}), center_x(tile_position.x),
     center_y(tile_position.y), center_z(tile_position.z) {}
 
 void

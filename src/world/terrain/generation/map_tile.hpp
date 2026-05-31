@@ -103,8 +103,8 @@ class MapTile {
     MacroDim y_; // y position
 
     const TileType& tile_type_; // map tile type
-    // TODO add mutex
-    // This requires >= 64 x 64 map macro tiles. This would correspond to
+    // to add mutex:
+    // requires >= 64 x 64 map macro tiles. This would correspond to
     // 2^30 tiles. This is 4+ gigabytes.
     // std::mutex mut_; // mutex for locking to avoid collisions during generation
     std::default_random_engine rand_engine_; // random number generator
@@ -123,7 +123,7 @@ class MapTile {
         rand_engine_(
             Noise::get_double((seed ^ tile_type.get_tile_type()) % RANDOM_NUMBER, x, y)
             * INT32_MAX
-        ){};
+        ) {};
 
     /**
      * @brief Get the x coordinate
@@ -191,7 +191,7 @@ class PlantMap {
      *
      * @details Default constructor
      */
-    inline PlantMap() : width_(0), height_(0){};
+    inline PlantMap() : width_(0), height_(0) {};
 
     /**
      * @brief Construct a new PlantMap object
