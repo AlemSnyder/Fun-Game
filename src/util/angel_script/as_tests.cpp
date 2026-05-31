@@ -212,7 +212,7 @@ as_load_tests() {
         return 1;
     }
     file_result =
-        context.load_file("Base", files::get_data_path() / "Base" / "biome_map.as");
+        context.load_file("Base", files::get_data_path() / "Base" / "biomes" / "Default" / "biome_map.as");
     if (file_result != AngelScript::asERetCodes::asSUCCESS) {
         LOG_ERROR(logging::script_logger, "Could not open file.");
         return 1;
@@ -225,12 +225,12 @@ as_load_tests() {
         return 1;
     }
 
-    auto type = context.get_type("Base", "Base::biomes::biome_map");
+    auto type = context.get_type("Base", "biome_map");
     int factory_count = type->GetFactoryCount();
     LOG_DEBUG(logging::main_logger, "Found {} factory functions", factory_count);
 
     auto factory_function =
-        type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
+        type->GetFactoryByDecl("biome_map@ biome_map()");
     auto factory_function_2 = type->GetFactoryByIndex(0);
 
     auto declaration = factory_function_2->GetDeclaration(true, true, true);

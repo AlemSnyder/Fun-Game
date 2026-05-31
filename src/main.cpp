@@ -35,12 +35,12 @@
 #include <string>
 
 void
-save_terrain(terrain::generation::biome_json_data biome_data) {
+save_terrain(terrain::generation::biome_data_t biome_data) {
     quill::Logger* logger = logging::main_logger;
 
-    LOG_INFO(logger, "Saving {} tile types", biome_data.biome_data.tile_data.size());
+    LOG_INFO(logger, "Saving {} tile types", biome_data.tile_data.size());
 
-    for (MapTile_t i = 0; i < biome_data.biome_data.tile_data.size(); i++) {
+    for (MapTile_t i = 0; i < biome_data.tile_data.size(); i++) {
         terrain::generation::Biome biome(biome_data, 5);
 
         MacroDim map_size = 3;
@@ -52,7 +52,7 @@ save_terrain(terrain::generation::biome_json_data biome_data) {
         );
 
         std::filesystem::path save_path = files::get_root_path() / "SavedTerrain";
-        save_path /= biome_data.biome_name;
+        save_path /= biome_data.name;
         save_path /= "biome_";
         save_path += std::to_string(i);
         save_path += ".qb";
@@ -62,18 +62,18 @@ save_terrain(terrain::generation::biome_json_data biome_data) {
 
 int
 TerrainTypes(const argh::parser& cmdl) {
-    terrain::generation::biome_json_data biome_data;
-
     std::string biome_name;
-    cmdl("biome-name", "-") >> biome_name;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
 
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
-    biome_data =
-        terrain::generation::Biome::get_json_data(files::get_data_path() / biome_name);
+    auto biome_data = object_handler.get_biome(biome_name);
+    if (!biome_data) {
+        return 1;
+    }
 
-    save_terrain(biome_data);
+    save_terrain(*biome_data);
 
     return 0;
 }
@@ -81,6 +81,9 @@ TerrainTypes(const argh::parser& cmdl) {
 // reimplement
 int
 GenerateTerrain(const argh::parser& cmdl) {
+
+    std::string biome_id;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_id;
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
@@ -88,11 +91,14 @@ GenerateTerrain(const argh::parser& cmdl) {
 
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
+    auto biome_data = object_handler.get_biome(biome_id);
+    if (!biome_data) {
+        return 1;
+    }
 
-    world::World world(&object_handler, BIOME_BASE_NAME, size, size, seed);
+    world::World world(&object_handler, *biome_data, size, size, seed);
 
     std::filesystem::path path_out = files::get_argument_path(cmdl(3).str());
-
     world.qb_save(path_out);
 
     return 0;
@@ -100,8 +106,8 @@ GenerateTerrain(const argh::parser& cmdl) {
 
 int
 MacroMap(const argh::parser& cmdl) {
-    std::string biome_name;
-    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
+    std::string biome_id;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_id;
     size_t seed;
     cmdl("seed", SEED) >> seed;
     size_t size;
@@ -109,8 +115,15 @@ MacroMap(const argh::parser& cmdl) {
 
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
+    auto biome_data = object_handler.get_biome(biome_id);
+    if (biome_data == nullptr) {
+        LOG_ERROR(
+            logging::terrain_logger, "Could not find biome with id {}.", biome_id
+        );
+        return 1;
+    }
 
-    terrain::generation::Biome biome(biome_name, seed);
+    terrain::generation::Biome biome(*biome_data, seed);
 
     // test terrain generation
     auto map = biome.get_map(size);
@@ -166,7 +179,12 @@ image_test(const argh::parser& cmdl) {
         manifest::ObjectHandler object_handler;
         object_handler.load_all_manifests<false>();
 
-        terrain::generation::Biome biome(biome_name, seed);
+        auto biome_data = object_handler.get_biome(biome_name);
+        if (!biome_data) {
+            return 1;
+        }
+
+        terrain::generation::Biome biome(*biome_data, seed);
 
         auto map = biome.get_map(size);
 
@@ -200,7 +218,12 @@ ChunkDataTest() {
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
-    world::World world(&object_handler, BIOME_BASE_NAME, 6, 6);
+    auto biome_data = object_handler.get_biome(BIOME_BASE_NAME);
+    if (!biome_data) {
+        return 1;
+    }
+
+    world::World world(&object_handler, *biome_data, 6, 6);
 
     const terrain::Chunk* chunk = world.get_terrain_main().get_chunk({0, 0, 0});
 
@@ -275,7 +298,12 @@ save_test(const argh::parser& cmdl) {
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
-    world::World world(&object_handler, BIOME_BASE_NAME, path_in, seed);
+    auto biome_data = object_handler.get_biome(BIOME_BASE_NAME);
+    if (!biome_data) {
+        return 1;
+    }
+
+    world::World world(&object_handler, *biome_data, path_in, seed);
 
     world.qb_save_debug(path_out);
 
@@ -299,7 +327,12 @@ path_finder_test(const argh::parser& cmdl) {
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
-    world::World world(&object_handler, biome_name, path_in, seed);
+    auto biome_data = object_handler.get_biome(BIOME_BASE_NAME);
+    if (!biome_data) {
+        return 1;
+    }
+
+    world::World world(&object_handler, *biome_data, path_in, seed);
 
     auto start_end = world.get_terrain_main().get_start_end_test();
 
@@ -344,7 +377,12 @@ path_finder_test() {
     manifest::ObjectHandler object_handler;
     object_handler.load_all_manifests<false>();
 
-    world::World world(&object_handler, BIOME_BASE_NAME, 4, 4, SEED);
+    auto biome_data = object_handler.get_biome(BIOME_BASE_NAME);
+    if (!biome_data) {
+        return 1;
+    }
+
+    world::World world(&object_handler, *biome_data, 4, 4, SEED);
 
     TerrainOffset3 start(20, 20, world.get_terrain_main().get_Z_solid(20, 20) + 1);
     TerrainOffset3 end(90, 90, world.get_terrain_main().get_Z_solid(90, 90) + 1);

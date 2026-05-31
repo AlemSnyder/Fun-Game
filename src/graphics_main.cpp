@@ -64,10 +64,18 @@ graphics_main(const argh::parser& cmdl) {
     cmdl("seed", SEED) >> seed;
     size_t size;
     cmdl("size", STRESS_TEST_SIZE) >> size;
-    std::string biome_name;
-    cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
+    std::string biome_id;
+    cmdl("biome-name", BIOME_BASE_NAME) >> biome_id;
 
-    world::World world(&object_handler, biome_name, size, size, seed);
+    auto biome_data = object_handler.get_biome(biome_id);
+    if (biome_data == nullptr) {
+        LOG_ERROR(
+            logging::terrain_logger, "Could not find biome with id {}.", biome_id
+        );
+        return 1;
+    }
+
+    world::World world(&object_handler, *biome_data, size, size, seed);
     world.generate_plants();
 
     world::Climate climate;

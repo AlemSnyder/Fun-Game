@@ -2,6 +2,7 @@
 
 #include "global_context.hpp"
 #include "local_context.hpp"
+#include "manifest/object_handler.hpp"
 #include "logging.hpp"
 #include "util/files.hpp"
 
@@ -56,31 +57,48 @@ GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
     }
 }
 
-Biome::Biome(const std::string& biome_name, size_t seed) :
-    Biome(get_json_data(files::get_data_path() / biome_name), seed) {}
+Biome::Biome(biome_data_t biome_data, size_t seed) :
+    materials_(init_materials_(
+        files::read_json_from_file<all_materials_t>(biome_data.materials_path)
+            .value_or(std::unordered_map<std::string, terrain::material_t>())
+    )),
+    generate_plants_(biome_data.generate_plants),
+    grass_data_(materials_.at(DIRT_ID).gradient),
+    map_generator_file_(biome_data.map_generator_path), name_(biome_data.name),
+    id_name_(biome_data.id), seed(seed) {
 
-Biome::Biome(biome_json_data biome_data, size_t seed) :
-    materials_(init_materials_(biome_data.materials_data)),
-    generate_plants_(biome_data.biome_data.generate_plants),
-    grass_data_(biome_data.materials_data.at("Dirt").gradient),
-    map_generator_file_(
-        files::get_data_path() / biome_data.biome_name
-        / biome_data.biome_data.map_generator_path
-    ),
-    name_(biome_data.biome_name), id_name_(biome_data.biome_name), seed(seed) {
-    // TODO make id_name_ add id_name_ to the json, and test if it is a good id (no
-    // spaces)
-    read_tile_macro_data_(biome_data.biome_data.tile_macros);
+    auto material_read =
+        files::read_json_from_file<all_materials_t>(biome_data.materials_path);
 
-    read_map_tile_data_(biome_data.biome_data.tile_data);
+    if (!material_read) {
+        return;
+    }
 
-    read_add_to_top_data_(biome_data.biome_data.layer_effects);
+    read_tile_macro_data_(biome_data.tile_macros);
+    read_map_tile_data_(biome_data.tile_data);
+    read_add_to_top_data_(biome_data.layer_effects);
+
+    if (!std::filesystem::exists(biome_data.materials_path)) [[unlikely]] {
+        LOG_WARNING(
+            logging::as_logger,
+            "File, {}, not found. Materials may not have been loaded.",
+            biome_data.materials_path.string()
+        );
+    }
 
     if (!std::filesystem::exists(map_generator_file_)) [[unlikely]] {
         LOG_ERROR(
-            logging::as_logger, "File, {}, not found", map_generator_file_.string()
+            logging::as_logger,
+            "File, {}, not found. Will not be able to generate biome map.",
+            map_generator_file_.string()
         );
     }
+
+    auto& global_context = GlobalContext::instance();
+
+    // This is technically lazy loading
+    global_context.load_file(id_name_, biome_data.map_generator_path);
+
 }
 
 TerrainMacroMap
@@ -88,12 +106,12 @@ Biome::get_map(MacroDim size) const {
     auto& global_context = GlobalContext::instance();
     auto& local_context = LocalContext::instance();
 
-    auto type = global_context.get_type("Base", "Base::biomes::biome_map");
+    auto type = global_context.get_type(id_name_, "biome_map");
     if (type == nullptr) {
         return {};
     }
     auto factory_function =
-        type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
+        type->GetFactoryByDecl("biome_map@ biome_map()");
 
     auto result = local_context.run_function(factory_function);
     if (!result) {
@@ -154,12 +172,9 @@ Biome::get_plant_map(Dim length) const {
     auto& global_context = GlobalContext::instance();
     auto& local_context = LocalContext::instance();
 
-    //    global_context.load_file("Base", files::get_data_path() / "Base" /
-    //    "biome_map.as");
-
-    auto type = global_context.get_type("Base", "Base::biomes::biome_map");
+    auto type = global_context.get_type(id_name_, "biome_map");
     auto factory_function =
-        type->GetFactoryByDecl("Base::biomes::biome_map@ biome_map()");
+        type->GetFactoryByDecl("biome_map@ biome_map()");
 
     auto result = local_context.run_function(factory_function);
     if (!result) {
@@ -284,30 +299,6 @@ Biome::get_colors_inverse_map() const {
         }
     }
     return materials_inverse;
-}
-
-biome_json_data
-Biome::get_json_data(const std::filesystem::path& biome_folder_path) {
-    auto biome_data = files::read_json_from_file<terrain::generation::biome_data_t>(
-        biome_folder_path / "biome_data.json"
-    );
-
-    if (!biome_data) {
-        return {};
-    }
-
-    auto materials = files::read_json_from_file<all_materials_t>(
-        biome_folder_path / "materials.json"
-    );
-
-    if (!materials) {
-        return {};
-    }
-
-    terrain::generation::biome_json_data data(
-        biome_data->name, *biome_data, *materials
-    );
-    return data;
 }
 
 } // namespace generation

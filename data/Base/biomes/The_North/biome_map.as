@@ -1,37 +1,25 @@
-// Biome map files must define a function that returns a structure with a "map".
-// The map function is called from c++ and reads the x and y lengths. Using this
-// information the "map" key of the returned structure can be used as if it were
-// a 2D array.
-
-// Anyway, do something like this and it should work as long as there are
-// correctly defined tile types and tile macros.
-
-// Base = Base or {}
-// Base.biome_map = Base.biome_map or {}
-
-// Base.biome_map.spacing = .8
-
-namespace Base {
-
-namespace biomes {
 
 class biome_map {
 
-    TerrainGeneration::FractalNoise noise; 
+    TerrainGeneration::FractalNoise noise_fractal;
+    TerrainGeneration::WorleyNoise noise_worley;
     TerrainGeneration::AlternativeWorleyNoise flower_noise;
     float spacing;
 
     biome_map() {
-        noise = TerrainGeneration::FractalNoise(4, 0.6, 3);
+        noise_fractal = TerrainGeneration::FractalNoise(4, 0.6, 3);
+        noise_worley = TerrainGeneration::WorleyNoise(1, 1.0);
         flower_noise = TerrainGeneration::AlternativeWorleyNoise(32, 0.5, 32);
-        spacing = 0.8;
+        spacing = 0.05;
     }
 
     int sample(int x, int y) {
         // sample noise and set a value
-        float height = 12.0 * noise.sample(float(x) * spacing, float(y) * spacing) - 4.0;
+        float intermediate = noise_worley.sample(float(x) * spacing, float(y) * spacing);
+        float height = 5.0 * intermediate * intermediate + 0.8;
+        height = height + noise_fractal.sample(float(x) * 0.6, y * 0.6) * 8 - 4;
         // each value must be integers. math.floor changes doubles to ints
-        int height_map_value =  int(height) ;
+        int height_map_value =  int(height);
         // This biome only defines tile types between 0, and 6
         if (height_map_value > 6) {
             height_map_value = 6;
@@ -69,10 +57,6 @@ class biome_map {
     }
 }
 
-}
-
-}
-
 void do_something() {
-    Base::biomes::biome_map@ map = Base::biomes::biome_map();
+    biome_map@ map = biome_map();
 }

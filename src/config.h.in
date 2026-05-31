@@ -35,4 +35,5 @@
 #define STRESS_TEST_SIZE      16
 #define SEED                  5
 
-#define BIOME_BASE_NAME       "Base"
+// TODO want to change / in id to :: to have the same standard between text in cpp and in AngelScript
+#define BIOME_BASE_NAME       "base::Default"

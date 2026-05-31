@@ -55,13 +55,13 @@ namespace world {
  *
  */
 class World {
+    object::EntityController controller_;
+
     // Biome of the world. Will contain the materials, and grass data
     terrain::generation::Biome biome_;
 
     // terrain in the world
     terrain::Terrain terrain_main_;
-
-    object::EntityController controller_;
 
     // TerrainMesh for all terrain
     std::shared_ptr<gui::gpu_data::TerrainMesh> terrain_mesh_;
@@ -131,8 +131,9 @@ class World {
      * where world was saved
      */
     World(
-        manifest::ObjectHandler* object_handler, const std::string& biome_name,
-        const std::string& path, size_t seed
+        manifest::ObjectHandler* object_handler,
+        const terrain::generation::biome_data_t& biome_name,
+        const std::filesystem::path& path, size_t seed
     );
     /**
      * @brief Construct a new World object to test biome generation.
@@ -143,12 +144,13 @@ class World {
      * (see) src/terrain/generation/land_generator.hpp
      */
     explicit World(
-        manifest::ObjectHandler* object_handler, const std::string& biome_name,
-        MapTile_t type, size_t seed
+        manifest::ObjectHandler* object_handler,
+        const terrain::generation::biome_data_t& biome_name, MapTile_t type, size_t seed
     );
     World(
-        manifest::ObjectHandler* object_handler, const std::string& biome_name,
-        MacroDim x_tiles, MacroDim y_tiles, size_t seed
+        manifest::ObjectHandler* object_handler,
+        const terrain::generation::biome_data_t& biome_name, MacroDim x_tiles,
+        MacroDim y_tiles, size_t seed
     );
 
     constexpr static int macro_tile_size = 32;
@@ -260,20 +262,20 @@ class World {
      *
      * @details Adds the chunk navigation regions
      *
-     * @param std::string& path to save file to
+     * @param std::filesystem::path& path to save file to
      */
     inline void
-    qb_save_debug(const std::string& path) {
+    qb_save_debug(const std::filesystem::path& path) {
         terrain_main_.qb_save_debug(path);
     }
 
     /**
      * @brief Save terrain
      *
-     * @param std::string& path to save file to
+     * @param std::filesystem::path& path to save file to
      */
     inline void
-    qb_save(const std::string& path) const {
+    qb_save(const std::filesystem::path& path) const {
         terrain_main_.qb_save(path);
     }
 

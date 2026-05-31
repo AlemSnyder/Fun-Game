@@ -41,7 +41,7 @@ breadth_first_compare(Node<T>* lhs, Node<T>* rhs) {
 
 } // namespace helper
 
-Terrain::Terrain(const std::string& path, const generation::Biome& biome) :
+Terrain::Terrain(const std::filesystem::path& path, const generation::Biome& biome) :
     Terrain(biome, voxel_utility::from_qb(path)) {}
 
 Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) :
