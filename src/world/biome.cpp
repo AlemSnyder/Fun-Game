@@ -2,8 +2,8 @@
 
 #include "global_context.hpp"
 #include "local_context.hpp"
-#include "manifest/object_handler.hpp"
 #include "logging.hpp"
+#include "manifest/object_handler.hpp"
 #include "util/files.hpp"
 
 #pragma clang diagnostic push
@@ -66,7 +66,6 @@ Biome::Biome(biome_data_t biome_data, size_t seed) :
     grass_data_(materials_.at(DIRT_ID).gradient),
     map_generator_file_(biome_data.map_generator_path), name_(biome_data.name),
     id_name_(biome_data.id), seed(seed) {
-
     auto material_read =
         files::read_json_from_file<all_materials_t>(biome_data.materials_path);
 
@@ -98,7 +97,6 @@ Biome::Biome(biome_data_t biome_data, size_t seed) :
 
     // This is technically lazy loading
     global_context.load_file(id_name_, biome_data.map_generator_path);
-
 }
 
 TerrainMacroMap
@@ -110,8 +108,7 @@ Biome::get_map(MacroDim size) const {
     if (type == nullptr) {
         return {};
     }
-    auto factory_function =
-        type->GetFactoryByDecl("biome_map@ biome_map()");
+    auto factory_function = type->GetFactoryByDecl("biome_map@ biome_map()");
 
     auto result = local_context.run_function(factory_function);
     if (!result) {
@@ -173,8 +170,7 @@ Biome::get_plant_map(Dim length) const {
     auto& local_context = LocalContext::instance();
 
     auto type = global_context.get_type(id_name_, "biome_map");
-    auto factory_function =
-        type->GetFactoryByDecl("biome_map@ biome_map()");
+    auto factory_function = type->GetFactoryByDecl("biome_map@ biome_map()");
 
     auto result = local_context.run_function(factory_function);
     if (!result) {
@@ -190,7 +186,7 @@ Biome::get_plant_map(Dim length) const {
 
     AngelScript::asIScriptFunction* script_method =
         type->GetMethodByDecl("float sample_plants(const string &in, int, int)");
-    //result = local_context.run_method(biome_map, script_method, 5, 5);
+    // result = local_context.run_method(biome_map, script_method, 5, 5);
     if (script_method == nullptr) {
         LOG_WARNING(logging::main_logger, "Could not find biome map function.");
         return {};

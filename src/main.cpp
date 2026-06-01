@@ -81,7 +81,6 @@ TerrainTypes(const argh::parser& cmdl) {
 // reimplement
 int
 GenerateTerrain(const argh::parser& cmdl) {
-
     std::string biome_id;
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_id;
     size_t seed;

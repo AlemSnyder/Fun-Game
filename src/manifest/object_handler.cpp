@@ -17,7 +17,6 @@ ObjectHandler::get_object(const std::string& id) {
     } else {
         return value->second;
     }
-
 }
 
 std::shared_ptr<const world::object::entity::Object>
@@ -43,14 +42,16 @@ ObjectHandler::read_biome(const descriptor_t& biome_descriptor) {
     );
 
     biome_data_value_pointer->map_generator_path =
-        files::get_data_path() / path_copy.remove_filename() / biome_data_value_pointer->map_generator_path;
+        files::get_data_path() / path_copy.remove_filename()
+        / biome_data_value_pointer->map_generator_path;
 
-    biome_data_value_pointer->image_path =
-        files::get_data_path() / path_copy.remove_filename() / biome_data_value_pointer->image_path;
+    biome_data_value_pointer->image_path = files::get_data_path()
+                                           / path_copy.remove_filename()
+                                           / biome_data_value_pointer->image_path;
 
     biome_data_value_pointer->materials_path =
-        files::get_data_path() / path_copy.remove_filename() / biome_data_value_pointer->materials_path;
-
+        files::get_data_path() / path_copy.remove_filename()
+        / biome_data_value_pointer->materials_path;
 
     ided_biomes.insert(
         std::make_pair(biome_descriptor.identification, biome_data_value_pointer)
@@ -62,14 +63,14 @@ ObjectHandler::read_biome(const descriptor_t& biome_descriptor) {
     //    );
 }
 
-    std::shared_ptr<terrain::generation::biome_data_t>
-    ObjectHandler::get_biome(const std::string& biome_id) {
-        auto value = ided_biomes.find(biome_id);
-        if (value == ided_biomes.end()) {
-            return nullptr;
-        } else {
-            return value->second;
-        }
+std::shared_ptr<terrain::generation::biome_data_t>
+ObjectHandler::get_biome(const std::string& biome_id) {
+    auto value = ided_biomes.find(biome_id);
+    if (value == ided_biomes.end()) {
+        return nullptr;
+    } else {
+        return value->second;
     }
+}
 
 } // namespace manifest
