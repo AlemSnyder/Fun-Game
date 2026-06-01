@@ -85,7 +85,7 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
     ) noexcept :
         model_mesh_(model_mesh, {}),
         model_textures_(
-            std::make_shared<util::image::FloatPolychromeAlphaImage>(vector_data)
+            util::image::FloatPolychromeAlphaImage(vector_data)
         ) {}
 
     inline virtual ~ModelController() {}

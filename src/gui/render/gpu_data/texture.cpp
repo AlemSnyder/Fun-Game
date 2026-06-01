@@ -72,7 +72,7 @@ Texture2D::connect_depth_texture(GLuint framebuffer_ID) {
 }
 
 void
-Texture2D::setup(std::shared_ptr<util::image::Image> image) {
+Texture2D::load_settings() {
 #if DEBUG()
     GlobalContext& context = GlobalContext::instance();
     if (!context.is_main_thread()) {
@@ -98,22 +98,22 @@ Texture2D::setup(std::shared_ptr<util::image::Image> image) {
         glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, settings_.compare_mode);
     }
     // set other paremeters
+}
 
-    if (image) {
-        load_data(image);
+void
+Texture2D::setup() {
+    // bind
+    if (settings_.multisample) {
+        glTexImage2DMultisample(
+            GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
+            static_cast<GLenum>(settings_.internal_format), width_, height_, GL_TRUE
+        );
     } else {
-        if (settings_.multisample) {
-            glTexImage2DMultisample(
-                GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
-                static_cast<GLenum>(settings_.internal_format), width_, height_, GL_TRUE
-            );
-        } else {
-            glTexImage2D(
-                GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
-                width_, height_, 0, static_cast<GLenum>(settings_.read_format),
-                static_cast<GLenum>(settings_.type), nullptr
-            );
-        }
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
+            width_, height_, 0, static_cast<GLenum>(settings_.read_format),
+            static_cast<GLenum>(settings_.type), nullptr
+        );
     }
 }
 
@@ -122,65 +122,50 @@ Texture2D::Texture2D(
 ) : width_(width), height_(height), settings_(settings) {
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this]() { setup(nullptr); });
+        context.push_opengl_task([this]() { load_settings(); setup(); });
     } else {
-        setup(nullptr);
+        load_settings();
+        setup();
     }
 }
 
 Texture2D::Texture2D(
-    std::shared_ptr<util::image::Image> image, TextureSettings settings, bool differed
-) : settings_(settings) {
-    if (!image) {
-        return;
-    }
-    width_ = image->get_width();
-    height_ = image->get_height();
+    util::image::ImageVariant image, TextureSettings settings, bool differed
+) :
+    settings_(settings) {
+//    width_ = image->get_width();
+//    height_ = image->get_height();
 
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this, image]() { setup(image); });
+        context.push_opengl_task([this, image]() { load_settings(); load_image(image); });
     } else {
-        setup(image);
+        load_settings();
+        load_image(image);
     }
 }
 
 void
-Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
-    // TODO lots of checks
-    if (settings_.multisample) {
-        LOG_ERROR(logging::opengl_logger, "Cannot write data to multisample texture");
-        return;
-    }
-    if (settings_.internal_format == gpu_data::GPUPixelStorageFormat::DEPTH) {
-        //
-    }
-    width_ = image->get_width();
-    height_ = image->get_height();
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
-        image->get_width(), image->get_height(), 0,
-        static_cast<GLenum>(settings_.read_format), static_cast<GLenum>(settings_.type),
-        image->data()
+Texture2D::load_image(util::image::ImageVariant image) {
+    const auto visitor = util::image::ImageVisitor(
+        [this](auto&& image) {this->load_data(image);}
     );
-    if (settings_.type == GPUPixelType::FLOAT
-        || settings_.type == GPUPixelType::HALF_FLOAT) {
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
+
+    std::visit(visitor, image);
 }
 
-std::shared_ptr<util::image::Image>
+std::expected<util::image::ImageVariant, int>
 Texture2D::get_image() const {
     // multiplying by 2 fixes the memory error, but that can't possibly be correct.
     // TODO GL_PACK_ALIGNMENT
     size_t data_size = width_ * height_ * get_size(settings_.type)
                        * get_size(settings_.read_format) * 2;
 
-    std::shared_ptr<char[]> data = std::make_shared<char[]>(data_size);
+//    std::shared_ptr<char[]> data = std::make_shared<char[]>(data_size);
 
     if (settings_.multisample) {
         LOG_ERROR(logging::opengl_logger, "Cannot load multisample texture to image.");
-        return nullptr;
+        return std::unexpected(1);
     }
     glBindTexture(GL_TEXTURE_2D, texture_ID_);
 
@@ -214,81 +199,22 @@ Texture2D::get_image() const {
 
 #endif
 
-    glGetTexImage(
-        GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.read_format),
-        static_cast<GLenum>(settings_.type), data.get()
+    util::image::ImageVariant out = util::image::make_image(settings_.type, settings_.read_format, width_, height_);
+
+    const auto visitor = util::image::ImageVisitor(
+        [this](auto&& image) {
+            glGetTexImage(
+                GL_TEXTURE_2D, 0, static_cast<GLenum>(this->settings_.read_format),
+                static_cast<GLenum>(this->settings_.type), static_cast<void*>(image.get_raw_data())
+            );
+        }
     );
 
-    switch (settings_.type) {
-        case GPUPixelType::FLOAT:
-        case GPUPixelType::HALF_FLOAT:
-            switch (settings_.read_format) {
-                case GPUPixelReadFormat::DEPTH_COMPONENT:
-                case GPUPixelReadFormat::DEPTH_STENCIL:
-                case GPUPixelReadFormat::RED:
-                case GPUPixelReadFormat::GREEN:
-                case GPUPixelReadFormat::BLUE:
-                    return std::make_shared<util::image::FloatMonochromeImage>(
-                        data, width_, height_, get_size(settings_.type)
-                    );
-                case GPUPixelReadFormat::RGB:
-                case GPUPixelReadFormat::BGR:
-                    return std::make_shared<util::image::FloatPolychromeImage>(
-                        data, width_, height_, get_size(settings_.type)
-                    );
+    std::visit(visitor, out);
 
-                case GPUPixelReadFormat::RGBA:
-                case GPUPixelReadFormat::BGRA:
-                    return std::make_shared<util::image::FloatPolychromeAlphaImage>(
-                        data, width_, height_, get_size(settings_.type)
-                    );
+    return out;
 
-                default:
-                    LOG_ERROR(
-                        logging::opengl_logger,
-                        "Cannot load image. Unknown read_format {}.",
-                        static_cast<GLenum>(settings_.read_format)
-                    );
-                    return nullptr;
-            }
-        case GPUPixelType::UNSIGNED_BYTE:
-            switch (settings_.read_format) {
-                case GPUPixelReadFormat::DEPTH_COMPONENT:
-                case GPUPixelReadFormat::DEPTH_STENCIL:
-                case GPUPixelReadFormat::RED:
-                case GPUPixelReadFormat::GREEN:
-                case GPUPixelReadFormat::BLUE:
-                    return std::make_shared<util::image::ByteMonochromeImage>(
-                        data, width_, height_, get_size(settings_.type)
-                    );
-                case GPUPixelReadFormat::RGB:
-                case GPUPixelReadFormat::BGR:
-                    return std::make_shared<util::image::BytePolychromeImage>(
-                        data, width_, height_, get_size(settings_.type)
-                    );
-
-                case GPUPixelReadFormat::RGBA:
-                case GPUPixelReadFormat::BGRA:
-                    return std::make_shared<util::image::BytePolychromeAlphaImage>(
-                        data, width_, height_, get_size(settings_.type)
-                    );
-
-                default:
-                    LOG_ERROR(
-                        logging::opengl_logger,
-                        "Cannot load image. Unknown read_format {}.",
-                        static_cast<GLenum>(settings_.read_format)
-                    );
-                    return nullptr;
-            }
-        default:
-            LOG_ERROR(
-                logging::opengl_logger, "Cannot load image. Unknown type {}.",
-                static_cast<GLenum>(settings_.type)
-            );
-            return nullptr;
     }
-}
 
 } // namespace gpu_data
 

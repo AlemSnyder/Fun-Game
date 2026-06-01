@@ -30,7 +30,7 @@ setup(the_buttons::UserInterface& user_interface) {
         LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
         return;
     }
-    std::shared_ptr<util::image::Image> image = image_result.value();
+    util::image::ImageVariant image = image_result.value();
 
     std::shared_ptr<the_buttons::BorderedWindow> a_window =
         std::make_shared<the_buttons::BorderedWindow>(
@@ -62,7 +62,7 @@ setup(the_buttons::UserInterface& user_interface) {
         LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result_2.error());
         return;
     }
-    std::shared_ptr<util::image::Image> image_2 = image_result_2.value();
+    util::image::ImageVariant image_2 = image_result_2.value();
 
     std::shared_ptr<the_buttons::BorderedWidget> a_widget =
         a_second_window->make<the_buttons::BorderedWidget>(
@@ -87,7 +87,7 @@ setup(the_buttons::UserInterface& user_interface) {
         LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result_3.error());
         return;
     }
-    std::shared_ptr<util::image::Image> image_3 = image_result_3.value();
+    util::image::ImageVariant image_3 = image_result_3.value();
 
     auto a_button = a_widget->make<the_buttons::ButtonWidget>(
         std::make_shared<render::WindowTexture>(image_3, texture_data_3.value()),

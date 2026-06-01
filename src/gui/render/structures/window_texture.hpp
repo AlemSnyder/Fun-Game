@@ -132,13 +132,13 @@ class WindowTexture : public virtual gpu_data::GPUData {
      *
      */
     WindowTexture(
-        std::shared_ptr<util::image::Image> image, glm::ivec4 border_size,
+        util::image::ImageVariant image, glm::ivec4 border_size,
         glm::ivec4 side_lengths, glm::ivec2 inner_pattern_size,
         std::array<glm::ivec2, 9> texture_regions
     );
 
     WindowTexture(
-        std::shared_ptr<util::image::Image> image,
+        util::image::ImageVariant image,
         const window_texture_data_t& texture_data
     );
 

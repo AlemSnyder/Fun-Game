@@ -58,7 +58,7 @@ World::World(
 ) :
     biome_(biome_name, seed), terrain_main_(
                                   x_tiles, y_tiles, macro_tile_size, height, biome_,
-                                  std::move(biome_.get_map(x_tiles))
+                                  biome_.get_map(x_tiles)
                               ),
     controller_(object_handler) {}
 
