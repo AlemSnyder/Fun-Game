@@ -4,7 +4,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include <fmt/core.h>
 #include <glaze/glaze.hpp>
 
 #include <array>

@@ -110,8 +110,8 @@ Texture2D::setup() {
         );
     } else {
         glTexImage2D(
-            GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
-            width_, height_, 0, static_cast<GLenum>(settings_.read_format),
+            GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format), width_,
+            height_, 0, static_cast<GLenum>(settings_.read_format),
             static_cast<GLenum>(settings_.type), nullptr
         );
     }
@@ -122,7 +122,10 @@ Texture2D::Texture2D(
 ) : width_(width), height_(height), settings_(settings) {
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this]() { load_settings(); setup(); });
+        context.push_opengl_task([this]() {
+            load_settings();
+            setup();
+        });
     } else {
         load_settings();
         setup();
@@ -131,14 +134,16 @@ Texture2D::Texture2D(
 
 Texture2D::Texture2D(
     util::image::ImageVariant image, TextureSettings settings, bool differed
-) :
-    settings_(settings) {
-//    width_ = image->get_width();
-//    height_ = image->get_height();
+) : settings_(settings) {
+    //    width_ = image->get_width();
+    //    height_ = image->get_height();
 
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this, image]() { load_settings(); load_image(image); });
+        context.push_opengl_task([this, image]() {
+            load_settings();
+            load_image(image);
+        });
     } else {
         load_settings();
         load_image(image);
@@ -147,9 +152,8 @@ Texture2D::Texture2D(
 
 void
 Texture2D::load_image(util::image::ImageVariant image) {
-    const auto visitor = util::image::ImageVisitor(
-        [this](auto&& image) {this->load_data(image);}
-    );
+    const auto visitor =
+        util::image::ImageVisitor([this](auto&& image) { this->load_data(image); });
 
     std::visit(visitor, image);
 }
@@ -161,7 +165,7 @@ Texture2D::get_image() const {
     size_t data_size = width_ * height_ * get_size(settings_.type)
                        * get_size(settings_.read_format) * 2;
 
-//    std::shared_ptr<char[]> data = std::make_shared<char[]>(data_size);
+    //    std::shared_ptr<char[]> data = std::make_shared<char[]>(data_size);
 
     if (settings_.multisample) {
         LOG_ERROR(logging::opengl_logger, "Cannot load multisample texture to image.");
@@ -199,22 +203,21 @@ Texture2D::get_image() const {
 
 #endif
 
-    util::image::ImageVariant out = util::image::make_image(settings_.type, settings_.read_format, width_, height_);
+    util::image::ImageVariant out =
+        util::image::make_image(settings_.type, settings_.read_format, width_, height_);
 
-    const auto visitor = util::image::ImageVisitor(
-        [this](auto&& image) {
-            glGetTexImage(
-                GL_TEXTURE_2D, 0, static_cast<GLenum>(this->settings_.read_format),
-                static_cast<GLenum>(this->settings_.type), static_cast<void*>(image.get_raw_data())
-            );
-        }
-    );
+    const auto visitor = util::image::ImageVisitor([this](auto&& image) {
+        glGetTexImage(
+            GL_TEXTURE_2D, 0, static_cast<GLenum>(this->settings_.read_format),
+            static_cast<GLenum>(this->settings_.type),
+            static_cast<void*>(image.get_raw_data())
+        );
+    });
 
     std::visit(visitor, out);
 
     return out;
-
-    }
+}
 
 } // namespace gpu_data
 

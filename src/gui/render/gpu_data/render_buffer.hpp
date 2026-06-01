@@ -5,6 +5,8 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include <cassert>
+
 namespace gui {
 
 namespace gpu_data {

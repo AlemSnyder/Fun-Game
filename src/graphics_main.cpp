@@ -173,11 +173,11 @@ start_game(intro_scene::result result, GLFWwindow* window) {
                 }
 
                 object_handler.load_all_manifests<false>();
-                    auto biome_data = object_handler.get_biome(biome_name);
-                    if (!biome_data) {
-                        result.result = 1;
-                        return result;
-                    }
+                auto biome_data = object_handler.get_biome(biome_name);
+                if (!biome_data) {
+                    result.result = 1;
+                    return result;
+                }
 
                 result.world = std::make_unique<world::World>(
                     &object_handler, *biome_data, size, size, seed

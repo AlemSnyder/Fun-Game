@@ -2,7 +2,7 @@
 #include "local_context.hpp"
 #include "logging.hpp"
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 #include <string>
 

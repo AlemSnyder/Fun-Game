@@ -26,6 +26,7 @@
 #include "types.hpp"
 #include "unit_path.hpp"
 
+#include <cassert>
 #include <cstdint>
 #include <utility>
 

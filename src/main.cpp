@@ -6,8 +6,8 @@
 #include "manifest/object_handler.hpp"
 #include "util/angel_script/as_tests.hpp"
 #include "util/files.hpp"
-#include "util/png_image.hpp"
 #include "util/image.hpp"
+#include "util/png_image.hpp"
 #include "util/time.hpp"
 #include "world/biome.hpp"
 #include "world/terrain/generation/terrain_map.hpp"
@@ -30,6 +30,7 @@
 #include <imgui/imgui.h>
 #include <png.h>
 
+#include <cassert>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -227,8 +228,7 @@ color_image_text() {
     //        std::dynamic_pointer_cast<>(image;
 
     auto result = image::write_image(
-        FPAimage,
-        files::get_root_path() / "logs" / "GenericBorder_out_test.png"
+        FPAimage, files::get_root_path() / "logs" / "GenericBorder_out_test.png"
     );
 
     if (!result == image::write_result_t::WR_OK) {

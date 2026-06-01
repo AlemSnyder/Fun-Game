@@ -105,7 +105,7 @@ target_include_directories(FunGame PRIVATE "src")
 target_include_directories(FunGame PRIVATE "${PROJECT_BINARY_DIR}")
 
 # this is for fmt included in quill
-target_include_directories(FunGame PRIVATE "vendor/quill/quill/include/quill/bundled")
+target_include_directories(FunGame PRIVATE "vendor/quill/include/quill/bundled")
 
 # Set warning options
 if(MSVC)

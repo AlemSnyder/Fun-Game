@@ -13,9 +13,8 @@ namespace gui {
 namespace render {
 
 WindowTexture::WindowTexture(
-    util::image::ImageVariant image, glm::ivec4 border_size,
-    glm::ivec4 side_lengths, glm::ivec2 inner_pattern_size,
-    std::array<glm::ivec2, 9> texture_regions
+    util::image::ImageVariant image, glm::ivec4 border_size, glm::ivec4 side_lengths,
+    glm::ivec2 inner_pattern_size, std::array<glm::ivec2, 9> texture_regions
 ) :
     // clang-format off
     gl_positions_{

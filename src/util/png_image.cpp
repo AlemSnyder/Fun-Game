@@ -53,15 +53,18 @@ test_function() {
 #endif
 
 class PNG_read_info {
-    public:
+ public:
     png_structp png_ptr = nullptr;
     png_infop png_info = nullptr;
 
     PNG_read_info() {
         // Create our write struct
         // TODO these nullptr should be function pointers
-        png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-        if (!png_ptr) {return ;}
+        png_ptr =
+            png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+        if (!png_ptr) {
+            return;
+        }
         // Create our info struct for this png image
         png_info = png_create_info_struct(png_ptr);
     }
@@ -88,10 +91,8 @@ read_image(std::filesystem::path path) {
         return std::unexpected(1);
     }
 
-    std::unique_ptr<std::FILE, void(*)(std::FILE*)> file (
-        fopen(path_string.c_str(), "rb"), [](std::FILE* file){
-            fclose(file);
-        }
+    std::unique_ptr<std::FILE, void (*)(std::FILE*)> file(
+        fopen(path_string.c_str(), "rb"), [](std::FILE* file) { fclose(file); }
     );
     png_uint_32 width;
     png_uint_32 height;
@@ -110,11 +111,9 @@ read_image(std::filesystem::path path) {
         return std::unexpected(2);
     }
 
-    auto struct_ptr = std::unique_ptr<png_struct, void(*)(png_struct*)>(
+    auto struct_ptr = std::unique_ptr<png_struct, void (*)(png_struct*)>(
         png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr),
-        [](png_struct* ptr){
-            png_destroy_read_struct(&ptr, nullptr, nullptr);
-        }
+        [](png_struct* ptr) { png_destroy_read_struct(&ptr, nullptr, nullptr); }
     );
     PNG_read_info info;
     if (!info.png_ptr) {
@@ -131,8 +130,8 @@ read_image(std::filesystem::path path) {
     png_read_info(info.png_ptr, info.png_info);
 
     png_get_IHDR(
-        info.png_ptr, info.png_info, &width, &height, &bit_depth, &color_type, &interlace_method,
-        &compression_method, &filter_method
+        info.png_ptr, info.png_info, &width, &height, &bit_depth, &color_type,
+        &interlace_method, &compression_method, &filter_method
     );
 
     if (color_type != PNG_COLOR_TYPE_RGB_ALPHA) {
@@ -148,7 +147,7 @@ read_image(std::filesystem::path path) {
     std::shared_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
 
     png_uint_32 row_bytes = png_get_rowbytes(info.png_ptr, info.png_info);
-    std::vector<std::array<png_byte, 4>> data (width * height);
+    std::vector<std::array<png_byte, 4>> data(width * height);
 
     for (unsigned int i = 0; i < height; i++) {
         row_pointers[i] = reinterpret_cast<png_bytep>(data.data()) + i * row_bytes;
@@ -159,8 +158,7 @@ read_image(std::filesystem::path path) {
     png_read_end(info.png_ptr, nullptr);
 
     // todo do things for bit depth
-    auto image =
-        util::image::PolychromeAlphaImage(width, height, data, 1);
+    auto image = util::image::PolychromeAlphaImage(width, height, data, 1);
 
 #if DEBUG()
     for (unsigned int i = 0; i < image.get_width(); i++) {

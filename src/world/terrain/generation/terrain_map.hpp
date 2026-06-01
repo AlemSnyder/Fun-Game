@@ -2,6 +2,8 @@
 
 #include "map_tile.hpp"
 
+#include <cassert>
+
 namespace terrain {
 namespace generation {
 

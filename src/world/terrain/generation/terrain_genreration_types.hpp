@@ -5,6 +5,7 @@
 
 #include <glaze/glaze.hpp>
 
+#include <cassert>
 #include <filesystem>
 #include <map>
 #include <unordered_set>

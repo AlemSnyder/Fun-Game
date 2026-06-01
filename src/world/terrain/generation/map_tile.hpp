@@ -27,6 +27,7 @@
 #include "types.hpp"
 #include "util/png_image.hpp"
 
+#include <cassert>
 #include <random>
 #include <unordered_set>
 #include <vector>

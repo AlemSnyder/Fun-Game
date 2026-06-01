@@ -6,6 +6,7 @@
 
 #include <glaze/glaze.hpp>
 
+#include <cassert>
 #include <string>
 #include <vector>
 

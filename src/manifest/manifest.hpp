@@ -5,6 +5,7 @@
 #include <glaze/glaze.hpp>
 #pragma clang diagnostic pop
 
+#include <cassert>
 #include <filesystem>
 #include <optional>
 #include <string>

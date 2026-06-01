@@ -3,6 +3,7 @@
 #include "../../logging.hpp"
 #include "global_context.hpp"
 
+#include <cassert>
 #include <optional>
 
 namespace gui {
