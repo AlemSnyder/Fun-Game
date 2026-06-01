@@ -88,6 +88,9 @@ class WorleyNoise : protected Noise {
     [[nodiscard]] virtual double
     get_noise(NoisePosition x, NoisePosition y) const override;
 
+    using Noise::add_ref;
+    using Noise::release_ref;
+
  protected:
     [[nodiscard]] std::set<WorleyPoint>
     get_points_(NoiseTileIndex x_t, NoiseTileIndex y_t, NoiseTileIndex range) const;
@@ -118,6 +121,9 @@ class AlternativeWorleyNoise : public WorleyNoise {
 
     [[nodiscard]] virtual double
     get_noise(NoisePosition x, NoisePosition y) const override;
+
+    using WorleyNoise::add_ref;
+    using WorleyNoise::release_ref;
 
  private:
     [[nodiscard]] double

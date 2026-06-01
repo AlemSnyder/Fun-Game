@@ -22,19 +22,15 @@
 
 #include "world.hpp"
 
-#include "glm/gtx/transform.hpp"
 #include "global_context.hpp"
 #include "logging.hpp"
 #include "manifest/object_handler.hpp"
-#include "object/entity/tile_object.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
-#include "util/files.hpp"
 #include "util/mesh.hpp"
 
 #include <cstdint>
-#include <fstream>
 #include <mutex>
 #include <string>
 
@@ -56,10 +52,10 @@ World::World(
     manifest::ObjectHandler* object_handler, const std::string& biome_name,
     MacroDim x_tiles, MacroDim y_tiles, size_t seed
 ) :
-    biome_(biome_name, seed), terrain_main_(
-                                  x_tiles, y_tiles, macro_tile_size, height, biome_,
-                                  std::move(biome_.get_map(x_tiles))
-                              ),
+    biome_(biome_name, seed),
+    terrain_main_(
+        x_tiles, y_tiles, macro_tile_size, height, biome_, biome_.get_map(x_tiles)
+    ),
     controller_(object_handler) {}
 
 World::World(

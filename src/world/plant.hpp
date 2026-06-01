@@ -25,7 +25,7 @@ struct plant_t {
     std::string identification;
     // The map that generates these plants eg Trees_1
     std::string map_name;
-    // path to lua file that contains function map_name
+    // path to script file that contains function map_name
     std::optional<std::filesystem::path> map_generator_path;
 
     [[nodiscard]] inline std::strong_ordering

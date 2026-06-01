@@ -29,11 +29,11 @@ static const std::string LOGLINE_FORMAT =
 
 #if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__)                \
     || defined(QUILL_NO_THREAD_NAME_SUPPORT)
-static const std::string LOGLINE_FORMAT_LUA =
+static const std::string LOGLINE_FORMAT_SCRIPT =
     "%(time) [%(thread_id:>6)] %(log_level:<10) [%(logger:<10)] "
     "%(message)";
 #else
-static const std::string LOGLINE_FORMAT_LUA =
+static const std::string LOGLINE_FORMAT_SCRIPT =
     "%(time) [%(thread_id:>6):%(thread_name:<16)] %(log_level:<10) "
     "[%(logger:<10)] %(message)";
 
@@ -46,14 +46,14 @@ using cc = quill::ConsoleColours;
 
 LogLevel _LOG_LEVEL;
 
-quill::Logger* main_logger;       // for everything else
-quill::Logger* opengl_logger;     // for glfw, glew etc
-quill::Logger* terrain_logger;    // for terrain, chunk, tile class
-quill::Logger* game_map_logger;   // for terrain generation
-quill::Logger* voxel_logger;      // for voxel logic like mesh creation
-quill::Logger* file_io_logger;    // for file io
-quill::Logger* lua_logger;        // for lua
-quill::Logger* lua_script_logger; // for lua
+quill::Logger* main_logger;     // for everything else
+quill::Logger* opengl_logger;   // for glfw, glew etc
+quill::Logger* terrain_logger;  // for terrain, chunk, tile class
+quill::Logger* game_map_logger; // for terrain generation
+quill::Logger* voxel_logger;    // for voxel logic like mesh creation
+quill::Logger* file_io_logger;  // for file io
+quill::Logger* as_logger;       // for AngelScript
+quill::Logger* script_logger;   // for scripts
 
 const static std::filesystem::path LOG_FILE = files::get_log_path() / "app.log";
 
@@ -115,6 +115,7 @@ init(bool console, quill::LogLevel log_level) {
 #endif
 
     // create all loggers
+    // clang-format off
     main_logger =
         quill::Frontend::create_or_get_logger("main", file_sink, LOGLINE_FORMAT);
     opengl_logger =
@@ -127,10 +128,11 @@ init(bool console, quill::LogLevel log_level) {
         quill::Frontend::create_or_get_logger("voxel", file_sink, LOGLINE_FORMAT);
     file_io_logger =
         quill::Frontend::create_or_get_logger("file_io", file_sink, LOGLINE_FORMAT);
-    lua_logger =
-        quill::Frontend::create_or_get_logger("lua", file_sink, LOGLINE_FORMAT);
-    lua_script_logger =
-        quill::Frontend::create_or_get_logger("script", file_sink, LOGLINE_FORMAT_LUA);
+    as_logger =
+        quill::Frontend::create_or_get_logger("as", file_sink, LOGLINE_FORMAT);
+    script_logger =
+        quill::Frontend::create_or_get_logger("script", file_sink, LOGLINE_FORMAT_SCRIPT);
+    // clang-format on
 
     main_logger->set_log_level(_LOG_LEVEL);
     opengl_logger->set_log_level(_LOG_LEVEL);
@@ -138,8 +140,8 @@ init(bool console, quill::LogLevel log_level) {
     game_map_logger->set_log_level(_LOG_LEVEL);
     voxel_logger->set_log_level(_LOG_LEVEL);
     file_io_logger->set_log_level(_LOG_LEVEL);
-    lua_logger->set_log_level(_LOG_LEVEL);
-    lua_script_logger->set_log_level(_LOG_LEVEL);
+    as_logger->set_log_level(_LOG_LEVEL);
+    script_logger->set_log_level(_LOG_LEVEL);
 
     // initialize backtrace on all loggers
     // is there a better way?
@@ -149,8 +151,8 @@ init(bool console, quill::LogLevel log_level) {
     game_map_logger->init_backtrace(5, quill::LogLevel::Error);
     voxel_logger->init_backtrace(5, quill::LogLevel::Error);
     file_io_logger->init_backtrace(5, quill::LogLevel::Error);
-    lua_logger->init_backtrace(5, quill::LogLevel::Error);
-    lua_script_logger->init_backtrace(5, quill::LogLevel::Error);
+    as_logger->init_backtrace(5, quill::LogLevel::Error);
+    script_logger->init_backtrace(5, quill::LogLevel::Error);
 
     LOG_INFO(main_logger, "Logging initialized!");
 }

@@ -158,7 +158,7 @@ class VoxelObject : VoxelBase {
      * @return VoxelSize length in x, y, z
      */
     [[nodiscard]] inline VoxelSize
-    get_size() noexcept {
+    get_size() const noexcept {
         return size_;
     }
 };
