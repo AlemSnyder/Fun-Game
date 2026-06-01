@@ -83,7 +83,7 @@ class Entity : public virtual Object, public virtual Cognition {
 
     Entity(const object_t& object_data, const manifest::descriptor_t& model_path);
 
-    virtual ~Entity(){};
+    virtual ~Entity() {};
 
     inline void
     reserve(size_t size) const {

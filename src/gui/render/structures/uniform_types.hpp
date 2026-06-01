@@ -18,7 +18,7 @@ namespace render {
 class LightEnvironment {
  private:
  public:
-    virtual ~LightEnvironment(){};
+    virtual ~LightEnvironment() {};
 
     virtual glm::vec3 get_light_direction() const = 0;
     virtual glm::vec3 get_diffuse_light() const = 0;
@@ -27,7 +27,7 @@ class LightEnvironment {
 
 class StarRotation {
  public:
-    virtual ~StarRotation(){};
+    virtual ~StarRotation() {};
     virtual glm::mat4 get_sky_rotation() const = 0;
 };
 
@@ -39,7 +39,7 @@ class LightDirection : public shader::UniformExecutor {
     LightDirection(std::shared_ptr<LightEnvironment> lighting) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
-    virtual ~LightDirection(){};
+    virtual ~LightDirection() {};
 
     virtual void
     bind(GLint uniform_ID) const override {
@@ -66,7 +66,7 @@ class DiffuseLight : public shader::UniformExecutor {
     DiffuseLight(std::shared_ptr<LightEnvironment> lighting) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
-    virtual ~DiffuseLight(){};
+    virtual ~DiffuseLight() {};
 
     virtual void
     bind(GLint uniform_ID) const override {
@@ -93,7 +93,7 @@ class SpectralLight : public shader::UniformExecutor {
     SpectralLight(std::shared_ptr<LightEnvironment> lighting) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_VEC3), lighting_(lighting) {}
 
-    virtual ~SpectralLight(){};
+    virtual ~SpectralLight() {};
 
     inline virtual void
     bind(GLint uniform_ID) const override {
@@ -117,7 +117,7 @@ class MatrixViewProjection : public shader::UniformExecutor {
     MatrixViewProjection(std::shared_ptr<scene::Controls> controller) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), controller_(controller) {}
 
-    virtual ~MatrixViewProjection(){};
+    virtual ~MatrixViewProjection() {};
 
     inline virtual void
     bind(GLint uniform_ID) const override {
@@ -141,7 +141,7 @@ class ViewMatrix : public shader::UniformExecutor {
     ViewMatrix(std::shared_ptr<scene::Controls> controller) :
         UniformExecutor(gpu_data::GPUArayType::FLOAT_MAT4), controller_(controller) {}
 
-    virtual ~ViewMatrix(){};
+    virtual ~ViewMatrix() {};
 
     inline virtual void
     bind(GLint uniform_ID) const override {

@@ -2,6 +2,34 @@
 
 #include "local_context.hpp"
 #include "logging.hpp"
+#include "scriptstdstring.h"
+#include "util/angel_script/as_logging.hpp"
+#include "util/angel_script/error_checks.hpp"
+#include "util/files.hpp"
+#include "world/terrain/generation/interface.hpp"
+
+// Implement a simple message callback function
+void
+MessageCallback(const AngelScript::asSMessageInfo* msg, void* param) {
+    if (msg->type == AngelScript::asMSGTYPE_ERROR) {
+        LOG_ERROR(
+            logging::script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
+            msg->col, msg->message
+        );
+    } else if (msg->type == AngelScript::asMSGTYPE_WARNING) {
+        LOG_WARNING(
+            logging::script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
+            msg->col, msg->message
+        );
+    } else if (msg->type == AngelScript::asMSGTYPE_INFORMATION) {
+        LOG_INFO(
+            logging::script_logger, "[ {} :({}, {}) ] - {}", msg->section, msg->row,
+            msg->col, msg->message
+        );
+    } else {
+        LOG_ERROR(logging::script_logger, "Unknown message type.");
+    }
+}
 
 void
 GlobalContext::run_opengl_queue() {
@@ -26,80 +54,84 @@ GlobalContext::run_opengl_queue() {
 }
 
 GlobalContext::GlobalContext() :
-    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {}
-
-std::optional<sol::object>
-GlobalContext::get_from_lua(const std::string& command) {
-    LOG_BACKTRACE(logging::lua_logger, "Attempting to index {}.", command);
-
-    std::stringstream command_stream(command);
-
-    std::string key;
-
-    std::getline(command_stream, key, '\\');
-
-    auto raw_result = lua_.get<sol::optional<sol::object>>(key);
-
-    if (!raw_result) {
-        LOG_BACKTRACE(logging::lua_logger, "{} not valid.", key);
-        return {};
+    thread_pool_([] { quill::detail::set_thread_name("BS Thread"); }) {
+    AngelScript::asPrepareMultithread();
+    engine_ = AngelScript::asCreateScriptEngine();
+    int r = engine_->SetMessageCallback(
+        AngelScript::asFUNCTION(MessageCallback), 0, AngelScript::asCALL_CDECL
+    );
+    if (r < 0) {
+        LOG_ERROR(logging::as_logger, "Could not set Message Callback.");
     }
-
-    sol::table result;
-
-    while (std::getline(command_stream, key, '\\')) {
-        if (!raw_result->is<sol::table>()) {
-            LOG_BACKTRACE(logging::lua_logger, "{} not index of table.", key);
-            return {};
-        }
-        result = raw_result.value();
-
-        if (!result.valid()) {
-            LOG_BACKTRACE(logging::lua_logger, "Could not find {}.", key);
-            return {};
-        }
-
-        if (result == sol::lua_nil) {
-            LOG_BACKTRACE(
-                logging::lua_logger, "Attempting to index {}. nil value at {}.",
-                command, key
-            );
-            return {};
-        }
-
-        if (!result.is<sol::table>()) {
-            LOG_BACKTRACE(
-                logging::lua_logger, "Attempting to index {}. {} not index of table.",
-                command, key
-            );
-            return {};
-        }
-
-        raw_result = result.get<sol::optional<sol::object>>(key);
-
-        if (!raw_result) {
-            LOG_BACKTRACE(logging::lua_logger, "{} not valid.", key);
-            return {};
-        }
-    }
-
-    // a sol object
-    return raw_result.value();
+    RegisterStdString(engine_);
+    terrain::generation::init_as_interface(engine_);
+    util::scripting::init_as_interface(engine_);
 }
 
-void
-GlobalContext::load_script_file(const std::filesystem::path& path) {
-    if (!std::filesystem::exists(path)) {
-        LOG_WARNING(logging::file_io_logger, "File {} does not exists.", path);
-        return;
-    }
-    // i think you also want this on the result valid but it might not matter
-    std::scoped_lock lock(global_lua_mutex_);
-    auto result = lua_.safe_script_file(path.lexically_normal().string());
+GlobalContext::~GlobalContext() {
+    engine_->ShutDownAndRelease();
+}
 
-    if (!result.valid()) {
-        sol::error err = result; // who designed this?
-        std::string what = err.what();
-        LOG_ERROR(logging::lua_logger, "{}", what);
+AngelScript::asERetCodes
+GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path) {
+    AngelScript::asIScriptModule* mod;
+    if (mod = engine_->GetModule(mod_name.c_str(), AngelScript::asGM_ONLY_IF_EXISTS)) {
+        LOG_BACKTRACE(
+            logging::as_logger, "Loading file from \"{}\" into module \"{}\".",
+            path.lexically_normal().string(), mod_name
+        );
+    } else if (mod = engine_->GetModule(
+                   mod_name.c_str(), AngelScript::asGM_CREATE_IF_NOT_EXISTS
+               )) {
+        LOG_BACKTRACE(
+            logging::as_logger, "Creating module \"{}\" from file \"{}\".", mod_name,
+            path.lexically_normal().string()
+        );
+    } else {
+        LOG_ERROR(
+            logging::as_logger, "Could not find or create module \"{}\".", mod_name
+        );
+        return AngelScript::asERetCodes::asERROR;
     }
+
+    std::ostringstream script;
+    auto file = files::open_file(path);
+    if (!file) {
+        LOG_ERROR(logging::as_logger, "Could not open file.");
+        return AngelScript::asERetCodes::asERROR;
+    }
+
+    script << file.value().rdbuf();
+    mod->AddScriptSection(path.filename().c_str(), script.str().c_str());
+
+    int result = mod->Build();
+    if (util::scripting::check_ScriptModule_Build(result)) {
+        return static_cast<AngelScript::asERetCodes>(result);
+    }
+    return AngelScript::asERetCodes::asSUCCESS;
+}
+
+AngelScript::asIScriptFunction*
+GlobalContext::get_function(
+    const std::string& module, std::string function_signature
+) const {
+    // check that the module exists.
+    AngelScript::asIScriptModule* mod;
+    if ((mod = engine_->GetModule(module.c_str())) == nullptr) {
+        return nullptr;
+    }
+    AngelScript::asIScriptFunction* function =
+        mod->GetFunctionByDecl(function_signature.c_str());
+    return function;
+}
+
+AngelScript::asITypeInfo*
+GlobalContext::get_type(const std::string& module, std::string type_signature) const {
+    // check that the module exists.
+    AngelScript::asIScriptModule* mod;
+    if ((mod = engine_->GetModule(module.c_str())) == nullptr) {
+        return nullptr;
+    }
+    AngelScript::asITypeInfo* type = mod->GetTypeInfoByDecl(type_signature.c_str());
+    return type;
 }

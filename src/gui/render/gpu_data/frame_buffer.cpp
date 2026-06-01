@@ -11,9 +11,7 @@ namespace gpu_data {
 
 FrameBufferBase::FrameBufferBase(
     screen_size_t width, screen_size_t height, FrameBufferSettings settings
-) :
-    width_(width),
-    height_(height), settings_(settings) {
+) : width_(width), height_(height), settings_(settings) {
     // frame buffer (the container for the other two)
     // -----------------
     glGenFramebuffers(1, &frame_buffer);
@@ -22,15 +20,17 @@ FrameBufferBase::FrameBufferBase(
 
 FrameBuffer::FrameBuffer(
     screen_size_t width, screen_size_t height, FrameBufferSettings settings
-) :
-    FrameBufferBase(width, height, settings) {
-    connect_depth_texture(std::make_shared<Texture2D>(
-        width_, height_,
-        TextureSettings{
-            .internal_format = GPUPixelStorageFormat::DEPTH,
-            .read_format = GPUPixelReadFormat::DEPTH_COMPONENT},
-        false
-    ));
+) : FrameBufferBase(width, height, settings) {
+    connect_depth_texture(
+        std::make_shared<Texture2D>(
+            width_, height_,
+            TextureSettings{
+                .internal_format = GPUPixelStorageFormat::DEPTH,
+                .read_format = GPUPixelReadFormat::DEPTH_COMPONENT
+            },
+            false
+        )
+    );
     connect_render_texture(
         std::make_shared<Texture2D>(
             width_, height_,

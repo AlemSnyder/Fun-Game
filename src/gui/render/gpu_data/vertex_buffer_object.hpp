@@ -69,9 +69,8 @@ struct GPUStructureType {
         uint8_t major_size_, uint8_t minor_size_, uint8_t type_size, bool is_int,
         GPUArayType draw_type
     ) :
-        major_size(major_size_),
-        minor_size(minor_size_), type_size(type_size), is_int(is_int),
-        draw_type(draw_type) {}
+        major_size(major_size_), minor_size(minor_size_), type_size(type_size),
+        is_int(is_int), draw_type(draw_type) {}
 
     template <
         uint8_t major_size_T, uint8_t minor_size_T, uint8_t type_size_T, bool is_int_T,

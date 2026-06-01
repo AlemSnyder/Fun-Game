@@ -108,7 +108,8 @@ display_data(const manifest::ObjectHandler& object_handler, bool& show) {
 
         for (auto& [id, object] : object_handler) {
             // Display a data item
-            ImGui::PushID(std::hash<std::string>{}(id)
+            ImGui::PushID(
+                std::hash<std::string>{}(id)
             ); // maybe not grate to call hashes like this
             ImGui::TableNextRow();
             ImGui::TableNextColumn();

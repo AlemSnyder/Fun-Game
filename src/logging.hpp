@@ -24,14 +24,14 @@ static constexpr quill::LogLevel DEFAULT_LOG_LEVEL = quill::LogLevel::Info;
 
 extern quill::LogLevel _LOG_LEVEL;
 
-extern quill::Logger* main_logger;       // for general logging
-extern quill::Logger* opengl_logger;     // for glfw, glew etc
-extern quill::Logger* terrain_logger;    // for terrain, chunk, tile class
-extern quill::Logger* game_map_logger;   // for terrain generation
-extern quill::Logger* voxel_logger;      // for voxel logic like mesh creation
-extern quill::Logger* file_io_logger;    // for file io
-extern quill::Logger* lua_logger;        // for lua logging
-extern quill::Logger* lua_script_logger; // for lua logging
+extern quill::Logger* main_logger;     // for general logging
+extern quill::Logger* opengl_logger;   // for glfw, glew etc
+extern quill::Logger* terrain_logger;  // for terrain, chunk, tile class
+extern quill::Logger* game_map_logger; // for terrain generation
+extern quill::Logger* voxel_logger;    // for voxel logic like mesh creation
+extern quill::Logger* file_io_logger;  // for file io
+extern quill::Logger* as_logger;       // for as logging
+extern quill::Logger* script_logger;   // for script logging
 
 inline void
 set_thread_name(std::string name) {
@@ -52,8 +52,8 @@ flush() {
     game_map_logger->flush_log();
     voxel_logger->flush_log();
     file_io_logger->flush_log();
-    lua_logger->flush_log();
-    lua_script_logger->flush_log();
+    as_logger->flush_log();
+    script_logger->flush_log();
 }
 
 } // namespace logging

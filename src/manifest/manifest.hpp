@@ -31,7 +31,8 @@ struct manifest_t {
 } // namespace manifest
 
 template <>
-inline glz::detail::any_t::operator std::vector<manifest::descriptor_t>() const {
+inline glz::detail::any_t::
+operator std::vector<manifest::descriptor_t>() const {
     assert(false && "Not Implemented");
     return {};
 }

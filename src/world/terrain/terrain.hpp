@@ -641,8 +641,8 @@ class Terrain : public voxel_utility::VoxelBase {
      * @return true can stand
      * @return false cannot stand
      */
-    [[nodiscard]] bool can_stand_1(TerrainOffset3 xyz
-    ) const; // this might be faster, and used for looping
+    [[nodiscard]] bool
+    can_stand_1(TerrainOffset3 xyz) const; // this might be faster, and used for looping
 
     /**
      * @brief test if dxy x dyx x dz object can stand at given position

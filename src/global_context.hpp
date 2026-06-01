@@ -26,8 +26,8 @@
 #include "logging.hpp"
 
 #define BS_THREAD_POOL_ENABLE_PRIORITY
+#include <angelscript.h>
 #include <BS_thread_pool.hpp>
-#include <sol/sol.hpp>
 
 #include <functional>
 #include <mutex>
@@ -53,9 +53,9 @@ class GlobalContext {
 
     std::mutex opengl_queue_mutex;
 
-    sol::state lua_;
+    AngelScript::asIScriptEngine* engine_;
 
-    std::mutex global_lua_mutex_;
+    // std::mutex global_as_mutex_;
 
 #if DEBUG()
 
@@ -73,6 +73,8 @@ class GlobalContext {
 
     void operator=(GlobalContext&&) = delete;
     void operator=(GlobalContext const&) = delete;
+
+    ~GlobalContext();
 
     inline void
     set_main_thread() {
@@ -101,9 +103,15 @@ class GlobalContext {
         return obj;
     }
 
-    // this must be run before exit if lua has been initialized on thread local
-    // 
-    inline void close_threads() {
+    /**
+     * @brief Close all threads in thread pool.
+     *
+     * @details This function will close the threads in the thread pool. This
+     * may be necessary if things allocated in thread local memory need to be
+     * deallocated before things on the main thread are deallocated.
+     */
+    inline void
+    close_threads() {
         thread_pool_.reset(0);
     }
 
@@ -133,7 +141,7 @@ class GlobalContext {
      * @param BS::priority_t priority = BS::pr::normal
      */
     template <typename F, typename R = std::invoke_result_t<std::decay_t<F>>>
-    auto
+    [[nodiscard]] auto
     submit_task(F&& function, BS::priority_t priority = BS::pr::normal) {
         return thread_pool_.submit_task(function, priority);
     }
@@ -148,14 +156,27 @@ class GlobalContext {
     }
 
     // Might want to expose these in the future.
-    auto
+    [[nodiscard]] auto
     wait_for_tasks() {
         return thread_pool_.wait();
     }
 
     // oh boy time to start wrapping tread_pool
 
-    void load_script_file(const std::filesystem::path& path);
+    [[nodiscard]] auto
+    as_engine() {
+        return engine_;
+    }
 
-    std::optional<sol::object> get_from_lua(const std::string& command);
+    // load as script file
+    [[nodiscard]] AngelScript::asERetCodes
+    load_file(const std::string& module, std::filesystem::path path);
+
+    // get function from module
+    [[nodiscard]] AngelScript::asIScriptFunction*
+    get_function(const std::string& module, std::string function) const;
+
+    // get type from module
+    [[nodiscard]] AngelScript::asITypeInfo*
+    get_type(const std::string& module, std::string type_signature) const;
 };

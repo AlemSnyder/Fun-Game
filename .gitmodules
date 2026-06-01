@@ -1,9 +1,6 @@
 [submodule "vendor/quill"]
 	path = vendor/quill
 	url = https://github.com/odygrd/quill.git
-[submodule "vendor/sol2"]
-	path = vendor/sol2
-	url = https://github.com/ThePhD/sol2.git
 [submodule "vendor/imgui"]
 	path = vendor/imgui/imgui
 	url = https://github.com/ocornut/imgui
@@ -19,3 +16,6 @@
 [submodule "vendor/whereami"]
 	path = vendor/whereami
 	url = https://github.com/gpakosz/whereami.git
+[submodule "vendor/angelscript"]
+	path = vendor/angelscript
+	url = https://github.com/anjo76/angelscript.git

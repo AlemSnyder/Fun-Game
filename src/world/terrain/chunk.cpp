@@ -55,7 +55,8 @@ Chunk::stamp_tile_region(
 
 void
 Chunk::init_nodegroups() {
-    std::unordered_map<LocalPosition, NodeGroup&> temporary_position_to_nodegroup_map({}
+    std::unordered_map<LocalPosition, NodeGroup&> temporary_position_to_nodegroup_map(
+        {}
     );
 
     // for all tiles:
@@ -171,7 +172,8 @@ Chunk::add_nodegroup_adjacent_mp() {
                     continue;
                 }
                 std::scoped_lock lock{
-                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()};
+                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()
+                };
                 NG.add_adjacent(to_add, 31);
             }
         }
@@ -207,7 +209,8 @@ Chunk::add_nodegroup_adjacent_all() {
                     continue;
                 }
                 std::scoped_lock lock{
-                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()};
+                    mut_, ter_->get_chunk(adjacent_chunk)->get_mutex()
+                };
                 NG.add_adjacent(to_add, 31);
             }
         }

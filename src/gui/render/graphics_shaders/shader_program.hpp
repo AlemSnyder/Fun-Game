@@ -113,9 +113,7 @@ class Render_Base {
  public:
     inline Render_Base(
         shader::Program& shader_program, const std::function<void()> setup_commands
-    ) :
-        opengl_program_(shader_program),
-        setup_(setup_commands) {
+    ) : opengl_program_(shader_program), setup_(setup_commands) {
         LOG_DEBUG(
             logging::opengl_logger, "Program ID: {}, Name: {}",
             opengl_program_.get_program_ID(), opengl_program_.get_name()
@@ -143,8 +141,7 @@ class ShaderProgram_Standard :
 
     inline ShaderProgram_Standard(
         shader::Program& shader_program, const std::function<void()> setup_commands
-    ) :
-        Render_Base(shader_program, setup_commands) {}
+    ) : Render_Base(shader_program, setup_commands) {}
 
     inline virtual ~ShaderProgram_Standard() {}
 
@@ -165,8 +162,7 @@ class ShaderProgram_Elements :
 
     inline ShaderProgram_Elements(
         shader::Program& shader_program, const std::function<void()> setup_commands
-    ) :
-        Render_Base(shader_program, setup_commands) {}
+    ) : Render_Base(shader_program, setup_commands) {}
 
     inline virtual ~ShaderProgram_Elements() {}
 
@@ -187,8 +183,7 @@ class ShaderProgram_Instanced :
 
     inline ShaderProgram_Instanced(
         shader::Program& shader_program, const std::function<void()> setup_commands
-    ) :
-        Render_Base(shader_program, setup_commands) {}
+    ) : Render_Base(shader_program, setup_commands) {}
 
     inline virtual ~ShaderProgram_Instanced() {}
 
@@ -209,8 +204,7 @@ class ShaderProgram_ElementsInstanced :
 
     inline ShaderProgram_ElementsInstanced(
         shader::Program& shader_program, const std::function<void()> setup_commands
-    ) :
-        Render_Base(shader_program, setup_commands) {}
+    ) : Render_Base(shader_program, setup_commands) {}
 
     inline virtual ~ShaderProgram_ElementsInstanced() {}
 
@@ -231,8 +225,7 @@ class ShaderProgram_MultiElements :
 
     inline ShaderProgram_MultiElements(
         shader::Program& shader_program, const std::function<void()> setup_commands
-    ) :
-        Render_Base(shader_program, setup_commands) {}
+    ) : Render_Base(shader_program, setup_commands) {}
 
     inline virtual ~ShaderProgram_MultiElements() {}
 

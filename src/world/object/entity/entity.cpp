@@ -5,8 +5,6 @@
 #include "logging.hpp"
 #include "util/files.hpp"
 
-#include <sol/sol.hpp>
-
 namespace world {
 
 namespace object {
@@ -14,9 +12,11 @@ namespace object {
 namespace entity {
 
 Entity::Entity(const util::Mesh& mesh) :
-    mesh_and_positions_(std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
-        mesh, std::vector<glm::mat4>()
-    )) {
+    mesh_and_positions_(
+        std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(
+            mesh, std::vector<glm::mat4>()
+        )
+    ) {
     LOG_WARNING(
         logging::main_logger,
         "Entity constructor Entity(const Mesh& mesh) is depreciated!"
@@ -25,9 +25,7 @@ Entity::Entity(const util::Mesh& mesh) :
 
 Entity::Entity(
     const object_t& object_data, const manifest::descriptor_t& identification_data
-) :
-    name_(object_data.name),
-    identification_(identification_data.identification) {
+) : name_(object_data.name), identification_(identification_data.identification) {
     const auto& model_data = object_data.models[0];
     // read mesh from path
     std::filesystem::path object_path_copy = identification_data.path;
@@ -46,10 +44,9 @@ Entity::Entity(
                                         / object_path_copy.remove_filename()
                                         / object_data.ai.value();
 
-        // load into All Lua
-        // need access control
+        // load into the angelscript engine
         GlobalContext& context = GlobalContext::instance();
-        context.load_script_file(ai_path);
+        context.load_file("Base", ai_path);
 
         has_ai_ = true;
     }
@@ -75,44 +72,16 @@ Entity::sync_data_to_gpu() {
 glm::vec3
 Entity::decision(EntityInstance* entity_instance) {
     LocalContext& local_context = LocalContext::instance();
-    std::optional<sol::object> update_function_query =
-        local_context.get_from_lua(identification_ + "\\update");
-    if (!update_function_query) {
-        LOG_ERROR(
-            logging::lua_logger, "Could not find Update function for entity {}.",
-            identification_
-        );
-        return entity_instance->get_position();
-    } else if (!update_function_query->is<sol::protected_function>()) {
-        LOG_ERROR(
-            logging::lua_logger, "Update is not a function for entity {}.",
-            identification_
-        );
-        return entity_instance->get_position();
-    }
 
-    sol::protected_function update_function = update_function_query.value();
-    if (!update_function.valid()) {
-        LOG_ERROR(
-            logging::lua_logger, "Update function for entity {} not valid.",
-            identification_
-        );
-        return entity_instance->get_position();
-    }
-    sol::protected_function_result result = update_function(entity_instance);
+    GlobalContext& global_context = GlobalContext::instance();
+    // global_context.get_function(identification_, "vec3 update(Base::entity)");
+    // TODO
+    // need to add glm vec3 to as
+    // and need to add the entity virtual class
 
-    if (!result.valid()) {
-        sol::error err = result;
-        sol::call_status status = result.status();
-        LOG_ERROR(logging::lua_logger, "{}: {}", sol::to_string(status), err.what());
-        return entity_instance->get_position();
-    }
+    // Then call function and pass the entity instance object to it.
 
-    sol::table vector_table = result;
-    glm::vec3 position;
-    position.x = vector_table["x"];
-    position.y = vector_table["y"];
-    position.z = vector_table["z"];
+    glm::vec3 position(0);
     return position;
 }
 

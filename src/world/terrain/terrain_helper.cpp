@@ -20,7 +20,7 @@ namespace helper {
  * given a set of grass tiles gets the adjacent grass tiles that have height
  * equal to given hight. Then next to those tiles set the grass height to
  * hight-1 if this is higher than the saved height.
-*/
+ */
 template <int getter(Tile*), void setter(Tile*, int)>
 void
 grow_grass_inner(

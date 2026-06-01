@@ -65,7 +65,7 @@ class Chunk : public voxel_utility::VoxelBase {
      * @param bz chunk z position
      * @param ter the terrain this chunk is in
      */
-    Chunk(Dim bx, Dim by, Dim bz, Terrain* ter) : Chunk({bx, by, bz}, ter){};
+    Chunk(Dim bx, Dim by, Dim bz, Terrain* ter) : Chunk({bx, by, bz}, ter) {};
 
     Chunk(TerrainDim3 chunk_position, Terrain* ter);
 
@@ -238,7 +238,7 @@ class ChunkData : public voxel_utility::VoxelBase {
 
     inline ChunkData(const Chunk& chunk) :
         data_(get_mat_color_from_chunk(chunk)), offset_(chunk.get_offset()),
-        color_ids_(chunk.get_color_ids()){};
+        color_ids_(chunk.get_color_ids()) {};
 
     /**
      * @brief Used for getting mesh
