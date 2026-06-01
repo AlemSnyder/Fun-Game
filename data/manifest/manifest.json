@@ -12,8 +12,8 @@
     ],
     "biomes": [
         {
-            "identification": "base/Test_Biome",
-            "path": "Base/biomes/Test_Biome.json"
+            "identification": "base::Default",
+            "path": "Base/biomes/Default/biome_data.json"
         }
     ]
 }

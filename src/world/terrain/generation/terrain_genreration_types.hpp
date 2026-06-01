@@ -115,10 +115,12 @@ struct layer_effects_t {
 };
 
 struct biome_data_t {
+    std::string name;
+    std::string id;
     std::filesystem::path map_generator_path;
     std::filesystem::path image_path;
+    std::filesystem::path materials_path;
     std::string description;
-    std::string name;
 
     std::vector<tile_macros_t> tile_macros;
     std::vector<tile_data_t> tile_data;

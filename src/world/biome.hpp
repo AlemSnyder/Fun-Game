@@ -33,18 +33,6 @@
 namespace terrain {
 
 namespace generation {
-/**
- * @brief Contains Json data from a biome file.
- */
-
-struct biome_json_data {
-    // Name of biome. Used both for file name and display name
-    std::string biome_name;
-    // Json data that describes biome
-    biome_data_t biome_data;
-    // Json data that describes materials
-    all_materials_t materials_data;
-};
 
 /**
  * @brief Contains grass colors and pattern for a biome.
@@ -134,15 +122,30 @@ class Biome {
      * @brief Construct a new Biome object
      *
      * @param biome_data data containing biome_data material data and biome name
+     *
+     * @param seed Set the seed for terrain generation
      */
-    Biome(biome_json_data biome_data, size_t seed);
+    Biome(biome_data_t biome_data, size_t seed);
 
     /**
-     * @brief Construct a new Biome object
+     * @brief Get the Biome display name.
      *
-     * @param biome_name name of biome
+     * @return const std::string& name
      */
-    Biome(const std::string& biome_name, size_t seed);
+    [[nodiscard]] inline const std::string&
+    get_name() const {
+        return name_;
+    }
+
+    /**
+     * @brief Get the Biome id.
+     *
+     * @return const std::string& id
+     */
+    [[nodiscard]] inline const std::string&
+    get_id() const {
+        return id_name_;
+    }
 
     /**
      * @brief Get macro tile map
@@ -287,9 +290,6 @@ class Biome {
     static TerrainMacroMap
     map_generation_test(const std::filesystem::path& map_generator_file, size_t size);
 
-    [[nodiscard]] static biome_json_data
-    get_json_data(const std::filesystem::path& biome_file_folder);
-
  private:
     // read data to create generator component
     void read_tile_macro_data_(const std::vector<tile_macros_t>& biome_data);
@@ -307,8 +307,6 @@ class Biome {
      */
     [[nodiscard]] std::unordered_map<MaterialId, const terrain::material_t>
     init_materials_(const all_materials_t& material_data);
-
-    [[nodiscard]] biome_json_data get_json_data_(const std::string& biome_name);
 };
 
 } // namespace generation

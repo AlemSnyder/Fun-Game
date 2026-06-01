@@ -263,9 +263,6 @@ check_ScriptModule_Build(int r) {
     }
 }
 
-// AngelScript::asERetCodes check_RegisterObjectType(int r) {
-
-//}
 } // namespace scripting
 
 } // namespace util

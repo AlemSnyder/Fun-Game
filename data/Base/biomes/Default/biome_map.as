@@ -1,19 +1,12 @@
-// Biome map files must define a function that returns a structure with a "map".
-// The map function is called from c++ and reads the x and y lengths. Using this
-// information the "map" key of the returned structure can be used as if it were
-// a 2D array.
+// Biome map files must define a class that has a "sample" method. The sample
+// method is called from c++ and takes the x, and y coordinates. The method
+// should be completely procedural, and except any integer x and y. This might
+// be used to do long range rendering so it is important it is well defined.
 
 // Anyway, do something like this and it should work as long as there are
 // correctly defined tile types and tile macros.
 
-// Base = Base or {}
-// Base.biome_map = Base.biome_map or {}
-
-// Base.biome_map.spacing = .8
-
-namespace Base {
-
-namespace biomes {
+int NUM_GRASS = 8;
 
 class biome_map {
 
@@ -44,7 +37,7 @@ class biome_map {
 
     // Maps for trees and bushes
     // name should be used in json file
-    float sample_plants(string plant_id, int x, int y) {
+    float sample_plants(const string& in plant_id, int x, int y) {
         if (plant_id == "Trees_1") {
             int height = sample(x, y);
             if (height == 1) {
@@ -69,10 +62,12 @@ class biome_map {
     }
 }
 
+// TODO need to add glm
+int dirt_coloring(int x, int y, int z) {
+    return (z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
 }
 
-}
 
 void do_something() {
-    Base::biomes::biome_map@ map = Base::biomes::biome_map();
+    biome_map@ map = biome_map();
 }
