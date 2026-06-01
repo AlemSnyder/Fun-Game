@@ -6,6 +6,8 @@
 // Anyway, do something like this and it should work as long as there are
 // correctly defined tile types and tile macros.
 
+int NUM_GRASS = 8;
+
 class biome_map {
 
     TerrainGeneration::FractalNoise noise; 
@@ -35,7 +37,7 @@ class biome_map {
 
     // Maps for trees and bushes
     // name should be used in json file
-    float sample_plants(string plant_id, int x, int y) {
+    float sample_plants(const string& in plant_id, int x, int y) {
         if (plant_id == "Trees_1") {
             int height = sample(x, y);
             if (height == 1) {
@@ -60,6 +62,10 @@ class biome_map {
     }
 }
 
+// TODO need to add glm
+int dirt_coloring(int x, int y, int z) {
+    return (z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
+}
 
 
 void do_something() {

@@ -128,6 +128,26 @@ class Biome {
     Biome(biome_data_t biome_data, size_t seed);
 
     /**
+     * @brief Get the Biome display name.
+     *
+     * @return const std::string& name
+     */
+    [[nodiscard]] inline const std::string&
+    get_name() const {
+        return name_;
+    }
+
+    /**
+     * @brief Get the Biome id.
+     *
+     * @return const std::string& id
+     */
+    [[nodiscard]] inline const std::string&
+    get_id() const {
+        return id_name_;
+    }
+
+    /**
      * @brief Get macro tile map
      *
      * @param length side length of square map

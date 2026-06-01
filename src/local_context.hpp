@@ -102,14 +102,15 @@ class LocalContext {
         return static_cast<AngelScript::asERetCodes>(context_->SetArgObject(i, arg));
     }
 
+    // Not sure this is possible.
     inline AngelScript::asERetCodes
-    set_arg(size_t i, std::string& arg) {
+    set_arg(size_t i, std::string arg) {
         return static_cast<AngelScript::asERetCodes>(context_->SetArgObject(i, &arg));
     }
 
     template <typename A>
     inline AngelScript::asERetCodes
-    set_all_args(const size_t i, const A&& a) {
+    set_all_args(const size_t i, A&& a) {
         AngelScript::asERetCodes result = set_arg(i, a);
         if (result != AngelScript::asERetCodes::asSUCCESS) {
             LOG_ERROR(
@@ -122,7 +123,7 @@ class LocalContext {
 
     template <typename A, typename... Args>
     inline AngelScript::asERetCodes
-    set_all_args(const size_t i, const A&& a, const Args&&... args) {
+    set_all_args(const size_t i, A&& a, Args&&... args) {
         AngelScript::asERetCodes result = set_arg(i, a);
         if (result != AngelScript::asERetCodes::asSUCCESS) {
             LOG_ERROR(
@@ -131,7 +132,7 @@ class LocalContext {
             );
             return result;
         }
-        return set_all_args(i + 1, std::forward<const Args>(args)...);
+        return set_all_args(i + 1, std::forward<Args>(args)...);
     }
 
  public:
@@ -140,7 +141,7 @@ class LocalContext {
 
     template <class T = void*, class... Args>
     inline std::expected<T, AngelScript::asEContextState>
-    run_function(AngelScript::asIScriptFunction* function, const Args&&... args) {
+    run_function(AngelScript::asIScriptFunction* function, Args&&... args) {
         AngelScript::asEContextState result =
             static_cast<AngelScript::asEContextState>(context_->Prepare(function));
         if (result != AngelScript::asEContextState::asEXECUTION_FINISHED) {
@@ -148,7 +149,7 @@ class LocalContext {
         }
         if constexpr (sizeof...(args) != 0) {
             AngelScript::asERetCodes args_result =
-                set_all_args(0, std::forward<const Args>(args)...);
+                set_all_args(0, std::forward<Args>(args)...);
             if (args_result != AngelScript::asERetCodes::asSUCCESS) {
                 LOG_WARNING(
                     logging::as_logger, "Setting script arguments did not secseed."
@@ -199,7 +200,7 @@ class LocalContext {
     inline std::expected<T, AngelScript::asEContextState>
     run_method(
         AngelScript::asIScriptObject* object, AngelScript::asIScriptFunction* function,
-        const Args&&... args
+        Args&&... args
     ) {
         AngelScript::asEContextState result =
             static_cast<AngelScript::asEContextState>(context_->Prepare(function));
@@ -212,7 +213,7 @@ class LocalContext {
         }
         if constexpr (sizeof...(args) != 0) {
             AngelScript::asERetCodes args_result =
-                set_all_args(0, std::forward<const Args>(args)...);
+                set_all_args(0, std::forward<Args>(args)...);
             if (args_result != AngelScript::asERetCodes::asSUCCESS) {
                 LOG_WARNING(
                     logging::as_logger, "Setting script arguments did not secseed."

@@ -4,6 +4,7 @@
 #include "generation/land_generator.hpp"
 #include "generation/noise.hpp"
 #include "generation/tile_stamp.hpp"
+#include "local_context.hpp"
 #include "logging.hpp"
 #include "material.hpp"
 #include "path/node.hpp"
@@ -551,9 +552,26 @@ Terrain::natural_color(
 ) const {
     auto mat_id = mat->material_id;
     if (mat_id == DIRT_ID) { // being set to dirt
-        // adds striations to the dirt. (This should be done by angelscript in the
-        // future)
-        color_id = (xyz.z + (xyz.x / 16 + xyz.y / 16) % 2) / 3 % 2 + NUM_GRASS;
+        // adds striations to the dirt.
+        auto& global_context = GlobalContext::instance();
+        auto& local_context = LocalContext::instance();
+
+        // TODO keep the function id
+        auto function = global_context.get_function(
+            biome_.get_id(), "int dirt_coloring(int, int, int)"
+        );
+        auto result = local_context.run_function<int, int, int, int>(
+            function, std::move(xyz.x), std::move(xyz.y), std::move(xyz.z)
+        );
+        if (result) {
+            color_id = static_cast<ColorId>(result.value());
+        } else {
+            LOG_WARNING_LIMIT(
+                std::chrono::seconds(300), logging::as_logger,
+                "Error running dirt coloring. Result {}.",
+                static_cast<int>(result.error())
+            );
+        }
     }
 
     return color_id;

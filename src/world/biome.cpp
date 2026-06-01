@@ -189,8 +189,8 @@ Biome::get_plant_map(Dim length) const {
     biome_map->AddRef();
 
     AngelScript::asIScriptFunction* script_method =
-        type->GetMethodByDecl("float sample_plants(string, int, int)");
-    result = local_context.run_method(biome_map, script_method, 5, 5);
+        type->GetMethodByDecl("float sample_plants(const string &in, int, int)");
+    //result = local_context.run_method(biome_map, script_method, 5, 5);
     if (script_method == nullptr) {
         LOG_WARNING(logging::main_logger, "Could not find biome map function.");
         return {};
