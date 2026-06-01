@@ -55,7 +55,6 @@ jobs:
           sudo apt update
 
           sudo apt install \
-            lua5.3 liblua5.3-dev \
             libglfw3 libglfw3-dev \
             libglew-dev \
             libglm-dev \
