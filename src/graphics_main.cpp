@@ -172,8 +172,15 @@ start_game(intro_scene::result result, GLFWwindow* window) {
                     return result;
                 }
 
+                object_handler.load_all_manifests<false>();
+                    auto biome_data = object_handler.get_biome(biome_name);
+                    if (!biome_data) {
+                        result.result = 1;
+                        return result;
+                    }
+
                 result.world = std::make_unique<world::World>(
-                    &object_handler, biome_name, size, size, seed
+                    &object_handler, *biome_data, size, size, seed
                 );
                 result.world->generate_plants();
                 result.climate = std::make_unique<world::Climate>();
@@ -181,7 +188,7 @@ start_game(intro_scene::result result, GLFWwindow* window) {
                 return result;
             });
 
-    } else if (result.index() == 2) { // load game
+    } else if (result.index() == 3) { // load game
         LOG_ERROR(logging::main_logger, "Loading World Not Implemented (yet*)");
         return intro_scene::IntroPage();
         // not implemented
