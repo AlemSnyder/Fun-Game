@@ -37,7 +37,7 @@ Entity::Entity(
     auto mesh = util::ambient_occlusion_mesher(model);
 
     mesh_and_positions_ =
-        std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh);
+        std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh, true);
 
     if (object_data.ai) {
         std::filesystem::path ai_path = files::get_data_path()

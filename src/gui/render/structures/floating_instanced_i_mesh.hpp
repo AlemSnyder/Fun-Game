@@ -59,11 +59,11 @@ class FloatingInstancedIMeshGPU :
     inline FloatingInstancedIMeshGPU&
     operator=(FloatingInstancedIMeshGPU&& other) = default;
 
-    inline FloatingInstancedIMeshGPU(const util::Mesh& mesh) :
-        FloatingInstancedIMeshGPU(mesh, {}) {}
+    inline FloatingInstancedIMeshGPU(const util::Mesh& mesh, bool differed = false) :
+        FloatingInstancedIMeshGPU(mesh, {}, differed) {}
 
     FloatingInstancedIMeshGPU(
-        const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
+        const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms, bool differed = false
     );
 
     inline virtual ~FloatingInstancedIMeshGPU() {}

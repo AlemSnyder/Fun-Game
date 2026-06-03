@@ -70,7 +70,7 @@ class InstancedIMeshGPU :
      * @param const std::vector<glm::ivec4>& model_transforms
      */
     InstancedIMeshGPU(
-        const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+        const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms, bool differed = false
     );
 
     inline virtual ~InstancedIMeshGPU() {}
