@@ -1,3 +1,26 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file bordered_widget.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines BorderedWidget Class
+ *
+ * @ingroup GUI  THE_BUTTONS
+ *
+ */
+
 #pragma once
 
 #include "bordered_widget.hpp"
@@ -12,6 +35,9 @@ namespace gui {
 
 namespace the_buttons {
 
+/**
+ * @brief A widget with a border.
+ */
 class BorderedWidget : public virtual WidgetBase {
  private:
     std::shared_ptr<render::WindowTexture> data_;
@@ -59,21 +85,40 @@ class BorderedWidget : public virtual WidgetBase {
         return data_->get_num_vertices();
     }
 
+    /**
+     * @brief Bind OpenGL data to use in a program
+     */
     inline virtual void
     bind() const {
         data_->bind();
     };
 
+    /**
+     * @brief Clears the OpenGL vertex array inputs
+     */
     inline virtual void
     release() const {
         data_->release();
     }
 
+    /**
+     * @brief If the widget should be rendered
+     *
+     * @return bool true if the widget should be rendered, false otherwise.
+     */
     inline virtual bool
     do_render() const {
         return data_->do_render();
     };
 
+    /**
+     * @brief Called by the UI to render this widget to the screen
+     *
+     * @param UserInterface* user_interface The UserInterface that is rendering the
+     * widget
+     * @param screen_size_t x_position Position on the screen to render the widget
+     * @param screen_size_t y_position Position on the screen to render the widget
+     */
     void user_interface_render(
         const UserInterface* user_interface, screen_size_t x_position,
         screen_size_t y_position

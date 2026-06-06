@@ -81,10 +81,7 @@ ShaderProgramElements_Windows::render(
     if (!data->do_render()) {
         return;
     }
-
     data->bind();
-
-    // test if T inherits from Instancing or not
 
     auto num_vertices = data->get_num_vertices();
     auto element_type = data->get_element_type();

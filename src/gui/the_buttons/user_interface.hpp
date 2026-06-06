@@ -1,3 +1,26 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file user_interface.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines UserInterface Class
+ *
+ * @ingroup GUI  THE_BUTTONS
+ *
+ */
+
 #pragma once
 
 #include "../render/graphics_shaders/shader_program.hpp"
@@ -9,6 +32,7 @@
 #include <memory>
 
 namespace gui {
+
 namespace the_buttons {
 
 class BorderedWidget;
@@ -16,6 +40,9 @@ class BorderedWindow;
 class ButtonWidget;
 class TextWidget;
 
+/**
+ * @brief Top leven UI. Handles inputs and forwards inputs to widgets.
+ */
 class UserInterface : public virtual scene::Inputs {
  private:
     // uniform
@@ -32,14 +59,17 @@ class UserInterface : public virtual scene::Inputs {
     std::shared_ptr<shader::ShaderProgram_Windows> window_pipeline_;
     std::shared_ptr<shader::ShaderProgramElements_Windows> text_pipeline_;
 
+    // set of all frames
     std::list<std::shared_ptr<FrameInterface>> frames_;
+    // selected frame
+    std::shared_ptr<WidgetInterface> selected_frame_;
 
-    std::shared_ptr<WidgetInterface> selected_frame_; // widget?
-
+    // get frame at given location
     [[nodiscard]] std::pair<
         std::weak_ptr<const FrameInterface>, std::weak_ptr<const WidgetInterface>>
     get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y) const;
 
+    // get frame at given location
     [[nodiscard]] inline std::pair<
         std::weak_ptr<FrameInterface>, std::weak_ptr<WidgetInterface>>
     get_frame(screen_size_t mouse_position_x, screen_size_t mouse_position_y) {
@@ -53,41 +83,91 @@ class UserInterface : public virtual scene::Inputs {
         );
     }
 
+    // render to window
     void reselect_frame(GLFWwindow* window);
 
  public:
+    /**
+     * @brief Construct a new UserInterface object
+     *
+     * @param shader::ShaderHandler& shader_handler
+     * @param uint8_t ui_scale
+     */
     UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_scale);
 
+    /**
+     * @brief Update the entire user interface using the given screen size.
+     *
+     * @param screen_size_t width width of screen
+     * @param screen_size_t height height of screen
+     */
     void update(screen_size_t width, screen_size_t height);
 
+    /**
+     * @brief Set the ui scale
+     *
+     * @param uint8_t ui_scale Scale to set the ui. Number of screen pixels per UI pixel
+     */
     inline void
     set_ui_scale(uint8_t ui_scale) {
         ui_scale_uniform_->set_ui_scale(ui_scale);
     }
 
-    // What types of frames do I need to add?
+    /**
+     * @brief Add new frame to the user interface
+     *
+     * @param std::shared_ptr<FrameInterface> frame frame to add
+     */
     inline void
     add(std::shared_ptr<FrameInterface> frame) {
         auto pos = frames_.begin();
         frames_.insert(pos, frame);
     }
 
-    // one of these for each
+    // Each type of widget and frame needs a different method to render. Visitor pattern
+    /**
+     * @brief Render a BorderedWindow
+     *
+     * @param const BorderedWindow* frame
+     * @param screen_size_t x_frame_position
+     * @param screen_size_t y_frame_position
+     */
     void render_frame(
         const BorderedWindow* frame, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 
+    /**
+     * @brief Render a BorderedWidget
+     *
+     * @param const BorderedWidget* frame
+     * @param screen_size_t x_frame_position
+     * @param screen_size_t y_frame_position
+     */
     void render_frame(
         const BorderedWidget* widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 
+    /**
+     * @brief Render a ButtonWidget
+     *
+     * @param const ButtonWidget* frame
+     * @param screen_size_t x_frame_position
+     * @param screen_size_t y_frame_position
+     */
     void render_frame(
         const ButtonWidget* widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position
     ) const;
 
+    /**
+     * @brief Render a TextWidget
+     *
+     * @param const TextWidget* frame
+     * @param screen_size_t x_frame_position
+     * @param screen_size_t y_frame_position
+     */
     void render_frame(
         const TextWidget* widget, screen_size_t x_frame_position,
         screen_size_t y_frame_position

@@ -1,3 +1,26 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file frame.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines FrameInterface and FrameBase Classes
+ *
+ * @ingroup GUI  THE_BUTTONS
+ *
+ */
+
 #pragma once
 
 #include "../render/gpu_data/data_types.hpp"
@@ -13,18 +36,45 @@ namespace gui {
 
 namespace the_buttons {
 
+/**
+ * @brief Interface for Frame. Frames hare top level widgets in the UI system. They don't have parents and are rendered relative to the window.
+ */
 class FrameInterface : public virtual WidgetInterface {
  public:
-    inline virtual ~FrameInterface() {}; // kill children
+    inline virtual ~FrameInterface() {};
 
+    /**
+     * @brief Check if the position of the frame fixed on the screen
+     * 
+     * @return true if fixed false if not.
+     */
     virtual bool is_fixed() const = 0;
 
+    /**
+     * @brief Check if the window should be rendered
+     * 
+     * @return false if should not be rendered true if should be
+     */
     inline virtual bool is_visible() const = 0;
 
+    /**
+     * @brief Function called when the Frame is selected
+     */
     virtual void on_select() = 0;
 
+    /**
+     * @brief Function called when any other frame is selected
+     */
     virtual void on_end_select() = 0;
 
+    /**
+     * @brief Get the box that bounds of the widget.
+     *
+     * @details This should be the smallest rectangle that completely contains the
+     * widget.
+     *
+     * @return std::array<screen_size_t, 4> [x position, y position, width, height]
+     */
     virtual std::array<screen_size_t, 4> get_bounding_box() const = 0;
 
     /**
@@ -139,9 +189,8 @@ class FrameBase : public virtual FrameInterface {
     glm::ivec2 frame_size_;
     std::vector<glm::ivec2> exterior_points_;
 
-    //    Frame* parent_;
     bool fixed_; // fixed position in render queue
-    std::unordered_set<std::shared_ptr<WidgetInterface>> children;
+    std::unordered_set<std::shared_ptr<WidgetInterface>> children_;
 
     bool is_selected;
 
@@ -153,16 +202,36 @@ class FrameBase : public virtual FrameInterface {
         position_(position), frame_size_(frame_size), exterior_points_(exterior_points),
         fixed_(fixed) {};
 
-    inline virtual ~FrameBase() {}; // kill children
+    inline virtual ~FrameBase() {};
 
+    /**
+     * @brief Test if the given location is within the region of the widget
+     *
+     * @param screen_size_t x screen position x coordinate
+     * @param screen_size_t y screen position y coordinate
+     */
     bool is_interior(screen_size_t x, screen_size_t y) const;
 
+    /**
+     * @brief Get child widget if it exists at the given position.
+     *
+     * @param screen_size_t x screen position x coordinate
+     * @param screen_size_t y screen position y coordinate
+     *
+     * @return std::weak_ptr<const WidgetInterface> a week pointer to the child widget.
+     * It will exist if the given location has a child widget.
+     */
     std::weak_ptr<const WidgetInterface>
     get_child_at_position(screen_size_t x, screen_size_t y) const;
 
+    /**
+     * @brief Quarry if this widget has child widgets.
+     *
+     * @return true if there are child widgets, false otherwise.
+     */
     [[nodiscard]] inline virtual bool
     has_children() const override {
-        return !children.empty();
+        return !children_.empty();
     }
 
     // prevent overlapping children.
@@ -174,44 +243,60 @@ class FrameBase : public virtual FrameInterface {
     // do this be checking if parent is set.
     // could also do the opposite and require that initialized with parent.
 
+    /**
+     * @brief Check if the position of the frame fixed on the screen
+     * 
+     * @return true if fixed false if not.
+     */
     inline virtual bool
     is_fixed() const override {
         return fixed_;
     }
 
+    /**
+     * @brief Check if the window should be rendered
+     * 
+     * @return false if should not be rendered true if should be
+     */
     inline virtual bool
     is_visible() const override {
         return true;
     }
 
+    /**
+     * @brief Function called when the Frame is selected
+     */
     inline virtual void on_select() override {};
 
+    /**
+     * @brief Function called when any other frame is selected
+     */
     inline virtual void on_end_select() override {};
 
-    // virtual void render_children(
-    //     const UserInterface* user_interface, screen_size_t x_position,
-    //     screen_size_t y_position
-    // ) const;
-
-    [[nodiscard]] inline screen_size_t
-    get_x_position() const {
-        return position_.x;
-    }
-
-    [[nodiscard]] inline screen_size_t
-    get_y_position() const {
-        return position_.y;
-    }
-
+    /**
+     * @brief Get the box that bounds of the widget.
+     *
+     * @details This should be the smallest rectangle that completely contains the
+     * widget.
+     *
+     * @return std::array<screen_size_t, 4> [x position, y position, width, height]
+     */
     inline virtual std::array<screen_size_t, 4>
     get_bounding_box() const {
         return {position_.x, position_.y, frame_size_.x, frame_size_.y};
     }
 
+    /**
+     * @brief Construct a child widget of given type with given arguments.
+     * @tparam widget_type T Child widget type
+     * @tparam ...Args arguments for child widget
+     * @param ...args arguments for child widget
+     * @return std::shared_ptr<T> shared_ptr to child widget
+     */
     template <widget_type T, class... Args>
     [[nodiscard]] inline std::shared_ptr<T>
     make(Args&&... args) {
-        auto new_widget = children.emplace(std::make_shared<T>(this, args...));
+        auto new_widget = children_.emplace(std::make_shared<T>(this, args...));
         if (new_widget.second) {
             if (auto new_widget_ptr = std::dynamic_pointer_cast<T>(*new_widget.first)) {
                 return new_widget_ptr;
@@ -222,12 +307,12 @@ class FrameBase : public virtual FrameInterface {
 
     [[nodiscard]] inline auto
     begin() const {
-        return children.begin();
+        return children_.begin();
     }
 
     [[nodiscard]] inline auto
     end() const {
-        return children.end();
+        return children_.end();
     }
 
     /**
@@ -344,13 +429,6 @@ class FrameBase : public virtual FrameInterface {
     virtual void
     cleanup([[maybe_unused]] GLFWwindow* window) {}
 };
-
-// class UI_Text : public virtual Frame {
-//  private:
-//     std::string text_;
-// };
-
-// class Button : public virtual Frame {};
 
 } // namespace the_buttons
 

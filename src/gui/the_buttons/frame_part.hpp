@@ -1,3 +1,26 @@
+// -*- lsst-c++ -*-
+/*
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+/**
+ * @file frame_part.hpp
+ *
+ * @author @AlemSnyder
+ *
+ * @brief Defines WidgetBase Class
+ *
+ * @ingroup GUI  THE_BUTTONS
+ *
+ */
+
 #pragma once
 
 #include "types.hpp"
@@ -64,18 +87,41 @@ class WidgetBase : public virtual WidgetInterface {
         return nullptr;
     }
 
+    /**
+     * @brief Test if the given location is within the region of the widget
+     *
+     * @param screen_size_t x screen position x coordinate
+     * @param screen_size_t y screen position y coordinate
+     */
     virtual bool is_interior(screen_size_t x, screen_size_t y) const override;
 
-    // virtual void user_interface_render(
-    //     const UserInterface* user_interface, screen_size_t x_position,
-    //     screen_size_t y_position
-    // ) const override;
-
+    /**
+     * @brief Quarry if this widget has child widgets.
+     *
+     * @return true if there are child widgets, false otherwise.
+     */
     [[nodiscard]] virtual bool has_children() const override;
 
+    /**
+     * @brief Get child widget if it exists at the given position.
+     *
+     * @param screen_size_t x screen position x coordinate
+     * @param screen_size_t y screen position y coordinate
+     *
+     * @return std::weak_ptr<const WidgetInterface> a week pointer to the child widget.
+     * It will exist if the given location has a child widget.
+     */
     virtual std::weak_ptr<const WidgetInterface>
     get_child_at_position(screen_size_t x, screen_size_t y) const override;
 
+    /**
+     * @brief Get the box that bounds of the widget.
+     *
+     * @details This should be the smallest rectangle that completely contains the
+     * widget.
+     *
+     * @return std::array<screen_size_t, 4> [x position, y position, width, height]
+     */
     inline virtual std::array<screen_size_t, 4>
     get_bounding_box() const override {
         return {position_.x, position_.y, frame_size_.x, frame_size_.y};

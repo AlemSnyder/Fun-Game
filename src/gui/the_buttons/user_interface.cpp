@@ -219,9 +219,6 @@ UserInterface::get_frame(
         return {};
     }
 
-    //    auto x_offset = (*frame_outer)->get_x_position();
-    //    auto y_offset = (*frame_outer)->get_y_position();
-
     std::weak_ptr<const FrameInterface> new_frame_outer = *frame_outer;
     std::weak_ptr<const WidgetInterface> frame_inner =
         (*frame_outer)->get_child_at_position(mouse_position_x, mouse_position_y);

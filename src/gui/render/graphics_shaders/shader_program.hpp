@@ -118,8 +118,6 @@ class Render_Base {
             logging::opengl_logger, "Program ID: {}, Name: {}",
             opengl_program_.get_program_ID(), opengl_program_.get_name()
         );
-        // LOG_DEBUG(logging::opengl_logger, "Uniforms ID: {}", uniforms_.get_names());
-        // log_uniforms(shader_program.get_detected_uniforms(), uniforms.get_names());
     }
 
     void render(
@@ -130,30 +128,74 @@ class Render_Base {
     inline virtual ~Render_Base() {}
 };
 
+/**
+ * @brief Program that renders UI windows
+ */
 class ShaderProgram_Windows :
     public virtual Render_Base,
     public virtual render_to::ScreenSection {
  public:
+    /**
+     * @brief Construct a new ShaderProgram_Windows object
+     *
+     * @param gui::shader::Program& shader_program shader program to be run on data
+     * @param std::function<void()> setup_commands function to be run to initialize
+     * program
+     */
     inline ShaderProgram_Windows(
-        shader::Program& shader_program, const std::function<void()> setup_commands
+        Program& shader_program, const std::function<void()> setup_commands
     ) : Render_Base(shader_program, setup_commands) {}
 
     inline virtual ~ShaderProgram_Windows() {}
 
+    /**
+     * @brief Render to given data to the given framebuffer at the given location
+     *
+     * @param screen_size_t x_start Distance from left of start of window
+     * @param screen_size_t y_start Distance from top of start of window
+     * @param screen_size_t width Width of window
+     * @param screen_size_t height Height of window
+     * @param GLuint framebuffer_ID Framebuffer to render to
+     * @param gui::gpu_data::GPUData* data OpenGL vertex array buffer data to be used by
+     * the program
+     */
     void virtual render(
-        screen_size_t x_start, screen_size_t y_start, screen_size_t width,
-        screen_size_t height, GLuint framebuffer_ID, const gpu_data::GPUData* data
+        screen_size_t, screen_size_t y_start, screen_size_t width, screen_size_t height,
+        GLuint framebuffer_ID, const gpu_data::GPUData* data
     ) override;
 };
 
+/**
+ * @brief Program that renders UI many windows at the same time
+ *
+ * @details eg. Text
+ */
 class ShaderProgramElements_Windows : public virtual Render_Base {
  public:
+    /**
+     * @brief Construct a new ShaderProgramElements_Windows object
+     *
+     * @param gui::shader::Program& shader_program shader program to be run on data
+     * @param std::function<void()> setup_commands function to be run to initialize
+     * program
+     */
     inline ShaderProgramElements_Windows(
         shader::Program& shader_program, const std::function<void()> setup_commands
     ) : Render_Base(shader_program, setup_commands) {}
 
     inline virtual ~ShaderProgramElements_Windows() {}
 
+    /**
+     * @brief Render to given data to the given framebuffer at the given location
+     *
+     * @param screen_size_t x_start Distance from left of start of window
+     * @param screen_size_t y_start Distance from top of start of window
+     * @param screen_size_t width Width of window
+     * @param screen_size_t height Height of window
+     * @param GLuint framebuffer_ID Framebuffer to render to
+     * @param gui::gpu_data::GPUDataElements* data OpenGL vertex array buffer data to be
+     * used by the program
+     */
     void virtual render(
         screen_size_t x_start, screen_size_t y_start, screen_size_t width,
         screen_size_t height, GLuint framebuffer_ID,

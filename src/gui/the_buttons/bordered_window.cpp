@@ -26,7 +26,7 @@ BorderedWindow::user_interface_render(
 ) const {
     user_interface->render_frame(this, x_position, y_position);
 
-    for (const auto& child : children) {
+    for (const auto& child : children_) {
         child->user_interface_render(
             user_interface, x_position + position_.x, y_position + position_.y
         );
