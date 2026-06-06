@@ -212,9 +212,12 @@ class TextWidget : public virtual WidgetBase, public virtual gpu_data::GPUDataEl
     ) const override;
 
     /**
-     * @brief Calculates the texture location to window space position for the given text.
-     * 
-     * @return std::vector<glm::uvec4> A vector of positions. The first two values in the uvec4 are the position in the widget, and the last two are the position in the texture.
+     * @brief Calculates the texture location to window space position for the given
+     * text.
+     *
+     * @return std::vector<glm::uvec4> A vector of positions. The first two values in
+     * the uvec4 are the position in the widget, and the last two are the position in
+     * the texture.
      */
     [[nodiscard]] std::vector<glm::uvec4> generate_data() const;
 };

@@ -37,7 +37,8 @@ namespace gui {
 namespace the_buttons {
 
 /**
- * @brief Interface for Frame. Frames hare top level widgets in the UI system. They don't have parents and are rendered relative to the window.
+ * @brief Interface for Frame. Frames hare top level widgets in the UI system. They
+ * don't have parents and are rendered relative to the window.
  */
 class FrameInterface : public virtual WidgetInterface {
  public:
@@ -45,14 +46,14 @@ class FrameInterface : public virtual WidgetInterface {
 
     /**
      * @brief Check if the position of the frame fixed on the screen
-     * 
+     *
      * @return true if fixed false if not.
      */
     virtual bool is_fixed() const = 0;
 
     /**
      * @brief Check if the window should be rendered
-     * 
+     *
      * @return false if should not be rendered true if should be
      */
     inline virtual bool is_visible() const = 0;
@@ -245,7 +246,7 @@ class FrameBase : public virtual FrameInterface {
 
     /**
      * @brief Check if the position of the frame fixed on the screen
-     * 
+     *
      * @return true if fixed false if not.
      */
     inline virtual bool
@@ -255,7 +256,7 @@ class FrameBase : public virtual FrameInterface {
 
     /**
      * @brief Check if the window should be rendered
-     * 
+     *
      * @return false if should not be rendered true if should be
      */
     inline virtual bool
