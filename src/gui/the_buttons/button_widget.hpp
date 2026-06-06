@@ -37,7 +37,7 @@ namespace gui {
 namespace the_buttons {
 
 /**
- *
+ * @brief Widget with the ability to call a function when it is "pressed"
  */
 class ButtonWidget : public virtual WidgetBase {
  private:
