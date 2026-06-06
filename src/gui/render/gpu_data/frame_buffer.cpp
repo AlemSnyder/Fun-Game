@@ -100,7 +100,7 @@ FrameBufferBase::read_data(
         type = color_texture->get_type();
         format = color_texture->get_format();
         switch (format) {
-            case GPUPixelStorageFormat::R:
+            case GPUPixelStorageFormat::RED:
                 read_format = GPUPixelReadFormat::RED;
                 break;
             case GPUPixelStorageFormat::RGB:
@@ -133,7 +133,7 @@ FrameBufferBase::read_data(
     }
 
     switch (format) {
-        case GPUPixelStorageFormat::R:
+        case GPUPixelStorageFormat::RED:
         case GPUPixelStorageFormat::DEPTH:
             // in this case format_size should be 1
             return std::make_shared<util::image::FloatMonochromeImage>(

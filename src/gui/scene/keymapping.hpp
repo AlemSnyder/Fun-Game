@@ -4,6 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <fmt/core.h>
 #include <glaze/glaze.hpp>
 
 #include <array>
@@ -423,6 +424,61 @@ to_string(const Key& key) {
             throw exc::not_implemented_error("Given Key is not implemented.");
     }
 }
+
+enum KeyAction { PRESS = GLFW_PRESS, RELEASE = GLFW_RELEASE, REPEAT = GLFW_REPEAT };
+
+constexpr inline std::string
+to_string(const KeyAction& key) {
+    switch (key) {
+        case KeyAction::PRESS:
+            return "KEY_PRESS";
+        case KeyAction::RELEASE:
+            return "KEY_RELEASE";
+        case KeyAction::REPEAT:
+            return "KEY_REPEAT";
+        default:
+            throw exc::not_implemented_error("Unknown key action");
+    }
+}
+
+enum KeyModifier {
+    SHIFT = GLFW_MOD_SHIFT,
+    CONTROL = GLFW_MOD_CONTROL,
+    ALT = GLFW_MOD_ALT,
+    SUPER = GLFW_MOD_SUPER,
+    CAPS_LOCK = GLFW_MOD_CAPS_LOCK,
+    NUM_LOCK = GLFW_MOD_NUM_LOCK
+};
+
+/*
+// TODO want to make this constexpr
+// ftm::join and fmt format are not cont expr
+inline std::string
+to_string(const KeyModifier& key) {
+
+std::vector<std::string> mods;
+//    std::string mods = "";
+if (key | KeyModifier::SHIFT) {
+    mods.push_back("SHIFT");
+} if (key | KeyModifier::CONTROL) {
+    mods.push_back("CONTROL");
+}
+if (key | KeyModifier::ALT) {
+    mods.push_back("ALT");
+}
+if (key | KeyModifier::SUPER) {
+    mods.push_back("SUPER");
+}
+if (key | KeyModifier::CAPS_LOCK) {
+    mods.push_back("CAPS_LOCK");
+}
+if (key | KeyModifier::NUM_LOCK) {
+    mods.push_back("NUM_LOCK");
+}
+
+return fmtquill::format("{}", fmtquill::join(mods, " & "));
+}
+*/
 
 namespace scene {
 

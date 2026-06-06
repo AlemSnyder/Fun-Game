@@ -232,7 +232,7 @@ Program::attach_uniforms() {
 
         LOG_INFO(
             logging::opengl_logger, "Uniform found with id: {}, name: {}, and type {}",
-            uid, name, gpu_data::to_string(enum_type)
+            uid, str_name, gpu_data::to_string(enum_type)
         );
 
         if (length > buf_size - 4) {
@@ -244,8 +244,8 @@ Program::attach_uniforms() {
         }
 
         uniforms_.emplace(
-            std::piecewise_construct, std::forward_as_tuple(name),
-            std::forward_as_tuple(name, enum_type, uid)
+            std::piecewise_construct, std::forward_as_tuple(str_name),
+            std::forward_as_tuple(str_name, enum_type, uid)
         );
     }
 }
@@ -273,6 +273,10 @@ Program::set_uniform(std::shared_ptr<UniformExecutor> uex, std::string uniform_n
             "program \"{}\".",
             uniform_name, name_
         );
+
+        // Add a  "do you mean..." suggestion.
+        // Consider Levenshtein distance less than 5
+        // https://en.wikipedia.org/wiki/Levenshtein_distance
     }
 }
 

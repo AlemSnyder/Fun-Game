@@ -105,9 +105,11 @@ static_assert(sizeof(VoxelColorId) == sizeof(MatColorId));
 
 // size in pixels of graphics objects
 using screen_size_t = int;
+// screen position
+using screen_position_t = glm::vec<2, screen_size_t>;
 
 // I'm so sorry, but this is needed because opengl uses ints to return from get
-// window size
+// window size, instead of unsigned ints
 
 template <>
 struct std::hash<TerrainOffset3> {
