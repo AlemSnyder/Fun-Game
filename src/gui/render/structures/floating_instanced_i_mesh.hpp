@@ -38,6 +38,23 @@ namespace gui {
 
 namespace gpu_data {
 
+class TransformsArray_mat4_c {
+ protected:
+    VertexBufferObject<glm::mat4> transforms_array_;
+ public:
+    inline TransformsArray_mat4_c(const TransformsArray_mat4_c& obj) = delete;
+    inline TransformsArray_mat4_c(TransformsArray_mat4_c&& other) = default;
+    // copy operator
+    inline TransformsArray_mat4_c&
+    operator=(const TransformsArray_mat4_c& obj) = delete;
+    inline TransformsArray_mat4_c&
+    operator=(TransformsArray_mat4_c&& other) = default;
+    
+    inline TransformsArray_mat4_c() : transforms_array_() {}
+
+    inline TransformsArray_mat4_c(const std::vector<glm::mat4>& model_transforms) : transforms_array_(model_transforms, 1) {}
+};
+
 /**
  * @brief Class to render integer meshes with arbitrary position
  *
@@ -45,11 +62,9 @@ namespace gpu_data {
  * binding, and deleting data on GPU.
  */
 class FloatingInstancedIMeshGPU :
+    public virtual TransformsArray_mat4_c,
     public virtual IMeshGPU,
     public virtual GPUDataElementsInstanced {
- protected:
-    VertexBufferObject<glm::mat4> transforms_array_;
-
  public:
     inline FloatingInstancedIMeshGPU(const FloatingInstancedIMeshGPU& obj) = delete;
     inline FloatingInstancedIMeshGPU(FloatingInstancedIMeshGPU&& other) = default;
