@@ -117,7 +117,7 @@ intermediate<T> inline make_intermediate(
         }
     }
 
-    data_out.resize(width * height);
+    data_out.reserve(width * height);
     for (size_t i = 0; i < height; i++) {
         data_out.insert(data_out.end(), data[i].begin(), data[i].end());
         data_out.insert(data_out.end(), width - data[i].size(), T());
