@@ -6,14 +6,15 @@ layout(location = 1) in uint vertex_color_id;
 layout(location = 2) in ivec3 vertexNormal_modelspace;
 layout(location = 3) in ivec4 model_matrix_transform;
 layout(location = 4) in uint model_texture_id;
-// Output data ; will be interpolated for each fragment.
+// Output data that will not be interpolated
 flat out uint Vertex_color_id;
+flat out uint ModelTextureID;
+// Output data ; will be interpolated for each fragment.
 out vec3 Position_worldspace;
 out vec3 Normal_cameraspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
 out vec4 ShadowCoord;
-flat out uint ModelTextureID;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;

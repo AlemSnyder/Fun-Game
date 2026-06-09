@@ -110,6 +110,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     image.transpose();
     texture_ = std::make_shared<gui::gpu_data::Texture2D>(image, settings);
 
+    // do not do this
     GlobalContext& global_context = GlobalContext::instance();
     global_context.run_opengl_queue();
 }
