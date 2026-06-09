@@ -7,7 +7,7 @@ layout(location = 2) in ivec3 vertexNormal_modelspace;
 layout(location = 3) in ivec4 model_matrix_transform;
 layout(location = 4) in uint model_texture_id;
 // Output data ; will be interpolated for each fragment.
-out uint Vertex_color_id;
+flat out uint Vertex_color_id;
 out vec3 Position_worldspace;
 out vec3 Normal_cameraspace;
 out vec3 EyeDirection_cameraspace;
