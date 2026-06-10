@@ -36,20 +36,6 @@ namespace util {
 
 namespace image {
 
-/*
-Image
-v
-different types, byte float [0, 1)
-
-get_width, get_height, get_pixel(), and finally a settings struct
-
-byte and float have get_data() which returns a byte of float
-
-
-*/
-
-// namespace {
-
 template <size_t n>
 [[maybe_unused]] inline std::array<png_byte, n>
 convert_to_color(std::array<float, n>& data) {
@@ -133,7 +119,7 @@ class ImageImplementation {
     size_t height_;
     size_t data_width_;          // width with padding
     size_t width_bit_alignment_; // 1, 2, 4, 8
-
+    // TODO ^ bit alignment is not yet implemented
     std::vector<T> data_;
 
     // private intermediate
@@ -172,19 +158,16 @@ class ImageImplementation {
         return height_;
     }
 
-    //    template<typename T>
     inline const T*
     get_raw_data() const {
         return data_.data();
     }
 
-    //    template<typename T>
     inline T*
     get_raw_data() {
         return data_.data();
     }
 
-    //    template<typename T>
     inline T
     get_data(size_t i, size_t j) const {
         assert(i < width_ && j < height_ && "Position must be within image.");
@@ -209,15 +192,13 @@ class ImageImplementation {
     }
 };
 
-//}
-
 struct FloatPolychromeAlphaImage_data_t {
     std::shared_ptr<char[]> data;
     screen_size_t width;
     screen_size_t height;
 };
 
-// t represents the underlying type of the data structure;
+// T represents the underlying type of the data structure;
 template <class T, int datum_number>
 std::array<png_byte, datum_number>
 read_data(std::shared_ptr<char[]> data, size_t offset) {
