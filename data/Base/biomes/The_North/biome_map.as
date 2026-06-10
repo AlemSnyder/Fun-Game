@@ -16,8 +16,13 @@ class biome_map {
     int sample(int x, int y) {
         // sample noise and set a value
         float intermediate = noise_worley.sample(float(x) * spacing, float(y) * spacing);
-        float height = 5.0 * intermediate * intermediate + 0.8;
-        height = height + noise_fractal.sample(float(x) * 0.6, y * 0.6) * 8 - 4;
+        float height = 0;
+        if (intermediate > .5){
+            height = 4;
+        } else {
+            height = 1;
+        }
+        height = height + noise_fractal.sample(float(x) * 0.6, y * 0.6) - 0.5;
         // each value must be integers. math.floor changes doubles to ints
         int height_map_value =  int(height);
         // This biome only defines tile types between 0, and 6

@@ -14,6 +14,14 @@
         {
             "identification": "base::Default",
             "path": "Base/biomes/Default/biome_data.json"
+        },
+        {
+            "identification": "base::TheNorth",
+            "path": "Base/biomes/The_North/biome_data.json"
+        },
+        {
+            "identification": "base::Shahar",
+            "path": "Base/biomes/Shahar/biome_data.json"
         }
     ]
 }
