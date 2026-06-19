@@ -66,7 +66,7 @@ class StampGenerator {
      */
     StampGenerator(const generation_stamp_t& data) :
         height_(data.height), height_variance_(data.height_range), width_(data.size),
-        width_variance_(data.center_range), elements_can_stamp_(data.can_override),
+        width_variance_(data.size_range), elements_can_stamp_(data.can_override),
         stamp_material_id_(data.material_id), stamp_color_id_(data.color_id) {}
 
     /**

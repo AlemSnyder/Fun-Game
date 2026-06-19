@@ -1,10 +1,10 @@
 {
-    "name": "Base",
+    "name": "Shahar",
     "map_generator_path": "./biome_map.as",
     "image_path": "path/to/image",
     "materials_path": "./materials.json",
-    "id": "base::Default",
-    "description": "This is a test biome",
+    "id": "base::Shahar",
+    "description": "Life here lives on the knife's edge between the crashing waves, and never ending sand.",
     "tile_macros": [
         {
             "generation_data": [
@@ -26,11 +26,39 @@
                             "color": [0, 1, 2, 3, 4, 5]
                         }
                     ],
-                    "size": 28,
-                    "size_range": 10,
-                    "height": 8,
+                    "size": 8,
+                    "size_range": 5,
+                    "height": 5,
                     "height_range": 2,
-                    "center_range": 0,
+                    "center_range": 3,
+                    "grid": {
+                        "radius": 16,
+                        "number": 3
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 2,
+                    "color_id": 6,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        },
+                        {
+                            "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 2,
+                            "color": [0, 1, 2, 3, 4, 5]
+                        }
+                    ],
+                    "size": 26,
+                    "size_range": 4,
+                    "height": 4,
+                    "height_range": 2,
+                    "center_range": 3,
                     "grid": {
                         "radius": 16,
                         "number": 2
@@ -58,14 +86,14 @@
                             "color": [0, 1, 2, 3, 4]
                         }
                     ],
-                    "size": 12,
-                    "size_range": 4,
-                    "height": 8,
-                    "height_range": 6,
-                    "center_range": 2,
+                    "size": 8,
+                    "size_range": 2,
+                    "height": 12,
+                    "height_range": 4,
+                    "center_range": 3,
                     "radius": {
                         "radius": 16,
-                        "number": 16
+                        "number": 32
                     }
                 },
                 {
@@ -86,14 +114,14 @@
                             "color": [0, 1, 2, 3, 4]
                         }
                     ],
-                    "size": 19,
-                    "size_range": 2,
+                    "size": 8,
+                    "size_range": 4,
                     "height": 16,
-                    "height_range": 3,
-                    "center_range": 0,
+                    "height_range": 6,
+                    "center_range": 4,
                     "grid": {
                         "radius": 16,
-                        "number": 2
+                        "number": 12
                     }
                 }
             ]
@@ -120,12 +148,12 @@
                     ],
                     "size": 12,
                     "size_range": 4,
-                    "height": 20,
+                    "height": 22,
                     "height_range": 6,
                     "center_range": 2,
                     "radius": {
-                        "radius": 16,
-                        "number": 16
+                        "radius": 20,
+                        "number": 20
                     }
                 },
                 {
@@ -180,12 +208,12 @@
                     ],
                     "size": 12,
                     "size_range": 6,
-                    "height": 36,
+                    "height": 40,
                     "height_range": 8,
                     "center_range": 2,
                     "radius": {
-                        "radius": 16,
-                        "number": 16
+                        "radius": 18,
+                        "number": 20
                     }
                 },
                 {
@@ -322,6 +350,18 @@
                             "color": true
                         },
                         {
+                            "material": 8,
+                            "color": true
+                        },
+                        {
+                            "material": 9,
+                            "color": true
+                        },
+                        {
+                            "material": 10,
+                            "color": true
+                        },
+                        {
                             "material": 2,
                             "color": [0, 1]
                         }
@@ -350,6 +390,18 @@
                             "color": true
                         },
                         {
+                            "material": 8,
+                            "color": true
+                        },
+                        {
+                            "material": 9,
+                            "color": true
+                        },
+                        {
+                            "material": 10,
+                            "color": true
+                        },
+                        {
                             "material": 2,
                             "color": 0
                         }
@@ -375,6 +427,18 @@
                         },
                         {
                             "material": 1,
+                            "color": true
+                        },
+                        {
+                            "material": 8,
+                            "color": true
+                        },
+                        {
+                            "material": 9,
+                            "color": true
+                        },
+                        {
+                            "material": 10,
                             "color": true
                         },
                         {
@@ -410,6 +474,18 @@
                             "color": true
                         },
                         {
+                            "material": 8,
+                            "color": true
+                        },
+                        {
+                            "material": 9,
+                            "color": true
+                        },
+                        {
+                            "material": 10,
+                            "color": true
+                        },
+                        {
                             "material": 2,
                             "color": 0
                         }
@@ -432,6 +508,18 @@
                         {
                             "material": 0,
                             "color": 0
+                        },
+                        {
+                            "material": 8,
+                            "color": true
+                        },
+                        {
+                            "material": 9,
+                            "color": true
+                        },
+                        {
+                            "material": 10,
+                            "color": true
                         }
                     ],
                     "size": 12,
@@ -452,6 +540,18 @@
                         {
                             "material": 0,
                             "color": 0
+                        },
+                        {
+                            "material": 8,
+                            "color": true
+                        },
+                        {
+                            "material": 9,
+                            "color": true
+                        },
+                        {
+                            "material": 10,
+                            "color": true
                         }
                     ],
                     "size": 12,
@@ -472,6 +572,18 @@
                         {
                             "material": 0,
                             "color": 0
+                        },
+                        {
+                            "material": 8,
+                            "color": true
+                        },
+                        {
+                            "material": 9,
+                            "color": true
+                        },
+                        {
+                            "material": 10,
+                            "color": true
                         }
                     ],
                     "size": 12,
@@ -498,14 +610,14 @@
                             "color": 0
                         }
                     ],
-                    "size": 12,
-                    "size_range": 4,
-                    "height": 28,
+                    "size": 6,
+                    "size_range": 2,
+                    "height": 26,
                     "height_range": 6,
-                    "center_range": 2,
+                    "center_range": 4,
                     "radius": {
                         "radius": 16,
-                        "number": 16
+                        "number": 32
                     }
                 },
                 {
@@ -543,13 +655,13 @@
                         }
                     ],
                     "size": 12,
-                    "size_range": 4,
-                    "height": 40,
-                    "height_range": 6,
-                    "center_range": 2,
+                    "size_range": 6,
+                    "height": 35,
+                    "height_range": 8,
+                    "center_range": 4,
                     "radius": {
-                        "radius": 16,
-                        "number": 16
+                        "radius": 14,
+                        "number": 26
                     }
                 },
                 {
@@ -562,8 +674,8 @@
                             "color": 0
                         }
                     ],
-                    "size": 19,
-                    "size_range": 2,
+                    "size": 21,
+                    "size_range": 4,
                     "height": 46,
                     "height_range": 0,
                     "center_range": 0,
@@ -588,7 +700,7 @@
                     ],
                     "size": 12,
                     "size_range": 4,
-                    "height": 52,
+                    "height": 49,
                     "height_range": 6,
                     "center_range": 2,
                     "radius": {
@@ -609,6 +721,270 @@
                     "size": 19,
                     "size_range": 2,
                     "height": 58,
+                    "height_range": 0,
+                    "center_range": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 10,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 6,
+                    "size_range": 2,
+                    "height": 22,
+                    "height_range": 6,
+                    "center_range": 4,
+                    "radius": {
+                        "radius": 16,
+                        "number": 32
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 10,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 19,
+                    "size_range": 2,
+                    "height": 30,
+                    "height_range": 0,
+                    "center_range": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 10,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "size_range": 6,
+                    "height": 35,
+                    "height_range": 8,
+                    "center_range": 4,
+                    "radius": {
+                        "radius": 14,
+                        "number": 26
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 10,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 21,
+                    "size_range": 4,
+                    "height": 46,
+                    "height_range": 0,
+                    "center_range": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 10,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "size_range": 4,
+                    "height": 49,
+                    "height_range": 6,
+                    "center_range": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 10,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 19,
+                    "size_range": 2,
+                    "height": 58,
+                    "height_range": 0,
+                    "center_range": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 8,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 6,
+                    "size_range": 2,
+                    "height": 26,
+                    "height_range": 6,
+                    "center_range": 4,
+                    "radius": {
+                        "radius": 16,
+                        "number": 32
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 8,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 19,
+                    "size_range": 2,
+                    "height": 34,
+                    "height_range": 0,
+                    "center_range": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 8,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "size_range": 6,
+                    "height": 35,
+                    "height_range": 8,
+                    "center_range": 4,
+                    "radius": {
+                        "radius": 14,
+                        "number": 26
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 8,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 21,
+                    "size_range": 4,
+                    "height": 44,
+                    "height_range": 0,
+                    "center_range": 0,
+                    "grid": {
+                        "radius": 16,
+                        "number": 2
+                    }
+                }
+            ]
+        },
+        {
+            "generation_data": [
+                {
+                    "type": "RADIUS",
+                    "material_id": 8,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 12,
+                    "size_range": 4,
+                    "height": 42,
+                    "height_range": 6,
+                    "center_range": 2,
+                    "radius": {
+                        "radius": 16,
+                        "number": 16
+                    }
+                },
+                {
+                    "type": "GRID",
+                    "material_id": 8,
+                    "color_id": 0,
+                    "can_override": [
+                        {
+                            "material": 0,
+                            "color": 0
+                        }
+                    ],
+                    "size": 19,
+                    "size_range": 2,
+                    "height": 48,
                     "height_range": 0,
                     "center_range": 0,
                     "grid": {
@@ -653,9 +1029,57 @@
             "used_tile_macros": [
                 0,
                 1,
+                10
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                11
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
                 2,
                 3,
-                4
+                12
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                13
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                14
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                3,
+                15
+            ]
+        },
+        {
+            "used_tile_macros": [
+                0,
+                1,
+                2,
+                3,
+                16
             ]
         },
         {
@@ -680,54 +1104,7 @@
             ]
         }
     ],
-    "layer_effects": [
-        {
-            "material_id": 1,
-            "color_id": 0,
-            "above_colors": [
-                {
-                    "material": 1,
-                    "color": true
-                },
-                {
-                    "material": 2,
-                    "color": true
-                }
-            ],
-            "can_override": [
-                {
-                    "material": true,
-                    "color": true
-                }
-            ],
-            "how_to_add": [
-                {
-                    "add_directions": "ADD",
-                    "data": 3,
-                    "start": 59,
-                    "stop": 66
-                },
-                {
-                    "add_directions": "TO",
-                    "data": 75,
-                    "start": 75,
-                    "stop": 66
-                },
-                {
-                    "add_directions": "ADD",
-                    "data": 3,
-                    "start": 75,
-                    "stop": 90
-                },
-                {
-                    "add_directions": "TO",
-                    "data": 97,
-                    "start": 90,
-                    "stop": 97
-                }
-            ]
-        }
-    ],
+    "layer_effects": [],
     "generate_plants": [
         {
             "identification": "base/Flower_Test",

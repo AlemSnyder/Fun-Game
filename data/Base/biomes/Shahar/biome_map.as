@@ -6,18 +6,18 @@
 // Anyway, do something like this and it should work as long as there are
 // correctly defined tile types and tile macros.
 
-int NUM_GRASS = 8;
+int NUM_GRASS = 5;
 
 class biome_map {
 
     TerrainGeneration::FractalNoise noise;
-    TerrainGeneration::WorleyNoise mountain_noise;
+    TerrainGeneration::AlternativeWorleyNoise mountain_noise;
     TerrainGeneration::AlternativeWorleyNoise flower_noise;
     float spacing;
 
     biome_map() {
         noise = TerrainGeneration::FractalNoise(4, 0.3, 8);
-        mountain_noise = TerrainGeneration::WorleyNoise(32.0, 8.0);
+        mountain_noise = TerrainGeneration::AlternativeWorleyNoise(16.0, 0.5, 8.0);
         flower_noise = TerrainGeneration::AlternativeWorleyNoise(32, 0.5, 32);
         spacing = 0.1;
     }
@@ -26,9 +26,12 @@ class biome_map {
         // sample noise and set a value
         float height = 60.0 * noise.sample(float(x) * spacing, float(y) * spacing) - 11;
         // each value must be integers. math.floor changes doubles to ints
-        float mountain_height = 1 - 0.5 * mountain_noise.sample(float(x + y), float(x - y)) * noise.sample(float(y + 500) * spacing, float(x + 500) * spacing);
+        float mountain_height = (mountain_noise.sample(float(x + y), float(x - y)) - .4) * noise.sample(float(y + 500) * spacing, float(x + 500) * spacing);
         if (mountain_height < 0) {
             mountain_height = 0;
+        }
+        if (height < 1) {
+            height = (height - 1) / 2 + 1;
         }
         height = height + mountain_height;
         int height_map_value =  int(height) ;
