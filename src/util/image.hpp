@@ -1,13 +1,13 @@
 #pragma once
 
+#include "gui/render/gl_enums.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
-#include "gui/render/gl_enums.hpp"
 
 #include <png.h>
 
-#include <vector>
 #include <variant>
+#include <vector>
 
 namespace util {
 
@@ -25,10 +25,10 @@ byte and float have get_data() which returns a byte of float
 
 */
 
-//namespace {
+// namespace {
 
-template<size_t n>
-[[maybe_unused]] inline std::array<png_byte, n> 
+template <size_t n>
+[[maybe_unused]] inline std::array<png_byte, n>
 convert_to_color(std::array<float, n>& data) {
     std::array<png_byte, n> out_color;
     for (size_t index = 0; index < n; index++) {
@@ -37,31 +37,31 @@ convert_to_color(std::array<float, n>& data) {
     return out_color;
 }
 
-[[maybe_unused]] inline png_byte 
+[[maybe_unused]] inline png_byte
 convert_to_color(float data) {
     return data * 255;
 }
 
-template<size_t n>
-[[maybe_unused]] inline std::array<png_byte, n> 
+template <size_t n>
+[[maybe_unused]] inline std::array<png_byte, n>
 convert_to_color(const std::array<png_byte, n>& data) {
-        return data;
+    return data;
 }
 
-template<size_t n>
-[[maybe_unused]] std::array<png_byte, n> 
+template <size_t n>
+[[maybe_unused]] std::array<png_byte, n>
 convert_to_color(std::array<png_byte, n>&& data) {
-        return data;
+    return data;
 }
 
-[[maybe_unused]] inline png_byte 
+[[maybe_unused]] inline png_byte
 convert_to_color(png_byte data) {
     return data;
 }
 
-template<typename T, typename D>
-inline
-std::vector<T> convert(const std::vector<D>& data) {
+template <typename T, typename D>
+inline std::vector<T>
+convert(const std::vector<D>& data) {
     static_assert(sizeof(T) == sizeof(D), "must be same size");
     std::vector<T> out(data.size());
     // I give up
@@ -69,71 +69,68 @@ std::vector<T> convert(const std::vector<D>& data) {
     return out;
 }
 
-template<typename T>
+template <typename T>
 struct intermediate {
     size_t width;
     size_t height;
-//    size_t data_width;
-    size_t width_bit_alignment;
 
     std::vector<T> data;
 };
 
-template<typename T>
-intermediate<T>
-inline
-make_intermediate(const std::vector<std::vector<T>>& data, size_t width_bit_alignment) {
-
+template <typename T>
+intermediate<T> inline make_intermediate(
+    const std::vector<std::vector<T>>& data
+) {
     std::vector<T> data_out;
 
     size_t width = 0;
     size_t height = data.size();
-    
+
     for (const auto& row : data) {
-    if (row.size() > width) {
-        width = row.size();
+        if (row.size() > width) {
+            width = row.size();
+        }
     }
-    }
-    
+
     data_out.resize(width * height);
     for (size_t i = 0; i < height; i++) {
-    data_out.insert(data_out.end(), data[i].begin(), data[i].end());
-    data_out.insert(data_out.end(), width - data[i].size(), T());
+        data_out.insert(data_out.end(), data[i].begin(), data[i].end());
+        data_out.insert(data_out.end(), width - data[i].size(), T());
     }
 
-    return intermediate(width, height, width_bit_alignment, data_out);
+    return intermediate(width, height, data_out);
 }
 
-template<typename T>
+template <typename T>
 class ImageImplementation {
  protected:
     size_t width_;
     size_t height_;
-    size_t data_width_; // width with padding
-    size_t width_bit_alignment_; // 1, 2, 4, 8
-
 
     std::vector<T> data_;
 
     // private intermediate
-    template<typename D>
-    inline
-    ImageImplementation(intermediate<D> inter) : ImageImplementation(inter.width, inter.height, inter.data, inter.width_bit_alignment) {}
+    template <typename D>
+    inline ImageImplementation(intermediate<D> inter) :
+        ImageImplementation(
+            inter.width, inter.height, inter.data
+        ) {}
 
  public:
-    template<typename D>
-    inline
-    ImageImplementation(size_t width, size_t height, const std::vector<D>& data, size_t width_bit_alignment = 1)
-        : width_(width), height_(height), width_bit_alignment_(width_bit_alignment), data_(convert<T,D>(data)) {
-            data_width_ = width_; // TODO
-    }
-    template<typename D>
-    inline
-    ImageImplementation(const std::vector<std::vector<D>>& data, size_t width_bit_alignment = 1)
-        : ImageImplementation(make_intermediate(data, width_bit_alignment)) { }
+    template <typename D>
+    inline ImageImplementation(
+        size_t width, size_t height, const std::vector<D>& data
+    ) :
+        width_(width), height_(height),
+        data_(convert<T, D>(data)) {}
 
-    ImageImplementation(size_t width, size_t height, size_t width_bit_alignment = 1)
-        : ImageImplementation<T>(width, height, std::vector<T>(), width_bit_alignment) {}
+    template <typename D>
+    inline ImageImplementation(
+        const std::vector<std::vector<D>>& data
+    ) : ImageImplementation(make_intermediate(data)) {}
+
+    ImageImplementation(size_t width, size_t height) :
+        ImageImplementation<T>(width, height, std::vector<T>()) {}
 
     inline virtual size_t
     get_width() const {
@@ -145,33 +142,36 @@ class ImageImplementation {
         return height_;
     }
 
-//    template<typename T>
-    inline const T* get_raw_data() const {
+    inline const T*
+    get_raw_data() const {
         return data_.data();
     }
 
-//    template<typename T>
-    inline T* get_raw_data() {
+    inline T*
+    get_raw_data() {
         return data_.data();
     }
 
-//    template<typename T>
-    inline T get_data(size_t i, size_t j) const {
+    inline T
+    get_data(size_t i, size_t j) const {
         assert(i < width_ && j < height_ && "Position must be within image.");
-        return data_.at(j * data_width_ + i);
+        return data_.at(j * width_ + i);
     }
 
-    inline auto get_color(size_t i, size_t j) const {
+    inline auto
+    get_color(size_t i, size_t j) const {
         return convert_to_color(get_data(i, j));
     }
 
     // TODO
-    inline void draw_at(ImageImplementation<T> other, size_t x, size_t y) {
+    inline void
+    draw_at(ImageImplementation<T> other, size_t x, size_t y) {
         return;
     }
 
     // not sure what this does
-    inline void transpose() {
+    inline void
+    transpose() {
         return;
     }
 };
@@ -221,7 +221,9 @@ using FloatMonochromeImage = ImageImplementation<float>;
 using FloatPolychromeImage = ImageImplementation<std::array<float, 3>>;
 using FloatPolychromeAlphaImage = ImageImplementation<std::array<float, 4>>;
 
-using ImageVariant = std::variant<MonochromeImage, PolychromeImage, PolychromeAlphaImage, FloatMonochromeImage, FloatPolychromeImage, FloatPolychromeAlphaImage>;
+using ImageVariant = std::variant<
+    MonochromeImage, PolychromeImage, PolychromeAlphaImage, FloatMonochromeImage,
+    FloatPolychromeImage, FloatPolychromeAlphaImage>;
 
 #if 0
 // HALF FLOAT
@@ -232,16 +234,20 @@ using HalfFloatPolychromeAlphaImage = ImageImplementation<std::array<halffloat, 
 
 #endif
 
-template<class... Ts>
-struct ImageVisitor : Ts... { using Ts::operator()...;};
+template <class... Ts>
+struct ImageVisitor : Ts... {
+    using Ts::operator()...;
+};
 
-ImageVariant
-make_image(gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format, size_t width, size_t height, size_t width_bit_alignment = 1);
+ImageVariant make_image(
+    gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format,
+    size_t width, size_t height
+);
 
-template<typename T>
+template <typename T>
 ImageVariant
-make_image(size_t width, size_t height, size_t width_bit_alignment = 1) {
-    return ImageImplementation<T>(width, height, {}, width_bit_alignment);
+make_image(size_t width, size_t height) {
+    return ImageImplementation<T>(width, height, {});
 }
 
 } // namespace image
