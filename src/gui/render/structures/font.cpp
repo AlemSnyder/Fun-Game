@@ -96,7 +96,7 @@ FontTexture::FontTexture(std::filesystem::path font_file) {
     }
 
     LOG_BACKTRACE(logging::main_logger, "Combining characters into single image.");
-    auto image = util::image::MonochromeImage(total_width, max_height, sizeof(char));
+    auto image = util::image::MonochromeImage(total_width, max_height);
 
     for (unsigned char c = 0; c < 128; c++) {
         image.draw_at(

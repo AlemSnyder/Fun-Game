@@ -45,12 +45,11 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 
-    glewExperimental = true; // Needed for core profile
-    if (glewInit() != GLEW_OK) {
-        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
-        glfwTerminate();
-        return nullptr;
-    }
+    // Set the pack and unpack alignment for textures to one byte. This is because I am
+    // reading them into textures which have their own alignment
+    glSetIntegerv(GL_PACK_ALIGNMENT, 1);
+    glSetIntegerv(GL_UNPACK_ALIGNMENT, 1);
+
     return window;
 }
 

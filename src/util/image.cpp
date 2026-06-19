@@ -6,7 +6,7 @@ namespace image {
 ImageVariant
 make_image(
     gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format,
-    size_t width, size_t height, size_t width_bit_alignment
+    size_t width, size_t height
 ) {
     switch (type) {
         case gui::gpu_data::GPUPixelType::FLOAT:
@@ -17,14 +17,14 @@ make_image(
                 case gui::gpu_data::GPUPixelReadFormat::RED:
                 case gui::gpu_data::GPUPixelReadFormat::GREEN:
                 case gui::gpu_data::GPUPixelReadFormat::BLUE:
-                    return MonochromeImage(width, height, width_bit_alignment);
+                    return MonochromeImage(width, height);
                 case gui::gpu_data::GPUPixelReadFormat::RGB:
                 case gui::gpu_data::GPUPixelReadFormat::BGR:
-                    return MonochromeImage(width, height, width_bit_alignment);
+                    return MonochromeImage(width, height);
 
                 case gui::gpu_data::GPUPixelReadFormat::RGBA:
                 case gui::gpu_data::GPUPixelReadFormat::BGRA:
-                    return MonochromeImage(width, height, width_bit_alignment);
+                    return MonochromeImage(width, height);
             }
         case gui::gpu_data::GPUPixelType::UNSIGNED_BYTE:
             switch (format) {
@@ -33,14 +33,14 @@ make_image(
                 case gui::gpu_data::GPUPixelReadFormat::RED:
                 case gui::gpu_data::GPUPixelReadFormat::GREEN:
                 case gui::gpu_data::GPUPixelReadFormat::BLUE:
-                    return MonochromeImage(width, height, width_bit_alignment);
+                    return MonochromeImage(width, height);
                 case gui::gpu_data::GPUPixelReadFormat::RGB:
                 case gui::gpu_data::GPUPixelReadFormat::BGR:
-                    return PolychromeImage(width, height, width_bit_alignment);
+                    return PolychromeImage(width, height);
 
                 case gui::gpu_data::GPUPixelReadFormat::RGBA:
                 case gui::gpu_data::GPUPixelReadFormat::BGRA:
-                    return PolychromeAlphaImage(width, height, width_bit_alignment);
+                    return PolychromeAlphaImage(width, height);
             }
     }
     // LOR error

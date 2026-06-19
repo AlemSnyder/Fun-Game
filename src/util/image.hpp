@@ -82,16 +82,12 @@ template <typename T>
 struct intermediate {
     size_t width;
     size_t height;
-    //    size_t data_width;
-    size_t width_bit_alignment;
 
     std::vector<T> data;
 };
 
 template <typename T>
-intermediate<T> inline make_intermediate(
-    const std::vector<std::vector<T>>& data, size_t width_bit_alignment
-) {
+intermediate<T> inline make_intermediate(const std::vector<std::vector<T>>& data) {
     std::vector<T> data_out;
 
     size_t width = 0;
@@ -109,7 +105,7 @@ intermediate<T> inline make_intermediate(
         data_out.insert(data_out.end(), width - data[i].size(), T());
     }
 
-    return intermediate(width, height, width_bit_alignment, data_out);
+    return intermediate(width, height, data_out);
 }
 
 template <typename T>
@@ -117,36 +113,25 @@ class ImageImplementation {
  protected:
     size_t width_;
     size_t height_;
-    size_t data_width_;          // width with padding
-    size_t width_bit_alignment_; // 1, 2, 4, 8
-    // TODO ^ bit alignment is not yet implemented
     std::vector<T> data_;
 
     // private intermediate
     template <typename D>
     inline ImageImplementation(intermediate<D> inter) :
-        ImageImplementation(
-            inter.width, inter.height, inter.data, inter.width_bit_alignment
-        ) {}
+        ImageImplementation(inter.width, inter.height, inter.data) {}
 
  public:
     template <typename D>
     inline ImageImplementation(
-        size_t width, size_t height, const std::vector<D>& data,
-        size_t width_bit_alignment = 1
-    ) :
-        width_(width), height_(height), width_bit_alignment_(width_bit_alignment),
-        data_(convert<T, D>(data)) {
-        data_width_ = width_; // TODO
-    }
+        size_t width, size_t height, const std::vector<D>& data
+    ) : width_(width), height_(height), data_(convert<T, D>(data)) {}
 
     template <typename D>
-    inline ImageImplementation(
-        const std::vector<std::vector<D>>& data, size_t width_bit_alignment = 1
-    ) : ImageImplementation(make_intermediate(data, width_bit_alignment)) {}
+    inline ImageImplementation(const std::vector<std::vector<D>>& data) :
+        ImageImplementation(make_intermediate(data)) {}
 
-    ImageImplementation(size_t width, size_t height, size_t width_bit_alignment = 1) :
-        ImageImplementation<T>(width, height, std::vector<T>(), width_bit_alignment) {}
+    ImageImplementation(size_t width, size_t height) :
+        ImageImplementation<T>(width, height, std::vector<T>()) {}
 
     inline virtual size_t
     get_width() const {
@@ -171,7 +156,7 @@ class ImageImplementation {
     inline T
     get_data(size_t i, size_t j) const {
         assert(i < width_ && j < height_ && "Position must be within image.");
-        return data_.at(j * data_width_ + i);
+        return data_.at(j * width_ + i);
     }
 
     inline auto
@@ -255,13 +240,13 @@ struct ImageVisitor : Ts... {
 
 ImageVariant make_image(
     gui::gpu_data::GPUPixelType type, gui::gpu_data::GPUPixelReadFormat format,
-    size_t width, size_t height, size_t width_bit_alignment = 1
+    size_t width, size_t height
 );
 
 template <typename T>
 ImageVariant
-make_image(size_t width, size_t height, size_t width_bit_alignment = 1) {
-    return ImageImplementation<T>(width, height, {}, width_bit_alignment);
+make_image(size_t width, size_t height) {
+    return ImageImplementation<T>(width, height, {});
 }
 
 } // namespace image

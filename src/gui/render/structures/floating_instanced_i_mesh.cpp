@@ -14,7 +14,8 @@ namespace gui {
 namespace gpu_data {
 
 FloatingInstancedIMeshGPU::FloatingInstancedIMeshGPU(
-    const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms, bool differed
+    const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms,
+    bool differed
 ) : TransformsArray_mat4_c(model_transforms), IMeshGPU(mesh, differed) {}
 
 void

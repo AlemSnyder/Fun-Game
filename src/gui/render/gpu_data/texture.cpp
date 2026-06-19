@@ -160,13 +160,6 @@ Texture2D::load_image(util::image::ImageVariant image) {
 
 std::expected<util::image::ImageVariant, int>
 Texture2D::get_image() const {
-    // multiplying by 2 fixes the memory error, but that can't possibly be correct.
-    // TODO GL_PACK_ALIGNMENT
-    size_t data_size = width_ * height_ * get_size(settings_.type)
-                       * get_size(settings_.read_format) * 2;
-
-    //    std::shared_ptr<char[]> data = std::make_shared<char[]>(data_size);
-
     if (settings_.multisample) {
         LOG_ERROR(logging::opengl_logger, "Cannot load multisample texture to image.");
         return std::unexpected(1);

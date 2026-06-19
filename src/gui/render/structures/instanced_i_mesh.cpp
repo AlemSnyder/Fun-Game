@@ -14,9 +14,10 @@ namespace gui {
 namespace gpu_data {
 
 InstancedIMeshGPU::InstancedIMeshGPU(
-    const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms, bool differed
-) : TransformsArray_vec4_c(model_transforms),
-    IMeshGPU(mesh, differed),
+    const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms,
+    bool differed
+) :
+    TransformsArray_vec4_c(model_transforms), IMeshGPU(mesh, differed),
     num_models_(model_transforms.size()) {}
 
 void

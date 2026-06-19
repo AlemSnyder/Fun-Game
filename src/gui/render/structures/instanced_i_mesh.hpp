@@ -41,16 +41,19 @@ namespace gpu_data {
 class TransformsArray_vec4_c {
  protected:
     VertexBufferObject<glm::ivec4> transforms_array_;
+
  public:
     inline TransformsArray_vec4_c(const TransformsArray_vec4_c& obj) = delete;
     inline TransformsArray_vec4_c(TransformsArray_vec4_c&& other) = default;
     // copy operator
-    inline TransformsArray_vec4_c& operator=(const TransformsArray_vec4_c& obj) = delete;
+    inline TransformsArray_vec4_c&
+    operator=(const TransformsArray_vec4_c& obj) = delete;
     inline TransformsArray_vec4_c& operator=(TransformsArray_vec4_c&& other) = default;
 
     inline TransformsArray_vec4_c() : transforms_array_() {}
 
-    inline TransformsArray_vec4_c(const std::vector<glm::ivec4>& model_transforms) : transforms_array_(model_transforms, 1) {}
+    inline TransformsArray_vec4_c(const std::vector<glm::ivec4>& model_transforms) :
+        transforms_array_(model_transforms, 1) {}
 };
 
 /**
@@ -85,7 +88,8 @@ class InstancedIMeshGPU :
      * @param const std::vector<glm::ivec4>& model_transforms
      */
     InstancedIMeshGPU(
-        const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms, bool differed = false
+        const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms,
+        bool differed = false
     );
 
     inline virtual ~InstancedIMeshGPU() {}

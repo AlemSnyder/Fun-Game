@@ -158,7 +158,7 @@ read_image(std::filesystem::path path) {
     png_read_end(info.png_ptr, nullptr);
 
     // todo do things for bit depth
-    auto image = util::image::PolychromeAlphaImage(width, height, data, 1);
+    auto image = util::image::PolychromeAlphaImage(width, height, data);
 
 #if DEBUG()
     for (unsigned int i = 0; i < image.get_width(); i++) {
