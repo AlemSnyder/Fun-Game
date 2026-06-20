@@ -187,10 +187,10 @@ image_test(const argh::parser& cmdl) {
 
         auto map = biome.get_map(size);
 
-        assert(
-            map.get_width() == size && map.get_width() == size
-            && "Size should match the width and height."
-        );
+        if (!(map.get_width() == size && map.get_height() == size)){
+            LOG_ERROR(logging::game_map_logger, "Size should match the width and height.");
+            return 1;
+        }
 
         std::filesystem::path png_save_path = files::get_argument_path(cmdl(3).str());
 

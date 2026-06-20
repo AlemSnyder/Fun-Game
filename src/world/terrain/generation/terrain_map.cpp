@@ -18,6 +18,8 @@ TerrainMapRepresentation::get_color(size_t i, size_t j) const {
 
     ColorInt color;
 
+    Dim tile_height = tile.get_height();
+
     if (index_i == 0 || index_j == 0) {
         color = tile.get_top_color();
     } else if (mod_i < tile_border_size_ || mod_j < tile_border_size_) {
@@ -43,6 +45,8 @@ TerrainMapRepresentation::get_color(size_t i, size_t j) const {
     }
 
     color_t color_vec = color::uint32_to_color(color);
+
+    color_vec = color_vec - color_t(tile_height / 4);
 
     return {color_vec[0], color_vec[1], color_vec[2]};
 }

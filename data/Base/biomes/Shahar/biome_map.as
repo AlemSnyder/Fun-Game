@@ -12,37 +12,63 @@ class biome_map {
 
     TerrainGeneration::FractalNoise noise;
     TerrainGeneration::AlternativeWorleyNoise mountain_noise;
+    TerrainGeneration::AlternativeWorleyNoise precipitation_noise;
     TerrainGeneration::AlternativeWorleyNoise flower_noise;
     float spacing;
 
     biome_map() {
         noise = TerrainGeneration::FractalNoise(4, 0.3, 8);
-        mountain_noise = TerrainGeneration::AlternativeWorleyNoise(16.0, 0.5, 8.0);
+        mountain_noise = TerrainGeneration::AlternativeWorleyNoise(16.0, 0.25, 8.0);
+        precipitation_noise = TerrainGeneration::AlternativeWorleyNoise(12.0, 0.5, 6.0);
         flower_noise = TerrainGeneration::AlternativeWorleyNoise(32, 0.5, 32);
-        spacing = 0.1;
+        spacing = 0.4;
     }
 
     int sample(int x, int y) {
         // sample noise and set a value
-        float height = 60.0 * noise.sample(float(x) * spacing, float(y) * spacing) - 11;
+        float sea_height = 60.0 * noise.sample(float(x) * spacing, float(y) * spacing) - 11;
         // each value must be integers. math.floor changes doubles to ints
-        float mountain_height = (mountain_noise.sample(float(x + y), float(x - y)) - .4) * noise.sample(float(y + 500) * spacing, float(x + 500) * spacing);
+        float mountain_height = 2 * (mountain_noise.sample(float(x + y) * 10 * spacing, float(x - y) * 10 * spacing) - .4) * noise.sample(float(y + 500) * spacing, float(x + 500) * spacing);
+        
         if (mountain_height < 0) {
             mountain_height = 0;
         }
-        if (height < 1) {
-            height = (height - 1) / 2 + 1;
+        // this makes the oceans shallower
+        if (sea_height < 1) {
+            sea_height = (sea_height - 1) / 2 + 1;
         }
-        height = height + mountain_height;
-        int height_map_value =  int(height) ;
+        float height = sea_height;
+        float height_intermediate = sea_height + mountain_height;
+        if (height_intermediate < 3) { 
+            height = height_intermediate;
+        }
+        int height_map_value =  int(height);
         // This biome only defines tile types between 0, and 6
-        if (height_map_value > 6) {
-            height_map_value = 6;
+        if (height_map_value > 5) {
+            height_map_value = 5;
         }
         else if (height_map_value < 0) {
             height_map_value = 0;
         }
-        return height_map_value;
+        if (height_map_value == 0) {
+            return height_map_value;
+        } else if (height_map_value >= 4) {
+            return height_map_value + 6;
+        }
+
+        if (sea_height > 2) {
+            sea_height = 2;
+        }
+
+        float precipitation = 11 - (precipitation_noise.sample(float(x - y + 900) * spacing / 10, float(x + y - 300) * spacing / 10) * 3 + sea_height * 3);
+
+        if (precipitation < 3){
+            return height_map_value + 6;
+        } else if (precipitation < 5) {
+            return height_map_value + 3;
+        } else {
+            return height_map_value;
+        }
     }
 
     // Maps for trees and bushes
