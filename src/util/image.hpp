@@ -131,7 +131,7 @@ class ImageImplementation {
         ImageImplementation(make_intermediate(data)) {}
 
     ImageImplementation(size_t width, size_t height) :
-        ImageImplementation<T>(width, height, std::vector<T>()) {}
+        ImageImplementation<T>(width, height, std::vector<T>(width * height)) {}
 
     inline virtual size_t
     get_width() const {

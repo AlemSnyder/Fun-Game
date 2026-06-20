@@ -137,9 +137,6 @@ display_data(
 
     const auto& mid_ground = scene.get_mid_ground_framebuffer();
 
-    FrameBufferHandler& fbh = FrameBufferHandler::instance();
-    fbh.bind_fbo(0);
-
     ImGui::Text("Texture ID %i", mid_ground.get_depth_buffer()->value());
     ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_depth_buffer()->value()),

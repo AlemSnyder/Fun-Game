@@ -284,6 +284,9 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
             );
         }
 
+        // Render ImGui to the screen
+        FrameBufferHandler& fbh = FrameBufferHandler::instance();
+        fbh.bind_fbo(0);
         // Rendering
         ImGui::Render();
         int display_w, display_h;
