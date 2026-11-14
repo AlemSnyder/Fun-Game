@@ -26,7 +26,6 @@
 #include "gui/render/structures/terrain_mesh.hpp"
 #include "manifest/object_handler.hpp"
 #include "object/entity/entity.hpp"
-#include "object/entity/tile_object.hpp"
 #include "object/entity_controller.hpp"
 #include "terrain/material.hpp"
 #include "terrain/terrain.hpp"
@@ -99,7 +98,7 @@ class World {
     /**
      * @brief Get object handler
      */
-    const auto
+    auto
     get_object_handler() const {
         return controller_.get_object_handler();
     }

@@ -45,9 +45,9 @@ class FrameBuffer {
 
 /**
  * @brief Render only to a section of the window
- * 
+ *
  * @details Renders to the given section of the window. This is used for things
- * that get rendered few times per frame, and have a specific location like a 
+ * that get rendered few times per frame, and have a specific location like a
  * window.
  */
 class ScreenSection {
