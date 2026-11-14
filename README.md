@@ -18,6 +18,17 @@ pacman -Su \
     mingw-w64-x86_64-glm
 ```
 
+### Linux
+
+```sh
+apt install \
+    libglfw3-dev \
+    libglew-dev \
+    libglm-dev \
+    libomp-17-dev \
+    libpng-dev
+```
+
 ## Building
 
 ```sh

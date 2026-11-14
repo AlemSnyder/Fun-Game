@@ -55,10 +55,9 @@ jobs:
           sudo apt update
 
           sudo apt install \
-            libglfw3 libglfw3-dev \
+            libglfw3-dev \
             libglew-dev \
             libglm-dev \
-            libomp-17-dev \
             libpng-dev
 
 
