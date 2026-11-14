@@ -1,6 +1,6 @@
 #include "object.hpp"
 
-#include "fmt/core.h"
+#include "fmt/base.h"
 
 namespace world {
 

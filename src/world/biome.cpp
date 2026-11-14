@@ -189,7 +189,7 @@ Biome::get_plant_map(Dim length) const {
         MacroDim x_map_tiles = length;
         MacroDim y_map_tiles = length;
 
-        out.reserve(x_map_tiles * y_map_tiles);
+        plant_data.reserve(x_map_tiles * y_map_tiles);
         for (MacroDim x = 0; x < x_map_tiles; x++) {
             for (MacroDim y = 0; y < y_map_tiles; y++) {
                 int x_copy = x;
@@ -198,10 +198,10 @@ Biome::get_plant_map(Dim length) const {
                     biome_map, script_method, &plant_map_name, std::move(x_copy),
                     std::move(y_copy)
                 );
-                if (!result) {
+                if (!result_2) {
                     LOG_ERROR(
                         logging::script_logger, "Error code {}",
-                        static_cast<int>(result.error())
+                        static_cast<int>(result_2.error())
                     );
                     return {};
                 }

@@ -36,6 +36,7 @@
 #include <set>
 #include <thread>
 #include <unordered_map>
+#include <cassert>
 
 /**
  * @brief Any global context that are needed will go in this class.
