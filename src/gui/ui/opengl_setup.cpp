@@ -33,35 +33,23 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
         GLFW_OPENGL_PROFILE,
         GLFW_OPENGL_CORE_PROFILE
     ); // somehow turning on core profiling
-    
+
     // Tell GLFW we want logging
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-    
-    glfwSwapInterval(1); // Enable vsync
 
+    glfwSwapInterval(1); // Enable vsync
 
     // Create window with graphics context
     GLFWwindow* window =
-    glfwCreateWindow(window_width, window_height, "Fun-Game", nullptr, nullptr);
+        glfwCreateWindow(window_width, window_height, "Fun-Game", nullptr, nullptr);
     if (window == nullptr)
         return nullptr;
     glfwMakeContextCurrent(window);
-    
-    // I can't for the life of me figure out why there are two of these
-    // Initialise GLFW
-    glewExperimental = true; // Needed for core profile
-    if (glewInit() != GLEW_OK) {
-        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
-        glfwTerminate();
-        return nullptr;
-    }
 
     // Set the pack and unpack alignment for textures to one byte. This is because I am
     // reading them into textures which have their own alignment
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    
-
 
     return window;
 }

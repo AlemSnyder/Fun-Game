@@ -67,22 +67,28 @@ init(bool console, quill::LogLevel log_level) {
 
     // Initialize print handler
     if (console) {
-        quill::ConsoleSinkConfig config;
-
-        quill::ConsoleSinkConfig::Colours colors;
+        cc colors;
         colors.assign_colour_to_log_level(LogLevel::TraceL3, cc::black);
         colors.assign_colour_to_log_level(LogLevel::TraceL2, cc::black);
         colors.assign_colour_to_log_level(LogLevel::TraceL1, cc::black);
         colors.assign_colour_to_log_level(LogLevel::Debug, cc::white);
         colors.assign_colour_to_log_level(LogLevel::Info, cc::green);
 
-        //        colors.assign_colour_to_log_level(LogLevel::Warning, cc::yellow +
-        //        cc::bold); colors.assign_colour_to_log_level(LogLevel::Error, cc::red
-        //        + cc::bold); colors.assign_colour_to_log_level(LogLevel::Critical,
-        //        cc::bold + cc::white + cc::on_red);
+#ifdef _WIN32
+        colors.assign_colour_to_log_level(LogLevel::Warning, cc::yellow | cc::bold);
+        colors.assign_colour_to_log_level(LogLevel::Error, cc::red | cc::bold);
+        colors.assign_colour_to_log_level(
+            LogLevel::Critical, cc::bold | cc::white | cc::on_red
+        );
+#else
+        colors.assign_colour_to_log_level(LogLevel::Warning, cc::yellow_bold);
+        colors.assign_colour_to_log_level(LogLevel::Error, cc::red_bold);
+        colors.assign_colour_to_log_level(LogLevel::Critical, cc::bold_on_red);
+#endif
 
         colors.assign_colour_to_log_level(LogLevel::Backtrace, cc::magenta);
 
+        quill::ConsoleSinkConfig config;
         config.set_colours(colors);
 
         auto console_sink =
@@ -113,24 +119,27 @@ init(bool console, quill::LogLevel log_level) {
 
 #endif
 
+    auto pattern = quill::PatternFormatterOptions{LOGLINE_FORMAT};
+    auto script_pattern = quill::PatternFormatterOptions{LOGLINE_FORMAT_SCRIPT};
+
     // create all loggers
     // clang-format off
     main_logger =
-        quill::Frontend::create_or_get_logger("main", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT});
+        quill::Frontend::create_or_get_logger("main", file_sink, pattern);
     opengl_logger =
-        quill::Frontend::create_or_get_logger("shaders", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT});
+        quill::Frontend::create_or_get_logger("shaders", file_sink, pattern);
     terrain_logger =
-        quill::Frontend::create_or_get_logger("terrain", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT});
+        quill::Frontend::create_or_get_logger("terrain", file_sink, pattern);
     game_map_logger =
-        quill::Frontend::create_or_get_logger("game_map", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT});
+        quill::Frontend::create_or_get_logger("game_map", file_sink, pattern);
     voxel_logger =
-        quill::Frontend::create_or_get_logger("voxel", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT});
+        quill::Frontend::create_or_get_logger("voxel", file_sink, pattern);
     file_io_logger =
-        quill::Frontend::create_or_get_logger("file_io", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT});
+        quill::Frontend::create_or_get_logger("file_io", file_sink, pattern);
     as_logger =
-        quill::Frontend::create_or_get_logger("as", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT});
+        quill::Frontend::create_or_get_logger("as", file_sink, pattern);
     script_logger =
-        quill::Frontend::create_or_get_logger("script", file_sink, quill::PatternFormatterOptions{LOGLINE_FORMAT_SCRIPT});
+        quill::Frontend::create_or_get_logger("script", file_sink, script_pattern);
     // clang-format on
 
     main_logger->set_log_level(_LOG_LEVEL);
