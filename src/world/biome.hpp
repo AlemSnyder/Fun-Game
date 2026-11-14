@@ -24,9 +24,6 @@
 #include "terrain/generation/land_generator.hpp"
 #include "terrain/generation/map_tile.hpp"
 #include "terrain/generation/terrain_map.hpp"
-#include "util/files.hpp"
-
-#include <sol/sol.hpp>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -123,7 +120,7 @@ class Biome {
 
     GrassData grass_data_;
 
-    const std::filesystem::path lua_map_generator_file_;
+    const std::filesystem::path map_generator_file_;
 
     // display name
     const std::string name_;
@@ -287,9 +284,8 @@ class Biome {
     [[nodiscard]] std::unordered_map<ColorInt, MaterialColor>
     get_colors_inverse_map() const;
 
-    static TerrainMacroMap map_generation_test(
-        const std::filesystem::path& lua_map_generator_file, size_t size
-    );
+    static TerrainMacroMap
+    map_generation_test(const std::filesystem::path& map_generator_file, size_t size);
 
     [[nodiscard]] static biome_json_data
     get_json_data(const std::filesystem::path& biome_file_folder);

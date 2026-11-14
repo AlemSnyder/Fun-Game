@@ -184,6 +184,7 @@ class ObjectHandler {
                 // iterate through objects in manifest and queue them to be loaded
                 for (const manifest::descriptor_t& entity_data : *manifest.entities) {
                     auto future = context.submit_task([this, entity_data]() {
+                        // manifest.name
                         int result = read_object<opengl>(entity_data);
                         return result;
                     });

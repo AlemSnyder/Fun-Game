@@ -87,7 +87,7 @@ imgui_entry(GLFWwindow* window, world::World& world, world::Climate& climate) {
     scene::InputHandler::imgui_active = true;
     scene::InputHandler::set_window(window);
     scene::InputHandler::forward_inputs_to(
-        std::static_pointer_cast<scene::Inputs>(controller)
+        static_pointer_cast<scene::Inputs>(controller)
     );
 
     // Setup Platform/Renderer backends
