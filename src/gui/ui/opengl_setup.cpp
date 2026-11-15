@@ -15,7 +15,6 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     glEnable(GL_MULTISAMPLE);
 
     // Initialise GLFW
-    glewExperimental = true; // Needed for core profile
     if (!glfwInit()) {
         LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
         glfwTerminate();
@@ -45,6 +44,14 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     if (window == nullptr)
         return nullptr;
     glfwMakeContextCurrent(window);
+
+    // This is GLEW not GLFW (E vs F)
+    glewExperimental = true; // Needed for core profile
+    if (glewInit() != GLEW_OK) {
+        LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
+        glfwTerminate();
+        return nullptr;
+    }
 
     // Set the pack and unpack alignment for textures to one byte. This is because I am
     // reading them into textures which have their own alignment

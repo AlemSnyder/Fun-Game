@@ -153,7 +153,7 @@ Texture2D::Texture2D(
 void
 Texture2D::load_image(util::image::ImageVariant image) {
     const auto visitor =
-        util::image::ImageVisitor([this](auto&& image) { this->load_data(image); });
+        util::image::ImageVisitor{[this](auto&& image) { this->load_data(image); }};
 
     std::visit(visitor, image);
 }
@@ -199,13 +199,13 @@ Texture2D::get_image() const {
     util::image::ImageVariant out =
         util::image::make_image(settings_.type, settings_.read_format, width_, height_);
 
-    const auto visitor = util::image::ImageVisitor([this](auto&& image) {
+    const auto visitor = util::image::ImageVisitor{[this](auto&& image) {
         glGetTexImage(
             GL_TEXTURE_2D, 0, static_cast<GLenum>(this->settings_.read_format),
             static_cast<GLenum>(this->settings_.type),
             static_cast<void*>(image.get_raw_data())
         );
-    });
+    }};
 
     std::visit(visitor, out);
 

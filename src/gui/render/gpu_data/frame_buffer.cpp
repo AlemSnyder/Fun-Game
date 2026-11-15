@@ -128,13 +128,13 @@ FrameBufferBase::read_data(
         util::image::make_image(GPUPixelType::FLOAT, read_format, image_w, image_h);
 
     const auto visitor =
-        util::image::ImageVisitor([this, start_w, start_h, read_format](auto&& image) {
+        util::image::ImageVisitor{[this, start_w, start_h, read_format](auto&& image) {
             glReadPixels(
                 start_w, start_h, image.get_width(), image.get_height(),
                 static_cast<GLenum>(read_format),
                 static_cast<GLenum>(GPUPixelType::FLOAT), image.get_raw_data()
             );
-        });
+        }};
 
     std::visit(visitor, out);
 
