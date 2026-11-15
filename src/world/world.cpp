@@ -55,8 +55,7 @@ World::World(
     MacroDim y_tiles, size_t seed
 ) :
     controller_(object_handler), biome_(biome_data, seed),
-    terrain_main_(
-        x_tiles, y_tiles, macro_tile_size, height, biome_, biome_.get_map(x_tiles)
+    terrain_main_(macro_tile_size, height, biome_, biome_.get_map(x_tiles)
     ) {}
 
 World::World(
@@ -66,7 +65,17 @@ World::World(
 ) :
     controller_(object_handler), biome_(biome_data, seed),
     terrain_main_(
-        3, 3, macro_tile_size, height, biome_, biome_.single_tile_type_map(tile_type)
+        macro_tile_size, height, biome_, biome_.single_tile_type_map(tile_type)
+    ) {}
+
+World::World(
+    manifest::ObjectHandler* object_handler,
+    const terrain::generation::biome_data_t& biome_data,
+    size_t seed
+) :
+    controller_(object_handler), biome_(biome_data, seed),
+    terrain_main_(
+        macro_tile_size, height, biome_, biome_.all_tile_type_map()
     ) {}
 
 void

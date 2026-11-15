@@ -166,25 +166,48 @@ class Biome {
     [[nodiscard]] const std::unordered_map<std::string, PlantMap>
     get_plant_map(MacroDim length) const;
 
-    // TODO pass seed
+    // TODO Reserve Macro 0 to be empty
     inline TerrainMacroMap
     single_tile_type_map(MapTile_t type) {
         std::vector<terrain::generation::MapTile> out;
         out.reserve(9);
 
-        out.emplace_back(get_macro_ids(0), 0, 0, 0);
-        out.emplace_back(get_macro_ids(0), 0, 0, 1);
-        out.emplace_back(get_macro_ids(0), 0, 0, 2);
+        out.emplace_back(get_macro_ids(0), seed, 0, 0);
+        out.emplace_back(get_macro_ids(0), seed, 0, 1);
+        out.emplace_back(get_macro_ids(0), seed, 0, 2);
 
-        out.emplace_back(get_macro_ids(0), 0, 1, 0);
-        out.emplace_back(get_macro_ids(type), 2, 1, 1);
-        out.emplace_back(get_macro_ids(0), 0, 1, 2);
+        out.emplace_back(get_macro_ids(0), seed, 1, 0);
+        out.emplace_back(get_macro_ids(type), seed, 1, 1);
+        out.emplace_back(get_macro_ids(0), seed, 1, 2);
 
-        out.emplace_back(get_macro_ids(0), 0, 2, 0);
-        out.emplace_back(get_macro_ids(0), 0, 2, 1);
-        out.emplace_back(get_macro_ids(0), 0, 2, 2);
+        out.emplace_back(get_macro_ids(0), seed, 2, 0);
+        out.emplace_back(get_macro_ids(0), seed, 2, 1);
+        out.emplace_back(get_macro_ids(0), seed, 2, 2);
 
         return TerrainMacroMap(out, 3, 3);
+    }
+
+    
+    inline TerrainMacroMap
+    all_tile_type_map() {
+        std::vector<terrain::generation::MapTile> out;
+
+        // TODO make this square eventually
+
+        out.reserve(macro_tile_types_.size() * 9);
+
+        for (size_t x = 0; x < macro_tile_types_.size() * 3; x++) {
+            for (size_t y = 0 ; y < 3; y++) {
+                if (y == 1 && x % 3 == 1){
+                    out.emplace_back(get_macro_ids(x / 3), seed, x, y);
+                } else {
+                    out.emplace_back(get_macro_ids(0), seed, x, y);
+                }
+            }
+        }
+
+        return TerrainMacroMap(out, macro_tile_types_.size() * 3, 3);
+
     }
 
     /**

@@ -307,7 +307,6 @@ class Terrain : public voxel_utility::VoxelBase {
     init_area(generation::MapTile& map_tile, generation::LandGenerator gen);
 
     [[nodiscard]] std::vector<std::vector<std::future<void>>> init_all_map_tile_regions(
-        TerrainOffset x_map_tiles, TerrainOffset y_map_tiles,
         generation::TerrainMacroMap& macro_map
     );
 
@@ -415,7 +414,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param grass_mid gradient index of grass not effected by an edge
      */
     Terrain(
-        TerrainOffset x_tiles, TerrainOffset y_tiles, TerrainOffset area_size_,
+        TerrainOffset area_size_,
         TerrainOffset z_tiles, const generation::Biome& biome,
         generation::TerrainMacroMap macro_map
     );

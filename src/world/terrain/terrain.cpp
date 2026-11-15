@@ -79,12 +79,12 @@ Terrain::Terrain(const generation::Biome& biome, voxel_utility::qb_data_t data) 
 }
 
 Terrain::Terrain(
-    TerrainOffset x_map_tiles, TerrainOffset y_map_tiles, TerrainOffset area_size_,
+    TerrainOffset area_size_,
     TerrainOffset z, const generation::Biome& biome,
     generation::TerrainMacroMap macro_map
 ) :
-    area_size_(area_size_), biome_(biome), X_MAX(x_map_tiles * area_size_),
-    Y_MAX(y_map_tiles * area_size_), Z_MAX(z) {
+    area_size_(area_size_), biome_(biome), X_MAX(macro_map.get_width() * area_size_),
+    Y_MAX(macro_map.get_height() * area_size_), Z_MAX(z) {
     // srand(seed);
     LOG_INFO(logging::terrain_logger, "Start of land generator.");
 
@@ -93,8 +93,8 @@ Terrain::Terrain(
 
     GlobalContext& context = GlobalContext::instance();
     std::future<std::vector<std::vector<std::future<void>>>> map_tile_async_status =
-        context.submit_task([&x_map_tiles, &y_map_tiles, &macro_map, this]() {
-            return this->init_all_map_tile_regions(x_map_tiles, y_map_tiles, macro_map);
+        context.submit_task([&macro_map, this]() {
+            return this->init_all_map_tile_regions(macro_map);
         });
 
     auto futures = map_tile_async_status.get();
@@ -454,14 +454,13 @@ Terrain::init_nodegroups() {
 
 std::vector<std::vector<std::future<void>>>
 Terrain::init_all_map_tile_regions(
-    TerrainOffset x_map_tiles, TerrainOffset y_map_tiles,
     generation::TerrainMacroMap& macro_map
 ) {
     std::vector<std::vector<std::future<void>>> futures;
 
     for (size_t start_index = 0; start_index < 4; start_index++) {
-        for (TerrainOffset i = start_index % 2; i < x_map_tiles; i += 2) {
-            for (TerrainOffset j = start_index / 2; j < y_map_tiles; j += 2) {
+        for (TerrainOffset i = start_index % 2; i < macro_map.get_width(); i += 2) {
+            for (TerrainOffset j = start_index / 2; j < macro_map.get_height(); j += 2) {
                 generation::MapTile& map_tile = macro_map.get_tile(i, j);
 
                 for (auto generator_macro : map_tile.get_type()) {

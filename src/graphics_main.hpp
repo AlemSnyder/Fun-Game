@@ -67,7 +67,18 @@ struct LoadGame {
     bool DearIMGUI;
 };
 
-using result = std::variant<Exit, IntroPage, NewGame, LoadGame>;
+struct DebugGame {
+    std::string biome;
+    size_t seed;
+    // size_t type; // this won't matter rn
+    // map location;
+    // starting something
+    // difficulty etc
+    // int difficulty;
+    bool DearIMGUI;
+};
+
+using result = std::variant<Exit, IntroPage, NewGame, LoadGame, DebugGame>;
 
 } // namespace intro_scene
 

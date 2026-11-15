@@ -47,7 +47,7 @@ class TerrainMacroMap {
     const MapTile&
     get_tile(size_t i, size_t j) const {
         assert(i < width_ && j < height_);
-        return terrain_map_[height_ * j + i];
+        return terrain_map_[height_ * i + j];
     }
 
     /**
@@ -59,7 +59,7 @@ class TerrainMacroMap {
     MapTile&
     get_tile(size_t i, size_t j) {
         assert(i < width_ && j < height_);
-        return terrain_map_[height_ * j + i];
+        return terrain_map_[height_ * i + j];
     }
 
     /**

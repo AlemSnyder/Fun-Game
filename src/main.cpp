@@ -44,11 +44,9 @@ save_terrain(terrain::generation::biome_data_t biome_data) {
     for (MapTile_t i = 0; i < biome_data.tile_data.size(); i++) {
         terrain::generation::Biome biome(biome_data, 5);
 
-        MacroDim map_size = 3;
         Dim terrain_height = 128;
         auto macro_map = biome.single_tile_type_map(i);
-        terrain::Terrain ter(
-            map_size, map_size, world::World::macro_tile_size, terrain_height, biome,
+        terrain::Terrain ter(world::World::macro_tile_size, terrain_height, biome,
             macro_map
         );
 

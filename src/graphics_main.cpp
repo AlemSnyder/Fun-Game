@@ -41,9 +41,18 @@ graphics_main(const argh::parser& cmdl) {
     cmdl("biome-name", BIOME_BASE_NAME) >> biome_name;
     bool imgui_debug = cmdl[{"-g", "--imgui"}];
 
-    intro_scene::result new_game_settings = intro_scene::NewGame{
-        .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug
-    };
+    bool terrain_types_debug = cmdl[{"--terrain-types"}];
+
+    intro_scene::result new_game_settings;
+    if (terrain_types_debug) {
+        new_game_settings = intro_scene::DebugGame{
+            .biome = biome_name, .seed = seed, .DearIMGUI = imgui_debug
+        };
+    } else {
+        new_game_settings = intro_scene::NewGame{
+            .biome = biome_name, .seed = seed, .size = size, .DearIMGUI = imgui_debug
+        };
+    }
 
     return graphics_main(new_game_settings);
 }
@@ -99,11 +108,16 @@ graphics_main(intro_scene::result result) {
                     result = start_game(result, window);
                 }
                 break;
+            case 4:
+                {
+                    result = start_game(result, window);
+                }
+                break;
             default:
                 LOG_WARNING(
                     logging::main_logger, "NOT IMPLEMENTED/Something went wrong"
                 );
-                break;
+                goto exit;
         }
     }
 exit:
@@ -175,7 +189,7 @@ start_game(intro_scene::result result, GLFWwindow* window) {
                 auto biome_data = object_handler.get_biome(biome_name);
                 if (!biome_data) {
                     // this is equivalent to crashing
-                    result.result = 4;
+                    result.result = 1;
                     return result;
                 }
 
@@ -192,9 +206,40 @@ start_game(intro_scene::result result, GLFWwindow* window) {
         LOG_ERROR(logging::main_logger, "Loading World Not Implemented (yet*)");
         return intro_scene::IntroPage();
         // not implemented
+    } else if (result.index() == 4) { // new debug game
+        std::string biome_name = std::get<intro_scene::DebugGame>(result).biome;
+        size_t seed = std::get<intro_scene::DebugGame>(result).seed;
+        imgui_debug = std::get<intro_scene::DebugGame>(result).DearIMGUI;
+
+        load_manifests_future =
+            global_context.submit_task([&object_handler, biome_name, /*type,*/ seed]() {
+                background_result result;
+
+                int manifest_result = object_handler.load_all_manifests<true>();
+                result.result = manifest_result;
+                if (result.result == 1) {
+                    return result;
+                }
+
+                auto biome_data = object_handler.get_biome(biome_name);
+                if (!biome_data) {
+                    // this is equivalent to crashing
+                    result.result = 1;
+                    return result;
+                }
+
+                result.world = std::make_unique<world::World>(
+                    &object_handler, *biome_data, seed
+                );
+                result.world->generate_plants();
+                result.climate = std::make_unique<world::Climate>();
+
+                return result;
+            });
+
     }
 
-    // can't cancel a task after it has been started run.
+    // can't cancel a task after it has been started.
 
     while (load_manifests_future.wait_for(std::chrono::seconds(0))
            != std::future_status::ready) {
@@ -208,7 +253,7 @@ start_game(intro_scene::result result, GLFWwindow* window) {
 
     auto future_value = load_manifests_future.get();
 
-    if (future_value.result == 1) {
+    if (future_value.result != 0) {
         LOG_ERROR(logging::main_logger, "Error Loading. Exiting.");
         return intro_scene::Exit(1);
     }

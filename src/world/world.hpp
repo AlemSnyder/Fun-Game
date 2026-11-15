@@ -147,9 +147,34 @@ class World {
         manifest::ObjectHandler* object_handler,
         const terrain::generation::biome_data_t& biome_name, MapTile_t type, size_t seed
     );
+    /**
+     * @brief Construct a new World object to test biome generation.
+     * 
+     * @details Generates a test world with all tile types.
+     *
+     * @param manifest::ObjectHandler* object_handler
+     * @param biome_data biome parameters
+     * @param seed
+     * (see) data/biome_data.json > `biome` > Tile_Data
+     * (see) src/terrain/generation/land_generator.hpp
+     */
+    explicit World(
+    manifest::ObjectHandler* object_handler,
+    const terrain::generation::biome_data_t& biome_data,
+    size_t seed);
+
+    /**
+     * @brief Construct a new World object from a save
+     *
+     * @param manifest::ObjectHandler* object_handler
+     * @param biome_data biome parameters
+     * @param MacroDim x_tiles
+     * @param MacroDim y_tiles
+     * @param size_t seed
+     */
     World(
         manifest::ObjectHandler* object_handler,
-        const terrain::generation::biome_data_t& biome_name, MacroDim x_tiles,
+        const terrain::generation::biome_data_t& biome_data, MacroDim x_tiles,
         MacroDim y_tiles, size_t seed
     );
 
