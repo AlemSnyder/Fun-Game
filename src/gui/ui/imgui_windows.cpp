@@ -137,10 +137,9 @@ display_data(
 
     const auto& mid_ground = scene.get_mid_ground_framebuffer();
 
-    
     FrameBufferHandler& fbh = FrameBufferHandler::instance();
     fbh.bind_fbo(0);
-    
+
     ImGui::Text("Texture ID %i", mid_ground.get_depth_buffer()->value());
     ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_depth_buffer()->value()),
@@ -151,7 +150,7 @@ display_data(
         ImVec2(0, float(window_width) / float(mid_ground.get_width())),
         ImVec2(float(window_height) / float(mid_ground.get_height()), 0)
     );
-    
+
     ImGui::Text("Texture ID %i", mid_ground.get_texture(0)->value());
     ImGui::Image(
         reinterpret_cast<ImTextureID>(mid_ground.get_texture(0)->value()),
@@ -162,16 +161,17 @@ display_data(
         ImVec2(0, float(window_height) / float(mid_ground.get_height())),
         ImVec2(float(window_width) / float(mid_ground.get_width()), 0)
     );
-    
-    auto read_data =
-        mid_ground.read_data(xy[0], xy[1], 1, 1);
+
+    auto read_data = mid_ground.read_data(xy[0], xy[1], 1, 1);
     if (!read_data.has_value()) {
         ImGui::Text("Cannot display depth. Something went wrong.");
-    }
-    else if (!std::holds_alternative<util::image::FloatMonochromeImage>(read_data.value())) { // FloatMonochromeImage
+    } else if (!std::holds_alternative<util::image::FloatMonochromeImage>(
+                   read_data.value()
+               )) { // FloatMonochromeImage
         ImGui::Text("Cannot display depth. Not float valued.");
     } else {
-        auto float_data = std::get<util::image::FloatMonochromeImage>(read_data.value());
+        auto float_data =
+            std::get<util::image::FloatMonochromeImage>(read_data.value());
         float depth_value = float_data.get_data(0, 0);
 
         ImGui::Text("Depth 32 %f", depth_value);

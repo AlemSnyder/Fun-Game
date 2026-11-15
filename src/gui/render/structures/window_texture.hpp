@@ -138,8 +138,7 @@ class WindowTexture : public virtual gpu_data::GPUData {
     );
 
     WindowTexture(
-        util::image::ImageVariant image,
-        const window_texture_data_t& texture_data
+        util::image::ImageVariant image, const window_texture_data_t& texture_data
     );
 
     inline virtual ~WindowTexture() {}

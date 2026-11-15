@@ -173,9 +173,8 @@ Terrain::qb_read(
                         if (color == 0) { // if the qb voxel is transparent.
                             mat_color =
                                 &materials_inverse.at(0); // set the materials to air
-                        } else if (materials_inverse.count(
-                                       color
-                                   )) { // if the color is known
+                        } else if (materials_inverse.count(color)) { // if the color is
+                                                                     // known
                             mat_color = &materials_inverse.at(color);
                         } else { // the color is unknown
                             std::unique_lock lock(unknown_colors_mutex_);

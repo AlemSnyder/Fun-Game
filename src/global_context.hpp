@@ -29,6 +29,7 @@
 #include <angelscript.h>
 #include <BS_thread_pool.hpp>
 
+#include <cassert>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -36,7 +37,6 @@
 #include <set>
 #include <thread>
 #include <unordered_map>
-#include <cassert>
 
 /**
  * @brief Any global context that are needed will go in this class.

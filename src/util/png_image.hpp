@@ -96,16 +96,19 @@ class ImageTest {
 };
 
 class PNG_write_info {
-    public:
+ public:
     png_structp png_ptr = nullptr;
     png_infop png_info = nullptr;
 
     PNG_write_info() {
         // Create our write struct
         // TODO these nullptr should be function pointers
-        png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-        if (!png_ptr) {return ;}
-            // Create our info struct for this png image
+        png_ptr =
+            png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+        if (!png_ptr) {
+            return;
+        }
+        // Create our info struct for this png image
 
         png_info = png_create_info_struct(png_ptr);
     }
@@ -145,12 +148,9 @@ write_image_base(T image, const std::filesystem::path& path /*other settings*/) 
     char meta_key[] = "An Image";
     char meta_text[] = "Some text";
 
-
     // Open the file for writing
-    std::unique_ptr<std::FILE, void(*)(std::FILE*)> file (
-        fopen(path.c_str(), "wb"), [](std::FILE* file){
-            fclose(file);
-        }
+    std::unique_ptr<std::FILE, void (*)(std::FILE*)> file(
+        fopen(path.c_str(), "wb"), [](std::FILE* file) { fclose(file); }
     );
 
     if (!file) {

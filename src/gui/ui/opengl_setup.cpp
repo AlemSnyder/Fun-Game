@@ -46,8 +46,8 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
 
     // Set the pack and unpack alignment for textures to one byte. This is because I am
     // reading them into textures which have their own alignment
-    glSetIntegerv(GL_PACK_ALIGNMENT, 1);
-    glSetIntegerv(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     return window;
 }

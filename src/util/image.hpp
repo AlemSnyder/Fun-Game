@@ -100,9 +100,7 @@ struct intermediate {
 };
 
 template <typename T>
-intermediate<T> inline make_intermediate(
-    const std::vector<std::vector<T>>& data
-) {
+intermediate<T> inline make_intermediate(const std::vector<std::vector<T>>& data) {
     std::vector<T> data_out;
 
     size_t width = 0;
@@ -134,22 +132,17 @@ class ImageImplementation {
     // private intermediate
     template <typename D>
     inline ImageImplementation(intermediate<D> inter) :
-        ImageImplementation(
-            inter.width, inter.height, inter.data
-        ) {}
+        ImageImplementation(inter.width, inter.height, inter.data) {}
 
  public:
     template <typename D>
     inline ImageImplementation(
         size_t width, size_t height, const std::vector<D>& data
-    ) :
-        width_(width), height_(height),
-        data_(convert<T, D>(data)) {}
+    ) : width_(width), height_(height), data_(convert<T, D>(data)) {}
 
     template <typename D>
-    inline ImageImplementation(
-        const std::vector<std::vector<D>>& data
-    ) : ImageImplementation(make_intermediate(data)) {}
+    inline ImageImplementation(const std::vector<std::vector<D>>& data) :
+        ImageImplementation(make_intermediate(data)) {}
 
     ImageImplementation(size_t width, size_t height) :
         ImageImplementation<T>(width, height, std::vector<T>()) {}
