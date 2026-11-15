@@ -6,6 +6,7 @@
 #include "manifest/object_handler.hpp"
 #include "util/angel_script/as_tests.hpp"
 #include "util/files.hpp"
+#include "util/image.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
 #include "world/biome.hpp"
@@ -206,6 +207,34 @@ image_test(const argh::parser& cmdl) {
         image::log_result(result, png_save_path);
 
         return result;
+    }
+
+    return 0;
+}
+
+int
+color_image_text() {
+    auto image_result = image::read_image(
+        files::get_resources_path() / "textures" / "GenericBorder.png"
+    );
+    if (!image_result.has_value()) {
+        LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
+        return 1;
+    }
+    util::image::ImageVariant image = image_result.value();
+
+    auto FPAimage = std::get<util::image::PolychromeAlphaImage>(image);
+    //        std::dynamic_pointer_cast<>(image;
+
+    auto result = image::write_image(
+        FPAimage, files::get_root_path() / "logs" / "GenericBorder_out_test.png"
+    );
+
+    if (!result == image::write_result_t::WR_OK) {
+        LOG_ERROR(
+            logging::file_io_logger, "Image write failed with result {}.", int(result)
+        );
+        return 1;
     }
 
     return 0;
@@ -494,6 +523,8 @@ tests(const argh::parser& cmdl) {
         return ChunkDataTest();
     } else if (run_function == "imageTest") {
         return image_test(cmdl);
+    } else if (run_function == "ColorImageTest") {
+        return color_image_text();
     } else if (run_function == "LoadManifest") {
         manifest::ObjectHandler object_handler;
         return object_handler.load_all_manifests<false>();

@@ -1,7 +1,7 @@
 #include "texture.hpp"
 
 #include "gui/handler.hpp"
-#include "util/color.hpp"
+#include "logging.hpp"
 
 namespace gui {
 
@@ -72,7 +72,7 @@ Texture2D::connect_depth_texture(GLuint framebuffer_ID) {
 }
 
 void
-Texture2D::setup(std::shared_ptr<util::image::Image> image) {
+Texture2D::load_settings() {
 #if DEBUG()
     GlobalContext& context = GlobalContext::instance();
     if (!context.is_main_thread()) {
@@ -98,22 +98,22 @@ Texture2D::setup(std::shared_ptr<util::image::Image> image) {
         glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, settings_.compare_mode);
     }
     // set other paremeters
+}
 
-    if (image) {
-        load_data(image);
+void
+Texture2D::setup() {
+    // bind
+    if (settings_.multisample) {
+        glTexImage2DMultisample(
+            GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
+            static_cast<GLenum>(settings_.internal_format), width_, height_, GL_TRUE
+        );
     } else {
-        if (settings_.multisample) {
-            glTexImage2DMultisample(
-                GL_TEXTURE_2D_MULTISAMPLE, settings_.samples,
-                static_cast<GLenum>(settings_.internal_format), width_, height_, GL_TRUE
-            );
-        } else {
-            glTexImage2D(
-                GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
-                width_, height_, 0, static_cast<GLenum>(settings_.read_format),
-                static_cast<GLenum>(settings_.type), nullptr
-            );
-        }
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format), width_,
+            height_, 0, static_cast<GLenum>(settings_.read_format),
+            static_cast<GLenum>(settings_.type), nullptr
+        );
     }
 }
 
@@ -122,48 +122,94 @@ Texture2D::Texture2D(
 ) : width_(width), height_(height), settings_(settings) {
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this]() { setup(nullptr); });
+        context.push_opengl_task([this]() {
+            load_settings();
+            setup();
+        });
     } else {
-        setup(nullptr);
+        load_settings();
+        setup();
     }
 }
 
 Texture2D::Texture2D(
-    std::shared_ptr<util::image::Image> image, TextureSettings settings, bool differed
+    util::image::ImageVariant image, TextureSettings settings, bool differed
 ) : settings_(settings) {
-    if (!image) {
-        return;
-    }
-    width_ = image->get_width();
-    height_ = image->get_height();
+    //    width_ = image->get_width();
+    //    height_ = image->get_height();
 
     if (differed) {
         GlobalContext& context = GlobalContext::instance();
-        context.push_opengl_task([this, image]() { setup(image); });
+        context.push_opengl_task([this, image]() {
+            load_settings();
+            load_image(image);
+        });
     } else {
-        setup(image);
+        load_settings();
+        load_image(image);
     }
 }
 
 void
-Texture2D::load_data(std::shared_ptr<util::image::Image> image) {
-    // TODO lots of checks
+Texture2D::load_image(util::image::ImageVariant image) {
+    const auto visitor =
+        util::image::ImageVisitor{[this](auto&& image) { this->load_data(image); }};
+
+    std::visit(visitor, image);
+}
+
+std::expected<util::image::ImageVariant, int>
+Texture2D::get_image() const {
     if (settings_.multisample) {
-        LOG_ERROR(logging::opengl_logger, "Cannot write data to multisample texture");
-        return;
+        LOG_ERROR(logging::opengl_logger, "Cannot load multisample texture to image.");
+        return std::unexpected(1);
     }
-    if (settings_.internal_format == gpu_data::GPUPixelStorageFormat::DEPTH) {
-        //
-    }
-    width_ = image->get_width();
-    height_ = image->get_height();
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, static_cast<GLenum>(settings_.internal_format),
-        image->get_width(), image->get_height(), 0,
-        static_cast<GLenum>(settings_.read_format), static_cast<GLenum>(settings_.type),
-        image->data()
+    glBindTexture(GL_TEXTURE_2D, texture_ID_);
+
+#if DEBUG()
+    int width;
+    int height;
+    int opengl_type;
+
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+    glGetTexLevelParameteriv(
+        GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &opengl_type
     );
-    glGenerateMipmap(GL_TEXTURE_2D);
+
+    if (width != width_ || height != height_) {
+        LOG_WARNING(
+            logging::opengl_logger,
+            "Width or Height don't match correct value. Actual {}, {}, Saved {}, {}.",
+            width, height, width_, height_
+        );
+    }
+
+    if (gui::gpu_data::GPUPixelStorageFormat(opengl_type)
+        != settings_.internal_format) {
+        LOG_WARNING(
+            logging::opengl_logger, "Type sizes don't match. Actual {}, Given {}.",
+            get_size(gui::gpu_data::GPUPixelStorageFormat(opengl_type)),
+            get_size(settings_.internal_format)
+        );
+    }
+
+#endif
+
+    util::image::ImageVariant out =
+        util::image::make_image(settings_.type, settings_.read_format, width_, height_);
+
+    const auto visitor = util::image::ImageVisitor{[this](auto&& image) {
+        glGetTexImage(
+            GL_TEXTURE_2D, 0, static_cast<GLenum>(this->settings_.read_format),
+            static_cast<GLenum>(this->settings_.type),
+            static_cast<void*>(image.get_raw_data())
+        );
+    }};
+
+    std::visit(visitor, out);
+
+    return out;
 }
 
 } // namespace gpu_data

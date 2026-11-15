@@ -1,6 +1,5 @@
 #include "model.hpp"
 
-#include "fmt/core.h"
 #include "util/files.hpp"
 
 #include <filesystem>
