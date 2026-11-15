@@ -40,16 +40,6 @@ UserInterface::UserInterface(shader::ShaderHandler& shader_handler, uint8_t ui_s
         files::get_resources_path() / "shaders" / "overlay" / "TextWindow.frag"
     );
 
-    // auto image_result = image::read_image(files::get_resources_path() / "textures" /
-    // "GenericBorder.png"); if (!image_result.has_value()) {
-    //     LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
-    //     return;
-    // }
-    // std::shared_ptr<util::image::Image> image = image_result.value();
-
-    // gpu_data::Texture2D border_texture(image, gui::gpu_data::TextureSettings{},
-    // false);
-
     // Overwrites anything that was there before
     std::function<void()> render_setup = []() {
         // Draw over everything
@@ -100,7 +90,7 @@ UserInterface::update(
     }
 }
 
-// maybe visitor pattern
+// visitor pattern
 // double dispatch on render frames
 // render_border
 // render_text
@@ -133,8 +123,6 @@ UserInterface::render_frame(
         bounding_box[0] + x_frame_position, bounding_box[1] + y_frame_position,
         bounding_box[2] - bounding_box[0], bounding_box[3] - bounding_box[1], 0, frame
     );
-
-    //    frame->render_children(this, x_frame_position, y_frame_position);
 }
 
 void

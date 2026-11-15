@@ -77,7 +77,9 @@ init(bool console, quill::LogLevel log_level) {
 #ifdef _WIN32
         colors.assign_colour_to_log_level(LogLevel::Warning, cc::yellow | cc::bold);
         colors.assign_colour_to_log_level(LogLevel::Error, cc::red | cc::bold);
-        colors.assign_colour_to_log_level(LogLevel::Critical, cc::bold | cc::white | cc::on_red);
+        colors.assign_colour_to_log_level(
+            LogLevel::Critical, cc::bold | cc::white | cc::on_red
+        );
 #else
         colors.assign_colour_to_log_level(LogLevel::Warning, cc::yellow_bold);
         colors.assign_colour_to_log_level(LogLevel::Error, cc::red_bold);
@@ -120,7 +122,6 @@ init(bool console, quill::LogLevel log_level) {
     auto pattern = quill::PatternFormatterOptions{LOGLINE_FORMAT};
 
     auto script_pattern = quill::PatternFormatterOptions{LOGLINE_FORMAT_SCRIPT};
-
 
     // create all loggers
     // clang-format off

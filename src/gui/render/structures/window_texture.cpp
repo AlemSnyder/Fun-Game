@@ -13,9 +13,8 @@ namespace gui {
 namespace render {
 
 WindowTexture::WindowTexture(
-    std::shared_ptr<util::image::Image> image, glm::ivec4 border_size,
-    glm::ivec4 side_lengths, glm::ivec2 inner_pattern_size,
-    std::array<glm::ivec2, 9> texture_regions
+    util::image::ImageVariant image, glm::ivec4 border_size, glm::ivec4 side_lengths,
+    glm::ivec2 inner_pattern_size, std::array<glm::ivec2, 9> texture_regions
 ) :
     // clang-format off
     gl_positions_{
@@ -54,7 +53,7 @@ WindowTexture::WindowTexture(
 }
 
 WindowTexture::WindowTexture(
-    std::shared_ptr<util::image::Image> image, const window_texture_data_t& texture_data
+    util::image::ImageVariant image, const window_texture_data_t& texture_data
 ) :
     WindowTexture(
         image, texture_data.border_size, texture_data.side_lengths,

@@ -6,6 +6,7 @@
 #include "manifest/object_handler.hpp"
 #include "util/angel_script/as_tests.hpp"
 #include "util/files.hpp"
+#include "util/image.hpp"
 #include "util/png_image.hpp"
 #include "util/time.hpp"
 #include "world/biome.hpp"
@@ -203,14 +204,13 @@ color_image_text() {
         LOG_ERROR(logging::file_io_logger, "Error Code {}", image_result.error());
         return 1;
     }
-    std::shared_ptr<util::image::Image> image = image_result.value();
+    util::image::ImageVariant image = image_result.value();
 
-    auto FPAimage =
-        std::dynamic_pointer_cast<util::image::BytePolychromeAlphaImage>(image);
+    auto FPAimage = std::get<util::image::PolychromeAlphaImage>(image);
+    //        std::dynamic_pointer_cast<>(image;
 
     auto result = image::write_image(
-        *FPAimage.get(),
-        files::get_resources_path() / "textures" / "GenericBorder_out_test.png"
+        FPAimage, files::get_root_path() / "logs" / "GenericBorder_out_test.png"
     );
 
     if (!result == image::write_result_t::WR_OK) {

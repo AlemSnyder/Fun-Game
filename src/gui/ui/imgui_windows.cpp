@@ -136,10 +136,6 @@ display_data(
     ImGui::DragInt2("Sample Position", xy, 1.0, 0, 2000);
 
     const auto& mid_ground = scene.get_mid_ground_framebuffer();
-    std::shared_ptr<util::image::Image> read_data =
-        mid_ground.read_data(xy[0], xy[1], 1, 1);
-    auto float_data =
-        std::dynamic_pointer_cast<util::image::FloatMonochromeImage>(read_data);
 
     FrameBufferHandler& fbh = FrameBufferHandler::instance();
     fbh.bind_fbo(0);
@@ -166,11 +162,17 @@ display_data(
         ImVec2(float(window_width) / float(mid_ground.get_width()), 0)
     );
 
-    if (!float_data) {
+    auto read_data = mid_ground.read_data(xy[0], xy[1], 1, 1);
+    if (!read_data.has_value()) {
         ImGui::Text("Cannot display depth. Something went wrong.");
-
+    } else if (!std::holds_alternative<util::image::FloatMonochromeImage>(
+                   read_data.value()
+               )) { // FloatMonochromeImage
+        ImGui::Text("Cannot display depth. Not float valued.");
     } else {
-        float depth_value = float_data->get_data(0, 0);
+        auto float_data =
+            std::get<util::image::FloatMonochromeImage>(read_data.value());
+        float depth_value = float_data.get_data(0, 0);
 
         ImGui::Text("Depth 32 %f", depth_value);
 
