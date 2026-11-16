@@ -7,6 +7,7 @@
 #include <glaze/glaze.hpp>
 #pragma clang diagnostic pop
 
+#include <cassert>
 #include <compare>
 #include <string>
 

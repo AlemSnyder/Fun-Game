@@ -14,16 +14,11 @@ namespace gui {
 namespace gpu_data {
 
 InstancedIMeshGPU::InstancedIMeshGPU(
-    const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms
+    const util::Mesh& mesh, const std::vector<glm::ivec4>& model_transforms,
+    bool differed
 ) :
-    IMeshGPU(mesh, false), transforms_array_(model_transforms, 1),
-    num_models_(model_transforms.size()) {
-    // InstancedInt does not have a color texture. One must inherit from this
-    // class and define a method that creates a color texture, and sets its id
-    // as color_texture_.
-    GlobalContext& context = GlobalContext::instance();
-    context.push_opengl_task([this]() { initialize(); });
-}
+    TransformsArray_vec4_c(model_transforms), IMeshGPU(mesh, differed),
+    num_models_(model_transforms.size()) {}
 
 void
 InstancedIMeshGPU::update_transforms_array(std::vector<glm::ivec4> data, uint offset) {

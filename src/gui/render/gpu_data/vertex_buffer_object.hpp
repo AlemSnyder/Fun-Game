@@ -30,6 +30,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include <cassert>
 #include <concepts>
 #include <type_traits>
 #include <vector>

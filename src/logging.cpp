@@ -120,7 +120,6 @@ init(bool console, quill::LogLevel log_level) {
 #endif
 
     auto pattern = quill::PatternFormatterOptions{LOGLINE_FORMAT};
-
     auto script_pattern = quill::PatternFormatterOptions{LOGLINE_FORMAT_SCRIPT};
 
     // create all loggers

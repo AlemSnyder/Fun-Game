@@ -14,14 +14,9 @@ namespace gui {
 namespace gpu_data {
 
 FloatingInstancedIMeshGPU::FloatingInstancedIMeshGPU(
-    const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms
-) : IMeshGPU(mesh, false), transforms_array_(model_transforms, 1) {
-    // InstancedInt does not have a color texture. One must inherit from this
-    // class and define a method that creates a color texture, and sets its id
-    // as color_texture_.
-    GlobalContext& context = GlobalContext::instance();
-    context.push_opengl_task([this]() { initialize(); });
-}
+    const util::Mesh& mesh, const std::vector<glm::mat4>& model_transforms,
+    bool differed
+) : TransformsArray_mat4_c(model_transforms), IMeshGPU(mesh, differed) {}
 
 void
 FloatingInstancedIMeshGPU::update_transforms_array(

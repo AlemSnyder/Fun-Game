@@ -42,31 +42,32 @@ World::get_material(MaterialId material_id) const {
 }
 
 World::World(
-    manifest::ObjectHandler* object_handler, const std::string& biome_name,
-    const std::string& path, size_t seed
+    manifest::ObjectHandler* object_handler,
+    const terrain::generation::biome_data_t& biome_data,
+    const std::filesystem::path& path, size_t seed
 ) :
-    biome_(biome_name, seed), terrain_main_(path, biome_), controller_(object_handler) {
+    controller_(object_handler), biome_(biome_data, seed), terrain_main_(path, biome_) {
 }
 
 World::World(
-    manifest::ObjectHandler* object_handler, const std::string& biome_name,
-    MacroDim x_tiles, MacroDim y_tiles, size_t seed
+    manifest::ObjectHandler* object_handler,
+    const terrain::generation::biome_data_t& biome_data, MacroDim x_tiles,
+    MacroDim y_tiles, size_t seed
 ) :
-    biome_(biome_name, seed),
+    controller_(object_handler), biome_(biome_data, seed),
     terrain_main_(
         x_tiles, y_tiles, macro_tile_size, height, biome_, biome_.get_map(x_tiles)
-    ),
-    controller_(object_handler) {}
+    ) {}
 
 World::World(
-    manifest::ObjectHandler* object_handler, const std::string& biome_name,
-    MapTile_t tile_type, size_t seed
+    manifest::ObjectHandler* object_handler,
+    const terrain::generation::biome_data_t& biome_data, MapTile_t tile_type,
+    size_t seed
 ) :
-    biome_(biome_name, seed),
+    controller_(object_handler), biome_(biome_data, seed),
     terrain_main_(
         3, 3, macro_tile_size, height, biome_, biome_.single_tile_type_map(tile_type)
-    ),
-    controller_(object_handler) {}
+    ) {}
 
 void
 World::generate_plants() {

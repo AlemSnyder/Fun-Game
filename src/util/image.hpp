@@ -28,26 +28,13 @@
 
 #include <png.h>
 
+#include <cassert>
 #include <variant>
 #include <vector>
 
 namespace util {
 
 namespace image {
-
-/*
-Image
-v
-different types, byte float [0, 1)
-
-get_width, get_height, get_pixel(), and finally a settings struct
-
-byte and float have get_data() which returns a byte of float
-
-
-*/
-
-// namespace {
 
 template <size_t n>
 [[maybe_unused]] inline std::array<png_byte, n>
@@ -112,7 +99,7 @@ intermediate<T> inline make_intermediate(const std::vector<std::vector<T>>& data
         }
     }
 
-    data_out.resize(width * height);
+    data_out.reserve(width * height);
     for (size_t i = 0; i < height; i++) {
         data_out.insert(data_out.end(), data[i].begin(), data[i].end());
         data_out.insert(data_out.end(), width - data[i].size(), T());
@@ -126,7 +113,6 @@ class ImageImplementation {
  protected:
     size_t width_;
     size_t height_;
-
     std::vector<T> data_;
 
     // private intermediate
@@ -145,7 +131,7 @@ class ImageImplementation {
         ImageImplementation(make_intermediate(data)) {}
 
     ImageImplementation(size_t width, size_t height) :
-        ImageImplementation<T>(width, height, std::vector<T>()) {}
+        ImageImplementation<T>(width, height, std::vector<T>(width * height)) {}
 
     inline virtual size_t
     get_width() const {
@@ -191,15 +177,13 @@ class ImageImplementation {
     }
 };
 
-//}
-
 struct FloatPolychromeAlphaImage_data_t {
     std::shared_ptr<char[]> data;
     screen_size_t width;
     screen_size_t height;
 };
 
-// t represents the underlying type of the data structure;
+// T represents the underlying type of the data structure;
 template <class T, int datum_number>
 std::array<png_byte, datum_number>
 read_data(std::shared_ptr<char[]> data, size_t offset) {

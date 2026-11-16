@@ -3,6 +3,7 @@
 #include "../../logging.hpp"
 #include "global_context.hpp"
 
+#include <cassert>
 #include <optional>
 
 namespace gui {
@@ -35,13 +36,14 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     // Tell GLFW we want logging
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
+    glfwSwapInterval(1); // Enable vsync
+
     // Create window with graphics context
     GLFWwindow* window =
         glfwCreateWindow(window_width, window_height, "Fun-Game", nullptr, nullptr);
     if (window == nullptr)
         return nullptr;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
 
     // This is GLEW not GLFW (E vs F)
     glewExperimental = true; // Needed for core profile

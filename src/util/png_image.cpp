@@ -163,19 +163,19 @@ read_image(std::filesystem::path path) {
 #if DEBUG()
     for (unsigned int i = 0; i < image.get_width(); i++) {
         for (unsigned int j = 0; j < image.get_height(); j++) {
-            auto raw_image_color0 = row_pointers[i][j * 4];
-            auto raw_image_color1 = row_pointers[i][j * 4 + 1];
-            auto raw_image_color2 = row_pointers[i][j * 4 + 2];
-            auto raw_image_color3 = row_pointers[i][j * 4 + 3];
+            auto raw_image_color0 = row_pointers[j][i * 4];
+            auto raw_image_color1 = row_pointers[j][i * 4 + 1];
+            auto raw_image_color2 = row_pointers[j][i * 4 + 2];
+            auto raw_image_color3 = row_pointers[j][i * 4 + 3];
 
             auto data_color0 =
-                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4];
+                reinterpret_cast<png_bytep>(data.data())[j * row_bytes + i * 4];
             auto data_color1 =
-                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4 + 1];
+                reinterpret_cast<png_bytep>(data.data())[j * row_bytes + i * 4 + 1];
             auto data_color2 =
-                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4 + 2];
+                reinterpret_cast<png_bytep>(data.data())[j * row_bytes + i * 4 + 2];
             auto data_color3 =
-                reinterpret_cast<png_bytep>(data.data())[i * row_bytes + j * 4 + 3];
+                reinterpret_cast<png_bytep>(data.data())[j * row_bytes + i * 4 + 3];
             if (raw_image_color0 != data_color0 || raw_image_color1 != data_color1
                 || raw_image_color2 != data_color2 || raw_image_color3 != data_color3) {
                 LOG_WARNING(logging::file_io_logger, "Pixel incorrect at {}{}", i, j);

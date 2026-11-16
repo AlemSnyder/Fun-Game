@@ -1,8 +1,10 @@
 {
+    "name": "The North",
     "map_generator_path": "./biome_map.as",
     "image_path": "path/to/image",
-    "description": "This is a test biome",
-    "name": "Base",
+    "materials_path": "./materials.json",
+    "description": "The land of the far north is notoriously barron. Only the most experienced travelers are able to survive here. While dangerous, an outpost on the north passage could prove to be quite lucrative.",
+    "id": "base::TheNorth",
     "tile_macros": [
         {
             "generation_data": [
@@ -727,10 +729,5 @@
         }
     ],
     "generate_plants": [
-        {
-            "identification": "base/Flower_Test",
-            "map_name": "Flower_1",
-            "map_generator_path": "biome_map.as"
-        }
     ]
 }

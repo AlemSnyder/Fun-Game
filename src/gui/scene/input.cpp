@@ -3,6 +3,8 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
 
+#include <cassert>
+
 namespace gui {
 
 namespace scene {

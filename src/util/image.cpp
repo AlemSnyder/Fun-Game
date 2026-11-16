@@ -9,22 +9,22 @@ make_image(
     size_t width, size_t height
 ) {
     switch (type) {
+        //        case gui::gpu_data::GPUPixelType::HALF_FLOAT: log error
         case gui::gpu_data::GPUPixelType::FLOAT:
-        case gui::gpu_data::GPUPixelType::HALF_FLOAT:
             switch (format) {
                 case gui::gpu_data::GPUPixelReadFormat::DEPTH_COMPONENT:
                 case gui::gpu_data::GPUPixelReadFormat::DEPTH_STENCIL:
                 case gui::gpu_data::GPUPixelReadFormat::RED:
                 case gui::gpu_data::GPUPixelReadFormat::GREEN:
                 case gui::gpu_data::GPUPixelReadFormat::BLUE:
-                    return MonochromeImage(width, height);
+                    return FloatMonochromeImage(width, height);
                 case gui::gpu_data::GPUPixelReadFormat::RGB:
                 case gui::gpu_data::GPUPixelReadFormat::BGR:
-                    return MonochromeImage(width, height);
+                    return FloatPolychromeImage(width, height);
 
                 case gui::gpu_data::GPUPixelReadFormat::RGBA:
                 case gui::gpu_data::GPUPixelReadFormat::BGRA:
-                    return MonochromeImage(width, height);
+                    return FloatPolychromeAlphaImage(width, height);
             }
         case gui::gpu_data::GPUPixelType::UNSIGNED_BYTE:
             switch (format) {

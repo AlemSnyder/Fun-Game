@@ -62,7 +62,7 @@ TileObject::TileObject(
             {color::convert_color_data(mesh.get_color_map())}
         );
         // load the mesh to the gpu
-        model_meshes_.emplace_back(mesh, color_data);
+        model_meshes_.emplace_back(mesh, color_data, true);
 
         // some how change because other things.
         // if we want glow or color in the model

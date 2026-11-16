@@ -2,6 +2,7 @@
 
 #include "util/files.hpp"
 
+#include <cassert>
 #include <filesystem>
 #include <iterator>
 
