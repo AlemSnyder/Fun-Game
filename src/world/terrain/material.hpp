@@ -28,6 +28,7 @@
 #include "logging.hpp"
 #include "types.hpp"
 #include "util/color.hpp"
+#include "world/surface_gradiant.hpp" // need to do something about this
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
@@ -58,11 +59,6 @@ struct material_color_t {
     }
 };
 
-struct grass_data_t {
-    std::vector<int> levels;
-    int midpoint;
-};
-
 /**
  * @brief Holds Material data
  *
@@ -80,7 +76,7 @@ struct material_t {
     bool solid = false;                  // Is the material solid?
     MaterialId material_id = AIR_MAT_ID; // The ID of the material (Air is 0)
     const std::string name = "Air";      // The material name
-    std::optional<grass_data_t> gradient;
+    std::optional<generation::GrassData> gradient;
 
     // int8_t deterioration from wind
     // int8_t deterioration from water
@@ -340,9 +336,3 @@ struct glz::meta<terrain::material_color_t> {
     // clang-format on
 };
 
-template <>
-inline glz::detail::any_t::
-operator terrain::grass_data_t() const {
-    assert(false && "Not Implemented");
-    return {};
-}

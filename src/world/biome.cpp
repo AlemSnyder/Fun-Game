@@ -20,50 +20,13 @@ namespace terrain {
 
 namespace generation {
 
-GrassData::GrassData(const grass_data_t& grass_data) {
-    ColorId grass_mid_color_id = grass_data.midpoint;
-
-    // Should be much lower than a Dim
-    std::vector<Dim> grass_grad_data;
-    for (Dim layer_length : grass_data.levels) {
-        if (layer_length > 16) {
-            LOG_WARNING(
-                logging::terrain_logger, "Quite long grass length {}", layer_length
-            );
-        }
-        grass_grad_data.push_back(layer_length);
-    }
-
-    if (grass_mid_color_id >= grass_grad_data.size()) {
-        grass_mid_color_id = grass_grad_data.size() - 1;
-        LOG_WARNING(
-            logging::terrain_logger, "Grass Mid (from biome_data.json) too large"
-        );
-    }
-
-    for (ColorId i = 0; i < grass_grad_data.size(); i++) {
-        if (i == grass_mid_color_id)
-            grass_mid_ = grass_colors_.size();
-        for (size_t j = 0; j < grass_grad_data[i]; j++)
-            grass_colors_.push_back(i);
-    }
-    grass_grad_length_ = grass_colors_.size();
-}
-
-GrassData::GrassData(const std::optional<grass_data_t>& grass_data) :
-    GrassData(grass_data.value_or(grass_data_t())) {
-    if (!grass_data) {
-        LOG_WARNING(logging::terrain_logger, "Grass Data Empty");
-    }
-}
-
 Biome::Biome(biome_data_t biome_data, size_t seed) :
     materials_(init_materials_(
         files::read_json_from_file<all_materials_t>(biome_data.materials_path)
             .value_or(std::unordered_map<std::string, terrain::material_t>())
     )),
     generate_plants_(biome_data.generate_plants),
-    grass_data_(materials_.at(DIRT_ID).gradient),
+    grass_data_(materials_.at(DIRT_ID).gradient.value()),
     map_generator_file_(biome_data.map_generator_path), name_(biome_data.name),
     id_name_(biome_data.id), seed(seed) {
     auto material_read =

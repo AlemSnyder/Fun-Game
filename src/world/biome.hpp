@@ -35,59 +35,6 @@ namespace terrain {
 namespace generation {
 
 /**
- * @brief Contains grass colors and pattern for a biome.
- */
-class GrassData {
- private:
-    // vector that determines grass color from edge distance
-    std::vector<ColorId> grass_colors_;
-    // length of grass gradient
-    uint8_t grass_grad_length_;
-    // gradient index of grass not by an edge
-    uint8_t grass_mid_;
-
- public:
-    /**
-     * @brief Construct a new GrassData ojbect
-     *
-     * @param json_grass_data Json data that describes grass gradient
-     */
-    GrassData(const grass_data_t& json_grass_data);
-
-    GrassData(const std::optional<grass_data_t>& json_grass_data);
-
-    /**
-     * @brief Get the grass gradient length
-     *
-     * @return length of grass gradient
-     */
-    [[nodiscard]] inline uint8_t
-    get_grass_grad_length() const noexcept {
-        return grass_grad_length_;
-    }
-
-    /**
-     * @brief Get index where grass gradient splits
-     *
-     * @return grass mid point
-     */
-    [[nodiscard]] inline uint8_t
-    get_grass_mid() const {
-        return grass_mid_;
-    }
-
-    /**
-     * @brief Get grass gradient
-     *
-     * @return vector of grass color ids
-     */
-    [[nodiscard]] inline const std::vector<ColorId>&
-    get_grass_colors() const {
-        return grass_colors_;
-    }
-};
-
-/**
  * @brief Generates terrain and plants map
  */
 class Biome {
