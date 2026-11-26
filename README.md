@@ -25,7 +25,6 @@ apt install \
     libglfw3-dev \
     libglew-dev \
     libglm-dev \
-    libomp-17-dev \
     libpng-dev
 ```
 
