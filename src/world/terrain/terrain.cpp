@@ -549,6 +549,7 @@ Terrain::natural_color(
     TerrainOffset3 xyz, const material_t* mat, ColorId color_id
 ) const {
     auto mat_id = mat->material_id;
+    // if (biome.has_location_color(mat_id))
     if (mat_id == DIRT_ID) { // being set to dirt
         // adds striations to the dirt.
         auto& global_context = GlobalContext::instance();

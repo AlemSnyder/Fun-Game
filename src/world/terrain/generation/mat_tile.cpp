@@ -41,9 +41,19 @@ TileType::TileType(
         }
     }
 
-    if (layer_effect_material_id == DIRT_ID) {
-        layer_effect_color_id = 0; // TODO this is the wrong grass color
+    // how many more checks should I add here?
+    try {
+        if (layer_effect_material_id == DIRT_ID) {
+            auto grass_gradient = materials.at(layer_effect_color_id).gradient;
+            if (grass_gradient.has_value()) {
+                layer_effect_color_id = grass_gradient.value().levels[grass_gradient.value().midpoint];
+            }
+        }
     }
+    catch(const std::exception& e) {
+        LOG_WARNING(logging::terrain_logger, "Exception determining grass color. {}", e.what());
+        LOG_INFO(logging::terrain_logger, "This is likely an issue in the materials json. Check the grass gradient and the midpoint.");
+    } // Is it bad that I am logging an exception as a warning.
 
     top_color_ = materials.at(stamp_material_id).color[stamp_color_id].hex_color;
 

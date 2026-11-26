@@ -24,25 +24,22 @@ Tile::set_material(const terrain::material_t* const material, ColorId color_id_)
 void
 Tile::set_material(const terrain::material_t* const material) {
     mat_id_ = material->material_id;
-    if (mat_id_ == DIRT_ID) {  // being set to dirt
-        color_id_ = NUM_GRASS; //(z + (x / 16 + y / 16) % 2) / 3 % 2 + NUM_GRASS;
-    } else {
-        color_id_ = 0;
-    }
+    color_id_ = 0;
     solid_ = material->solid;
 }
 
 // If able, set `color_id` to `color_id_`.
 void
 Tile::set_color_id(ColorId color_id, const terrain::material_t* const material) {
+    if (mat_id_ != material->material_id) {
+        LOG_WARNING(logging::terrain_logger, "Attempting to set color to {} with "
+            "material {}, but tile has material {}.", color_id, material->material_id,
+            mat_id_);
+    }
     if (color_id >= material->color.size()) {
         return;
     }
-    // if ((mat_id_ != DIRT_ID) || (color_id < NUM_GRASS && grass_)) {
     color_id_ = color_id;
-    //} // cannot set the color of dirt
-    // now setting to color of dirt
-    // I guess the plan is to change tile to a struct
 }
 
 // Set `grow_data_high` to `num`

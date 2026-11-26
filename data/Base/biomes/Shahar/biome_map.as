@@ -74,27 +74,7 @@ class biome_map {
     // Maps for trees and bushes
     // name should be used in json file
     float sample_plants(const string& in plant_id, int x, int y) {
-        if (plant_id == "Trees_1") {
-            int height = sample(x, y);
-            if (height == 1) {
-                return 0.1;
-            }
-            else {
-                return 0.0;
-            }
-        }
-        else if (plant_id == "Flower_1") {
-            int flower_height = int(flower_noise.sample(x * 4, y * 4));
-            if (flower_height > 0) {
-                return 0.10;
-            }
-            else {
-                return 0.0;
-            }
-        }
-        else {
-            return 0.0;
-        }
+        return 0.0;
     }
 }
 
