@@ -46,7 +46,7 @@ TileType::TileType(
         if (layer_effect_material_id == DIRT_ID) {
             auto grass_gradient = materials.at(layer_effect_color_id).gradient;
             if (grass_gradient.has_value()) {
-                layer_effect_color_id = grass_gradient.value().levels[grass_gradient.value().midpoint];
+                layer_effect_color_id = grass_gradient.value().midpoint;
             }
         }
     }
