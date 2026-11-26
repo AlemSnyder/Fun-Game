@@ -19,6 +19,16 @@ pacman -Su \
     mingw-w64-x86_64-freetype
 ```
 
+### Linux
+
+```sh
+apt install \
+    libglfw3-dev \
+    libglew-dev \
+    libglm-dev \
+    libpng-dev
+```
+
 ## Building
 
 ```sh
