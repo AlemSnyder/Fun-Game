@@ -81,11 +81,11 @@ class ModelController : virtual public gui::gpu_data::GPUDataElementsInstanced {
      */
     inline ModelController(
         const util::Mesh& model_mesh,
-        const std::vector<std::vector<ColorFloat>>& vector_data
+        const std::vector<std::vector<ColorFloat>>& vector_data, bool differed = false
     ) noexcept :
-        model_mesh_(model_mesh, {}),
+        model_mesh_(model_mesh, {}, differed),
         model_textures_(
-            std::make_shared<util::image::FloatPolychromeAlphaImage>(vector_data)
+            util::image::FloatPolychromeAlphaImage(vector_data), {}, differed
         ) {}
 
     inline virtual ~ModelController() {}

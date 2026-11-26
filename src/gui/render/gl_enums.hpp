@@ -150,18 +150,25 @@ enum class GPUArayType : GLenum {
 enum class GPUPixelType : GLenum {
     FLOAT = GL_FLOAT,           // float (32)
     HALF_FLOAT = GL_HALF_FLOAT, // float16
-    NONE = 0,                   // render buffers have no internal type
+    UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
+    NONE = 0, // render buffers have no internal type
+
 };
 
 enum class GPUPixelStorageFormat : GLenum {
-    R = GL_R,
+    RED = GL_RED,
     DEPTH = GL_DEPTH_COMPONENT,
     DEPTH_16 = GL_DEPTH_COMPONENT16,
     DEPTH_24 = GL_DEPTH_COMPONENT24,
     DEPTH_32 = GL_DEPTH_COMPONENT32,
     RGB = GL_RGB,
     RGB8 = GL_RGB8,
-    RGBA = GL_RGBA
+    RGBA = GL_RGBA,
+    RGBA8 = GL_RGBA8,
+
+    RGBA8I = GL_RGBA8I,
+    RGBA8UI = GL_RGBA8UI,
+    //    RGBA8I = GL_RGBA8I
 };
 
 enum class GPUPixelReadFormat : GLenum {
@@ -176,6 +183,7 @@ enum class GPUPixelReadFormat : GLenum {
     RGBA = GL_RGBA,
     BGRA = GL_BGRA,
 
+    RGBA_INTEGER = GL_RGBA_INTEGER,
 };
 
 /**
@@ -614,7 +622,7 @@ get_size(const GPUPixelReadFormat& data_format) {
 constexpr inline size_t
 get_size(const GPUPixelStorageFormat& data_format) {
     switch (data_format) {
-        case GPUPixelStorageFormat::R:
+        case GPUPixelStorageFormat::RED:
         case GPUPixelStorageFormat::DEPTH:
             return 1;
         case GPUPixelStorageFormat::RGB:
@@ -640,6 +648,8 @@ get_size(const GPUPixelType type) {
             return 4;
         case GPUPixelType::HALF_FLOAT:
             return 2;
+        case GPUPixelType::UNSIGNED_BYTE:
+            return 1;
         default:
             LOG_CRITICAL(
                 logging::opengl_logger,

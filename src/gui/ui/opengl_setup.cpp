@@ -3,6 +3,7 @@
 #include "../../logging.hpp"
 #include "global_context.hpp"
 
+#include <cassert>
 #include <optional>
 
 namespace gui {
@@ -14,7 +15,6 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     glEnable(GL_MULTISAMPLE);
 
     // Initialise GLFW
-    glewExperimental = true; // Needed for core profile
     if (!glfwInit()) {
         LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLFW");
         glfwTerminate();
@@ -36,20 +36,28 @@ setup_opengl(screen_size_t window_width, screen_size_t window_height) {
     // Tell GLFW we want logging
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
+    glfwSwapInterval(1); // Enable vsync
+
     // Create window with graphics context
     GLFWwindow* window =
         glfwCreateWindow(window_width, window_height, "Fun-Game", nullptr, nullptr);
     if (window == nullptr)
         return nullptr;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
 
+    // This is GLEW not GLFW (E vs F)
     glewExperimental = true; // Needed for core profile
     if (glewInit() != GLEW_OK) {
         LOG_CRITICAL(logging::opengl_logger, "Failed to initialize GLEW");
         glfwTerminate();
         return nullptr;
     }
+
+    // Set the pack and unpack alignment for textures to one byte. This is because I am
+    // reading them into textures which have their own alignment
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
     return window;
 }
 

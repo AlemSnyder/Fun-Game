@@ -37,7 +37,7 @@ Entity::Entity(
     auto mesh = util::ambient_occlusion_mesher(model);
 
     mesh_and_positions_ =
-        std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh);
+        std::make_shared<gui::gpu_data::FloatingInstancedIMeshGPU>(mesh, true);
 
     if (object_data.ai) {
         std::filesystem::path ai_path = files::get_data_path()
@@ -96,7 +96,9 @@ EntityInstance::EntityInstance(std::shared_ptr<Entity> entity_type) :
 EntityInstance::~EntityInstance() {}
 
 void
-EntityInstance::operate(std::chrono::milliseconds delta_time, bool show) {
+EntityInstance::operate(
+    [[maybe_unused]] std::chrono::milliseconds delta_time, bool show
+) {
     if (std::shared_ptr<Entity> entity_type = entity_type_.lock()) {
         glm::vec3 position = entity_type->decision(this);
         position_ = position;

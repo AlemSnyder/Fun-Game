@@ -34,6 +34,7 @@
 #include <glaze/glaze.hpp>
 #pragma clang diagnostic pop
 
+#include <cassert>
 #include <cstdint>
 #include <string>
 #include <unordered_map>

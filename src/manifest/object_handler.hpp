@@ -52,6 +52,8 @@ class ObjectHandler {
     std::mutex map_mutex_;
     std::unordered_map<std::string, std::shared_ptr<world::object::entity::Object>>
         ided_objects;
+    std::unordered_map<std::string, std::shared_ptr<terrain::generation::biome_data_t>>
+        ided_biomes;
 
  public:
     ObjectHandler() {}
@@ -213,6 +215,9 @@ class ObjectHandler {
     std::shared_ptr<const world::object::entity::Object>
     get_object(const std::string& object_id) const;
 
+    std::shared_ptr<const terrain::generation::biome_data_t>
+    get_biome(const std::string& biome_id) const;
+
     /**
      * @brief Load new biome from file
      *
@@ -220,7 +225,8 @@ class ObjectHandler {
      */
     void read_biome(const manifest::descriptor_t& biome_descriptor);
 
-    std::shared_ptr<terrain::generation::Biome> get_biome(const std::string& biome_id);
+    std::shared_ptr<terrain::generation::biome_data_t>
+    get_biome(const std::string& biome_id);
 
     [[nodiscard]] inline const auto
     begin() const {

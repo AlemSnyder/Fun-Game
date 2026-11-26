@@ -1,8 +1,8 @@
 #include "model.hpp"
 
-#include "fmt/core.h"
 #include "util/files.hpp"
 
+#include <cassert>
 #include <filesystem>
 #include <iterator>
 

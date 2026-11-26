@@ -94,13 +94,12 @@ Controls::handle_pooled_inputs(GLFWwindow* window) {
     ); // display range max
     // Camera matrix
     view_matrix_ = glm::lookAt(
-        position_, // Camera is here
-        position_
-            + direction, // and looks here : at the same position_, plus "direction"
-        screen_up        // Head is up (set to 0,-1,0 to look upside-down)
+        position_,             // Camera is here
+        position_ + direction, // look along direction
+        screen_up              // set up direction
     );
 
-    // For the next frame, the "last time" will be "now"
+    // Update time
     glfw_previous_time_ = currentTime;
 }
 
@@ -118,15 +117,15 @@ Controls::handle_mouse_scroll_input(
 
 void
 Controls::handle_mouse_button_input(
-    GLFWwindow* window, int button, int action, int mods
+    GLFWwindow* window, int button, int action, [[maybe_unused]] int mods
 ) {
     if (static_cast<Key>(button) == Key::MOUSE_LEFT && action == GLFW_PRESS) {
         double xpos;
         double ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         LOG_DEBUG(logging::main_logger, "Mouse Position: [{}, {}]", xpos, ypos);
-        int xpos_int = floor(xpos);
-        int ypos_int = floor(ypos);
+        // int xpos_int = floor(xpos);
+        // int ypos_int = floor(ypos);
     }
 }
 

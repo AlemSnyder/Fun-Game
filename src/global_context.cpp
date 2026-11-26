@@ -80,9 +80,10 @@ GlobalContext::load_file(const std::string& mod_name, std::filesystem::path path
             logging::as_logger, "Loading file from \"{}\" into module \"{}\".",
             path.lexically_normal().string(), mod_name
         );
-    } else if (mod = engine_->GetModule(
-                   mod_name.c_str(), AngelScript::asGM_CREATE_IF_NOT_EXISTS
-               )) {
+    } else if (
+        mod =
+            engine_->GetModule(mod_name.c_str(), AngelScript::asGM_CREATE_IF_NOT_EXISTS)
+    ) {
         LOG_BACKTRACE(
             logging::as_logger, "Creating module \"{}\" from file \"{}\".", mod_name,
             path.lexically_normal().string()

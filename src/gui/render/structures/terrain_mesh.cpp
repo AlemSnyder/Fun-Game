@@ -1,5 +1,7 @@
 #include "terrain_mesh.hpp"
 
+#include <cassert>
+
 namespace gui {
 
 namespace gpu_data {

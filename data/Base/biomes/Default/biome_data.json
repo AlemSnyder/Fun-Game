@@ -1,8 +1,10 @@
 {
-    "map_generator_path": "../biome_map.as",
-    "image_path": "path/to/image",
-    "description": "This is a test biome",
     "name": "Base",
+    "map_generator_path": "./biome_map.as",
+    "image_path": "path/to/image",
+    "materials_path": "./materials.json",
+    "id": "base::Default",
+    "description": "This is a test biome",
     "tile_macros": [
         {
             "generation_data": [
@@ -730,7 +732,7 @@
         {
             "identification": "base/Flower_Test",
             "map_name": "Flower_1",
-            "map_generator_path": "../biome_map.as"
+            "map_generator_path": "biome_map.as"
         }
     ]
 }

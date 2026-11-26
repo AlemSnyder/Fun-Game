@@ -425,7 +425,7 @@ class Terrain : public voxel_utility::VoxelBase {
      * @param path path to saved terrain
      * @param material materials of the world
      */
-    Terrain(const std::string& path, const generation::Biome& biome);
+    Terrain(const std::filesystem::path& path, const generation::Biome& biome);
 
     /**
      * @brief Construct a new Terrain Base object from qb data

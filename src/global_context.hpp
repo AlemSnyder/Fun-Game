@@ -29,6 +29,7 @@
 #include <angelscript.h>
 #include <BS_thread_pool.hpp>
 
+#include <cassert>
 #include <functional>
 #include <mutex>
 #include <optional>

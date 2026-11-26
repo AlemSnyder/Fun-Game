@@ -58,7 +58,8 @@ jobs:
             libglfw3-dev \
             libglew-dev \
             libglm-dev \
-            libpng-dev
+            libpng-dev \
+            libfreetype-dev
 
 
       - name: Build
